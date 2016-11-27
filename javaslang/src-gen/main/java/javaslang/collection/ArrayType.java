@@ -10,6 +10,7 @@ package javaslang.collection;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.io.Serializable;
+
 import java.util.Collection;
 
 /**
@@ -31,9 +32,10 @@ interface ArrayType<T> {
     Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size);
 
     @SuppressWarnings("unchecked")
-    static <T> ArrayType<T> of(Object array) { return of((Class<T>) array.getClass().getComponentType()); }
+    static <T> ArrayType<T> of(Object array)  { return of((Class<T>) array.getClass().getComponentType()); }
+    static <T> ArrayType<T> of(Class<T> type) { return !type.isPrimitive() ? obj() : ofPrimitive(type); }
     @SuppressWarnings("unchecked")
-    static <T> ArrayType<T> of(Class<T> type) {
+    static <T> ArrayType<T> ofPrimitive(Class<T> type) {
         if (boolean.class == type) {
             return (ArrayType<T>) BooleanArrayType.INSTANCE;
         } else if (byte.class == type) {
@@ -51,7 +53,7 @@ interface ArrayType<T> {
         } else if (short.class == type) {
             return (ArrayType<T>) ShortArrayType.INSTANCE;
         } else {
-            return (ArrayType<T>) ObjectArrayType.INSTANCE;
+            throw new IllegalArgumentException(String.valueOf(type));
         }
     }
 
@@ -155,29 +157,30 @@ interface ArrayType<T> {
         public boolean[] empty() { return EMPTY; }
 
         @Override
-        public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+        public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
         @Override
         public Boolean getAt(Object array, int index) { return cast(array)[index]; }
 
         @Override
         public void setAt(Object array, int index, Boolean value) throws ClassCastException {
-            if (value == null) {
-                throw new ClassCastException();
-            } else {
+            if (value != null) {
                 cast(array)[index] = value;
+            } else {
+                throw new ClassCastException();
             }
         }
 
         @Override
         public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-            if (size == 0) {
-                return new boolean[arraySize];
-            } else {
-                final boolean[] result = new boolean[arraySize];
-                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                return result;
-            }
+            return (size > 0)
+                    ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                    : new boolean[arraySize];
+        }
+        private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            final boolean[] result = new boolean[arraySize];
+            System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+            return result;
         }
     }
 
@@ -195,29 +198,30 @@ interface ArrayType<T> {
         public byte[] empty() { return EMPTY; }
 
         @Override
-        public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+        public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
         @Override
         public Byte getAt(Object array, int index) { return cast(array)[index]; }
 
         @Override
         public void setAt(Object array, int index, Byte value) throws ClassCastException {
-            if (value == null) {
-                throw new ClassCastException();
-            } else {
+            if (value != null) {
                 cast(array)[index] = value;
+            } else {
+                throw new ClassCastException();
             }
         }
 
         @Override
         public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-            if (size == 0) {
-                return new byte[arraySize];
-            } else {
-                final byte[] result = new byte[arraySize];
-                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                return result;
-            }
+            return (size > 0)
+                    ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                    : new byte[arraySize];
+        }
+        private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            final byte[] result = new byte[arraySize];
+            System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+            return result;
         }
     }
 
@@ -235,29 +239,30 @@ interface ArrayType<T> {
         public char[] empty() { return EMPTY; }
 
         @Override
-        public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+        public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
         @Override
         public Character getAt(Object array, int index) { return cast(array)[index]; }
 
         @Override
         public void setAt(Object array, int index, Character value) throws ClassCastException {
-            if (value == null) {
-                throw new ClassCastException();
-            } else {
+            if (value != null) {
                 cast(array)[index] = value;
+            } else {
+                throw new ClassCastException();
             }
         }
 
         @Override
         public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-            if (size == 0) {
-                return new char[arraySize];
-            } else {
-                final char[] result = new char[arraySize];
-                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                return result;
-            }
+            return (size > 0)
+                    ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                    : new char[arraySize];
+        }
+        private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            final char[] result = new char[arraySize];
+            System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+            return result;
         }
     }
 
@@ -275,29 +280,30 @@ interface ArrayType<T> {
         public double[] empty() { return EMPTY; }
 
         @Override
-        public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+        public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
         @Override
         public Double getAt(Object array, int index) { return cast(array)[index]; }
 
         @Override
         public void setAt(Object array, int index, Double value) throws ClassCastException {
-            if (value == null) {
-                throw new ClassCastException();
-            } else {
+            if (value != null) {
                 cast(array)[index] = value;
+            } else {
+                throw new ClassCastException();
             }
         }
 
         @Override
         public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-            if (size == 0) {
-                return new double[arraySize];
-            } else {
-                final double[] result = new double[arraySize];
-                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                return result;
-            }
+            return (size > 0)
+                    ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                    : new double[arraySize];
+        }
+        private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            final double[] result = new double[arraySize];
+            System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+            return result;
         }
     }
 
@@ -315,29 +321,30 @@ interface ArrayType<T> {
         public float[] empty() { return EMPTY; }
 
         @Override
-        public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+        public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
         @Override
         public Float getAt(Object array, int index) { return cast(array)[index]; }
 
         @Override
         public void setAt(Object array, int index, Float value) throws ClassCastException {
-            if (value == null) {
-                throw new ClassCastException();
-            } else {
+            if (value != null) {
                 cast(array)[index] = value;
+            } else {
+                throw new ClassCastException();
             }
         }
 
         @Override
         public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-            if (size == 0) {
-                return new float[arraySize];
-            } else {
-                final float[] result = new float[arraySize];
-                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                return result;
-            }
+            return (size > 0)
+                    ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                    : new float[arraySize];
+        }
+        private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            final float[] result = new float[arraySize];
+            System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+            return result;
         }
     }
 
@@ -355,29 +362,30 @@ interface ArrayType<T> {
         public int[] empty() { return EMPTY; }
 
         @Override
-        public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+        public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
         @Override
         public Integer getAt(Object array, int index) { return cast(array)[index]; }
 
         @Override
         public void setAt(Object array, int index, Integer value) throws ClassCastException {
-            if (value == null) {
-                throw new ClassCastException();
-            } else {
+            if (value != null) {
                 cast(array)[index] = value;
+            } else {
+                throw new ClassCastException();
             }
         }
 
         @Override
         public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-            if (size == 0) {
-                return new int[arraySize];
-            } else {
-                final int[] result = new int[arraySize];
-                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                return result;
-            }
+            return (size > 0)
+                    ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                    : new int[arraySize];
+        }
+        private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            final int[] result = new int[arraySize];
+            System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+            return result;
         }
     }
 
@@ -395,29 +403,30 @@ interface ArrayType<T> {
         public long[] empty() { return EMPTY; }
 
         @Override
-        public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+        public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
         @Override
         public Long getAt(Object array, int index) { return cast(array)[index]; }
 
         @Override
         public void setAt(Object array, int index, Long value) throws ClassCastException {
-            if (value == null) {
-                throw new ClassCastException();
-            } else {
+            if (value != null) {
                 cast(array)[index] = value;
+            } else {
+                throw new ClassCastException();
             }
         }
 
         @Override
         public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-            if (size == 0) {
-                return new long[arraySize];
-            } else {
-                final long[] result = new long[arraySize];
-                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                return result;
-            }
+            return (size > 0)
+                    ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                    : new long[arraySize];
+        }
+        private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            final long[] result = new long[arraySize];
+            System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+            return result;
         }
     }
 
@@ -435,29 +444,30 @@ interface ArrayType<T> {
         public short[] empty() { return EMPTY; }
 
         @Override
-        public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+        public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
         @Override
         public Short getAt(Object array, int index) { return cast(array)[index]; }
 
         @Override
         public void setAt(Object array, int index, Short value) throws ClassCastException {
-            if (value == null) {
-                throw new ClassCastException();
-            } else {
+            if (value != null) {
                 cast(array)[index] = value;
+            } else {
+                throw new ClassCastException();
             }
         }
 
         @Override
         public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-            if (size == 0) {
-                return new short[arraySize];
-            } else {
-                final short[] result = new short[arraySize];
-                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                return result;
-            }
+            return (size > 0)
+                    ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                    : new short[arraySize];
+        }
+        private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            final short[] result = new short[arraySize];
+            System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+            return result;
         }
     }
 
@@ -475,7 +485,7 @@ interface ArrayType<T> {
         public Object[] empty() { return EMPTY; }
 
         @Override
-        public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+        public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
         @Override
         public Object getAt(Object array, int index) { return cast(array)[index]; }
@@ -487,13 +497,14 @@ interface ArrayType<T> {
 
         @Override
         public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-            if (size == 0) {
-                return new Object[arraySize];
-            } else {
-                final Object[] result = new Object[arraySize];
-                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                return result;
-            }
+            return (size > 0)
+                    ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                    : new Object[arraySize];
+        }
+        private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+            final Object[] result = new Object[arraySize];
+            System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+            return result;
         }
     }
 }

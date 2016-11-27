@@ -2296,7 +2296,6 @@ def generateMainClasses(): Unit = {
     ) // note: there is no void[] in Java
 
     genJavaslangFile("javaslang.collection", "ArrayType")((im: ImportManager, packageName: String, className: String) => xs"""
-      import javaslang.Tuple2;
       import java.util.Collection;
 
       /**
@@ -2318,12 +2317,28 @@ def generateMainClasses(): Unit = {
           Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size);
 
           @SuppressWarnings("unchecked")
-          static <T> ArrayType<T> of(Object array) { return of((Class<T>) array.getClass().getComponentType()); }
+          static <T> ArrayType<T> of(Object array)  { return of((Class<T>) array.getClass().getComponentType()); }
+          static <T> ArrayType<T> of(Class<T> type) { return !type.isPrimitive() ? obj() : ofPrimitive(type); }
           @SuppressWarnings("unchecked")
-          static <T> ArrayType<T> of(Class<T> type) {
-              ${types.keys.toSeq.gen(arrayType =>
-                  s"""${if (arrayType == types.keys.last) "} else" else s"${if (arrayType == types.keys.head) "if" else "} else if"} ($arrayType.class == type)"} {
-                     |    return (ArrayType<T>) ${arrayType.capitalize + className}.INSTANCE;""".stripMargin)("\n")}
+          static <T> ArrayType<T> ofPrimitive(Class<T> type) {
+              if (boolean.class == type) {
+                  return (ArrayType<T>) BooleanArrayType.INSTANCE;
+              } else if (byte.class == type) {
+                  return (ArrayType<T>) ByteArrayType.INSTANCE;
+              } else if (char.class == type) {
+                  return (ArrayType<T>) CharArrayType.INSTANCE;
+              } else if (double.class == type) {
+                  return (ArrayType<T>) DoubleArrayType.INSTANCE;
+              } else if (float.class == type) {
+                  return (ArrayType<T>) FloatArrayType.INSTANCE;
+              } else if (int.class == type) {
+                  return (ArrayType<T>) IntArrayType.INSTANCE;
+              } else if (long.class == type) {
+                  return (ArrayType<T>) LongArrayType.INSTANCE;
+              } else if (short.class == type) {
+                  return (ArrayType<T>) ShortArrayType.INSTANCE;
+              } else {
+                  throw new IllegalArgumentException(String.valueOf(type));
               }
           }
 
@@ -2438,7 +2453,7 @@ def generateMainClasses(): Unit = {
             public $arrayType[] empty() { return EMPTY; }
 
             @Override
-            public int lengthOf(Object array) { return (array == null) ? 0 : cast(array).length; }
+            public int lengthOf(Object array) { return (array != null) ? cast(array).length : 0; }
 
             @Override
             public $wrapperType getAt(Object array, int index) { return cast(array)[index]; }
@@ -2446,23 +2461,24 @@ def generateMainClasses(): Unit = {
             @Override
             public void setAt(Object array, int index, $wrapperType value) ${if (isPrimitive) "throws ClassCastException " else ""}{
                 ${if (isPrimitive)
-                """if (value == null) {
-                  |    throw new ClassCastException();
-                  |} else {
+                """if (value != null) {
                   |    cast(array)[index] = value;
+                  |} else {
+                  |    throw new ClassCastException();
                   |}""".stripMargin
               else "cast(array)[index] = value;" }
             }
 
             @Override
             public Object copy(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
-                if (size == 0) {
-                    return new $arrayType[arraySize];
-                } else {
-                    final $arrayType[] result = new $arrayType[arraySize];
-                    System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
-                    return result;
-                }
+                return (size > 0)
+                        ? copyNonEmpty(array, arraySize, sourceFrom, destinationFrom, size)
+                        : new $arrayType[arraySize];
+            }
+            private static Object copyNonEmpty(Object array, int arraySize, int sourceFrom, int destinationFrom, int size) {
+                final $arrayType[] result = new $arrayType[arraySize];
+                System.arraycopy(array, sourceFrom, result, destinationFrom, size); /* has to be near the object allocation to avoid zeroing out the array */
+                return result;
             }
         }
       """
