@@ -64,7 +64,7 @@ final class Collections {
     static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
         Objects.requireNonNull(classifier, "classifier is null");
         Objects.requireNonNull(mapper, "mapper is null");
-        final java.util.Map<C, Collection<T>> mutableResults = new java.util.LinkedHashMap<>();
+        final java.util.Map<C, Collection<T>> mutableResults = new java.util.LinkedHashMap<>(source.isTraversableAgain() ? source.size() : 16);
         for (T value : source) {
             final C key = classifier.apply(value);
             mutableResults.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
