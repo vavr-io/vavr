@@ -260,6 +260,7 @@ final class BitMappedTrie<T> implements Serializable {
      * Node: the offset and length should be taken into consideration as there may be leading and trailing garbage.
      * Also, the returned array is mutable, but should not be mutated!
      */
+    @SuppressWarnings("WeakerAccess")
     Object getLeaf(int index) {
         if (depthShift == 0) {
             return array;
@@ -313,7 +314,7 @@ final class BitMappedTrie<T> implements Serializable {
         int globalIndex = 0, start = lastDigit(offset);
         for (int index = 0; index < length; ) {
             final T2 leaf = (T2) getLeaf(index);
-            final int end = Math.min(type.lengthOf(leaf), start + length - index);
+            final int end = getMin(start, index, leaf);
 
             globalIndex = visitor.visit(globalIndex, leaf, start, end);
 
@@ -322,38 +323,35 @@ final class BitMappedTrie<T> implements Serializable {
         }
         return globalIndex;
     }
+    private int getMin(int start, int index, Object leaf) { return Math.min(type.lengthOf(leaf), start + length - index); }
 
     BitMappedTrie<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-
         final Object results = type.newInstance(length());
-        final int length = this.<T> visit((index, leaf, start, end) -> {
-            for (int i = start; i < end; i++) {
-                final T value = type.getAt(leaf, i);
-                if (predicate.test(value)) {
-                    type.setAt(results, index++, value);
-                }
-            }
-            return index;
-        });
-
+        final int length = this.<T>visit((index, leaf, start, end) -> filter(predicate, results, index, leaf, start, end));
         return (this.length == length)
-               ? this
-               : BitMappedTrie.ofAll(type.copyRange(results, 0, length));
+                ? this
+                : BitMappedTrie.ofAll(type.copyRange(results, 0, length));
+    }
+    private int filter(Predicate<? super T> predicate, Object results, int index, T leaf, int start, int end) {
+        for (int i = start; i < end; i++) {
+            final T value = type.getAt(leaf, i);
+            if (predicate.test(value)) {
+                type.setAt(results, index++, value);
+            }
+        }
+        return index;
     }
 
     <U> BitMappedTrie<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-
         final Object results = obj().newInstance(length);
-        this.<T> visit((index, leaf, start, end) -> {
-            for (int i = start; i < end; i++) {
-                obj().setAt(results, index++, mapper.apply(type.getAt(leaf, i)));
-            }
-            return index;
-        });
-
+        this.<T> visit((index, leaf, start, end) -> map(mapper, results, index, leaf, start, end));
         return BitMappedTrie.ofAll(results);
+    }
+    private <U> int map(Function<? super T, ? extends U> mapper, Object results, int index, T leaf, int start, int end) {
+        for (int i = start; i < end; i++) {
+            obj().setAt(results, index++, mapper.apply(type.getAt(leaf, i)));
+        }
+        return index;
     }
 
     int length() { return length; }
