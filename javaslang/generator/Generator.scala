@@ -37,6 +37,7 @@ def generateMainClasses(): Unit = {
   genFunctions()
   genTuples()
   genArrayTypes()
+  genApplicative()
 
   /**
    * Generator of Match
@@ -2448,6 +2449,122 @@ def generateMainClasses(): Unit = {
       """
     }
   }
+
+  /**
+  * Generator of javaslang.Applicative
+  */
+  def genApplicative(): Unit = {
+
+    genJavaslangFile("javaslang.control", "Applicative")(genApplicativeFile)
+
+    def genApplicativeType(im: ImportManager, typeName: String): String = {
+
+      val FunctionType = im.getType("java.util.function.Function")
+      val BiFunctionType = im.getType("java.util.function.BiFunction")
+
+      (1 to N).gen(i => {
+        val functionType = i match {
+          case 1 => FunctionType
+          case 2 => BiFunctionType
+          case _ => s"Function$i"
+        }
+        val generics = (1 to i+1).gen(j => s"T$j")(", ")
+        var genericsInput = (1 to i).gen(j => s"? super T$j")(", ") + s", ? extends T${i+1}"
+        val resultGenerics = (1 to i+1).gen(j => s"$typeName<T$j>")(", ")
+        val params = (1 to i).gen(j => s"a$j")(", ")
+        val resultParams = (1 to i).gen(j => s"b$j")(", ")
+        def applyLevel(l: Int): String = {
+          if (l == i) {
+            s"a${l}.map(b${l} -> f.apply(${resultParams}))"
+          } else {
+            s"a$l.flatMap(b${l} -> ${applyLevel(l+1)})"
+          }
+        }
+        xs"""
+
+        /**
+         * Lift a function: promote it to operate on {@link $typeName} functors
+         *
+         * @param f the function to be lifted
+         * @returns a function performing the same as the input function, but operating on functors
+         */
+        public static <$generics> $functionType<$resultGenerics> lift$typeName($functionType<$genericsInput> f) {
+          return ($params) -> ${applyLevel(1)};
+        }
+
+        """
+      })
+    }
+
+    def genApplicativeEither(im: ImportManager): String = {
+      val EitherType = im.getType("javaslang.control.Either")
+      val FunctionType = im.getType("java.util.function.Function")
+      val BiFunctionType = im.getType("java.util.function.BiFunction")
+
+      (1 to N).gen(i => {
+        val functionType = i match {
+          case 1 => FunctionType
+          case 2 => BiFunctionType
+          case _ => s"Function$i"
+        }
+        val generics = (1 to i+1).gen(j => s"T$j")(", ")
+        var genericsInput = (1 to i).gen(j => s"? super T$j")(", ") + s", ? extends T${i+1}"
+        val resultGenerics = (1 to i+1).gen(j => s"$EitherType<E, T$j>")(", ")
+        val params = (1 to i).gen(j => s"a$j")(", ")
+        val resultParams = (1 to i).gen(j => s"b$j")(", ")
+        def applyLevel(l: Int): String = {
+          if (l == i) {
+            s"a${l}.map(b${l} -> f.apply(${resultParams}))"
+          } else {
+            s"a$l.flatMap(b${l} -> ${applyLevel(l+1)})"
+          }
+        }
+        xs"""
+
+        /**
+         * Lift a function: promote it to operate on {@link $EitherType} functors
+         *
+         * @param f the function to be lifted
+         * @returns a function performing the same as the input function, but operating on functors
+         */
+        public static <E,$generics> $functionType<$resultGenerics> lift$EitherType($functionType<$genericsInput> f) {
+          return ($params) -> ${applyLevel(1)};
+        }
+
+        """
+      })
+    }
+
+    def genApplicativeFile(im: ImportManager, packageName: String, className: String): String = {
+      val OptionType = im.getType("javaslang.control.Option")
+      val TryType = im.getType("javaslang.control.Try")
+      val FutureType = im.getType("javaslang.concurrent.Future")
+      val ListType = im.getType("javaslang.collection.List")
+
+      xs"""
+        ${(3 to N).gen(j => s"import javaslang.Function$j;")("\n")}
+        import javaslang.control.Option;
+        import javaslang.control.Try;
+        import javaslang.concurrent.Future;
+
+        /**
+         * Applicative helpers
+         *
+         * @author Daniel Dietrich
+         * @since 2.1.0
+         */
+        public final class Applicative {
+
+            private Applicative() {}
+
+            ${genApplicativeType(im, OptionType)}
+            ${genApplicativeType(im, TryType)}
+            ${genApplicativeType(im, FutureType)}
+            ${genApplicativeType(im, ListType)}
+            ${genApplicativeEither(im)}
+        }"""
+    }
+  }
 }
 
 /**
@@ -2458,6 +2575,7 @@ def generateTestClasses(): Unit = {
   genAPITests()
   genFunctionTests()
   genTupleTests()
+  genApplicativeTests()
 
   /**
    * Generator of Function tests
@@ -3415,6 +3533,80 @@ def generateTestClasses(): Unit = {
           }
         """
       })
+    })
+  }
+
+  /**
+  * Generator of Applicative tests
+  */
+  def genApplicativeTests(): Unit = {
+
+    def genTestsValue(typeName: String, builder: String, test: String, assertThat: String): String = {
+      (1 to N).gen(i => {
+        val liftParams = (1 to i).gen(j => s"Integer i$j")(", ")
+        val liftBody = (1 to i).gen(j => s"i$j")(" + ")
+        val applyParams = (1 to i).gen(j => s"$typeName.$builder($j)")(", ")
+        val expected = (1 to i).toList.sum
+        xs"""
+
+        @$test
+        public void shouldLift$typeName$i() {
+          $assertThat(Applicative.lift$typeName(($liftParams) -> $liftBody).apply($applyParams)).isEqualTo($typeName.$builder($expected));
+        }
+
+        """
+      })
+    }
+
+    def genTestsSupplier(typeName: String, test: String, assertThat: String): String = {
+      (1 to N).gen(i => {
+                     val liftParams = (1 to i).gen(j => s"Integer i$j")(", ")
+                     val liftBody = (1 to i).gen(j => s"i$j")(" + ")
+                     val applyParams = (1 to i).gen(j => s"$typeName.of(() -> $j)")(", ")
+                     val expected = (1 to i).toList.sum
+                     xs"""
+
+        @$test
+        public void shouldLift$typeName$i() {
+          $assertThat(Applicative.lift$typeName(($liftParams) -> $liftBody).apply($applyParams).get()).isEqualTo($expected);
+        }
+
+        """
+      })
+    }
+
+    genJavaslangFile("javaslang.control", s"ApplicativeTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+      val test = im.getType("org.junit.Test")
+      val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+      val OptionType = im.getType("javaslang.control.Option")
+      val EitherType = im.getType("javaslang.control.Either")
+      val TryType = im.getType("javaslang.control.Try")
+      val FutureType = im.getType("javaslang.concurrent.Future")
+      val ListType = im.getType("javaslang.collection.List")
+      xs"""
+        import javaslang.collection.List;
+        import javaslang.concurrent.Future;
+
+        public class ApplicativeTest {
+
+            ${genTestsValue(OptionType, "of", test, assertThat)}
+            ${genTestsSupplier(TryType, test, assertThat)}
+            ${genTestsSupplier(FutureType, test, assertThat)}
+            ${genTestsValue(EitherType, "right", test, assertThat)}
+
+            @Test
+            public void shouldLift${EitherType}2Fail() {
+              assertThat(Applicative.lift$EitherType((Integer i1, Integer i2) -> i1 + i2).apply($EitherType.right(1), $EitherType.left("oops"))).isEqualTo($EitherType.left("oops"));
+            }
+
+            ${genTestsValue(ListType, "of", test, assertThat)}
+
+            @Test
+            public void shouldLift${ListType}2twoElements() {
+              assertThat(Applicative.lift$ListType((Integer i1, Integer i2) -> i1 + i2).apply($ListType.of(1, 2), $ListType.of(3, 4))).isEqualTo($ListType.of(4, 5, 5, 6));
+            }
+        }
+      """
     })
   }
 }
