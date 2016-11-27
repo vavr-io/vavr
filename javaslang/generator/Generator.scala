@@ -2193,6 +2193,24 @@ def generateMainClasses(): Unit = {
         """
       }
 
+      def genNarrowMethod(i: Int) = {
+        val generics = (1 to i).gen(j => s"T$j")(", ")
+        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
+        xs"""
+          /**
+           * Narrows a widened {@code Tuple$i<$wideGenerics>} to {@code Tuple$i<$generics>}.
+           * This is eligible because immutable/read-only tuples are covariant.
+           * @param t A {@code Tuple$i}.
+           ${(1 to i).gen(j => s"* @param <T$j> the ${j.ordinal} component type")("\n")}
+           * @return the given {@code t} instance as narrowed type {@code Tuple$i<$generics>}.
+           */
+          @SuppressWarnings("unchecked")
+          static <$generics> Tuple$i<$generics> narrow(Tuple$i<$wideGenerics> t) {
+              return (Tuple$i<$generics>) t;
+          }
+        """
+      }
+
       xs"""
         /**
          * The base interface of all tuples.
@@ -2251,6 +2269,9 @@ def generateMainClasses(): Unit = {
             ${(1 to N).gen(genFactoryMethod)("\n\n")}
 
             ${(1 to N).gen(genSeqMethod)("\n\n")}
+
+            ${(1 to N).gen(genNarrowMethod)("\n\n")}
+
 
         }
       """
