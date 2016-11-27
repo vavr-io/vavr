@@ -5,6 +5,8 @@
  */
 package javaslang;
 
+import org.derive4j.hkt.__2;
+
 /**
  * Recursive self type representing {@code TYPE<T1, T2>}, which allows similar behavior to higher-kinded types.
  *
@@ -14,5 +16,5 @@ package javaslang;
  * @author Daniel Dietrich, Eric Nelson
  * @since 2.0.0
  */
-public interface Kind2<TYPE extends Kind2<TYPE, ?, ?>, T1, T2> {
+public interface Kind2<TYPE extends Kind2<TYPE, ?, ?>, T1, T2> extends __2<TYPE, T1, T2> {
 }

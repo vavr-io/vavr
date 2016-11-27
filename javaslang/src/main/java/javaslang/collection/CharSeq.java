@@ -25,7 +25,7 @@ import java.util.stream.Collector;
  * @author Ruslan Sennov, Daniel Dietrich
  * @since 2.0.0
  */
-public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, IndexedSeq<Character>, Serializable {
+public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

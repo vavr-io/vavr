@@ -29,6 +29,11 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
+            <groupId>org.derive4j.hkt</groupId>
+            <artifactId>hkt</artifactId>
+            <version>${hkt.version}</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
