@@ -968,6 +968,10 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         return Collections.scanRight(this, zero, operation, Iterator::toQueue);
     }
 
+    @Override public Queue<T> shuffle() {
+        return Collections.shuffle(this, Queue::ofAll);
+    }
+
     @Override
     public Queue<T> slice(int beginIndex, int endIndex) {
         return ofAll(toList().slice(beginIndex, endIndex));

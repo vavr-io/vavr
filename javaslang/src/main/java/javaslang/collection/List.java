@@ -1184,6 +1184,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> shuffle() {
+        return Collections.shuffle(this, List::ofAll);
+    }
+
+    @Override
     default List<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return empty();

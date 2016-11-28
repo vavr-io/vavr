@@ -1275,6 +1275,11 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> shuffle() {
+        return Collections.shuffle(this, Stream::ofAll);
+    }
+
+    @Override
     default Stream<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || isEmpty()) {
             return empty();

@@ -70,6 +70,7 @@ import java.util.function.Predicate;
  * <li>{@link #padTo(int, Object)}</li>
  * <li>{@link #permutations()}</li>
  * <li>{@link #reverse()}</li>
+ * <li>{@link #shuffle()}</li>
  * <li>{@link #sorted()}</li>
  * <li>{@link #sorted(Comparator)}</li>
  * <li>{@link #splitAt(int)}</li>
@@ -786,6 +787,13 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * from such that every element of the segment satisfies the predicate p.
      */
     int segmentLength(Predicate<? super T> predicate, int from);
+
+    /**
+     * Randomize the order of the elements in the current sequence.
+     *
+     * @return a sequence with the same elements as the current sequence in a random order.
+     */
+    Seq<T> shuffle();
 
     /**
      * Returns a Seq that is a <em>slice</em> of this. The slice begins with the element at the specified

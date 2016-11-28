@@ -816,6 +816,10 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         return Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
+    @Override public CharSeq shuffle() {
+        return Collections.shuffle(this, CharSeq::ofAll);
+    }
+
     @Override
     public CharSeq slice(int beginIndex, int endIndex) {
         final int from = beginIndex < 0 ? 0 : beginIndex;
