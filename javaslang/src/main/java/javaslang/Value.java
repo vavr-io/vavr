@@ -957,7 +957,9 @@ public interface Value<T> extends Iterable<T> {
         if (this instanceof PriorityQueue<?>) {
             return (PriorityQueue<T>) this;
         } else {
-            final Comparator<T> comparator = (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+            final Comparator<T> comparator = (this instanceof Ordered<?>)
+                    ? ((Ordered<T>) this).comparator()
+                    : (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
             return toPriorityQueue(comparator);
         }
     }
@@ -1029,15 +1031,14 @@ public interface Value<T> extends Iterable<T> {
      */
     @SuppressWarnings("unchecked")
     default SortedSet<T> toSortedSet() throws ClassCastException {
-        final Comparator<T> comparator;
         if (this instanceof TreeSet<?>) {
             return (TreeSet<T>) this;
-        } else if (this instanceof SortedSet<?>) {
-            comparator = ((SortedSet<T>) this).comparator();
         } else {
-            comparator = (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+            final Comparator<T> comparator = (this instanceof Ordered<?>)
+                    ? ((Ordered<T>) this).comparator()
+                    : (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+            return toSortedSet(comparator);
         }
-        return toSortedSet(comparator);
     }
 
     /**

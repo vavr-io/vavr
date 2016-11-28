@@ -526,6 +526,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Checks if this Traversable is ordered
+     *
+     * @return true, if this Traversable is ordered, false otherwise.
+     */
+    default boolean isOrdered() {
+        return false;
+    }
+
+    /**
      * Each of Javaslang's collections may contain more than one element.
      *
      * @return {@code false}

@@ -20,7 +20,7 @@ import java.util.function.*;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
-public interface SortedMap<K, V> extends Map<K, V> {
+public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
 
     long serialVersionUID = 1L;
 
@@ -155,6 +155,11 @@ public interface SortedMap<K, V> extends Map<K, V> {
 
     @Override
     Option<? extends SortedMap<K, V>> initOption();
+
+    @Override
+    default boolean isOrdered() {
+        return true;
+    }
 
     @Override
     SortedSet<K> keySet();
