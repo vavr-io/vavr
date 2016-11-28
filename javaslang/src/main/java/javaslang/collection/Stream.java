@@ -119,6 +119,30 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     /**
+     * Lazily creates a Stream in O(1) which traverses along the concatenation of the given iterables.
+     *
+     * @param iterables The iterables
+     * @param <T>       Component type.
+     * @return A new {@code Stream}
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    static <T> Stream<T> concat(Iterable<? extends T>... iterables) {
+        return Iterator.concat(iterables).toStream();
+    }
+
+    /**
+     * Lazily creates a Stream in O(1) which traverses along the concatenation of the given iterables.
+     *
+     * @param iterables The iterable of iterables
+     * @param <T>       Component type.
+     * @return A new {@code Stream}
+     */
+    static <T> Stream<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
+        return Iterator.concat(iterables).toStream();
+    }
+
+    /**
      * Returns an infinitely long Stream of {@code int} values starting from {@code from}.
      * <p>
      * The {@code Stream} extends to {@code Integer.MIN_VALUE} when passing {@code Integer.MAX_VALUE}.
