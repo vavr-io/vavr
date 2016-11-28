@@ -254,26 +254,22 @@ public class IteratorTest extends AbstractTraversableTest {
     public void shouldConcatEmptyIterableIterable() {
         final Iterable<Iterable<Integer>> empty = List.empty();
         assertThat(concat(empty)).isSameAs(Iterator.empty());
-
     }
 
     @Test
     public void shouldConcatNonEmptyIterableIterable() {
         final Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
         assertThat(concat(itIt)).isEqualTo(Iterator.of(1, 2, 3));
-
     }
 
     @Test
     public void shouldConcatEmptyArrayIterable() {
         assertThat(concat()).isSameAs(Iterator.empty());
-
     }
 
     @Test
     public void shouldConcatNonEmptyArrayIterable() {
         assertThat(concat(List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(1, 2, 3));
-
     }
 
     // -- concat

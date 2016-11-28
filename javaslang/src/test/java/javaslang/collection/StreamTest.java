@@ -20,6 +20,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static javaslang.collection.Stream.concat;
+
 public class StreamTest extends AbstractLinearSeqTest {
 
     // -- construction
@@ -174,6 +176,30 @@ public class StreamTest extends AbstractLinearSeqTest {
     @Override
     protected Stream<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return Stream.rangeClosedBy(from, toInclusive, step);
+    }
+
+    // -- static concat()
+
+    @Test
+    public void shouldConcatEmptyIterableIterable() {
+        final Iterable<Iterable<Integer>> empty = List.empty();
+        assertThat(concat(empty)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldConcatNonEmptyIterableIterable() {
+        final Iterable<Iterable<Integer>> itIt = List.of(List.of(1, 2), List.of(3));
+        assertThat(concat(itIt)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldConcatEmptyArrayIterable() {
+        assertThat(concat()).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldConcatNonEmptyArrayIterable() {
+        assertThat(concat(List.of(1, 2), List.of(3))).isEqualTo(of(1, 2, 3));
     }
 
     // -- static from(int)
