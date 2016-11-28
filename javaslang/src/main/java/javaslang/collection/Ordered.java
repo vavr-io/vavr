@@ -19,7 +19,7 @@ public interface Ordered<T> {
     /**
      * Returns the comparator which defines the order of the elements contained in this collection.
      *
-     * @return This set's comparator.
+     * @return The comparator that defines the order of this collection's elements.
      */
     Comparator<T> comparator();
 }
