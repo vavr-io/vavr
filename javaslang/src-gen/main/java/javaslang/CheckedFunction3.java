@@ -106,6 +106,21 @@ public interface CheckedFunction3<T1, T2, T3, R> extends λ<R> {
     }
 
     /**
+     * Narrows the given {@code CheckedFunction3<? super T1, ? super T2, ? super T3, ? extends R>} to {@code CheckedFunction3<T1, T2, T3, R>}
+     *
+     * @param wideFunction A {@code CheckedFunction3}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @return the given {@code wideFunction} instance as narrowed type {@code CheckedFunction3<T1, T2, T3, R>}
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, R> CheckedFunction3<T1, T2, T3, R> narrow(CheckedFunction3<? super T1, ? super T2, ? super T3, ? extends R> wideFunction) {
+        return (CheckedFunction3<T1, T2, T3, R>) wideFunction;
+    }
+
+    /**
      * Applies this function to three arguments and returns the result.
      *
      * @param t1 argument 1

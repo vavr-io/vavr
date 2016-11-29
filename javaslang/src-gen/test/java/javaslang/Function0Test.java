@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
 import javaslang.control.Try;
 import org.junit.Test;
@@ -130,6 +131,14 @@ public class Function0Test {
         final Function1<Object, Object> after = o -> null;
         final Function0<Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
+    }
+
+    @Test
+    public void shouldNarrow(){
+        final Function0<String> wideFunction = () -> "Zero args";
+        final Function0<CharSequence> narrowFunction = Function0.narrow(wideFunction);
+
+        assertThat(narrowFunction.apply()).isEqualTo("Zero args");
     }
 
 }

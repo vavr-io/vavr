@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.CharSequence;
 import java.security.MessageDigest;
 import java.util.concurrent.atomic.AtomicInteger;
 import javaslang.control.Try;
@@ -188,5 +189,13 @@ public class CheckedFunction1Test {
         final CheckedFunction1<Object, Object> before = o -> null;
         final CheckedFunction1<Object, Object> composed = f.compose(before);
         assertThat(composed).isNotNull();
+    }
+
+    @Test
+    public void shouldNarrow() throws Throwable{
+        final CheckedFunction1<Number, String> wideFunction = (o1) -> String.format("Numbers are: %s", o1);
+        final CheckedFunction1<Integer, CharSequence> narrowFunction = CheckedFunction1.narrow(wideFunction);
+
+        assertThat(narrowFunction.apply(1)).isEqualTo("Numbers are: 1");
     }
 }

@@ -93,6 +93,18 @@ public interface CheckedFunction0<R> extends λ<R> {
     }
 
     /**
+     * Narrows the given {@code CheckedFunction0<? extends R>} to {@code CheckedFunction0<R>}
+     *
+     * @param wideFunction A {@code CheckedFunction0}
+     * @param <R> return type
+     * @return the given {@code wideFunction} instance as narrowed type {@code CheckedFunction0<R>}
+     */
+    @SuppressWarnings("unchecked")
+    static <R> CheckedFunction0<R> narrow(CheckedFunction0<? extends R> wideFunction) {
+        return (CheckedFunction0<R>) wideFunction;
+    }
+
+    /**
      * Applies this function to no arguments and returns the result.
      *
      * @return the result of function application

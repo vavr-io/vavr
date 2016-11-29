@@ -110,6 +110,22 @@ public interface Function4<T1, T2, T3, T4, R> extends λ<R> {
     }
 
     /**
+     * Narrows the given {@code Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R>} to {@code Function4<T1, T2, T3, T4, R>}
+     *
+     * @param wideFunction A {@code Function4}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @return the given {@code wideFunction} instance as narrowed type {@code Function4<T1, T2, T3, T4, R>}
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> narrow(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> wideFunction) {
+        return (Function4<T1, T2, T3, T4, R>) wideFunction;
+    }
+
+    /**
      * Applies this function to 4 arguments and returns the result.
      *
      * @param t1 argument 1

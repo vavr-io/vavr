@@ -1604,6 +1604,18 @@ def generateMainClasses(): Unit = {
                   }
               }
 
+              /$javadoc
+               * Narrows the given {@code $fullGenericsType} to {@code $className$fullGenerics}
+               *
+               * @param wideFunction A {@code $className}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
+               * @return the given {@code wideFunction} instance as narrowed type {@code $className$fullGenerics}
+               */
+              @SuppressWarnings("unchecked")
+              static $fullGenerics $className$fullGenerics narrow($fullGenericsType wideFunction) {
+                  return ($className$fullGenerics) wideFunction;
+              }
+
               ${(i == 1).gen(xs"""
                 /$javadoc
                  * Returns the identity $className, i.e. the function that returns its input.
@@ -2924,6 +2936,13 @@ def generateTestClasses(): Unit = {
           case _ => s"Function1<Object, ${curriedType(max - 1, function)}>"
         }
 
+        val wideGenericArgs = (1 to i).gen(j => "Number")(", ")
+        val wideGenericResult = "String"
+        val wideFunctionPattern = (1 to i).gen(j => "%s")(", ")
+        val narrowGenericArgs = (1 to i).gen(j => "Integer")(", ")
+        val narrowGenericResult = im.getType("java.lang.CharSequence")
+        val narrowArgs = (1 to i).gen(j => j.toString)(", ")
+
         xs"""
           public class $className {
 
@@ -3225,6 +3244,26 @@ def generateTestClasses(): Unit = {
                     final $name$i<$generics> composed = f.compose(before);
                     $assertThat(composed).isNotNull();
                 }
+              """)}
+
+              ${(i == 0).gen(xs"""
+              @$test
+              public void shouldNarrow()${checked.gen(" throws Throwable")}{
+                  final $name$i<$wideGenericResult> wideFunction = () -> "Zero args";
+                  final $name$i<$narrowGenericResult> narrowFunction = $name$i.narrow(wideFunction);
+
+                  $assertThat(narrowFunction.apply()).isEqualTo("Zero args");
+              }
+              """)}
+
+              ${(i > 0).gen(xs"""
+              @$test
+              public void shouldNarrow()${checked.gen(" throws Throwable")}{
+                  final $name$i<$wideGenericArgs, $wideGenericResult> wideFunction = ($functionArgs) -> String.format("Numbers are: $wideFunctionPattern", $functionArgs);
+                  final $name$i<$narrowGenericArgs, $narrowGenericResult> narrowFunction = $name$i.narrow(wideFunction);
+
+                  $assertThat(narrowFunction.apply($narrowArgs)).isEqualTo("Numbers are: $narrowArgs");
+              }
               """)}
           }
         """

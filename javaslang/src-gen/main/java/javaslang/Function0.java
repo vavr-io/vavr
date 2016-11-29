@@ -93,6 +93,18 @@ public interface Function0<R> extends λ<R>, Supplier<R> {
     }
 
     /**
+     * Narrows the given {@code Supplier<? extends R>} to {@code Function0<R>}
+     *
+     * @param wideFunction A {@code Function0}
+     * @param <R> return type
+     * @return the given {@code wideFunction} instance as narrowed type {@code Function0<R>}
+     */
+    @SuppressWarnings("unchecked")
+    static <R> Function0<R> narrow(Supplier<? extends R> wideFunction) {
+        return (Function0<R>) wideFunction;
+    }
+
+    /**
      * Applies this function to no arguments and returns the result.
      *
      * @return the result of function application
