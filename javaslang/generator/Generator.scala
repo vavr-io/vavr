@@ -3550,8 +3550,8 @@ object JavaGenerator {
       } else if (packageName == packageNameOfClass) {
         simpleName
       } else if (imports.contains(fullQualifiedName)) {
-        imports.get(fullQualifiedName).get
-      } else if (knownSimpleClassNames.contains(simpleName) || imports.values.exists(simpleName.equals(_))) {
+        imports(fullQualifiedName)
+      } else if (simpleName != "*" && (knownSimpleClassNames.contains(simpleName) || imports.values.exists(simpleName.equals(_)))) {
         fullQualifiedName
       } else {
         imports += fullQualifiedName -> simpleName
