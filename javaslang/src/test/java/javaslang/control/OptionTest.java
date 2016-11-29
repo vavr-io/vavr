@@ -520,8 +520,8 @@ public class OptionTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertSomeToCompletableFuture()  {
-        String some = "some";
-        CompletableFuture<String> future = Option(some).toCompletableFuture();
+        final String some = "some";
+        final CompletableFuture<String> future = Option(some).toCompletableFuture();
         assertThat(future.isDone());
         assertThat(Try.of(future::get).get()).isEqualTo(some);
     }
@@ -529,7 +529,7 @@ public class OptionTest extends AbstractValueTest {
     @Test
     public void shouldConvertNoneToFailedCompletableFuture() {
 
-        CompletableFuture<Object> future = None().toCompletableFuture();
+        final CompletableFuture<Object> future = None().toCompletableFuture();
         assertThat(future.isDone());
         assertThat(future.isCompletedExceptionally());
     }

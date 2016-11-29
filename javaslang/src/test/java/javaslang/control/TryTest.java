@@ -216,7 +216,7 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldReturnAndNotThrowOnNonFatal() {
         final NonFatalException cause = NonFatalException.of(new Exception());
-        assertThat(NonFatalException.of(cause) instanceof NonFatalException).isTrue();
+        assertThat(NonFatalException.of(cause)).isNotNull();
     }
 
     @Test
@@ -472,13 +472,12 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldConvertFailureToFailedCompletableFuture() {
 
-        CompletableFuture<Object> future = failure().toCompletableFuture();
+        final CompletableFuture<Object> future = failure().toCompletableFuture();
         assertThat(future.isDone());
         assertThat(future.isCompletedExceptionally());
         assertThatThrownBy(future::get)
                 .isExactlyInstanceOf(ExecutionException.class)
-                .hasCauseExactlyInstanceOf(NonFatalException.class)
-                .hasRootCauseExactlyInstanceOf(RuntimeException.class);
+                .hasCauseExactlyInstanceOf(RuntimeException.class);
     }
 
     // -- toValidation

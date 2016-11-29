@@ -526,7 +526,17 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link CompletableFuture} containing the value
      */
      default <U extends T> CompletableFuture<T> toCompletableFuture() {
-         return CompletableFuture.completedFuture(Boolean.TRUE).thenApply(t -> get());
+         final CompletableFuture<T> completableFuture = new CompletableFuture<>();
+         try {
+             completableFuture.complete(get());
+         } catch (Try.FatalException x) {
+             throw x;
+         } catch (Try.NonFatalException x) {
+             completableFuture.completeExceptionally(x.getCause());
+         } catch (Throwable x) {
+             completableFuture.completeExceptionally(x);
+         }
+         return completableFuture;
      }
 
     /**

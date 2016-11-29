@@ -22,7 +22,6 @@ import javaslang.control.Try.CheckedSupplier;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -249,7 +248,7 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Creates a {@code Future} with the given java.util.concurrent.CompletableFuture, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}
+     * Creates a {@code Future} with the given {@link java.util.concurrent.CompletableFuture}, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}
      *
      * @param future A {@link java.util.concurrent.CompletableFuture}
      * @param <T>    Result type of the Future
@@ -261,7 +260,7 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Creates a {@code Future} with the given java.util.concurrent.CompletableFuture, backed by given {@link ExecutorService}
+     * Creates a {@code Future} with the given {@link java.util.concurrent.CompletableFuture}, backed by given {@link ExecutorService}
      *
      * @param executorService An {@link ExecutorService}
      * @param future          A {@link java.util.concurrent.CompletableFuture}
@@ -272,12 +271,9 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> fromCompletableFuture(ExecutorService executorService, CompletableFuture<T> future) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(future, "future is null");
-        FutureImpl<T> newFuture = new FutureImpl<>(executorService);
-        future.handle((t, throwable) -> newFuture
-                .tryComplete(throwable == null
-                             ? Try.success(t)
-                             : Try.failure(throwable instanceof CompletionException ? throwable.getCause() : throwable)));
-        return newFuture;
+        final Promise<T> promise = Promise.make();
+        future.handle((t, err) -> err == null ? promise.success(t) : promise.failure(err));
+        return promise.future();
     }
 
     /**
@@ -504,7 +500,7 @@ public interface Future<T> extends Value<T> {
 
     @Override
     default <U extends T> CompletableFuture<T> toCompletableFuture() {
-        CompletableFuture<T> future = new CompletableFuture<>();
+        final CompletableFuture<T> future = new CompletableFuture<>();
         onSuccess(future::complete);
         onFailure(future::completeExceptionally);
         return future;

@@ -113,7 +113,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldCreateFutureFromJavaFuture() {
         // Create slow-resolving Java future to show that the wrapping doesn't block
-        java.util.concurrent.Future<Integer> jFuture = generateJavaFuture(1, 3000);
+        final java.util.concurrent.Future<Integer> jFuture = generateJavaFuture(1, 3000);
         final Future<Integer> future = Future.fromJavaFuture(jFuture);
         waitUntil(future::isCompleted);
         assertCompleted(future, 1);
@@ -122,7 +122,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldCreateFutureFromJavaFutureUsingTrivialExecutorService() {
         // Create slow-resolving Java future to show that the wrapping doesn't block
-        java.util.concurrent.Future<String> jFuture = generateJavaFuture("Result", 3000);
+        final java.util.concurrent.Future<String> jFuture = generateJavaFuture("Result", 3000);
         final Future<String> future = Future.fromJavaFuture(trivialExecutorService(), jFuture);
         waitUntil(future::isCompleted);
         assertCompleted(future, "Result");
@@ -132,14 +132,14 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateFutureFromCompletedJavaCompletableFuture() {
-        CompletableFuture<Integer> jFuture = CompletableFuture.completedFuture(1);
+        final CompletableFuture<Integer> jFuture = CompletableFuture.completedFuture(1);
         final Future<Integer> future = Future.fromCompletableFuture(jFuture);
         assertCompleted(future, 1);
     }
 
     @Test
     public void shouldCreateFutureFromFailedJavaCompletableFuture() {
-        CompletableFuture<Integer> jFuture = new CompletableFuture<>();
+        final CompletableFuture<Integer> jFuture = new CompletableFuture<>();
         jFuture.completeExceptionally(new RuntimeException("some"));
         final Future<Integer> future = Future.fromCompletableFuture(jFuture);
         assertFailed(future, RuntimeException.class);
@@ -148,7 +148,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldCreateFutureFromJavaCompletableFuture() {
         // Create slow-resolving Java future to show that the wrapping doesn't block
-        CompletableFuture<Integer> jFuture = generateJavaCompletableFuture(1, 1000);
+        final CompletableFuture<Integer> jFuture = generateJavaCompletableFuture(1, 1000);
         final Future<Integer> future = Future.fromCompletableFuture(jFuture);
         waitUntil(future::isCompleted);
         assertCompleted(future, 1);
@@ -156,7 +156,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateFutureFromLateFailingJavaCompletableFuture() {
-        CompletableFuture<Integer> jFuture = Future.<Integer>of(zZz(new RuntimeException())).toCompletableFuture();
+        final CompletableFuture<Integer> jFuture = Future.<Integer>of(zZz(new RuntimeException())).toCompletableFuture();
         final Future<Integer> future = Future.fromCompletableFuture(jFuture);
         waitUntil(future::isCompleted);
         assertFailed(future, RuntimeException.class);
@@ -165,7 +165,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldCreateFutureFromJavaCompletableFutureUsingTrivialExecutorService() {
         // Create slow-resolving Java future to show that the wrapping doesn't block
-        java.util.concurrent.Future<String> jFuture = generateJavaCompletableFuture("Result", 1000);
+        final java.util.concurrent.Future<String> jFuture = generateJavaCompletableFuture("Result", 1000);
         final Future<String> future = Future.fromJavaFuture(trivialExecutorService(), jFuture);
         waitUntil(future::isCompleted);
         assertCompleted(future, "Result");
@@ -739,21 +739,21 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertCompletedFutureToCompletableFuture() {
-        CompletableFuture<Integer> completableFuture = Future.of(() -> 42).toCompletableFuture();
+        final CompletableFuture<Integer> completableFuture = Future.of(() -> 42).toCompletableFuture();
         assertThat(completableFuture.isDone());
         assertThat(Try.of(completableFuture::get).get()).isEqualTo(42);
     }
 
     @Test
     public void shouldConvertFailedFutureToCompletableFuture() {
-        CompletableFuture<Integer> completableFuture = Future.<Integer>failed(new RuntimeException()).toCompletableFuture();
+        final CompletableFuture<Integer> completableFuture = Future.<Integer>failed(new RuntimeException()).toCompletableFuture();
         assertThat(completableFuture.isCompletedExceptionally());
         assertThat(Try.of(completableFuture::get).getCause()).isExactlyInstanceOf(ExecutionException.class);
     }
 
     @Test
     public void shouldConvertLateFutureToCompletableFuture() {
-        CompletableFuture<Integer> completableFuture = Future.of(zZz(42)).toCompletableFuture();
+        final CompletableFuture<Integer> completableFuture = Future.of(zZz(42)).toCompletableFuture();
         assertThat(Try.of(completableFuture::get).get()).isEqualTo(42);
     }
 
