@@ -106,6 +106,8 @@ import java.util.function.Predicate;
  *
  * <ul>
  * <li>{@link #existsUnique(Predicate)}</li>
+ * <li>{@link #isDistinct}</li>
+ * <li>{@link #isOrdered}</li>
  * <li>{@link #hasDefiniteSize()}</li>
  * <li>{@link #isTraversableAgain()}</li>
  * </ul>
@@ -513,6 +515,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     default Option<? extends Traversable<T>> initOption() {
         return isEmpty() ? Option.none() : Option.some(init());
+    }
+
+    /**
+     * Checks if this Traversable may consist of distinct elements only.
+     *
+     * @return true if this Traversable may consist of distinct elements only, false otherwise.
+     */
+    default boolean isDistinct() {
+        return false;
     }
 
     /**

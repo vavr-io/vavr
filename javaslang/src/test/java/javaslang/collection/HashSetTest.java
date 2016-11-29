@@ -83,6 +83,11 @@ public class HashSetTest extends AbstractSetTest {
     // -- construction
 
     @Override
+    protected boolean isDistinctElements() {
+        return true;
+    }
+
+    @Override
     protected <T> Collector<T, ArrayList<T>, HashSet<T>> collector() {
         return HashSet.collector();
     }

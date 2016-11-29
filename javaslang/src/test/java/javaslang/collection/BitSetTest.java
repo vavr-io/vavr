@@ -80,6 +80,11 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Override
+    protected boolean isDistinctElements() {
+        return true;
+    }
+
+    @Override
     protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector() {
         return this.<T> bsBuilder().collector();
     }

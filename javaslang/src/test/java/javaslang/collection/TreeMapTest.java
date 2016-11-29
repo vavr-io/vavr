@@ -47,6 +47,11 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Override
+    protected boolean isDistinctElements() {
+        return true;
+    }
+
+    @Override
     protected boolean emptyShouldBeSingleton() {
         return false;
     }

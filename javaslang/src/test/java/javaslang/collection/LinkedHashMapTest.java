@@ -234,4 +234,8 @@ public class LinkedHashMapTest extends AbstractMapTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Override
+    protected boolean isDistinctElements() {
+        return true;
+    }
 }

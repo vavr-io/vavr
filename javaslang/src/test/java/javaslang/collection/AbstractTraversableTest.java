@@ -32,6 +32,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         return true;
     }
 
+    abstract protected boolean isDistinctElements();
+
     abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
 
     @Override
@@ -71,6 +73,14 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     abstract protected <T> Traversable<T> tabulate(int n, Function<? super Integer, ? extends T> f);
 
     abstract protected <T> Traversable<T> fill(int n, Supplier<? extends T> s);
+
+    // -- isDistinct()
+
+    @Test
+    public void shouldTestDistinct() {
+        assertThat(empty().isDistinct()).isEqualTo(isDistinctElements());
+        assertThat(of(1).isDistinct()).isEqualTo(isDistinctElements());
+    }
 
     // -- static empty()
 

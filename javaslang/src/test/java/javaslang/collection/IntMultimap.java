@@ -39,6 +39,11 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public boolean isDistinct() {
+        return original.isDistinct();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o instanceof IntMultimap) {
             final IntMultimap<?> that = (IntMultimap<?>) o;

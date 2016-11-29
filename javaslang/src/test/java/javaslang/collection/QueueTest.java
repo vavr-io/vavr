@@ -22,6 +22,11 @@ public class QueueTest extends AbstractLinearSeqTest {
     // -- construction
 
     @Override
+    protected boolean isDistinctElements() {
+        return false;
+    }
+
+    @Override
     protected <T> Collector<T, ArrayList<T>, Queue<T>> collector() {
         return Queue.collector();
     }
