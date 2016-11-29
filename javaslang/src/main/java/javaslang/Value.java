@@ -5,12 +5,22 @@
  */
 package javaslang;
 
+import javaslang.collection.Array;
+import javaslang.collection.CharSeq;
 import javaslang.collection.*;
+import javaslang.collection.List;
+import javaslang.collection.Map;
+import javaslang.collection.PriorityQueue;
+import javaslang.collection.Queue;
+import javaslang.collection.Set;
+import javaslang.collection.SortedMap;
+import javaslang.collection.SortedSet;
+import javaslang.collection.Stream;
+import javaslang.collection.Vector;
 import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import javaslang.control.Validation;
-import static javaslang.API.*;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -19,9 +29,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.*;
 import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
+
+import static javaslang.API.*;
 
 /**
  * Functional programming is all about values and transformation of values using functions. The {@code Value}
@@ -506,6 +519,15 @@ public interface Value<T> extends Iterable<T> {
             return CharSeq.of(iterator().mkString());
         }
     }
+
+    /**
+     * Converts this to a {@link CompletableFuture}
+     *
+     * @return A new {@link CompletableFuture} containing the value
+     */
+     default <U extends T> CompletableFuture<T> toCompletableFuture() {
+         return CompletableFuture.completedFuture(Boolean.TRUE).thenApply(t -> get());
+     }
 
     /**
      * Converts this to a {@link Validation}.

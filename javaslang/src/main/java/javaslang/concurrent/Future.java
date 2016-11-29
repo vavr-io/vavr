@@ -21,6 +21,8 @@ import javaslang.control.Try.CheckedSupplier;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -247,6 +249,38 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Creates a {@code Future} with the given java.util.concurrent.CompletableFuture, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}
+     *
+     * @param future A {@link java.util.concurrent.CompletableFuture}
+     * @param <T>    Result type of the Future
+     * @return A new {@code Future} wrapping the result of the {@link java.util.concurrent.CompletableFuture}
+     * @throws NullPointerException if future is null
+     */
+    static <T> Future<T> fromCompletableFuture(CompletableFuture<T> future) {
+        return fromCompletableFuture(DEFAULT_EXECUTOR_SERVICE, future);
+    }
+
+    /**
+     * Creates a {@code Future} with the given java.util.concurrent.CompletableFuture, backed by given {@link ExecutorService}
+     *
+     * @param executorService An {@link ExecutorService}
+     * @param future          A {@link java.util.concurrent.CompletableFuture}
+     * @param <T>             Result type of the Future
+     * @return A new {@code Future} wrapping the result of the {@link java.util.concurrent.CompletableFuture}
+     * @throws NullPointerException if executorService or future is null
+     */
+    static <T> Future<T> fromCompletableFuture(ExecutorService executorService, CompletableFuture<T> future) {
+        Objects.requireNonNull(executorService, "executorService is null");
+        Objects.requireNonNull(future, "future is null");
+        FutureImpl<T> newFuture = new FutureImpl<>(executorService);
+        future.handle((t, throwable) -> newFuture
+                .tryComplete(throwable == null
+                             ? Try.success(t)
+                             : Try.failure(throwable instanceof CompletionException ? throwable.getCause() : throwable)));
+        return newFuture;
+    }
+
+    /**
      * Creates a {@code Future} from a {@link Try}, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
      *
      * @param result The result.
@@ -466,6 +500,14 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> successful(ExecutorService executorService, T result) {
         Objects.requireNonNull(executorService, "executorService is null");
         return Promise.successful(executorService, result).future();
+    }
+
+    @Override
+    default <U extends T> CompletableFuture<T> toCompletableFuture() {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        onSuccess(future::complete);
+        onFailure(future::completeExceptionally);
+        return future;
     }
 
     /**
