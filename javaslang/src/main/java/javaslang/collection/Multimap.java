@@ -254,6 +254,11 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     }
 
     @Override
+    default boolean isDistinct() {
+        return true;
+    }
+
+    @Override
     default boolean isTraversableAgain() {
         return true;
     }

@@ -21,6 +21,11 @@ import java.util.stream.Stream;
 public class ArrayTest extends AbstractIndexedSeqTest {
 
     @Override
+    protected boolean isDistinctElements() {
+        return false;
+    }
+
+    @Override
     protected <T> Collector<T, ArrayList<T>, ? extends Seq<T>> collector() {
         return Array.collector();
     }

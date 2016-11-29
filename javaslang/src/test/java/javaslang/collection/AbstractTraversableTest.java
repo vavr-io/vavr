@@ -32,45 +32,55 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         return true;
     }
 
-    abstract protected <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
+    protected abstract boolean isDistinctElements();
+
+    protected abstract <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
 
     @Override
-    abstract protected <T> Traversable<T> empty();
+    protected abstract <T> Traversable<T> empty();
 
     protected boolean emptyShouldBeSingleton() {
         return true;
     }
 
     @Override
-    abstract protected <T> Traversable<T> of(T element);
+    protected abstract <T> Traversable<T> of(T element);
 
     @SuppressWarnings("unchecked")
     @Override
-    abstract protected <T> Traversable<T> of(T... elements);
+    protected abstract <T> Traversable<T> of(T... elements);
 
-    abstract protected <T> Traversable<T> ofAll(Iterable<? extends T> elements);
+    protected abstract <T> Traversable<T> ofAll(Iterable<? extends T> elements);
 
-    abstract protected <T> Traversable<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream);
+    protected abstract <T> Traversable<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream);
 
-    abstract protected Traversable<Boolean> ofAll(boolean[] array);
+    protected abstract Traversable<Boolean> ofAll(boolean[] array);
 
-    abstract protected Traversable<Byte> ofAll(byte[] array);
+    protected abstract Traversable<Byte> ofAll(byte[] array);
 
-    abstract protected Traversable<Character> ofAll(char[] array);
+    protected abstract Traversable<Character> ofAll(char[] array);
 
-    abstract protected Traversable<Double> ofAll(double[] array);
+    protected abstract Traversable<Double> ofAll(double[] array);
 
-    abstract protected Traversable<Float> ofAll(float[] array);
+    protected abstract Traversable<Float> ofAll(float[] array);
 
-    abstract protected Traversable<Integer> ofAll(int[] array);
+    protected abstract Traversable<Integer> ofAll(int[] array);
 
-    abstract protected Traversable<Long> ofAll(long[] array);
+    protected abstract Traversable<Long> ofAll(long[] array);
 
-    abstract protected Traversable<Short> ofAll(short[] array);
+    protected abstract Traversable<Short> ofAll(short[] array);
 
-    abstract protected <T> Traversable<T> tabulate(int n, Function<? super Integer, ? extends T> f);
+    protected abstract <T> Traversable<T> tabulate(int n, Function<? super Integer, ? extends T> f);
 
-    abstract protected <T> Traversable<T> fill(int n, Supplier<? extends T> s);
+    protected abstract <T> Traversable<T> fill(int n, Supplier<? extends T> s);
+
+    // -- isDistinct()
+
+    @Test
+    public void shouldTestDistinct() {
+        assertThat(empty().isDistinct()).isEqualTo(isDistinctElements());
+        assertThat(of(1).isDistinct()).isEqualTo(isDistinctElements());
+    }
 
     // -- static empty()
 

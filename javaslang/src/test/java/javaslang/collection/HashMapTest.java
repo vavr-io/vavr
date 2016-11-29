@@ -112,4 +112,9 @@ public class HashMapTest extends AbstractMapTest {
         source.put(3, 4);
         assertThat(HashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
+
+    @Override
+    protected boolean isDistinctElements() {
+        return true;
+    }
 }

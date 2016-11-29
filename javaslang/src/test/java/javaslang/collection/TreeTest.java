@@ -97,6 +97,11 @@ public class TreeTest extends AbstractTraversableTest {
     }
 
     @Override
+    protected boolean isDistinctElements() {
+        return true;
+    }
+
+    @Override
     protected <T> Collector<T, ArrayList<T>, Tree<T>> collector() {
         return Tree.collector();
     }

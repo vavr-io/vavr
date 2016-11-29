@@ -38,6 +38,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public boolean isDistinct() {
+        return original.isDistinct();
+    }
+
+    @Override
     public int hashCode() {
         return original.values().hashCode();
     }

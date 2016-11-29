@@ -233,4 +233,8 @@ public class TreeMultimapTest extends AbstractMultimapTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    @Override
+    protected boolean isDistinctElements() {
+        return true;
+    }
 }

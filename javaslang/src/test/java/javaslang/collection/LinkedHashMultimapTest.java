@@ -233,4 +233,8 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    @Override
+    protected boolean isDistinctElements() {
+        return true;
+    }
 }

@@ -219,6 +219,11 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     Option<? extends Set<T>> initOption();
 
     @Override
+    default boolean isDistinct() {
+        return true;
+    }
+
+    @Override
     Iterator<T> iterator();
 
     @Override

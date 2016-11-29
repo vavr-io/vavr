@@ -233,4 +233,8 @@ public class HashMultimapTest extends AbstractMultimapTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    @Override
+    protected boolean isDistinctElements() {
+        return true;
+    }
 }

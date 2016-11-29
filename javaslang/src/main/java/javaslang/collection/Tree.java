@@ -223,6 +223,10 @@ public interface Tree<T> extends Traversable<T> {
         return !(isEmpty() || isLeaf());
     }
 
+    default boolean isDistinct() {
+        return true;
+    }
+
     /**
      * Traverses this tree values in a specific {@link Order}.
      *

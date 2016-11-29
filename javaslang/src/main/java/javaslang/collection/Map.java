@@ -658,6 +658,11 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     Iterator<? extends Map<K, V>> grouped(int size);
 
     @Override
+    default boolean isDistinct() {
+        return true;
+    }
+
+    @Override
     Map<K, V> init();
 
     @Override
