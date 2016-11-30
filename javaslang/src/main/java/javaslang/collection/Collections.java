@@ -15,8 +15,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static javaslang.API.Array;
-import static javaslang.API.List;
 import static javaslang.collection.ArrayType.asArray;
 
 /**
@@ -252,7 +250,7 @@ final class Collections {
         } else if (isTraversableAgain(iterable)) {
             return new IterableWithSize<>(iterable, ((Traversable<?>) iterable).size());
         } else {
-            final List<? extends T> list = List(iterable);
+            final List<? extends T> list = List.ofAll(iterable);
             return new IterableWithSize<>(list, list.size());
         }
     }

@@ -128,7 +128,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
      * @param <T> Component type
      * @return The empty PriorityQueue.
      */
-    public static <T extends Comparable<T>> PriorityQueue<T> empty() {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> empty() {
         return empty(naturalComparator());
     }
 
@@ -168,12 +168,12 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         return (PriorityQueue<T>) queue;
     }
 
-    public static <T extends Comparable<T>> PriorityQueue<T> of(T element) {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> of(T element) {
         return of(naturalComparator(), element);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T extends Comparable<T>> PriorityQueue<T> of(T... elements) {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> of(T... elements) {
         return ofAll(naturalComparator(), List.of(elements));
     }
 
@@ -186,7 +186,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         return ofAll(comparator, List.of(elements));
     }
 
-    public static <T extends Comparable<T>> PriorityQueue<T> ofAll(Iterable<? extends T> elements) {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> ofAll(Iterable<? extends T> elements) {
         return ofAll(naturalComparator(), elements);
     }
 
@@ -202,7 +202,7 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         return new PriorityQueue<>(comparator, forest, size);
     }
 
-    public static <T extends Comparable<T>> PriorityQueue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         return ofAll(naturalComparator(), Iterator.ofAll(javaStream.iterator()));
     }
 
