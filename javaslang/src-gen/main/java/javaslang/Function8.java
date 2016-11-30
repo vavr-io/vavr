@@ -126,6 +126,26 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends λ<R> {
     }
 
     /**
+     * Narrows the given {@code Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R>} to {@code Function8<T1, T2, T3, T4, T5, T6, T7, T8, R>}
+     *
+     * @param f A {@code Function8}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @param <T6> 6th argument
+     * @param <T7> 7th argument
+     * @param <T8> 8th argument
+     * @return the given {@code f} instance as narrowed type {@code Function8<T1, T2, T3, T4, T5, T6, T7, T8, R>}
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> narrow(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        return (Function8<T1, T2, T3, T4, T5, T6, T7, T8, R>) f;
+    }
+
+    /**
      * Applies this function to 8 arguments and returns the result.
      *
      * @param t1 argument 1

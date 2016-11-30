@@ -11,6 +11,7 @@ package javaslang;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
 import javaslang.control.Try;
 import org.junit.Test;
@@ -149,5 +150,13 @@ public class Function1Test {
         final Function1<Object, Object> before = o -> null;
         final Function1<Object, Object> composed = f.compose(before);
         assertThat(composed).isNotNull();
+    }
+
+    @Test
+    public void shouldNarrow(){
+        final Function1<Number, String> wideFunction = (o1) -> String.format("Numbers are: %s", o1);
+        final Function1<Integer, CharSequence> narrowFunction = Function1.narrow(wideFunction);
+
+        assertThat(narrowFunction.apply(1)).isEqualTo("Numbers are: 1");
     }
 }

@@ -103,6 +103,20 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
     }
 
     /**
+     * Narrows the given {@code CheckedFunction2<? super T1, ? super T2, ? extends R>} to {@code CheckedFunction2<T1, T2, R>}
+     *
+     * @param f A {@code CheckedFunction2}
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @return the given {@code f} instance as narrowed type {@code CheckedFunction2<T1, T2, R>}
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, R> CheckedFunction2<T1, T2, R> narrow(CheckedFunction2<? super T1, ? super T2, ? extends R> f) {
+        return (CheckedFunction2<T1, T2, R>) f;
+    }
+
+    /**
      * Applies this function to two arguments and returns the result.
      *
      * @param t1 argument 1
