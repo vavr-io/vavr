@@ -100,14 +100,14 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
     /**
      * Narrows the given {@code CheckedFunction1<? super T1, ? extends R>} to {@code CheckedFunction1<T1, R>}
      *
-     * @param wideFunction A {@code CheckedFunction1}
+     * @param f A {@code CheckedFunction1}
      * @param <R> return type
      * @param <T1> 1st argument
-     * @return the given {@code wideFunction} instance as narrowed type {@code CheckedFunction1<T1, R>}
+     * @return the given {@code f} instance as narrowed type {@code CheckedFunction1<T1, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, R> CheckedFunction1<T1, R> narrow(CheckedFunction1<? super T1, ? extends R> wideFunction) {
-        return (CheckedFunction1<T1, R>) wideFunction;
+    static <T1, R> CheckedFunction1<T1, R> narrow(CheckedFunction1<? super T1, ? extends R> f) {
+        return (CheckedFunction1<T1, R>) f;
     }
 
     /**

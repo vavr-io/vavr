@@ -108,16 +108,16 @@ public interface Function3<T1, T2, T3, R> extends λ<R> {
     /**
      * Narrows the given {@code Function3<? super T1, ? super T2, ? super T3, ? extends R>} to {@code Function3<T1, T2, T3, R>}
      *
-     * @param wideFunction A {@code Function3}
+     * @param f A {@code Function3}
      * @param <R> return type
      * @param <T1> 1st argument
      * @param <T2> 2nd argument
      * @param <T3> 3rd argument
-     * @return the given {@code wideFunction} instance as narrowed type {@code Function3<T1, T2, T3, R>}
+     * @return the given {@code f} instance as narrowed type {@code Function3<T1, T2, T3, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, T2, T3, R> Function3<T1, T2, T3, R> narrow(Function3<? super T1, ? super T2, ? super T3, ? extends R> wideFunction) {
-        return (Function3<T1, T2, T3, R>) wideFunction;
+    static <T1, T2, T3, R> Function3<T1, T2, T3, R> narrow(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        return (Function3<T1, T2, T3, R>) f;
     }
 
     /**

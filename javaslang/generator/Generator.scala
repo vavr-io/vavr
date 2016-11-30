@@ -1607,13 +1607,13 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * Narrows the given {@code $fullGenericsType} to {@code $className$fullGenerics}
                *
-               * @param wideFunction A {@code $className}
+               * @param f A {@code $className}
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
-               * @return the given {@code wideFunction} instance as narrowed type {@code $className$fullGenerics}
+               * @return the given {@code f} instance as narrowed type {@code $className$fullGenerics}
                */
               @SuppressWarnings("unchecked")
-              static $fullGenerics $className$fullGenerics narrow($fullGenericsType wideFunction) {
-                  return ($className$fullGenerics) wideFunction;
+              static $fullGenerics $className$fullGenerics narrow($fullGenericsType f) {
+                  return ($className$fullGenerics) f;
               }
 
               ${(i == 1).gen(xs"""

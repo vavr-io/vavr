@@ -124,7 +124,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
     /**
      * Narrows the given {@code Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R>} to {@code Function7<T1, T2, T3, T4, T5, T6, T7, R>}
      *
-     * @param wideFunction A {@code Function7}
+     * @param f A {@code Function7}
      * @param <R> return type
      * @param <T1> 1st argument
      * @param <T2> 2nd argument
@@ -133,11 +133,11 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends λ<R> {
      * @param <T5> 5th argument
      * @param <T6> 6th argument
      * @param <T7> 7th argument
-     * @return the given {@code wideFunction} instance as narrowed type {@code Function7<T1, T2, T3, T4, T5, T6, T7, R>}
+     * @return the given {@code f} instance as narrowed type {@code Function7<T1, T2, T3, T4, T5, T6, T7, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> narrow(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> wideFunction) {
-        return (Function7<T1, T2, T3, T4, T5, T6, T7, R>) wideFunction;
+    static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> narrow(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        return (Function7<T1, T2, T3, T4, T5, T6, T7, R>) f;
     }
 
     /**

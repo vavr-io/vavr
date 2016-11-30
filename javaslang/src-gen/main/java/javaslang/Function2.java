@@ -105,15 +105,15 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
     /**
      * Narrows the given {@code BiFunction<? super T1, ? super T2, ? extends R>} to {@code Function2<T1, T2, R>}
      *
-     * @param wideFunction A {@code Function2}
+     * @param f A {@code Function2}
      * @param <R> return type
      * @param <T1> 1st argument
      * @param <T2> 2nd argument
-     * @return the given {@code wideFunction} instance as narrowed type {@code Function2<T1, T2, R>}
+     * @return the given {@code f} instance as narrowed type {@code Function2<T1, T2, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, T2, R> Function2<T1, T2, R> narrow(BiFunction<? super T1, ? super T2, ? extends R> wideFunction) {
-        return (Function2<T1, T2, R>) wideFunction;
+    static <T1, T2, R> Function2<T1, T2, R> narrow(BiFunction<? super T1, ? super T2, ? extends R> f) {
+        return (Function2<T1, T2, R>) f;
     }
 
     /**

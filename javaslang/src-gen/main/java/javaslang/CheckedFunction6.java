@@ -120,7 +120,7 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
     /**
      * Narrows the given {@code CheckedFunction6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R>} to {@code CheckedFunction6<T1, T2, T3, T4, T5, T6, R>}
      *
-     * @param wideFunction A {@code CheckedFunction6}
+     * @param f A {@code CheckedFunction6}
      * @param <R> return type
      * @param <T1> 1st argument
      * @param <T2> 2nd argument
@@ -128,11 +128,11 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
      * @param <T4> 4th argument
      * @param <T5> 5th argument
      * @param <T6> 6th argument
-     * @return the given {@code wideFunction} instance as narrowed type {@code CheckedFunction6<T1, T2, T3, T4, T5, T6, R>}
+     * @return the given {@code f} instance as narrowed type {@code CheckedFunction6<T1, T2, T3, T4, T5, T6, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, T2, T3, T4, T5, T6, R> CheckedFunction6<T1, T2, T3, T4, T5, T6, R> narrow(CheckedFunction6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> wideFunction) {
-        return (CheckedFunction6<T1, T2, T3, T4, T5, T6, R>) wideFunction;
+    static <T1, T2, T3, T4, T5, T6, R> CheckedFunction6<T1, T2, T3, T4, T5, T6, R> narrow(CheckedFunction6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        return (CheckedFunction6<T1, T2, T3, T4, T5, T6, R>) f;
     }
 
     /**
