@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.concurrent.Executors;
-import java.util.stream.Stream;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
 import javaslang.collection.Map;
@@ -173,47 +172,47 @@ public class APITest {
 
     @Test
     public void shouldUnchecked0ReturnNonCheckedFunction() {
-        assertThat(Unchecked(() -> null)).isInstanceOf(Function0.class);
+        assertThat(unchecked(() -> null)).isInstanceOf(Function0.class);
     }
 
     @Test
     public void shouldUnchecked1ReturnNonCheckedFunction() {
-        assertThat(Unchecked((v1) -> null)).isInstanceOf(Function1.class);
+        assertThat(unchecked((v1) -> null)).isInstanceOf(Function1.class);
     }
 
     @Test
     public void shouldUnchecked2ReturnNonCheckedFunction() {
-        assertThat(Unchecked((v1, v2) -> null)).isInstanceOf(Function2.class);
+        assertThat(unchecked((v1, v2) -> null)).isInstanceOf(Function2.class);
     }
 
     @Test
     public void shouldUnchecked3ReturnNonCheckedFunction() {
-        assertThat(Unchecked((v1, v2, v3) -> null)).isInstanceOf(Function3.class);
+        assertThat(unchecked((v1, v2, v3) -> null)).isInstanceOf(Function3.class);
     }
 
     @Test
     public void shouldUnchecked4ReturnNonCheckedFunction() {
-        assertThat(Unchecked((v1, v2, v3, v4) -> null)).isInstanceOf(Function4.class);
+        assertThat(unchecked((v1, v2, v3, v4) -> null)).isInstanceOf(Function4.class);
     }
 
     @Test
     public void shouldUnchecked5ReturnNonCheckedFunction() {
-        assertThat(Unchecked((v1, v2, v3, v4, v5) -> null)).isInstanceOf(Function5.class);
+        assertThat(unchecked((v1, v2, v3, v4, v5) -> null)).isInstanceOf(Function5.class);
     }
 
     @Test
     public void shouldUnchecked6ReturnNonCheckedFunction() {
-        assertThat(Unchecked((v1, v2, v3, v4, v5, v6) -> null)).isInstanceOf(Function6.class);
+        assertThat(unchecked((v1, v2, v3, v4, v5, v6) -> null)).isInstanceOf(Function6.class);
     }
 
     @Test
     public void shouldUnchecked7ReturnNonCheckedFunction() {
-        assertThat(Unchecked((v1, v2, v3, v4, v5, v6, v7) -> null)).isInstanceOf(Function7.class);
+        assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7) -> null)).isInstanceOf(Function7.class);
     }
 
     @Test
     public void shouldUnchecked8ReturnNonCheckedFunction() {
-        assertThat(Unchecked((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isInstanceOf(Function8.class);
+        assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isInstanceOf(Function8.class);
     }
 
     @Test
@@ -300,20 +299,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldFutureWithErrorReturnNotNull() {
-        final Future<?> future = Future(new Error()).await();
-        assertThat(future).isNotNull();
-        assertThat(future.isFailure()).isTrue();
-    }
-
-    @Test
-    public void shouldFutureWithinExecutorWithErrorReturnNotNull() {
-        final Future<?> future = Future(Executors.newSingleThreadExecutor(), new Error()).await();
-        assertThat(future).isNotNull();
-        assertThat(future.isFailure()).isTrue();
-    }
-
-    @Test
     public void shouldLazyReturnNotNull() {
         assertThat(Lazy(() -> 1)).isNotNull();
     }
@@ -395,16 +380,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldArrayWithIterableReturnNotNull() {
-        assertThat(Array(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldArrayWithStreamReturnNotNull() {
-        assertThat(Array(Stream.of('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
     public void shouldEmptyVectorReturnNotNull() {
         assertThat(Vector()).isNotNull();
     }
@@ -417,16 +392,6 @@ public class APITest {
     @Test
     public void shouldVectorWithVarArgReturnNotNull() {
         assertThat(Vector('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldVectorWithIterableReturnNotNull() {
-        assertThat(Vector(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldVectorWithStreamReturnNotNull() {
-        assertThat(Vector(Stream.of('1', '2', '3'))).isNotNull();
     }
 
     @Test
@@ -445,16 +410,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldListWithIterableReturnNotNull() {
-        assertThat(List(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldListWithStreamReturnNotNull() {
-        assertThat(List(Stream.of('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
     public void shouldEmptyStreamReturnNotNull() {
         assertThat(Stream()).isNotNull();
     }
@@ -467,16 +422,6 @@ public class APITest {
     @Test
     public void shouldStreamWithVarArgReturnNotNull() {
         assertThat(Stream('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldStreamWithIterableReturnNotNull() {
-        assertThat(Stream(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldStreamWithStreamReturnNotNull() {
-        assertThat(Stream(Stream.of('1', '2', '3'))).isNotNull();
     }
 
     @Test
@@ -495,16 +440,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldQueueWithIterableReturnNotNull() {
-        assertThat(Queue(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldQueueWithStreamReturnNotNull() {
-        assertThat(Queue(Stream.of('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
     public void shouldEmptyLinkedSetReturnNotNull() {
         assertThat(LinkedSet()).isNotNull();
     }
@@ -517,16 +452,6 @@ public class APITest {
     @Test
     public void shouldLinkedSetWithVarArgReturnNotNull() {
         assertThat(LinkedSet('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldLinkedSetWithIterableReturnNotNull() {
-        assertThat(LinkedSet(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldLinkedSetWithStreamReturnNotNull() {
-        assertThat(LinkedSet(Stream.of('1', '2', '3'))).isNotNull();
     }
 
     @Test
@@ -545,16 +470,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldSetWithIterableReturnNotNull() {
-        assertThat(Set(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldSetWithStreamReturnNotNull() {
-        assertThat(Set(Stream.of('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
     public void shouldEmptySeqReturnNotNull() {
         assertThat(Seq()).isNotNull();
     }
@@ -570,16 +485,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldSeqWithIterableReturnNotNull() {
-        assertThat(Seq(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldSeqWithStreamReturnNotNull() {
-        assertThat(Seq(Stream.of('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
     public void shouldEmptyIndexedSeqReturnNotNull() {
         assertThat(IndexedSeq()).isNotNull();
     }
@@ -592,16 +497,6 @@ public class APITest {
     @Test
     public void shouldIndexedSeqWithVarArgReturnNotNull() {
         assertThat(IndexedSeq('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldIndexedSeqWithIterableReturnNotNull() {
-        assertThat(IndexedSeq(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldIndexedSeqWithStreamReturnNotNull() {
-        assertThat(IndexedSeq(Stream.of('1', '2', '3'))).isNotNull();
     }
 
     @Test
@@ -635,26 +530,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldSortedSetWithIterableReturnNotNull() {
-        assertThat(SortedSet(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedSetWithIterableAndComparatorReturnNotNull() {
-        assertThat(SortedSet(Character::compareTo, CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedSetWithStreamReturnNotNull() {
-        assertThat(SortedSet(Stream.of('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedSetWithStreamAndComparatorReturnNotNull() {
-        assertThat(SortedSet(Character::compareTo, Stream.of('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
     public void shouldEmptyPriorityQueueReturnNotNull() {
         assertThat(PriorityQueue()).isNotNull();
     }
@@ -685,26 +560,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldPriorityQueueWithIterableReturnNotNull() {
-        assertThat(PriorityQueue(CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldPriorityQueueWithIterableAndComparatorReturnNotNull() {
-        assertThat(PriorityQueue(Character::compareTo, CharSeq('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldPriorityQueueWithStreamReturnNotNull() {
-        assertThat(PriorityQueue(Stream.of('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldPriorityQueueWithStreamAndComparatorReturnNotNull() {
-        assertThat(PriorityQueue(Character::compareTo, Stream.of('1', '2', '3'))).isNotNull();
-    }
-
-    @Test
     public void shouldEmptyLinkedMapReturnNotNull() {
         assertThat(LinkedMap()).isNotNull();
     }
@@ -717,11 +572,6 @@ public class APITest {
     @Test
     public void shouldLinkedMapFromTuplesReturnNotNull() {
         assertThat(LinkedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldLinkedMapFromMapReturnNotNull() {
-        assertThat(LinkedMap(Collections.singletonMap(1, '1'))).isNotNull();
     }
 
     @Test
@@ -850,11 +700,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldMapFromMapReturnNotNull() {
-        assertThat(Map(Collections.singletonMap(1, '1'))).isNotNull();
-    }
-
-    @Test
     public void shouldMapFromPairsReturnNotNull() {
         assertThat(Map(1, '1', 2, '2', 3, '3')).isNotNull();
     }
@@ -977,11 +822,6 @@ public class APITest {
     @Test
     public void shouldSortedMapFromTuplesReturnNotNull() {
         assertThat(SortedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedMapFromMapReturnNotNull() {
-        assertThat(SortedMap(Collections.singletonMap(1, '1'))).isNotNull();
     }
 
     @Test

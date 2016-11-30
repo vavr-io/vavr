@@ -47,17 +47,11 @@ def generateMainClasses(): Unit = {
 
     def genAPI(im: ImportManager, packageName: String, className: String): String = {
 
-      val Objects = im.getType("java.util.Objects")
       val OptionType = im.getType("javaslang.control.Option")
-      val FunctionType = im.getType("java.util.function.Function")
-      val BiFunctionType = im.getType("java.util.function.BiFunction")
-      val PredicateType = im.getType("java.util.function.Predicate")
-      val SupplierType = im.getType("java.util.function.Supplier")
       val IteratorType = im.getType("javaslang.collection.Iterator")
       val EitherType = im.getType("javaslang.control.Either")
       val FutureType = im.getType("javaslang.concurrent.Future")
       val CheckedSupplierType = im.getType("javaslang.control.Try.CheckedSupplier")
-      val ExecutorServiceType = im.getType("java.util.concurrent.ExecutorService")
       val TryType = im.getType("javaslang.control.Try")
       val ValidationType = im.getType("javaslang.control.Validation")
       val CharSeqType = im.getType("javaslang.collection.CharSeq")
@@ -68,261 +62,289 @@ def generateMainClasses(): Unit = {
       val QueueType = im.getType("javaslang.collection.Queue")
       val LinkedHashSetType = im.getType("javaslang.collection.LinkedHashSet")
       val HashSetType = im.getType("javaslang.collection.HashSet")
-      val JavaStreamType = im.getType("java.util.stream.Stream")
       val TreeSetType = im.getType("javaslang.collection.TreeSet")
       val PriorityQueueType = im.getType("javaslang.collection.PriorityQueue")
-      val JavaComparatorType = im.getType("java.util.Comparator")
       val LinkedHashMapType = im.getType("javaslang.collection.LinkedHashMap")
       val HashMapType = im.getType("javaslang.collection.HashMap")
       val TreeMapType = im.getType("javaslang.collection.TreeMap")
+      val IndexedSeqType = im.getType("javaslang.collection.IndexedSeq")
+      val MapType = im.getType("javaslang.collection.Map")
+      val SeqType = im.getType("javaslang.collection.Seq")
+      val SetType = im.getType("javaslang.collection.Set")
+      val SortedMapType = im.getType("javaslang.collection.SortedMap")
+      val SortedSetType = im.getType("javaslang.collection.SortedSet")
+
+      // Note: import the Java stuff last in order to force full qualified names on import clashes
+
+      val Objects = im.getType("java.util.Objects")
+      val JavaComparatorType = im.getType("java.util.Comparator")
       val JavaMapType = im.getType("java.util.Map")
+      val ExecutorServiceType = im.getType("java.util.concurrent.ExecutorService")
+      val FunctionType = im.getType("java.util.function.Function")
+      val BiFunctionType = im.getType("java.util.function.BiFunction")
+      val PredicateType = im.getType("java.util.function.Predicate")
+      val SupplierType = im.getType("java.util.function.Supplier")
 
-      def genTraversableAliases(traversableType: String, name: String): String = {
-        xs"""
-          /$javadoc
-           * Alias for {@link $traversableType#empty()}
-           *
-           * @param <T> Component type of element.
-           * @return A singleton instance of empty {@link $traversableType}
-           */
-          public static <T> $traversableType<T> $name() {
-              return $traversableType.empty();
-          }
+      def genTraversableAliases(traversableType: String, returnType: String, name: String) = xs"""
+        // -- $name
 
-          /$javadoc
-           * Alias for {@link $traversableType#of(Object)}
-           *
-           * @param <T>     Component type of element.
-           * @param element An element.
-           * @return A new {@link $traversableType} instance containing the given element
-           */
-          public static <T> $traversableType<T> $name(T element) {
-              return $traversableType.of(element);
-          }
+        /$javadoc
+         * Alias for {@link $traversableType#empty()}
+         *
+         * @param <T> Component type of element.
+         * @return A singleton instance of empty {@link $traversableType}
+         */
+        public static <T> $returnType<T> $name() {
+            return $traversableType.empty();
+        }
 
-          /$javadoc
-           * Alias for {@link $traversableType#of(Object...)}
-           *
-           * @param <T>      Component type of elements.
-           * @param elements Zero or more elements.
-           * @return A new {@link $traversableType} instance containing the given elements
-           * @throws NullPointerException if {@code elements} is null
-           */
-          @SuppressWarnings("varargs")
-          @SafeVarargs
-          public static <T> $traversableType<T> $name(T... elements) {
-              return $traversableType.of(elements);
-          }
+        /$javadoc
+         * Alias for {@link $traversableType#of(Object)}
+         *
+         * @param <T>     Component type of element.
+         * @param element An element.
+         * @return A new {@link $traversableType} instance containing the given element
+         */
+        public static <T> $returnType<T> $name(T element) {
+            return $traversableType.of(element);
+        }
 
-          /$javadoc
-           * Alias for {@link $traversableType#ofAll(Iterable)}
-           *
-           * @param <T>      Component type of elements.
-           * @param elements Zero or more elements.
-           * @return A new {@link $traversableType} instance containing the given elements
-           * @throws NullPointerException if {@code elements} is null
-           */
-          public static <T> $traversableType<T> $name(Iterable<? extends T> elements) {
-              return $traversableType.ofAll(elements);
-          }
+        /$javadoc
+         * Alias for {@link $traversableType#of(Object...)}
+         *
+         * @param <T>      Component type of elements.
+         * @param elements Zero or more elements.
+         * @return A new {@link $traversableType} instance containing the given elements
+         * @throws NullPointerException if {@code elements} is null
+         */
+        @SuppressWarnings("varargs")
+        @SafeVarargs
+        public static <T> $returnType<T> $name(T... elements) {
+            return $traversableType.of(elements);
+        }
+      """
 
-          /$javadoc
-           * Alias for {@link $traversableType#ofAll($JavaStreamType)}
-           *
-           * @param <T>      Component type of elements.
-           * @param elements Zero or more elements.
-           * @return A new {@link $traversableType} instance containing the given elements
-           * @throws NullPointerException if {@code elements} is null
-           */
-          public static <T> $traversableType<T> $name($JavaStreamType<? extends T> elements) {
-              return $traversableType.ofAll(elements);
-          }
-        """
-      }
+      def genSortedTraversableAliases(traversableType: String, returnType: String, name: String) = xs"""
+        // -- $name
 
-      def genSortedTraversableAliases(traversableType: String, name: String, comparableExt: String): String = {
-        xs"""
-          /$javadoc
-           * Alias for {@link $traversableType#empty()}
-           *
-           * @param <T> Component type of element.
-           * @return A new {@link $traversableType} empty instance
-           */
-          public static <T $comparableExt> $traversableType<T> $name() {
-              return $traversableType.empty();
-          }
+        /$javadoc
+         * Alias for {@link $traversableType#empty()}
+         *
+         * @param <T> Component type of element.
+         * @return A new {@link $traversableType} empty instance
+         */
+        public static <T extends Comparable<? super T>> $returnType<T> $name() {
+            return $traversableType.empty();
+        }
 
-          /$javadoc
-           * Alias for {@link $traversableType#empty($JavaComparatorType)}
-           *
-           * @param <T>        Component type of element.
-           * @param comparator The comparator used to sort the elements
-           * @return A new {@link $traversableType} empty instance
-           */
-          public static <T $comparableExt> $traversableType<T> $name($JavaComparatorType<? super T> comparator) {
-              return $traversableType.empty(comparator);
-          }
+        /$javadoc
+         * Alias for {@link $traversableType#empty($JavaComparatorType)}
+         *
+         * @param <T>        Component type of element.
+         * @param comparator The comparator used to sort the elements
+         * @return A new {@link $traversableType} empty instance
+         */
+        public static <T extends Comparable<? super T>> $returnType<T> $name($JavaComparatorType<? super T> comparator) {
+            return $traversableType.empty(comparator);
+        }
 
-          /$javadoc
-           * Alias for {@link $traversableType#of(Comparable)}
-           *
-           * @param <T>     Component type of element.
-           * @param element An element.
-           * @return A new {@link $traversableType} instance containing the given element
-           */
-          public static <T $comparableExt> $traversableType<T> $name(T element) {
-              return $traversableType.of(element);
-          }
+        /$javadoc
+         * Alias for {@link $traversableType#of(Comparable)}
+         *
+         * @param <T>     Component type of element.
+         * @param element An element.
+         * @return A new {@link $traversableType} instance containing the given element
+         */
+        public static <T extends Comparable<? super T>> $returnType<T> $name(T element) {
+            return $traversableType.of(element);
+        }
 
-          /$javadoc
-           * Alias for {@link $traversableType#of($JavaComparatorType, Object)}
-           *
-           * @param <T>        Component type of element.
-           * @param comparator The comparator used to sort the elements
-           * @param element    An element.
-           * @return A new {@link $traversableType} instance containing the given element
-           */
-          public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, T element) {
-              return $traversableType.of(comparator, element);
-          }
+        /$javadoc
+         * Alias for {@link $traversableType#of($JavaComparatorType, Object)}
+         *
+         * @param <T>        Component type of element.
+         * @param comparator The comparator used to sort the elements
+         * @param element    An element.
+         * @return A new {@link $traversableType} instance containing the given element
+         */
+        public static <T> $returnType<T> $name($JavaComparatorType<? super T> comparator, T element) {
+            return $traversableType.of(comparator, element);
+        }
 
-          /$javadoc
-           * Alias for {@link $traversableType#of(Comparable...)}
-           *
-           * @param <T>      Component type of element.
-           * @param elements Zero or more elements.
-           * @return A new {@link $traversableType} instance containing the given elements
-           */
-          @SuppressWarnings("varargs")
-          @SafeVarargs
-          public static <T $comparableExt> $traversableType<T> $name(T... elements) {
-              return $traversableType.of(elements);
-          }
+        /$javadoc
+         * Alias for {@link $traversableType#of(Comparable...)}
+         *
+         * @param <T>      Component type of element.
+         * @param elements Zero or more elements.
+         * @return A new {@link $traversableType} instance containing the given elements
+         */
+        @SuppressWarnings("varargs")
+        @SafeVarargs
+        public static <T extends Comparable<? super T>> $returnType<T> $name(T... elements) {
+            return $traversableType.of(elements);
+        }
 
-          /$javadoc
-           * Alias for {@link $traversableType#of($JavaComparatorType, Object...)}
-           *
-           * @param <T>        Component type of element.
-           * @param comparator The comparator used to sort the elements
-           * @param elements   Zero or more elements.
-           * @return A new {@link $traversableType} instance containing the given elements
-           */
-          @SuppressWarnings("varargs")
-          @SafeVarargs
-          public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, T... elements) {
-              return $traversableType.of(comparator, elements);
-          }
+        /$javadoc
+         * Alias for {@link $traversableType#of($JavaComparatorType, Object...)}
+         *
+         * @param <T>        Component type of element.
+         * @param comparator The comparator used to sort the elements
+         * @param elements   Zero or more elements.
+         * @return A new {@link $traversableType} instance containing the given elements
+         */
+        @SuppressWarnings("varargs")
+        @SafeVarargs
+        public static <T> $returnType<T> $name($JavaComparatorType<? super T> comparator, T... elements) {
+            return $traversableType.of(comparator, elements);
+        }
+      """
 
-          /$javadoc
-           * Alias for {@link $traversableType#ofAll(Iterable)}
-           *
-           * @param <T>      Component type of element.
-           * @param elements Zero or more elements.
-           * @return A new {@link $traversableType} instance containing the given elements
-           */
-          public static <T $comparableExt> $traversableType<T> $name(Iterable<? extends T> elements) {
-              return $traversableType.ofAll(elements);
-          }
+      def genMapAliases(mapType: String, returnType: String, name: String) = xs"""
+        // -- $name
 
-          /$javadoc
-           * Alias for {@link $traversableType#ofAll($JavaComparatorType, Iterable)}
-           *
-           * @param <T>        Component type of element.
-           * @param comparator The comparator used to sort the elements
-           * @param elements   Zero or more elements.
-           * @return A new {@link $traversableType} instance containing the given elements
-           */
-          public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, Iterable<? extends T> elements) {
-              return $traversableType.ofAll(comparator, elements);
-          }
+        /$javadoc
+         * Alias for {@link $mapType#empty()}
+         *
+         * @param <K> The key type.
+         * @param <V> The value type.
+         * @return A singleton instance of empty {@link $mapType}
+         */
+        public static <K, V> $returnType<K, V> $name() {
+            return $mapType.empty();
+        }
 
-          /$javadoc
-           * Alias for {@link $traversableType#ofAll($JavaStreamType)}
-           *
-           * @param <T>      Component type of element.
-           * @param elements Zero or more elements.
-           * @return A new {@link $traversableType} instance containing the given elements
-           */
-          public static <T $comparableExt> $traversableType<T> $name($JavaStreamType<? extends T> elements) {
-              return $traversableType.ofAll(elements);
-          }
+        /$javadoc
+         * Alias for {@link $mapType#ofEntries(Tuple2...)}
+         *
+         * @param <K>     The key type.
+         * @param <V>     The value type.
+         * @param entries Map entries.
+         * @return A new {@link $mapType} instance containing the given entries
+         */
+        @SuppressWarnings("varargs")
+        @SafeVarargs
+        public static <K, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
+            return $mapType.ofEntries(entries);
+        }
 
-          /$javadoc
-           * Alias for {@link $traversableType#ofAll($JavaComparatorType, $JavaStreamType)}
-           *
-           * @param <T>        Component type of element.
-           * @param comparator The comparator used to sort the elements
-           * @param elements   Zero or more elements.
-           * @return A new {@link $traversableType} instance containing the given elements
-           */
-          public static <T> $traversableType<T> $name($JavaComparatorType<? super T> comparator, $JavaStreamType<? extends T> elements) {
-              return $traversableType.ofAll(comparator, elements);
-          }
-        """
-      }
+        ${(1 to VARARGS).gen(i => {
+          xs"""
+            /$javadoc
+             * Alias for {@link $mapType#of(${(1 to i).gen(j => "Object, Object")(", ")})}
+             *
+             * @param <K> The key type.
+             * @param <V> The value type.
+             ${(1 to i).gen(j => s"* @param k$j  The key${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
+             * @return A new {@link $mapType} instance containing the given entries
+             */
+            public static <K, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(", ")}) {
+                return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(", ")});
+            }
+          """
+        })("\n\n")}
+      """
 
-      def genMapAliases(mapType: String, name: String): String = {
-        xs"""
+      def genSortedMapAliases(mapType: String, returnType: String, name: String) = xs"""
+        /$javadoc
+         * Alias for {@link $mapType#empty()}
+         *
+         * @param <K> The key type.
+         * @param <V> The value type.
+         * @return A new empty {@link $mapType} instance
+         */
+        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name() {
+            return $mapType.empty();
+        }
+
+        /$javadoc
+         * Alias for {@link $mapType#empty($JavaComparatorType)}
+         *
+         * @param <K>           The key type.
+         * @param <V>           The value type.
+         * @param keyComparator The comparator used to sort the entries by their key
+         * @return A new empty {@link $mapType} instance
+         */
+        public static <K, V> $returnType<K, V> $name($JavaComparatorType<? super K> keyComparator) {
+            return $mapType.empty(keyComparator);
+        }
+
+        /$javadoc
+         * Alias for {@link $mapType#of(Comparator, Object, Object)}
+         *
+         * @param <K>           The key type.
+         * @param <V>           The value type.
+         * @param keyComparator The comparator used to sort the entries by their key
+         * @param key           A singleton map key.
+         * @param value         A singleton map value.
+         * @return A new {@link $mapType} instance containing the given entry
+         */
+        public static <K, V> $returnType<K, V> $name(Comparator<? super K> keyComparator, K key, V value) {
+            return $mapType.of(keyComparator, key, value);
+        }
+
+        /$javadoc
+         * Alias for {@link $mapType#ofEntries(Tuple2...)}
+         *
+         * @param <K>     The key type.
+         * @param <V>     The value type.
+         * @param entries Map entries.
+         * @return A new {@link $mapType} instance containing the given entries
+         */
+        @SuppressWarnings("varargs")
+        @SafeVarargs
+        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
+            return $mapType.ofEntries(entries);
+        }
+
+        /$javadoc
+         * Alias for {@link $mapType#ofEntries($JavaComparatorType, Tuple2...)}
+         *
+         * @param <K>           The key type.
+         * @param <V>           The value type.
+         * @param keyComparator The comparator used to sort the entries by their key
+         * @param entries       Map entries.
+         * @return A new {@link $mapType} instance containing the given entry
+         */
+        @SuppressWarnings("varargs")
+        @SafeVarargs
+        public static <K, V> $returnType<K, V> $name($JavaComparatorType<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
+            return $mapType.ofEntries(keyComparator, entries);
+        }
+
+        /$javadoc
+         * Alias for {@link $mapType#ofAll($JavaMapType)}
+         *
+         * @param <K> The key type.
+         * @param <V> The value type.
+         * @param map A map entry.
+         * @return A new {@link $mapType} instance containing the given map
+         */
+        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
+            return $mapType.ofAll(map);
+        }
+
+        ${(1 to VARARGS).gen(i => xs"""
           /$javadoc
-           * Alias for {@link $mapType#empty()}
+           * Alias for {@link $mapType#of(${(1 to i).gen(j => s"${if (mapType.equals("TreeMap")) s"Comparable" else s"Object"}, Object")(", ")})}
            *
            * @param <K> The key type.
            * @param <V> The value type.
-           * @return A singleton instance of empty {@link $mapType}
-           */
-          public static <K, V> $mapType<K, V> $name() {
-              return $mapType.empty();
-          }
-
-          /$javadoc
-           * Alias for {@link $mapType#ofEntries(Tuple2...)}
-           *
-           * @param <K>     The key type.
-           * @param <V>     The value type.
-           * @param entries Map entries.
+           ${(1 to i).gen(j => s"* @param k$j  The key${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
            * @return A new {@link $mapType} instance containing the given entries
            */
-          @SuppressWarnings("varargs")
-          @SafeVarargs
-          public static <K, V> $mapType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
-              return $mapType.ofEntries(entries);
+          public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(", ")}) {
+              return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(", ")});
           }
-
-          /$javadoc
-           * Alias for {@link $mapType#ofAll($JavaMapType)}
-           *
-           * @param <K> The key type.
-           * @param <V> The value type.
-           * @param map A map entry.
-           * @return A new {@link $mapType} instance containing the given map
-           */
-          public static <K, V> $mapType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
-              return $mapType.ofAll(map);
-          }
-
-          ${(1 to VARARGS).gen(i => {
-            xs"""
-              /$javadoc
-               * Alias for {@link $mapType#of(${(1 to i).gen(j => "Object, Object")(", ")})}
-               *
-               * @param <K> The key type.
-               * @param <V> The value type.
-               ${(1 to i).gen(j => s"* @param k$j  The key${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
-               * @return A new {@link $mapType} instance containing the given entries
-               */
-              public static <K, V> $mapType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(", ")}) {
-                  return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(", ")});
-              }
-            """
-          })("\n\n")}
-        """
-      }
+        """)("\n\n")}
+      """
 
       def genAliases(im: ImportManager, packageName: String, className: String): String = {
         xs"""
           //
           // Aliases for static factories
           //
+
+          // -- Function
 
           ${(0 to N).gen(i => {
             val generics = (1 to i).gen(j => s"T$j")(", ")
@@ -341,6 +363,8 @@ def generateMainClasses(): Unit = {
             """
           })("\n\n")}
 
+          // -- CheckedFunction
+
           ${(0 to N).gen(i => {
             val generics = (1 to i).gen(j => s"T$j")(", ")
             val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
@@ -358,6 +382,8 @@ def generateMainClasses(): Unit = {
             """
           })("\n\n")}
 
+          // -- unchecked
+
           ${(0 to N).gen(i => {
             val generics = (1 to i).gen(j => s"T$j")(", ")
             val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
@@ -369,11 +395,13 @@ def generateMainClasses(): Unit = {
                * @param f    A method reference
                * @return A unchecked wrapper of supplied {@link CheckedFunction$i}
                */
-              public static $fullGenerics Function$i$fullGenerics Unchecked(CheckedFunction$i$fullGenerics f) {
+              public static $fullGenerics Function$i$fullGenerics unchecked(CheckedFunction$i$fullGenerics f) {
                   return f.unchecked();
               }
             """
           })("\n\n")}
+
+          // -- Tuple
 
           /$javadoc
            * Alias for {@link Tuple#empty()}
@@ -405,6 +433,8 @@ def generateMainClasses(): Unit = {
             """
           })("\n\n")}
 
+          // -- Either
+
           /$javadoc
            * Alias for {@link $EitherType#right(Object)}
            *
@@ -413,8 +443,9 @@ def generateMainClasses(): Unit = {
            * @param right The value.
            * @return A new {@link $EitherType.Right} instance.
            */
-          public static <L, R> $EitherType<L, R> Right(R right) {
-              return $EitherType.right(right);
+          @SuppressWarnings("unchecked")
+          public static <L, R> $EitherType.Right<L, R> Right(R right) {
+              return ($EitherType.Right<L, R>) $EitherType.right(right);
           }
 
           /$javadoc
@@ -425,9 +456,12 @@ def generateMainClasses(): Unit = {
            * @param left The value.
            * @return A new {@link $EitherType.Left} instance.
            */
-          public static <L, R> $EitherType<L, R> Left(L left) {
-              return $EitherType.left(left);
+          @SuppressWarnings("unchecked")
+          public static <L, R> $EitherType.Left<L, R> Left(L left) {
+              return ($EitherType.Left<L, R>) $EitherType.left(left);
           }
+
+          // -- Future
 
           /$javadoc
            * Alias for {@link $FutureType#of($TryType.$CheckedSupplierType)}
@@ -478,30 +512,7 @@ def generateMainClasses(): Unit = {
               return $FutureType.successful(executorService, result);
           }
 
-          /$javadoc
-           * Alias for {@link $FutureType#failed(Throwable)}
-           *
-           * @param <T>       The value type of a successful result.
-           * @param exception The reason why it failed.
-           * @return A failed {@link $FutureType}.
-           * @throws NullPointerException if exception is null
-           */
-          public static <T> $FutureType<T> Future(Throwable exception) {
-              return $FutureType.failed(exception);
-          }
-
-          /$javadoc
-           * Alias for {@link $FutureType#failed($ExecutorServiceType, Throwable)}
-           *
-           * @param <T>             The value type of a successful result.
-           * @param executorService An executor service.
-           * @param exception       The reason why it failed.
-           * @return A failed {@link $FutureType}.
-           * @throws NullPointerException if executorService or exception is null
-           */
-          public static <T> $FutureType<T> Future($ExecutorServiceType executorService, Throwable exception) {
-              return $FutureType.failed(executorService, exception);
-          }
+          // -- Lazy
 
           /$javadoc
            * Alias for {@link Lazy#of($SupplierType)}
@@ -513,6 +524,8 @@ def generateMainClasses(): Unit = {
           public static <T> Lazy<T> Lazy($SupplierType<? extends T> supplier) {
               return Lazy.of(supplier);
           }
+
+          // -- Option
 
           /$javadoc
            * Alias for {@link $OptionType#of(Object)}
@@ -532,8 +545,9 @@ def generateMainClasses(): Unit = {
            * @param value A value
            * @return {@link $OptionType.Some}
            */
-          public static <T> $OptionType<T> Some(T value) {
-              return $OptionType.some(value);
+          @SuppressWarnings("unchecked")
+          public static <T> $OptionType.Some<T> Some(T value) {
+              return ($OptionType.Some<T>) $OptionType.some(value);
           }
 
           /$javadoc
@@ -542,9 +556,12 @@ def generateMainClasses(): Unit = {
            * @param <T> component type
            * @return the singleton instance of {@link $OptionType.None}
            */
-          public static <T> $OptionType<T> None() {
-              return $OptionType.none();
+          @SuppressWarnings("unchecked")
+          public static <T> $OptionType.None<T> None() {
+              return ($OptionType.None<T>) $OptionType.none();
           }
+
+          // -- Try
 
           /$javadoc
            * Alias for {@link $TryType#of($CheckedSupplierType)}
@@ -565,8 +582,9 @@ def generateMainClasses(): Unit = {
            * @param value A value.
            * @return A new {@link $TryType.Success}.
            */
-          public static <T> $TryType<T> Success(T value) {
-              return $TryType.success(value);
+          @SuppressWarnings("unchecked")
+          public static <T> $TryType.Success<T> Success(T value) {
+              return ($TryType.Success<T>) $TryType.success(value);
           }
 
           /$javadoc
@@ -576,9 +594,12 @@ def generateMainClasses(): Unit = {
            * @param exception An exception.
            * @return A new {@link $TryType.Failure}.
            */
-          public static <T> $TryType<T> Failure(Throwable exception) {
-              return $TryType.failure(exception);
+          @SuppressWarnings("unchecked")
+          public static <T> $TryType.Failure<T> Failure(Throwable exception) {
+              return ($TryType.Failure<T>) $TryType.failure(exception);
           }
+
+          // -- Validation
 
           /$javadoc
            * Alias for {@link $ValidationType#valid(Object)}
@@ -589,8 +610,9 @@ def generateMainClasses(): Unit = {
            * @return {@link $ValidationType.Valid}
            * @throws NullPointerException if value is null
            */
-          public static <E, T> $ValidationType<E, T> Valid(T value) {
-              return $ValidationType.valid(value);
+          @SuppressWarnings("unchecked")
+          public static <E, T> $ValidationType.Valid<E, T> Valid(T value) {
+              return ($ValidationType.Valid<E, T>) $ValidationType.valid(value);
           }
 
           /$javadoc
@@ -602,9 +624,12 @@ def generateMainClasses(): Unit = {
            * @return {@link $ValidationType.Invalid}
            * @throws NullPointerException if error is null
            */
-          public static <E, T> $ValidationType<E, T> Invalid(E error) {
-              return $ValidationType.invalid(error);
+          @SuppressWarnings("unchecked")
+          public static <E, T> $ValidationType.Invalid<E, T> Invalid(E error) {
+              return ($ValidationType.Invalid<E, T>) $ValidationType.invalid(error);
           }
+
+          // -- CharSeq
 
           /$javadoc
            * Alias for {@link $CharSeqType#of(char)}
@@ -637,125 +662,32 @@ def generateMainClasses(): Unit = {
               return $CharSeqType.of(sequence);
           }
 
-          ${genTraversableAliases(ArrayType, "Array")}
+          // -- TRAVERSABLES
 
-          ${genTraversableAliases(VectorType, "Vector")}
+          ${genSortedTraversableAliases(PriorityQueueType, PriorityQueueType, "PriorityQueue")}
 
-          ${genTraversableAliases(ListType, "List")}
+          // -- SEQUENCES
 
-          ${genTraversableAliases(StreamType, "Stream")}
+          ${genTraversableAliases(ListType, SeqType, "Seq")}
+          ${genTraversableAliases(VectorType, IndexedSeqType, "IndexedSeq")}
+          ${genTraversableAliases(ArrayType, ArrayType, "Array")}
+          ${genTraversableAliases(ListType, ListType, "List")}
+          ${genTraversableAliases(QueueType, QueueType, "Queue")}
+          ${genTraversableAliases(StreamType, StreamType, "Stream")}
+          ${genTraversableAliases(VectorType, VectorType, "Vector")}
 
-          ${genTraversableAliases(QueueType, "Queue")}
+          // -- SETS
 
-          ${genTraversableAliases(LinkedHashSetType, "LinkedSet")}
+          ${genTraversableAliases(HashSetType, SetType, "Set")}
+          ${genTraversableAliases(LinkedHashSetType, SetType, "LinkedSet")}
+          ${genSortedTraversableAliases(TreeSetType, SortedSetType, "SortedSet")}
 
-          ${genTraversableAliases(HashSetType, "Set")}
+          // -- MAPS
 
-          ${genTraversableAliases(ListType, "Seq")}
+          ${genMapAliases(HashMapType, MapType, "Map")}
+          ${genMapAliases(LinkedHashMapType, MapType, "LinkedMap")}
+          ${genSortedMapAliases(TreeMapType, SortedMapType, "SortedMap")}
 
-          ${genTraversableAliases(VectorType, "IndexedSeq")}
-
-          ${genSortedTraversableAliases(TreeSetType, "SortedSet", "extends Comparable<? super T>")}
-
-          ${genSortedTraversableAliases(PriorityQueueType, "PriorityQueue", "extends Comparable<T>")}
-
-          ${genMapAliases(LinkedHashMapType, "LinkedMap")}
-
-          ${genMapAliases(HashMapType, "Map")}
-
-          /$javadoc
-           * Alias for {@link $TreeMapType#empty()}
-           *
-           * @param <K> The key type.
-           * @param <V> The value type.
-           * @return A new empty {@link $TreeMapType} instance
-           */
-          public static <K extends Comparable<? super K>, V> $TreeMapType<K, V> SortedMap() {
-              return $TreeMapType.empty();
-          }
-
-          /$javadoc
-           * Alias for {@link $TreeMapType#empty($JavaComparatorType)}
-           *
-           * @param <K>           The key type.
-           * @param <V>           The value type.
-           * @param keyComparator The comparator used to sort the entries by their key
-           * @return A new empty {@link $TreeMapType} instance
-           */
-          public static <K, V> $TreeMapType<K, V> SortedMap($JavaComparatorType<? super K> keyComparator) {
-              return $TreeMapType.empty(keyComparator);
-          }
-
-          /$javadoc
-           * Alias for {@link $TreeMapType#of(Comparator, Object, Object)}
-           *
-           * @param <K>           The key type.
-           * @param <V>           The value type.
-           * @param keyComparator The comparator used to sort the entries by their key
-           * @param key           A singleton map key.
-           * @param value         A singleton map value.
-           * @return A new {@link $TreeMapType} instance containing the given entry
-           */
-          public static <K, V> $TreeMapType<K, V> SortedMap(Comparator<? super K> keyComparator, K key, V value) {
-              return $TreeMapType.of(keyComparator, key, value);
-          }
-
-          /$javadoc
-           * Alias for {@link $TreeMapType#ofEntries(Tuple2...)}
-           *
-           * @param <K>     The key type.
-           * @param <V>     The value type.
-           * @param entries Map entries.
-           * @return A new {@link $TreeMapType} instance containing the given entries
-           */
-          @SuppressWarnings("varargs")
-          @SafeVarargs
-          public static <K extends Comparable<? super K>, V> $TreeMapType<K, V> SortedMap(Tuple2<? extends K, ? extends V>... entries) {
-              return $TreeMapType.ofEntries(entries);
-          }
-
-          /$javadoc
-           * Alias for {@link $TreeMapType#ofEntries($JavaComparatorType, Tuple2...)}
-           *
-           * @param <K>           The key type.
-           * @param <V>           The value type.
-           * @param keyComparator The comparator used to sort the entries by their key
-           * @param entries       Map entries.
-           * @return A new {@link $TreeMapType} instance containing the given entry
-           */
-          @SuppressWarnings("varargs")
-          @SafeVarargs
-          public static <K, V> $TreeMapType<K, V> SortedMap($JavaComparatorType<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
-              return $TreeMapType.ofEntries(keyComparator, entries);
-          }
-
-          /$javadoc
-           * Alias for {@link $TreeMapType#ofAll($JavaMapType)}
-           *
-           * @param <K> The key type.
-           * @param <V> The value type.
-           * @param map A map entry.
-           * @return A new {@link $TreeMapType} instance containing the given map
-           */
-          public static <K extends Comparable<? super K>, V> $TreeMapType<K, V> SortedMap($JavaMapType<? extends K, ? extends V> map) {
-              return $TreeMapType.ofAll(map);
-          }
-
-          ${(1 to VARARGS).gen(i => {
-            xs"""
-              /$javadoc
-               * Alias for {@link $TreeMapType#of(${(1 to i).gen(j => s"${if (TreeMapType.equals("TreeMap")) s"Comparable" else s"Object"}, Object")(", ")})}
-               *
-               * @param <K> The key type.
-               * @param <V> The value type.
-               ${(1 to i).gen(j => s"* @param k$j  The key${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
-               * @return A new {@link $TreeMapType} instance containing the given entries
-               */
-              public static <K extends Comparable<? super K>, V> $TreeMapType<K, V> SortedMap(${(1 to i).gen(j => xs"K k$j, V v$j")(", ")}) {
-                  return $TreeMapType.of(${(1 to i).gen(j => xs"k$j, v$j")(", ")});
-              }
-            """
-          })("\n\n")}
         """
       }
 
@@ -1972,7 +1904,7 @@ def generateMainClasses(): Unit = {
                * @return a copy of this tuple with a new value for the ${j.ordinal} element of this Tuple.
                */
               public $className$generics update$j(T$j value) {
-                  return new $className<>(${(1 to (j - 1)).gen(k => s"_$k")(", ")}${(j > 1).gen(", ")}value${(j < i).gen(", ")}${((j + 1) to i).gen(k => s"_$k")(", ")});
+                  return new $className<>(${(1 until j).gen(k => s"_$k")(", ")}${(j > 1).gen(", ")}value${(j < i).gen(", ")}${((j + 1) to i).gen(k => s"_$k")(", ")});
               }
             """)("\n\n")}
 
@@ -2226,7 +2158,7 @@ def generateMainClasses(): Unit = {
              * Note: This value might be changed in a future version of Javaslang.
              * So it is recommended to use this constant instead of hardcoding the current maximum arity.
              */
-            int MAX_ARITY = ${N};
+            int MAX_ARITY = $N;
 
             /**
              * Returns the number of elements of this tuple.
@@ -2512,13 +2444,12 @@ def generateTestClasses(): Unit = {
       val OptionType = im.getType("javaslang.control.Option")
       val FutureType = im.getType("javaslang.concurrent.Future")
       val ExecutorServiceType = im.getType("java.util.concurrent.Executors")
-      val ExecutorService = s"${ExecutorServiceType}.newSingleThreadExecutor()"
+      val ExecutorService = s"$ExecutorServiceType.newSingleThreadExecutor()"
       val TryType = im.getType("javaslang.control.Try")
-      val JavaStreamType = im.getType("java.util.stream.Stream")
       val JavaComparatorType = im.getType("java.util.Comparator")
       val JavaCollectionsType = im.getType("java.util.Collections")
 
-      val d = "$";
+      val d = "$"
 
       im.getStatic("javaslang.API.*")
 
@@ -2544,7 +2475,7 @@ def generateTestClasses(): Unit = {
       def genExtAliasTest(name: String, func: String, value: String, check: String): String = {
         xs"""
           @$test
-          public void should${name}() {
+          public void should$name() {
               assertThat($func($value)).$check;
           }
         """
@@ -2556,22 +2487,18 @@ def generateTestClasses(): Unit = {
 
       def genTraversableTests(func: String): String = {
         xs"""
-          ${genMediumAliasTest(s"Empty${func}", func, "")}
+          ${genMediumAliasTest(s"Empty$func", func, "")}
 
           ${genMediumAliasTest(s"${func}WithSingle", func, "'1'")}
 
           ${genMediumAliasTest(s"${func}WithVarArg", func, "'1', '2', '3'")}
-
-          ${genMediumAliasTest(s"${func}WithIterable", func, "CharSeq('1', '2', '3')")}
-
-          ${genMediumAliasTest(s"${func}WithStream", func, s"$JavaStreamType.of('1', '2', '3')")}
 
         """
       }
 
       def genSortedTraversableTests(func: String): String = {
         xs"""
-          ${genMediumAliasTest(s"Empty${func}", func, "")}
+          ${genMediumAliasTest(s"Empty$func", func, "")}
 
           ${genMediumAliasTest(s"Empty${func}WithComparator", func, s"($JavaComparatorType<Character>) Character::compareTo")}
 
@@ -2583,26 +2510,16 @@ def generateTestClasses(): Unit = {
 
           ${genMediumAliasTest(s"${func}WithVarArgAndComparator", func, s"($JavaComparatorType<Character>) Character::compareTo, '1', '2', '3'")}
 
-          ${genMediumAliasTest(s"${func}WithIterable", func, "CharSeq('1', '2', '3')")}
-
-          ${genMediumAliasTest(s"${func}WithIterableAndComparator", func, "Character::compareTo, CharSeq('1', '2', '3')")}
-
-          ${genMediumAliasTest(s"${func}WithStream", func, s"$JavaStreamType.of('1', '2', '3')")}
-
-          ${genMediumAliasTest(s"${func}WithStreamAndComparator", func, s"Character::compareTo, $JavaStreamType.of('1', '2', '3')")}
-
         """
       }
 
       def genMapTests(func: String): String = {
         xs"""
-          ${genMediumAliasTest(s"Empty${func}", func, "")}
+          ${genMediumAliasTest(s"Empty$func", func, "")}
 
           ${genMediumAliasTest(s"${func}FromSingle", func, "1, '1'")}
 
           ${genMediumAliasTest(s"${func}FromTuples", func, "Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3')")}
-
-          ${genMediumAliasTest(s"${func}FromMap", func, s"$JavaCollectionsType.singletonMap(1, '1')")}
 
           ${genMediumAliasTest(s"${func}FromPairs", func, "1, '1', 2, '2', 3, '3'")}
 
@@ -2610,7 +2527,7 @@ def generateTestClasses(): Unit = {
             xs"""
               @$test
               public void shouldCreate${func}From${i}Pairs() {
-                ${MapType}<Integer, Integer> map = ${func}(${(1 to i).gen(j => s"$j, ${j*2}")(", ")});
+                $MapType<Integer, Integer> map = $func(${(1 to i).gen(j => s"$j, ${j*2}")(", ")});
                 ${(1 to i).gen(j => s"assertThat(map.apply($j)).isEqualTo(${j*2});")("\n")}
               }
             """
@@ -2651,7 +2568,7 @@ def generateTestClasses(): Unit = {
 
           ${(0 to N).gen(i => {
             val params = (1 to i).gen(j => s"v$j")(", ")
-            genExtAliasTest(s"Unchecked${i}ReturnNonCheckedFunction", "Unchecked", s"($params) -> null", s"isInstanceOf(Function$i.class)")
+            genExtAliasTest(s"Unchecked${i}ReturnNonCheckedFunction", "unchecked", s"($params) -> null", s"isInstanceOf(Function$i.class)")
           })("\n\n")}
 
           ${(0 to N).gen(i => {
@@ -2678,8 +2595,6 @@ def generateTestClasses(): Unit = {
           ${genFutureTests("Supplier", "() -> 1", success = true)}
 
           ${genFutureTests("Value", "1", success = true)}
-
-          ${genFutureTests("Error", "new Error()", success = false)}
 
           ${genSimpleAliasTest("Lazy", "() -> 1")}
 
@@ -2731,7 +2646,7 @@ def generateTestClasses(): Unit = {
 
       def genShortcutsTests(im: ImportManager, packageName: String, className: String): String = {
 
-        val fail = im.getStatic("org.junit.Assert.fail");
+        val fail = im.getStatic("org.junit.Assert.fail")
 
         xs"""
           @$test
