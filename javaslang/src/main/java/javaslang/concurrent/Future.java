@@ -499,7 +499,7 @@ public interface Future<T> extends Value<T> {
     }
 
     @Override
-    default <U extends T> CompletableFuture<T> toCompletableFuture() {
+    default CompletableFuture<T> toCompletableFuture() {
         final CompletableFuture<T> future = new CompletableFuture<>();
         onSuccess(future::complete);
         onFailure(future::completeExceptionally);
