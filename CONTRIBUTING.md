@@ -341,3 +341,15 @@ git checkout master
 git branch -D bugfix-release-1.2.3
 git push origin :bugfix-release-1.2.3
 ```
+
+### Release notes
+
+For major, minor and bugfix releases we create release notes on Github.
+
+#### Useful commands
+
+The number of lines changed by author since a specific date:
+
+```bash
+git ls-files -z | xargs -0n1 git blame -w --since="3/18/2016" --line-porcelain | grep -a "^author " | sort -f | uniq -c | sort -n -r
+```
