@@ -776,7 +776,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     /**
      * Joins the string representations of this elements using a specific delimiter.
      * <p>
-     * This has the same effect as calling {@code mkString(delimiter, "", "")}.
+     * This has the same effect as calling {@code mkString("", delimiter, "")}.
      *
      * @param delimiter A delimiter string put between string representations of elements of this
      * @return A new String
@@ -788,7 +788,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     /**
      * Joins the string representations of this elements using a specific delimiter, prefix and suffix.
      * <p>
-     * Example: {@code List.of("a", "b", "c").mkString(", ", "Chars(", ")") = "Chars(a, b, c)"}
+     * Example: {@code List.of("a", "b", "c").mkString("Chars(", ", ", ")") = "Chars(a, b, c)"}
      *
      * @param prefix    prefix of the resulting string
      * @param delimiter A delimiter string put between string representations of elements of this
@@ -815,7 +815,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     /**
      * Joins the string representations of this elements using a specific delimiter.
      * <p>
-     * This has the same effect as calling {@code mkCharSeq(delimiter, "", "")}.
+     * This has the same effect as calling {@code mkCharSeq("", delimiter, "")}.
      *
      * @param delimiter A delimiter string put between string representations of elements of this
      * @return A new {@link CharSeq}
@@ -827,7 +827,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     /**
      * Joins the string representations of this elements using a specific delimiter, prefix and suffix.
      * <p>
-     * Example: {@code List.of("a", "b", "c").mkCharSeq(", ", "Chars(", ")") = CharSeq.of("Chars(a, b, c))"}
+     * Example: {@code List.of("a", "b", "c").mkCharSeq("Chars(", ", ", ")") = CharSeq.of("Chars(a, b, c))"}
      *
      * @param prefix    prefix of the resulting {@link CharSeq}
      * @param delimiter A delimiter string put between string representations of elements of this
