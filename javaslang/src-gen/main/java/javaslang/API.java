@@ -190,7 +190,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function0}
      */
-    public static <R> Function0<R> Function0(Function0<R> methodReference) {
+    public static <R> Function0<R> Function(Function0<R> methodReference) {
         return Function0.of(methodReference);
     }
 
@@ -202,7 +202,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function1}
      */
-    public static <T1, R> Function1<T1, R> Function1(Function1<T1, R> methodReference) {
+    public static <T1, R> Function1<T1, R> Function(Function1<T1, R> methodReference) {
         return Function1.of(methodReference);
     }
 
@@ -215,7 +215,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function2}
      */
-    public static <T1, T2, R> Function2<T1, T2, R> Function2(Function2<T1, T2, R> methodReference) {
+    public static <T1, T2, R> Function2<T1, T2, R> Function(Function2<T1, T2, R> methodReference) {
         return Function2.of(methodReference);
     }
 
@@ -229,7 +229,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function3}
      */
-    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> Function3(Function3<T1, T2, T3, R> methodReference) {
+    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> Function(Function3<T1, T2, T3, R> methodReference) {
         return Function3.of(methodReference);
     }
 
@@ -244,7 +244,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function4}
      */
-    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> Function4(Function4<T1, T2, T3, T4, R> methodReference) {
+    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> Function(Function4<T1, T2, T3, T4, R> methodReference) {
         return Function4.of(methodReference);
     }
 
@@ -260,7 +260,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function5}
      */
-    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> Function5(Function5<T1, T2, T3, T4, T5, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> Function(Function5<T1, T2, T3, T4, T5, R> methodReference) {
         return Function5.of(methodReference);
     }
 
@@ -277,7 +277,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function6}
      */
-    public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> Function6(Function6<T1, T2, T3, T4, T5, T6, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> Function(Function6<T1, T2, T3, T4, T5, T6, R> methodReference) {
         return Function6.of(methodReference);
     }
 
@@ -295,7 +295,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function7}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> Function7(Function7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> Function(Function7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
         return Function7.of(methodReference);
     }
 
@@ -314,7 +314,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function8}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> Function8(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> Function(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
         return Function8.of(methodReference);
     }
 
@@ -327,7 +327,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction0}
      */
-    public static <R> CheckedFunction0<R> CheckedFunction0(CheckedFunction0<R> methodReference) {
+    public static <R> CheckedFunction0<R> CheckedFunction(CheckedFunction0<R> methodReference) {
         return CheckedFunction0.of(methodReference);
     }
 
@@ -339,7 +339,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction1}
      */
-    public static <T1, R> CheckedFunction1<T1, R> CheckedFunction1(CheckedFunction1<T1, R> methodReference) {
+    public static <T1, R> CheckedFunction1<T1, R> CheckedFunction(CheckedFunction1<T1, R> methodReference) {
         return CheckedFunction1.of(methodReference);
     }
 
@@ -352,7 +352,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction2}
      */
-    public static <T1, T2, R> CheckedFunction2<T1, T2, R> CheckedFunction2(CheckedFunction2<T1, T2, R> methodReference) {
+    public static <T1, T2, R> CheckedFunction2<T1, T2, R> CheckedFunction(CheckedFunction2<T1, T2, R> methodReference) {
         return CheckedFunction2.of(methodReference);
     }
 
@@ -366,7 +366,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction3}
      */
-    public static <T1, T2, T3, R> CheckedFunction3<T1, T2, T3, R> CheckedFunction3(CheckedFunction3<T1, T2, T3, R> methodReference) {
+    public static <T1, T2, T3, R> CheckedFunction3<T1, T2, T3, R> CheckedFunction(CheckedFunction3<T1, T2, T3, R> methodReference) {
         return CheckedFunction3.of(methodReference);
     }
 
@@ -381,7 +381,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction4}
      */
-    public static <T1, T2, T3, T4, R> CheckedFunction4<T1, T2, T3, T4, R> CheckedFunction4(CheckedFunction4<T1, T2, T3, T4, R> methodReference) {
+    public static <T1, T2, T3, T4, R> CheckedFunction4<T1, T2, T3, T4, R> CheckedFunction(CheckedFunction4<T1, T2, T3, T4, R> methodReference) {
         return CheckedFunction4.of(methodReference);
     }
 
@@ -397,7 +397,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction5}
      */
-    public static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> CheckedFunction5(CheckedFunction5<T1, T2, T3, T4, T5, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> CheckedFunction(CheckedFunction5<T1, T2, T3, T4, T5, R> methodReference) {
         return CheckedFunction5.of(methodReference);
     }
 
@@ -414,7 +414,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction6}
      */
-    public static <T1, T2, T3, T4, T5, T6, R> CheckedFunction6<T1, T2, T3, T4, T5, T6, R> CheckedFunction6(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, R> CheckedFunction6<T1, T2, T3, T4, T5, T6, R> CheckedFunction(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> methodReference) {
         return CheckedFunction6.of(methodReference);
     }
 
@@ -432,7 +432,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction7}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction7(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
         return CheckedFunction7.of(methodReference);
     }
 
@@ -451,7 +451,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction8}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction8(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
         return CheckedFunction8.of(methodReference);
     }
 

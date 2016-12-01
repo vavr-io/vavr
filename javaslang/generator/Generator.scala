@@ -357,7 +357,7 @@ def generateMainClasses(): Unit = {
                * @param methodReference A method reference
                * @return A {@link Function$i}
                */
-              public static $fullGenerics Function$i$fullGenerics Function$i(Function$i$fullGenerics methodReference) {
+              public static $fullGenerics Function$i$fullGenerics Function(Function$i$fullGenerics methodReference) {
                   return Function$i.of(methodReference);
               }
             """
@@ -376,7 +376,7 @@ def generateMainClasses(): Unit = {
                * @param methodReference A method reference
                * @return A {@link CheckedFunction$i}
                */
-              public static $fullGenerics CheckedFunction$i$fullGenerics CheckedFunction$i(CheckedFunction$i$fullGenerics methodReference) {
+              public static $fullGenerics CheckedFunction$i$fullGenerics CheckedFunction(CheckedFunction$i$fullGenerics methodReference) {
                   return CheckedFunction$i.of(methodReference);
               }
             """
@@ -2567,12 +2567,12 @@ def generateTestClasses(): Unit = {
             xs"""
               @$test
               public void shouldFunction${i}ReturnNotNull() {
-                  assertThat(Function$i(($params) -> null)).isNotNull();
+                  assertThat(Function(($params) -> null)).isNotNull();
               }
 
               @$test
               public void shouldCheckedFunction${i}ReturnNotNull() {
-                  assertThat(CheckedFunction$i(($params) -> null)).isNotNull();
+                  assertThat(CheckedFunction(($params) -> null)).isNotNull();
               }
 
             """
