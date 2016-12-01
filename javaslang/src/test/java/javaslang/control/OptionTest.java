@@ -5,13 +5,19 @@
  */
 package javaslang.control;
 
-import javaslang.*;
+import javaslang.AbstractValueTest;
+import javaslang.Serializables;
 import javaslang.collection.Seq;
 import org.junit.Test;
-import static javaslang.API.*;
 
 import java.util.*;
-import java.util.function.*;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import static javaslang.API.*;
+import static javaslang.API.Option;
 
 public class OptionTest extends AbstractValueTest {
 
@@ -508,5 +514,23 @@ public class OptionTest extends AbstractValueTest {
     public void shouldPreserveSingletonWhenDeserializingNone() {
         final Object none = Serializables.deserialize(Serializables.serialize(Option.none()));
         assertThat(none == Option.none()).isTrue();
+    }
+
+    // -- toCompletableFuture
+
+    @Test
+    public void shouldConvertSomeToCompletableFuture()  {
+        final String some = "some";
+        final CompletableFuture<String> future = Option(some).toCompletableFuture();
+        assertThat(future.isDone());
+        assertThat(Try.of(future::get).get()).isEqualTo(some);
+    }
+
+    @Test
+    public void shouldConvertNoneToFailedCompletableFuture() {
+
+        final CompletableFuture<Object> future = None().toCompletableFuture();
+        assertThat(future.isDone());
+        assertThat(future.isCompletedExceptionally());
     }
 }
