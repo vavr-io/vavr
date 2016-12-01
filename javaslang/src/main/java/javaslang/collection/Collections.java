@@ -62,16 +62,20 @@ final class Collections {
     static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
         Objects.requireNonNull(classifier, "classifier is null");
         Objects.requireNonNull(mapper, "mapper is null");
-        final java.util.Map<C, Collection<T>> mutableResults = new java.util.LinkedHashMap<>(source.isTraversableAgain() ? source.size() : 16);
-        for (T value : source) {
-            final C key = classifier.apply(value);
-            mutableResults.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
-        }
         Map<C, R> results = LinkedHashMap.empty();
-        for (java.util.Map.Entry<C, Collection<T>> entry : mutableResults.entrySet()) {
+        for (java.util.Map.Entry<? extends C, Collection<T>> entry : groupBy(source, classifier)) {
             results = results.put(entry.getKey(), mapper.apply(entry.getValue()));
         }
         return results;
+
+    }
+    private static <T, C> java.util.Set<java.util.Map.Entry<C, Collection<T>>> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier) {
+        final java.util.Map<C, Collection<T>> results = new java.util.LinkedHashMap<>(source.isTraversableAgain() ? source.size() : 16);
+        for (T value : source) {
+            final C key = classifier.apply(value);
+            results.computeIfAbsent(key, k -> new ArrayList<>()).add(value);
+        }
+        return results.entrySet();
     }
 
     // hashes the elements of an iterable
@@ -238,20 +242,24 @@ final class Collections {
         }
 
         @SuppressWarnings("unchecked")
-        T[] toArray() {
-            return (T[]) asArray(iterator(), size());
+        Object[] toArray() {
+            if (iterable instanceof Collection<?>) {
+                return ((Collection<? extends T>) iterable).toArray();
+            } else {
+                return asArray(iterator(), size());
+            }
         }
     }
 
     @SuppressWarnings("unchecked")
     static <T> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
+        return isTraversableAgain(iterable) ? withSizeTraversable(iterable) : withSizeTraversable(List.ofAll(iterable));
+    }
+    private static <T> IterableWithSize<T> withSizeTraversable(Iterable<? extends T> iterable) {
         if (iterable instanceof Collection) {
             return new IterableWithSize<>(iterable, ((Collection<?>) iterable).size());
-        } else if (isTraversableAgain(iterable)) {
-            return new IterableWithSize<>(iterable, ((Traversable<?>) iterable).size());
         } else {
-            final List<? extends T> list = List.ofAll(iterable);
-            return new IterableWithSize<>(list, list.size());
+            return new IterableWithSize<>(iterable, ((Traversable<?>) iterable).size());
         }
     }
 }

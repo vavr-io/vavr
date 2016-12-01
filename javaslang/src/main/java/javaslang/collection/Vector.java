@@ -14,8 +14,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static javaslang.collection.ArrayType.asArray;
 import static javaslang.collection.Collections.areEqual;
+import static javaslang.collection.Collections.withSize;
 
 /**
  * Vector is the default Seq implementation that provides effectively constant time access to any element.
@@ -33,10 +33,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     private static final Vector<?> EMPTY = new Vector<>(BitMappedTrie.empty());
 
     final BitMappedTrie<T> trie;
-    private Vector(BitMappedTrie<T> trie) {
-        this.trie = trie;
-        assert (EMPTY == null) || (length() > 0);
-    }
+    private Vector(BitMappedTrie<T> trie) { this.trie = trie; }
 
     @SuppressWarnings("ObjectEquality")
     private Vector<T> wrap(BitMappedTrie<T> trie) {
@@ -161,8 +158,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         if (iterable instanceof Vector) {
             return (Vector<T>) iterable;
         } else {
-            final BitMappedTrie<T> trie = BitMappedTrie.ofAll(asArray(iterable));
-            return ofAll(trie);
+            final Object[] values = withSize(iterable).toArray();
+            return ofAll(BitMappedTrie.ofAll(values));
         }
     }
 
