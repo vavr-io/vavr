@@ -16,7 +16,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static javaslang.API.Tuple;
-import static javaslang.API.Vector;
 import static javaslang.collection.BitMappedTrie.BRANCHING_FACTOR;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -229,7 +228,7 @@ public class VectorPropertyTest {
                 Seq<Tuple2<Seq<Object>, Vector<Object>>> history = Array.empty();
 
                 if (percent(random) < 20) {
-                    expected = Array.ofAll(Vector(randomValues(random, 100)).filter(v -> ((Object) v) instanceof Integer));
+                    expected = Array.ofAll(Vector.ofAll(randomValues(random, 100)).filter(v -> v instanceof Integer));
                     actual = (percent(random) < 30) ? Vector.narrow(Vector.ofAll(ArrayType.<int[]> asPrimitives(int.class, expected))) : Vector.ofAll(expected);
                     assertAreEqual(expected, actual);
                     history = history.append(Tuple(expected, actual));
