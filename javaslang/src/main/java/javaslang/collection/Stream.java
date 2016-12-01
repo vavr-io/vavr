@@ -139,7 +139,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @return A new {@code Stream}
      */
     static <T> Stream<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
-        return Iterator.concat(iterables).toStream();
+        return Iterator.<T>concat(iterables).toStream();
     }
 
     /**
