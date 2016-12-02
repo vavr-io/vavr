@@ -499,7 +499,6 @@ public class TupleTest {
         assertThat(narrowTuple._8()).isEqualTo(new BigDecimal(7));
     }
 
-
     // -- nested tuples
 
     @Test

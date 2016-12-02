@@ -5,14 +5,13 @@
  */
 package javaslang.collection.euler;
 
-import org.junit.Test;
-
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
-import static javaslang.collection.euler.Utils.factors;
+import org.junit.Test;
 
+import static javaslang.collection.euler.Utils.factors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler33Test {

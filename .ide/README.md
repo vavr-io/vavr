@@ -1,10 +1,16 @@
 IntelliJ IDEA
 -------------
 
-The following IntelliJ IDEA settings are exported (File/Export Setting):
+The following IntelliJ IDEA settings contained:
 
-* Code Style
-* Editor, Inspection profiles
-* File templates
+![Export Settings](./img/idea-settings.png)
 
-See also [issue #133](https://github.com/javaslang/javaslang/issues/133)).
+We reformat only .java files.
+
+![Reformat Code](./img/idea-reformat-code.png)
+
+After the code is reformatted we have to generate sources:
+
+```bash
+mvn clean package -DskipTests
+```

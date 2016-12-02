@@ -108,41 +108,41 @@ public class ArbitraryTest {
     public void shouldCreateNonDistinctArbitrary() {
         final Gen<String> arbitrary = Arbitrary.string(Gen.choose('a', 'b')).apply(2);
         List.range(0, 1000)
-            .map(i -> arbitrary.apply(RANDOM))
-            .groupBy(Function1.identity())
-            .forEach((key, value) -> assertThat(value.length())
-                    .describedAs(key)
-                    .isGreaterThan(1));
+                .map(i -> arbitrary.apply(RANDOM))
+                .groupBy(Function1.identity())
+                .forEach((key, value) -> assertThat(value.length())
+                        .describedAs(key)
+                        .isGreaterThan(1));
     }
 
     @Test
     public void shouldCreateDistinctArbitrary() {
         final Gen<String> distinctArbitrary = Arbitrary.string(Gen.choose('a', 'b')).distinct().apply(100);
         List.range(0, 1000)
-            .map(i -> distinctArbitrary.apply(RANDOM))
-            .groupBy(Function1.identity())
-            .forEach((key, value) -> assertThat(value.length())
-                    .describedAs(key)
-                    .isEqualTo(1));
+                .map(i -> distinctArbitrary.apply(RANDOM))
+                .groupBy(Function1.identity())
+                .forEach((key, value) -> assertThat(value.length())
+                        .describedAs(key)
+                        .isEqualTo(1));
     }
 
     @Test
     public void shouldCreateDistinctByArbitrary() {
         final Gen<String> distinctByArbitrary = Arbitrary.string(Gen.choose('a', 'b'))
-                                                         .distinctBy(Comparator.naturalOrder()).apply(100);
+                .distinctBy(Comparator.naturalOrder()).apply(100);
         List.range(0, 10000)
-            .map(i -> distinctByArbitrary.apply(RANDOM))
-            .groupBy(Function1.identity())
-            .forEach((key, value) -> assertThat(value.length())
-                    .describedAs(key)
-                    .isEqualTo(1));
+                .map(i -> distinctByArbitrary.apply(RANDOM))
+                .groupBy(Function1.identity())
+                .forEach((key, value) -> assertThat(value.length())
+                        .describedAs(key)
+                        .isEqualTo(1));
     }
 
     @Test
     public void shouldCreateInterspersedFixedContentArbitrary() {
         final Gen<String> arbitrary = Arbitrary.of("test")
-                                               .intersperse(Arbitrary.of("content"))
-                                               .apply(10);
+                .intersperse(Arbitrary.of("content"))
+                .apply(10);
         for (int i = 0; i < 100; i++) {
             assertThat(arbitrary.apply(RANDOM)).isIn("test", "content");
         }
@@ -151,11 +151,11 @@ public class ArbitraryTest {
     @Test
     public void shouldCreateInterspersedFixedContentArbitraryWithConstantOrder() {
         final Gen<String> arbitrary = Arbitrary.of("test")
-                                               .intersperse(Arbitrary.of("content"))
-                                               .apply(10);
+                .intersperse(Arbitrary.of("content"))
+                .apply(10);
         final Iterator<Stream<String>> generatedStringPairs = Stream.range(0, 10)
-                                                                    .map(i -> arbitrary.apply(RANDOM))
-                                                                    .grouped(2);
+                .map(i -> arbitrary.apply(RANDOM))
+                .grouped(2);
         for (Stream<String> stringPairs : generatedStringPairs) {
             assertThat(stringPairs.mkString(",")).isEqualTo("test,content");
         }
@@ -165,8 +165,8 @@ public class ArbitraryTest {
     @Test
     public void shouldCreateCharArrayArbitrary() {
         final Gen<String> arbitrary = Arbitrary.string(Gen.choose("test".toCharArray()))
-                                               .filter(s -> !"".equals(s))
-                                               .apply(1);
+                .filter(s -> !"".equals(s))
+                .apply(1);
         for (int i = 0; i < 100; i++) {
             assertThat(arbitrary.apply(RANDOM)).isIn("t", "e", "s");
         }

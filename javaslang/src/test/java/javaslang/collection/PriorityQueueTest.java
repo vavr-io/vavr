@@ -261,7 +261,9 @@ public class PriorityQueueTest extends AbstractTraversableTest {
                 /* Delete */
                 if (random.nextInt() % 5 == 0) {
                     if (!mutablePriorityQueue.isEmpty()) { mutablePriorityQueue.poll(); }
-                    if (!functionalPriorityQueue.isEmpty()) { functionalPriorityQueue = functionalPriorityQueue.tail(); }
+                    if (!functionalPriorityQueue.isEmpty()) {
+                        functionalPriorityQueue = functionalPriorityQueue.tail();
+                    }
 
                     assertMinimumsAreEqual(mutablePriorityQueue, functionalPriorityQueue);
                 }

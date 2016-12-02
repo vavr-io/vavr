@@ -13,7 +13,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -278,13 +281,13 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @Test
     public void shouldConstructFromEntries() {
         Multimap<String, Integer> map = mapOfEntries(entry("1", 1), entry("2", 2), entry("3", 3));
-        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
     @Test
     public void shouldConstructFromPairs() {
         Multimap<String, Integer> map = mapOfPairs("1", 1, "2", 2, "3", 3);
-        assertThat(map).isEqualTo(this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
     // -- toString
@@ -444,7 +447,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         Multimap<Integer, Integer> m3 = emptyIntInt().put(3, 3).put(4, 4);
         assertThat(emptyIntInt().merge(m2)).isEqualTo(m2);
         assertThat(m2.merge(emptyIntInt())).isEqualTo(m2);
-        if(containerType == Multimap.ContainerType.SEQ) {
+        if (containerType == Multimap.ContainerType.SEQ) {
             assertThat(m1.merge(m2)).isEqualTo(emptyIntInt().put(1, 1).put(1, 1).put(2, 2).put(4, 4));
             assertThat(m1.merge(m3)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
         } else {
@@ -711,7 +714,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsIfThisIsSmaller() {
-        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object>emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object> emptyMap()
                 .put(1, 1)
                 .put(2, 2)
                 .zipAll(of("a", "b", "c"), Tuple.of(9, 10), "z");
@@ -722,7 +725,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsIfThisIsMoreSmaller() {
-        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object>emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object> emptyMap()
                 .put(1, 1)
                 .put(2, 2)
                 .zipAll(of("a", "b", "c", "d"), Tuple.of(9, 10), "z");
@@ -733,7 +736,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsIfThatIsSmaller() {
-        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object>emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object> emptyMap()
                 .put(1, 1)
                 .put(2, 2)
                 .put(3, 3)
@@ -745,7 +748,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsIfThatIsMoreSmaller() {
-        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object>emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object> emptyMap()
                 .put(1, 1)
                 .put(2, 2)
                 .put(3, 3)
@@ -758,7 +761,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldZipAllNonNilsOfSameSize() {
-        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object>emptyMap()
+        final Seq<Tuple2<Tuple2<Integer, Object>, String>> actual = this.<Integer, Object> emptyMap()
                 .put(1, 1)
                 .put(2, 2)
                 .put(3, 3)
@@ -777,7 +780,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Override
     public void shouldComputeDistinctOfNonEmptyTraversable() {
-        final Multimap<Integer, Object> testee = this.<Integer, Object>emptyMap().put(1, 1).put(2, 2).put(3, 3);
+        final Multimap<Integer, Object> testee = this.<Integer, Object> emptyMap().put(1, 1).put(2, 2).put(3, 3);
         assertThat(testee.distinct()).isEqualTo(testee);
     }
 
@@ -872,7 +875,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public void shouldHoldEqualsElements() {
         Multimap<Integer, String> multimap = emptyMap();
         multimap = multimap.put(1, "a").put(1, "b").put(1, "b");
-        if(containerType == Multimap.ContainerType.SEQ) {
+        if (containerType == Multimap.ContainerType.SEQ) {
             assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b), (1, b))");
         } else {
             assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b))");

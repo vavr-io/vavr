@@ -8,7 +8,10 @@ package javaslang.idiom;
 import javaslang.JmhRunner;
 import javaslang.collection.Array;
 import org.junit.Test;
-import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 
 import java.util.ArrayList;
 import java.util.Arrays;

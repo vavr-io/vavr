@@ -766,7 +766,7 @@ public interface Tree<T> extends Traversable<T> {
             } else if (o instanceof Node) {
                 final Node<?> that = (Node<?>) o;
                 return Objects.equals(this.getValue(), that.getValue())
-                       && Objects.equals(this.getChildren(), that.getChildren());
+                        && Objects.equals(this.getChildren(), that.getChildren());
             } else {
                 return false;
             }
@@ -794,8 +794,8 @@ public interface Tree<T> extends Traversable<T> {
             for (List<Node<T>> it = children; !it.isEmpty(); it = it.tail()) {
                 final boolean isLast = it.tail().isEmpty();
                 builder.append('\n')
-                       .append(indent)
-                       .append(isLast ? "└──" : "├──");
+                        .append(indent)
+                        .append(isLast ? "└──" : "├──");
                 it.head().drawAux(indent + (isLast ? "   " : "│  "), builder);
             }
         }
@@ -1131,7 +1131,7 @@ interface TreeModule {
     final class Unzip {
 
         static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> apply(Node<T> node,
-                                                            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+                Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
             final Tuple2<? extends T1, ? extends T2> value = unzipper.apply(node.getValue());
             final List<Tuple2<Node<T1>, Node<T2>>> children = node
                     .getChildren()
@@ -1142,10 +1142,10 @@ interface TreeModule {
         }
 
         static <T, T1, T2, T3> Tuple3<Node<T1>, Node<T2>, Node<T3>> apply3(Node<T> node,
-                                                                           Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+                Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
             final List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
-                                                                            .map(child -> Unzip.apply3(child, unzipper));
+                    .map(child -> Unzip.apply3(child, unzipper));
             final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
             final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
             final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));

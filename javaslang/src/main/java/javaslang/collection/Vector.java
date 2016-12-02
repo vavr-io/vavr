@@ -566,8 +566,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     public Vector<T> appendAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         return isEmpty()
-                ? ofAll(iterable)
-                : new Vector<>(trie.appendAll(iterable));
+               ? ofAll(iterable)
+               : new Vector<>(trie.appendAll(iterable));
     }
 
     @Override
@@ -710,8 +710,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
             final Vector<T> begin = take(index).appendAll(elements);
             final Vector<T> end = drop(index);
             return (begin.size() > end.size())
-                    ? begin.appendAll(end)
-                    : end.prependAll(begin);
+                   ? begin.appendAll(end)
+                   : end.prependAll(begin);
         } else {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Vector of length " + length());
         }
@@ -825,8 +825,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     public Vector<T> prependAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         return isEmpty()
-                ? ofAll(iterable)
-                : new Vector<>(trie.prependAll(iterable));
+               ? ofAll(iterable)
+               : new Vector<>(trie.prependAll(iterable));
     }
 
     @Override
@@ -867,8 +867,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
             final Vector<T> begin = take(index);
             final Vector<T> end = drop(index + 1);
             return (begin.size() > end.size())
-                    ? begin.appendAll(end)
-                    : end.prependAll(begin);
+                   ? begin.appendAll(end)
+                   : end.prependAll(begin);
         } else {
             throw new IndexOutOfBoundsException("removeAt(" + index + ")");
         }
@@ -931,10 +931,11 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public <U> Vector<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return  Collections.scanRight(this, zero, operation, Iterator::toVector);
+        return Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
-    @Override public Vector<T> shuffle() {
+    @Override
+    public Vector<T> shuffle() {
         return Collections.shuffle(this, Vector::ofAll);
     }
 

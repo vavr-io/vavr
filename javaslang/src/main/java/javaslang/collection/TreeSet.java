@@ -188,7 +188,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(Iterable<? extends T> values) {
         Objects.requireNonNull(values, "values is null");
-        if(values instanceof TreeSet) {
+        if (values instanceof TreeSet) {
             return (TreeSet<T>) values;
         } else {
             return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();
@@ -203,8 +203,8 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
             return (TreeSet<T>) values;
         } else {
             return values.iterator().hasNext()
-                    ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
-                    : (TreeSet<T>) empty();
+                   ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
+                   : (TreeSet<T>) empty();
         }
     }
 
@@ -618,7 +618,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public <U> TreeSet<U> flatMap(Comparator<? super U> comparator,
-                                  Function<? super T, ? extends Iterable<? extends U>> mapper) {
+            Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
     }

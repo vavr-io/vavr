@@ -227,7 +227,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldNarrowMap() {
-        final TreeMultimap<Integer, Number> int2doubleMap = (TreeMultimap<Integer, Number>) this.<Integer, Number>emptyMap().put(1, 1.0d);
+        final TreeMultimap<Integer, Number> int2doubleMap = (TreeMultimap<Integer, Number>) this.<Integer, Number> emptyMap().put(1, 1.0d);
         final TreeMultimap<Number, Number> number2numberMap = TreeMultimap.narrow(int2doubleMap);
         final int actual = number2numberMap.put(2, new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);

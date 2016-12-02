@@ -5,15 +5,21 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
-import javaslang.collection.RedBlackTreeModule.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
+import javaslang.Tuple3;
+import javaslang.collection.RedBlackTreeModule.Empty;
+import javaslang.collection.RedBlackTreeModule.Node;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 
 import static javaslang.collection.Comparators.naturalComparator;
-import static javaslang.collection.RedBlackTree.Color.*;
+import static javaslang.collection.RedBlackTree.Color.BLACK;
+import static javaslang.collection.RedBlackTree.Color.RED;
 
 /**
  * Purely functional Red/Black Tree, inspired by <a href="https://github.com/kazu-yamamoto/llrbtree/blob/master/Data/Set/RBTree.hs">Kazu Yamamoto's Haskell implementation</a>.
@@ -495,7 +501,7 @@ interface RedBlackTreeModule {
         }
 
         private static <T> Node<T> balanceLeft(Color color, int blackHeight, RedBlackTree<T> left, T value,
-                                               RedBlackTree<T> right, Empty<T> empty) {
+                RedBlackTree<T> right, Empty<T> empty) {
             if (color == BLACK) {
                 if (!left.isEmpty()) {
                     final Node<T> ln = (Node<T>) left;
@@ -525,7 +531,7 @@ interface RedBlackTreeModule {
         }
 
         private static <T> Node<T> balanceRight(Color color, int blackHeight, RedBlackTree<T> left, T value,
-                                                RedBlackTree<T> right, Empty<T> empty) {
+                RedBlackTree<T> right, Empty<T> empty) {
             if (color == BLACK) {
                 if (!right.isEmpty()) {
                     final Node<T> rn = (Node<T>) right;
@@ -658,14 +664,14 @@ interface RedBlackTreeModule {
                 if (comparison < 0) {
                     final Node<T> newLeft = insert(node.left, value);
                     return (newLeft == node.left)
-                            ? node
-                            : Node.balanceLeft(node.color, node.blackHeight, newLeft, node.value, node.right,
+                           ? node
+                           : Node.balanceLeft(node.color, node.blackHeight, newLeft, node.value, node.right,
                             node.empty);
                 } else if (comparison > 0) {
                     final Node<T> newRight = insert(node.right, value);
                     return (newRight == node.right)
-                            ? node
-                            : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight,
+                           ? node
+                           : Node.balanceRight(node.color, node.blackHeight, node.left, node.value, newRight,
                             node.empty);
                 } else {
                     // DEV-NOTE: Even if there is no _comparison_ difference, the object may not be _equal_.
@@ -812,7 +818,7 @@ interface RedBlackTreeModule {
         }
 
         private static <T> Tuple2<Node<T>, Boolean> unbalancedLeft(Color color, int blackHeight, RedBlackTree<T> left,
-                                                                   T value, RedBlackTree<T> right, Empty<T> empty) {
+                T value, RedBlackTree<T> right, Empty<T> empty) {
             if (!left.isEmpty()) {
                 final Node<T> ln = (Node<T>) left;
                 if (ln.color == BLACK) {
@@ -833,7 +839,7 @@ interface RedBlackTreeModule {
         }
 
         private static <T> Tuple2<Node<T>, Boolean> unbalancedRight(Color color, int blackHeight, RedBlackTree<T> left,
-                                                                    T value, RedBlackTree<T> right, Empty<T> empty) {
+                T value, RedBlackTree<T> right, Empty<T> empty) {
             if (!right.isEmpty()) {
                 final Node<T> rn = (Node<T>) right;
                 if (rn.color == BLACK) {

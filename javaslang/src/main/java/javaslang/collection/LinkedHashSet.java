@@ -897,7 +897,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     private static <T> LinkedHashMap<T, T> addAll(LinkedHashMap<T, T> initial,
-                                                  Iterable<? extends T> additional) {
+            Iterable<? extends T> additional) {
         LinkedHashMap<T, T> that = initial;
         for (T t : additional) {
             that = that.put(t, t);

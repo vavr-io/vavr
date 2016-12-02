@@ -9,10 +9,10 @@ import javaslang.Function1;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import static javaslang.collection.euler.Utils.file;
-import static javaslang.collection.euler.Utils.readLines;
 import org.junit.Test;
 
+import static javaslang.collection.euler.Utils.file;
+import static javaslang.collection.euler.Utils.readLines;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler42Test {

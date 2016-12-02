@@ -902,7 +902,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      */
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
-        if (offset < 0) return false;
+        if (offset < 0) { return false; }
         Iterator<T> i = this.iterator().drop(offset);
         java.util.Iterator<? extends T> j = that.iterator();
         while (i.hasNext() && j.hasNext()) {

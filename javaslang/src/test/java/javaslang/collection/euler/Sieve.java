@@ -34,8 +34,8 @@ final class Sieve {
                     ),
             (sieve, limit, root) -> Stream.rangeClosed(5, root)
                     .foldLeft(sieve, (xs, r) -> xs.contains(r)
-                            ? Stream.rangeBy(r * r, limit, r * r).foldLeft(xs, Set::remove)
-                            : xs
+                                                ? Stream.rangeBy(r * r, limit, r * r).foldLeft(xs, Set::remove)
+                                                : xs
                     )
     );
 

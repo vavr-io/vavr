@@ -5,7 +5,6 @@
  */
 package javaslang.collection.euler;
 
-
 import javaslang.Function1;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;

@@ -6,15 +6,14 @@
 package javaslang.collection.euler;
 
 import javaslang.API;
-import static javaslang.API.$;
-import static javaslang.API.Case;
 import javaslang.Function1;
-import org.junit.Test;
-
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import static javaslang.collection.euler.Utils.divisors;
+import org.junit.Test;
 
+import static javaslang.API.$;
+import static javaslang.API.Case;
+import static javaslang.collection.euler.Utils.divisors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

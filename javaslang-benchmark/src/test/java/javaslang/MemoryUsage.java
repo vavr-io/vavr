@@ -47,7 +47,7 @@ public class MemoryUsage {
         ).map(CharSeq::of)));
     }
     private static String toHumanReadableByteSize(Object target) { return FORMAT.format(byteSize(target)); }
-    private static long byteSize(Object target)                  { return GraphLayout.parseInstance(target).totalSize(); }
+    private static long byteSize(Object target) { return GraphLayout.parseInstance(target).totalSize(); }
 
     private static HashMap<Predicate<String>, String> names = HashMap.ofEntries(
             Tuple.of("^java\\.", "Java mutable @ "),

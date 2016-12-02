@@ -98,7 +98,7 @@ public interface BitSet<T> extends SortedSet<T> {
 
     @SuppressWarnings("RedundantTypeArguments")
     static <T extends Enum<T>> Builder<T> withEnum(Class<T> enumClass) {
-        return new Builder<>(i -> enumClass.getEnumConstants()[i], Enum<T> ::ordinal);
+        return new Builder<>(i -> enumClass.getEnumConstants()[i], Enum<T>::ordinal);
     }
 
     static Builder<Character> withCharacters() {

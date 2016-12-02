@@ -5,13 +5,11 @@
  */
 package javaslang.collection.euler;
 
-import org.junit.Test;
-
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
+import org.junit.Test;
 
 import static javaslang.API.*;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler38Test {

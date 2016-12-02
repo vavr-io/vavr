@@ -418,12 +418,12 @@ public class OptionTest extends AbstractValueTest {
     public void shouldApplyTransformFunctionToSome() {
         Option<Integer> option = Option.some(1);
         Function<Option<Integer>, String> f = o -> o.get().toString().concat("-transformed");
-        assertThat(option.<String>transform(f)).isEqualTo("1-transformed");
+        assertThat(option.<String> transform(f)).isEqualTo("1-transformed");
     }
 
     @Test
     public void shouldHandleTransformOnNone() {
-        assertThat(Option.none().<String>transform(self -> self.isEmpty() ? "ok" : "failed")).isEqualTo("ok");
+        assertThat(Option.none().<String> transform(self -> self.isEmpty() ? "ok" : "failed")).isEqualTo("ok");
     }
 
     // -- iterator
@@ -519,7 +519,7 @@ public class OptionTest extends AbstractValueTest {
     // -- toCompletableFuture
 
     @Test
-    public void shouldConvertSomeToCompletableFuture()  {
+    public void shouldConvertSomeToCompletableFuture() {
         final String some = "some";
         final CompletableFuture<String> future = Option(some).toCompletableFuture();
         assertThat(future.isDone());

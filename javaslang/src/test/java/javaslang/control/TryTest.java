@@ -463,7 +463,7 @@ public class TryTest extends AbstractValueTest {
     // -- toCompletableFuture
 
     @Test
-    public void shouldConvertSuccessToCompletableFuture()  {
+    public void shouldConvertSuccessToCompletableFuture() {
         CompletableFuture<String> future = success().toCompletableFuture();
         assertThat(future.isDone());
         assertThat(Try.of(future::get).get()).isEqualTo(success().get());
@@ -784,15 +784,13 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldFilterNonMatchingPredicateAndDefaultThrowableSupplierOnSuccess()
-    {
+    public void shouldFilterNonMatchingPredicateAndDefaultThrowableSupplierOnSuccess() {
         assertThat(success().filter(s -> false).getCause())
                 .isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
-    public void shouldFilterNonMatchingPredicateAndCustomThrowableSupplierOnSuccess()
-    {
+    public void shouldFilterNonMatchingPredicateAndCustomThrowableSupplierOnSuccess() {
         assertThat(success().filter(s -> false, () -> new IllegalArgumentException()).getCause())
                 .isInstanceOf(IllegalArgumentException.class);
     }

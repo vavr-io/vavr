@@ -23,7 +23,7 @@ import static javaslang.JmhRunner.create;
 import static javaslang.JmhRunner.getRandomValues;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
-@SuppressWarnings({"UnnecessaryFullyQualifiedName", "UnnecessarilyQualifiedInnerClassAccess"})
+@SuppressWarnings({ "UnnecessaryFullyQualifiedName", "UnnecessarilyQualifiedInnerClassAccess" })
 public class PriorityQueueBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
             Enqueue.class,
@@ -46,7 +46,7 @@ public class PriorityQueueBenchmark {
         static final Ordering<Integer> SCALA_ORDERING = Ordering$.MODULE$.comparatorToOrdering(Integer::compareTo);
         static final Order<Integer> SCALAZ_ORDER = Order$.MODULE$.fromScalaOrdering(SCALA_ORDERING);
 
-        @Param({"10", "100", "1000"})
+        @Param({ "10", "100", "1000" })
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;
@@ -69,7 +69,7 @@ public class PriorityQueueBenchmark {
 
     public static class Enqueue extends Base {
         @Benchmark
-        @SuppressWarnings({"Convert2streamapi", "ManualArrayToCollectionCopy"})
+        @SuppressWarnings({ "Convert2streamapi", "ManualArrayToCollectionCopy" })
         public Object java_mutable() {
             final java.util.PriorityQueue<Integer> values = new java.util.PriorityQueue<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
@@ -80,7 +80,7 @@ public class PriorityQueueBenchmark {
         }
 
         @Benchmark
-        @SuppressWarnings({"Convert2streamapi", "ManualArrayToCollectionCopy"})
+        @SuppressWarnings({ "Convert2streamapi", "ManualArrayToCollectionCopy" })
         public Object java_blocking_mutable() {
             final java.util.concurrent.PriorityBlockingQueue<Integer> values = new java.util.concurrent.PriorityBlockingQueue<>(CONTAINER_SIZE);
             for (Integer element : ELEMENTS) {
@@ -148,8 +148,8 @@ public class PriorityQueueBenchmark {
                 }
 
                 assert (javaMutable.size() == state.CONTAINER_SIZE)
-                       && (javaBlockingMutable.size() == state.CONTAINER_SIZE)
-                       && (scalaMutable.size() == state.CONTAINER_SIZE);
+                        && (javaBlockingMutable.size() == state.CONTAINER_SIZE)
+                        && (scalaMutable.size() == state.CONTAINER_SIZE);
             }
 
             @TearDown(Level.Invocation)

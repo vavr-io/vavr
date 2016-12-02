@@ -151,7 +151,7 @@ public class GenTest {
 
     @Test
     public void shouldChooseFromASingleArray() throws Exception {
-        Integer[] i = {1};
+        Integer[] i = { 1 };
         assertForAll(() -> Gen.choose(i).apply(RANDOM), c -> c == 1);
     }
 

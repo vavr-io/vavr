@@ -899,7 +899,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     }
 
     private static <T> HashArrayMappedTrie<T, T> addAll(HashArrayMappedTrie<T, T> initial,
-                                                        Iterable<? extends T> additional) {
+            Iterable<? extends T> additional) {
         HashArrayMappedTrie<T, T> that = initial;
         for (T t : additional) {
             that = that.put(t, t);

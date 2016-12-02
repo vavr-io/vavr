@@ -6,10 +6,10 @@
 package javaslang.collection;
 
 import javaslang.Serializables;
+import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.control.Option;
 import javaslang.control.Try;
-import javaslang.Tuple2;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -522,10 +522,10 @@ public class StreamTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldRightSimpleStream() {
         assertThat(
-            Stream.unfoldRight(10, x -> x == 0
-                              ? Option.none()
-                              : Option.of(new Tuple2<>(x, x-1))))
-            .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+                Stream.unfoldRight(10, x -> x == 0
+                                            ? Option.none()
+                                            : Option.of(new Tuple2<>(x, x - 1))))
+                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
     }
 
     @Test
@@ -536,10 +536,10 @@ public class StreamTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldLeftSimpleStream() {
         assertThat(
-            Stream.unfoldLeft(10, x -> x == 0
-                             ? Option.none()
-                             : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                Stream.unfoldLeft(10, x -> x == 0
+                                           ? Option.none()
+                                           : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     @Test
@@ -550,10 +550,10 @@ public class StreamTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldSimpleStream() {
         assertThat(
-            Stream.unfold(10, x -> x == 0
-                          ? Option.none()
-                          : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                Stream.unfold(10, x -> x == 0
+                                       ? Option.none()
+                                       : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     // -- toString

@@ -8,7 +8,6 @@ package javaslang.collection.euler;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
-
 import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

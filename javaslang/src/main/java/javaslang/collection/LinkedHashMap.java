@@ -111,32 +111,32 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Returns a {@code LinkedHashMap}, from entries mapped from stream.
      *
-     * @param stream the source stream
+     * @param stream      the source stream
      * @param entryMapper the entry mapper
-     * @param <T> The stream type
-     * @param <K> The key type
-     * @param <V> The value type
+     * @param <T>         The stream type
+     * @param <K>         The key type
+     * @param <V>         The value type
      * @return A new Map
      */
     public static <T, K, V> LinkedHashMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
-                                                      Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
+            Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
         return Maps.ofStream(empty(), stream, entryMapper);
     }
 
     /**
      * Returns a {@code LinkedHashMap}, from entries mapped from stream.
      *
-     * @param stream the source stream
-     * @param keyMapper the key mapper
+     * @param stream      the source stream
+     * @param keyMapper   the key mapper
      * @param valueMapper the value mapper
-     * @param <T> The stream type
-     * @param <K> The key type
-     * @param <V> The value type
+     * @param <T>         The stream type
+     * @param <K>         The key type
+     * @param <V>         The value type
      * @return A new Map
      */
     public static <T, K, V> LinkedHashMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
-                                                      Function<? super T, ? extends K> keyMapper,
-                                                      Function<? super T, ? extends V> valueMapper) {
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper) {
         return Maps.ofStream(empty(), stream, keyMapper, valueMapper);
     }
 
@@ -158,10 +158,10 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
-     * @param k1 a key for the map
-     * @param v1 the value for k1
-     * @param k2 a key for the map
-     * @param v2 the value for k2
+     * @param k1  a key for the map
+     * @param v1  the value for k1
+     * @param k2  a key for the map
+     * @param v2  the value for k2
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -175,12 +175,12 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
-     * @param k1 a key for the map
-     * @param v1 the value for k1
-     * @param k2 a key for the map
-     * @param v2 the value for k2
-     * @param k3 a key for the map
-     * @param v3 the value for k3
+     * @param k1  a key for the map
+     * @param v1  the value for k1
+     * @param k2  a key for the map
+     * @param v2  the value for k2
+     * @param k3  a key for the map
+     * @param v3  the value for k3
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -194,14 +194,14 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
-     * @param k1 a key for the map
-     * @param v1 the value for k1
-     * @param k2 a key for the map
-     * @param v2 the value for k2
-     * @param k3 a key for the map
-     * @param v3 the value for k3
-     * @param k4 a key for the map
-     * @param v4 the value for k4
+     * @param k1  a key for the map
+     * @param v1  the value for k1
+     * @param k2  a key for the map
+     * @param v2  the value for k2
+     * @param k3  a key for the map
+     * @param v3  the value for k3
+     * @param k4  a key for the map
+     * @param v4  the value for k4
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -215,16 +215,16 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
-     * @param k1 a key for the map
-     * @param v1 the value for k1
-     * @param k2 a key for the map
-     * @param v2 the value for k2
-     * @param k3 a key for the map
-     * @param v3 the value for k3
-     * @param k4 a key for the map
-     * @param v4 the value for k4
-     * @param k5 a key for the map
-     * @param v5 the value for k5
+     * @param k1  a key for the map
+     * @param v1  the value for k1
+     * @param k2  a key for the map
+     * @param v2  the value for k2
+     * @param k3  a key for the map
+     * @param v3  the value for k3
+     * @param k4  a key for the map
+     * @param v4  the value for k4
+     * @param k5  a key for the map
+     * @param v5  the value for k5
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -238,18 +238,18 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
-     * @param k1 a key for the map
-     * @param v1 the value for k1
-     * @param k2 a key for the map
-     * @param v2 the value for k2
-     * @param k3 a key for the map
-     * @param v3 the value for k3
-     * @param k4 a key for the map
-     * @param v4 the value for k4
-     * @param k5 a key for the map
-     * @param v5 the value for k5
-     * @param k6 a key for the map
-     * @param v6 the value for k6
+     * @param k1  a key for the map
+     * @param v1  the value for k1
+     * @param k2  a key for the map
+     * @param v2  the value for k2
+     * @param k3  a key for the map
+     * @param v3  the value for k3
+     * @param k4  a key for the map
+     * @param v4  the value for k4
+     * @param k5  a key for the map
+     * @param v5  the value for k5
+     * @param k6  a key for the map
+     * @param v6  the value for k6
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -263,20 +263,20 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
-     * @param k1 a key for the map
-     * @param v1 the value for k1
-     * @param k2 a key for the map
-     * @param v2 the value for k2
-     * @param k3 a key for the map
-     * @param v3 the value for k3
-     * @param k4 a key for the map
-     * @param v4 the value for k4
-     * @param k5 a key for the map
-     * @param v5 the value for k5
-     * @param k6 a key for the map
-     * @param v6 the value for k6
-     * @param k7 a key for the map
-     * @param v7 the value for k7
+     * @param k1  a key for the map
+     * @param v1  the value for k1
+     * @param k2  a key for the map
+     * @param v2  the value for k2
+     * @param k3  a key for the map
+     * @param v3  the value for k3
+     * @param k4  a key for the map
+     * @param v4  the value for k4
+     * @param k5  a key for the map
+     * @param v5  the value for k5
+     * @param k6  a key for the map
+     * @param v6  the value for k6
+     * @param k7  a key for the map
+     * @param v7  the value for k7
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -290,22 +290,22 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
-     * @param k1 a key for the map
-     * @param v1 the value for k1
-     * @param k2 a key for the map
-     * @param v2 the value for k2
-     * @param k3 a key for the map
-     * @param v3 the value for k3
-     * @param k4 a key for the map
-     * @param v4 the value for k4
-     * @param k5 a key for the map
-     * @param v5 the value for k5
-     * @param k6 a key for the map
-     * @param v6 the value for k6
-     * @param k7 a key for the map
-     * @param v7 the value for k7
-     * @param k8 a key for the map
-     * @param v8 the value for k8
+     * @param k1  a key for the map
+     * @param v1  the value for k1
+     * @param k2  a key for the map
+     * @param v2  the value for k2
+     * @param k3  a key for the map
+     * @param v3  the value for k3
+     * @param k4  a key for the map
+     * @param v4  the value for k4
+     * @param k5  a key for the map
+     * @param v5  the value for k5
+     * @param k6  a key for the map
+     * @param v6  the value for k6
+     * @param k7  a key for the map
+     * @param v7  the value for k7
+     * @param k8  a key for the map
+     * @param v8  the value for k8
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -319,24 +319,24 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
-     * @param k1 a key for the map
-     * @param v1 the value for k1
-     * @param k2 a key for the map
-     * @param v2 the value for k2
-     * @param k3 a key for the map
-     * @param v3 the value for k3
-     * @param k4 a key for the map
-     * @param v4 the value for k4
-     * @param k5 a key for the map
-     * @param v5 the value for k5
-     * @param k6 a key for the map
-     * @param v6 the value for k6
-     * @param k7 a key for the map
-     * @param v7 the value for k7
-     * @param k8 a key for the map
-     * @param v8 the value for k8
-     * @param k9 a key for the map
-     * @param v9 the value for k9
+     * @param k1  a key for the map
+     * @param v1  the value for k1
+     * @param k2  a key for the map
+     * @param v2  the value for k2
+     * @param k3  a key for the map
+     * @param v3  the value for k3
+     * @param k4  a key for the map
+     * @param v4  the value for k4
+     * @param k5  a key for the map
+     * @param v5  the value for k5
+     * @param k6  a key for the map
+     * @param v6  the value for k6
+     * @param k7  a key for the map
+     * @param v7  the value for k7
+     * @param k8  a key for the map
+     * @param v8  the value for k8
+     * @param k9  a key for the map
+     * @param v9  the value for k9
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given entries
@@ -350,24 +350,24 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Creates a LinkedHashMap of the given list of key-value pairs.
      *
-     * @param k1 a key for the map
-     * @param v1 the value for k1
-     * @param k2 a key for the map
-     * @param v2 the value for k2
-     * @param k3 a key for the map
-     * @param v3 the value for k3
-     * @param k4 a key for the map
-     * @param v4 the value for k4
-     * @param k5 a key for the map
-     * @param v5 the value for k5
-     * @param k6 a key for the map
-     * @param v6 the value for k6
-     * @param k7 a key for the map
-     * @param v7 the value for k7
-     * @param k8 a key for the map
-     * @param v8 the value for k8
-     * @param k9 a key for the map
-     * @param v9 the value for k9
+     * @param k1  a key for the map
+     * @param v1  the value for k1
+     * @param k2  a key for the map
+     * @param v2  the value for k2
+     * @param k3  a key for the map
+     * @param v3  the value for k3
+     * @param k4  a key for the map
+     * @param v4  the value for k4
+     * @param k5  a key for the map
+     * @param v5  the value for k5
+     * @param k6  a key for the map
+     * @param v6  the value for k6
+     * @param k7  a key for the map
+     * @param v7  the value for k7
+     * @param k8  a key for the map
+     * @param v8  the value for k8
+     * @param k9  a key for the map
+     * @param v9  the value for k9
      * @param k10 a key for the map
      * @param v10 the value for k10
      * @param <K> The key type
@@ -645,7 +645,7 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
 
     @Override
     public <U extends V> LinkedHashMap<K, V> merge(Map<? extends K, U> that,
-                                                   BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+            BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
         return Maps.merge(this, this::createFromEntries, that, collisionResolution);
     }
 
@@ -684,7 +684,7 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
 
     @Override
     public <U extends V> LinkedHashMap<K, V> put(Tuple2<? extends K, U> entry,
-                                                 BiFunction<? super V, ? super U, ? extends V> merge) {
+            BiFunction<? super V, ? super U, ? extends V> merge) {
         return Maps.put(this, entry, merge);
     }
 

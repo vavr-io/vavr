@@ -343,8 +343,8 @@ public class BenchmarkPerformanceReporter {
         }
 
         private void printRatioForBaseType(String baseType, Array<TestExecution> testExecutions,
-                                           BiFunction<String, String, String> ratioNamePrinter,
-                                           BiFunction<Array<TestExecution>, Array<TestExecution>, String> ratioCalculator) {
+                BiFunction<String, String, String> ratioNamePrinter,
+                BiFunction<Array<TestExecution>, Array<TestExecution>, String> ratioCalculator) {
             final Array<TestExecution> baseImplExecutions = testExecutions.filter(e -> e.getImplementation().equals(baseType));
             if (baseImplExecutions.isEmpty()) {
                 return;
@@ -374,8 +374,8 @@ public class BenchmarkPerformanceReporter {
                 final Option<TestExecution> alternativeExecution = alternativeExecutions.find(e -> e.getParamKey().equals(paramKey));
                 final Option<TestExecution> baseExecution = baseImplExecutions.find(e -> e.getParamKey().equals(paramKey));
                 final String paramRatio = alternativeExecution.isEmpty() || baseExecution.isEmpty() || baseExecution.get().getScore() == 0.0
-                        ? ""
-                        : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "×";
+                                          ? ""
+                                          : PERFORMANCE_FORMAT.format(alternativeExecution.get().getScore() / baseExecution.get().getScore()) + "×";
                 ratioStings = ratioStings.append(padRight(paramRatio, paramKeySize));
             }
             return ratioStings.mkString(" ");

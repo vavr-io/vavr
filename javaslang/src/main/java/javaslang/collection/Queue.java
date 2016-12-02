@@ -935,8 +935,8 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         final List<T> newFront = front.replace(currentElement, newElement);
         final List<T> newRear = rear.replace(currentElement, newElement);
         return newFront.size() + newRear.size() == 0 ? empty()
-                : newFront == front && newRear == rear ? this
-                : new Queue<>(newFront, newRear);
+                                                     : newFront == front && newRear == rear ? this
+                                                                                            : new Queue<>(newFront, newRear);
     }
 
     @Override
@@ -944,8 +944,8 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         final List<T> newFront = front.replaceAll(currentElement, newElement);
         final List<T> newRear = rear.replaceAll(currentElement, newElement);
         return newFront.size() + newRear.size() == 0 ? empty()
-                : newFront == front && newRear == rear ? this
-                : new Queue<>(newFront, newRear);
+                                                     : newFront == front && newRear == rear ? this
+                                                                                            : new Queue<>(newFront, newRear);
     }
 
     @Override
@@ -968,7 +968,8 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         return Collections.scanRight(this, zero, operation, Iterator::toQueue);
     }
 
-    @Override public Queue<T> shuffle() {
+    @Override
+    public Queue<T> shuffle() {
         return Collections.shuffle(this, Queue::ofAll);
     }
 

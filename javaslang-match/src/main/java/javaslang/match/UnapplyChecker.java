@@ -10,7 +10,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.type.TypeKind;
 import javax.tools.Diagnostic;
-
 import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Supplier;

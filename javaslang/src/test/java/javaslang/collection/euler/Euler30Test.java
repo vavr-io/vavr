@@ -11,7 +11,6 @@ import javaslang.collection.List;
 import javaslang.collection.Stream;
 import org.junit.Test;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

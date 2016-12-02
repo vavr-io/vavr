@@ -5,12 +5,11 @@
  */
 package javaslang.collection.euler;
 
-import org.junit.Test;
-
 import javaslang.Tuple;
 import javaslang.Tuple3;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
+import org.junit.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

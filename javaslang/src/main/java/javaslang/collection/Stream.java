@@ -139,7 +139,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @return A new {@code Stream}
      */
     static <T> Stream<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
-        return Iterator.<T>concat(iterables).toStream();
+        return Iterator.<T> concat(iterables).toStream();
     }
 
     /**
@@ -930,7 +930,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         }
         final Stream<T> finalStream = stream;
         return stream.isEmpty() ? Stream.empty()
-                : cons(stream.head(), () -> finalStream.tail().filter(predicate));
+                                : cons(stream.head(), () -> finalStream.tail().filter(predicate));
     }
 
     @Override
