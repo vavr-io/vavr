@@ -68,7 +68,6 @@ interface ArrayType<T> {
     /** Repeatedly group an array into equal sized sub-trees */
     default Object grouped(Object array, int groupSize) {
         final int arrayLength = lengthOf(array);
-        assert arrayLength > groupSize;
         final Object results = obj().newInstance(1 + ((arrayLength - 1) / groupSize));
         obj().setAt(results, 0, copyRange(array, 0, groupSize));
 
@@ -122,19 +121,8 @@ interface ArrayType<T> {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> Object[] asArray(Iterable<? extends T> iterable) {
-        if (iterable instanceof Collection<?>) {
-            final Collection<? extends T> collection = (Collection<? extends T>) iterable;
-            return collection.toArray();
-        } else {
-            return Collections.withSize(iterable).toArray();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
     static <T> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
         final Object[] array = Array.ofAll(values).toJavaArray();
-        assert (array.length == 0) || !primitiveClass.isArray();
         final ArrayType<T> type = of((Class<T>) primitiveClass);
         final Object results = type.newInstance(array.length);
         for (int i = 0; i < array.length; i++) {

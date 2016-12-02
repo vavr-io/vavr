@@ -55,10 +55,6 @@ final class BitMappedTrie<T> implements Serializable {
         this.offset = offset;
         this.length = length;
         this.depthShift = depthShift;
-
-        assert offset >= 0;
-        assert length <= treeSize(BRANCHING_FACTOR, depthShift);
-        assert (EMPTY == null) || ((length > 0) && (ArrayType.of(array).lengthOf(array) > 0));
     }
 
     private static int treeSize(int branchCount, int depthShift) {
@@ -69,16 +65,15 @@ final class BitMappedTrie<T> implements Serializable {
     static <T> BitMappedTrie<T> ofAll(Object array) {
         final ArrayType<T> type = ArrayType.of(array);
         final int size = type.lengthOf(array);
-        if (size == 0) {
-            return empty();
-        } else {
-            int shift = 0;
-            for (ArrayType<T> t = type; t.lengthOf(array) > BRANCHING_FACTOR; shift += BRANCHING_BASE) {
-                array = t.grouped(array, BRANCHING_FACTOR);
-                t = obj();
-            }
-            return new BitMappedTrie<>(type, array, 0, size, shift);
+        return (size == 0) ? empty() : ofAll(array, type, size);
+    }
+    private static <T> BitMappedTrie<T> ofAll(Object array, ArrayType<T> type, int size) {
+        int shift = 0;
+        for (ArrayType<T> t = type; t.lengthOf(array) > BRANCHING_FACTOR; shift += BRANCHING_BASE) {
+            array = t.grouped(array, BRANCHING_FACTOR);
+            t = obj();
         }
+        return new BitMappedTrie<>(type, array, 0, size, shift);
     }
 
     private BitMappedTrie<T> boxed() { return map(identity()); }
@@ -109,7 +104,6 @@ final class BitMappedTrie<T> implements Serializable {
             array = result.modify(array, shift, index, COPY_NODE, prependToLeaf(iterator));
             result = new BitMappedTrie<>(type, array, offset - delta, result.length + delta, shift);
         }
-        assert !iterator.hasNext();
         return result;
     }
     private boolean isFullLeft() { return offset == 0; }
@@ -149,7 +143,6 @@ final class BitMappedTrie<T> implements Serializable {
             array = result.modify(array, shift, index, COPY_NODE, appendToLeaf(iterator, leafSpace + delta));
             result = new BitMappedTrie<>(type, array, offset, result.length + delta, shift);
         }
-        assert !iterator.hasNext();
         return result;
 
     }
@@ -203,9 +196,7 @@ final class BitMappedTrie<T> implements Serializable {
     }
 
     private boolean arePointingToSameLeaf(int i, int j) {
-        final boolean result = firstDigit(offset + i, BRANCHING_BASE) == firstDigit(offset + j, BRANCHING_BASE);
-        assert result == (getLeaf(i) == getLeaf(j));
-        return result;
+        return firstDigit(offset + i, BRANCHING_BASE) == firstDigit(offset + j, BRANCHING_BASE);
     }
 
     /* drop root node while it has a single element */
@@ -264,8 +255,6 @@ final class BitMappedTrie<T> implements Serializable {
     Object getLeaf(int index) {
         if (depthShift == 0) {
             return array;
-        } else if (depthShift == BRANCHING_BASE) {
-            return obj().getAt(array, firstDigit(offset + index, depthShift));
         } else {
             return getLeafGeneral(index);
         }
@@ -294,9 +283,7 @@ final class BitMappedTrie<T> implements Serializable {
             @Override
             public T next() {
                 if (index == length) { setCurrentArray(); }
-
                 final T next = type.getAt(leaf, index);
-                assert Objects.equals(next, BitMappedTrie.this.get(globalIndex));
 
                 index++;
                 globalIndex++;
