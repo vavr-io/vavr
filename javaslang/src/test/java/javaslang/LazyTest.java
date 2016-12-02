@@ -5,7 +5,9 @@
  */
 package javaslang;
 
-import javaslang.collection.*;
+import javaslang.collection.List;
+import javaslang.collection.Seq;
+import javaslang.collection.Vector;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import org.junit.Test;

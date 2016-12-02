@@ -7,7 +7,6 @@ package javaslang.control;
 
 import javaslang.Value;
 import javaslang.collection.Iterator;
-import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.collection.Vector;
 
@@ -905,7 +904,7 @@ public interface Try<T> extends Value<T> {
         @Override
         public boolean equals(Object o) {
             return (o == this) || (o instanceof FatalException
-                                   && Arrays.deepEquals(getCause().getStackTrace(), ((FatalException) o).getCause().getStackTrace()));
+                    && Arrays.deepEquals(getCause().getStackTrace(), ((FatalException) o).getCause().getStackTrace()));
         }
 
         @Override
@@ -959,9 +958,9 @@ public interface Try<T> extends Value<T> {
                 throw (FatalException) exception;
             } else {
                 final boolean isFatal = exception instanceof InterruptedException
-                                        || exception instanceof LinkageError
-                                        || exception instanceof ThreadDeath
-                                        || exception instanceof VirtualMachineError;
+                        || exception instanceof LinkageError
+                        || exception instanceof ThreadDeath
+                        || exception instanceof VirtualMachineError;
                 if (isFatal) {
                     throw new FatalException(exception);
                 } else {
@@ -979,7 +978,7 @@ public interface Try<T> extends Value<T> {
         @Override
         public boolean equals(Object o) {
             return (o == this) || (o instanceof NonFatalException
-                                   && Arrays.deepEquals(getCause().getStackTrace(), ((NonFatalException) o).getCause().getStackTrace()));
+                    && Arrays.deepEquals(getCause().getStackTrace(), ((NonFatalException) o).getCause().getStackTrace()));
         }
 
         @Override

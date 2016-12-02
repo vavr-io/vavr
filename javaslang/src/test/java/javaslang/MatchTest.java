@@ -17,13 +17,18 @@ import java.time.Year;
 import java.util.function.Predicate;
 
 import static javaslang.API.$;
-import static javaslang.API.Case;
-import static javaslang.API.Match;
-import static javaslang.API.run;
+import static javaslang.API.*;
 import static javaslang.MatchTest_DeveloperPatterns.Developer;
-import static javaslang.Patterns.*;
+import static javaslang.Patterns.Left;
+import static javaslang.Patterns.List;
+import static javaslang.Patterns.None;
+import static javaslang.Patterns.Right;
+import static javaslang.Patterns.Some;
 import static javaslang.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
+
+import javaslang.control.Option.Some;
+import javaslang.collection.List;
 
 public class MatchTest {
 
@@ -293,63 +298,63 @@ public class MatchTest {
         );
         assertThat(actual).isEqualTo("Some(1)::List(Some(2.0))");
     }
-    
-     // -- run
 
-     @Test
-     public void shouldRunUnitOfWork() {
+    // -- run
 
-         class OuterWorld {
+    @Test
+    public void shouldRunUnitOfWork() {
 
-             String effect = null;
+        class OuterWorld {
 
-             void displayHelp() {
-                 effect = "help";
-             }
+            String effect = null;
 
-             void displayVersion() {
-                 effect = "version";
-             }
-         }
+            void displayHelp() {
+                effect = "help";
+            }
 
-         final OuterWorld outerWorld = new OuterWorld();
+            void displayVersion() {
+                effect = "version";
+            }
+        }
 
-         Match("-v").of(
-                 Case(isIn("-h", "--help"), o -> run(outerWorld::displayHelp)),
-                 Case(isIn("-v", "--version"), o -> run(outerWorld::displayVersion)),
-                 Case($(), o -> { throw new IllegalArgumentException(); })
-         );
+        final OuterWorld outerWorld = new OuterWorld();
 
-         assertThat(outerWorld.effect).isEqualTo("version");
-     }
+        Match("-v").of(
+                Case(isIn("-h", "--help"), o -> run(outerWorld::displayHelp)),
+                Case(isIn("-v", "--version"), o -> run(outerWorld::displayVersion)),
+                Case($(), o -> { throw new IllegalArgumentException(); })
+        );
 
-     @Test
-     public void shouldRunWithInferredArguments() {
+        assertThat(outerWorld.effect).isEqualTo("version");
+    }
 
-         class OuterWorld {
+    @Test
+    public void shouldRunWithInferredArguments() {
 
-             Number effect = null;
+        class OuterWorld {
 
-             void writeInt(int i) {
-                 effect = i;
-             }
+            Number effect = null;
 
-             void writeDouble(double d) {
-                 effect = d;
-             }
-         }
+            void writeInt(int i) {
+                effect = i;
+            }
 
-         final OuterWorld outerWorld = new OuterWorld();
-         final Object obj = .1d;
+            void writeDouble(double d) {
+                effect = d;
+            }
+        }
 
-         Match(obj).of(
-                 Case(instanceOf(Integer.class), i -> run(() -> outerWorld.writeInt(i))),
-                 Case(instanceOf(Double.class), d -> run(() -> outerWorld.writeDouble(d))),
-                 Case($(), o -> { throw new NumberFormatException(); })
-         );
+        final OuterWorld outerWorld = new OuterWorld();
+        final Object obj = .1d;
 
-         assertThat(outerWorld.effect).isEqualTo(.1d);
-     }
+        Match(obj).of(
+                Case(instanceOf(Integer.class), i -> run(() -> outerWorld.writeInt(i))),
+                Case(instanceOf(Double.class), d -> run(() -> outerWorld.writeDouble(d))),
+                Case($(), o -> { throw new NumberFormatException(); })
+        );
+
+        assertThat(outerWorld.effect).isEqualTo(.1d);
+    }
 
     // -- Developer
 

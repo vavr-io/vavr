@@ -5,8 +5,9 @@
  */
 package javaslang.collection.euler;
 
-import java.math.BigInteger;
 import org.junit.Test;
+
+import java.math.BigInteger;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

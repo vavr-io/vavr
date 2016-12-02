@@ -868,10 +868,10 @@ public interface Future<T> extends Value<T> {
      * If this Future failed the result contains this failure. Otherwise the result contains that failure or
      * a combination of both successful Future results.
      *
-     * @param that Another Future
+     * @param that       Another Future
      * @param combinator The combinator function
-     * @param <U>  Result type of {@code that}
-     * @param <R>  Result type of {@code f}
+     * @param <U>        Result type of {@code that}
+     * @param <R>        Result type of {@code f}
      * @return A new Future that returns both Future results.
      * @throws NullPointerException if {@code that} is null
      */

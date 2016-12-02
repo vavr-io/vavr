@@ -8,7 +8,6 @@ package javaslang;
 import org.assertj.core.api.Assertions;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 
 public final class AssertionsExtensions {
 

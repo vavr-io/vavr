@@ -97,7 +97,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
         private final BiFunction<Traversable<?>, Object, Traversable<?>> remove;
 
         ContainerType(BiFunction<Traversable<?>, Object, Traversable<?>> add,
-                      BiFunction<Traversable<?>, Object, Traversable<?>> remove) {
+                BiFunction<Traversable<?>, Object, Traversable<?>> remove) {
             this.add = add;
             this.remove = remove;
         }
@@ -235,7 +235,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     /**
      * Returns the value associated with a key, or a default value if the key is not contained in the map
      *
-     * @param key the key
+     * @param key          the key
      * @param defaultValue a default value
      * @return the value associated with key if it exists, otherwise the result of the default value
      */
@@ -591,7 +591,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     /**
      * Replaces the entry for the specified key only if it is currently mapped to some value.
      *
-     * @param key the key of the element to be substituted
+     * @param key   the key of the element to be substituted
      * @param value the new value to be associated with the key
      * @return a new map containing key mapped to value if key was contained before. The old map otherwise
      */
@@ -600,7 +600,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     /**
      * Replaces the entry with the specified key and oldValue.
      *
-     * @param key the key of the element to be substituted
+     * @param key      the key of the element to be substituted
      * @param oldValue the expected current value associated with the key
      * @param newValue the new value to be associated with the key
      * @return a new map containing key mapped to newValue if key was contained before and oldValue was associated with the key. The old map otherwise.
@@ -620,7 +620,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
 
     @Override
     Multimap<K, V> scan(Tuple2<K, V> zero,
-                        BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
     Iterator<? extends Multimap<K, V>> sliding(int size);

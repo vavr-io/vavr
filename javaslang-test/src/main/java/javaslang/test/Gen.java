@@ -207,7 +207,7 @@ public interface Gen<T> {
      * Chooses a value from all values in the iterable
      *
      * @param values iterable with the values to choose from.
-     * @param <T> value type
+     * @param <T>    value type
      * @return A new iterable generator
      */
     static <T> Gen<T> choose(Iterable<T> values) {
@@ -289,12 +289,12 @@ public interface Gen<T> {
         return choose(1, size).flatMap(n -> GenModule.frequency(n, generators.iterator()));
     }
 
-  /**
-   * Intersperse values from this generator instance with those of another.
-   *
-   * @param other another T generator to accept values from.
-   * @return A new T generator
-   */
+    /**
+     * Intersperse values from this generator instance with those of another.
+     *
+     * @param other another T generator to accept values from.
+     * @return A new T generator
+     */
     default Gen<T> intersperse(Gen<T> other) {
         final Iterator<Gen<T>> iter = Iterator.continually(this).intersperse(other);
         return random -> iter.get().apply(random);
@@ -433,7 +433,7 @@ interface GenModule {
             } else {
                 n = n - k;
             }
-        } while(true);
+        } while (true);
     }
 
 }

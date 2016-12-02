@@ -6,9 +6,9 @@
 package javaslang.collection.euler;
 
 import javaslang.collection.Stream;
-import static javaslang.collection.euler.Utils.factors;
 import org.junit.Test;
 
+import static javaslang.collection.euler.Utils.factors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler12Test {

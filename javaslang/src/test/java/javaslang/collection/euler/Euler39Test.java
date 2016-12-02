@@ -5,8 +5,6 @@
  */
 package javaslang.collection.euler;
 
-import static java.lang.Math.floor;
-import static java.lang.Math.hypot;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -14,8 +12,9 @@ import javaslang.collection.List;
 import javaslang.collection.Map;
 import org.junit.Test;
 
+import static java.lang.Math.floor;
+import static java.lang.Math.hypot;
 import static javaslang.control.Option.some;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler39Test {

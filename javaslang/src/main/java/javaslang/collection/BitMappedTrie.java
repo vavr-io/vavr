@@ -6,7 +6,6 @@
 package javaslang.collection;
 
 import java.io.Serializable;
-import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -35,8 +34,8 @@ final class BitMappedTrie<T> implements Serializable {
     static final int BRANCHING_MASK = -1 >>> -BRANCHING_BASE;
 
     static int firstDigit(int num, int depthShift) { return num >> depthShift; }
-    static int digit(int num, int depthShift)      { return lastDigit(firstDigit(num, depthShift)); }
-    static int lastDigit(int num)                  { return num & BRANCHING_MASK; }
+    static int digit(int num, int depthShift) { return lastDigit(firstDigit(num, depthShift)); }
+    static int lastDigit(int num) { return num & BRANCHING_MASK; }
 
     private static final long serialVersionUID = 1L;
 
@@ -215,8 +214,8 @@ final class BitMappedTrie<T> implements Serializable {
     /* descend the tree from root to leaf, applying the given modifications along the way, returning the new root */
     private Object modify(Object root, int depthShift, int index, NodeModifier node, NodeModifier leaf) {
         return (depthShift == 0)
-                ? leaf.apply(root, index)
-                : modifyNonLeaf(root, depthShift, index, node, leaf);
+               ? leaf.apply(root, index)
+               : modifyNonLeaf(root, depthShift, index, node, leaf);
     }
     private Object modifyNonLeaf(Object root, int depthShift, int index, NodeModifier node, NodeModifier leaf) {
         int previousIndex = firstDigit(index, depthShift);
@@ -317,10 +316,10 @@ final class BitMappedTrie<T> implements Serializable {
 
     BitMappedTrie<T> filter(Predicate<? super T> predicate) {
         final Object results = type.newInstance(length());
-        final int length = this.<T>visit((index, leaf, start, end) -> filter(predicate, results, index, leaf, start, end));
+        final int length = this.<T> visit((index, leaf, start, end) -> filter(predicate, results, index, leaf, start, end));
         return (this.length == length)
-                ? this
-                : BitMappedTrie.ofAll(type.copyRange(results, 0, length));
+               ? this
+               : BitMappedTrie.ofAll(type.copyRange(results, 0, length));
     }
     private int filter(Predicate<? super T> predicate, Object results, int index, T leaf, int start, int end) {
         for (int i = start; i < end; i++) {

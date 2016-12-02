@@ -9,7 +9,8 @@ import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import static javaslang.JmhRunner.*;
+import static javaslang.JmhRunner.create;
+import static javaslang.JmhRunner.getRandomValues;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
 public class HashSetBenchmark {

@@ -285,7 +285,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
-        if (offset < 0) return false;
+        if (offset < 0) { return false; }
         if (that instanceof IndexedSeq) {
             IndexedSeq<? extends T> thatIndexedSeq = (IndexedSeq<? extends T>) that;
             int i = offset;

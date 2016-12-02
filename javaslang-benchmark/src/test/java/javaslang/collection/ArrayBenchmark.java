@@ -9,10 +9,12 @@ import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Objects;
 
 import static java.util.Arrays.asList;
-import static javaslang.JmhRunner.*;
+import static javaslang.JmhRunner.create;
+import static javaslang.JmhRunner.getRandomValues;
 import static javaslang.collection.Collections.areEqual;
 
 public class ArrayBenchmark {

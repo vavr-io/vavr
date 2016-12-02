@@ -28,8 +28,8 @@ public class Euler31Test {
     }
 
     private static int coinSums(int n, List<Integer> coins) {
-        if (n == 0) return 1;
-        if (n < 0 || coins.isEmpty()) return 0;
+        if (n == 0) { return 1; }
+        if (n < 0 || coins.isEmpty()) { return 0; }
         return coinSums(n, coins.tail()) + coinSums(n - coins.head(), coins);
     }
 

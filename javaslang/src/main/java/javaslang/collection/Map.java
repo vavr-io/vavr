@@ -155,7 +155,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * attempts to compute its value using the given mapping
      * function and enters it into this map.
      *
-     * @param key key whose presence in this map is to be tested
+     * @param key             key whose presence in this map is to be tested
      * @param mappingFunction mapping function
      * @return the {@link Tuple2} of current or modified map and existing or computed value associated with the specified key
      */
@@ -165,7 +165,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
      * If the value for the specified key is present, attempts to
      * compute a new mapping given the key and its current mapped value.
      *
-     * @param key key whose presence in this map is to be tested
+     * @param key               key whose presence in this map is to be tested
      * @param remappingFunction remapping function
      * @return the {@link Tuple2} of current or modified map and the {@code Some} of the value associated
      * with the specified key, or {@code None} if none
@@ -280,7 +280,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     /**
      * Returns the value associated with a key, or a default value if the key is not contained in the map.
      *
-     * @param key the key
+     * @param key          the key
      * @param defaultValue a default value
      * @return the value associated with key if it exists, otherwise the default value.
      */
@@ -680,7 +680,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     /**
      * Replaces the entry for the specified key only if it is currently mapped to some value.
      *
-     * @param key the key of the element to be substituted.
+     * @param key   the key of the element to be substituted.
      * @param value the new value to be associated with the key
      * @return a new map containing key mapped to value if key was contained before. The old map otherwise.
      */
@@ -689,7 +689,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     /**
      * Replaces the entry for the specified key only if currently mapped to the specified value.
      *
-     * @param key the key of the element to be substituted.
+     * @param key      the key of the element to be substituted.
      * @param oldValue the expected current value that the key is currently mapped to
      * @param newValue the new value to be associated with the key
      * @return a new map containing key mapped to newValue if key was contained before and oldValue matched. The old map otherwise.
@@ -712,7 +712,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
 
     @Override
     Map<K, V> scan(Tuple2<K, V> zero,
-                   BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
     Iterator<? extends Map<K, V>> sliding(int size);

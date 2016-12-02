@@ -54,7 +54,7 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
      * @throws NullPointerException if {@code keyMapper} or {@code valueMapper} is null
      */
     <K2, V2> SortedMap<K2, V2> bimap(Comparator<? super K2> keyComparator,
-                                     Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
+            Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
 
     /**
      * Same as {@link #flatMap(BiFunction)} but using a specific comparator for values of the codomain of the given

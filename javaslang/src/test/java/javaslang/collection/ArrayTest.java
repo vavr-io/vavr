@@ -8,14 +8,13 @@ package javaslang.collection;
 import javaslang.Tuple2;
 import javaslang.Value;
 import javaslang.control.Option;
-
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.*;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 public class ArrayTest extends AbstractIndexedSeqTest {
@@ -215,10 +214,10 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     @Test
     public void shouldUnfoldRightSimpleArray() {
         assertThat(
-            Array.unfoldRight(10, x -> x == 0
-                             ? Option.none()
-                             : Option.of(new Tuple2<>(x, x-1))))
-            .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+                Array.unfoldRight(10, x -> x == 0
+                                           ? Option.none()
+                                           : Option.of(new Tuple2<>(x, x - 1))))
+                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
     }
 
     @Test
@@ -229,10 +228,10 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     @Test
     public void shouldUnfoldLeftSimpleArray() {
         assertThat(
-            Array.unfoldLeft(10, x -> x == 0
-                            ? Option.none()
-                            : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                Array.unfoldLeft(10, x -> x == 0
+                                          ? Option.none()
+                                          : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     @Test
@@ -243,10 +242,10 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     @Test
     public void shouldUnfoldSimpleArray() {
         assertThat(
-            Array.unfold(10, x -> x == 0
-                         ? Option.none()
-                         : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                Array.unfold(10, x -> x == 0
+                                      ? Option.none()
+                                      : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     // -- toString

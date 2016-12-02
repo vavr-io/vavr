@@ -5,16 +5,18 @@
  */
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.collection.HashArrayMappedTrieModule.EmptyNode;
 import javaslang.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Objects;
 
 import static java.lang.Integer.bitCount;
-import static java.util.Arrays.*;
-import static javaslang.collection.HashArrayMappedTrieModule.Action.*;
+import static java.util.Arrays.copyOf;
+import static javaslang.collection.HashArrayMappedTrieModule.Action.PUT;
+import static javaslang.collection.HashArrayMappedTrieModule.Action.REMOVE;
 
 /**
  * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
@@ -633,7 +635,7 @@ interface HashArrayMappedTrieModule {
             final boolean exists = (mask & bit) != 0;
             final AbstractNode<K, V> atIndx = exists ? (AbstractNode<K, V>) subNodes[index] : null;
             AbstractNode<K, V> child = exists ? atIndx.modify(shift + SIZE, keyHash, key, value, action)
-                    : EmptyNode.<K, V> instance().modify(shift + SIZE, keyHash, key, value, action);
+                                              : EmptyNode.<K, V> instance().modify(shift + SIZE, keyHash, key, value, action);
             boolean removed = exists && child.isEmpty();
             boolean added = !exists && !child.isEmpty();
             int newBitmap = removed ? mask & ~bit : added ? mask | bit : mask;

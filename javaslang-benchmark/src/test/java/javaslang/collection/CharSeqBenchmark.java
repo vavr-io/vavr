@@ -9,7 +9,8 @@ import javaslang.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import java.util.*;
+import java.util.Objects;
+import java.util.Random;
 
 import static java.lang.String.valueOf;
 import static javaslang.JmhRunner.create;

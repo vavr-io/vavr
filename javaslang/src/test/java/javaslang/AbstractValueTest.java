@@ -5,7 +5,8 @@
  */
 package javaslang;
 
-import javaslang.collection.*;
+import javaslang.collection.Array;
+import javaslang.collection.CharSeq;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
 import javaslang.collection.LinkedHashMap;
@@ -18,6 +19,8 @@ import javaslang.collection.Set;
 import javaslang.collection.SortedMap;
 import javaslang.collection.SortedSet;
 import javaslang.collection.Stack;
+import javaslang.collection.Stream;
+import javaslang.collection.*;
 import javaslang.collection.TreeMap;
 import javaslang.collection.TreeSet;
 import javaslang.collection.Vector;
@@ -27,13 +30,13 @@ import javaslang.control.Try;
 import javaslang.control.Validation;
 import org.assertj.core.api.*;
 import org.junit.Test;
-import static javaslang.API.*;
 
 import java.util.*;
 import java.util.Collections;
 import java.util.function.Function;
 
 import static java.lang.Integer.bitCount;
+import static javaslang.API.*;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 
@@ -479,7 +482,6 @@ public abstract class AbstractValueTest {
         final SortedSet<Integer> actual = deserialize(serialize(set));
         assertThat(actual).isEqualTo(set);
     }
-
 
     @Test
     public void shouldConvertToStack() {

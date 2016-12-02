@@ -174,7 +174,7 @@ public class TreeTest extends AbstractTraversableTest {
     }
 
     @Override
-        protected <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    protected <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         return Tree.tabulate(n, f);
     }
 
@@ -250,14 +250,14 @@ public class TreeTest extends AbstractTraversableTest {
     public void shouldNotGetValueOfNonNil() {
         assertThat(tree.getValue()).isEqualTo(1);
     }
-    
+
     // -- size
 
     @Test
     public void shouldCalculateSizeOfALeaf() {
         assertThat($(0).size()).isEqualTo(1);
     }
-    
+
     @Test
     public void shouldCalculateSizeOfNestedNodes() {
         assertThat(tree.size()).isEqualTo(9);
@@ -331,7 +331,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- branchCount
 
-    @Test   
+    @Test
     public void shouldCountBranchesOfNil() {
         assertThat(Tree.empty().branchCount()).isEqualTo(0);
     }

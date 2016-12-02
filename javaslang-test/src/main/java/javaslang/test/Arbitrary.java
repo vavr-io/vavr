@@ -72,7 +72,6 @@ public interface Arbitrary<T> {
         return distinctBy(Function.identity());
     }
 
-
     /**
      * Returns an Arbitrary based on this Arbitrary which produces unique values based on the given comparator.
      *
@@ -169,7 +168,7 @@ public interface Arbitrary<T> {
      * Generates an arbitrary value from a fixed set of values
      *
      * @param values A fixed set of values
-     * @param <U> Type of generator value
+     * @param <U>    Type of generator value
      * @return A new generator
      */
     @SafeVarargs
@@ -180,12 +179,13 @@ public interface Arbitrary<T> {
 
     /**
      * Generates an arbitrary value from a given generator
+     *
      * @param generator A generator to produce arbitrary values
-     * @param <U> Type of generator value
+     * @param <U>       Type of generator value
      * @return A new generator
      */
     static <U> Arbitrary<U> ofAll(Gen<U> generator) {
-      return size -> generator;
+        return size -> generator;
     }
 
     /**

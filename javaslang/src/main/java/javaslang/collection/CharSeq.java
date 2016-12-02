@@ -552,7 +552,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         }
         for (int i = 1; i < length(); i++) {
             sb.append(element)
-              .append(get(i));
+                    .append(get(i));
         }
         return sb.length() == 0 ? EMPTY : of(sb);
     }
@@ -816,7 +816,8 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         return Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
-    @Override public CharSeq shuffle() {
+    @Override
+    public CharSeq shuffle() {
         return Collections.shuffle(this, CharSeq::ofAll);
     }
 
@@ -863,7 +864,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     public <U> CharSeq sortBy(Comparator<? super U> comparator, Function<? super Character, ? extends U> mapper) {
         final Function<? super Character, ? extends U> domain = Function1.of(mapper::apply).memoized();
         return toJavaStream().sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
-                             .collect(collector());
+                .collect(collector());
     }
 
     @Override
@@ -2511,7 +2512,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         if (back.isEmpty()) {
             return this;
         }
-        return CharSeq.of(back.substring(0,1).toUpperCase(locale) + back.substring(1));
+        return CharSeq.of(back.substring(0, 1).toUpperCase(locale) + back.substring(1));
     }
 
     /**

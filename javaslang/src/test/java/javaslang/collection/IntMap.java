@@ -30,7 +30,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     @SuppressWarnings("unchecked")
     public static <T> IntMap<T> of(Map<Integer, T> original) {
         return original.isEmpty() ? (IntMap<T>) EMPTY
-                : new IntMap<>(original);
+                                  : new IntMap<>(original);
     }
 
     private IntMap(Map<Integer, T> original) {
@@ -339,7 +339,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Seq<Tuple2<T, Integer>> zipWithIndex() {
-        return  zipWithIndex(Tuple::of);
+        return zipWithIndex(Tuple::of);
     }
 
     @Override

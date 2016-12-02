@@ -14,8 +14,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static java.util.Arrays.*;
 import static java.util.Arrays.copyOf;
+import static java.util.Arrays.sort;
 
 /**
  * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
@@ -1059,7 +1059,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         return Collections.scanRight(this, zero, operation, Array::ofAll);
     }
 
-    @Override public Array<T> shuffle() {
+    @Override
+    public Array<T> shuffle() {
         return Collections.shuffle(this, Array::ofAll);
     }
 

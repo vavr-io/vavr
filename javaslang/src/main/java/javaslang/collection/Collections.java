@@ -43,7 +43,7 @@ final class Collections {
             return Iterator.empty();
         } else {
             return Iterator.range(0, power)
-                           .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
+                    .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
         }
     }
 
@@ -93,7 +93,7 @@ final class Collections {
 
     static <T> boolean isTraversableAgain(Iterable<? extends T> iterable) {
         return (iterable instanceof Collection) ||
-               (iterable instanceof Traversable && ((Traversable<?>) iterable).isTraversableAgain());
+                (iterable instanceof Traversable && ((Traversable<?>) iterable).isTraversableAgain());
     }
 
     @SuppressWarnings("unchecked")
@@ -141,7 +141,7 @@ final class Collections {
         } else if (iterable instanceof Seq) {
             return ((Seq<T>) iterable).reverseIterator();
         } else {
-            return List.<T>empty().pushAll(iterable).iterator();
+            return List.<T> empty().pushAll(iterable).iterator();
         }
     }
 
@@ -227,7 +227,10 @@ final class Collections {
         private final Iterable<? extends T> iterable;
         private final int size;
 
-        IterableWithSize(Iterable<? extends T> iterable, int size) { this.iterable = iterable; this.size = size; }
+        IterableWithSize(Iterable<? extends T> iterable, int size) {
+            this.iterable = iterable;
+            this.size = size;
+        }
 
         java.util.Iterator<? extends T> iterator() {
             return iterable.iterator();

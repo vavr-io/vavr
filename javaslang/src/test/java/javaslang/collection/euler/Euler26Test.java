@@ -5,17 +5,17 @@
  */
 package javaslang.collection.euler;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.collection.CharSeq;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
+import javaslang.control.Option;
 import org.junit.Test;
 
-import javaslang.control.Option;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -71,10 +71,10 @@ public class Euler26Test {
                 divisor,
                 recurringCycleLengthInDecimalFractionPart(
                         CharSeq.of(BigDecimal.ONE.divide(BigDecimal.valueOf(divisor), 2000, RoundingMode.UP).toString())
-                        .transform(removeLeadingZeroAndDecimalPoint())
-                        .transform(removeRoundingDigit())
-                        .transform(removeTrailingZeroes())
-                        .mkString()
+                                .transform(removeLeadingZeroAndDecimalPoint())
+                                .transform(removeRoundingDigit())
+                                .transform(removeTrailingZeroes())
+                                .mkString()
                 ));
     }
 

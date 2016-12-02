@@ -15,11 +15,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.*;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 import static java.util.Comparator.nullsFirst;
-import static javaslang.API.*;
+import static javaslang.API.List;
+import static javaslang.API.Tuple;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static javaslang.collection.Comparators.naturalComparator;

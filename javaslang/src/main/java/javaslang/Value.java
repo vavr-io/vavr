@@ -31,6 +31,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.*;
+import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
 
@@ -513,7 +514,8 @@ public interface Value<T> extends Iterable<T> {
     default CharSeq toCharSeq() {
         if (this instanceof CharSeq) {
             return (CharSeq) this;
-        } if (isEmpty()) {
+        }
+        if (isEmpty()) {
             return CharSeq.empty();
         } else {
             return CharSeq.of(iterator().mkString());
@@ -525,19 +527,19 @@ public interface Value<T> extends Iterable<T> {
      *
      * @return A new {@link CompletableFuture} containing the value
      */
-     default CompletableFuture<T> toCompletableFuture() {
-         final CompletableFuture<T> completableFuture = new CompletableFuture<>();
-         try {
-             completableFuture.complete(get());
-         } catch (Try.FatalException x) {
-             throw x;
-         } catch (Try.NonFatalException x) {
-             completableFuture.completeExceptionally(x.getCause());
-         } catch (Throwable x) {
-             completableFuture.completeExceptionally(x);
-         }
-         return completableFuture;
-     }
+    default CompletableFuture<T> toCompletableFuture() {
+        final CompletableFuture<T> completableFuture = new CompletableFuture<>();
+        try {
+            completableFuture.complete(get());
+        } catch (Try.FatalException x) {
+            throw x;
+        } catch (Try.NonFatalException x) {
+            completableFuture.completeExceptionally(x.getCause());
+        } catch (Throwable x) {
+            completableFuture.completeExceptionally(x);
+        }
+        return completableFuture;
+    }
 
     /**
      * Converts this to a {@link Validation}.
@@ -912,7 +914,7 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Either}.
      *
      * @param left A left value for the {@link Either}
-     * @param <L> Either left component type
+     * @param <L>  Either left component type
      * @return A new {@link Either}.
      */
     default <L> Either<L, T> toEither(L left) {
@@ -927,7 +929,7 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Either}.
      *
      * @param leftSupplier A {@link Supplier} for the left value for the {@link Either}
-     * @param <L> Validation error component type
+     * @param <L>          Validation error component type
      * @return A new {@link Either}.
      */
     default <L> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
@@ -937,13 +939,13 @@ public interface Value<T> extends Iterable<T> {
         } else {
             return isEmpty() ? Left(leftSupplier.get()) : Right(get());
         }
-     }
+    }
 
     /**
      * Converts this to an {@link Validation}.
      *
      * @param invalid An invalid value for the {@link Validation}
-     * @param <L> Validation error component type
+     * @param <L>     Validation error component type
      * @return A new {@link Validation}.
      */
     default <L> Validation<L, T> toValidation(L invalid) {
@@ -958,7 +960,7 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Validation}.
      *
      * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
-     * @param <L> Validation error component type
+     * @param <L>             Validation error component type
      * @return A new {@link Validation}.
      */
     default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
@@ -990,8 +992,8 @@ public interface Value<T> extends Iterable<T> {
             return (PriorityQueue<T>) this;
         } else {
             final Comparator<T> comparator = (this instanceof Ordered<?>)
-                    ? ((Ordered<T>) this).comparator()
-                    : (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+                                             ? ((Ordered<T>) this).comparator()
+                                             : (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
             return toPriorityQueue(comparator);
         }
     }
@@ -1067,8 +1069,8 @@ public interface Value<T> extends Iterable<T> {
             return (TreeSet<T>) this;
         } else {
             final Comparator<T> comparator = (this instanceof Ordered<?>)
-                    ? ((Ordered<T>) this).comparator()
-                    : (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+                                             ? ((Ordered<T>) this).comparator()
+                                             : (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
             return toSortedSet(comparator);
         }
     }

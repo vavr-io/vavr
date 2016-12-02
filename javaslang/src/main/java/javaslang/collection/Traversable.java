@@ -143,7 +143,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * DEPRECATED. SHOULD NOT BE USED ANY MORE.
      *
      * @param objects An Iterable instance containing zero or more objects.
-     * @param <T> Component type
+     * @param <T>     Component type
      * @return The hashcode
      * @deprecated Will be removed in next major release.
      */
@@ -643,7 +643,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *
      * @return {@code Some(maximum)} of this elements or {@code None} if this is empty
      * @throws NullPointerException if an element is null
-     * @throws ClassCastException if the elements do not have a natural order, i.e. they do not implement Comparable
+     * @throws ClassCastException   if the elements do not have a natural order, i.e. they do not implement Comparable
      */
     @SuppressWarnings("unchecked")
     default Option<T> max() {
@@ -705,7 +705,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *
      * @return {@code Some(minimum)} of this elements or {@code None} if this is empty
      * @throws NullPointerException if an element is null
-     * @throws ClassCastException if the elements do not have a natural order, i.e. they do not implement Comparable
+     * @throws ClassCastException   if the elements do not have a natural order, i.e. they do not implement Comparable
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {

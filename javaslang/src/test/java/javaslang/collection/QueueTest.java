@@ -12,9 +12,11 @@ import javaslang.control.Option;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.*;
-import java.util.function.*;
-import java.util.stream.*;
+import java.util.ArrayList;
+import java.util.NoSuchElementException;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 public class QueueTest extends AbstractLinearSeqTest {
@@ -355,10 +357,10 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldRightSimpleQueue() {
         assertThat(
-            Queue.unfoldRight(10, x -> x == 0
-                               ? Option.none()
-                               : Option.of(new Tuple2<>(x, x-1))))
-            .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+                Queue.unfoldRight(10, x -> x == 0
+                                           ? Option.none()
+                                           : Option.of(new Tuple2<>(x, x - 1))))
+                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
     }
 
     @Test
@@ -369,10 +371,10 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldLeftSimpleQueue() {
         assertThat(
-            Queue.unfoldLeft(10, x -> x == 0
-                              ? Option.none()
-                              : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                Queue.unfoldLeft(10, x -> x == 0
+                                          ? Option.none()
+                                          : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     @Test
@@ -383,10 +385,10 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldSimpleQueue() {
         assertThat(
-            Queue.unfold(10, x -> x == 0
-                         ? Option.none()
-                         : Option.of(new Tuple2<>(x-1, x))))
-            .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                Queue.unfold(10, x -> x == 0
+                                      ? Option.none()
+                                      : Option.of(new Tuple2<>(x - 1, x))))
+                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     // -- equals

@@ -6,11 +6,14 @@
 
 package javaslang.collection;
 
-import javaslang.*;
+import javaslang.Tuple;
+import javaslang.Tuple2;
 import javaslang.control.Option;
 
-import java.util.*;
-import java.util.function.*;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 /**
  * @author Pap Lőrinc, Daniel Dietrich

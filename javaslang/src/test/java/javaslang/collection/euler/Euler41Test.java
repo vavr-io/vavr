@@ -5,12 +5,12 @@
  */
 package javaslang.collection.euler;
 
-import static java.util.Comparator.reverseOrder;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
-import static javaslang.collection.euler.Utils.isPrime;
 import org.junit.Test;
 
+import static java.util.Comparator.reverseOrder;
+import static javaslang.collection.euler.Utils.isPrime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler41Test {

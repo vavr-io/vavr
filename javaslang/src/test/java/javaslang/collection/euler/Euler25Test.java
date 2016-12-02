@@ -8,7 +8,6 @@ package javaslang.collection.euler;
 import org.junit.Test;
 
 import static javaslang.collection.euler.Utils.fibonacci;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

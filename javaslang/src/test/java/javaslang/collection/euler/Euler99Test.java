@@ -7,8 +7,6 @@ package javaslang.collection.euler;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-
 import static java.util.Arrays.asList;
 import static javaslang.collection.euler.Utils.file;
 import static javaslang.collection.euler.Utils.readLines;
