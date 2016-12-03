@@ -5,6 +5,7 @@
  */
 package javaslang.concurrent;
 
+import javaslang.API;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
@@ -746,6 +747,15 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if {@code action} is null.
      */
     Future<T> onComplete(Consumer<? super Try<T>> action);
+
+    /**
+     * Performs the action of matched case once the Future is complete.
+     *
+     * @param cases A cases containing actions, to match against future completion result.
+     * @return this Future
+     */
+    @SuppressWarnings({ "unchecked", "varargs" })
+    Future<T> onCompleteMatch(API.Match.Case<? extends Try<T>, Consumer<? super Try<T>>>... cases);
 
     /**
      * Performs the action once the Future is complete and the result is a {@link Try.Failure}. Please note that the
