@@ -28,6 +28,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 
+import static javaslang.API.Match;
+
 /**
  * A Future is a computation result that becomes available at some point. All operations provided are non-blocking.
  * <p>
@@ -755,7 +757,9 @@ public interface Future<T> extends Value<T> {
      * @return this Future
      */
     @SuppressWarnings({ "unchecked", "varargs" })
-    Future<T> onCompleteMatch(API.Match.Case<? extends Try<T>, Consumer<? super Try<T>>>... cases);
+    default Future<T> onCompleteMatch(API.Match.Case<? extends Try<T>, Consumer<? super Try<T>>>... cases){
+        return onComplete(result -> Match(result).option(cases).forEach(matchedConsumer -> matchedConsumer.accept(result)));
+    }
 
     /**
      * Performs the action once the Future is complete and the result is a {@link Try.Failure}. Please note that the
@@ -771,6 +775,18 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * Performs the action of matched case once the Future is failed.
+     *
+     * @param cases A cases containing actions, to match against future fail result.
+     * @return this Future
+     */
+    @SuppressWarnings({ "unchecked", "varargs" })
+    default Future<T> onFailureMatch(API.Match.Case<? extends Throwable, Consumer<? super Throwable>>... cases){
+        return onFailure(failure -> Match(failure).option(cases).forEach(matchedConsumer -> matchedConsumer.accept(failure)));
+    }
+
+
+    /**
      * Performs the action once the Future is complete and the result is a {@link Try.Success}.
      *
      * @param action An action to be performed when this future succeeded.
@@ -780,6 +796,17 @@ public interface Future<T> extends Value<T> {
     default Future<T> onSuccess(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         return onComplete(result -> result.onSuccess(action));
+    }
+
+    /**
+     * Performs the action of matched case once the Future is successful.
+     *
+     * @param cases A cases containing actions, to match against future success result.
+     * @return this Future
+     */
+    @SuppressWarnings({ "unchecked", "varargs" })
+    default Future<T> onSuccessMatch(API.Match.Case<? extends T, Consumer<? super T>>... cases){
+        return onSuccess(success -> Match(success).option(cases).forEach(matchedConsumer -> matchedConsumer.accept(success)));
     }
 
     /**

@@ -15,8 +15,6 @@ import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.function.Consumer;
 
-import static javaslang.API.Match;
-
 /**
  * <strong>INTERNAL API - This class is subject to change.</strong>
  * <p>
@@ -165,12 +163,6 @@ final class FutureImpl<T> implements Future<T> {
             }
         }
         return this;
-    }
-
-    @SuppressWarnings({ "unchecked", "varargs" })
-    @SafeVarargs
-    public final Future<T> onCompleteMatch(Match.Case<? extends Try<T>, Consumer<? super Try<T>>>... cases) {
-        return onComplete(result -> Match(result).option(cases).forEach(matchedConsumer -> matchedConsumer.accept(result)));
     }
 
     // This class is MUTABLE and therefore CANNOT CHANGE DEFAULT equals() and hashCode() behavior.
