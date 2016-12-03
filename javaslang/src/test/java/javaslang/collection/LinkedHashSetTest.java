@@ -187,7 +187,7 @@ public class LinkedHashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldKeepOrder() {
-        List<Integer> actual = LinkedHashSet.<Integer> empty().add(3).add(2).add(1).toList();
+        final List<Integer> actual = LinkedHashSet.<Integer> empty().add(3).add(2).add(1).toList();
         assertThat(actual).isEqualTo(List.of(3, 2, 1));
     }
 
@@ -239,7 +239,7 @@ public class LinkedHashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
     }
 
@@ -247,7 +247,7 @@ public class LinkedHashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldReturnSelfOnConvertToLinkedSet() {
-        Value<Integer> value = of(1, 2, 3);
+        final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toLinkedSet()).isSameAs(value);
     }
 }

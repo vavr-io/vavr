@@ -26,7 +26,7 @@ public class Euler10Test {
         assertThat(sumPrimes(2_000_000L)).isEqualTo(142_913_828_922L);
     }
 
-    public long sumPrimes(long max) {
+    private long sumPrimes(long max) {
         return PrimeNumbers.primes()
                 .map(Long::valueOf)
                 .takeWhile(t -> t < max)

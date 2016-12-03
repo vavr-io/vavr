@@ -257,8 +257,8 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      */
     default boolean endsWith(Seq<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
-        Iterator<T> i = this.iterator().drop(length() - that.length());
-        Iterator<? extends T> j = that.iterator();
+        final Iterator<T> i = this.iterator().drop(length() - that.length());
+        final Iterator<? extends T> j = that.iterator();
         while (i.hasNext() && j.hasNext()) {
             if (!Objects.equals(i.next(), j.next())) {
                 return false;
@@ -364,7 +364,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
                 if (from <= 0 && checkPrefix(t, slice)) {
                     return 0;
                 }
-                int idx = indexOfSlice(t.tail(), slice, from - 1);
+                final int idx = indexOfSlice(t.tail(), slice, from - 1);
                 return idx >= 0 ? idx + 1 : -1;
             }
 
@@ -903,8 +903,8 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     default boolean startsWith(Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
         if (offset < 0) { return false; }
-        Iterator<T> i = this.iterator().drop(offset);
-        java.util.Iterator<? extends T> j = that.iterator();
+        final Iterator<T> i = this.iterator().drop(offset);
+        final java.util.Iterator<? extends T> j = that.iterator();
         while (i.hasNext() && j.hasNext()) {
             if (!Objects.equals(i.next(), j.next())) {
                 return false;

@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
+import javaslang.Value;
 import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
@@ -499,4 +500,19 @@ public class IteratorTest extends AbstractTraversableTest {
     public void shouldHaveAReasonableToString() {
         // iterators are intermediate objects and should not have an equals, hashCode or toString
     }
+
+    // -- equals
+
+    @Override
+    @Test
+    public void shouldRecognizeEqualObjects() {
+        // Iterator equality undefined
+    }
+
+    @Override
+    @Test
+    public void shouldRecognizeUnequalObjects() {
+        // Iterator equality undefined
+    }
+
 }

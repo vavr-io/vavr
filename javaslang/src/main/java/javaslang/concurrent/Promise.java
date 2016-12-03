@@ -302,7 +302,7 @@ public interface Promise<T> {
  */
 final class PromiseImpl<T> implements Promise<T> {
 
-    final FutureImpl<T> future;
+    private final FutureImpl<T> future;
 
     PromiseImpl(FutureImpl<T> future) {
         this.future = future;

@@ -343,7 +343,7 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
     }
 
@@ -356,11 +356,9 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldUnfoldRightSimpleQueue() {
-        assertThat(
-                Queue.unfoldRight(10, x -> x == 0
-                                           ? Option.none()
-                                           : Option.of(new Tuple2<>(x, x - 1))))
-                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+        assertThat(Queue.unfoldRight(10, x ->
+                x == 0 ? Option.none() : Option.of(new Tuple2<>(x, x - 1)))
+        ).isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
     }
 
     @Test
@@ -370,11 +368,9 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldUnfoldLeftSimpleQueue() {
-        assertThat(
-                Queue.unfoldLeft(10, x -> x == 0
-                                          ? Option.none()
-                                          : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        assertThat(Queue.unfoldLeft(10, x ->
+                x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
+        ).isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     @Test
@@ -384,11 +380,9 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldUnfoldSimpleQueue() {
-        assertThat(
-                Queue.unfold(10, x -> x == 0
-                                      ? Option.none()
-                                      : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        assertThat(Queue.unfold(10, x ->
+                x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
+        ).isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     // -- equals
@@ -402,7 +396,7 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldReturnSelfOnConvertToQueue() {
-        Value<Integer> value = of(1, 2, 3);
+        final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toQueue()).isSameAs(value);
     }
 }

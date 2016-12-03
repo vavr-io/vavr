@@ -514,8 +514,7 @@ public interface Value<T> extends Iterable<T> {
     default CharSeq toCharSeq() {
         if (this instanceof CharSeq) {
             return (CharSeq) this;
-        }
-        if (isEmpty()) {
+        } else if (isEmpty()) {
             return CharSeq.empty();
         } else {
             return CharSeq.of(iterator().mkString());

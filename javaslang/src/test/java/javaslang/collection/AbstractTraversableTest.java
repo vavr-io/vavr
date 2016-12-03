@@ -21,6 +21,7 @@ import java.util.stream.Collector;
 
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
+import static java.util.Comparator.comparingInt;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.fail;
@@ -337,7 +338,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeDistinctByOfEmptyTraversableUsingComparator() {
-        final Comparator<Integer> comparator = (i1, i2) -> i1 - i2;
+        final Comparator<Integer> comparator = comparingInt(i -> i);
         if (useIsEqualToInsteadOfIsSameAs()) {
             assertThat(this.<Integer> empty().distinctBy(comparator)).isEqualTo(empty());
         } else {
@@ -347,8 +348,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
-        final Comparator<String> comparator = (s1, s2) -> (s1.charAt(1)) - (s2.charAt(1));
-
+        final Comparator<String> comparator = comparingInt(s -> (s.charAt(1)));
         final Traversable<String> distinct = of("1a", "2a", "3a", "3b", "4b", "5c").distinctBy(comparator).map(s -> s.substring(1));
         assertThat(distinct).isEqualTo(of("a", "b", "c"));
     }
@@ -1002,7 +1002,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCalculateMaxByOfInts() {
-        assertThat(of(1, 2, 3).maxBy((i1, i2) -> i1 - i2)).isEqualTo(Option.some(3));
+        assertThat(of(1, 2, 3).maxBy(comparingInt(i -> i))).isEqualTo(Option.some(3));
     }
 
     @Test
@@ -1128,7 +1128,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCalculateMinByOfInts() {
-        assertThat(of(1, 2, 3).minBy((i1, i2) -> i1 - i2)).isEqualTo(Option.some(1));
+        assertThat(of(1, 2, 3).minBy(comparingInt(i -> i))).isEqualTo(Option.some(1));
     }
 
     @Test
@@ -1421,13 +1421,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldRetainAllElementsFromNil() {
-        final Traversable<Object> src = empty();
-        final Traversable<Object> expected = src;
-        final Traversable<Object> actual = src.retainAll(of(1, 2, 3));
+        final Traversable<Object> empty = empty();
+        final Traversable<Object> actual = empty.retainAll(of(1, 2, 3));
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(actual).isEqualTo(expected);
+            assertThat(actual).isEqualTo(empty);
         } else {
-            assertThat(actual).isSameAs(expected);
+            assertThat(actual).isSameAs(empty);
         }
     }
 
@@ -1990,7 +1989,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldUnzipNonNil() {
         final Tuple actual = of(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
-        final Tuple expected = Tuple.of(of(0, 1), this.<Character> of('a', 'b'));
+        final Tuple expected = Tuple.of(of(0, 1), of('a', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2002,7 +2001,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldUnzip3NonNil() {
         final Tuple actual = of(0, 1).unzip3(i -> Tuple.of(i, (char) ((short) 'a' + i), (char) ((short) 'a' + i + 1)));
-        final Tuple expected = Tuple.of(of(0, 1), this.<Character> of('a', 'b'), this.<Character> of('b', 'c'));
+        final Tuple expected = Tuple.of(of(0, 1), of('a', 'b'), of('b', 'c'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2184,6 +2183,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     // -- equals
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTraversableInstance() {
         final Traversable<?> nonEmpty = of(1);
@@ -2282,7 +2282,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldStreamAndCollectNil() {
         testCollector(() -> {
-            final Traversable<?> actual = java.util.stream.Stream.empty().collect(this.<Object> collector());
+            final Traversable<?> actual = java.util.stream.Stream.empty().collect(collector());
             assertThat(actual).isEmpty();
         });
     }
@@ -2298,7 +2298,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldParallelStreamAndCollectNil() {
         testCollector(() -> {
-            final Traversable<?> actual = java.util.stream.Stream.empty().parallel().collect(this.<Object> collector());
+            final Traversable<?> actual = java.util.stream.Stream.empty().parallel().collect(collector());
             assertThat(actual).isEmpty();
         });
     }
@@ -2373,8 +2373,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
         final java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(asList(0, 1));
-        final Supplier<Integer> s = () -> ints.remove();
-        final Traversable<Number> actual = fill(2, s);
+        final Traversable<Number> actual = fill(2, ints::remove);
         assertThat(actual).isEqualTo(of(0, 1));
     }
 
@@ -2417,7 +2416,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     // helpers
 
-    static PrintStream failingPrintStream() {
+    private static PrintStream failingPrintStream() {
         return new PrintStream(new OutputStream() {
             @Override
             public void write(int b) throws IOException {
@@ -2426,7 +2425,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         });
     }
 
-    static PrintWriter failingPrintWriter() {
+    private static PrintWriter failingPrintWriter() {
         return new PrintWriter(new OutputStream() {
             @Override
             public void write(int b) throws IOException {

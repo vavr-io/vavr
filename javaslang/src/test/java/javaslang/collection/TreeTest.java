@@ -44,7 +44,7 @@ public class TreeTest extends AbstractTraversableTest {
      * 7       8   9
      * </code></pre>
      */
-    final Tree<Integer> tree = $(1, $(2, $(4, $(7)), $(5)), $(3, $(6, $(8), $(9))));
+    private final Tree<Integer> tree = $(1, $(2, $(4, $(7)), $(5)), $(3, $(6, $(8), $(9))));
 
     @Override
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
@@ -460,7 +460,7 @@ public class TreeTest extends AbstractTraversableTest {
     public void shouldFullyIterateNonNil() {
         final int length = List
                 .of(1, 2, 4, 7, 5, 3, 6, 8, 9)
-                .zip(tree::iterator)
+                .zip(tree)
                 .filter(t -> Objects.equals(t._1, t._2))
                 .length();
         assertThat(length).isEqualTo(9);
@@ -562,6 +562,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // equals
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldBeAwareThatTwoTreesOfSameInstanceAreEqual() {
         // DEV_NOTE: intentionally not called `assertThat(Tree.empty()).isEqualTo(Tree.empty())`
@@ -594,7 +595,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     public void shouldTransform() {
-        String transformed = $(42, $(2), $(3)).transform(v -> String.valueOf(v.get()));
+        final String transformed = $(42, $(2), $(3)).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
     }
 
@@ -661,15 +662,14 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     public void shouldSerializeDeserializeNonEmpty() {
         final Object actual = deserialize(serialize(tree));
-        final Object expected = tree;
-        assertThat(actual).isEqualTo(expected);
+        assertThat(actual).isEqualTo(tree);
     }
 
     // -- toVector
 
     @Test
     public void shouldReturnSelfOnConvertToTree() {
-        Value<Integer> value = of(1, 2, 3);
+        final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toTree()).isSameAs(value);
     }
 }

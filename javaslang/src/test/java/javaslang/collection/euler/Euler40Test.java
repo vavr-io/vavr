@@ -52,8 +52,7 @@ public class Euler40Test {
         return FIRST_1_000_000_DECIMALS.get(num - 1);
     }
 
-    private static final Stream<Character> FIRST_1_000_000_DECIMALS
-            = Stream.from(1)
+    private static final Stream<Character> FIRST_1_000_000_DECIMALS = Stream.from(1)
             .map(i -> i.toString())
             .flatMap(CharSeq::of)
             .take(1_000_000);

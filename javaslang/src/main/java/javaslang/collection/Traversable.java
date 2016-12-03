@@ -188,7 +188,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return {@code Some(average)} or {@code None}, if there are no elements
      * @throws UnsupportedOperationException if this elements are not numeric
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "unchecked", "OptionalGetWithoutIsPresent" })
     default Option<Double> average() {
         if (isEmpty()) {
             return Option.none();
@@ -228,7 +228,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     default boolean containsAll(Iterable<? extends T> elements) {
-        HashSet<T> uniqueElements = HashSet.ofAll(elements);
+        final HashSet<T> uniqueElements = HashSet.ofAll(elements);
         return toSet().intersect(uniqueElements).size() == uniqueElements.size();
     }
 

@@ -225,7 +225,6 @@ final class FutureImpl<T> implements Future<T> {
      * DEV-NOTE: Internally this method is called by the {@code Future.run()} method and by {@code Promise}.
      *
      * @param value A Success containing a result or a Failure containing an Exception.
-     * @return The given {@code value} for convenience purpose.
      * @throws IllegalStateException if the Future is already completed or cancelled.
      * @throws NullPointerException  if the given {@code value} is null.
      */

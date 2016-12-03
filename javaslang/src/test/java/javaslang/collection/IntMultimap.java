@@ -246,7 +246,7 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
         class SpliteratorProxy implements Spliterator<T> {
             private final Spliterator<Tuple2<Integer, T>> spliterator;
 
-            SpliteratorProxy(Spliterator<Tuple2<Integer, T>> spliterator) {
+            private SpliteratorProxy(Spliterator<Tuple2<Integer, T>> spliterator) {
                 this.spliterator = spliterator;
             }
 

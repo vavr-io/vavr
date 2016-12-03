@@ -28,16 +28,16 @@ public class HashSetTest extends AbstractSetTest {
             @Override
             public IterableAssert<T> isEqualTo(Object obj) {
                 @SuppressWarnings("unchecked")
-                Iterable<T> expected = (Iterable<T>) obj;
-                java.util.Map<T, Integer> actualMap = countMap(actual);
-                java.util.Map<T, Integer> expectedMap = countMap(expected);
+                final Iterable<T> expected = (Iterable<T>) obj;
+                final java.util.Map<T, Integer> actualMap = countMap(actual);
+                final java.util.Map<T, Integer> expectedMap = countMap(expected);
                 assertThat(actualMap.size()).isEqualTo(expectedMap.size());
                 actualMap.keySet().forEach(k -> assertThat(actualMap.get(k)).isEqualTo(expectedMap.get(k)));
                 return this;
             }
 
             private java.util.Map<T, Integer> countMap(Iterable<? extends T> it) {
-                java.util.HashMap<T, Integer> cnt = new java.util.HashMap<>();
+                final java.util.HashMap<T, Integer> cnt = new java.util.HashMap<>();
                 it.forEach(i -> cnt.merge(i, 1, (v1, v2) -> v1 + v2));
                 return cnt;
             }
@@ -301,7 +301,7 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
     }
 
@@ -460,7 +460,7 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldReturnSelfOnConvertToSet() {
-        Value<Integer> value = of(1, 2, 3);
+        final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toSet()).isSameAs(value);
     }
 }

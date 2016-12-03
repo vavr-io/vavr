@@ -226,6 +226,7 @@ public class LazyTest {
 
     // -- equals
 
+    @SuppressWarnings({ "EqualsBetweenInconvertibleTypes", "EqualsWithItself" })
     @Test
     public void shouldDetectEqualObject() {
         assertThat(Lazy.of(() -> 1).equals("")).isFalse();

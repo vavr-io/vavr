@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
-import static java.lang.Integer.bitCount;
+import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toList;
 import static javaslang.TestComparators.toStringComparator;
 import static javaslang.collection.Comparators.naturalComparator;
@@ -130,7 +130,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     }
 
     private static Comparator<Integer> composedComparator() {
-        final Comparator<Integer> bitCountComparator = (o1, o2) -> Integer.compare(bitCount(o1), bitCount(o2));
+        final Comparator<Integer> bitCountComparator = comparingInt(Integer::bitCount);
         return bitCountComparator.thenComparing(naturalComparator());
     }
 
@@ -190,7 +190,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
 
     @Test
     public void shouldComputeDistinctOfNonEmptyTraversableUsingKeyExtractor() {
-        final Comparator<String> comparator = (o1, o2) -> Integer.compare(o1.charAt(1), o2.charAt(1));
+        final Comparator<String> comparator = comparingInt(o -> o.charAt(1));
         assertThat(PriorityQueue.of(comparator, "5c", "1a", "3a", "1a", "2a", "4b", "3b").distinct().map(s -> s.substring(1))).isEqualTo(of("a", "b", "c"));
     }
 

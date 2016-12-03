@@ -8,13 +8,15 @@ package javaslang;
 import java.io.Serializable;
 import java.util.Comparator;
 
+import static java.util.Comparator.comparing;
+
 public final class TestComparators {
 
     private TestComparators() {
     }
 
     public static Comparator<Object> toStringComparator() {
-        return (Comparator<Object> & Serializable) (o1, o2) -> String.valueOf(o1).compareTo(String.valueOf(o2));
+        return (Comparator<Object> & Serializable) comparing(String::valueOf);
     }
 
 }

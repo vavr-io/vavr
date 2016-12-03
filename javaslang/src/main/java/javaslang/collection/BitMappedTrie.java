@@ -29,17 +29,19 @@ import static javaslang.collection.NodeModifier.IDENTITY;
  * @since 2.1.0
  */
 final class BitMappedTrie<T> implements Serializable {
-    static final int BRANCHING_BASE = 5;
-    static final int BRANCHING_FACTOR = 1 << BRANCHING_BASE;
-    static final int BRANCHING_MASK = -1 >>> -BRANCHING_BASE;
 
-    static int firstDigit(int num, int depthShift) { return num >> depthShift; }
-    static int digit(int num, int depthShift) { return lastDigit(firstDigit(num, depthShift)); }
-    static int lastDigit(int num) { return num & BRANCHING_MASK; }
+    private static final int BRANCHING_BASE = 5;
+    private static final int BRANCHING_FACTOR = 1 << BRANCHING_BASE;
+    private static final int BRANCHING_MASK = -1 >>> -BRANCHING_BASE;
+
+    private static int firstDigit(int num, int depthShift) { return num >> depthShift; }
+    private static int digit(int num, int depthShift) { return lastDigit(firstDigit(num, depthShift)); }
+    private static int lastDigit(int num) { return num & BRANCHING_MASK; }
 
     private static final long serialVersionUID = 1L;
 
     private static final BitMappedTrie<?> EMPTY = new BitMappedTrie<>(obj(), obj().empty(), 0, 0, 0);
+
     @SuppressWarnings("unchecked")
     static <T> BitMappedTrie<T> empty() { return (BitMappedTrie<T>) EMPTY; }
 

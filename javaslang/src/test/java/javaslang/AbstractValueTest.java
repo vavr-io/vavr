@@ -35,7 +35,6 @@ import java.util.*;
 import java.util.Collections;
 import java.util.function.Function;
 
-import static java.lang.Integer.bitCount;
 import static javaslang.API.*;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
@@ -466,7 +465,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToSortedSet() {
         final Value<Integer> value = of(3, 7, 1, 15, 0);
-        final Comparator<Integer> comparator = (o1, o2) -> Integer.compare(bitCount(o1), bitCount(o2));
+        final Comparator<Integer> comparator = Comparator.comparingInt(Integer::bitCount);
         final SortedSet<Integer> set = value.toSortedSet(comparator.reversed());
         if (value.isSingleValued()) {
             assertThat(set).isEqualTo(TreeSet.of(3));
@@ -754,6 +753,7 @@ public abstract class AbstractValueTest {
     public void shouldConvertToJavaStream() {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.stream.Stream<Integer> s1 = value.toJavaStream();
+        //noinspection Duplicates
         if (value.isSingleValued()) {
             final java.util.stream.Stream<Integer> s2 = java.util.stream.Stream.of(1);
             assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
@@ -768,6 +768,7 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.stream.Stream<Integer> s1 = value.toJavaParallelStream();
         assertThat(s1.isParallel()).isTrue();
+        //noinspection Duplicates
         if (value.isSingleValued()) {
             final java.util.stream.Stream<Integer> s2 = java.util.stream.Stream.of(1);
             assertThat(List.ofAll(s1::iterator)).isEqualTo(List.ofAll(s2::iterator));
@@ -781,44 +782,44 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToEitherLeftFromValueSupplier() {
-        Either<Integer, String> either = of(0).toLeft(() -> "fallback");
+        final Either<Integer, String> either = of(0).toLeft(() -> "fallback");
         assertThat(either.isLeft()).isTrue();
         assertThat(either.getLeft()).isEqualTo(0);
 
-        Either<Object, String> either2 = empty().toLeft(() -> "fallback");
+        final Either<Object, String> either2 = empty().toLeft(() -> "fallback");
         assertThat(either2.isRight()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherLeftFromValue() {
-        Either<Integer, String> either = of(0).toLeft("fallback");
+        final Either<Integer, String> either = of(0).toLeft("fallback");
         assertThat(either.isLeft()).isTrue();
         assertThat(either.getLeft()).isEqualTo(0);
 
-        Either<Object, String> either2 = empty().toLeft("fallback");
+        final Either<Object, String> either2 = empty().toLeft("fallback");
         assertThat(either2.isRight()).isTrue();
         assertThat(either2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherRightFromValueSupplier() {
-        Either<String, Integer> either = of(0).toRight(() -> "fallback");
+        final Either<String, Integer> either = of(0).toRight(() -> "fallback");
         assertThat(either.isRight()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<String, Object> either2 = empty().toRight(() -> "fallback");
+        final Either<String, Object> either2 = empty().toRight(() -> "fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.getLeft()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToEitherRightFromValue() {
-        Either<String, Integer> either = of(0).toRight("fallback");
+        final Either<String, Integer> either = of(0).toRight("fallback");
         assertThat(either.isRight()).isTrue();
         assertThat(either.get()).isEqualTo(0);
 
-        Either<String, Object> either2 = empty().toRight("fallback");
+        final Either<String, Object> either2 = empty().toRight("fallback");
         assertThat(either2.isLeft()).isTrue();
         assertThat(either2.getLeft()).isEqualTo("fallback");
     }
@@ -827,44 +828,44 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToValidationInvalidFromValueSupplier() {
-        Validation<Integer, String> validation = of(0).toInvalid(() -> "fallback");
+        final Validation<Integer, String> validation = of(0).toInvalid(() -> "fallback");
         assertThat(validation.isInvalid()).isTrue();
         assertThat(validation.getError()).isEqualTo(0);
 
-        Validation<Object, String> validation2 = empty().toInvalid(() -> "fallback");
+        final Validation<Object, String> validation2 = empty().toInvalid(() -> "fallback");
         assertThat(validation2.isValid()).isTrue();
         assertThat(validation2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToValidationInvalidFromValue() {
-        Validation<Integer, String> validation = of(0).toInvalid("fallback");
+        final Validation<Integer, String> validation = of(0).toInvalid("fallback");
         assertThat(validation.isInvalid()).isTrue();
         assertThat(validation.getError()).isEqualTo(0);
 
-        Validation<Object, String> validation2 = empty().toInvalid("fallback");
+        final Validation<Object, String> validation2 = empty().toInvalid("fallback");
         assertThat(validation2.isValid()).isTrue();
         assertThat(validation2.get()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToValidationRightFromValueSupplier() {
-        Validation<String, Integer> validation = of(0).toValid(() -> "fallback");
+        final Validation<String, Integer> validation = of(0).toValid(() -> "fallback");
         assertThat(validation.isValid()).isTrue();
         assertThat(validation.get()).isEqualTo(0);
 
-        Validation<String, Object> validation2 = empty().toValid(() -> "fallback");
+        final Validation<String, Object> validation2 = empty().toValid(() -> "fallback");
         assertThat(validation2.isInvalid()).isTrue();
         assertThat(validation2.getError()).isEqualTo("fallback");
     }
 
     @Test
     public void shouldConvertToValidationValidFromValue() {
-        Validation<String, Integer> validation = of(0).toValid("fallback");
+        final Validation<String, Integer> validation = of(0).toValid("fallback");
         assertThat(validation.isValid()).isTrue();
         assertThat(validation.get()).isEqualTo(0);
 
-        Validation<String, Object> validation2 = empty().toValid("fallback");
+        final Validation<String, Object> validation2 = empty().toValid("fallback");
         assertThat(validation2.isInvalid()).isTrue();
         assertThat(validation2.getError()).isEqualTo("fallback");
     }
@@ -983,5 +984,28 @@ public abstract class AbstractValueTest {
             final Value<?> actual = deserialize(serialize(testee));
             assertThat(actual).isEqualTo(testee);
         }
+    }
+
+    // -- equals
+
+    @Test
+    public void shouldRecognizeSameObject() {
+        final Value<Integer> v = of(1);
+        //noinspection EqualsWithItself
+        assertThat(v.equals(v)).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeEqualObjects() {
+        final Value<Integer> v1 = of(1);
+        final Value<Integer> v2 = of(1);
+        assertThat(v1.equals(v2)).isTrue();
+    }
+
+    @Test
+    public void shouldRecognizeUnequalObjects() {
+        final Value<Integer> v1 = of(1);
+        final Value<Integer> v2 = of(2);
+        assertThat(v1.equals(v2)).isFalse();
     }
 }
