@@ -7,7 +7,7 @@ package javaslang;
 
 import java.util.*;
 
-public final class JavaCollections {
+final class JavaCollections {
 
     private JavaCollections() {
     }

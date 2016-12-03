@@ -201,7 +201,7 @@ public class ListTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldAcceptNavigableSet() {
-        java.util.TreeSet<Integer> javaSet = new java.util.TreeSet<>();
+        final java.util.TreeSet<Integer> javaSet = new java.util.TreeSet<>();
         javaSet.add(2);
         javaSet.add(1);
         assertThat(List.ofAll(javaSet)).isEqualTo(List.of(1, 2));
@@ -289,7 +289,7 @@ public class ListTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
     }
 
@@ -399,7 +399,7 @@ public class ListTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldReturnSelfOnConvertToList() {
-        Value<Integer> value = of(1, 2, 3);
+        final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toList()).isSameAs(value);
     }
 }

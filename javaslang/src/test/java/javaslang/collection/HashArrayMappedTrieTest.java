@@ -60,8 +60,8 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void testDeepestTree() {
+        final List<Integer> ints = List.tabulate(Integer.SIZE, i -> 1 << i).sorted();
         HashArrayMappedTrie<Integer, Integer> hamt = empty();
-        List<Integer> ints = List.tabulate(Integer.SIZE, i -> 1 << i).sorted();
         hamt = ints.foldLeft(hamt, (h, i) -> h.put(i, i));
         assertThat(List.ofAll(hamt.keysIterator()).sorted()).isEqualTo(ints);
     }
@@ -77,8 +77,8 @@ public class HashArrayMappedTrieTest {
     }
 
     private <K extends Comparable<? super K>, V> void testBigData(int count, Function<Tuple2<Integer, Integer>, Tuple2<K, V>> mapper) {
-        Comparator<K, V> cmp = new Comparator<>();
-        java.util.Map<K, V> rnd = rnd(count, mapper);
+        final Comparator<K, V> cmp = new Comparator<>();
+        final java.util.Map<K, V> rnd = rnd(count, mapper);
         for (java.util.Map.Entry<K, V> e : rnd.entrySet()) {
             cmp.set(e.getKey(), e.getValue());
         }
@@ -104,9 +104,10 @@ public class HashArrayMappedTrieTest {
 
     // -- equals
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameHAMTInstance() {
-        HashArrayMappedTrie<Integer, Integer> trie = empty();
+        final HashArrayMappedTrie<Integer, Integer> trie = empty();
         assertThat(trie.equals(trie)).isTrue();
     }
 
@@ -147,7 +148,7 @@ public class HashArrayMappedTrieTest {
     public void shouldCheckHashCodeInLeafList() {
         HashArrayMappedTrie<Integer, Integer> trie = empty();
         trie = trie.put(0, 1).put(null, 2);       // LeafList.hash == 0
-        Option<Integer> none = trie.get(1 << 6);  // (key.hash & BUCKET_BITS) == 0
+        final Option<Integer> none = trie.get(1 << 6);  // (key.hash & BUCKET_BITS) == 0
         assertThat(none).isEqualTo(Option.none());
     }
 
@@ -167,23 +168,10 @@ public class HashArrayMappedTrieTest {
     }
 
     @Test
-    public void test() {
-        System.out.printf("#(0): %d%n", Objects.hash(0));
-        System.out.printf("#(0, 1): %d%n", Objects.hash(0, 1));
-        System.out.printf("#(1): %d%n", Objects.hash(1));
-        System.out.printf("#(1, 2): %d%n", Objects.hash(1, 2));
-        System.out.printf("#(2): %d%n", Objects.hash(2));
-        System.out.printf("#(2, 3): %d%n", Objects.hash(2, 3));
-        System.out.printf("0 ^ #(1, 2): %d%n", (0 ^ Objects.hash(1, 2)));
-        System.out.printf("0 ^ #(2, 3): %d%n", (0 ^ Objects.hash(2, 3)));
-
-    }
-
-    @Test
     public void shouldCalculateBigHashCode() {
         HashArrayMappedTrie<Integer, Integer> h1 = empty();
         HashArrayMappedTrie<Integer, Integer> h2 = empty();
-        int count = 1234;
+        final int count = 1234;
         for (int i = 0; i <= count; i++) {
             h1 = h1.put(i, i);
             h2 = h2.put(count - i, count - i);
@@ -220,7 +208,7 @@ public class HashArrayMappedTrieTest {
         public boolean equals(Object o) {
             if (this == o) { return true; }
             if (o == null || getClass() != o.getClass()) { return false; }
-            WeakInteger that = (WeakInteger) o;
+            final WeakInteger that = (WeakInteger) o;
             return value == that.value;
         }
 
@@ -261,10 +249,10 @@ public class HashArrayMappedTrieTest {
     }
 
     private <K, V> java.util.Map<K, V> rnd(int count, Function<Tuple2<Integer, Integer>, Tuple2<K, V>> mapper) {
-        Random r = new Random();
-        java.util.HashMap<K, V> mp = new java.util.HashMap<>();
+        final Random r = new Random();
+        final java.util.HashMap<K, V> mp = new java.util.HashMap<>();
         for (int i = 0; i < count; i++) {
-            Tuple2<K, V> entry = mapper.apply(Tuple.of(r.nextInt(), r.nextInt()));
+            final Tuple2<K, V> entry = mapper.apply(Tuple.of(r.nextInt(), r.nextInt()));
             mp.put(entry._1, entry._2);
         }
         return mp;

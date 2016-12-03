@@ -840,9 +840,7 @@ public interface Future<T> extends Value<T> {
     default <U> Future<U> transformValue(Function<? super Try<T>, ? extends Try<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
         final Promise<U> promise = Promise.make(executorService());
-        onComplete(t -> {
-            Try.run(() -> promise.complete(f.apply(t))).onFailure(promise::failure);
-        });
+        onComplete(t -> Try.run(() -> promise.complete(f.apply(t))).onFailure(promise::failure));
         return promise.future();
     }
 

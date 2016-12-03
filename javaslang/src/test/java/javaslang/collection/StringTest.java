@@ -43,7 +43,7 @@ public class StringTest {
 
     @Test
     public void getChars() {
-        char[] chars = new char[2];
+        final char[] chars = new char[2];
         CharSeq.of("123").getChars(0, 2, chars, 0);
         assertThat(chars).isEqualTo(new char[] { '1', '2' });
     }

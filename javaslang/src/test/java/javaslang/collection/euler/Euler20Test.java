@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler20Test {
 
+    @SuppressWarnings("PointlessArithmeticExpression")
     @Test
     public void shouldSolveProblem20() {
         assertThat(sumOfFactorialDigits(10)).isEqualTo(3 + 6 + 2 + 8 + 8 + 0 + 0);

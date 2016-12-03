@@ -40,12 +40,14 @@ public class TupleTest {
         assertThat(tuple0().toSeq()).isEqualTo(List.empty());
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTuple0Instances() {
         final Tuple0 t = tuple0();
         assertThat(t.equals(t)).isTrue();
     }
 
+    @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void shouldNotTuple0EqualsNull() {
         assertThat(tuple0().equals(null)).isFalse();
@@ -56,6 +58,7 @@ public class TupleTest {
         assertThat(tuple0().equals(new Object())).isFalse();
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldTuple0EqualTuple0() {
         assertThat(tuple0().equals(tuple0())).isTrue();
@@ -63,7 +66,7 @@ public class TupleTest {
 
     @Test
     public void shouldDeserializeSingletonOfTuple0() {
-        Object tuple0 = Serializables.deserialize(Serializables.serialize(Tuple0.instance()));
+        final Object tuple0 = Serializables.deserialize(Serializables.serialize(Tuple0.instance()));
         assertThat(tuple0 == Tuple0.instance()).isTrue();
     }
 
@@ -106,12 +109,14 @@ public class TupleTest {
         assertThat(tuple1().arity()).isEqualTo(1);
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTuple1Instances() {
         final Tuple1<?> t = tuple1();
         assertThat(t.equals(t)).isTrue();
     }
 
+    @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void shouldNotTuple1EqualsNull() {
         assertThat(tuple1().equals(null)).isFalse();
@@ -143,7 +148,7 @@ public class TupleTest {
 
     @Test
     public void shouldCreateTuple2FromEntry() {
-        Tuple2<Integer, Integer> tuple2FromEntry = Tuple.fromEntry(new AbstractMap.SimpleEntry<>(1, 2));
+        final Tuple2<Integer, Integer> tuple2FromEntry = Tuple.fromEntry(new AbstractMap.SimpleEntry<>(1, 2));
         assertThat(tuple2FromEntry.toString()).isEqualTo("(1, 2)");
     }
 
@@ -158,12 +163,14 @@ public class TupleTest {
         assertThat(tuple2().arity()).isEqualTo(2);
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTuple2Instances() {
         final Tuple2<?, ?> t = tuple2();
         assertThat(t.equals(t)).isTrue();
     }
 
+    @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void shouldNotTuple2EqualsNull() {
         assertThat(tuple2().equals(null)).isFalse();
@@ -214,12 +221,14 @@ public class TupleTest {
         assertThat(tuple3().arity()).isEqualTo(3);
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTuple3Instances() {
         final Tuple3<?, ?, ?> t = tuple3();
         assertThat(t.equals(t)).isTrue();
     }
 
+    @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void shouldNotTuple3EqualsNull() {
         assertThat(tuple3().equals(null)).isFalse();
@@ -262,12 +271,14 @@ public class TupleTest {
         assertThat(tuple4().arity()).isEqualTo(4);
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTuple4Instances() {
         final Tuple4<?, ?, ?, ?> t = tuple4();
         assertThat(t.equals(t)).isTrue();
     }
 
+    @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void shouldNotTuple4EqualsNull() {
         assertThat(tuple4().equals(null)).isFalse();
@@ -311,12 +322,14 @@ public class TupleTest {
         assertThat(tuple5().arity()).isEqualTo(5);
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTuple5Instances() {
         final Tuple5<?, ?, ?, ?, ?> t = tuple5();
         assertThat(t.equals(t)).isTrue();
     }
 
+    @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void shouldNotTuple5EqualsNull() {
         assertThat(tuple5().equals(null)).isFalse();
@@ -361,12 +374,14 @@ public class TupleTest {
         assertThat(tuple6().arity()).isEqualTo(6);
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTuple6Instances() {
         final Tuple6<?, ?, ?, ?, ?, ?> t = tuple6();
         assertThat(t.equals(t)).isTrue();
     }
 
+    @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void shouldNotTuple6EqualsNull() {
         assertThat(tuple6().equals(null)).isFalse();
@@ -412,12 +427,14 @@ public class TupleTest {
         assertThat(tuple7().arity()).isEqualTo(7);
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTuple7Instances() {
         final Tuple7<?, ?, ?, ?, ?, ?, ?> t = tuple7();
         assertThat(t.equals(t)).isTrue();
     }
 
+    @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void shouldNotTuple7EqualsNull() {
         assertThat(tuple7().equals(null)).isFalse();
@@ -464,12 +481,14 @@ public class TupleTest {
         assertThat(tuple8().arity()).isEqualTo(8);
     }
 
+    @SuppressWarnings("EqualsWithItself")
     @Test
     public void shouldEqualSameTuple8Instances() {
         final Tuple8<?, ?, ?, ?, ?, ?, ?, ?> t = tuple8();
         assertThat(t.equals(t)).isTrue();
     }
 
+    @SuppressWarnings("ObjectEqualsNull")
     @Test
     public void shouldNotTuple8EqualsNull() {
         assertThat(tuple8().equals(null)).isFalse();

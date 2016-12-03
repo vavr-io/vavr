@@ -88,7 +88,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 final ArrayList<Tuple2<Integer, T>> result = new ArrayList<>();
                 Stream.ofAll(list)
                         .zipWithIndex()
-                        .map(tu -> Tuple.of(tu._2.intValue(), tu._1))
+                        .map(tu -> Tuple.of(tu._2, tu._1))
                         .forEach(result::add);
                 return result;
             }

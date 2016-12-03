@@ -36,9 +36,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     static <T> Array<T> wrap(Object[] array) {
-        return array.length == 0
-               ? empty()
-               : new Array<T>(array);
+        return (array.length == 0) ? empty() : new Array<>(array);
     }
 
     /**
@@ -1340,9 +1338,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (o == this) {
             return true;
         } else if (o instanceof Array) {
-            final Object[] arr1 = delegate;
-            final Object[] arr2 = ((Array<?>) o).delegate;
-            return Objects.deepEquals(arr1, arr2);
+            final Array<?> that = (Array<?>) o;
+            return Objects.deepEquals(this.delegate, that.delegate);
         } else {
             return false;
         }

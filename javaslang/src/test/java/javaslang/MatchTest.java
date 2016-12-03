@@ -17,18 +17,13 @@ import java.time.Year;
 import java.util.function.Predicate;
 
 import static javaslang.API.$;
-import static javaslang.API.*;
+import static javaslang.API.Case;
+import static javaslang.API.Match;
+import static javaslang.API.run;
+import static javaslang.Patterns.*;
 import static javaslang.MatchTest_DeveloperPatterns.Developer;
-import static javaslang.Patterns.Left;
-import static javaslang.Patterns.List;
-import static javaslang.Patterns.None;
-import static javaslang.Patterns.Right;
-import static javaslang.Patterns.Some;
 import static javaslang.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
-
-import javaslang.control.Option.Some;
-import javaslang.collection.List;
 
 public class MatchTest {
 
@@ -224,7 +219,7 @@ public class MatchTest {
         final Tuple2<String, Integer> actual = Match(tuple2Option).of(
                 Case(Some($()), value -> {
                     @SuppressWarnings("UnnecessaryLocalVariable")
-                    Tuple2<String, Integer> tuple2 = value; // types are inferred correctly!
+                    final Tuple2<String, Integer> tuple2 = value; // types are inferred correctly!
                     return tuple2;
                 })
         );

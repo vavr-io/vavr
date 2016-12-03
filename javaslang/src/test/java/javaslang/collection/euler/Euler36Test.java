@@ -36,8 +36,8 @@ public class Euler36Test {
     }
 
     private static boolean isDoubleBasePalindrome(int x) {
-        CharSeq seq = CharSeq.of(Integer.toString(x));
-        CharSeq rev = CharSeq.of(Integer.toBinaryString(x));
+        final CharSeq seq = CharSeq.of(Integer.toString(x));
+        final CharSeq rev = CharSeq.of(Integer.toBinaryString(x));
         return isPalindrome(seq) && isPalindrome(rev);
     }
 
