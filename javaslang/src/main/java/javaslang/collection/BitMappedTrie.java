@@ -30,13 +30,13 @@ import static javaslang.collection.NodeModifier.IDENTITY;
  */
 final class BitMappedTrie<T> implements Serializable {
 
-    private static final int BRANCHING_BASE = 5;
-    private static final int BRANCHING_FACTOR = 1 << BRANCHING_BASE;
-    private static final int BRANCHING_MASK = -1 >>> -BRANCHING_BASE;
+    static final int BRANCHING_BASE = 5;
+    static final int BRANCHING_FACTOR = 1 << BRANCHING_BASE;
+    static final int BRANCHING_MASK = -1 >>> -BRANCHING_BASE;
 
-    private static int firstDigit(int num, int depthShift) { return num >> depthShift; }
-    private static int digit(int num, int depthShift) { return lastDigit(firstDigit(num, depthShift)); }
-    private static int lastDigit(int num) { return num & BRANCHING_MASK; }
+    static int firstDigit(int num, int depthShift) { return num >> depthShift; }
+    static int digit(int num, int depthShift) { return lastDigit(firstDigit(num, depthShift)); }
+    static int lastDigit(int num) { return num & BRANCHING_MASK; }
 
     private static final long serialVersionUID = 1L;
 
