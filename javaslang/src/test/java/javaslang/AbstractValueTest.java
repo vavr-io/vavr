@@ -34,6 +34,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.Collections;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static javaslang.API.*;
 import static javaslang.Serializables.deserialize;
@@ -124,15 +125,26 @@ public abstract class AbstractValueTest {
     // -- getOrElse(T)
 
     @Test
-    public void shouldCalculateGetOrElse() {
+    public void shouldCalculateGetOrElseWithNull() {
+        assertThat(this.<Integer> empty().getOrElse((Integer) null)).isEqualTo(null);
+        assertThat(of(1).getOrElse((Integer) null)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldCalculateGetOrElseWithNonNull() {
         assertThat(empty().getOrElse(1)).isEqualTo(1);
         assertThat(of(1).getOrElse(2)).isEqualTo(1);
     }
 
     // -- getOrElse(Supplier)
 
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowOnGetOrElseWithNullSupplier() {
+        empty().getOrElse((Supplier<?>) null);
+    }
+
     @Test
-    public void shouldCalculateGetOrElseSupplier() {
+    public void shouldCalculateGetOrElseWithSupplier() {
         assertThat(empty().getOrElse(() -> 1)).isEqualTo(1);
         assertThat(of(1).getOrElse(() -> 2)).isEqualTo(1);
     }
