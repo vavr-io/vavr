@@ -7,10 +7,8 @@ package javaslang.collection;
 
 import javaslang.Function2;
 import javaslang.Tuple2;
-import javaslang.control.Try;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,16 +16,10 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static javaslang.API.Tuple;
+import static javaslang.collection.BitMappedTrie.BRANCHING_FACTOR;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class VectorPropertyTest {
-
-    // DEV-NOTE: We do not directly expose BitMappedTrie.BRANCHING_FACTOR if it is only needed for a unit test!
-    private static final int BRANCHING_FACTOR = Try.of(() -> {
-        final Field branchingFactor = BitMappedTrie.class.getDeclaredField("BRANCHING_FACTOR");
-        branchingFactor.setAccessible(true);
-        return branchingFactor.getInt(null);
-    }).getOrElseThrow(x -> new Error("Can't read BitMappedTrie.BRANCHING_FACTOR", x));
 
     @Test
     public void shouldCreateAndGet() {
