@@ -17,6 +17,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 
+import static java.util.Arrays.asList;
+
 /**
  * Tests all methods defined in {@link javaslang.collection.Seq}.
  */
@@ -184,6 +186,49 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldUseSeqAsPartialFunction() {
         assertThat(of(1, 2, 3).apply(1)).isEqualTo(2);
+    }
+
+    // -- asJava
+
+    @Test
+    public void shouldAsUnmodifiableListBehaveLikeToJavaList() {
+        final Seq<Integer> source = of(1, 2, 3, 4);
+        final java.util.List<Integer> wrapped = source.asJava();
+        final java.util.List<Integer> converted = source.toJavaList();
+
+        assertThat(wrapped.size()).isEqualTo(converted.size());
+        assertThat(wrapped.isEmpty()).isEqualTo(converted.isEmpty());
+
+        assertThat(wrapped.contains(2)).isEqualTo(converted.contains(2));
+        assertThat(wrapped.contains(0)).isEqualTo(converted.contains(0));
+        assertThat(wrapped.containsAll(asList(0, 1))).isEqualTo(converted.containsAll(asList(0, 1)));
+        assertThat(wrapped.containsAll(asList(1, 2))).isEqualTo(converted.containsAll(asList(1, 2)));
+
+        assertThat(wrapped.get(0)).isEqualTo(converted.get(0));
+        assertThat(wrapped.indexOf(4)).isEqualTo(converted.indexOf(4));
+        assertThat(wrapped.indexOf(5)).isEqualTo(converted.indexOf(5));
+        assertThat(wrapped.lastIndexOf(2)).isEqualTo(converted.lastIndexOf(2));
+
+        assertThat(wrapped).hasSameElementsAs(converted);
+        assertThat(wrapped.subList(1, 3)).hasSameElementsAs(converted.subList(1, 3));
+        assertThat(wrapped.toArray()).isEqualTo(converted.toArray());
+        assertThat(wrapped.toArray(new Integer[source.size()])).isEqualTo(converted.toArray(new Integer[source.size()]));
+
+        assertThat(wrapped.listIterator().hasPrevious()).isEqualTo(converted.listIterator().hasPrevious());
+        assertThat(wrapped.listIterator().previousIndex()).isEqualTo(converted.listIterator().previousIndex());
+
+        assertThat(wrapped.listIterator().hasNext()).isEqualTo(converted.listIterator().hasNext());
+        assertThat(wrapped.listIterator().nextIndex()).isEqualTo(converted.listIterator().nextIndex());
+        assertThat(wrapped.listIterator().next()).isEqualTo(converted.listIterator().next());
+        assertThat(wrapped.listIterator().nextIndex()).isEqualTo(converted.listIterator().nextIndex());
+
+        assertThat(wrapped.listIterator(source.size()).hasNext()).isEqualTo(converted.listIterator(source.size()).hasNext());
+        assertThat(wrapped.listIterator().nextIndex()).isEqualTo(converted.listIterator().nextIndex());
+
+        assertThat(wrapped.listIterator(source.size()).hasPrevious()).isEqualTo(converted.listIterator(source.size()).hasPrevious());
+        assertThat(wrapped.listIterator(source.size()).previousIndex()).isEqualTo(converted.listIterator(source.size()).previousIndex());
+        assertThat(wrapped.listIterator(source.size()).previous()).isEqualTo(converted.listIterator(source.size()).previous());
+        assertThat(wrapped.listIterator(source.size()).previousIndex()).isEqualTo(converted.listIterator(source.size()).previousIndex());
     }
 
     // -- combinations
@@ -1231,7 +1276,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldShuffleHaveSameElements() {
-        Seq<Integer> shuffled = of(1, 2, 3).shuffle();
+        final Seq<Integer> shuffled = of(1, 2, 3).shuffle();
         assertThat(shuffled.indexOf(1)).isNotEqualTo(-1);
         assertThat(shuffled.indexOf(2)).isNotEqualTo(-1);
         assertThat(shuffled.indexOf(3)).isNotEqualTo(-1);

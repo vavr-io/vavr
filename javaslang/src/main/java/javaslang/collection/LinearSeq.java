@@ -337,6 +337,10 @@ public interface LinearSeq<T> extends Seq<T> {
         return LinearSeqModule.Search.linearSearch(this, comparison);
     }
 
+    @Override
+    default java.util.List<T> asJava() {
+        return JavaConverters.asJava(this);
+    }
 }
 
 interface LinearSeqModule {

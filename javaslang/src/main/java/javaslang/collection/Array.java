@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.ArrayModule.Combinations;
+import javaslang.collection.JavaConverters.SeqAsJavaList;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -110,15 +111,19 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      *
      * @param <T>      Component type of the Array.
      * @param elements An Iterable of elements.
-     * @return A Array containing the given elements in the same order.
+     * @return An Array containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
     public static <T> Array<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return elements instanceof Array
-               ? (Array<T>) elements
-               : wrap(toArray(elements));
+        if (elements instanceof Array) {
+            return (Array<T>) elements;
+        } else if (elements instanceof SeqAsJavaList) {
+            return ((SeqAsJavaList<T, ?>) elements).asArray();
+        } else {
+            return wrap(toArray(elements));
+        }
     }
 
     /**
