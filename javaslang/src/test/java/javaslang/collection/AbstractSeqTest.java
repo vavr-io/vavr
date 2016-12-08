@@ -188,13 +188,15 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).apply(1)).isEqualTo(2);
     }
 
-    // -- asJava
+    // -- asImmutableJavaList
 
     @Test
-    public void shouldAsUnmodifiableListBehaveLikeToJavaList() {
+    public void immutableJavaListShouldBehaveLikeArrayList() {
         final Seq<Integer> source = of(1, 2, 3, 4);
-        final java.util.List<Integer> wrapped = source.asJava();
+        final java.util.List<Integer> wrapped = source.asImmutableJavaList();
         final java.util.List<Integer> converted = source.toJavaList();
+        final Seq<Integer> unwrapped = ofAll(wrapped);
+        assertThat(unwrapped).isSameAs(source);
 
         assertThat(wrapped.size()).isEqualTo(converted.size());
         assertThat(wrapped.isEmpty()).isEqualTo(converted.isEmpty());

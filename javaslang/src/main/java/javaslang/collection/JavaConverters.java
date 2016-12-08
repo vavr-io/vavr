@@ -7,9 +7,11 @@ package javaslang.collection;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.function.BiFunction;
+import java.util.function.UnaryOperator;
 
 import static javaslang.API.TODO;
 import static javaslang.collection.Collections.areEqual;
@@ -31,41 +33,49 @@ import static javaslang.collection.Collections.areEqual;
  * <p>
  * Subtypes of the Javaslang types mentioned above can have special views that make use of optimized implementations.
  *
- * @author Pap Lőrinc, Daniel Dietrich
+ * @author Pap Lőrinc, Daniel Dietrich, Sean Flanigan
  * @since 2.1.0
  */
 final class JavaConverters {
-    private static final boolean SHOULD_MUTATE = true;
     private JavaConverters() {}
 
-    static <T> java.util.List<T> asJava(LinearSeq<T> seq) {
-        return new SeqAsJavaList<>(seq, LinearSeqListIterator::new);
+    static <T> java.util.List<T> asImmutableJava(LinearSeq<T> seq) {
+        return new SeqAsImmutableJavaList<>(seq, LinearSeqImmutableListIterator::new);
     }
 
-    static <T> java.util.List<T> asJava(IndexedSeq<T> seq) {
-        return new SeqAsJavaList<>(seq, IndexedSeqListIterator::new);
+    static <T> java.util.List<T> asImmutableJava(IndexedSeq<T> seq) {
+        return new SeqAsImmutableJavaList<>(seq, IndexedSeqImmutableListIterator::new);
     }
 
-    static <T> java.util.Set<T> asJava(Set<T> set) {
+    static <T> java.util.List<T> asMutableJava(LinearSeq<T> seq) {
+        return new SeqAsMutableJavaList<>(seq, LinearSeqMutableListIterator::new);
+    }
+
+    static <T> java.util.List<T> asMutableJava(IndexedSeq<T> seq) {
+        return new SeqAsMutableJavaList<>(seq, IndexedSeqMutableListIterator::new);
+    }
+
+    static <T> java.util.Set<T> asImmutableJava(Set<T> set) {
         return new SetAsJavaSet<>(set);
     }
 
-    static <K, V> java.util.Map<K, V> asJava(Map<K, V> map) {
+    static <K, V> java.util.Map<K, V> asImmutableJava(Map<K, V> map) {
         return new MapAsJavaMap<>(map);
     }
 
-    static <K, V> java.util.Map<K, java.util.Collection<V>> asJava(Multimap<K, V> map) {
+    static <K, V> java.util.Map<K, java.util.Collection<V>> asImmutableJava(Multimap<K, V> map) {
         return new MultimapAsJavaMap<>(map);
     }
 
     // -- private view implementations
+    // TODO these should be split out into multiple files
 
-    static class SeqAsJavaList<T, S extends Seq<T>> implements java.util.List<T>, Serializable {
+    static abstract class AbstractSeqAsJavaList<T, S extends Seq<T>> extends java.util.AbstractList<T> implements Serializable {
         private static final long serialVersionUID = 1L;
         private final ListIteratorFactory<T, S> listIteratorFactory;
         private Seq<T> delegate;
 
-        SeqAsJavaList(S delegate, ListIteratorFactory<T, S> listIteratorFactory) {
+        AbstractSeqAsJavaList(S delegate, ListIteratorFactory<T, S> listIteratorFactory) {
             this.delegate = delegate;
             this.listIteratorFactory = listIteratorFactory;
         }
@@ -82,7 +92,7 @@ final class JavaConverters {
 
         @Override
         public T get(int index) {
-            // may throw an IndexOutOfBoundsException accordingly to the j.u.List.get(int)
+            // may throw IndexOutOfBoundsException according to j.u.List.get(int)
             return delegate.get(index);
         }
 
@@ -125,8 +135,8 @@ final class JavaConverters {
 
         @Override
         public java.util.List<T> subList(int fromIndex, int toIndex) {
-            // may throw IndexOutOfBoundsException accordingly to j.u.List.subList(int, int)
-            return delegate.subSequence(fromIndex, toIndex).asJava();
+            // may throw IndexOutOfBoundsException according to j.u.List.subList(int, int)
+            return delegate.subSequence(fromIndex, toIndex).asImmutableJavaList();
         }
 
         @Override
@@ -139,66 +149,8 @@ final class JavaConverters {
             return delegate.toJavaList().toArray(array);
         }
 
-        @Override
-        public boolean add(T element) {
-            setDelegate(delegate.append(element));
-            return true;
-        }
-
-        @Override
-        public void add(int index, T element) {
-            // may throw an IndexOutOfBoundsException accordingly to the j.u.List.add(int, T)
-            setDelegate(delegate.insert(index, element));
-        }
-
-        @Override
-        public boolean addAll(Collection<? extends T> collection) {
-            setDelegate(delegate.appendAll(collection));
-            return true;
-        }
-
-        @Override
-        public boolean addAll(int index, Collection<? extends T> collection) {
-            // may throw an IndexOutOfBoundsException accordingly to the j.u.List.addAll(int, Collection)
-            setDelegate(delegate.insertAll(index, collection));
-            return true;
-        }
-
-        @Override
-        public void clear() {
-            setDelegate(delegate.take(0));
-        }
-
-        @Override
-        public T remove(int index) {
-            // may throw an IndexOutOfBoundsException accordingly to the j.u.List.remove(int)
-            return setDelegateAndGetPreviousElement(index, delegate.removeAt(index));
-        }
-
         public Seq<Object> narrowed() {
             return Seq.narrow(delegate);
-        }
-
-        @Override
-        @SuppressWarnings("unchecked")
-        public boolean remove(Object obj) {
-            return setDelegateAndCheckChanged(narrowed().remove(obj));
-        }
-
-        @Override
-        public boolean removeAll(Collection<?> c) {
-            return setDelegateAndCheckChanged(narrowed().removeAll(c));
-        }
-
-        @Override
-        public boolean retainAll(Collection<?> c) {
-            return setDelegateAndCheckChanged(narrowed().retainAll(c));
-        }
-
-        @Override
-        public T set(int index, T element) {
-            // may throw an IndexOutOfBoundsException accordingly to the j.u.List.set(int, T)
-            return setDelegateAndGetPreviousElement(index, delegate.update(index, element));
         }
 
         // -- Object.*
@@ -209,50 +161,202 @@ final class JavaConverters {
         }
 
         @Override
-        public int hashCode() {
-            return Collections.hash(delegate);
-        }
-
-        @Override
         public String toString() {
-            return delegate.toJavaList().toString();
+            return delegate.mkString("[", ", ", "]");
         }
 
         // -- private helpers
 
-        private void setDelegate(Seq<T> delegate) {
-            if (!SHOULD_MUTATE) throw new UnsupportedOperationException();
-            else this.delegate = delegate;
+        Seq<T> getDelegate() {
+            return delegate;
         }
 
-        private T setDelegateAndGetPreviousElement(int index, Seq<T> newDelegate) {
-            final T previousElement = delegate.get(index);
-            setDelegate(newDelegate);
-            return previousElement;
-        }
-
-        @SuppressWarnings("unchecked")
-        private boolean setDelegateAndCheckChanged(Seq<?> newDelegate) {
-            final boolean changed = delegate.size() != newDelegate.size();
-            setDelegate((Seq<T>) newDelegate);
-            return changed;
+        void setDelegate(Seq<T> delegate) {
+            this.delegate = delegate;
         }
 
         // -- Javaslang converters
 
-        Vector<T> asVector() {
-            return delegate.toVector();
+        Array<T> asArray() {
+            return delegate.toArray();
         }
 
         List<T> asList() {
             return delegate.toList();
         }
 
-        Array<T> asArray() {
-            return delegate.toArray();
+        Queue<T> asQueue() {
+            return delegate.toQueue();
+        }
+
+        Stream<T> asStream() {
+            return delegate.toStream();
+        }
+
+        Vector<T> asVector() {
+            return delegate.toVector();
+        }
+
+
+    }
+
+    static class SeqAsImmutableJavaList<T, S extends Seq<T>> extends AbstractSeqAsJavaList<T, S> {
+        private static final long serialVersionUID = 1L;
+
+        SeqAsImmutableJavaList(S delegate, ListIteratorFactory<T, S> listIteratorFactory) {
+            super(delegate, listIteratorFactory);
+        }
+
+        @Override
+        void setDelegate(Seq<T> delegate) {
+            // this should never be called
+            throw new IllegalStateException();
+        }
+
+        @Override
+        public boolean add(T element) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean remove(Object obj) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends T> collection) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean addAll(int index, Collection<? extends T> collection) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void replaceAll(UnaryOperator<T> operator) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void sort(Comparator<? super T> c) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void clear() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public T set(int index, T element) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void add(int index, T element) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public T remove(int index) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    static class SeqAsMutableJavaList<T, S extends Seq<T>> extends AbstractSeqAsJavaList<T, S> {
+        private static final long serialVersionUID = 1L;
+
+        SeqAsMutableJavaList(S delegate, ListIteratorFactory<T, S> listIteratorFactory) {
+            super(delegate, listIteratorFactory);
+        }
+
+        T setDelegateAndGetPreviousElement(int index, Seq<T> newDelegate) {
+            final T previousElement = getDelegate().get(index);
+            setDelegate(newDelegate);
+            return previousElement;
+        }
+
+        /**
+         * Points at a new delegate, but only if it has a different size
+         * @param newDelegate the new delegate to use if it has a different size
+         * @return whether the delegate was changed
+         */
+        @SuppressWarnings("unchecked")
+        boolean setDelegateIfSizeChanged(Seq<?> newDelegate) {
+            final boolean changed = getDelegate().size() != newDelegate.size();
+            if (changed) setDelegate((Seq<T>) newDelegate);
+            return changed;
+        }
+
+        @Override
+        public boolean add(T element) {
+            setDelegate(getDelegate().append(element));
+            return true;
+        }
+
+        @Override
+        public void add(int index, T element) {
+            // may throw IndexOutOfBoundsException according to j.u.List.add(int, T)
+            setDelegate(getDelegate().insert(index, element));
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends T> collection) {
+            return setDelegateIfSizeChanged(getDelegate().appendAll(collection));
+        }
+
+        @Override
+        public boolean addAll(int index, Collection<? extends T> collection) {
+            // may throw IndexOutOfBoundsException according to j.u.List.addAll(int, Collection)
+            return setDelegateIfSizeChanged(getDelegate().insertAll(index, collection));
+        }
+
+        @Override
+        public void clear() {
+            setDelegate(getDelegate().take(0));
+        }
+
+        @Override
+        public T remove(int index) {
+            // may throw an IndexOutOfBoundsException accordingly to the j.u.List.remove(int)
+            return setDelegateAndGetPreviousElement(index, getDelegate().removeAt(index));
+        }
+
+        @Override
+        @SuppressWarnings("unchecked")
+        public boolean remove(Object obj) {
+            return setDelegateIfSizeChanged(narrowed().remove(obj));
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> c) {
+            return setDelegateIfSizeChanged(narrowed().removeAll(c));
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> c) {
+            return setDelegateIfSizeChanged(narrowed().retainAll(c));
+        }
+
+        @Override
+        public T set(int index, T element) {
+            // may throw an IndexOutOfBoundsException accordingly to the j.u.List.set(int, T)
+            return setDelegateAndGetPreviousElement(index, getDelegate().update(index, element));
         }
 
     }
+
 
     @FunctionalInterface
     private interface ListIteratorFactory<T, S extends Seq<T>> extends BiFunction<S, Integer, ListIterator<T>>, Serializable {
@@ -520,13 +624,17 @@ final class JavaConverters {
         }
     }
 
-    private static class IndexedSeqListIterator<T> implements java.util.ListIterator<T> {
+    private static abstract class AbstractIndexedSeqListIterator<T> implements java.util.ListIterator<T> {
         private IndexedSeq<T> delegate;
         private int index;
 
-        IndexedSeqListIterator(IndexedSeq<T> delegate, int index) {
+        AbstractIndexedSeqListIterator(IndexedSeq<T> delegate, int index) {
             this.delegate = delegate;
             this.index = index;
+        }
+
+        int getIndex() {
+            return index;
         }
 
         @Override
@@ -559,29 +667,72 @@ final class JavaConverters {
             return index - 1;
         }
 
+        IndexedSeq<T> getDelegate() {
+            return delegate;
+        }
+
+        void setDelegate(IndexedSeq<T> delegate) {
+            this.delegate = delegate;
+        }
+    }
+
+    private static class IndexedSeqImmutableListIterator<T> extends AbstractIndexedSeqListIterator<T> {
+        IndexedSeqImmutableListIterator(IndexedSeq<T> delegate, int index) {
+            super(delegate, index);
+        }
+
         @Override
         public void remove() {
-            setDelegate(delegate.removeAt(index));
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void set(T value) {
-            setDelegate(delegate.update(index, value));
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void add(T value) {
-            setDelegate(delegate.insert(index, value));
+            throw new UnsupportedOperationException();
         }
 
-        private void setDelegate(IndexedSeq<T> delegate) {
-            if (!SHOULD_MUTATE) throw new UnsupportedOperationException();
-            else this.delegate = delegate;
+        void setDelegate(IndexedSeq<T> delegate) {
+            // this should never be called
+            throw new IllegalStateException();
+        }
+
+    }
+
+    private static class IndexedSeqMutableListIterator<T> extends AbstractIndexedSeqListIterator<T> {
+        IndexedSeqMutableListIterator(IndexedSeq<T> delegate, int index) {
+            super(delegate, index);
+        }
+
+        @Override
+        public void remove() {
+            setDelegate(getDelegate().removeAt(getIndex()));
+        }
+
+        @Override
+        public void set(T value) {
+            setDelegate(getDelegate().update(getIndex(), value));
+        }
+
+        @Override
+        public void add(T value) {
+            setDelegate(getDelegate().insert(getIndex(), value));
+        }
+
+    }
+
+    private static class LinearSeqImmutableListIterator<T> extends IndexedSeqImmutableListIterator<T> {
+        LinearSeqImmutableListIterator(Seq<T> delegate, int index) {
+            super(delegate.toVector(), index);
         }
     }
 
-    private static class LinearSeqListIterator<T> extends IndexedSeqListIterator<T> {
-        LinearSeqListIterator(Seq<T> delegate, int index) {
+    private static class LinearSeqMutableListIterator<T> extends IndexedSeqMutableListIterator<T> {
+        LinearSeqMutableListIterator(Seq<T> delegate, int index) {
             super(delegate.toVector(), index);
         }
     }

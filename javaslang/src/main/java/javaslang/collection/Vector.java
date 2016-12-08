@@ -6,7 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.collection.JavaConverters.SeqAsJavaList;
+import javaslang.collection.JavaConverters.AbstractSeqAsJavaList;
 import javaslang.collection.VectorModule.Combinations;
 import javaslang.control.Option;
 
@@ -148,7 +148,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * The resulting vector has the same iteration order as the given iterable of elements
      * if the iteration order of the elements is stable.
      *
-     * @param <T>      Component type    of the Vector.
+     * @param <T>      Component type of the Vector.
      * @param elements An Iterable of elements.
      * @return A Vector containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
@@ -158,8 +158,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Vector) {
             return (Vector<T>) elements;
-        } else if (elements instanceof SeqAsJavaList) {
-            return ((SeqAsJavaList<T, ?>) elements).asVector();
+        } else if (elements instanceof AbstractSeqAsJavaList) {
+            return ((AbstractSeqAsJavaList<T, ?>) elements).asVector();
         } else {
             final Object[] array = withSize(elements).toArray();
             return ofAll(BitMappedTrie.ofAll(array));

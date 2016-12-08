@@ -6,7 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
-import javaslang.collection.JavaConverters.SeqAsJavaList;
+import javaslang.collection.JavaConverters.AbstractSeqAsJavaList;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
@@ -195,8 +195,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             return (List<T>) elements;
-        } else if (elements instanceof SeqAsJavaList) {
-            return ((SeqAsJavaList<T, ?>) elements).asList();
+        } else if (elements instanceof AbstractSeqAsJavaList) {
+            return ((AbstractSeqAsJavaList<T, ?>) elements).asList();
         } else if (elements instanceof java.util.List) {
             List<T> result = Nil.instance();
             final java.util.List<T> list = (java.util.List<T>) elements;
