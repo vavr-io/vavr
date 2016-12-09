@@ -573,6 +573,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     /**
      * Transposes the rows and columns of a {@link List} matrix.
      *
+     * @param <T> matrix element type
      * @param matrix to be transposed.
      * @return a transposed {@link List} matrix.
      * @throws IllegalArgumentException if the row lengths of {@code matrix} differ.

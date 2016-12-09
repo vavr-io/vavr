@@ -666,6 +666,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     /**
      * Transposes the rows and columns of a {@link Stream} matrix.
      *
+     * @param <T> matrix element type
      * @param matrix to be transposed.
      * @return a transposed {@link Stream} matrix.
      * @throws IllegalArgumentException if the row lengths of {@code matrix} differ.
@@ -821,7 +822,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? this : new AppendSelf<>((Cons<T>) this, mapper).stream();
     }
-
+    
     @Override
     default Stream<Stream<T>> combinations() {
         return Stream.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());

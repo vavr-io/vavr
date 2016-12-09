@@ -16,7 +16,7 @@ public final class TestComparators {
     }
 
     public static Comparator<Object> toStringComparator() {
-        return (Comparator<Object> & Serializable) comparing(String::valueOf);
+        return comparing(String::valueOf);
     }
 
 }

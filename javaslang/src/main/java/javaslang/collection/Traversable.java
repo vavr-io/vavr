@@ -226,8 +226,12 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     default boolean containsAll(Iterable<? extends T> elements) {
-        final HashSet<T> uniqueElements = HashSet.ofAll(elements);
-        return toSet().intersect(uniqueElements).size() == uniqueElements.size();
+        for (T element : elements) {
+            if (!contains(element)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**

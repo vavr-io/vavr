@@ -1234,6 +1234,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if {@code f} is null
      */
     static <T, U> Iterator<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+        Objects.requireNonNull(f, "f is null");
         return Stream.<U> ofAll(
                 unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2, t._1)))))
                 .reverse().iterator();
