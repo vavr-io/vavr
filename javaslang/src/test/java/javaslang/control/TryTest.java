@@ -5,21 +5,22 @@
  */
 package javaslang.control;
 
-import javaslang.AbstractValueTest;
-import javaslang.Serializables;
-import javaslang.collection.Seq;
-import javaslang.control.Try.NonFatalException;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.*;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+
+import javaslang.AbstractValueTest;
+import javaslang.Serializables;
+import javaslang.collection.Seq;
+import javaslang.control.Try.NonFatalException;
 
 public class TryTest extends AbstractValueTest {
 
@@ -942,6 +943,27 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldEnsureThatIdentityCheckedFunctionReturnsIdentity() throws Throwable {
         assertThat(Function.identity().apply(1)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldNotTryToRecoverWhenItIsNotNeeded(){
+        assertThat(Try.of(() -> OK).recoverOption(RuntimeException.class, (ex) -> Option.of(FAILURE)).get()).isEqualTo(OK);
+    }
+
+    @Test(expected = NonFatalException.class)
+    public void shouldReturnExceptionWhenRecoveryWasNotSuccess(){
+        Try.of(() -> {throw error();}).recoverOption(IOException.class, (ex) -> Option.none()).get();
+    }
+
+    @Test
+    public void shouldReturnRecoveredValue(){
+        assertThat(Try.of(() -> {throw error();}).recoverOption(RuntimeException.class, (ex) -> Option.of(OK)).get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldHandleErrorDuringRecovering(){
+        Try<?> t = Try.of(() -> {throw new IllegalArgumentException(OK);}).recoverOption(IOException.class, (ex) -> { throw new IllegalStateException(FAILURE);});
+         assertThatThrownBy(t::get).hasRootCauseExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     // -- helpers

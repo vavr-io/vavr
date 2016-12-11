@@ -5,19 +5,14 @@
  */
 package javaslang.control;
 
+import java.io.Serializable;
+import java.util.*;
+import java.util.function.*;
+
 import javaslang.Value;
 import javaslang.collection.Iterator;
-import javaslang.collection.Seq;
+import javaslang.collection.*;
 import javaslang.collection.Vector;
-
-import java.io.Serializable;
-import java.util.Arrays;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -556,6 +551,33 @@ public interface Try<T> extends Value<T> {
 
     /**
      * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
+     * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f} <b>which returns Option</b>.
+     * If option returned by {@code f} function is empty it means that recovery cannot take place due to some circumstances.
+     *
+     * @param <X>       Exception type
+     * @param exception The specific exception type that should be handled
+     * @param f         A recovery function taking an exception of type {@code X} and returning Option as a result of recovery.
+     *                  If option is not empty then recovery ends up successfully. When option is empty then the function was not able to recover.
+     * @return a {@code Try}
+     */
+    @GwtIncompatible
+    @SuppressWarnings("unchecked")
+    default <X extends Throwable> Try<T> recoverOption(Class<X> exception, Function<? super X, Option<? extends T>> f){
+        Objects.requireNonNull(exception, "exception is null");
+        Objects.requireNonNull(f, "f is null");
+        if(isFailure()){
+            final Throwable cause = getCause();
+            if (exception.isAssignableFrom(cause.getClass())) {
+                return Try.of(() -> f.apply((X) cause))
+                        .filter(option -> option.isDefined())
+                        .map(option -> option.get());
+            }
+        }
+        return this;
+    }
+
+    /**
+     * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
      * from {@code cause.getClass()}. Otherwise returns a {@code Success} containing the given {@code value}.
      *
      * @param <X>       Exception type
@@ -571,6 +593,8 @@ public interface Try<T> extends Value<T> {
                ? Try.success(value)
                : this;
     }
+
+
 
     /**
      * Returns {@code this}, if this is a {@code Success}, otherwise tries to recover the exception of the failure with {@code f},
