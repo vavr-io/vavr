@@ -526,6 +526,7 @@ public interface Value<T> extends Iterable<T> {
      *
      * @return A new {@link CompletableFuture} containing the value
      */
+    @GwtIncompatible
     default CompletableFuture<T> toCompletableFuture() {
         final CompletableFuture<T> completableFuture = new CompletableFuture<>();
         try {
