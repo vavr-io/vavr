@@ -578,6 +578,7 @@ public interface Try<T> extends Value<T> {
         return this;
     }
 
+    @GwtIncompatible
     default <X extends Throwable> Try<T> recoverWith(Class<X> exception,  Try<? extends T> recovered){
         return (isFailure() && exception.isAssignableFrom(getCause().getClass()))
                 ? narrow(recovered)
