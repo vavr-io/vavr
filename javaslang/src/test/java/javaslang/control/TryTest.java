@@ -956,10 +956,10 @@ public class TryTest extends AbstractValueTest {
 
     private static <T, X extends Throwable> Try<T> failure(Class<X> exceptionType) {
         try {
-            final X exception = exceptionType.newInstance();
+            final X exception = exceptionType.getConstructor().newInstance();
             return Try.failure(exception);
-        } catch (InstantiationException | IllegalAccessException x) {
-            throw new IllegalStateException("Error instantiating " + exceptionType);
+        } catch (Throwable e) {
+            throw new IllegalStateException("Error instantiating " + exceptionType, e);
         }
     }
 

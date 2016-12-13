@@ -114,7 +114,7 @@ class ImportManager {
     private static List<String> reverseSort(String[] strings) {
         final String[] copy = new String[strings.length];
         System.arraycopy(strings, 0, copy, 0, strings.length);
-        Arrays.sort(copy, (s1, s2) -> s2.compareTo(s1));
+        Arrays.sort(copy, Comparator.reverseOrder());
         return Arrays.asList(copy);
     }
 

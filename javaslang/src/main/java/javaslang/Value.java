@@ -860,7 +860,7 @@ public interface Value<T> extends Iterable<T> {
      */
     default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
-        return toSortedMap((Comparator<? super K> & Serializable) K::compareTo, f);
+        return toSortedMap(Comparator.naturalOrder(), f);
     }
 
     /**
@@ -992,8 +992,8 @@ public interface Value<T> extends Iterable<T> {
             return (PriorityQueue<T>) this;
         } else {
             final Comparator<T> comparator = (this instanceof Ordered<?>)
-                                             ? ((Ordered<T>) this).comparator()
-                                             : (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+                    ? ((Ordered<T>) this).comparator()
+                    : (Comparator<T>) Comparator.naturalOrder();
             return toPriorityQueue(comparator);
         }
     }
@@ -1069,8 +1069,8 @@ public interface Value<T> extends Iterable<T> {
             return (TreeSet<T>) this;
         } else {
             final Comparator<T> comparator = (this instanceof Ordered<?>)
-                                             ? ((Ordered<T>) this).comparator()
-                                             : (Comparator<T> & Serializable) (o1, o2) -> ((Comparable<T>) o1).compareTo(o2);
+                    ? ((Ordered<T>) this).comparator()
+                    : (Comparator<T>) Comparator.naturalOrder();
             return toSortedSet(comparator);
         }
     }

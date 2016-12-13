@@ -451,7 +451,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeDistinctByOfEmptyTraversableUsingComparator() {
-        final Comparator<Character> comparator = (i1, i2) -> i1 - i2;
+        final Comparator<Character> comparator = Comparator.comparingInt(i -> i);
         assertThat(empty().distinctBy(comparator)).isSameAs(empty());
     }
 
@@ -1004,7 +1004,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateMaxByOfInts() {
-        assertThat(of('1', '2', '3').maxBy((i1, i2) -> i1 - i2)).isEqualTo(Option.some('3'));
+        assertThat(of('1', '2', '3').maxBy(Comparator.comparingInt(i -> i))).isEqualTo(Option.some('3'));
     }
 
     @Test
@@ -1060,7 +1060,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldCalculateMinByOfInts() {
-        assertThat(of('1', '2', '3').minBy((i1, i2) -> i1 - i2)).isEqualTo(Option.some('1'));
+        assertThat(of('1', '2', '3').minBy(Comparator.comparingInt(i -> i))).isEqualTo(Option.some('1'));
     }
 
     @Test
@@ -3139,7 +3139,7 @@ public class CharSeqTest {
         assertThat(
                 CharSeq.unfoldRight('j', x -> x == 'a'
                                               ? Option.none()
-                                              : Option.of(new Tuple2<>(new Character(x), (char) (x - 1)))))
+                                              : Option.of(new Tuple2<>(x, (char) (x - 1)))))
                 .isEqualTo(of("jihgfedcb"));
     }
 
@@ -3153,7 +3153,7 @@ public class CharSeqTest {
         assertThat(
                 CharSeq.unfoldLeft('j', x -> x == 'a'
                                              ? Option.none()
-                                             : Option.of(new Tuple2<>((char) (x - 1), new Character(x)))))
+                                             : Option.of(new Tuple2<>((char) (x - 1), x))))
                 .isEqualTo(of("bcdefghij"));
     }
 
@@ -3167,7 +3167,7 @@ public class CharSeqTest {
         assertThat(
                 CharSeq.unfold('j', x -> x == 'a'
                                          ? Option.none()
-                                         : Option.of(new Tuple2<>((char) (x - 1), new Character(x)))))
+                                         : Option.of(new Tuple2<>((char) (x - 1), x))))
                 .isEqualTo(of("bcdefghij"));
     }
 
