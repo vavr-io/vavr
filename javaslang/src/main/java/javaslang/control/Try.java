@@ -551,30 +551,39 @@ public interface Try<T> extends Value<T> {
 
     /**
      * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
-     * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f} <b>which returns Option</b>.
-     * If option returned by {@code f} function is empty it means that recovery cannot take place due to some circumstances.
+     * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f} <b>which returns Try</b>.
+     * If {@link Try#isFailure()} returned by {@code f} function is <code>true</code> it means that recovery cannot take place due to some circumstances.
      *
      * @param <X>       Exception type
      * @param exception The specific exception type that should be handled
-     * @param f         A recovery function taking an exception of type {@code X} and returning Option as a result of recovery.
-     *                  If option is not empty then recovery ends up successfully. When option is empty then the function was not able to recover.
+     * @param f         A recovery function taking an exception of type {@code X} and returning Try as a result of recovery.
+     *                  If Try is {@link Try#isSuccess()} then recovery ends up successfully. Otherwise the function was not able to recover.
      * @return a {@code Try}
      */
     @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> recoverOption(Class<X> exception, Function<? super X, Option<? extends T>> f){
+    default <X extends Throwable> Try<T> recoverWith(Class<X> exception, Function<? super X, Try<? extends T>> f){
         Objects.requireNonNull(exception, "exception is null");
         Objects.requireNonNull(f, "f is null");
         if(isFailure()){
             final Throwable cause = getCause();
             if (exception.isAssignableFrom(cause.getClass())) {
-                return Try.of(() -> f.apply((X) cause))
-                        .filter(option -> option.isDefined())
-                        .map(option -> option.get());
+                try {
+                    return narrow(f.apply((X) cause));
+                } catch (Throwable t) {
+                    return new Failure<>(t);
+                }
             }
         }
         return this;
     }
+
+    default <X extends Throwable> Try<T> recoverWith(Class<X> exception,  Try<? extends T> recovered){
+        return (isFailure() && exception.isAssignableFrom(getCause().getClass()))
+                ? narrow(recovered)
+                : this;
+    }
+
 
     /**
      * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable

@@ -947,23 +947,33 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldNotTryToRecoverWhenItIsNotNeeded(){
-        assertThat(Try.of(() -> OK).recoverOption(RuntimeException.class, (ex) -> Option.of(FAILURE)).get()).isEqualTo(OK);
+        assertThat(Try.of(() -> OK).recoverWith(RuntimeException.class, (ex) -> failure()).get()).isEqualTo(OK);
     }
 
     @Test(expected = NonFatalException.class)
     public void shouldReturnExceptionWhenRecoveryWasNotSuccess(){
-        Try.of(() -> {throw error();}).recoverOption(IOException.class, (ex) -> Option.none()).get();
+        Try.of(() -> {throw error();}).recoverWith(IOException.class, (ex) -> failure()).get();
     }
 
     @Test
     public void shouldReturnRecoveredValue(){
-        assertThat(Try.of(() -> {throw error();}).recoverOption(RuntimeException.class, (ex) -> Option.of(OK)).get()).isEqualTo(OK);
+        assertThat(Try.of(() -> {throw error();}).recoverWith(RuntimeException.class, (ex) -> success()).get()).isEqualTo(OK);
     }
 
     @Test
     public void shouldHandleErrorDuringRecovering(){
-        Try<?> t = Try.of(() -> {throw new IllegalArgumentException(OK);}).recoverOption(IOException.class, (ex) -> { throw new IllegalStateException(FAILURE);});
+        Try<?> t = Try.of(() -> {throw new IllegalArgumentException(OK);}).recoverWith(IOException.class, (ex) -> { throw new IllegalStateException(FAILURE);});
          assertThatThrownBy(t::get).hasRootCauseExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void shouldNotReturnRecoveredValueOnSuccess(){
+        assertThat(Try.of(() -> OK).recoverWith(IOException.class, failure()).get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldReturnRecoveredValueOnFailure(){
+        assertThat(Try.of(() -> {throw new IllegalStateException(FAILURE);}).recoverWith(IllegalStateException.class, success()).get()).isEqualTo(OK);
     }
 
     // -- helpers
