@@ -655,6 +655,17 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
+    public Queue<T> dropUntil(Predicate<? super T> predicate) {
+        return Collections.dropUntil(this, predicate);
+    }
+
+    @Override
+    public Queue<T> dropWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropUntil(predicate.negate());
+    }
+
+    @Override
     public Queue<T> dropRight(int n) {
         if (n <= 0) {
             return this;
@@ -666,16 +677,14 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Queue<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
+    public Queue<T> dropRightUntil(Predicate<? super T> predicate) {
+        return Collections.dropUntil(reverse(), predicate).reverse();
     }
 
     @Override
-    public Queue<T> dropWhile(Predicate<? super T> predicate) {
+    public Queue<T> dropRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final List<T> dropped = toList().dropWhile(predicate);
-        return ofAll(dropped.length() == length() ? this : dropped);
+        return dropRightUntil(predicate.negate());
     }
 
     @Override

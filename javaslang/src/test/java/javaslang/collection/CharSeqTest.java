@@ -566,6 +566,52 @@ public class CharSeqTest {
         assertThat(of('1', '2', '3').dropWhile(i -> i == '1')).isEqualTo(of('2', '3'));
     }
 
+    // -- dropRightUntil
+
+    @Test
+    public void shouldDropRightUntilNoneOnNil() {
+        assertThat(empty().dropRightUntil(ignored -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldDropRightUntilNoneIfPredicateIsTrue() {
+        final CharSeq t = of('1', '2', '3');
+        assertThat(t.dropRightUntil(ignored -> true)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldDropRightUntilAllIfPredicateIsFalse() {
+        assertThat(of('1', '2', '3').dropRightUntil(ignored -> false)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldDropRightUntilCorrect() {
+        assertThat(of('1', '2', '3').dropRightUntil(i -> i == '2')).isEqualTo(of('1', '2'));
+    }
+
+    // -- dropRightWhile
+
+    @Test
+    public void shouldDropRightWhileNoneOnNil() {
+        assertThat(empty().dropRightWhile(ignored -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldDropRightWhileNoneIfPredicateIsFalse() {
+        final CharSeq t = of('1', '2', '3');
+        assertThat(t.dropRightWhile(ignored -> false)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldDropRightWhileAllIfPredicateIsTrue() {
+        assertThat(of('1', '2', '3').dropRightWhile(ignored -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldDropRightWhileAccordingToPredicate() {
+        assertThat(of('1', '2', '3').dropRightWhile(i -> i != '2')).isEqualTo(of('1', '2'));
+    }
+
     // -- existsUnique
 
     @Test

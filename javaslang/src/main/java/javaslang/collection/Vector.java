@@ -602,20 +602,14 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Vector<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropUntil(predicate.negate());
+    public Vector<T> dropUntil(Predicate<? super T> predicate) {
+        return Collections.dropUntil(this, predicate);
     }
 
     @Override
-    public Vector<T> dropUntil(Predicate<? super T> predicate) {
+    public Vector<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = 0; i < length(); i++) {
-            if (predicate.test(get(i))) {
-                return drop(i);
-            }
-        }
-        return empty();
+        return dropUntil(predicate.negate());
     }
 
     @Override
@@ -623,19 +617,15 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         return take(length() - n);
     }
 
+    @Override
+    public Vector<T> dropRightUntil(Predicate<? super T> predicate) {
+        return Collections.dropRightUntil(this, predicate);
+    }
+
+    @Override
     public Vector<T> dropRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropRightUntil(predicate.negate());
-    }
-
-    public Vector<T> dropRightUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = length() - 1; i >= 0; i--) {
-            if (predicate.test(get(i))) {
-                return take(i + 1);
-            }
-        }
-        return empty();
     }
 
     @Override

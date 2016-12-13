@@ -651,6 +651,17 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
+    public Array<T> dropUntil(Predicate<? super T> predicate) {
+        return Collections.dropUntil(this, predicate);
+    }
+
+    @Override
+    public Array<T> dropWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropUntil(predicate.negate());
+    }
+
+    @Override
     public Array<T> dropRight(int n) {
         if (n <= 0) {
             return this;
@@ -662,20 +673,14 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
-    public Array<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
+    public Array<T> dropRightUntil(Predicate<? super T> predicate) {
+        return Collections.dropRightUntil(this, predicate);
     }
 
     @Override
-    public Array<T> dropWhile(Predicate<? super T> predicate) {
+    public Array<T> dropRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = 0; i < length(); i++) {
-            if (!predicate.test(get(i))) {
-                return drop(i);
-            }
-        }
-        return empty();
+        return dropRightUntil(predicate.negate());
     }
 
     @Override

@@ -294,9 +294,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     /**
      * Drops elements until the predicate holds for the current element.
-     * <p>
-     * Note: This is essentially the same as {@code dropWhile(predicate.negate())}. It is intended to be used with
-     * method references, which cannot be negated directly.
      *
      * @param predicate A condition tested subsequently for this elements.
      * @return a new instance consisting of all elements starting from the first one which does satisfy the given
@@ -307,8 +304,11 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     /**
      * Drops elements while the predicate holds for the current element.
+     * <p>
+     * Note: This is essentially the same as {@code dropUntil(predicate.negate())}.
+     * It is intended to be used with method references, which cannot be negated directly.
      *
-     * @param predicate A condition tested subsequently for this elements starting with the first.
+     * @param predicate A condition tested subsequently for this elements.
      * @return a new instance consisting of all elements starting from the first one which does not satisfy the
      * given predicate.
      * @throws NullPointerException if {@code predicate} is null

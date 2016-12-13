@@ -703,6 +703,17 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> dropUntil(Predicate<? super T> predicate) {
+        return Collections.dropUntil(this, predicate);
+    }
+
+    @Override
+    default List<T> dropWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropUntil(predicate.negate());
+    }
+
+    @Override
     default List<T> dropRight(int n) {
         if (n <= 0) {
             return this;
@@ -714,19 +725,14 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
-    default List<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
+    default List<T> dropRightUntil(Predicate<? super T> predicate) {
+        return Collections.dropUntil(reverse(), predicate).reverse();
     }
 
     @Override
-    default List<T> dropWhile(Predicate<? super T> predicate) {
+    default List<T> dropRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        List<T> list = this;
-        while (!list.isEmpty() && predicate.test(list.head())) {
-            list = list.tail();
-        }
-        return list;
+        return dropRightUntil(predicate.negate());
     }
 
     @Override

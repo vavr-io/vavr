@@ -897,6 +897,17 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> dropUntil(Predicate<? super T> predicate) {
+        return Collections.dropUntil(this, predicate);
+    }
+
+    @Override
+    default Stream<T> dropWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropUntil(predicate.negate());
+    }
+
+    @Override
     default Stream<T> dropRight(int n) {
         if (n <= 0) {
             return this;
@@ -906,19 +917,14 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
+    default Stream<T> dropRightUntil(Predicate<? super T> predicate) {
+        return Collections.dropUntil(reverse(), predicate).reverse();
     }
 
     @Override
-    default Stream<T> dropWhile(Predicate<? super T> predicate) {
+    default Stream<T> dropRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        Stream<T> stream = this;
-        while (!stream.isEmpty() && predicate.test(stream.head())) {
-            stream = stream.tail();
-        }
-        return stream;
+        return dropRightUntil(predicate.negate());
     }
 
     @Override
