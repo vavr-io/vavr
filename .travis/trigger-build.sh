@@ -1,15 +1,27 @@
 #!/bin/bash
 
+org="javaslang"
 repo=$1
+branch=$2
 
 if [ -z $repo ]; then
-  echo "Please specify a javaslang repo name."
-  echo "Example: trigger-build.sh javaslang-gwt"
+
+  echo "Usage: trigger-build.sh <github-repo> [<branch>]"
+
 else
-  body='{
-  "request": {
-    "branch":"master"
-  }}'
+
+  if [ -z $branch ]; then
+    branch="master"
+  fi
+
+  echo "Triggering travis-ci build of $org/$repo [$branch]..."
+
+  body=`cat <<EOF
+{ "request": {
+    "branch": "$branch"
+}}
+EOF
+`
 
   curl -s -X POST \
     -H "Content-Type: application/json" \
@@ -17,5 +29,6 @@ else
     -H "Travis-API-Version: 3" \
     -H "Authorization: token $TRAVIS_ACCESS_TOKEN" \
     -d "$body" \
-    https://api.travis-ci.org/repo/javaslang%2F$repo/requests
+    https://api.travis-ci.org/repo/$org%2F$repo/requests
+
 fi
