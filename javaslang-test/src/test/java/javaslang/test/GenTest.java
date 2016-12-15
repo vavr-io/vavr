@@ -216,9 +216,15 @@ public class GenTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void shouldThrowWhenCallingFrequencyOfVarArgsAndFrequenceIsNegative() {
-        final Gen<Integer> gen = Gen.frequency(Tuple.of(-1, Gen.of(-1)));
+    public void shouldThrowWhenCallingFrequencyOfVarArgsAndAllFrequenciesAreNonPositive() {
+        final Gen<Integer> gen = Gen.frequency(Tuple.of(-1, Gen.of(-1)), Tuple.of(0, Gen.of(0)));
         gen.apply(RANDOM);
+    }
+
+    @Test
+    public void shouldIgnoreGeneratorsWithNonPositiveFrequency() {
+        final Gen<Integer> gen = Gen.frequency(Tuple.of(-1, Gen.of(-1)), Tuple.of(0, Gen.of(0)), Tuple.of(1, Gen.of(1)));
+        assertForAll(() -> gen.apply(RANDOM), i -> i == 1);
     }
 
     @Test
@@ -237,6 +243,12 @@ public class GenTest {
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowWhenCallingFrequencyOfIterableAndArgIsEmpty() {
         Gen.frequency(List.empty());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowWhenCallingFrequencyOfIterableAndAllFrequenciesAreNonPositive() {
+        final Gen<Integer> gen = Gen.frequency(List.of(Tuple.of(-1, Gen.of(-1)), Tuple.of(0, Gen.of(0))));
+        gen.apply(RANDOM);
     }
 
     @Test

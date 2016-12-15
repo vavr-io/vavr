@@ -9,6 +9,7 @@ import javaslang.Tuple2;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
+import javaslang.collection.Vector;
 
 import java.util.Objects;
 import java.util.Random;
@@ -246,12 +247,14 @@ public interface Gen<T> {
 
     /**
      * Chooses one of the given generators according to their frequency.
+     * Only generators with positive frequencies are used in returned
+     * generator.
      *
      * @param generators A non-empty array of Tuples (frequency, generator)
      * @param <T>        Type to be generated
      * @return A new T generator
      * @throws java.lang.NullPointerException     if generators is null
-     * @throws java.lang.IllegalArgumentException if generators is empty
+     * @throws java.lang.IllegalArgumentException if generators doesn't contain any generator with positive frequency
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
@@ -266,27 +269,27 @@ public interface Gen<T> {
 
     /**
      * Chooses one of the given generators according to their frequency.
+     * Only generators with positive frequencies ares used in returned
+     * generator.
      *
      * @param generators A non-empty traversable of Tuples (frequency, generator)
      * @param <T>        Type to be generated
      * @return A new T generator
      * @throws java.lang.NullPointerException     if generators is null
-     * @throws java.lang.IllegalArgumentException if generators is empty
+     * @throws java.lang.IllegalArgumentException if generators doesn't contain any generator with positive frequency
      */
     static <T> Gen<T> frequency(Iterable<Tuple2<Integer, Gen<T>>> generators) {
         Objects.requireNonNull(generators, "generators is null");
-        final Iterator<Tuple2<Integer, Gen<T>>> iter = Iterator.ofAll(generators);
-        if (!iter.hasNext()) {
-            throw new IllegalArgumentException("generators is empty");
+        final Vector<Tuple2<Integer, Gen<T>>> filtered = Iterator.ofAll(generators)
+                .filter(t -> t._1() > 0).toVector();
+        if (filtered.isEmpty()) {
+            throw new IllegalArgumentException("no generator with positive weight");
         }
-        final int size = iter.map(t -> {
+        final int size = filtered.map(t -> {
             final int frequency = t._1;
-            if (frequency < 0) {
-                throw new IllegalArgumentException("negative frequency: " + frequency);
-            }
             return frequency;
         }).sum().intValue();
-        return choose(1, size).flatMap(n -> GenModule.frequency(n, generators.iterator()));
+        return choose(1, size).flatMap(n -> GenModule.frequency(n, filtered.iterator()));
     }
 
     /**
