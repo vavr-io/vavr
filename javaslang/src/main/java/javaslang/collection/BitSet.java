@@ -744,7 +744,7 @@ interface BitSetModule {
 
         @Override
         public Comparator<T> comparator() {
-            return (Comparator<T> & Serializable) (t1, t2) -> Integer.compare(toInt.apply(t1), toInt.apply(t2));
+            return Comparator.comparing(toInt);
         }
 
         @Override

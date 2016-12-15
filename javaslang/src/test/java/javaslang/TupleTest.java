@@ -399,14 +399,14 @@ public class TupleTest {
 
     @Test
     public void shouldNarrowTuple6() {
-        final Tuple6<String, Double, Float, Integer, Long, Byte> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L, new Byte("5"));
+        final Tuple6<String, Double, Float, Integer, Long, Byte> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L, (byte) 5);
         final Tuple6<CharSequence, Number, Number, Number, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
         assertThat(narrowTuple._1()).isEqualTo("zero");
         assertThat(narrowTuple._2()).isEqualTo(1.0D);
         assertThat(narrowTuple._3()).isEqualTo(2.0F);
         assertThat(narrowTuple._4()).isEqualTo(3);
         assertThat(narrowTuple._5()).isEqualTo(4L);
-        assertThat(narrowTuple._6()).isEqualTo(new Byte("5"));
+        assertThat(narrowTuple._6()).isEqualTo((byte) 5);
     }
 
     // -- Tuple7
@@ -452,15 +452,15 @@ public class TupleTest {
 
     @Test
     public void shouldNarrowTuple7() {
-        final Tuple7<String, Double, Float, Integer, Long, Byte, Short> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L, new Byte("5"), new Short("6"));
+        final Tuple7<String, Double, Float, Integer, Long, Byte, Short> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L, (byte) 5, (short) 6);
         final Tuple7<CharSequence, Number, Number, Number, Number, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
         assertThat(narrowTuple._1()).isEqualTo("zero");
         assertThat(narrowTuple._2()).isEqualTo(1.0D);
         assertThat(narrowTuple._3()).isEqualTo(2.0F);
         assertThat(narrowTuple._4()).isEqualTo(3);
         assertThat(narrowTuple._5()).isEqualTo(4L);
-        assertThat(narrowTuple._6()).isEqualTo(new Byte("5"));
-        assertThat(narrowTuple._7()).isEqualTo(new Short("6"));
+        assertThat(narrowTuple._6()).isEqualTo((byte) 5);
+        assertThat(narrowTuple._7()).isEqualTo((short) 6);
     }
 
     // -- Tuple8
@@ -506,15 +506,15 @@ public class TupleTest {
 
     @Test
     public void shouldNarrowTuple8() {
-        final Tuple8<String, Double, Float, Integer, Long, Byte, Short, BigDecimal> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L, new Byte("5"), new Short("6"), new BigDecimal(7));
+        final Tuple8<String, Double, Float, Integer, Long, Byte, Short, BigDecimal> wideTuple = Tuple.of("zero", 1.0D, 2.0F, 3, 4L, (byte) 5, (short) 6, new BigDecimal(7));
         final Tuple8<CharSequence, Number, Number, Number, Number, Number, Number, Number> narrowTuple = Tuple.narrow(wideTuple);
         assertThat(narrowTuple._1()).isEqualTo("zero");
         assertThat(narrowTuple._2()).isEqualTo(1.0D);
         assertThat(narrowTuple._3()).isEqualTo(2.0F);
         assertThat(narrowTuple._4()).isEqualTo(3);
         assertThat(narrowTuple._5()).isEqualTo(4L);
-        assertThat(narrowTuple._6()).isEqualTo(new Byte("5"));
-        assertThat(narrowTuple._7()).isEqualTo(new Short("6"));
+        assertThat(narrowTuple._6()).isEqualTo((byte) 5);
+        assertThat(narrowTuple._7()).isEqualTo((short) 6);
         assertThat(narrowTuple._8()).isEqualTo(new BigDecimal(7));
     }
 
