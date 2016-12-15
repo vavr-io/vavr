@@ -38,6 +38,28 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
+    static <T, S extends Seq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (int i = 0; i < seq.length(); i++) {
+            if (predicate.test(seq.get(i))) {
+                return (S) seq.drop(i);
+            }
+        }
+        return (S) seq.take(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T, S extends IndexedSeq<T>> S dropRightUntil(S seq, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (int i = seq.length() - 1; i >= 0; i--) {
+            if (predicate.test(seq.get(i))) {
+                return (S) seq.take(i + 1);
+            }
+        }
+        return (S) seq.take(0);
+    }
+
+    @SuppressWarnings("unchecked")
     static <T, S extends Seq<T>> Iterator<S> crossProduct(S empty, S seq, int power) {
         if (power < 0) {
             return Iterator.empty();

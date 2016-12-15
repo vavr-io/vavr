@@ -308,6 +308,58 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         empty().crossProduct(null);
     }
 
+
+    // -- dropRightUntil
+
+    @Test
+    public void shouldDropRightUntilNoneOnNil() {
+        assertThat(empty().dropRightUntil(ignored -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldDropRightUntilNoneIfPredicateIsTrue() {
+        final Seq<Integer> values = of(1, 2, 3);
+        assertThat(values.dropRightUntil(ignored -> true)).isEqualTo(values);
+    }
+
+    @Test
+    public void shouldDropRightUntilAllIfPredicateIsFalse() {
+        assertThat(of(1, 2, 3).dropRightUntil(ignored -> false)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropRightUntilCorrect() {
+        assertThat(of(1, 2, 3).dropRightUntil(i -> i <= 2)).isEqualTo(of(1, 2));
+    }
+
+    // -- dropRightWhile
+
+    @Test
+    public void shouldDropRightWhileNoneOnNil() {
+        assertThat(empty().dropRightWhile(ignored -> true)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldDropRightWhileNoneIfPredicateIsFalse() {
+        final Seq<Integer> values = of(1, 2, 3);
+        assertThat(values.dropRightWhile(ignored -> false)).isEqualTo(values);
+    }
+
+    @Test
+    public void shouldDropRightWhileAllIfPredicateIsTrue() {
+        assertThat(of(1, 2, 3).dropRightWhile(ignored -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldDropRightWhileAccordingToPredicate() {
+        assertThat(of(1, 2, 3).dropRightWhile(i -> i > 2)).isEqualTo(of(1, 2));
+    }
+
+    @Test
+    public void shouldDropRightWhileAndNotTruncate() {
+        assertThat(of(1, 2, 3).dropRightWhile(i -> i % 2 == 1)).isEqualTo(of(1, 2));
+    }
+
     // -- get
 
     @Test(expected = IndexOutOfBoundsException.class)

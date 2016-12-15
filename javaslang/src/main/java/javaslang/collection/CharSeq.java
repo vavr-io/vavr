@@ -407,6 +407,17 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
+    public CharSeq dropUntil(Predicate<? super Character> predicate) {
+        return Collections.dropUntil(this, predicate);
+    }
+
+    @Override
+    public CharSeq dropWhile(Predicate<? super Character> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropUntil(predicate.negate());
+    }
+
+    @Override
     public CharSeq dropRight(int n) {
         if (n <= 0) {
             return this;
@@ -418,19 +429,14 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public CharSeq dropUntil(Predicate<? super Character> predicate) {
+    public CharSeq dropRightWhile(Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
+        return dropRightUntil(predicate.negate());
     }
 
     @Override
-    public CharSeq dropWhile(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        int index = 0;
-        while (index < length() && predicate.test(charAt(index))) {
-            index++;
-        }
-        return index < length() ? (index == 0 ? this : of(back.substring(index))) : empty();
+    public CharSeq dropRightUntil(Predicate<? super Character> predicate) {
+        return Collections.dropRightUntil(this, predicate);
     }
 
     @Override

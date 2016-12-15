@@ -1025,13 +1025,36 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     Seq<T> drop(int n);
 
     @Override
-    Seq<T> dropRight(int n);
-
-    @Override
     Seq<T> dropUntil(Predicate<? super T> predicate);
 
     @Override
     Seq<T> dropWhile(Predicate<? super T> predicate);
+
+    @Override
+    Seq<T> dropRight(int n);
+
+    /**
+     * Drops elements until the predicate holds for the current element, starting from the end.
+     *
+     * @param predicate A condition tested subsequently for this elements, starting from the end.
+     * @return a new instance consisting of all elements starting from the last one which does satisfy the given
+     * predicate.
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Seq<T> dropRightUntil(Predicate<? super T> predicate);
+
+    /**
+     * Drops elements while the predicate holds for the current element, starting from the end.
+     * <p>
+     * Note: This is essentially the same as {@code dropRightUntil(predicate.negate())}.
+     * It is intended to be used with method references, which cannot be negated directly.
+     *
+     * @param predicate A condition tested subsequently for this elements, starting from the end.
+     * @return a new instance consisting of all elements starting from the last one which does not satisfy the
+     * given predicate.
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Seq<T> dropRightWhile(Predicate<? super T> predicate);
 
     @Override
     Seq<T> filter(Predicate<? super T> predicate);
