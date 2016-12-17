@@ -173,69 +173,75 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     /**
-     * Creates a BitSet based on the elements of a boolean array.
+     * Creates a BitSet from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new BitSet of boolean values
+     * @throws NullPointerException if elements is null
      */
-    static BitSet<Boolean> ofAll(boolean[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return BitSet.withRelations(i -> i != 0, b -> b ? 1 : 0).ofAll(Iterator.ofAll(array));
+    static BitSet<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return BitSet.withRelations(i -> i != 0, b -> b ? 1 : 0).ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a BitSet based on the elements of a byte array.
+     * Creates a BitSet from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new BitSet of byte values
+     * @throws NullPointerException if elements is null
      */
-    static BitSet<Byte> ofAll(byte[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return BitSet.withBytes().ofAll(Iterator.ofAll(array));
+    static BitSet<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return BitSet.withBytes().ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a BitSet based on the elements of a char array.
+     * Creates a BitSet from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new BitSet of char values
+     * @throws NullPointerException if elements is null
      */
-    static BitSet<Character> ofAll(char[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return BitSet.withCharacters().ofAll(Iterator.ofAll(array));
+    static BitSet<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return BitSet.withCharacters().ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a BitSet based on the elements of an int array.
+     * Creates a BitSet from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new BitSet of int values
+     * @throws NullPointerException if elements is null
      */
-    static BitSet<Integer> ofAll(int[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return BitSet.ofAll(Iterator.ofAll(array));
+    static BitSet<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return BitSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a BitSet based on the elements of a long array.
+     * Creates a BitSet from long values.
      *
-     * @param array a long array
+     * @param elements long values
      * @return A new BitSet of long values
+     * @throws NullPointerException if elements is null
      */
-    static BitSet<Long> ofAll(long[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return BitSet.withLongs().ofAll(Iterator.ofAll(array));
+    static BitSet<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return BitSet.withLongs().ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a BitSet based on the elements of a short array.
+     * Creates a BitSet from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new BitSet of short values
+     * @throws NullPointerException if elements is null
      */
-    static BitSet<Short> ofAll(short[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return BitSet.withShorts().ofAll(Iterator.ofAll(array));
+    static BitSet<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return BitSet.withShorts().ofAll(Iterator.ofAll(elements));
     }
 
     /**

@@ -168,99 +168,99 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     /**
-     * Creates a Queue based on the elements of a boolean array.
+     * Creates a Queue from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new Queue of Boolean values
-     * @throws NullPointerException if array is null
+     * @throws NullPointerException if elements is null
      */
-    public static Queue<Boolean> ofAll(boolean[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(List.ofAll(array));
+    public static Queue<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(List.ofAll(elements));
     }
 
     /**
-     * Creates a Queue based on the elements of a byte array.
+     * Creates a Queue from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new Queue of Byte values
-     * @throws NullPointerException if array is null
+     * @throws NullPointerException if elements is null
      */
-    public static Queue<Byte> ofAll(byte[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(List.ofAll(array));
+    public static Queue<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(List.ofAll(elements));
     }
 
     /**
-     * Creates a Queue based on the elements of a char array.
+     * Creates a Queue from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new Queue of Character values
-     * @throws NullPointerException if array is null
+     * @throws NullPointerException if elements is null
      */
-    public static Queue<Character> ofAll(char[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(List.ofAll(array));
+    public static Queue<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(List.ofAll(elements));
     }
 
     /**
-     * Creates a Queue based on the elements of a double array.
+     * Creates a Queue from double values.
      *
-     * @param array a double array
+     * @param elements double values
      * @return A new Queue of Double values
-     * @throws NullPointerException if array is null
+     * @throws NullPointerException if elements is null
      */
-    public static Queue<Double> ofAll(double[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(List.ofAll(array));
+    public static Queue<Double> ofAll(double... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(List.ofAll(elements));
     }
 
     /**
-     * Creates a Queue based on the elements of a float array.
+     * Creates a Queue from float values.
      *
-     * @param array a float array
+     * @param elements float values
      * @return A new Queue of Float values
-     * @throws NullPointerException if array is null
+     * @throws NullPointerException if elements is null
      */
-    public static Queue<Float> ofAll(float[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(List.ofAll(array));
+    public static Queue<Float> ofAll(float... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(List.ofAll(elements));
     }
 
     /**
-     * Creates a Queue based on the elements of an int array.
+     * Creates a Queue from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new Queue of Integer values
-     * @throws NullPointerException if array is null
+     * @throws NullPointerException if elements is null
      */
-    public static Queue<Integer> ofAll(int[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(List.ofAll(array));
+    public static Queue<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(List.ofAll(elements));
     }
 
     /**
-     * Creates a Queue based on the elements of a long array.
+     * Creates a Queue from long values.
      *
-     * @param array a long array
+     * @param elements  long values
      * @return A new Queue of Long values
-     * @throws NullPointerException if array is null
+     * @throws NullPointerException if elements is null
      */
-    public static Queue<Long> ofAll(long[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(List.ofAll(array));
+    public static Queue<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(List.ofAll(elements));
     }
 
     /**
-     * Creates a Queue based on the elements of a short array.
+     * Creates a Queue from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new Queue of Short values
-     * @throws NullPointerException if array is null
+     * @throws NullPointerException if elements is null
      */
-    public static Queue<Short> ofAll(short[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(List.ofAll(array));
+    public static Queue<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(List.ofAll(elements));
     }
 
     /**

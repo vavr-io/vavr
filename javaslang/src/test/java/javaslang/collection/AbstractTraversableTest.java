@@ -55,21 +55,21 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     protected abstract <T> Traversable<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream);
 
-    protected abstract Traversable<Boolean> ofAll(boolean[] array);
+    protected abstract Traversable<Boolean> ofAll(boolean... elements);
 
-    protected abstract Traversable<Byte> ofAll(byte[] array);
+    protected abstract Traversable<Byte> ofAll(byte... elements);
 
-    protected abstract Traversable<Character> ofAll(char[] array);
+    protected abstract Traversable<Character> ofAll(char... elements);
 
-    protected abstract Traversable<Double> ofAll(double[] array);
+    protected abstract Traversable<Double> ofAll(double... elements);
 
-    protected abstract Traversable<Float> ofAll(float[] array);
+    protected abstract Traversable<Float> ofAll(float... elements);
 
-    protected abstract Traversable<Integer> ofAll(int[] array);
+    protected abstract Traversable<Integer> ofAll(int... elements);
 
-    protected abstract Traversable<Long> ofAll(long[] array);
+    protected abstract Traversable<Long> ofAll(long... elements);
 
-    protected abstract Traversable<Short> ofAll(short[] array);
+    protected abstract Traversable<Short> ofAll(short... elements);
 
     protected abstract <T> Traversable<T> tabulate(int n, Function<? super Integer, ? extends T> f);
 
@@ -144,56 +144,56 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateListOfPrimitiveBooleanArray() {
-        final Traversable<Boolean> actual = ofAll(new boolean[] { true, false });
+        final Traversable<Boolean> actual = ofAll(true, false);
         final Traversable<Boolean> expected = of(true, false);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveByteArray() {
-        final Traversable<Byte> actual = ofAll(new byte[] { 1, 2, 3 });
+        final Traversable<Byte> actual = ofAll((byte) 1, (byte) 2, (byte) 3);
         final Traversable<Byte> expected = of((byte) 1, (byte) 2, (byte) 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveCharArray() {
-        final Traversable<Character> actual = ofAll(new char[] { 'a', 'b', 'c' });
+        final Traversable<Character> actual = ofAll('a', 'b', 'c');
         final Traversable<Character> expected = of('a', 'b', 'c');
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveDoubleArray() {
-        final Traversable<Double> actual = ofAll(new double[] { 1d, 2d, 3d });
+        final Traversable<Double> actual = ofAll(1d, 2d, 3d);
         final Traversable<Double> expected = of(1d, 2d, 3d);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveFloatArray() {
-        final Traversable<Float> actual = ofAll(new float[] { 1f, 2f, 3f });
+        final Traversable<Float> actual = ofAll(1f, 2f, 3f);
         final Traversable<Float> expected = of(1f, 2f, 3f);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveIntArray() {
-        final Traversable<Integer> actual = ofAll(new int[] { 1, 2, 3 });
+        final Traversable<Integer> actual = ofAll(1, 2, 3);
         final Traversable<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveLongArray() {
-        final Traversable<Long> actual = ofAll(new long[] { 1L, 2L, 3L });
+        final Traversable<Long> actual = ofAll(1L, 2L, 3L);
         final Traversable<Long> expected = of(1L, 2L, 3L);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateListOfPrimitiveShortArray() {
-        final Traversable<Short> actual = ofAll(new short[] { (short) 1, (short) 2, (short) 3 });
+        final Traversable<Short> actual = ofAll((short) 1, (short) 2, (short) 3);
         final Traversable<Short> expected = of((short) 1, (short) 2, (short) 3);
         assertThat(actual).isEqualTo(expected);
     }

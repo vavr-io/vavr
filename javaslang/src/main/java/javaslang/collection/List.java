@@ -64,10 +64,10 @@ import java.util.stream.Collector;
  * List&lt;Integer&gt;       s2 = List.of(1, 2, 3);
  *                           // = List.of(new Integer[] {1, 2, 3});
  *
- * List&lt;int[]&gt;         s3 = List.ofAll(new int[] {1, 2, 3});
+ * List&lt;int[]&gt;         s3 = List.ofAll(1, 2, 3);
  * List&lt;List&lt;Integer&gt;&gt; s4 = List.ofAll(List.of(1, 2, 3));
  *
- * List&lt;Integer&gt;       s5 = List.ofAll(new int[] {1, 2, 3});
+ * List&lt;Integer&gt;       s5 = List.ofAll(1, 2, 3);
  * List&lt;Integer&gt;       s6 = List.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
@@ -236,91 +236,99 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     /**
-     * Creates a List based on the elements of a boolean array.
+     * Creates a List from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new List of Boolean values
+     * @throws NullPointerException if elements is null
      */
-    static List<Boolean> ofAll(boolean[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    static List<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a List based on the elements of a byte array.
+     * Creates a List from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new List of Byte values
+     * @throws NullPointerException if elements is null
      */
-    static List<Byte> ofAll(byte[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    static List<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a List based on the elements of a char array.
+     * Creates a List from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new List of Character values
+     * @throws NullPointerException if elements is null
      */
-    static List<Character> ofAll(char[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    static List<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a List based on the elements of a double array.
+     * Creates a List from double values.
      *
-     * @param array a double array
+     * @param elements double values
      * @return A new List of Double values
+     * @throws NullPointerException if elements is null
      */
-    static List<Double> ofAll(double[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    static List<Double> ofAll(double... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a List based on the elements of a float array.
+     * Creates a List from float values.
      *
-     * @param array a float array
+     * @param elements a float values
      * @return A new List of Float values
+     * @throws NullPointerException if elements is null
      */
-    static List<Float> ofAll(float[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    static List<Float> ofAll(float... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a List based on the elements of an int array.
+     * Creates a List from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new List of Integer values
+     * @throws NullPointerException if elements is null
      */
-    static List<Integer> ofAll(int[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    static List<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a List based on the elements of a long array.
+     * Creates a List from long values.
      *
-     * @param array a long array
+     * @param elements long values
      * @return A new List of Long values
+     * @throws NullPointerException if elements is null
      */
-    static List<Long> ofAll(long[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    static List<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a List based on the elements of a short array.
+     * Creates a List from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new List of Short values
+     * @throws NullPointerException if elements is null
      */
-    static List<Short> ofAll(short[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    static List<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**

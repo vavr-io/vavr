@@ -75,43 +75,43 @@ public class TreeSetTest extends AbstractSortedSetTest {
     }
 
     @Override
-    protected TreeSet<Boolean> ofAll(boolean[] array) {
-        return TreeSet.ofAll(array);
+    protected TreeSet<Boolean> ofAll(boolean... elements) {
+        return TreeSet.ofAll(elements);
     }
 
     @Override
-    protected TreeSet<Byte> ofAll(byte[] array) {
-        return TreeSet.ofAll(array);
+    protected TreeSet<Byte> ofAll(byte... elements) {
+        return TreeSet.ofAll(elements);
     }
 
     @Override
-    protected TreeSet<Character> ofAll(char[] array) {
-        return TreeSet.ofAll(array);
+    protected TreeSet<Character> ofAll(char... elements) {
+        return TreeSet.ofAll(elements);
     }
 
     @Override
-    protected TreeSet<Double> ofAll(double[] array) {
-        return TreeSet.ofAll(array);
+    protected TreeSet<Double> ofAll(double... elements) {
+        return TreeSet.ofAll(elements);
     }
 
     @Override
-    protected TreeSet<Float> ofAll(float[] array) {
-        return TreeSet.ofAll(array);
+    protected TreeSet<Float> ofAll(float... elements) {
+        return TreeSet.ofAll(elements);
     }
 
     @Override
-    protected TreeSet<Integer> ofAll(int[] array) {
-        return TreeSet.ofAll(array);
+    protected TreeSet<Integer> ofAll(int... elements) {
+        return TreeSet.ofAll(elements);
     }
 
     @Override
-    protected TreeSet<Long> ofAll(long[] array) {
-        return TreeSet.ofAll(array);
+    protected TreeSet<Long> ofAll(long... elements) {
+        return TreeSet.ofAll(elements);
     }
 
     @Override
-    protected TreeSet<Short> ofAll(short[] array) {
-        return TreeSet.ofAll(array);
+    protected TreeSet<Short> ofAll(short... elements) {
+        return TreeSet.ofAll(elements);
     }
 
     @Override

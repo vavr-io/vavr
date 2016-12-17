@@ -57,42 +57,42 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     }
 
     @Override
-    protected Array<Boolean> ofAll(boolean[] array) {
+    protected Array<Boolean> ofAll(boolean... array) {
         return Array.ofAll(array);
     }
 
     @Override
-    protected Array<Byte> ofAll(byte[] array) {
+    protected Array<Byte> ofAll(byte... array) {
         return Array.ofAll(array);
     }
 
     @Override
-    protected Array<Character> ofAll(char[] array) {
+    protected Array<Character> ofAll(char... array) {
         return Array.ofAll(array);
     }
 
     @Override
-    protected Array<Double> ofAll(double[] array) {
+    protected Array<Double> ofAll(double... array) {
         return Array.ofAll(array);
     }
 
     @Override
-    protected Array<Float> ofAll(float[] array) {
+    protected Array<Float> ofAll(float... array) {
         return Array.ofAll(array);
     }
 
     @Override
-    protected Array<Integer> ofAll(int[] array) {
+    protected Array<Integer> ofAll(int... array) {
         return Array.ofAll(array);
     }
 
     @Override
-    protected Array<Long> ofAll(long[] array) {
+    protected Array<Long> ofAll(long... array) {
         return Array.ofAll(array);
     }
 
     @Override
-    protected Array<Short> ofAll(short[] array) {
+    protected Array<Short> ofAll(short... array) {
         return Array.ofAll(array);
     }
 

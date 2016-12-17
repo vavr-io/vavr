@@ -38,7 +38,7 @@ import java.util.stream.Collector;
  * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
  * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
  * Stream.ofAll(Iterable)          // e.g. Stream.ofAll(List.of(1, 2, 3)) = 1, 2, 3
- * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
+ * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(1, 2, 3) = 1, 2, 3
  *
  * // int sequences
  * Stream.from(0)                  // = 0, 1, 2, 3, ...
@@ -60,10 +60,10 @@ import java.util.stream.Collector;
  * Stream&lt;Integer&gt;       s2 = Stream.of(1, 2, 3);
  *                       // = Stream.of(new Integer[] {1, 2, 3});
  *
- * Stream&lt;int[]&gt;         s3 = Stream.ofAll(new int[] {1, 2, 3});
+ * Stream&lt;int[]&gt;         s3 = Stream.ofAll(1, 2, 3);
  * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.ofAll(List.of(1, 2, 3));
  *
- * Stream&lt;Integer&gt;       s5 = Stream.ofAll(new int[] {1, 2, 3});
+ * Stream&lt;Integer&gt;       s5 = Stream.ofAll(1, 2, 3);
  * Stream&lt;Integer&gt;       s6 = Stream.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
@@ -358,91 +358,99 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     /**
-     * Creates a Stream based on the elements of a boolean array.
+     * Creates a Stream from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new Stream of Boolean values
+     * @throws NullPointerException if elements is null
      */
-    static Stream<Boolean> ofAll(boolean[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(Iterator.ofAll(array));
+    static Stream<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return Stream.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Stream based on the elements of a byte array.
+     * Creates a Stream from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new Stream of Byte values
+     * @throws NullPointerException if elements is null
      */
-    static Stream<Byte> ofAll(byte[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(Iterator.ofAll(array));
+    static Stream<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return Stream.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Stream based on the elements of a char array.
+     * Creates a Stream from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new Stream of Character values
+     * @throws NullPointerException if elements is null
      */
-    static Stream<Character> ofAll(char[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(Iterator.ofAll(array));
+    static Stream<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return Stream.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Stream based on the elements of a double array.
+     * Creates a Stream values double values.
      *
-     * @param array a double array
+     * @param elements double values
      * @return A new Stream of Double values
+     * @throws NullPointerException if elements is null
      */
-    static Stream<Double> ofAll(double[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(Iterator.ofAll(array));
+    static Stream<Double> ofAll(double... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return Stream.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Stream based on the elements of a float array.
+     * Creates a Stream from float values.
      *
-     * @param array a float array
+     * @param elements float values
      * @return A new Stream of Float values
+     * @throws NullPointerException if elements is null
      */
-    static Stream<Float> ofAll(float[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(Iterator.ofAll(array));
+    static Stream<Float> ofAll(float... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return Stream.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Stream based on the elements of an int array.
+     * Creates a Stream from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new Stream of Integer values
+     * @throws NullPointerException if elements is null
      */
-    static Stream<Integer> ofAll(int[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(Iterator.ofAll(array));
+    static Stream<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return Stream.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Stream based on the elements of a long array.
+     * Creates a Stream from long values.
      *
-     * @param array a long array
+     * @param elements long values
      * @return A new Stream of Long values
+     * @throws NullPointerException if elements is null
      */
-    static Stream<Long> ofAll(long[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(Iterator.ofAll(array));
+    static Stream<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return Stream.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Stream based on the elements of a short array.
+     * Creates a Stream from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new Stream of Short values
+     * @throws NullPointerException if elements is null
      */
-    static Stream<Short> ofAll(short[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return Stream.ofAll(Iterator.ofAll(array));
+    static Stream<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return Stream.ofAll(Iterator.ofAll(elements));
     }
 
     static Stream<Character> range(char from, char toExclusive) {

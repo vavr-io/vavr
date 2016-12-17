@@ -134,91 +134,99 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array based on the elements of a boolean array.
+     * Creates an Array from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new Array of Boolean values
+     * @throws NullPointerException if elements is null
      */
-    public static Array<Boolean> ofAll(boolean[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    public static Array<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Array based on the elements of a byte array.
+     * Creates an Array from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new Array of Byte values
+     * @throws NullPointerException if elements is null
      */
-    public static Array<Byte> ofAll(byte[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    public static Array<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Array based on the elements of a char array.
+     * Creates an Array from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new Array of Character values
+     * @throws NullPointerException if elements is null
      */
-    public static Array<Character> ofAll(char[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    public static Array<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Array based on the elements of a double array.
+     * Creates an Array from double values.
      *
-     * @param array a double array
+     * @param elements double values
      * @return A new Array of Double values
+     * @throws NullPointerException if elements is null
      */
-    public static Array<Double> ofAll(double[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    public static Array<Double> ofAll(double... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Array based on the elements of a float array.
+     * Creates an Array from float values.
      *
-     * @param array a float array
+     * @param elements float values
      * @return A new Array of Float values
+     * @throws NullPointerException if elements is null
      */
-    public static Array<Float> ofAll(float[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    public static Array<Float> ofAll(float... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Array based on the elements of an int array.
+     * Creates an Array from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new Array of Integer values
+     * @throws NullPointerException if elements is null
      */
-    public static Array<Integer> ofAll(int[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    public static Array<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Array based on the elements of a long array.
+     * Creates an Array from long values.
      *
-     * @param array a long array
+     * @param elements long values
      * @return A new Array of Long values
+     * @throws NullPointerException if elements is null
      */
-    public static Array<Long> ofAll(long[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    public static Array<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a Array based on the elements of a short array.
+     * Creates an Array from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new Array of Short values
+     * @throws NullPointerException if elements is null
      */
-    public static Array<Short> ofAll(short[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(Iterator.ofAll(array));
+    public static Array<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(Iterator.ofAll(elements));
     }
 
     /**

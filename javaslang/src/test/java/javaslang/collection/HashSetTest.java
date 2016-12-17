@@ -125,42 +125,42 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
-    protected HashSet<Boolean> ofAll(boolean[] array) {
+    protected HashSet<Boolean> ofAll(boolean... array) {
         return HashSet.ofAll(array);
     }
 
     @Override
-    protected HashSet<Byte> ofAll(byte[] array) {
+    protected HashSet<Byte> ofAll(byte... array) {
         return HashSet.ofAll(array);
     }
 
     @Override
-    protected HashSet<Character> ofAll(char[] array) {
+    protected HashSet<Character> ofAll(char... array) {
         return HashSet.ofAll(array);
     }
 
     @Override
-    protected HashSet<Double> ofAll(double[] array) {
+    protected HashSet<Double> ofAll(double... array) {
         return HashSet.ofAll(array);
     }
 
     @Override
-    protected HashSet<Float> ofAll(float[] array) {
+    protected HashSet<Float> ofAll(float... array) {
         return HashSet.ofAll(array);
     }
 
     @Override
-    protected HashSet<Integer> ofAll(int[] array) {
+    protected HashSet<Integer> ofAll(int... array) {
         return HashSet.ofAll(array);
     }
 
     @Override
-    protected HashSet<Long> ofAll(long[] array) {
+    protected HashSet<Long> ofAll(long... array) {
         return HashSet.ofAll(array);
     }
 
     @Override
-    protected HashSet<Short> ofAll(short[] array) {
+    protected HashSet<Short> ofAll(short... array) {
         return HashSet.ofAll(array);
     }
 

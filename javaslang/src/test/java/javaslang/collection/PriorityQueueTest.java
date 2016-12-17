@@ -60,42 +60,42 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected PriorityQueue<Boolean> ofAll(boolean[] array) {
+    protected PriorityQueue<Boolean> ofAll(boolean... array) {
         return PriorityQueue.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected PriorityQueue<Byte> ofAll(byte[] array) {
+    protected PriorityQueue<Byte> ofAll(byte... array) {
         return PriorityQueue.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected PriorityQueue<Character> ofAll(char[] array) {
+    protected PriorityQueue<Character> ofAll(char... array) {
         return PriorityQueue.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected PriorityQueue<Double> ofAll(double[] array) {
+    protected PriorityQueue<Double> ofAll(double... array) {
         return PriorityQueue.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected PriorityQueue<Float> ofAll(float[] array) {
+    protected PriorityQueue<Float> ofAll(float... array) {
         return PriorityQueue.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected PriorityQueue<Integer> ofAll(int[] array) {
+    protected PriorityQueue<Integer> ofAll(int... array) {
         return PriorityQueue.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected PriorityQueue<Long> ofAll(long[] array) {
+    protected PriorityQueue<Long> ofAll(long... array) {
         return PriorityQueue.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected PriorityQueue<Short> ofAll(short[] array) {
+    protected PriorityQueue<Short> ofAll(short... array) {
         return PriorityQueue.ofAll(List.ofAll(array));
     }
 

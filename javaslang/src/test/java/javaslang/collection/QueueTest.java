@@ -61,42 +61,42 @@ public class QueueTest extends AbstractLinearSeqTest {
     }
 
     @Override
-    protected Queue<Boolean> ofAll(boolean[] array) {
+    protected Queue<Boolean> ofAll(boolean... array) {
         return Queue.ofAll(array);
     }
 
     @Override
-    protected Queue<Byte> ofAll(byte[] array) {
+    protected Queue<Byte> ofAll(byte... array) {
         return Queue.ofAll(array);
     }
 
     @Override
-    protected Queue<Character> ofAll(char[] array) {
+    protected Queue<Character> ofAll(char... array) {
         return Queue.ofAll(array);
     }
 
     @Override
-    protected Queue<Double> ofAll(double[] array) {
+    protected Queue<Double> ofAll(double... array) {
         return Queue.ofAll(array);
     }
 
     @Override
-    protected Queue<Float> ofAll(float[] array) {
+    protected Queue<Float> ofAll(float... array) {
         return Queue.ofAll(array);
     }
 
     @Override
-    protected Queue<Integer> ofAll(int[] array) {
+    protected Queue<Integer> ofAll(int... array) {
         return Queue.ofAll(array);
     }
 
     @Override
-    protected Queue<Long> ofAll(long[] array) {
+    protected Queue<Long> ofAll(long... array) {
         return Queue.ofAll(array);
     }
 
     @Override
-    protected Queue<Short> ofAll(short[] array) {
+    protected Queue<Short> ofAll(short... array) {
         return Queue.ofAll(array);
     }
 
