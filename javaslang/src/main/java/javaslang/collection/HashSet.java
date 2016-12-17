@@ -166,91 +166,99 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     }
 
     /**
-     * Creates a HashSet based on the elements of a boolean array.
+     * Creates a HashSet from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new HashSet of Boolean values
+     * @throws NullPointerException if elements is null
      */
-    public static HashSet<Boolean> ofAll(boolean... array) {
-        Objects.requireNonNull(array, "array is null");
-        return HashSet.ofAll(Iterator.ofAll(array));
+    public static HashSet<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return HashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a HashSet based on the elements of a byte array.
+     * Creates a HashSet from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new HashSet of Byte values
+     * @throws NullPointerException if elements is null
      */
-    public static HashSet<Byte> ofAll(byte... array) {
-        Objects.requireNonNull(array, "array is null");
-        return HashSet.ofAll(Iterator.ofAll(array));
+    public static HashSet<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return HashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a HashSet based on the elements of a char array.
+     * Creates a HashSet from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new HashSet of Character values
+     * @throws NullPointerException if elements is null
      */
-    public static HashSet<Character> ofAll(char... array) {
-        Objects.requireNonNull(array, "array is null");
-        return HashSet.ofAll(Iterator.ofAll(array));
+    public static HashSet<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return HashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a HashSet based on the elements of a double array.
+     * Creates a HashSet from double values.
      *
-     * @param array a double array
+     * @param elements double values
      * @return A new HashSet of Double values
+     * @throws NullPointerException if elements is null
      */
-    public static HashSet<Double> ofAll(double... array) {
-        Objects.requireNonNull(array, "array is null");
-        return HashSet.ofAll(Iterator.ofAll(array));
+    public static HashSet<Double> ofAll(double... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return HashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a HashSet based on the elements of a float array.
+     * Creates a HashSet from float values.
      *
-     * @param array a float array
+     * @param elements float values
      * @return A new HashSet of Float values
+     * @throws NullPointerException if elements is null
      */
-    public static HashSet<Float> ofAll(float... array) {
-        Objects.requireNonNull(array, "array is null");
-        return HashSet.ofAll(Iterator.ofAll(array));
+    public static HashSet<Float> ofAll(float... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return HashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a HashSet based on the elements of an int array.
+     * Creates a HashSet from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new HashSet of Integer values
+     * @throws NullPointerException if elements is null
      */
-    public static HashSet<Integer> ofAll(int... array) {
-        Objects.requireNonNull(array, "array is null");
-        return HashSet.ofAll(Iterator.ofAll(array));
+    public static HashSet<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return HashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a HashSet based on the elements of a long array.
+     * Creates a HashSet from long values.
      *
-     * @param array a long array
+     * @param elements long values
      * @return A new HashSet of Long values
+     * @throws NullPointerException if elements is null
      */
-    public static HashSet<Long> ofAll(long... array) {
-        Objects.requireNonNull(array, "array is null");
-        return HashSet.ofAll(Iterator.ofAll(array));
+    public static HashSet<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return HashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a HashSet based on the elements of a short array.
+     * Creates a HashSet from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new HashSet of Short values
+     * @throws NullPointerException if elements is null
      */
-    public static HashSet<Short> ofAll(short... array) {
-        Objects.requireNonNull(array, "array is null");
-        return HashSet.ofAll(Iterator.ofAll(array));
+    public static HashSet<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return HashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**

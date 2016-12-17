@@ -176,91 +176,99 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     /**
-     * Creates a Vector based on the elements of a boolean array.
+     * Creates a Vector from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new Vector of Boolean values
+     * @throws NullPointerException if elements is null
      */
-    public static Vector<Boolean> ofAll(boolean... array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(BitMappedTrie.ofAll(array));
+    public static Vector<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(BitMappedTrie.ofAll(elements));
     }
 
     /**
-     * Creates a Vector based on the elements of a byte array.
+     * Creates a Vector from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new Vector of Byte values
+     * @throws NullPointerException if elements is null
      */
-    public static Vector<Byte> ofAll(byte... array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(BitMappedTrie.ofAll(array));
+    public static Vector<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(BitMappedTrie.ofAll(elements));
     }
 
     /**
-     * Creates a Vector based on the elements of a char array.
+     * Creates a Vector from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new Vector of Character values
+     * @throws NullPointerException if elements is null
      */
-    public static Vector<Character> ofAll(char... array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(BitMappedTrie.ofAll(array));
+    public static Vector<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(BitMappedTrie.ofAll(elements));
     }
 
     /**
-     * Creates a Vector based on the elements of a double array.
+     * Creates a Vector from double values.
      *
-     * @param array a double array
+     * @param elements double values
      * @return A new Vector of Double values
+     * @throws NullPointerException if elements is null
      */
-    public static Vector<Double> ofAll(double... array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(BitMappedTrie.ofAll(array));
+    public static Vector<Double> ofAll(double... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(BitMappedTrie.ofAll(elements));
     }
 
     /**
-     * Creates a Vector based on the elements of a float array.
+     * Creates a Vector from float values.
      *
-     * @param array a float array
+     * @param elements float values
      * @return A new Vector of Float values
+     * @throws NullPointerException if elements is null
      */
-    public static Vector<Float> ofAll(float... array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(BitMappedTrie.ofAll(array));
+    public static Vector<Float> ofAll(float... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(BitMappedTrie.ofAll(elements));
     }
 
     /**
-     * Creates a Vector based on the elements of an int array.
+     * Creates a Vector from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new Vector of Integer values
+     * @throws NullPointerException if elements is null
      */
-    public static Vector<Integer> ofAll(int... array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(BitMappedTrie.ofAll(array));
+    public static Vector<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(BitMappedTrie.ofAll(elements));
     }
 
     /**
-     * Creates a Vector based on the elements of a long array.
+     * Creates a Vector from long values.
      *
-     * @param array a long array
+     * @param elements long values
      * @return A new Vector of Long values
+     * @throws NullPointerException if elements is null
      */
-    public static Vector<Long> ofAll(long... array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(BitMappedTrie.ofAll(array));
+    public static Vector<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(BitMappedTrie.ofAll(elements));
     }
 
     /**
-     * Creates a Vector based on the elements of a short array.
+     * Creates a Vector from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new Vector of Short values
+     * @throws NullPointerException if elements is null
      */
-    public static Vector<Short> ofAll(short... array) {
-        Objects.requireNonNull(array, "array is null");
-        return ofAll(BitMappedTrie.ofAll(array));
+    public static Vector<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(BitMappedTrie.ofAll(elements));
     }
 
     public static Vector<Character> range(char from, char toExclusive) {

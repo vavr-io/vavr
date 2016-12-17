@@ -229,185 +229,193 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Creates an Iterator based on the elements of a boolean array.
+     * Creates an Iterator from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new Iterator of Boolean values
+     * @throws NullPointerException if elements is null
      */
-    static Iterator<Boolean> ofAll(boolean... array) {
-        Objects.requireNonNull(array, "array is null");
+    static Iterator<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<Boolean>() {
             int i = 0;
 
             @Override
             public boolean hasNext() {
-                return i < array.length;
+                return i < elements.length;
             }
 
             @Override
             public Boolean getNext() {
-                return array[i++];
+                return elements[i++];
             }
         };
     }
 
     /**
-     * Creates an Iterator based on the elements of a byte array.
+     * Creates an Iterator from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new Iterator of Byte values
+     * @throws NullPointerException if elements is null
      */
-    static Iterator<Byte> ofAll(byte... array) {
-        Objects.requireNonNull(array, "array is null");
+    static Iterator<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<Byte>() {
             int i = 0;
 
             @Override
             public boolean hasNext() {
-                return i < array.length;
+                return i < elements.length;
             }
 
             @Override
             public Byte getNext() {
-                return array[i++];
+                return elements[i++];
             }
         };
     }
 
     /**
-     * Creates an Iterator based on the elements of a char array.
+     * Creates an Iterator from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new Iterator of Character values
+     * @throws NullPointerException if elements is null
      */
-    static Iterator<Character> ofAll(char... array) {
-        Objects.requireNonNull(array, "array is null");
+    static Iterator<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<Character>() {
             int i = 0;
 
             @Override
             public boolean hasNext() {
-                return i < array.length;
+                return i < elements.length;
             }
 
             @Override
             public Character getNext() {
-                return array[i++];
+                return elements[i++];
             }
         };
     }
 
     /**
-     * Creates ann Iterator based on the elements of a double array.
+     * Creates ann Iterator from double values.
      *
-     * @param array a double array
+     * @param elements double values
      * @return A new Iterator of Double values
+     * @throws NullPointerException if elements is null
      */
-    static Iterator<Double> ofAll(double... array) {
-        Objects.requireNonNull(array, "array is null");
+    static Iterator<Double> ofAll(double... elements) {
+        Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<Double>() {
             int i = 0;
 
             @Override
             public boolean hasNext() {
-                return i < array.length;
+                return i < elements.length;
             }
 
             @Override
             public Double getNext() {
-                return array[i++];
+                return elements[i++];
             }
         };
     }
 
     /**
-     * Creates an Iterator based on the elements of a float array.
+     * Creates an Iterator from float values.
      *
-     * @param array a float array
+     * @param elements float values
      * @return A new Iterator of Float values
+     * @throws NullPointerException if elements is null
      */
-    static Iterator<Float> ofAll(float... array) {
-        Objects.requireNonNull(array, "array is null");
+    static Iterator<Float> ofAll(float... elements) {
+        Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<Float>() {
             int i = 0;
 
             @Override
             public boolean hasNext() {
-                return i < array.length;
+                return i < elements.length;
             }
 
             @Override
             public Float getNext() {
-                return array[i++];
+                return elements[i++];
             }
         };
     }
 
     /**
-     * Creates an Iterator based on the elements of an int array.
+     * Creates an Iterator from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new Iterator of Integer values
+     * @throws NullPointerException if elements is null
      */
-    static Iterator<Integer> ofAll(int... array) {
-        Objects.requireNonNull(array, "array is null");
+    static Iterator<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<Integer>() {
             int i = 0;
 
             @Override
             public boolean hasNext() {
-                return i < array.length;
+                return i < elements.length;
             }
 
             @Override
             public Integer getNext() {
-                return array[i++];
+                return elements[i++];
             }
         };
     }
 
     /**
-     * Creates an Iterator based on the elements of a long array.
+     * Creates an Iterator from long values.
      *
-     * @param array a long array
+     * @param elements long values
      * @return A new Iterator of Long values
+     * @throws NullPointerException if elements is null
      */
-    static Iterator<Long> ofAll(long... array) {
-        Objects.requireNonNull(array, "array is null");
+    static Iterator<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<Long>() {
             int i = 0;
 
             @Override
             public boolean hasNext() {
-                return i < array.length;
+                return i < elements.length;
             }
 
             @Override
             public Long getNext() {
-                return array[i++];
+                return elements[i++];
             }
         };
     }
 
     /**
-     * Creates an Iterator based on the elements of a short array.
+     * Creates an Iterator from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new Iterator of Short values
+     * @throws NullPointerException if elements is null
      */
-    static Iterator<Short> ofAll(short... array) {
-        Objects.requireNonNull(array, "array is null");
+    static Iterator<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
         return new AbstractIterator<Short>() {
             int i = 0;
 
             @Override
             public boolean hasNext() {
-                return i < array.length;
+                return i < elements.length;
             }
 
             @Override
             public Short getNext() {
-                return array[i++];
+                return elements[i++];
             }
         };
     }

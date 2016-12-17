@@ -55,21 +55,21 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     protected abstract <T> Traversable<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream);
 
-    protected abstract Traversable<Boolean> ofAll(boolean... array);
+    protected abstract Traversable<Boolean> ofAll(boolean... elements);
 
-    protected abstract Traversable<Byte> ofAll(byte... array);
+    protected abstract Traversable<Byte> ofAll(byte... elements);
 
-    protected abstract Traversable<Character> ofAll(char... array);
+    protected abstract Traversable<Character> ofAll(char... elements);
 
-    protected abstract Traversable<Double> ofAll(double... array);
+    protected abstract Traversable<Double> ofAll(double... elements);
 
-    protected abstract Traversable<Float> ofAll(float... array);
+    protected abstract Traversable<Float> ofAll(float... elements);
 
-    protected abstract Traversable<Integer> ofAll(int... array);
+    protected abstract Traversable<Integer> ofAll(int... elements);
 
-    protected abstract Traversable<Long> ofAll(long... array);
+    protected abstract Traversable<Long> ofAll(long... elements);
 
-    protected abstract Traversable<Short> ofAll(short... array);
+    protected abstract Traversable<Short> ofAll(short... elements);
 
     protected abstract <T> Traversable<T> tabulate(int n, Function<? super Integer, ? extends T> f);
 

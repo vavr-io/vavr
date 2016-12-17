@@ -166,91 +166,99 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     /**
-     * Creates a LinkedHashSet based on the elements of a boolean array.
+     * Creates a LinkedHashSet from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new LinkedHashSet of Boolean values
+     * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Boolean> ofAll(boolean... array) {
-        Objects.requireNonNull(array, "array is null");
-        return LinkedHashSet.ofAll(Iterator.ofAll(array));
+    public static LinkedHashSet<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a LinkedHashSet based on the elements of a byte array.
+     * Creates a LinkedHashSet from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new LinkedHashSet of Byte values
+     * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Byte> ofAll(byte... array) {
-        Objects.requireNonNull(array, "array is null");
-        return LinkedHashSet.ofAll(Iterator.ofAll(array));
+    public static LinkedHashSet<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a LinkedHashSet based on the elements of a char array.
+     * Creates a LinkedHashSet from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new LinkedHashSet of Character values
+     * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Character> ofAll(char... array) {
-        Objects.requireNonNull(array, "array is null");
-        return LinkedHashSet.ofAll(Iterator.ofAll(array));
+    public static LinkedHashSet<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a LinkedHashSet based on the elements of a double array.
+     * Creates a LinkedHashSet from double values.
      *
-     * @param array a double array
+     * @param elements double values
      * @return A new LinkedHashSet of Double values
+     * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Double> ofAll(double... array) {
-        Objects.requireNonNull(array, "array is null");
-        return LinkedHashSet.ofAll(Iterator.ofAll(array));
+    public static LinkedHashSet<Double> ofAll(double... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a LinkedHashSet based on the elements of a float array.
+     * Creates a LinkedHashSet from float values.
      *
-     * @param array a float array
+     * @param elements a float values
      * @return A new LinkedHashSet of Float values
+     * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Float> ofAll(float... array) {
-        Objects.requireNonNull(array, "array is null");
-        return LinkedHashSet.ofAll(Iterator.ofAll(array));
+    public static LinkedHashSet<Float> ofAll(float... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a LinkedHashSet based on the elements of an int array.
+     * Creates a LinkedHashSet from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new LinkedHashSet of Integer values
+     * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Integer> ofAll(int... array) {
-        Objects.requireNonNull(array, "array is null");
-        return LinkedHashSet.ofAll(Iterator.ofAll(array));
+    public static LinkedHashSet<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a LinkedHashSet based on the elements of a long array.
+     * Creates a LinkedHashSet from long values.
      *
-     * @param array a long array
+     * @param elements long values
      * @return A new LinkedHashSet of Long values
+     * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Long> ofAll(long... array) {
-        Objects.requireNonNull(array, "array is null");
-        return LinkedHashSet.ofAll(Iterator.ofAll(array));
+    public static LinkedHashSet<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a LinkedHashSet based on the elements of a short array.
+     * Creates a LinkedHashSet from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new LinkedHashSet of Short values
+     * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Short> ofAll(short... array) {
-        Objects.requireNonNull(array, "array is null");
-        return LinkedHashSet.ofAll(Iterator.ofAll(array));
+    public static LinkedHashSet<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**

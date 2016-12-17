@@ -206,43 +206,43 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected IntMap<Boolean> ofAll(boolean... array) {
-        return ofAll(Iterator.ofAll(array));
+    protected IntMap<Boolean> ofAll(boolean... elements) {
+        return ofAll(Iterator.ofAll(elements));
     }
 
     @Override
-    protected IntMap<Byte> ofAll(byte... array) {
-        return ofAll(Iterator.ofAll(array));
+    protected IntMap<Byte> ofAll(byte... elements) {
+        return ofAll(Iterator.ofAll(elements));
     }
 
     @Override
-    protected IntMap<Character> ofAll(char... array) {
-        return ofAll(Iterator.ofAll(array));
+    protected IntMap<Character> ofAll(char... elements) {
+        return ofAll(Iterator.ofAll(elements));
     }
 
     @Override
-    protected IntMap<Double> ofAll(double... array) {
-        return ofAll(Iterator.ofAll(array));
+    protected IntMap<Double> ofAll(double... elements) {
+        return ofAll(Iterator.ofAll(elements));
     }
 
     @Override
-    protected IntMap<Float> ofAll(float... array) {
-        return ofAll(Iterator.ofAll(array));
+    protected IntMap<Float> ofAll(float... elements) {
+        return ofAll(Iterator.ofAll(elements));
     }
 
     @Override
-    protected IntMap<Integer> ofAll(int... array) {
-        return ofAll(Iterator.ofAll(array));
+    protected IntMap<Integer> ofAll(int... elements) {
+        return ofAll(Iterator.ofAll(elements));
     }
 
     @Override
-    protected IntMap<Long> ofAll(long... array) {
-        return ofAll(Iterator.ofAll(array));
+    protected IntMap<Long> ofAll(long... elements) {
+        return ofAll(Iterator.ofAll(elements));
     }
 
     @Override
-    protected IntMap<Short> ofAll(short... array) {
-        return ofAll(Iterator.ofAll(array));
+    protected IntMap<Short> ofAll(short... elements) {
+        return ofAll(Iterator.ofAll(elements));
     }
 
     @Override

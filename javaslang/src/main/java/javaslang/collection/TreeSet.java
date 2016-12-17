@@ -219,91 +219,99 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     /**
-     * Creates a TreeSet based on the elements of a boolean array.
+     * Creates a TreeSet from boolean values.
      *
-     * @param array a boolean array
+     * @param elements boolean values
      * @return A new TreeSet of Boolean values
+     * @throws NullPointerException if elements is null
      */
-    public static TreeSet<Boolean> ofAll(boolean[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(Iterator.ofAll(array));
+    public static TreeSet<Boolean> ofAll(boolean... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a TreeSet based on the elements of a byte array.
+     * Creates a TreeSet from byte values.
      *
-     * @param array a byte array
+     * @param elements byte values
      * @return A new TreeSet of Byte values
+     * @throws NullPointerException if elements is null
      */
-    public static TreeSet<Byte> ofAll(byte[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(Iterator.ofAll(array));
+    public static TreeSet<Byte> ofAll(byte... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a TreeSet based on the elements of a char array.
+     * Creates a TreeSet from char values.
      *
-     * @param array a char array
+     * @param elements char values
      * @return A new TreeSet of Character values
+     * @throws NullPointerException if elements is null
      */
-    public static TreeSet<Character> ofAll(char[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(Iterator.ofAll(array));
+    public static TreeSet<Character> ofAll(char... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a TreeSet based on the elements of a double array.
+     * Creates a TreeSet from double values.
      *
-     * @param array a double array
+     * @param elements double values
      * @return A new TreeSet of Double values
+     * @throws NullPointerException if elements is null
      */
-    public static TreeSet<Double> ofAll(double[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(Iterator.ofAll(array));
+    public static TreeSet<Double> ofAll(double... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a TreeSet based on the elements of a float array.
+     * Creates a TreeSet from float values.
      *
-     * @param array a float array
+     * @param elements float values
      * @return A new TreeSet of Float values
+     * @throws NullPointerException if elements is null
      */
-    public static TreeSet<Float> ofAll(float[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(Iterator.ofAll(array));
+    public static TreeSet<Float> ofAll(float... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a TreeSet based on the elements of an int array.
+     * Creates a TreeSet from int values.
      *
-     * @param array an int array
+     * @param elements int values
      * @return A new TreeSet of Integer values
+     * @throws NullPointerException if elements is null
      */
-    public static TreeSet<Integer> ofAll(int[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(Iterator.ofAll(array));
+    public static TreeSet<Integer> ofAll(int... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a TreeSet based on the elements of a long array.
+     * Creates a TreeSet from long values.
      *
-     * @param array a long array
+     * @param elements long values
      * @return A new TreeSet of Long values
+     * @throws NullPointerException if elements is null
      */
-    public static TreeSet<Long> ofAll(long[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(Iterator.ofAll(array));
+    public static TreeSet<Long> ofAll(long... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**
-     * Creates a TreeSet based on the elements of a short array.
+     * Creates a TreeSet from short values.
      *
-     * @param array a short array
+     * @param elements short values
      * @return A new TreeSet of Short values
+     * @throws NullPointerException if elements is null
      */
-    public static TreeSet<Short> ofAll(short[] array) {
-        Objects.requireNonNull(array, "array is null");
-        return TreeSet.ofAll(Iterator.ofAll(array));
+    public static TreeSet<Short> ofAll(short... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
     /**

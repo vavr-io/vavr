@@ -41,28 +41,28 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     abstract protected <T> Seq<T> ofAll(Iterable<? extends T> elements);
 
     @Override
-    abstract protected Seq<Boolean> ofAll(boolean... array);
+    abstract protected Seq<Boolean> ofAll(boolean... elements);
 
     @Override
-    abstract protected Seq<Byte> ofAll(byte... array);
+    abstract protected Seq<Byte> ofAll(byte... elements);
 
     @Override
-    abstract protected Seq<Character> ofAll(char... array);
+    abstract protected Seq<Character> ofAll(char... elements);
 
     @Override
-    abstract protected Seq<Double> ofAll(double... array);
+    abstract protected Seq<Double> ofAll(double... elements);
 
     @Override
-    abstract protected Seq<Float> ofAll(float... array);
+    abstract protected Seq<Float> ofAll(float... elements);
 
     @Override
-    abstract protected Seq<Integer> ofAll(int... array);
+    abstract protected Seq<Integer> ofAll(int... elements);
 
     @Override
-    abstract protected Seq<Long> ofAll(long... array);
+    abstract protected Seq<Long> ofAll(long... elements);
 
     @Override
-    abstract protected Seq<Short> ofAll(short... array);
+    abstract protected Seq<Short> ofAll(short... elements);
 
     @Override
     abstract protected Seq<Character> range(char from, char toExclusive);
