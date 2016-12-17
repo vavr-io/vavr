@@ -64,10 +64,10 @@ import java.util.stream.Collector;
  * List&lt;Integer&gt;       s2 = List.of(1, 2, 3);
  *                           // = List.of(new Integer[] {1, 2, 3});
  *
- * List&lt;int[]&gt;         s3 = List.ofAll(new int[] {1, 2, 3});
+ * List&lt;int[]&gt;         s3 = List.ofAll(1, 2, 3);
  * List&lt;List&lt;Integer&gt;&gt; s4 = List.ofAll(List.of(1, 2, 3));
  *
- * List&lt;Integer&gt;       s5 = List.ofAll(new int[] {1, 2, 3});
+ * List&lt;Integer&gt;       s5 = List.ofAll(1, 2, 3);
  * List&lt;Integer&gt;       s6 = List.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
@@ -241,7 +241,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a boolean array
      * @return A new List of Boolean values
      */
-    static List<Boolean> ofAll(boolean[] array) {
+    static List<Boolean> ofAll(boolean... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -252,7 +252,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a byte array
      * @return A new List of Byte values
      */
-    static List<Byte> ofAll(byte[] array) {
+    static List<Byte> ofAll(byte... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -263,7 +263,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a char array
      * @return A new List of Character values
      */
-    static List<Character> ofAll(char[] array) {
+    static List<Character> ofAll(char... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -274,7 +274,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a double array
      * @return A new List of Double values
      */
-    static List<Double> ofAll(double[] array) {
+    static List<Double> ofAll(double... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -285,7 +285,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a float array
      * @return A new List of Float values
      */
-    static List<Float> ofAll(float[] array) {
+    static List<Float> ofAll(float... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -296,7 +296,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array an int array
      * @return A new List of Integer values
      */
-    static List<Integer> ofAll(int[] array) {
+    static List<Integer> ofAll(int... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -307,7 +307,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a long array
      * @return A new List of Long values
      */
-    static List<Long> ofAll(long[] array) {
+    static List<Long> ofAll(long... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -318,7 +318,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      * @param array a short array
      * @return A new List of Short values
      */
-    static List<Short> ofAll(short[] array) {
+    static List<Short> ofAll(short... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }

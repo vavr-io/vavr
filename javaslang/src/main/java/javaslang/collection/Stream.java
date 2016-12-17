@@ -38,7 +38,7 @@ import java.util.stream.Collector;
  * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
  * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
  * Stream.ofAll(Iterable)          // e.g. Stream.ofAll(List.of(1, 2, 3)) = 1, 2, 3
- * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(new int[] {1, 2, 3}) = 1, 2, 3
+ * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(1, 2, 3) = 1, 2, 3
  *
  * // int sequences
  * Stream.from(0)                  // = 0, 1, 2, 3, ...
@@ -60,10 +60,10 @@ import java.util.stream.Collector;
  * Stream&lt;Integer&gt;       s2 = Stream.of(1, 2, 3);
  *                       // = Stream.of(new Integer[] {1, 2, 3});
  *
- * Stream&lt;int[]&gt;         s3 = Stream.ofAll(new int[] {1, 2, 3});
+ * Stream&lt;int[]&gt;         s3 = Stream.ofAll(1, 2, 3);
  * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.ofAll(List.of(1, 2, 3));
  *
- * Stream&lt;Integer&gt;       s5 = Stream.ofAll(new int[] {1, 2, 3});
+ * Stream&lt;Integer&gt;       s5 = Stream.ofAll(1, 2, 3);
  * Stream&lt;Integer&gt;       s6 = Stream.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
@@ -363,7 +363,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @param array a boolean array
      * @return A new Stream of Boolean values
      */
-    static Stream<Boolean> ofAll(boolean[] array) {
+    static Stream<Boolean> ofAll(boolean... array) {
         Objects.requireNonNull(array, "array is null");
         return Stream.ofAll(Iterator.ofAll(array));
     }
@@ -374,7 +374,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @param array a byte array
      * @return A new Stream of Byte values
      */
-    static Stream<Byte> ofAll(byte[] array) {
+    static Stream<Byte> ofAll(byte... array) {
         Objects.requireNonNull(array, "array is null");
         return Stream.ofAll(Iterator.ofAll(array));
     }
@@ -385,7 +385,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @param array a char array
      * @return A new Stream of Character values
      */
-    static Stream<Character> ofAll(char[] array) {
+    static Stream<Character> ofAll(char... array) {
         Objects.requireNonNull(array, "array is null");
         return Stream.ofAll(Iterator.ofAll(array));
     }
@@ -396,7 +396,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @param array a double array
      * @return A new Stream of Double values
      */
-    static Stream<Double> ofAll(double[] array) {
+    static Stream<Double> ofAll(double... array) {
         Objects.requireNonNull(array, "array is null");
         return Stream.ofAll(Iterator.ofAll(array));
     }
@@ -407,7 +407,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @param array a float array
      * @return A new Stream of Float values
      */
-    static Stream<Float> ofAll(float[] array) {
+    static Stream<Float> ofAll(float... array) {
         Objects.requireNonNull(array, "array is null");
         return Stream.ofAll(Iterator.ofAll(array));
     }
@@ -418,7 +418,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @param array an int array
      * @return A new Stream of Integer values
      */
-    static Stream<Integer> ofAll(int[] array) {
+    static Stream<Integer> ofAll(int... array) {
         Objects.requireNonNull(array, "array is null");
         return Stream.ofAll(Iterator.ofAll(array));
     }
@@ -429,7 +429,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @param array a long array
      * @return A new Stream of Long values
      */
-    static Stream<Long> ofAll(long[] array) {
+    static Stream<Long> ofAll(long... array) {
         Objects.requireNonNull(array, "array is null");
         return Stream.ofAll(Iterator.ofAll(array));
     }
@@ -440,7 +440,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * @param array a short array
      * @return A new Stream of Short values
      */
-    static Stream<Short> ofAll(short[] array) {
+    static Stream<Short> ofAll(short... array) {
         Objects.requireNonNull(array, "array is null");
         return Stream.ofAll(Iterator.ofAll(array));
     }

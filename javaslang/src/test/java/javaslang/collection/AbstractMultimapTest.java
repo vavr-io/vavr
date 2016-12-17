@@ -213,42 +213,42 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected IntMultimap<Boolean> ofAll(boolean[] array) {
+    protected IntMultimap<Boolean> ofAll(boolean... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMultimap<Byte> ofAll(byte[] array) {
+    protected IntMultimap<Byte> ofAll(byte... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMultimap<Character> ofAll(char[] array) {
+    protected IntMultimap<Character> ofAll(char... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMultimap<Double> ofAll(double[] array) {
+    protected IntMultimap<Double> ofAll(double... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMultimap<Float> ofAll(float[] array) {
+    protected IntMultimap<Float> ofAll(float... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMultimap<Integer> ofAll(int[] array) {
+    protected IntMultimap<Integer> ofAll(int... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMultimap<Long> ofAll(long[] array) {
+    protected IntMultimap<Long> ofAll(long... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMultimap<Short> ofAll(short[] array) {
+    protected IntMultimap<Short> ofAll(short... array) {
         return ofAll(Iterator.ofAll(array));
     }
 

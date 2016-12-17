@@ -66,42 +66,42 @@ public class LinkedHashSetTest extends AbstractSetTest {
     }
 
     @Override
-    protected LinkedHashSet<Boolean> ofAll(boolean[] array) {
+    protected LinkedHashSet<Boolean> ofAll(boolean... array) {
         return LinkedHashSet.ofAll(array);
     }
 
     @Override
-    protected LinkedHashSet<Byte> ofAll(byte[] array) {
+    protected LinkedHashSet<Byte> ofAll(byte... array) {
         return LinkedHashSet.ofAll(array);
     }
 
     @Override
-    protected LinkedHashSet<Character> ofAll(char[] array) {
+    protected LinkedHashSet<Character> ofAll(char... array) {
         return LinkedHashSet.ofAll(array);
     }
 
     @Override
-    protected LinkedHashSet<Double> ofAll(double[] array) {
+    protected LinkedHashSet<Double> ofAll(double... array) {
         return LinkedHashSet.ofAll(array);
     }
 
     @Override
-    protected LinkedHashSet<Float> ofAll(float[] array) {
+    protected LinkedHashSet<Float> ofAll(float... array) {
         return LinkedHashSet.ofAll(array);
     }
 
     @Override
-    protected LinkedHashSet<Integer> ofAll(int[] array) {
+    protected LinkedHashSet<Integer> ofAll(int... array) {
         return LinkedHashSet.ofAll(array);
     }
 
     @Override
-    protected LinkedHashSet<Long> ofAll(long[] array) {
+    protected LinkedHashSet<Long> ofAll(long... array) {
         return LinkedHashSet.ofAll(array);
     }
 
     @Override
-    protected LinkedHashSet<Short> ofAll(short[] array) {
+    protected LinkedHashSet<Short> ofAll(short... array) {
         return LinkedHashSet.ofAll(array);
     }
 

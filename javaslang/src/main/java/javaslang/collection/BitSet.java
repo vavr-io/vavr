@@ -178,7 +178,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param array a boolean array
      * @return A new BitSet of boolean values
      */
-    static BitSet<Boolean> ofAll(boolean[] array) {
+    static BitSet<Boolean> ofAll(boolean... array) {
         Objects.requireNonNull(array, "array is null");
         return BitSet.withRelations(i -> i != 0, b -> b ? 1 : 0).ofAll(Iterator.ofAll(array));
     }
@@ -189,7 +189,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param array a byte array
      * @return A new BitSet of byte values
      */
-    static BitSet<Byte> ofAll(byte[] array) {
+    static BitSet<Byte> ofAll(byte... array) {
         Objects.requireNonNull(array, "array is null");
         return BitSet.withBytes().ofAll(Iterator.ofAll(array));
     }
@@ -200,7 +200,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param array a char array
      * @return A new BitSet of char values
      */
-    static BitSet<Character> ofAll(char[] array) {
+    static BitSet<Character> ofAll(char... array) {
         Objects.requireNonNull(array, "array is null");
         return BitSet.withCharacters().ofAll(Iterator.ofAll(array));
     }
@@ -211,7 +211,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param array an int array
      * @return A new BitSet of int values
      */
-    static BitSet<Integer> ofAll(int[] array) {
+    static BitSet<Integer> ofAll(int... array) {
         Objects.requireNonNull(array, "array is null");
         return BitSet.ofAll(Iterator.ofAll(array));
     }
@@ -222,7 +222,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param array a long array
      * @return A new BitSet of long values
      */
-    static BitSet<Long> ofAll(long[] array) {
+    static BitSet<Long> ofAll(long... array) {
         Objects.requireNonNull(array, "array is null");
         return BitSet.withLongs().ofAll(Iterator.ofAll(array));
     }
@@ -233,7 +233,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param array a short array
      * @return A new BitSet of short values
      */
-    static BitSet<Short> ofAll(short[] array) {
+    static BitSet<Short> ofAll(short... array) {
         Objects.requireNonNull(array, "array is null");
         return BitSet.withShorts().ofAll(Iterator.ofAll(array));
     }

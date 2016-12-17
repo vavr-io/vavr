@@ -206,42 +206,42 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected IntMap<Boolean> ofAll(boolean[] array) {
+    protected IntMap<Boolean> ofAll(boolean... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMap<Byte> ofAll(byte[] array) {
+    protected IntMap<Byte> ofAll(byte... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMap<Character> ofAll(char[] array) {
+    protected IntMap<Character> ofAll(char... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMap<Double> ofAll(double[] array) {
+    protected IntMap<Double> ofAll(double... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMap<Float> ofAll(float[] array) {
+    protected IntMap<Float> ofAll(float... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMap<Integer> ofAll(int[] array) {
+    protected IntMap<Integer> ofAll(int... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMap<Long> ofAll(long[] array) {
+    protected IntMap<Long> ofAll(long... array) {
         return ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected IntMap<Short> ofAll(short[] array) {
+    protected IntMap<Short> ofAll(short... array) {
         return ofAll(Iterator.ofAll(array));
     }
 

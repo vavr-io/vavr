@@ -58,42 +58,42 @@ public class VectorTest extends AbstractIndexedSeqTest {
     }
 
     @Override
-    protected Vector<Boolean> ofAll(boolean[] array) {
+    protected Vector<Boolean> ofAll(boolean... array) {
         return Vector.ofAll(array);
     }
 
     @Override
-    protected Vector<Byte> ofAll(byte[] array) {
+    protected Vector<Byte> ofAll(byte... array) {
         return Vector.ofAll(array);
     }
 
     @Override
-    protected Vector<Character> ofAll(char[] array) {
+    protected Vector<Character> ofAll(char... array) {
         return Vector.ofAll(array);
     }
 
     @Override
-    protected Vector<Double> ofAll(double[] array) {
+    protected Vector<Double> ofAll(double... array) {
         return Vector.ofAll(array);
     }
 
     @Override
-    protected Vector<Float> ofAll(float[] array) {
+    protected Vector<Float> ofAll(float... array) {
         return Vector.ofAll(array);
     }
 
     @Override
-    protected Vector<Integer> ofAll(int[] array) {
+    protected Vector<Integer> ofAll(int... array) {
         return Vector.ofAll(array);
     }
 
     @Override
-    protected Vector<Long> ofAll(long[] array) {
+    protected Vector<Long> ofAll(long... array) {
         return Vector.ofAll(array);
     }
 
     @Override
-    protected Vector<Short> ofAll(short[] array) {
+    protected Vector<Short> ofAll(short... array) {
         return Vector.ofAll(array);
     }
 

@@ -171,7 +171,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      * @param array a boolean array
      * @return A new HashSet of Boolean values
      */
-    public static HashSet<Boolean> ofAll(boolean[] array) {
+    public static HashSet<Boolean> ofAll(boolean... array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -182,7 +182,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      * @param array a byte array
      * @return A new HashSet of Byte values
      */
-    public static HashSet<Byte> ofAll(byte[] array) {
+    public static HashSet<Byte> ofAll(byte... array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -193,7 +193,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      * @param array a char array
      * @return A new HashSet of Character values
      */
-    public static HashSet<Character> ofAll(char[] array) {
+    public static HashSet<Character> ofAll(char... array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -204,7 +204,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      * @param array a double array
      * @return A new HashSet of Double values
      */
-    public static HashSet<Double> ofAll(double[] array) {
+    public static HashSet<Double> ofAll(double... array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -215,7 +215,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      * @param array a float array
      * @return A new HashSet of Float values
      */
-    public static HashSet<Float> ofAll(float[] array) {
+    public static HashSet<Float> ofAll(float... array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -226,7 +226,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      * @param array an int array
      * @return A new HashSet of Integer values
      */
-    public static HashSet<Integer> ofAll(int[] array) {
+    public static HashSet<Integer> ofAll(int... array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -237,7 +237,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      * @param array a long array
      * @return A new HashSet of Long values
      */
-    public static HashSet<Long> ofAll(long[] array) {
+    public static HashSet<Long> ofAll(long... array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }
@@ -248,7 +248,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
      * @param array a short array
      * @return A new HashSet of Short values
      */
-    public static HashSet<Short> ofAll(short[] array) {
+    public static HashSet<Short> ofAll(short... array) {
         Objects.requireNonNull(array, "array is null");
         return HashSet.ofAll(Iterator.ofAll(array));
     }

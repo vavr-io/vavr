@@ -171,7 +171,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param array a boolean array
      * @return A new LinkedHashSet of Boolean values
      */
-    public static LinkedHashSet<Boolean> ofAll(boolean[] array) {
+    public static LinkedHashSet<Boolean> ofAll(boolean... array) {
         Objects.requireNonNull(array, "array is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(array));
     }
@@ -182,7 +182,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param array a byte array
      * @return A new LinkedHashSet of Byte values
      */
-    public static LinkedHashSet<Byte> ofAll(byte[] array) {
+    public static LinkedHashSet<Byte> ofAll(byte... array) {
         Objects.requireNonNull(array, "array is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(array));
     }
@@ -193,7 +193,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param array a char array
      * @return A new LinkedHashSet of Character values
      */
-    public static LinkedHashSet<Character> ofAll(char[] array) {
+    public static LinkedHashSet<Character> ofAll(char... array) {
         Objects.requireNonNull(array, "array is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(array));
     }
@@ -204,7 +204,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param array a double array
      * @return A new LinkedHashSet of Double values
      */
-    public static LinkedHashSet<Double> ofAll(double[] array) {
+    public static LinkedHashSet<Double> ofAll(double... array) {
         Objects.requireNonNull(array, "array is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(array));
     }
@@ -215,7 +215,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param array a float array
      * @return A new LinkedHashSet of Float values
      */
-    public static LinkedHashSet<Float> ofAll(float[] array) {
+    public static LinkedHashSet<Float> ofAll(float... array) {
         Objects.requireNonNull(array, "array is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(array));
     }
@@ -226,7 +226,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param array an int array
      * @return A new LinkedHashSet of Integer values
      */
-    public static LinkedHashSet<Integer> ofAll(int[] array) {
+    public static LinkedHashSet<Integer> ofAll(int... array) {
         Objects.requireNonNull(array, "array is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(array));
     }
@@ -237,7 +237,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param array a long array
      * @return A new LinkedHashSet of Long values
      */
-    public static LinkedHashSet<Long> ofAll(long[] array) {
+    public static LinkedHashSet<Long> ofAll(long... array) {
         Objects.requireNonNull(array, "array is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(array));
     }
@@ -248,7 +248,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * @param array a short array
      * @return A new LinkedHashSet of Short values
      */
-    public static LinkedHashSet<Short> ofAll(short[] array) {
+    public static LinkedHashSet<Short> ofAll(short... array) {
         Objects.requireNonNull(array, "array is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(array));
     }

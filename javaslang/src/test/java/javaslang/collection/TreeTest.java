@@ -134,42 +134,42 @@ public class TreeTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected Tree<Boolean> ofAll(boolean[] array) {
+    protected Tree<Boolean> ofAll(boolean... array) {
         return Tree.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected Tree<Byte> ofAll(byte[] array) {
+    protected Tree<Byte> ofAll(byte... array) {
         return Tree.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected Tree<Character> ofAll(char[] array) {
+    protected Tree<Character> ofAll(char... array) {
         return Tree.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected Tree<Double> ofAll(double[] array) {
+    protected Tree<Double> ofAll(double... array) {
         return Tree.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected Tree<Float> ofAll(float[] array) {
+    protected Tree<Float> ofAll(float... array) {
         return Tree.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected Tree<Integer> ofAll(int[] array) {
+    protected Tree<Integer> ofAll(int... array) {
         return Tree.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected Tree<Long> ofAll(long[] array) {
+    protected Tree<Long> ofAll(long... array) {
         return Tree.ofAll(List.ofAll(array));
     }
 
     @Override
-    protected Tree<Short> ofAll(short[] array) {
+    protected Tree<Short> ofAll(short... array) {
         return Tree.ofAll(List.ofAll(array));
     }
 

@@ -64,42 +64,42 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Override
-    protected Stream<Boolean> ofAll(boolean[] array) {
+    protected Stream<Boolean> ofAll(boolean... array) {
         return Stream.ofAll(array);
     }
 
     @Override
-    protected Stream<Byte> ofAll(byte[] array) {
+    protected Stream<Byte> ofAll(byte... array) {
         return Stream.ofAll(array);
     }
 
     @Override
-    protected Stream<Character> ofAll(char[] array) {
+    protected Stream<Character> ofAll(char... array) {
         return Stream.ofAll(array);
     }
 
     @Override
-    protected Stream<Double> ofAll(double[] array) {
+    protected Stream<Double> ofAll(double... array) {
         return Stream.ofAll(array);
     }
 
     @Override
-    protected Stream<Float> ofAll(float[] array) {
+    protected Stream<Float> ofAll(float... array) {
         return Stream.ofAll(array);
     }
 
     @Override
-    protected Stream<Integer> ofAll(int[] array) {
+    protected Stream<Integer> ofAll(int... array) {
         return Stream.ofAll(array);
     }
 
     @Override
-    protected Stream<Long> ofAll(long[] array) {
+    protected Stream<Long> ofAll(long... array) {
         return Stream.ofAll(array);
     }
 
     @Override
-    protected Stream<Short> ofAll(short[] array) {
+    protected Stream<Short> ofAll(short... array) {
         return Stream.ofAll(array);
     }
 

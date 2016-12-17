@@ -234,7 +234,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param array a boolean array
      * @return A new Iterator of Boolean values
      */
-    static Iterator<Boolean> ofAll(boolean[] array) {
+    static Iterator<Boolean> ofAll(boolean... array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Boolean>() {
             int i = 0;
@@ -257,7 +257,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param array a byte array
      * @return A new Iterator of Byte values
      */
-    static Iterator<Byte> ofAll(byte[] array) {
+    static Iterator<Byte> ofAll(byte... array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Byte>() {
             int i = 0;
@@ -280,7 +280,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param array a char array
      * @return A new Iterator of Character values
      */
-    static Iterator<Character> ofAll(char[] array) {
+    static Iterator<Character> ofAll(char... array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Character>() {
             int i = 0;
@@ -303,7 +303,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param array a double array
      * @return A new Iterator of Double values
      */
-    static Iterator<Double> ofAll(double[] array) {
+    static Iterator<Double> ofAll(double... array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Double>() {
             int i = 0;
@@ -326,7 +326,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param array a float array
      * @return A new Iterator of Float values
      */
-    static Iterator<Float> ofAll(float[] array) {
+    static Iterator<Float> ofAll(float... array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Float>() {
             int i = 0;
@@ -349,7 +349,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param array an int array
      * @return A new Iterator of Integer values
      */
-    static Iterator<Integer> ofAll(int[] array) {
+    static Iterator<Integer> ofAll(int... array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Integer>() {
             int i = 0;
@@ -372,7 +372,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param array a long array
      * @return A new Iterator of Long values
      */
-    static Iterator<Long> ofAll(long[] array) {
+    static Iterator<Long> ofAll(long... array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Long>() {
             int i = 0;
@@ -395,7 +395,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @param array a short array
      * @return A new Iterator of Short values
      */
-    static Iterator<Short> ofAll(short[] array) {
+    static Iterator<Short> ofAll(short... array) {
         Objects.requireNonNull(array, "array is null");
         return new AbstractIterator<Short>() {
             int i = 0;

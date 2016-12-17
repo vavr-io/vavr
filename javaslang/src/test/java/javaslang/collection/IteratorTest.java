@@ -133,42 +133,42 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected Iterator<Boolean> ofAll(boolean[] array) {
+    protected Iterator<Boolean> ofAll(boolean... array) {
         return Iterator.ofAll(array);
     }
 
     @Override
-    protected Iterator<Byte> ofAll(byte[] array) {
+    protected Iterator<Byte> ofAll(byte... array) {
         return Iterator.ofAll(array);
     }
 
     @Override
-    protected Iterator<Character> ofAll(char[] array) {
+    protected Iterator<Character> ofAll(char... array) {
         return Iterator.ofAll(array);
     }
 
     @Override
-    protected Iterator<Double> ofAll(double[] array) {
+    protected Iterator<Double> ofAll(double... array) {
         return Iterator.ofAll(array);
     }
 
     @Override
-    protected Iterator<Float> ofAll(float[] array) {
+    protected Iterator<Float> ofAll(float... array) {
         return Iterator.ofAll(array);
     }
 
     @Override
-    protected Iterator<Integer> ofAll(int[] array) {
+    protected Iterator<Integer> ofAll(int... array) {
         return Iterator.ofAll(array);
     }
 
     @Override
-    protected Iterator<Long> ofAll(long[] array) {
+    protected Iterator<Long> ofAll(long... array) {
         return Iterator.ofAll(array);
     }
 
     @Override
-    protected Iterator<Short> ofAll(short[] array) {
+    protected Iterator<Short> ofAll(short... array) {
         return Iterator.ofAll(array);
     }
 

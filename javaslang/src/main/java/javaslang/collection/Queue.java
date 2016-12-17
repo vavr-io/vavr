@@ -174,7 +174,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return A new Queue of Boolean values
      * @throws NullPointerException if array is null
      */
-    public static Queue<Boolean> ofAll(boolean[] array) {
+    public static Queue<Boolean> ofAll(boolean... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(List.ofAll(array));
     }
@@ -186,7 +186,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return A new Queue of Byte values
      * @throws NullPointerException if array is null
      */
-    public static Queue<Byte> ofAll(byte[] array) {
+    public static Queue<Byte> ofAll(byte... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(List.ofAll(array));
     }
@@ -198,7 +198,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return A new Queue of Character values
      * @throws NullPointerException if array is null
      */
-    public static Queue<Character> ofAll(char[] array) {
+    public static Queue<Character> ofAll(char... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(List.ofAll(array));
     }
@@ -210,7 +210,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return A new Queue of Double values
      * @throws NullPointerException if array is null
      */
-    public static Queue<Double> ofAll(double[] array) {
+    public static Queue<Double> ofAll(double... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(List.ofAll(array));
     }
@@ -222,7 +222,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return A new Queue of Float values
      * @throws NullPointerException if array is null
      */
-    public static Queue<Float> ofAll(float[] array) {
+    public static Queue<Float> ofAll(float... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(List.ofAll(array));
     }
@@ -234,7 +234,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return A new Queue of Integer values
      * @throws NullPointerException if array is null
      */
-    public static Queue<Integer> ofAll(int[] array) {
+    public static Queue<Integer> ofAll(int... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(List.ofAll(array));
     }
@@ -246,7 +246,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return A new Queue of Long values
      * @throws NullPointerException if array is null
      */
-    public static Queue<Long> ofAll(long[] array) {
+    public static Queue<Long> ofAll(long... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(List.ofAll(array));
     }
@@ -258,7 +258,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * @return A new Queue of Short values
      * @throws NullPointerException if array is null
      */
-    public static Queue<Short> ofAll(short[] array) {
+    public static Queue<Short> ofAll(short... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(List.ofAll(array));
     }

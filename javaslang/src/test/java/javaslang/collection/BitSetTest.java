@@ -143,42 +143,42 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Override
-    protected BitSet<Boolean> ofAll(boolean[] array) {
+    protected BitSet<Boolean> ofAll(boolean... array) {
         return BitSet.ofAll(array);
     }
 
     @Override
-    protected BitSet<Byte> ofAll(byte[] array) {
+    protected BitSet<Byte> ofAll(byte... array) {
         return BitSet.ofAll(array);
     }
 
     @Override
-    protected BitSet<Character> ofAll(char[] array) {
+    protected BitSet<Character> ofAll(char... array) {
         return BitSet.ofAll(array);
     }
 
     @Override
-    protected BitSet<Double> ofAll(double[] array) {
+    protected BitSet<Double> ofAll(double... array) {
         return this.<Double> bsBuilder().ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected BitSet<Float> ofAll(float[] array) {
+    protected BitSet<Float> ofAll(float... array) {
         return this.<Float> bsBuilder().ofAll(Iterator.ofAll(array));
     }
 
     @Override
-    protected BitSet<Integer> ofAll(int[] array) {
+    protected BitSet<Integer> ofAll(int... array) {
         return BitSet.ofAll(array);
     }
 
     @Override
-    protected BitSet<Long> ofAll(long[] array) {
+    protected BitSet<Long> ofAll(long... array) {
         return BitSet.ofAll(array);
     }
 
     @Override
-    protected BitSet<Short> ofAll(short[] array) {
+    protected BitSet<Short> ofAll(short... array) {
         return BitSet.ofAll(array);
     }
 

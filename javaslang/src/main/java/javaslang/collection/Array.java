@@ -139,7 +139,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @param array a boolean array
      * @return A new Array of Boolean values
      */
-    public static Array<Boolean> ofAll(boolean[] array) {
+    public static Array<Boolean> ofAll(boolean... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -150,7 +150,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @param array a byte array
      * @return A new Array of Byte values
      */
-    public static Array<Byte> ofAll(byte[] array) {
+    public static Array<Byte> ofAll(byte... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -161,7 +161,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @param array a char array
      * @return A new Array of Character values
      */
-    public static Array<Character> ofAll(char[] array) {
+    public static Array<Character> ofAll(char... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -172,7 +172,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @param array a double array
      * @return A new Array of Double values
      */
-    public static Array<Double> ofAll(double[] array) {
+    public static Array<Double> ofAll(double... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -183,7 +183,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @param array a float array
      * @return A new Array of Float values
      */
-    public static Array<Float> ofAll(float[] array) {
+    public static Array<Float> ofAll(float... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -194,7 +194,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @param array an int array
      * @return A new Array of Integer values
      */
-    public static Array<Integer> ofAll(int[] array) {
+    public static Array<Integer> ofAll(int... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -205,7 +205,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @param array a long array
      * @return A new Array of Long values
      */
-    public static Array<Long> ofAll(long[] array) {
+    public static Array<Long> ofAll(long... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
@@ -216,7 +216,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * @param array a short array
      * @return A new Array of Short values
      */
-    public static Array<Short> ofAll(short[] array) {
+    public static Array<Short> ofAll(short... array) {
         Objects.requireNonNull(array, "array is null");
         return ofAll(Iterator.ofAll(array));
     }
