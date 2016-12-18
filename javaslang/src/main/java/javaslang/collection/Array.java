@@ -88,11 +88,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of the given elements.
+     * Creates an Array of the given elements.
      *
      * @param <T>      Component type of the Array.
      * @param elements Zero or more elements.
-     * @return A Array containing the given elements in the same order.
+     * @return An Array containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("varargs")
@@ -103,14 +103,14 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of the given elements.
+     * Creates an Array of the given elements.
      * <p>
      * The resulting Array has the same iteration order as the given iterable of elements
      * if the iteration order of the elements is stable.
      *
      * @param <T>      Component type of the Array.
      * @param elements An Iterable of elements.
-     * @return A Array containing the given elements in the same order.
+     * @return An Array containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
@@ -122,11 +122,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array that contains the elements of the given {@link java.util.stream.Stream}.
+     * Creates an Array that contains the elements of the given {@link java.util.stream.Stream}.
      *
      * @param javaStream A {@link java.util.stream.Stream}
      * @param <T>        Component type of the Stream.
-     * @return A Array containing the given elements in the same order.
+     * @return An Array containing the given elements in the same order.
      */
     public static <T> Array<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
@@ -272,7 +272,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates an Array of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
      * Examples:
      * <pre>
@@ -292,7 +292,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * Creates an Array of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
      * with {@code step}.
      * <p>
      * Examples:
@@ -318,7 +318,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * Creates an Array of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
      * Examples:
      * <pre>
@@ -338,7 +338,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * Creates an Array of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
      * with {@code step}.
      * <p>
      * Examples:
@@ -377,7 +377,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of int numbers starting from {@code from}, extending to {@code toInclusive}.
+     * Creates an Array of int numbers starting from {@code from}, extending to {@code toInclusive}.
      * <p>
      * Examples:
      * <pre>
@@ -397,7 +397,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of int numbers starting from {@code from}, extending to {@code toInclusive},
+     * Creates an Array of int numbers starting from {@code from}, extending to {@code toInclusive},
      * with {@code step}.
      * <p>
      * Examples:
@@ -423,7 +423,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     * Creates an Array of long numbers starting from {@code from}, extending to {@code toInclusive}.
      * <p>
      * Examples:
      * <pre>
@@ -443,7 +443,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * Creates an Array of long numbers starting from {@code from}, extending to {@code toInclusive},
      * with {@code step}.
      * <p>
      * Examples:
@@ -469,7 +469,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     /**
-     * Creates a Array from a seed value and a function.
+     * Creates an Array from a seed value and a function.
      * The function takes the seed at first.
      * The function should return {@code None} when it's
      * done generating the Array, otherwise {@code Some} {@code Tuple}
