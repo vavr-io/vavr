@@ -133,43 +133,43 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected Iterator<Boolean> ofAll(boolean... array) {
-        return Iterator.ofAll(array);
+    protected Iterator<Boolean> ofAll(boolean... elements) {
+        return Iterator.ofAll(elements);
     }
 
     @Override
-    protected Iterator<Byte> ofAll(byte... array) {
-        return Iterator.ofAll(array);
+    protected Iterator<Byte> ofAll(byte... elements) {
+        return Iterator.ofAll(elements);
     }
 
     @Override
-    protected Iterator<Character> ofAll(char... array) {
-        return Iterator.ofAll(array);
+    protected Iterator<Character> ofAll(char... elements) {
+        return Iterator.ofAll(elements);
     }
 
     @Override
-    protected Iterator<Double> ofAll(double... array) {
-        return Iterator.ofAll(array);
+    protected Iterator<Double> ofAll(double... elements) {
+        return Iterator.ofAll(elements);
     }
 
     @Override
-    protected Iterator<Float> ofAll(float... array) {
-        return Iterator.ofAll(array);
+    protected Iterator<Float> ofAll(float... elements) {
+        return Iterator.ofAll(elements);
     }
 
     @Override
-    protected Iterator<Integer> ofAll(int... array) {
-        return Iterator.ofAll(array);
+    protected Iterator<Integer> ofAll(int... elements) {
+        return Iterator.ofAll(elements);
     }
 
     @Override
-    protected Iterator<Long> ofAll(long... array) {
-        return Iterator.ofAll(array);
+    protected Iterator<Long> ofAll(long... elements) {
+        return Iterator.ofAll(elements);
     }
 
     @Override
-    protected Iterator<Short> ofAll(short... array) {
-        return Iterator.ofAll(array);
+    protected Iterator<Short> ofAll(short... elements) {
+        return Iterator.ofAll(elements);
     }
 
     @Override

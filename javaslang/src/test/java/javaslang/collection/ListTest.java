@@ -63,43 +63,43 @@ public class ListTest extends AbstractLinearSeqTest {
     }
 
     @Override
-    protected List<Boolean> ofAll(boolean... array) {
-        return List.ofAll(array);
+    protected List<Boolean> ofAll(boolean... elements) {
+        return List.ofAll(elements);
     }
 
     @Override
-    protected List<Byte> ofAll(byte... array) {
-        return List.ofAll(array);
+    protected List<Byte> ofAll(byte... elements) {
+        return List.ofAll(elements);
     }
 
     @Override
-    protected List<Character> ofAll(char... array) {
-        return List.ofAll(array);
+    protected List<Character> ofAll(char... elements) {
+        return List.ofAll(elements);
     }
 
     @Override
-    protected List<Double> ofAll(double... array) {
-        return List.ofAll(array);
+    protected List<Double> ofAll(double... elements) {
+        return List.ofAll(elements);
     }
 
     @Override
-    protected List<Float> ofAll(float... array) {
-        return List.ofAll(array);
+    protected List<Float> ofAll(float... elements) {
+        return List.ofAll(elements);
     }
 
     @Override
-    protected List<Integer> ofAll(int... array) {
-        return List.ofAll(array);
+    protected List<Integer> ofAll(int... elements) {
+        return List.ofAll(elements);
     }
 
     @Override
-    protected List<Long> ofAll(long... array) {
-        return List.ofAll(array);
+    protected List<Long> ofAll(long... elements) {
+        return List.ofAll(elements);
     }
 
     @Override
-    protected List<Short> ofAll(short... array) {
-        return List.ofAll(array);
+    protected List<Short> ofAll(short... elements) {
+        return List.ofAll(elements);
     }
 
     @Override
