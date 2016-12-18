@@ -60,43 +60,43 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected PriorityQueue<Boolean> ofAll(boolean... array) {
-        return PriorityQueue.ofAll(List.ofAll(array));
+    protected PriorityQueue<Boolean> ofAll(boolean... elements) {
+        return PriorityQueue.ofAll(List.ofAll(elements));
     }
 
     @Override
-    protected PriorityQueue<Byte> ofAll(byte... array) {
-        return PriorityQueue.ofAll(List.ofAll(array));
+    protected PriorityQueue<Byte> ofAll(byte... elements) {
+        return PriorityQueue.ofAll(List.ofAll(elements));
     }
 
     @Override
-    protected PriorityQueue<Character> ofAll(char... array) {
-        return PriorityQueue.ofAll(List.ofAll(array));
+    protected PriorityQueue<Character> ofAll(char... elements) {
+        return PriorityQueue.ofAll(List.ofAll(elements));
     }
 
     @Override
-    protected PriorityQueue<Double> ofAll(double... array) {
-        return PriorityQueue.ofAll(List.ofAll(array));
+    protected PriorityQueue<Double> ofAll(double... elements) {
+        return PriorityQueue.ofAll(List.ofAll(elements));
     }
 
     @Override
-    protected PriorityQueue<Float> ofAll(float... array) {
-        return PriorityQueue.ofAll(List.ofAll(array));
+    protected PriorityQueue<Float> ofAll(float... elements) {
+        return PriorityQueue.ofAll(List.ofAll(elements));
     }
 
     @Override
-    protected PriorityQueue<Integer> ofAll(int... array) {
-        return PriorityQueue.ofAll(List.ofAll(array));
+    protected PriorityQueue<Integer> ofAll(int... elements) {
+        return PriorityQueue.ofAll(List.ofAll(elements));
     }
 
     @Override
-    protected PriorityQueue<Long> ofAll(long... array) {
-        return PriorityQueue.ofAll(List.ofAll(array));
+    protected PriorityQueue<Long> ofAll(long... elements) {
+        return PriorityQueue.ofAll(List.ofAll(elements));
     }
 
     @Override
-    protected PriorityQueue<Short> ofAll(short... array) {
-        return PriorityQueue.ofAll(List.ofAll(array));
+    protected PriorityQueue<Short> ofAll(short... elements) {
+        return PriorityQueue.ofAll(List.ofAll(elements));
     }
 
     @Override

@@ -143,43 +143,43 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Override
-    protected BitSet<Boolean> ofAll(boolean... array) {
-        return BitSet.ofAll(array);
+    protected BitSet<Boolean> ofAll(boolean... elements) {
+        return BitSet.ofAll(elements);
     }
 
     @Override
-    protected BitSet<Byte> ofAll(byte... array) {
-        return BitSet.ofAll(array);
+    protected BitSet<Byte> ofAll(byte... elements) {
+        return BitSet.ofAll(elements);
     }
 
     @Override
-    protected BitSet<Character> ofAll(char... array) {
-        return BitSet.ofAll(array);
+    protected BitSet<Character> ofAll(char... elements) {
+        return BitSet.ofAll(elements);
     }
 
     @Override
-    protected BitSet<Double> ofAll(double... array) {
-        return this.<Double> bsBuilder().ofAll(Iterator.ofAll(array));
+    protected BitSet<Double> ofAll(double... elements) {
+        return this.<Double> bsBuilder().ofAll(Iterator.ofAll(elements));
     }
 
     @Override
-    protected BitSet<Float> ofAll(float... array) {
-        return this.<Float> bsBuilder().ofAll(Iterator.ofAll(array));
+    protected BitSet<Float> ofAll(float... elements) {
+        return this.<Float> bsBuilder().ofAll(Iterator.ofAll(elements));
     }
 
     @Override
-    protected BitSet<Integer> ofAll(int... array) {
-        return BitSet.ofAll(array);
+    protected BitSet<Integer> ofAll(int... elements) {
+        return BitSet.ofAll(elements);
     }
 
     @Override
-    protected BitSet<Long> ofAll(long... array) {
-        return BitSet.ofAll(array);
+    protected BitSet<Long> ofAll(long... elements) {
+        return BitSet.ofAll(elements);
     }
 
     @Override
-    protected BitSet<Short> ofAll(short... array) {
-        return BitSet.ofAll(array);
+    protected BitSet<Short> ofAll(short... elements) {
+        return BitSet.ofAll(elements);
     }
 
     @Override

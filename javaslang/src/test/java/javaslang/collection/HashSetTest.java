@@ -125,43 +125,43 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
-    protected HashSet<Boolean> ofAll(boolean... array) {
-        return HashSet.ofAll(array);
+    protected HashSet<Boolean> ofAll(boolean... elements) {
+        return HashSet.ofAll(elements);
     }
 
     @Override
-    protected HashSet<Byte> ofAll(byte... array) {
-        return HashSet.ofAll(array);
+    protected HashSet<Byte> ofAll(byte... elements) {
+        return HashSet.ofAll(elements);
     }
 
     @Override
-    protected HashSet<Character> ofAll(char... array) {
-        return HashSet.ofAll(array);
+    protected HashSet<Character> ofAll(char... elements) {
+        return HashSet.ofAll(elements);
     }
 
     @Override
-    protected HashSet<Double> ofAll(double... array) {
-        return HashSet.ofAll(array);
+    protected HashSet<Double> ofAll(double... elements) {
+        return HashSet.ofAll(elements);
     }
 
     @Override
-    protected HashSet<Float> ofAll(float... array) {
-        return HashSet.ofAll(array);
+    protected HashSet<Float> ofAll(float... elements) {
+        return HashSet.ofAll(elements);
     }
 
     @Override
-    protected HashSet<Integer> ofAll(int... array) {
-        return HashSet.ofAll(array);
+    protected HashSet<Integer> ofAll(int... elements) {
+        return HashSet.ofAll(elements);
     }
 
     @Override
-    protected HashSet<Long> ofAll(long... array) {
-        return HashSet.ofAll(array);
+    protected HashSet<Long> ofAll(long... elements) {
+        return HashSet.ofAll(elements);
     }
 
     @Override
-    protected HashSet<Short> ofAll(short... array) {
-        return HashSet.ofAll(array);
+    protected HashSet<Short> ofAll(short... elements) {
+        return HashSet.ofAll(elements);
     }
 
     @Override
