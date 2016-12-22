@@ -169,12 +169,13 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Returns a {@code TreeMap}, from entries mapped from stream.
      *
-     * @param stream      the source stream
-     * @param keyMapper   the key mapper
-     * @param valueMapper the value mapper
-     * @param <T>         The stream type
-     * @param <K>         The key type
-     * @param <V>         The value type
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @param stream        the source stream
+     * @param keyMapper     the key mapper
+     * @param valueMapper   the value mapper
+     * @param <T>           The stream type
+     * @param <K>           The key type
+     * @param <V>           The value type
      * @return A new Map
      */
     public static <T, K, V> TreeMap<K, V> ofAll(Comparator<? super K> keyComparator,
@@ -202,6 +203,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Returns a {@code TreeMap}, from entries mapped from stream.
      *
+     * @param keyComparator The comparator used to sort the entries by their key.
      * @param stream      the source stream
      * @param entryMapper the entry mapper
      * @param <T>         The stream type
