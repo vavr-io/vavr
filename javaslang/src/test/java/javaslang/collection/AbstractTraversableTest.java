@@ -2249,6 +2249,36 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2).hashCode() != of(2, 3).hashCode()).isTrue();
     }
 
+    // -- toString
+
+    @Test
+    public void shouldConformEmptyStringRepresentation() {
+        final Traversable<Object> testee = empty();
+        if (!testee.hasDefiniteSize()) {
+            assertThat(testee.toString()).isEqualTo(testee.stringPrefix() + "()");
+            testee.size(); // evaluates all elements of lazy collections
+        }
+        assertThat(testee.toString()).isEqualTo(toString(testee));
+    }
+
+    @Test
+    public void shouldConformNonEmptyStringRepresentation() {
+        final Traversable<Object> testee = of("a", "b", "c");
+        if (isTraversableAgain()) {
+            if (!testee.hasDefiniteSize()) {
+                assertThat(testee.toString()).isEqualTo(testee.stringPrefix() + "(a, ?)");
+                testee.size(); // evaluates all elements of lazy collections
+            }
+            assertThat(testee.toString()).isEqualTo(toString(testee));
+        } else {
+            assertThat(testee.toString()).isEqualTo(testee.stringPrefix() + "(?)");
+        }
+    }
+
+    private static String toString(Traversable<?> traversable) {
+        return traversable.mkString(traversable.stringPrefix() + "(", ", ", ")");
+    }
+
     // -- Serializable interface
 
     @Test

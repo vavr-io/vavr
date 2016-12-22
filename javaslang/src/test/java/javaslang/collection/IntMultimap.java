@@ -58,12 +58,12 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public String stringPrefix() {
-        return "IntMap";
+        return "IntMultimap";
     }
 
     @Override
     public String toString() {
-        return original.mkString(stringPrefix() + "(", ", ", ")");
+        return mkString(stringPrefix() + "(", ", ", ")");
     }
 
     @Override
