@@ -10,7 +10,6 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.List.Nil;
 import javaslang.collection.Tree.*;
-import javaslang.collection.TreeModule.*;
 import javaslang.control.Option;
 
 import java.io.*;
@@ -238,6 +237,13 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     /**
+     * Creates a <a href="https://www.tutorialspoint.com/lisp/lisp_tree.htm">Lisp-like</a> representation of this {@code Tree}.
+     *
+     * @return This {@code Tree} as Lisp-string, i.e. represented as list of lists.
+     */
+    String toLispString();
+
+    /**
      * Transforms this {@code Tree}.
      *
      * @param f   A transformation
@@ -274,13 +280,13 @@ public interface Tree<T> extends Traversable<T> {
             final Node<T> node = (Node<T>) this;
             switch (order) {
                 case PRE_ORDER:
-                    return Traversal.preOrder(node);
+                    return TreeModule.traversePreOrder(node);
                 case IN_ORDER:
-                    return Traversal.inOrder(node);
+                    return TreeModule.traverseInOrder(node);
                 case POST_ORDER:
-                    return Traversal.postOrder(node);
+                    return TreeModule.traversePostOrder(node);
                 case LEVEL_ORDER:
-                    return Traversal.levelOrder(node);
+                    return TreeModule.traverseLevelOrder(node);
                 default:
                     throw new IllegalStateException("Unknown order: " + order.name());
             }
@@ -420,7 +426,7 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Empty.instance() : FlatMap.apply((Node<T>) this, mapper);
+        return isEmpty() ? Empty.instance() : TreeModule.flatMap((Node<T>) this, mapper);
     }
 
     @Override
@@ -485,7 +491,7 @@ public interface Tree<T> extends Traversable<T> {
     @Override
     default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Empty.instance() : TreeModule.Map.apply((Node<T>) this, mapper);
+        return isEmpty() ? Empty.instance() : TreeModule.map((Node<T>) this, mapper);
     }
 
     @SuppressWarnings("unchecked")
@@ -513,7 +519,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Empty.instance();
         } else {
-            return Replace.apply((Node<T>) this, currentElement, newElement);
+            return TreeModule.replace((Node<T>) this, currentElement, newElement);
         }
     }
 
@@ -627,7 +633,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Tuple.of(Empty.instance(), Empty.instance());
         } else {
-            return (Tuple2<Tree<T1>, Tree<T2>>) (Object) Unzip.apply((Node<T>) this, unzipper);
+            return (Tuple2<Tree<T1>, Tree<T2>>) (Object) TreeModule.unzip((Node<T>) this, unzipper);
         }
     }
 
@@ -639,7 +645,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Tuple.of(Empty.instance(), Empty.instance(), Empty.instance());
         } else {
-            return (Tuple3<Tree<T1>, Tree<T2>, Tree<T3>>) (Object) Unzip.apply3((Node<T>) this, unzipper);
+            return (Tuple3<Tree<T1>, Tree<T2>, Tree<T3>>) (Object) TreeModule.unzip3((Node<T>) this, unzipper);
         }
     }
 
@@ -655,7 +661,7 @@ public interface Tree<T> extends Traversable<T> {
         if (isEmpty()) {
             return Empty.instance();
         } else {
-            return Zip.apply((Node<T>) this, that.iterator(), mapper);
+            return TreeModule.zip((Node<T>) this, that.iterator(), mapper);
         }
     }
 
@@ -666,7 +672,7 @@ public interface Tree<T> extends Traversable<T> {
             return Iterator.<U> ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
         } else {
             final java.util.Iterator<? extends U> thatIter = that.iterator();
-            final Tree<Tuple2<T, U>> tree = ZipAll.apply((Node<T>) this, thatIter, thatElem);
+            final Tree<Tuple2<T, U>> tree = TreeModule.zipAll((Node<T>) this, thatIter, thatElem);
             if (thatIter.hasNext()) {
                 final Iterable<Node<Tuple2<T, U>>> remainder = Iterator
                         .ofAll(thatIter)
@@ -779,7 +785,12 @@ public interface Tree<T> extends Traversable<T> {
 
         @Override
         public String toString() {
-            return stringPrefix() + (isLeaf() ? "(" + value + ")" : toLispString(this));
+            return mkString(stringPrefix() + "(", ", ", ")");
+        }
+
+        @Override
+        public String toLispString() {
+            return toLispString(this);
         }
 
         @Override
@@ -805,7 +816,7 @@ public interface Tree<T> extends Traversable<T> {
             if (tree.isLeaf()) {
                 return value;
             } else {
-                final String children = tree.getChildren().map(Node::toLispString).mkString(" ");
+                final String children = tree.getChildren().map(child -> toLispString(child)).mkString(" ");
                 return "(" + value + " " + children + ")";
             }
         }
@@ -969,6 +980,11 @@ public interface Tree<T> extends Traversable<T> {
         }
 
         @Override
+        public String toLispString() {
+            return "()";
+        }
+
+        @Override
         public String draw() { return "▣"; }
 
         // -- Serializable implementation
@@ -1040,150 +1056,129 @@ public interface Tree<T> extends Traversable<T> {
  */
 interface TreeModule {
 
-    final class FlatMap {
-
-        @SuppressWarnings("unchecked")
-        static <T, U> Tree<U> apply(Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
-            final Tree<U> mapped = ofAll(mapper.apply(node.getValue()));
-            if (mapped.isEmpty()) {
-                return empty();
-            } else {
-                final List<Node<U>> children = (List<Node<U>>) (Object) node
-                        .getChildren()
-                        .map(child -> FlatMap.apply(child, mapper))
-                        .filter(Tree::nonEmpty);
-                return of(mapped.getValue(), children.prependAll(mapped.getChildren()));
-            }
+    @SuppressWarnings("unchecked")
+    static <T, U> Tree<U> flatMap(Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        final Tree<U> mapped = ofAll(mapper.apply(node.getValue()));
+        if (mapped.isEmpty()) {
+            return empty();
+        } else {
+            final List<Node<U>> children = (List<Node<U>>) (Object) node
+                    .getChildren()
+                    .map(child -> flatMap(child, mapper))
+                    .filter(Tree::nonEmpty);
+            return of(mapped.getValue(), children.prependAll(mapped.getChildren()));
         }
     }
 
-    final class Map {
+    static <T, U> Node<U> map(Node<T> node, Function<? super T, ? extends U> mapper) {
+        final U value = mapper.apply(node.getValue());
+        final List<Node<U>> children = node.getChildren().map(child -> map(child, mapper));
+        return new Node<>(value, children);
+    }
 
-        static <T, U> Node<U> apply(Node<T> node, Function<? super T, ? extends U> mapper) {
-            final U value = mapper.apply(node.getValue());
-            final List<Node<U>> children = node.getChildren().map(child -> Map.apply(child, mapper));
+    // Idea:
+    // Traverse (depth-first) until a match is found, then stop and rebuild relevant parts of the tree.
+    // If not found, return the same tree instance.
+    static <T> Node<T> replace(Node<T> node, T currentElement, T newElement) {
+        if (Objects.equals(node.getValue(), currentElement)) {
+            return new Node<>(newElement, node.getChildren());
+        } else {
+            for (Node<T> child : node.getChildren()) {
+                final Node<T> newChild = replace(child, currentElement, newElement);
+                final boolean found = newChild != child;
+                if (found) {
+                    final List<Node<T>> newChildren = node.getChildren().replace(child, newChild);
+                    return new Node<>(node.getValue(), newChildren);
+                }
+            }
+            return node;
+        }
+    }
+
+    static <T> Stream<Node<T>> traversePreOrder(Node<T> node) {
+        return node.getChildren().foldLeft(Stream.of(node),
+                (acc, child) -> acc.appendAll(traversePreOrder(child)));
+    }
+
+    static <T> Stream<Node<T>> traverseInOrder(Node<T> node) {
+        if (node.isLeaf()) {
+            return Stream.of(node);
+        } else {
+            final List<Node<T>> children = node.getChildren();
+            return children
+                    .tail()
+                    .foldLeft(Stream.<Node<T>> empty(), (acc, child) -> acc.appendAll(traverseInOrder(child)))
+                    .prepend(node)
+                    .prependAll(traverseInOrder(children.head()));
+        }
+    }
+
+    static <T> Stream<Node<T>> traversePostOrder(Node<T> node) {
+        return node
+                .getChildren()
+                .foldLeft(Stream.<Node<T>> empty(), (acc, child) -> acc.appendAll(traversePostOrder(child)))
+                .append(node);
+    }
+
+    static <T> Stream<Node<T>> traverseLevelOrder(Node<T> node) {
+        Stream<Node<T>> result = Stream.empty();
+        final java.util.Queue<Node<T>> queue = new java.util.LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            final Node<T> next = queue.remove();
+            result = result.prepend(next);
+            queue.addAll(next.getChildren().toJavaList());
+        }
+        return result.reverse();
+    }
+
+    static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> unzip(Node<T> node,
+            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        final Tuple2<? extends T1, ? extends T2> value = unzipper.apply(node.getValue());
+        final List<Tuple2<Node<T1>, Node<T2>>> children = node
+                .getChildren()
+                .map(child -> unzip(child, unzipper));
+        final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
+        final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
+        return Tuple.of(node1, node2);
+    }
+
+    static <T, T1, T2, T3> Tuple3<Node<T1>, Node<T2>, Node<T3>> unzip3(Node<T> node,
+            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
+        final List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
+                .map(child -> unzip3(child, unzipper));
+        final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
+        final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
+        final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));
+        return Tuple.of(node1, node2, node3);
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T, U, R> Tree<R> zip(Node<T> node, java.util.Iterator<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+        if (!that.hasNext()) {
+            return Empty.instance();
+        } else {
+            final R value = mapper.apply(node.getValue(), that.next());
+            final List<Node<R>> children = (List<Node<R>>) (Object) node
+                    .getChildren()
+                    .map(child -> zip(child, that, mapper))
+                    .filter(Tree::nonEmpty);
             return new Node<>(value, children);
         }
     }
 
-    final class Replace {
-
-        // Idea:
-        // Traverse (depth-first) until a match is found, then stop and rebuild relevant parts of the tree.
-        // If not found, return the same tree instance.
-        static <T> Node<T> apply(Node<T> node, T currentElement, T newElement) {
-            if (Objects.equals(node.getValue(), currentElement)) {
-                return new Node<>(newElement, node.getChildren());
-            } else {
-                for (Node<T> child : node.getChildren()) {
-                    final Node<T> newChild = Replace.apply(child, currentElement, newElement);
-                    final boolean found = newChild != child;
-                    if (found) {
-                        final List<Node<T>> newChildren = node.getChildren().replace(child, newChild);
-                        return new Node<>(node.getValue(), newChildren);
-                    }
-                }
-                return node;
-            }
-        }
-    }
-
-    final class Traversal {
-
-        static <T> Stream<Node<T>> preOrder(Node<T> node) {
-            return node.getChildren().foldLeft(Stream.of(node),
-                    (acc, child) -> acc.appendAll(preOrder(child)));
-        }
-
-        static <T> Stream<Node<T>> inOrder(Node<T> node) {
-            if (node.isLeaf()) {
-                return Stream.of(node);
-            } else {
-                final List<Node<T>> children = node.getChildren();
-                return children
-                        .tail()
-                        .foldLeft(Stream.<Node<T>> empty(), (acc, child) -> acc.appendAll(inOrder(child)))
-                        .prepend(node)
-                        .prependAll(inOrder(children.head()));
-            }
-        }
-
-        static <T> Stream<Node<T>> postOrder(Node<T> node) {
-            return node
+    @SuppressWarnings("unchecked")
+    static <T, U> Tree<Tuple2<T, U>> zipAll(Node<T> node, java.util.Iterator<? extends U> that, U thatElem) {
+        if (!that.hasNext()) {
+            return node.map(value -> Tuple.of(value, thatElem));
+        } else {
+            final Tuple2<T, U> value = Tuple.of(node.getValue(), that.next());
+            final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node
                     .getChildren()
-                    .foldLeft(Stream.<Node<T>> empty(), (acc, child) -> acc.appendAll(postOrder(child)))
-                    .append(node);
-        }
-
-        static <T> Stream<Node<T>> levelOrder(Node<T> node) {
-            Stream<Node<T>> result = Stream.empty();
-            final java.util.Queue<Node<T>> queue = new java.util.LinkedList<>();
-            queue.add(node);
-            while (!queue.isEmpty()) {
-                final Node<T> next = queue.remove();
-                result = result.prepend(next);
-                queue.addAll(next.getChildren().toJavaList());
-            }
-            return result.reverse();
-        }
-    }
-
-    final class Unzip {
-
-        static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> apply(Node<T> node,
-                Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-            final Tuple2<? extends T1, ? extends T2> value = unzipper.apply(node.getValue());
-            final List<Tuple2<Node<T1>, Node<T2>>> children = node
-                    .getChildren()
-                    .map(child -> Unzip.apply(child, unzipper));
-            final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
-            final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
-            return Tuple.of(node1, node2);
-        }
-
-        static <T, T1, T2, T3> Tuple3<Node<T1>, Node<T2>, Node<T3>> apply3(Node<T> node,
-                Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-            final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
-            final List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
-                    .map(child -> Unzip.apply3(child, unzipper));
-            final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
-            final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
-            final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));
-            return Tuple.of(node1, node2, node3);
-        }
-    }
-
-    final class Zip {
-
-        @SuppressWarnings("unchecked")
-        static <T, U, R> Tree<R> apply(Node<T> node, java.util.Iterator<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-            if (!that.hasNext()) {
-                return Empty.instance();
-            } else {
-                final R value = mapper.apply(node.getValue(), that.next());
-                final List<Node<R>> children = (List<Node<R>>) (Object) node
-                        .getChildren()
-                        .map(child -> Zip.apply(child, that, mapper))
-                        .filter(Tree::nonEmpty);
-                return new Node<>(value, children);
-            }
-        }
-    }
-
-    final class ZipAll {
-
-        @SuppressWarnings("unchecked")
-        static <T, U> Tree<Tuple2<T, U>> apply(Node<T> node, java.util.Iterator<? extends U> that, U thatElem) {
-            if (!that.hasNext()) {
-                return node.map(value -> Tuple.of(value, thatElem));
-            } else {
-                final Tuple2<T, U> value = Tuple.of(node.getValue(), that.next());
-                final List<Node<Tuple2<T, U>>> children = (List<Node<Tuple2<T, U>>>) (Object) node
-                        .getChildren()
-                        .map(child -> ZipAll.apply(child, that, thatElem))
-                        .filter(Tree::nonEmpty);
-                return new Node<>(value, children);
-            }
+                    .map(child -> zipAll(child, that, thatElem))
+                    .filter(Tree::nonEmpty);
+            return new Node<>(value, children);
         }
     }
 }
