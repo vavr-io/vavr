@@ -280,6 +280,7 @@ public interface Arbitrary<T> {
             return new String(chars);
         }).apply(random);
     }
+
     /**
      * Generates arbitrary lists based on a given element generator arbitraryT.
      * <p>
@@ -307,6 +308,7 @@ public interface Arbitrary<T> {
             }).apply(random);
         };
     }
+
     /**
      * Generates arbitrary streams based on a given element generator arbitraryT.
      * <p>
