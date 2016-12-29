@@ -9,6 +9,9 @@ import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -195,6 +198,60 @@ public interface Arbitrary<T> {
      */
     static Arbitrary<Integer> integer() {
         return size -> random -> Gen.choose(-size, size).apply(random);
+    }
+
+    /**
+     * Generates arbitrary {@link LocalDateTime}s with {@link LocalDateTime#now()} as {@code median} and
+     * {@link ChronoUnit#DAYS} as chronological unit.
+     *
+     * @return A new Arbitrary of LocalDateTime
+     * @see #localDateTime(LocalDateTime, ChronoUnit)
+     */
+    static Arbitrary<LocalDateTime> localDateTime() {
+        return localDateTime(ChronoUnit.DAYS);
+    }
+
+    /**
+     * Generates arbitrary {@link LocalDateTime}s with {@link LocalDateTime#now()} as {@code median}.
+     *
+     * @param unit Chronological unit of {@code size}
+     * @return A new Arbitrary of LocalDateTime
+     * @see #localDateTime(LocalDateTime, ChronoUnit)
+     */
+    static Arbitrary<LocalDateTime> localDateTime(ChronoUnit unit) {
+        return localDateTime(LocalDateTime.now(), unit);
+    }
+
+    /**
+     * Generates arbitrary {@link LocalDateTime}s. All generated values are drawn from a range with {@code median}
+     * as center and {@code median +/- size} as included boundaries. {@code unit} defines the chronological unit
+     * of {@code size}.
+     *
+     * <p>
+     * Example:
+     * <pre>
+     * <code>
+     * Arbitrary.localDateTime(LocalDateTime.now(), ChronoUnit.YEARS);
+     * </code>
+     * </pre>
+     *
+     * @param median Center of the LocalDateTime range
+     * @param unit   Chronological unit of {@code size}
+     * @return  A new Arbitrary of LocalDateTime
+     */
+    static Arbitrary<LocalDateTime> localDateTime(LocalDateTime median, ChronoUnit unit) {
+        Objects.requireNonNull(median, "median is null");
+        Objects.requireNonNull(unit, "unit is null");
+        return size -> {
+            if(size == 0) {
+                return Gen.of(median);
+            }
+            final LocalDateTime start = median.minus(size, unit);
+            final LocalDateTime end = median.plus(size, unit);
+            final long duration = Duration.between(start, end).toMillis();
+            final Gen<Long> from = Gen.choose(0, duration);
+            return random -> start.plus(from.apply(random), ChronoUnit.MILLIS);
+        };
     }
 
     /**
