@@ -9,6 +9,9 @@ import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -197,6 +200,29 @@ public interface Arbitrary<T> {
         return size -> random -> Gen.choose(-size, size).apply(random);
     }
 
+    static Arbitrary<LocalDateTime> localDateTime() {
+        return localDateTime(ChronoUnit.DAYS);
+    }
+
+    static Arbitrary<LocalDateTime> localDateTime(ChronoUnit unit) {
+        return localDateTime(LocalDateTime.now(), unit);
+    }
+
+    static Arbitrary<LocalDateTime> localDateTime(LocalDateTime median, ChronoUnit unit) {
+        Objects.requireNonNull(median, "median is null");
+        Objects.requireNonNull(unit, "unit is null");
+        return size -> {
+            if(size == 0) {
+                return Gen.of(median);
+            }
+            final LocalDateTime start = median.minus(size, unit);
+            final LocalDateTime end = median.plus(size, unit);
+            final long duration = Duration.between(start, end).toMillis();
+            final Gen<Long> from = Gen.choose(0, duration);
+            return random -> start.plus(from.apply(random), ChronoUnit.MILLIS);
+        };
+    }
+
     /**
      * Generates arbitrary strings based on a given alphabet represented by <em>gen</em>.
      * <p>
@@ -223,7 +249,6 @@ public interface Arbitrary<T> {
             return new String(chars);
         }).apply(random);
     }
-
     /**
      * Generates arbitrary lists based on a given element generator arbitraryT.
      * <p>
@@ -251,7 +276,6 @@ public interface Arbitrary<T> {
             }).apply(random);
         };
     }
-
     /**
      * Generates arbitrary streams based on a given element generator arbitraryT.
      * <p>

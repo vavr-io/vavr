@@ -12,6 +12,8 @@ import javaslang.collection.List;
 import javaslang.collection.Stream;
 import org.junit.Test;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.Random;
 
@@ -22,6 +24,8 @@ public class ArbitraryTest {
     // equally distributed random number generator
     private static final Random RANDOM = new Random();
 
+    // predictable random number generator (seed = 1)
+    private Random predictableRandom = new Random(1L);
     // -- apply
 
     @Test
@@ -183,6 +187,79 @@ public class ArbitraryTest {
             }
         });
         assertThat(actual.length()).isEqualTo(10);
+    }
+
+    @Test
+    public void shouldCreateArbitraryLocalDateTime(){
+        final Arbitrary<LocalDateTime> date = Arbitrary.localDateTime();
+
+        assertThat(date).isNotNull();
+    }
+
+
+    @Test(expected = NullPointerException.class)
+    public void shouldNotAcceptNullMedianLocalDateTime(){
+        final Arbitrary<LocalDateTime> dates = Arbitrary.localDateTime(null, ChronoUnit.DAYS);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldNotAcceptNullChronoUnit(){
+        final Arbitrary<LocalDateTime> dates = Arbitrary.localDateTime(LocalDateTime.now(), null);
+    }
+
+    @Test
+    public void shouldCreateArbitraryLocalDateTimeAdjustedWithGivenChronoUnit(){
+        final LocalDateTime median = LocalDateTime.of(2017, 2, 17, 3, 40);
+        final Arbitrary<LocalDateTime> arbitrary = Arbitrary.localDateTime(median, ChronoUnit.YEARS);
+
+        final LocalDateTime date = arbitrary.apply(100).apply(predictableRandom);
+
+        assertThat(date).isEqualTo("2063-04-22T01:46:10.312");
+    }
+
+    @Test
+    public void shouldCreateMedianLocalDateTimeIfSizeIsZero(){
+        final LocalDateTime median = LocalDateTime.now();
+
+        final Arbitrary<LocalDateTime> arbitrary = Arbitrary.localDateTime(median, ChronoUnit.DAYS);
+
+        final LocalDateTime date = arbitrary.apply(0).apply(RANDOM);
+
+        assertThat(date).isEqualTo(median);
+    }
+
+    @Test
+    public void shouldCreateDatesInInRangeOfSize(){
+        final LocalDateTime median = LocalDateTime.now();
+        final Arbitrary<LocalDateTime> arbitrary = Arbitrary.localDateTime(median, ChronoUnit.DAYS);
+
+        Property.def("With negative size of -100 days, dates should be in range of +/- 100 days")
+                .forAll(arbitrary)
+                .suchThat(d -> d.isAfter(median.minusDays(100)) && d.isBefore(median.plusDays(100)))
+                .check(100, 1000);
+    }
+
+    @Test
+    public void shouldIgnoreNegativeSignInRangeOfDates(){
+        final LocalDateTime median = LocalDateTime.now();
+        final Arbitrary<LocalDateTime> arbitrary = Arbitrary.localDateTime(median, ChronoUnit.DAYS);
+
+        Property.def("With size of 100 days, dates should be in range of +/- 100 days")
+                .forAll(arbitrary)
+                .suchThat(d -> d.isAfter(median.minusDays(100)) && d.isBefore(median.plusDays(100)))
+                .check(-100, 1000);
+    }
+
+    @Test
+    public void shouldGenerateTwoDifferentSuccessiveDates(){
+        final LocalDateTime end = LocalDateTime.now().minusDays(2);
+        final LocalDateTime start = LocalDateTime.now().minusDays(3);
+
+        final Arbitrary<LocalDateTime> dates = Arbitrary.localDateTime();
+        final LocalDateTime firstDate = dates.apply(100).apply(RANDOM);
+        final LocalDateTime secondDate = dates.apply(100).apply(RANDOM);
+
+        assertThat(firstDate).isNotEqualTo(secondDate);
     }
 
     // -- transform
