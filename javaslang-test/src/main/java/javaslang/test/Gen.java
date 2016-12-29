@@ -38,8 +38,6 @@ import java.util.function.Predicate;
 @FunctionalInterface
 public interface Gen<T> {
 
-    int FILTER_THRESHOLD = Integer.MAX_VALUE;
-
     /**
      * Functional interface of this generator.
      *
@@ -360,10 +358,11 @@ public interface Gen<T> {
         Objects.requireNonNull(predicate, "predicate is null");
         return random -> {
             int count = 0;
+            final int filterThreshold = Integer.MAX_VALUE;
             T t;
             while (!predicate.test(t = apply(random))) {
                 // it may take a looooooong time to hit this condition!
-                if (++count == FILTER_THRESHOLD) {
+                if (++count == filterThreshold) {
                     throw new IllegalStateException("empty filter");
                 }
             }
