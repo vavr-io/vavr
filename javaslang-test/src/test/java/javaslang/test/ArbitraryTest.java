@@ -199,12 +199,12 @@ public class ArbitraryTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldNotAcceptNullMedianLocalDateTime(){
-        final Arbitrary<LocalDateTime> dates = Arbitrary.localDateTime(null, ChronoUnit.DAYS);
+        Arbitrary.localDateTime(null, ChronoUnit.DAYS);
     }
 
     @Test(expected = NullPointerException.class)
     public void shouldNotAcceptNullChronoUnit(){
-        final Arbitrary<LocalDateTime> dates = Arbitrary.localDateTime(LocalDateTime.now(), null);
+        Arbitrary.localDateTime(LocalDateTime.now(), null);
     }
 
     @Test
@@ -233,7 +233,7 @@ public class ArbitraryTest {
         final LocalDateTime median = LocalDateTime.now();
         final Arbitrary<LocalDateTime> arbitrary = Arbitrary.localDateTime(median, ChronoUnit.DAYS);
 
-        Property.def("With negative size of -100 days, dates should be in range of +/- 100 days")
+        Property.def("With size of 100 days, dates should be in range of +/- 100 days")
                 .forAll(arbitrary)
                 .suchThat(d -> d.isAfter(median.minusDays(100)) && d.isBefore(median.plusDays(100)))
                 .check(100, 1000);
@@ -244,7 +244,7 @@ public class ArbitraryTest {
         final LocalDateTime median = LocalDateTime.now();
         final Arbitrary<LocalDateTime> arbitrary = Arbitrary.localDateTime(median, ChronoUnit.DAYS);
 
-        Property.def("With size of 100 days, dates should be in range of +/- 100 days")
+        Property.def("With negative size of -100 days, dates should be in range of +/- 100 days")
                 .forAll(arbitrary)
                 .suchThat(d -> d.isAfter(median.minusDays(100)) && d.isBefore(median.plusDays(100)))
                 .check(-100, 1000);
@@ -252,9 +252,6 @@ public class ArbitraryTest {
 
     @Test
     public void shouldGenerateTwoDifferentSuccessiveDates(){
-        final LocalDateTime end = LocalDateTime.now().minusDays(2);
-        final LocalDateTime start = LocalDateTime.now().minusDays(3);
-
         final Arbitrary<LocalDateTime> dates = Arbitrary.localDateTime();
         final LocalDateTime firstDate = dates.apply(100).apply(RANDOM);
         final LocalDateTime secondDate = dates.apply(100).apply(RANDOM);
