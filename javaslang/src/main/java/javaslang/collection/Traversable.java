@@ -1083,7 +1083,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * {@code predicate} and the second element is the remainder.
      *
      * @param predicate A predicate.
-     * @return a Tuple containing the longest prefix of elements that satisfy p and the remainder.
+     * @return a {@code Tuple} containing the longest prefix of elements that satisfy p and the remainder.
      * @throws NullPointerException if {@code predicate} is null
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
