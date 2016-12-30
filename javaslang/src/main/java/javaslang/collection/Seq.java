@@ -861,7 +861,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      * {@code Tuple.of(take(n), drop(n))}.
      *
      * @param n An index.
-     * @return A Tuple containing the first n and the remaining elements.
+     * @return A {@link Tuple} containing the first n and the remaining elements.
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n);
 
