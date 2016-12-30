@@ -479,7 +479,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <p>
      * This method should be implemented by classes only, i.e. not by interfaces.
      *
-     * @return true, if this Traversable is known to hafe a finite size, false otherwise.
+     * @return true, if this Traversable is known to have a finite size, false otherwise.
      */
     boolean hasDefiniteSize();
 
@@ -610,7 +610,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * Dual of {@linkplain #headOption()}, returning the last element as {@code Opiton}.
+     * Dual of {@linkplain #headOption()}, returning the last element as {@code Option}.
      *
      * @return {@code Some(element)} or {@code None} if this is empty.
      */
