@@ -45,7 +45,7 @@ import java.util.stream.Collector;
  * </code>
  * </pre>
  *
- * Note: A {@code List} is primary a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
+ * Note: A {@code List} is primarily a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
  * <p>
  * If operating on a {@code List}, please prefer
  *
