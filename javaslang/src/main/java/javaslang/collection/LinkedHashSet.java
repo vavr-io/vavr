@@ -921,7 +921,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
      * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
      * an instance of the enclosing class.
      *
-     * @return A SerialiationProxy for this enclosing class.
+     * @return A SerializationProxy for this enclosing class.
      */
     @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private Object writeReplace() {
