@@ -309,7 +309,7 @@ public interface Validation<E, T> extends Value<T> {
      * @param validation5 fifth validation
      * @param validation6 sixth validation
      * @param validation7 seventh validation
-     * @param validation8 eigth validation
+     * @param validation8 eighth validation
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7,T8&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6, validation7 or validation8 is null
      */
