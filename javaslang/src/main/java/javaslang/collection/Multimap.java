@@ -623,6 +623,9 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
             BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
+    Iterator<? extends Multimap<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier);
+
+    @Override
     Iterator<? extends Multimap<K, V>> sliding(int size);
 
     @Override

@@ -988,6 +988,11 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
+    public Iterator<Queue<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier).map(Queue::ofAll);
+    }
+
+    @Override
     public Iterator<Queue<T>> sliding(int size) {
         return sliding(size, 1);
     }

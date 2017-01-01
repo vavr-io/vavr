@@ -732,6 +732,11 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     }
 
     @Override
+    public Iterator<HashSet<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier).map(HashSet::ofAll);
+    }
+
+    @Override
     public Iterator<HashSet<T>> sliding(int size) {
         return sliding(size, 1);
     }

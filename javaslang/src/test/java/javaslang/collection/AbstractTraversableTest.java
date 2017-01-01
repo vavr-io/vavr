@@ -1536,6 +1536,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual.length()).isEqualTo(expected.length());
     }
 
+    // -- slideBy(classifier)
+
+    @Test
+    public void shouldSlideNilByClassifier() {
+        assertThat(empty().slideBy(Function.identity())).isEmpty();
+    }
+
     // -- sliding(size)
 
     @Test(expected = IllegalArgumentException.class)

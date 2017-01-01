@@ -457,6 +457,11 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     @Override
+    public Iterator<? extends PriorityQueue<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier).map(v -> ofAll(comparator, v));
+    }
+
+    @Override
     public Iterator<? extends PriorityQueue<T>> sliding(int size) {
         return iterator().sliding(size).map(v -> ofAll(comparator, v));
     }

@@ -237,6 +237,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> slice(int beginIndex, int endIndex);
 
     @Override
+    Iterator<? extends LinearSeq<T>> slideBy(Function<? super T, ?> classifier);
+
+    @Override
     Iterator<? extends LinearSeq<T>> sliding(int size);
 
     @Override

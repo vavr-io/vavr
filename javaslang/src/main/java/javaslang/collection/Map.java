@@ -715,6 +715,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
             BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
+    Iterator<? extends Map<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier);
+
+    @Override
     Iterator<? extends Map<K, V>> sliding(int size);
 
     @Override

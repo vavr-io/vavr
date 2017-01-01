@@ -810,6 +810,11 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
+    public Iterator<TreeSet<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier).map(seq -> TreeSet.ofAll(tree.comparator(), seq));
+    }
+
+    @Override
     public Iterator<TreeSet<T>> sliding(int size) {
         return sliding(size, 1);
     }

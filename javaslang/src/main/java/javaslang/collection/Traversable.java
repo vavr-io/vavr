@@ -1048,6 +1048,29 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Slides a non-overlapping window of a variable size over this {@code Traversable}.
+     * <p>
+     * Each window contains elements with the same class, as determined by {@code classifier}. Two consecutive
+     * values in this {@code Traversable} will be in the same window only if {@code classifier} returns equal
+     * values for them. Otherwise, the values will constitute the last element of the previous window and the
+     * first element of the next window.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * [].slideBy(Function.identity()) = []
+     * [1,2,3,4,4,5].slideBy(Function.identity()) = [[1],[2],[3],[4,4],[5]]
+     * [1,2,3,10,12,5,7,20,29].slideBy(x -> x/10) = [[1,2,3],[10,12],[5,7],[20,29]]
+     * </code>
+     * </pre>
+     *
+     * @param classifier A function which classifies elements into classes
+     * @return A new Iterator of windows of the grouped elements
+     * @throws NullPointerException if {@code classifier} is null.
+     */
+    Iterator<? extends Traversable<T>> slideBy(Function<? super T, ?> classifier);
+
+    /**
      * Slides a window of a specific {@code size} and step size 1 over this {@code Traversable} by calling
      * {@link #sliding(int, int)}.
      *

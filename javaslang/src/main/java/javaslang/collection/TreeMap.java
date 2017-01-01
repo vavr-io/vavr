@@ -1157,6 +1157,11 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     @Override
+    public Iterator<TreeMap<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier) {
+        return Maps.slideBy(this, this::createFromEntries, classifier);
+    }
+
+    @Override
     public Iterator<TreeMap<K, V>> sliding(int size) {
         return Maps.sliding(this, this::createFromEntries, size);
     }

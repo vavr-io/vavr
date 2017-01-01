@@ -841,6 +841,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
+    public Iterator<CharSeq> slideBy(Function<? super Character, ?> classifier) {
+        return iterator().slideBy(classifier).map(CharSeq::ofAll);
+    }
+
+    @Override
     public Iterator<CharSeq> sliding(int size) {
         return sliding(size, 1);
     }

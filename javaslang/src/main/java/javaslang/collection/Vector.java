@@ -949,6 +949,11 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
+    public Iterator<Vector<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier).map(Vector::ofAll);
+    }
+
+    @Override
     public Iterator<Vector<T>> sliding(int size) {
         return sliding(size, 1);
     }

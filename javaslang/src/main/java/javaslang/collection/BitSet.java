@@ -484,6 +484,9 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
+    Iterator<BitSet<T>> slideBy(Function<? super T, ?> classifier);
+
+    @Override
     default Iterator<BitSet<T>> sliding(int size) {
         return sliding(size, 1);
     }
@@ -712,6 +715,11 @@ interface BitSetModule {
                     return (size == results.size()) ? this : results;
                 }
             }
+        }
+
+        @Override
+        public Iterator<BitSet<T>> slideBy(Function<? super T, ?> classifier) {
+            return iterator().slideBy(classifier).map(this::createFromAll);
         }
 
         @Override

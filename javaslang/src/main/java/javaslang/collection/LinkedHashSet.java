@@ -731,6 +731,11 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
+    public Iterator<LinkedHashSet<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier).map(LinkedHashSet::ofAll);
+    }
+
+    @Override
     public Iterator<LinkedHashSet<T>> sliding(int size) {
         return sliding(size, 1);
     }

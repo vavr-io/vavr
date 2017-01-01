@@ -1222,6 +1222,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default Iterator<List<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier).map(List::ofAll);
+    }
+
+    @Override
     default Iterator<List<T>> sliding(int size) {
         return sliding(size, 1);
     }

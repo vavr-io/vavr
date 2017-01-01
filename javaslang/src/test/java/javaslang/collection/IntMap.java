@@ -232,6 +232,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public Iterator<IntMap<T>> slideBy(Function<? super T, ?> classifier) {
+        return original.slideBy(e -> classifier.apply(e._2)).map(IntMap::of);
+    }
+
+    @Override
     public Iterator<IntMap<T>> sliding(int size) {
         return original.sliding(size).map(IntMap::of);
     }

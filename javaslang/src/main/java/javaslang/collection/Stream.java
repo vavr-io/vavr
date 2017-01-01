@@ -1308,6 +1308,11 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
+    default Iterator<Stream<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier).map(Stream::ofAll);
+    }
+
+    @Override
     default Iterator<Stream<T>> sliding(int size) {
         return sliding(size, 1);
     }
