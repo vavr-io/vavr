@@ -1566,8 +1566,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldSlideNonNilBySomeClassifier() {
-        final List<Traversable<Integer>> actual = of(1, 2, 3, 20, 21, 4, 22).slideBy(e -> e / 10).toList().map(Vector::ofAll);
-        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2, 3), Vector.of(20, 21), Vector.of(4), Vector.of(22));
+        final List<Traversable<Integer>> actual = of(10, 20, 30, 42, 52, 60, 72).slideBy(e -> e % 10).toList().map(Vector::ofAll);
+        final List<Traversable<Integer>> expected = List.of(Vector.of(10, 20, 30), Vector.of(42, 52), Vector.of(60), Vector.of(72));
         assertThat(actual).isEqualTo(expected);
     }
 
