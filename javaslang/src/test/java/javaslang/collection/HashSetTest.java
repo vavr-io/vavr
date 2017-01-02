@@ -189,6 +189,12 @@ public class HashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- slideBy is not expected to work for larger subsequences, due to unspecified iteration order
+    @Test
+    public void shouldSlideNonNilBySomeClassifier() {
+        // ignore
+    }
+
     // TODO move to traversable
     // -- zip
 

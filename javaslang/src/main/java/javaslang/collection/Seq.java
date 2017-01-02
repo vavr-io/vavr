@@ -1108,6 +1108,9 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
     <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
+    Iterator<? extends Seq<T>> slideBy(Function<? super T, ?> classifier);
+
+    @Override
     Iterator<? extends Seq<T>> sliding(int size);
 
     @Override

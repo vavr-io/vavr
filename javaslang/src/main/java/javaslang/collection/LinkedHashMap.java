@@ -801,6 +801,11 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     }
 
     @Override
+    public Iterator<LinkedHashMap<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier) {
+        return Maps.slideBy(this, this::createFromEntries, classifier);
+    }
+
+    @Override
     public Iterator<LinkedHashMap<K, V>> sliding(int size) {
         return Maps.sliding(this, this::createFromEntries, size);
     }

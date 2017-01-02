@@ -1536,6 +1536,41 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual.length()).isEqualTo(expected.length());
     }
 
+    // -- slideBy(classifier)
+
+    @Test
+    public void shouldSlideNilByClassifier() {
+        assertThat(empty().slideBy(Function.identity())).isEmpty();
+    }
+
+    @Test
+    public void shouldSlideSingularByClassifier() {
+        final List<Traversable<Integer>> actual = of(1).slideBy(Function.identity()).toList().map(Vector::ofAll);
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSlideNonNilByIdentityClassifier() {
+        final List<Traversable<Integer>> actual = of(1, 2, 3).slideBy(Function.identity()).toList().map(Vector::ofAll);
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1), Vector.of(2), Vector.of(3));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSlideNonNilByConstantClassifier() {
+        final List<Traversable<Integer>> actual = of(1, 2, 3).slideBy(e -> "same").toList().map(Vector::ofAll);
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2, 3));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSlideNonNilBySomeClassifier() {
+        final List<Traversable<Integer>> actual = of(10, 20, 30, 42, 52, 60, 72).slideBy(e -> e % 10).toList().map(Vector::ofAll);
+        final List<Traversable<Integer>> expected = List.of(Vector.of(10, 20, 30), Vector.of(42, 52), Vector.of(60), Vector.of(72));
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- sliding(size)
 
     @Test(expected = IllegalArgumentException.class)

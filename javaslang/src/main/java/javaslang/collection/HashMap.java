@@ -748,6 +748,11 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     }
 
     @Override
+    public Iterator<HashMap<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier) {
+        return Maps.slideBy(this, this::createFromEntries, classifier);
+    }
+
+    @Override
     public Iterator<HashMap<K, V>> sliding(int size) {
         return Maps.sliding(this, this::createFromEntries, size);
     }

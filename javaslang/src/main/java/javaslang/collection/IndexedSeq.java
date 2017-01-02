@@ -268,6 +268,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> slice(int beginIndex, int endIndex);
 
     @Override
+    Iterator<? extends IndexedSeq<T>> slideBy(Function<? super T, ?> classifier);
+
+    @Override
     Iterator<? extends IndexedSeq<T>> sliding(int size);
 
     @Override

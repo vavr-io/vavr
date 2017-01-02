@@ -257,6 +257,9 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
     <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
+    Iterator<? extends Set<T>> slideBy(Function<? super T, ?> classifier);
+
+    @Override
     Iterator<? extends Set<T>> sliding(int size);
 
     @Override

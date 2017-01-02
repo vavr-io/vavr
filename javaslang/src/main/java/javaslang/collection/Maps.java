@@ -283,6 +283,11 @@ final class Maps {
         return (M) Collections.scanLeft(map, zero, operation, finisher);
     }
 
+    static <K, V, M extends Map<K, V>> Iterator<M> slideBy(M map, OfEntries<K, V, M> ofEntries,
+            Function<? super Tuple2<K, V>, ?> classifier) {
+        return map.iterator().slideBy(classifier).map(ofEntries);
+    }
+
     static <K, V, M extends Map<K, V>> Iterator<M> sliding(M map, OfEntries<K, V, M> ofEntries, int size) {
         return sliding(map, ofEntries, size, 1);
     }

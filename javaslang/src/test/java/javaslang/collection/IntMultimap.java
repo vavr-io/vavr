@@ -228,6 +228,11 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public Iterator<IntMultimap<T>> slideBy(Function<? super T, ?> classifier) {
+        return original.slideBy(e -> classifier.apply(e._2)).map(IntMultimap::of);
+    }
+
+    @Override
     public Iterator<IntMultimap<T>> sliding(int size) {
         return original.sliding(size).map(IntMultimap::of);
     }

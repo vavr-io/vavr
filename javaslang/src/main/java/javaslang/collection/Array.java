@@ -1091,6 +1091,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     @Override
+    public Iterator<Array<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier).map(Array::ofAll);
+    }
+
+    @Override
     public Iterator<Array<T>> sliding(int size) {
         return sliding(size, 1);
     }

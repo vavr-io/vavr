@@ -550,6 +550,11 @@ public interface Tree<T> extends Traversable<T> {
     }
 
     @Override
+    default Iterator<Seq<T>> slideBy(Function<? super T, ?> classifier) {
+        return iterator().slideBy(classifier);
+    }
+
+    @Override
     default Iterator<Seq<T>> sliding(int size) {
         return sliding(size, 1);
     }

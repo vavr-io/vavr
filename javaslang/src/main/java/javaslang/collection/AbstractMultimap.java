@@ -408,6 +408,11 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
+    public Iterator<Multimap<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier) {
+        return iterator().slideBy(classifier).map(this::createFromEntries);
+    }
+
+    @Override
     public Iterator<Multimap<K, V>> sliding(int size) {
         return sliding(size, 1);
     }

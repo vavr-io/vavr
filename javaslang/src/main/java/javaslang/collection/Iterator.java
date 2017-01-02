@@ -1785,6 +1785,38 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
+    default Iterator<Seq<T>> slideBy(Function<? super T, ?> classifier) {
+        Objects.requireNonNull(classifier, "classifier is null");
+        if (!hasNext()) {
+            return empty();
+        } else {
+            final Stream<T> source = Stream.ofAll(this);
+            return new AbstractIterator<Seq<T>>() {
+                private Stream<T> that = source;
+                private Stream<T> next = null;
+
+                @Override
+                public boolean hasNext() {
+                    while (next == null && !that.isEmpty()) {
+                        final Object key = classifier.apply(that.head());
+                        final Tuple2<Stream<T>, Stream<T>> split = that.splitAt(e -> !key.equals(classifier.apply(e)));
+                        next = split._1;
+                        that = split._2;
+                    }
+                    return next != null;
+                }
+
+                @Override
+                public Stream<T> getNext() {
+                    final Stream<T> result = next;
+                    next = null;
+                    return result;
+                }
+            };
+        }
+    }
+
+    @Override
     default Iterator<Seq<T>> sliding(int size) {
         return sliding(size, 1);
     }

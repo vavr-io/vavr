@@ -173,6 +173,9 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
+    Iterator<? extends SortedSet<T>> slideBy(Function<? super T, ?> classifier);
+
+    @Override
     Iterator<? extends SortedSet<T>> sliding(int size);
 
     @Override

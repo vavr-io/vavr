@@ -218,6 +218,9 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     SortedMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
+    Iterator<? extends SortedMap<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier);
+
+    @Override
     Iterator<? extends SortedMap<K, V>> sliding(int size);
 
     @Override
