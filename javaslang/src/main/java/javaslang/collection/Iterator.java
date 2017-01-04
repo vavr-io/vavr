@@ -22,6 +22,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
 import static java.math.RoundingMode.HALF_UP;
 import static javaslang.collection.IteratorModule.BigDecimalHelper.areEqual;
 import static javaslang.collection.IteratorModule.BigDecimalHelper.asDecimal;
+import static javaslang.collection.IteratorModule.EmptyIterator;
 
 /**
  * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
@@ -53,19 +54,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     /**
      * The empty Iterator.
+     *
+     * @deprecated Will be removed because class loading may cause a deadlock under certain circumstances (see #1773 and https://bugs.openjdk.java.net/browse/JDK-8037567)
      */
-    Iterator<Object> EMPTY = new AbstractIterator<Object>() {
-
-        @Override
-        public boolean hasNext() {
-            return false;
-        }
-
-        @Override
-        public Object getNext() {
-            return null;
-        }
-    };
+    @Deprecated
+    Iterator<Object> EMPTY = EmptyIterator.INSTANCE;
 
     /**
      * Creates an Iterator which traverses along the concatenation of the given iterables.
@@ -109,7 +102,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     @SuppressWarnings("unchecked")
     static <T> Iterator<T> empty() {
-        return (Iterator<T>) EMPTY;
+        return (Iterator<T>) EmptyIterator.INSTANCE;
     }
 
     /**
@@ -2005,7 +1998,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 }
 
 interface IteratorModule {
+
     final class ConcatIterator<T> extends AbstractIterator<T> {
+
         private final Iterator<? extends Iterator<? extends T>> iterators;
         private Iterator<? extends T> current;
 
@@ -2029,6 +2024,7 @@ interface IteratorModule {
     }
 
     final class DistinctIterator<T, U> extends AbstractIterator<T> {
+
         private final Iterator<? extends T> that;
         private Set<U> known;
         private final Function<? super T, ? extends U> keyExtractor;
@@ -2061,7 +2057,32 @@ interface IteratorModule {
         }
     }
 
+    final class EmptyIterator implements Iterator<Object> {
+
+        static final EmptyIterator INSTANCE = new EmptyIterator();
+
+        @Override
+        public boolean hasNext() { return false; }
+
+        @Override
+        public Object next() { throw new NoSuchElementException(stringPrefix() + ".next()"); }
+
+        @Override
+        public void remove() { throw new IllegalStateException(stringPrefix() + ".remove()"); }
+
+        @Override
+        public String stringPrefix() {
+            return "EmptyIterator";
+        }
+
+        @Override
+        public String toString() {
+            return stringPrefix() + "()";
+        }
+    }
+
     final class BigDecimalHelper {
+
         @GwtIncompatible("Math::nextDown is not implemented")
         private static final Lazy<BigDecimal> INFINITY_DISTANCE = Lazy.of(() -> {
             final BigDecimal two = BigDecimal.valueOf(2);
