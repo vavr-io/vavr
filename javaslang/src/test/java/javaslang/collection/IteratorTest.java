@@ -406,6 +406,12 @@ public class IteratorTest extends AbstractTraversableTest {
         // a hashCode impl would enforce evaluation which is not wanted
     }
 
+    @Override
+    @Test
+    public void shouldComputeHashCodeOfEmpty() {
+        // a hashCode impl would enforce evaluation which is not wanted
+    }
+
     // -- groupBy
 
     @Override
