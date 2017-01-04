@@ -1651,7 +1651,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
         @Override
         public int hashCode() {
-            return Objects.hash(head, tail);
+            return Collections.hash(this);
         }
 
         @Override

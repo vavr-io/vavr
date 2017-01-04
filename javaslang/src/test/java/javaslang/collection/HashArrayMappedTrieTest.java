@@ -154,7 +154,7 @@ public class HashArrayMappedTrieTest {
 
     @Test
     public void shouldCalculateHashCodeOfNil() {
-        assertThat(empty().hashCode()).isEqualTo(0);
+        assertThat(empty().hashCode()).isEqualTo(1);
     }
 
     @Test

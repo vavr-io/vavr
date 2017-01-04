@@ -1020,4 +1020,5 @@ public abstract class AbstractValueTest {
         final Value<Integer> v2 = of(2);
         assertThat(v1.equals(v2)).isFalse();
     }
+
 }

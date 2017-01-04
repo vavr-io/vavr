@@ -9,6 +9,7 @@ import javaslang.AbstractValueTest;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
@@ -2282,6 +2283,16 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
         assertThat(of(1, 2).hashCode() != of(2, 3).hashCode()).isTrue();
+    }
+
+    @Test
+    public void shouldComputeHashCodeOfEmpty() {
+        assertThat(empty().hashCode()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldNotThrowStackOverflowErrorWhenCalculatingHashCodeOf1000000Integers() {
+        ofAll(Iterator.range(0, 1000000)).hashCode();
     }
 
     // -- toString
