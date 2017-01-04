@@ -301,7 +301,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public int hashCode() {
-            return 0;
+            return 1;
         }
 
         /**
