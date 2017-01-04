@@ -47,6 +47,7 @@ import java.util.function.Predicate;
  * <ul>
  * <li>{@link #grouped(int)}</li>
  * <li>{@link #iterator()}</li>
+ * <li>{@link #slideBy(Function)}</li>
  * <li>{@link #sliding(int)}</li>
  * <li>{@link #sliding(int, int)}</li>
  * </ul>
@@ -1056,13 +1057,11 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * first element of the next window.
      * <p>
      * Examples:
-     * <pre>
-     * <code>
+     * <pre>{@code
      * [].slideBy(Function.identity()) = []
      * [1,2,3,4,4,5].slideBy(Function.identity()) = [[1],[2],[3],[4,4],[5]]
      * [1,2,3,10,12,5,7,20,29].slideBy(x -> x/10) = [[1,2,3],[10,12],[5,7],[20,29]]
-     * </code>
-     * </pre>
+     * }</pre>
      *
      * @param classifier A function which classifies elements into classes
      * @return A new Iterator of windows of the grouped elements
