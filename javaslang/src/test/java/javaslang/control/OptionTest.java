@@ -8,6 +8,7 @@ package javaslang.control;
 import javaslang.AbstractValueTest;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
@@ -249,6 +250,44 @@ public class OptionTest extends AbstractValueTest {
     @Test
     public void shouldBePresentOnIsEmptyWhenValue() {
         assertThat(Option.of(1).isEmpty()).isFalse();
+    }
+
+    // -- onEmpty
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenNullOnEmptyActionPassed() {
+        try {
+            final Option<String> none = Option.none();
+            none.onEmpty(null);
+            Assert.fail("No exception was thrown");
+        } catch (NullPointerException exc) {
+            assertThat(exc.getMessage()).isEqualTo("action is null");
+        }
+    }
+
+    @Test
+    public void shouldThrowExceptionIfOnEmptySetAndOptionIsEmpty() {
+        try {
+            final Option<String> none = Option.none();
+            none.onEmpty(() -> {
+                throw new RuntimeException("Exception from empty option!");
+            });
+            Assert.fail("No exception was thrown");
+        } catch (RuntimeException exc) {
+            assertThat(exc.getMessage()).isEqualTo("Exception from empty option!");
+        }
+    }
+
+    @Test
+    public void shouldNotThrowExceptionIfOnEmptySetAndOptionIsSome() {
+        try {
+            final Option<String> none = Option.some("value");
+            none.onEmpty(() -> {
+                throw new RuntimeException("Exception from empty option!");
+            });
+        } catch (RuntimeException exc) {
+            Assert.fail("No exception should be thrown!");
+        }
     }
 
     // -- filter

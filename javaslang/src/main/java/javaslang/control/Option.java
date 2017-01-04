@@ -171,6 +171,20 @@ public interface Option<T> extends Value<T> {
     boolean isEmpty();
 
     /**
+     * Runs a Java Runnable passed as parameter if this {@code Option} is empty.
+     *
+     * @param action a given Runnable to be run
+     * @return this {@code Option}
+     */
+    default Option<T> onEmpty(Runnable action) {
+        Objects.requireNonNull(action, "action is null");
+        if (isEmpty()) {
+            action.run();
+        }
+        return this;
+    }
+
+    /**
      * Returns true, if this is {@code Some}, otherwise false, if this is {@code None}.
      * <p>
      * Please note that it is possible to create {@code new Some(null)}, which is defined.
