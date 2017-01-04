@@ -17,6 +17,8 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -457,4 +459,33 @@ public class IteratorTest extends AbstractTraversableTest {
         // iterators are intermediate objects and not serializable/deserializable
     }
 
+    // -- class initialization (see #1773)
+
+    @Test(timeout = 5_000)
+    public void shouldNotDeadlockOnConcurrentClassInitialization() throws InterruptedException {
+        final ExecutorService executorService = Executors.newFixedThreadPool(2);
+        executorService.execute(new ClassInitializer("javaslang.collection.Iterator"));
+        executorService.execute(new ClassInitializer("javaslang.collection.AbstractIterator"));
+        executorService.shutdown();
+        // try to access javaslang iterator and it will hang
+        Iterator.empty().iterator();
+    }
+
+    static class ClassInitializer implements Runnable {
+
+        private String type;
+
+        ClassInitializer(String type) {
+            this.type = type;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Class.forName(type);
+            } catch (ClassNotFoundException e) {
+                throw new Error(e);
+            }
+        }
+    }
 }
