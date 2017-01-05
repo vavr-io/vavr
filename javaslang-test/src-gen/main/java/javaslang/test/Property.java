@@ -10,11 +10,7 @@ package javaslang.test;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import java.util.Objects;
-import java.util.Random;
 import javaslang.*;
-import javaslang.control.Option;
-import javaslang.control.Try;
-import javaslang.control.Try.NonFatalException;
 
 /**
  * A property builder which provides a fluent API to build checkable properties.
@@ -46,60 +42,6 @@ public class Property {
         return new Property(name);
     }
 
-    private static void logSatisfied(String name, int tries, long millis, boolean exhausted) {
-        if (exhausted) {
-            log(String.format("%s: Exhausted after %s tests in %s ms.", name, tries, millis));
-        } else {
-            log(String.format("%s: OK, passed %s tests in %s ms.", name, tries, millis));
-        }
-    }
-
-    private static void logFalsified(String name, int currentTry, long millis) {
-        log(String.format("%s: Falsified after %s passed tests in %s ms.", name, currentTry - 1, millis));
-    }
-
-    private static void logErroneous(String name, int currentTry, long millis, String errorMessage) {
-        log(String.format("%s: Errored after %s passed tests in %s ms with message: %s", name, Math.max(0, currentTry - 1), millis, errorMessage));
-    }
-
-    private static void log(String msg) {
-        System.out.println(msg);
-    }
-
-    /**
-     * Creates an Error caused by an exception when obtaining a generator.
-     *
-     * @param position The position of the argument within the argument list of the property, starting with 1.
-     * @param size     The size hint passed to the {@linkplain Arbitrary} which caused the error.
-     * @param cause    The error which occurred when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
-     * @return a new Error instance.
-     */
-    private static Error arbitraryError(int position, int size, Throwable cause) {
-        return new Error(String.format("Arbitrary %s of size %s: %s", position, size, cause.getMessage()), cause);
-    }
-
-    /**
-     * Creates an Error caused by an exception when generating a value.
-     *
-     * @param position The position of the argument within the argument list of the property, starting with 1.
-     * @param size     The size hint of the arbitrary which called the generator {@linkplain Gen} which caused the error.
-     * @param cause    The error which occurred when the {@linkplain Gen} tried to generate a random value.
-     * @return a new Error instance.
-     */
-    private static Error genError(int position, int size, Throwable cause) {
-        return new Error(String.format("Gen %s of size %s: %s", position, size, cause.getMessage()), cause);
-    }
-
-    /**
-     * Creates an Error caused by an exception when testing a Predicate.
-     *
-     * @param cause The error which occurred when applying the {@linkplain java.util.function.Predicate}.
-     * @return a new Error instance.
-     */
-    private static Error predicateError(Throwable cause) {
-        return new Error("Applying predicate: " + cause.getMessage(), cause);
-    }
-
     /**
      * Returns a logical for all quantor of 1 given variables.
      *
@@ -108,7 +50,7 @@ public class Property {
      * @return a new {@code ForAll1} instance of 1 variables
      */
     public <T1> ForAll1<T1> forAll(Arbitrary<T1> a1) {
-        return new ForAll1<>(name, a1);
+        return new ForAll1<>(name, ArbitraryTuple.of(a1));
     }
 
     /**
@@ -121,7 +63,7 @@ public class Property {
      * @return a new {@code ForAll2} instance of 2 variables
      */
     public <T1, T2> ForAll2<T1, T2> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2) {
-        return new ForAll2<>(name, a1, a2);
+        return new ForAll2<>(name, ArbitraryTuple.of(a1, a2));
     }
 
     /**
@@ -136,7 +78,7 @@ public class Property {
      * @return a new {@code ForAll3} instance of 3 variables
      */
     public <T1, T2, T3> ForAll3<T1, T2, T3> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3) {
-        return new ForAll3<>(name, a1, a2, a3);
+        return new ForAll3<>(name, ArbitraryTuple.of(a1, a2, a3));
     }
 
     /**
@@ -153,7 +95,7 @@ public class Property {
      * @return a new {@code ForAll4} instance of 4 variables
      */
     public <T1, T2, T3, T4> ForAll4<T1, T2, T3, T4> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4) {
-        return new ForAll4<>(name, a1, a2, a3, a4);
+        return new ForAll4<>(name, ArbitraryTuple.of(a1, a2, a3, a4));
     }
 
     /**
@@ -172,7 +114,7 @@ public class Property {
      * @return a new {@code ForAll5} instance of 5 variables
      */
     public <T1, T2, T3, T4, T5> ForAll5<T1, T2, T3, T4, T5> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
-        return new ForAll5<>(name, a1, a2, a3, a4, a5);
+        return new ForAll5<>(name, ArbitraryTuple.of(a1, a2, a3, a4, a5));
     }
 
     /**
@@ -193,7 +135,7 @@ public class Property {
      * @return a new {@code ForAll6} instance of 6 variables
      */
     public <T1, T2, T3, T4, T5, T6> ForAll6<T1, T2, T3, T4, T5, T6> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
-        return new ForAll6<>(name, a1, a2, a3, a4, a5, a6);
+        return new ForAll6<>(name, ArbitraryTuple.of(a1, a2, a3, a4, a5, a6));
     }
 
     /**
@@ -216,7 +158,7 @@ public class Property {
      * @return a new {@code ForAll7} instance of 7 variables
      */
     public <T1, T2, T3, T4, T5, T6, T7> ForAll7<T1, T2, T3, T4, T5, T6, T7> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
-        return new ForAll7<>(name, a1, a2, a3, a4, a5, a6, a7);
+        return new ForAll7<>(name, ArbitraryTuple.of(a1, a2, a3, a4, a5, a6, a7));
     }
 
     /**
@@ -241,7 +183,7 @@ public class Property {
      * @return a new {@code ForAll8} instance of 8 variables
      */
     public <T1, T2, T3, T4, T5, T6, T7, T8> ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> forAll(Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
-        return new ForAll8<>(name, a1, a2, a3, a4, a5, a6, a7, a8);
+        return new ForAll8<>(name, ArbitraryTuple.of(a1, a2, a3, a4, a5, a6, a7, a8));
     }
 
     /**
@@ -254,11 +196,11 @@ public class Property {
     public static class ForAll1<T1> {
 
         private final String name;
-        private final Arbitrary<T1> a1;
+        private final Arbitrary<Tuple1<T1>> arbitrary;
 
-        ForAll1(String name, Arbitrary<T1> a1) {
+        ForAll1(String name, Arbitrary<Tuple1<T1>> arbitrary) {
             this.name = name;
-            this.a1 = a1;
+            this.arbitrary = arbitrary;
         }
 
         /**
@@ -268,8 +210,8 @@ public class Property {
          * @return a new {@code Property1} of 1 variables.
          */
         public Property1<T1> suchThat(CheckedFunction1<T1, Boolean> predicate) {
-            final CheckedFunction1<T1, Condition> proposition = (t1) -> new Condition(true, predicate.apply(t1));
-            return new Property1<>(name, a1, proposition);
+            final CheckedFunction1<Tuple1<T1>, Condition> proposition = (t) -> new Condition(true, predicate.tupled().apply(t));
+            return new Property1<>(name, proposition, arbitrary, Shrink.empty());
         }
     }
 
@@ -284,13 +226,11 @@ public class Property {
     public static class ForAll2<T1, T2> {
 
         private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
+        private final Arbitrary<Tuple2<T1, T2>> arbitrary;
 
-        ForAll2(String name, Arbitrary<T1> a1, Arbitrary<T2> a2) {
+        ForAll2(String name, Arbitrary<Tuple2<T1, T2>> arbitrary) {
             this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
+            this.arbitrary = arbitrary;
         }
 
         /**
@@ -300,8 +240,8 @@ public class Property {
          * @return a new {@code Property2} of 2 variables.
          */
         public Property2<T1, T2> suchThat(CheckedFunction2<T1, T2, Boolean> predicate) {
-            final CheckedFunction2<T1, T2, Condition> proposition = (t1, t2) -> new Condition(true, predicate.apply(t1, t2));
-            return new Property2<>(name, a1, a2, proposition);
+            final CheckedFunction1<Tuple2<T1, T2>, Condition> proposition = (t) -> new Condition(true, predicate.tupled().apply(t));
+            return new Property2<>(name, proposition, arbitrary, Shrink.empty());
         }
     }
 
@@ -317,15 +257,11 @@ public class Property {
     public static class ForAll3<T1, T2, T3> {
 
         private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
+        private final Arbitrary<Tuple3<T1, T2, T3>> arbitrary;
 
-        ForAll3(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3) {
+        ForAll3(String name, Arbitrary<Tuple3<T1, T2, T3>> arbitrary) {
             this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
+            this.arbitrary = arbitrary;
         }
 
         /**
@@ -335,8 +271,8 @@ public class Property {
          * @return a new {@code Property3} of 3 variables.
          */
         public Property3<T1, T2, T3> suchThat(CheckedFunction3<T1, T2, T3, Boolean> predicate) {
-            final CheckedFunction3<T1, T2, T3, Condition> proposition = (t1, t2, t3) -> new Condition(true, predicate.apply(t1, t2, t3));
-            return new Property3<>(name, a1, a2, a3, proposition);
+            final CheckedFunction1<Tuple3<T1, T2, T3>, Condition> proposition = (t) -> new Condition(true, predicate.tupled().apply(t));
+            return new Property3<>(name, proposition, arbitrary, Shrink.empty());
         }
     }
 
@@ -353,17 +289,11 @@ public class Property {
     public static class ForAll4<T1, T2, T3, T4> {
 
         private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
+        private final Arbitrary<Tuple4<T1, T2, T3, T4>> arbitrary;
 
-        ForAll4(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4) {
+        ForAll4(String name, Arbitrary<Tuple4<T1, T2, T3, T4>> arbitrary) {
             this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
+            this.arbitrary = arbitrary;
         }
 
         /**
@@ -373,8 +303,8 @@ public class Property {
          * @return a new {@code Property4} of 4 variables.
          */
         public Property4<T1, T2, T3, T4> suchThat(CheckedFunction4<T1, T2, T3, T4, Boolean> predicate) {
-            final CheckedFunction4<T1, T2, T3, T4, Condition> proposition = (t1, t2, t3, t4) -> new Condition(true, predicate.apply(t1, t2, t3, t4));
-            return new Property4<>(name, a1, a2, a3, a4, proposition);
+            final CheckedFunction1<Tuple4<T1, T2, T3, T4>, Condition> proposition = (t) -> new Condition(true, predicate.tupled().apply(t));
+            return new Property4<>(name, proposition, arbitrary, Shrink.empty());
         }
     }
 
@@ -392,19 +322,11 @@ public class Property {
     public static class ForAll5<T1, T2, T3, T4, T5> {
 
         private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
-        private final Arbitrary<T5> a5;
+        private final Arbitrary<Tuple5<T1, T2, T3, T4, T5>> arbitrary;
 
-        ForAll5(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5) {
+        ForAll5(String name, Arbitrary<Tuple5<T1, T2, T3, T4, T5>> arbitrary) {
             this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
-            this.a5 = a5;
+            this.arbitrary = arbitrary;
         }
 
         /**
@@ -414,8 +336,8 @@ public class Property {
          * @return a new {@code Property5} of 5 variables.
          */
         public Property5<T1, T2, T3, T4, T5> suchThat(CheckedFunction5<T1, T2, T3, T4, T5, Boolean> predicate) {
-            final CheckedFunction5<T1, T2, T3, T4, T5, Condition> proposition = (t1, t2, t3, t4, t5) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5));
-            return new Property5<>(name, a1, a2, a3, a4, a5, proposition);
+            final CheckedFunction1<Tuple5<T1, T2, T3, T4, T5>, Condition> proposition = (t) -> new Condition(true, predicate.tupled().apply(t));
+            return new Property5<>(name, proposition, arbitrary, Shrink.empty());
         }
     }
 
@@ -434,21 +356,11 @@ public class Property {
     public static class ForAll6<T1, T2, T3, T4, T5, T6> {
 
         private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
-        private final Arbitrary<T5> a5;
-        private final Arbitrary<T6> a6;
+        private final Arbitrary<Tuple6<T1, T2, T3, T4, T5, T6>> arbitrary;
 
-        ForAll6(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6) {
+        ForAll6(String name, Arbitrary<Tuple6<T1, T2, T3, T4, T5, T6>> arbitrary) {
             this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
-            this.a5 = a5;
-            this.a6 = a6;
+            this.arbitrary = arbitrary;
         }
 
         /**
@@ -458,8 +370,8 @@ public class Property {
          * @return a new {@code Property6} of 6 variables.
          */
         public Property6<T1, T2, T3, T4, T5, T6> suchThat(CheckedFunction6<T1, T2, T3, T4, T5, T6, Boolean> predicate) {
-            final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> proposition = (t1, t2, t3, t4, t5, t6) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6));
-            return new Property6<>(name, a1, a2, a3, a4, a5, a6, proposition);
+            final CheckedFunction1<Tuple6<T1, T2, T3, T4, T5, T6>, Condition> proposition = (t) -> new Condition(true, predicate.tupled().apply(t));
+            return new Property6<>(name, proposition, arbitrary, Shrink.empty());
         }
     }
 
@@ -479,23 +391,11 @@ public class Property {
     public static class ForAll7<T1, T2, T3, T4, T5, T6, T7> {
 
         private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
-        private final Arbitrary<T5> a5;
-        private final Arbitrary<T6> a6;
-        private final Arbitrary<T7> a7;
+        private final Arbitrary<Tuple7<T1, T2, T3, T4, T5, T6, T7>> arbitrary;
 
-        ForAll7(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7) {
+        ForAll7(String name, Arbitrary<Tuple7<T1, T2, T3, T4, T5, T6, T7>> arbitrary) {
             this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
-            this.a5 = a5;
-            this.a6 = a6;
-            this.a7 = a7;
+            this.arbitrary = arbitrary;
         }
 
         /**
@@ -505,8 +405,8 @@ public class Property {
          * @return a new {@code Property7} of 7 variables.
          */
         public Property7<T1, T2, T3, T4, T5, T6, T7> suchThat(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> predicate) {
-            final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7));
-            return new Property7<>(name, a1, a2, a3, a4, a5, a6, a7, proposition);
+            final CheckedFunction1<Tuple7<T1, T2, T3, T4, T5, T6, T7>, Condition> proposition = (t) -> new Condition(true, predicate.tupled().apply(t));
+            return new Property7<>(name, proposition, arbitrary, Shrink.empty());
         }
     }
 
@@ -527,25 +427,11 @@ public class Property {
     public static class ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
-        private final Arbitrary<T5> a5;
-        private final Arbitrary<T6> a6;
-        private final Arbitrary<T7> a7;
-        private final Arbitrary<T8> a8;
+        private final Arbitrary<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> arbitrary;
 
-        ForAll8(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8) {
+        ForAll8(String name, Arbitrary<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> arbitrary) {
             this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
-            this.a5 = a5;
-            this.a6 = a6;
-            this.a7 = a7;
-            this.a8 = a8;
+            this.arbitrary = arbitrary;
         }
 
         /**
@@ -555,8 +441,8 @@ public class Property {
          * @return a new {@code Property8} of 8 variables.
          */
         public Property8<T1, T2, T3, T4, T5, T6, T7, T8> suchThat(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> predicate) {
-            final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> proposition = (t1, t2, t3, t4, t5, t6, t7, t8) -> new Condition(true, predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8));
-            return new Property8<>(name, a1, a2, a3, a4, a5, a6, a7, a8, proposition);
+            final CheckedFunction1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, Condition> proposition = (t) -> new Condition(true, predicate.tupled().apply(t));
+            return new Property8<>(name, proposition, arbitrary, Shrink.empty());
         }
     }
 
@@ -566,16 +452,10 @@ public class Property {
      * @author Daniel Dietrich
      * @since 1.2.0
      */
-    public static class Property1<T1> implements Checkable {
+    public static class Property1<T1> extends PropertyCheck<Tuple1<T1>> {
 
-        private final String name;
-        private final Arbitrary<T1> a1;
-        private final CheckedFunction1<T1, Condition> predicate;
-
-        Property1(String name, Arbitrary<T1> a1, CheckedFunction1<T1, Condition> predicate) {
-            this.name = name;
-            this.a1 = a1;
-            this.predicate = predicate;
+        Property1(String name, CheckedFunction1<Tuple1<T1>, Condition> predicate, Arbitrary<Tuple1<T1>> arbitrary, Shrink<Tuple1<T1>> shrink) {
+            super(name, arbitrary, predicate, shrink);
         }
 
         /**
@@ -584,55 +464,20 @@ public class Property {
          * @param postcondition The postcondition of this implication
          * @return A new Checkable implication
          */
-        public Checkable implies(CheckedFunction1<T1, Boolean> postcondition) {
-            final CheckedFunction1<T1, Condition> implication = (t1) -> {
-                final Condition precondition = predicate.apply(t1);
+        public Checkable<Tuple1<T1>> implies(CheckedFunction1<T1, Boolean> postcondition) {
+            final CheckedFunction1<Tuple1<T1>, Condition> implication = (t) -> {
+                final Condition precondition = predicate.apply(t);
                 if (precondition.isFalse()) {
                     return Condition.EX_FALSO_QUODLIBET;
                 } else {
-                    return new Condition(true, postcondition.apply(t1));
+                    return new Condition(true, postcondition.tupled().apply(t));
                 }
             };
-            return new Property1<>(name, a1, implication);
+            return new Property1<>(name, implication, arbitrary, shrink);
         }
 
-        @Override
-        public CheckResult check(Random random, int size, int tries) {
-            Objects.requireNonNull(random, "random is null");
-            if (tries < 0) {
-                throw new IllegalArgumentException("tries < 0");
-            }
-            final long startTime = System.currentTimeMillis();
-            try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
-                boolean exhausted = true;
-                for (int i = 1; i <= tries; i++) {
-                    try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
-                        try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1)).recover(x -> { throw predicateError(x); }).get();
-                            if (condition.precondition) {
-                                exhausted = false;
-                                if (!condition.postcondition) {
-                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
-                                    return new CheckResult.Falsified(name, i, Tuple.of(val1));
-                                }
-                            }
-                        } catch(NonFatalException nonFatal) {
-                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.some(Tuple.of(val1)));
-                        }
-                    } catch(NonFatalException nonFatal) {
-                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.none());
-                    }
-                }
-                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
-                return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(NonFatalException nonFatal) {
-                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), Option.none());
-            }
+        public Property1<T1> shrinking(Shrink<T1> s1) {
+            return new Property1<>(name, predicate, arbitrary, ShrinkTuple.of(s1));
         }
     }
 
@@ -642,18 +487,10 @@ public class Property {
      * @author Daniel Dietrich
      * @since 1.2.0
      */
-    public static class Property2<T1, T2> implements Checkable {
+    public static class Property2<T1, T2> extends PropertyCheck<Tuple2<T1, T2>> {
 
-        private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final CheckedFunction2<T1, T2, Condition> predicate;
-
-        Property2(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, CheckedFunction2<T1, T2, Condition> predicate) {
-            this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.predicate = predicate;
+        Property2(String name, CheckedFunction1<Tuple2<T1, T2>, Condition> predicate, Arbitrary<Tuple2<T1, T2>> arbitrary, Shrink<Tuple2<T1, T2>> shrink) {
+            super(name, arbitrary, predicate, shrink);
         }
 
         /**
@@ -662,57 +499,20 @@ public class Property {
          * @param postcondition The postcondition of this implication
          * @return A new Checkable implication
          */
-        public Checkable implies(CheckedFunction2<T1, T2, Boolean> postcondition) {
-            final CheckedFunction2<T1, T2, Condition> implication = (t1, t2) -> {
-                final Condition precondition = predicate.apply(t1, t2);
+        public Checkable<Tuple2<T1, T2>> implies(CheckedFunction2<T1, T2, Boolean> postcondition) {
+            final CheckedFunction1<Tuple2<T1, T2>, Condition> implication = (t) -> {
+                final Condition precondition = predicate.apply(t);
                 if (precondition.isFalse()) {
                     return Condition.EX_FALSO_QUODLIBET;
                 } else {
-                    return new Condition(true, postcondition.apply(t1, t2));
+                    return new Condition(true, postcondition.tupled().apply(t));
                 }
             };
-            return new Property2<>(name, a1, a2, implication);
+            return new Property2<>(name, implication, arbitrary, shrink);
         }
 
-        @Override
-        public CheckResult check(Random random, int size, int tries) {
-            Objects.requireNonNull(random, "random is null");
-            if (tries < 0) {
-                throw new IllegalArgumentException("tries < 0");
-            }
-            final long startTime = System.currentTimeMillis();
-            try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
-                boolean exhausted = true;
-                for (int i = 1; i <= tries; i++) {
-                    try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
-                        try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2)).recover(x -> { throw predicateError(x); }).get();
-                            if (condition.precondition) {
-                                exhausted = false;
-                                if (!condition.postcondition) {
-                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
-                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2));
-                                }
-                            }
-                        } catch(NonFatalException nonFatal) {
-                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.some(Tuple.of(val1, val2)));
-                        }
-                    } catch(NonFatalException nonFatal) {
-                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.none());
-                    }
-                }
-                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
-                return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(NonFatalException nonFatal) {
-                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), Option.none());
-            }
+        public Property2<T1, T2> shrinking(Shrink<T1> s1, Shrink<T2> s2) {
+            return new Property2<>(name, predicate, arbitrary, ShrinkTuple.of(s1, s2));
         }
     }
 
@@ -722,20 +522,10 @@ public class Property {
      * @author Daniel Dietrich
      * @since 1.2.0
      */
-    public static class Property3<T1, T2, T3> implements Checkable {
+    public static class Property3<T1, T2, T3> extends PropertyCheck<Tuple3<T1, T2, T3>> {
 
-        private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final CheckedFunction3<T1, T2, T3, Condition> predicate;
-
-        Property3(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, CheckedFunction3<T1, T2, T3, Condition> predicate) {
-            this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.predicate = predicate;
+        Property3(String name, CheckedFunction1<Tuple3<T1, T2, T3>, Condition> predicate, Arbitrary<Tuple3<T1, T2, T3>> arbitrary, Shrink<Tuple3<T1, T2, T3>> shrink) {
+            super(name, arbitrary, predicate, shrink);
         }
 
         /**
@@ -744,59 +534,20 @@ public class Property {
          * @param postcondition The postcondition of this implication
          * @return A new Checkable implication
          */
-        public Checkable implies(CheckedFunction3<T1, T2, T3, Boolean> postcondition) {
-            final CheckedFunction3<T1, T2, T3, Condition> implication = (t1, t2, t3) -> {
-                final Condition precondition = predicate.apply(t1, t2, t3);
+        public Checkable<Tuple3<T1, T2, T3>> implies(CheckedFunction3<T1, T2, T3, Boolean> postcondition) {
+            final CheckedFunction1<Tuple3<T1, T2, T3>, Condition> implication = (t) -> {
+                final Condition precondition = predicate.apply(t);
                 if (precondition.isFalse()) {
                     return Condition.EX_FALSO_QUODLIBET;
                 } else {
-                    return new Condition(true, postcondition.apply(t1, t2, t3));
+                    return new Condition(true, postcondition.tupled().apply(t));
                 }
             };
-            return new Property3<>(name, a1, a2, a3, implication);
+            return new Property3<>(name, implication, arbitrary, shrink);
         }
 
-        @Override
-        public CheckResult check(Random random, int size, int tries) {
-            Objects.requireNonNull(random, "random is null");
-            if (tries < 0) {
-                throw new IllegalArgumentException("tries < 0");
-            }
-            final long startTime = System.currentTimeMillis();
-            try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
-                boolean exhausted = true;
-                for (int i = 1; i <= tries; i++) {
-                    try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
-                        try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3)).recover(x -> { throw predicateError(x); }).get();
-                            if (condition.precondition) {
-                                exhausted = false;
-                                if (!condition.postcondition) {
-                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
-                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3));
-                                }
-                            }
-                        } catch(NonFatalException nonFatal) {
-                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.some(Tuple.of(val1, val2, val3)));
-                        }
-                    } catch(NonFatalException nonFatal) {
-                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.none());
-                    }
-                }
-                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
-                return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(NonFatalException nonFatal) {
-                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), Option.none());
-            }
+        public Property3<T1, T2, T3> shrinking(Shrink<T1> s1, Shrink<T2> s2, Shrink<T3> s3) {
+            return new Property3<>(name, predicate, arbitrary, ShrinkTuple.of(s1, s2, s3));
         }
     }
 
@@ -806,22 +557,10 @@ public class Property {
      * @author Daniel Dietrich
      * @since 1.2.0
      */
-    public static class Property4<T1, T2, T3, T4> implements Checkable {
+    public static class Property4<T1, T2, T3, T4> extends PropertyCheck<Tuple4<T1, T2, T3, T4>> {
 
-        private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
-        private final CheckedFunction4<T1, T2, T3, T4, Condition> predicate;
-
-        Property4(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, CheckedFunction4<T1, T2, T3, T4, Condition> predicate) {
-            this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
-            this.predicate = predicate;
+        Property4(String name, CheckedFunction1<Tuple4<T1, T2, T3, T4>, Condition> predicate, Arbitrary<Tuple4<T1, T2, T3, T4>> arbitrary, Shrink<Tuple4<T1, T2, T3, T4>> shrink) {
+            super(name, arbitrary, predicate, shrink);
         }
 
         /**
@@ -830,61 +569,20 @@ public class Property {
          * @param postcondition The postcondition of this implication
          * @return A new Checkable implication
          */
-        public Checkable implies(CheckedFunction4<T1, T2, T3, T4, Boolean> postcondition) {
-            final CheckedFunction4<T1, T2, T3, T4, Condition> implication = (t1, t2, t3, t4) -> {
-                final Condition precondition = predicate.apply(t1, t2, t3, t4);
+        public Checkable<Tuple4<T1, T2, T3, T4>> implies(CheckedFunction4<T1, T2, T3, T4, Boolean> postcondition) {
+            final CheckedFunction1<Tuple4<T1, T2, T3, T4>, Condition> implication = (t) -> {
+                final Condition precondition = predicate.apply(t);
                 if (precondition.isFalse()) {
                     return Condition.EX_FALSO_QUODLIBET;
                 } else {
-                    return new Condition(true, postcondition.apply(t1, t2, t3, t4));
+                    return new Condition(true, postcondition.tupled().apply(t));
                 }
             };
-            return new Property4<>(name, a1, a2, a3, a4, implication);
+            return new Property4<>(name, implication, arbitrary, shrink);
         }
 
-        @Override
-        public CheckResult check(Random random, int size, int tries) {
-            Objects.requireNonNull(random, "random is null");
-            if (tries < 0) {
-                throw new IllegalArgumentException("tries < 0");
-            }
-            final long startTime = System.currentTimeMillis();
-            try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
-                boolean exhausted = true;
-                for (int i = 1; i <= tries; i++) {
-                    try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
-                        try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4)).recover(x -> { throw predicateError(x); }).get();
-                            if (condition.precondition) {
-                                exhausted = false;
-                                if (!condition.postcondition) {
-                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
-                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4));
-                                }
-                            }
-                        } catch(NonFatalException nonFatal) {
-                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.some(Tuple.of(val1, val2, val3, val4)));
-                        }
-                    } catch(NonFatalException nonFatal) {
-                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.none());
-                    }
-                }
-                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
-                return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(NonFatalException nonFatal) {
-                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), Option.none());
-            }
+        public Property4<T1, T2, T3, T4> shrinking(Shrink<T1> s1, Shrink<T2> s2, Shrink<T3> s3, Shrink<T4> s4) {
+            return new Property4<>(name, predicate, arbitrary, ShrinkTuple.of(s1, s2, s3, s4));
         }
     }
 
@@ -894,24 +592,10 @@ public class Property {
      * @author Daniel Dietrich
      * @since 1.2.0
      */
-    public static class Property5<T1, T2, T3, T4, T5> implements Checkable {
+    public static class Property5<T1, T2, T3, T4, T5> extends PropertyCheck<Tuple5<T1, T2, T3, T4, T5>> {
 
-        private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
-        private final Arbitrary<T5> a5;
-        private final CheckedFunction5<T1, T2, T3, T4, T5, Condition> predicate;
-
-        Property5(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, CheckedFunction5<T1, T2, T3, T4, T5, Condition> predicate) {
-            this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
-            this.a5 = a5;
-            this.predicate = predicate;
+        Property5(String name, CheckedFunction1<Tuple5<T1, T2, T3, T4, T5>, Condition> predicate, Arbitrary<Tuple5<T1, T2, T3, T4, T5>> arbitrary, Shrink<Tuple5<T1, T2, T3, T4, T5>> shrink) {
+            super(name, arbitrary, predicate, shrink);
         }
 
         /**
@@ -920,63 +604,20 @@ public class Property {
          * @param postcondition The postcondition of this implication
          * @return A new Checkable implication
          */
-        public Checkable implies(CheckedFunction5<T1, T2, T3, T4, T5, Boolean> postcondition) {
-            final CheckedFunction5<T1, T2, T3, T4, T5, Condition> implication = (t1, t2, t3, t4, t5) -> {
-                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5);
+        public Checkable<Tuple5<T1, T2, T3, T4, T5>> implies(CheckedFunction5<T1, T2, T3, T4, T5, Boolean> postcondition) {
+            final CheckedFunction1<Tuple5<T1, T2, T3, T4, T5>, Condition> implication = (t) -> {
+                final Condition precondition = predicate.apply(t);
                 if (precondition.isFalse()) {
                     return Condition.EX_FALSO_QUODLIBET;
                 } else {
-                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5));
+                    return new Condition(true, postcondition.tupled().apply(t));
                 }
             };
-            return new Property5<>(name, a1, a2, a3, a4, a5, implication);
+            return new Property5<>(name, implication, arbitrary, shrink);
         }
 
-        @Override
-        public CheckResult check(Random random, int size, int tries) {
-            Objects.requireNonNull(random, "random is null");
-            if (tries < 0) {
-                throw new IllegalArgumentException("tries < 0");
-            }
-            final long startTime = System.currentTimeMillis();
-            try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw arbitraryError(5, size, x); }).get();
-                boolean exhausted = true;
-                for (int i = 1; i <= tries; i++) {
-                    try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw genError(5, size, x); }).get();
-                        try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5)).recover(x -> { throw predicateError(x); }).get();
-                            if (condition.precondition) {
-                                exhausted = false;
-                                if (!condition.postcondition) {
-                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
-                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5));
-                                }
-                            }
-                        } catch(NonFatalException nonFatal) {
-                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.some(Tuple.of(val1, val2, val3, val4, val5)));
-                        }
-                    } catch(NonFatalException nonFatal) {
-                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.none());
-                    }
-                }
-                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
-                return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(NonFatalException nonFatal) {
-                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), Option.none());
-            }
+        public Property5<T1, T2, T3, T4, T5> shrinking(Shrink<T1> s1, Shrink<T2> s2, Shrink<T3> s3, Shrink<T4> s4, Shrink<T5> s5) {
+            return new Property5<>(name, predicate, arbitrary, ShrinkTuple.of(s1, s2, s3, s4, s5));
         }
     }
 
@@ -986,26 +627,10 @@ public class Property {
      * @author Daniel Dietrich
      * @since 1.2.0
      */
-    public static class Property6<T1, T2, T3, T4, T5, T6> implements Checkable {
+    public static class Property6<T1, T2, T3, T4, T5, T6> extends PropertyCheck<Tuple6<T1, T2, T3, T4, T5, T6>> {
 
-        private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
-        private final Arbitrary<T5> a5;
-        private final Arbitrary<T6> a6;
-        private final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> predicate;
-
-        Property6(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> predicate) {
-            this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
-            this.a5 = a5;
-            this.a6 = a6;
-            this.predicate = predicate;
+        Property6(String name, CheckedFunction1<Tuple6<T1, T2, T3, T4, T5, T6>, Condition> predicate, Arbitrary<Tuple6<T1, T2, T3, T4, T5, T6>> arbitrary, Shrink<Tuple6<T1, T2, T3, T4, T5, T6>> shrink) {
+            super(name, arbitrary, predicate, shrink);
         }
 
         /**
@@ -1014,65 +639,20 @@ public class Property {
          * @param postcondition The postcondition of this implication
          * @return A new Checkable implication
          */
-        public Checkable implies(CheckedFunction6<T1, T2, T3, T4, T5, T6, Boolean> postcondition) {
-            final CheckedFunction6<T1, T2, T3, T4, T5, T6, Condition> implication = (t1, t2, t3, t4, t5, t6) -> {
-                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6);
+        public Checkable<Tuple6<T1, T2, T3, T4, T5, T6>> implies(CheckedFunction6<T1, T2, T3, T4, T5, T6, Boolean> postcondition) {
+            final CheckedFunction1<Tuple6<T1, T2, T3, T4, T5, T6>, Condition> implication = (t) -> {
+                final Condition precondition = predicate.apply(t);
                 if (precondition.isFalse()) {
                     return Condition.EX_FALSO_QUODLIBET;
                 } else {
-                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6));
+                    return new Condition(true, postcondition.tupled().apply(t));
                 }
             };
-            return new Property6<>(name, a1, a2, a3, a4, a5, a6, implication);
+            return new Property6<>(name, implication, arbitrary, shrink);
         }
 
-        @Override
-        public CheckResult check(Random random, int size, int tries) {
-            Objects.requireNonNull(random, "random is null");
-            if (tries < 0) {
-                throw new IllegalArgumentException("tries < 0");
-            }
-            final long startTime = System.currentTimeMillis();
-            try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw arbitraryError(5, size, x); }).get();
-                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw arbitraryError(6, size, x); }).get();
-                boolean exhausted = true;
-                for (int i = 1; i <= tries; i++) {
-                    try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw genError(6, size, x); }).get();
-                        try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6)).recover(x -> { throw predicateError(x); }).get();
-                            if (condition.precondition) {
-                                exhausted = false;
-                                if (!condition.postcondition) {
-                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
-                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6));
-                                }
-                            }
-                        } catch(NonFatalException nonFatal) {
-                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.some(Tuple.of(val1, val2, val3, val4, val5, val6)));
-                        }
-                    } catch(NonFatalException nonFatal) {
-                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.none());
-                    }
-                }
-                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
-                return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(NonFatalException nonFatal) {
-                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), Option.none());
-            }
+        public Property6<T1, T2, T3, T4, T5, T6> shrinking(Shrink<T1> s1, Shrink<T2> s2, Shrink<T3> s3, Shrink<T4> s4, Shrink<T5> s5, Shrink<T6> s6) {
+            return new Property6<>(name, predicate, arbitrary, ShrinkTuple.of(s1, s2, s3, s4, s5, s6));
         }
     }
 
@@ -1082,28 +662,10 @@ public class Property {
      * @author Daniel Dietrich
      * @since 1.2.0
      */
-    public static class Property7<T1, T2, T3, T4, T5, T6, T7> implements Checkable {
+    public static class Property7<T1, T2, T3, T4, T5, T6, T7> extends PropertyCheck<Tuple7<T1, T2, T3, T4, T5, T6, T7>> {
 
-        private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
-        private final Arbitrary<T5> a5;
-        private final Arbitrary<T6> a6;
-        private final Arbitrary<T7> a7;
-        private final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate;
-
-        Property7(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> predicate) {
-            this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
-            this.a5 = a5;
-            this.a6 = a6;
-            this.a7 = a7;
-            this.predicate = predicate;
+        Property7(String name, CheckedFunction1<Tuple7<T1, T2, T3, T4, T5, T6, T7>, Condition> predicate, Arbitrary<Tuple7<T1, T2, T3, T4, T5, T6, T7>> arbitrary, Shrink<Tuple7<T1, T2, T3, T4, T5, T6, T7>> shrink) {
+            super(name, arbitrary, predicate, shrink);
         }
 
         /**
@@ -1112,67 +674,20 @@ public class Property {
          * @param postcondition The postcondition of this implication
          * @return A new Checkable implication
          */
-        public Checkable implies(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> postcondition) {
-            final CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Condition> implication = (t1, t2, t3, t4, t5, t6, t7) -> {
-                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7);
+        public Checkable<Tuple7<T1, T2, T3, T4, T5, T6, T7>> implies(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, Boolean> postcondition) {
+            final CheckedFunction1<Tuple7<T1, T2, T3, T4, T5, T6, T7>, Condition> implication = (t) -> {
+                final Condition precondition = predicate.apply(t);
                 if (precondition.isFalse()) {
                     return Condition.EX_FALSO_QUODLIBET;
                 } else {
-                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7));
+                    return new Condition(true, postcondition.tupled().apply(t));
                 }
             };
-            return new Property7<>(name, a1, a2, a3, a4, a5, a6, a7, implication);
+            return new Property7<>(name, implication, arbitrary, shrink);
         }
 
-        @Override
-        public CheckResult check(Random random, int size, int tries) {
-            Objects.requireNonNull(random, "random is null");
-            if (tries < 0) {
-                throw new IllegalArgumentException("tries < 0");
-            }
-            final long startTime = System.currentTimeMillis();
-            try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw arbitraryError(5, size, x); }).get();
-                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw arbitraryError(6, size, x); }).get();
-                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw arbitraryError(7, size, x); }).get();
-                boolean exhausted = true;
-                for (int i = 1; i <= tries; i++) {
-                    try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw genError(7, size, x); }).get();
-                        try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7)).recover(x -> { throw predicateError(x); }).get();
-                            if (condition.precondition) {
-                                exhausted = false;
-                                if (!condition.postcondition) {
-                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
-                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
-                                }
-                            }
-                        } catch(NonFatalException nonFatal) {
-                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.some(Tuple.of(val1, val2, val3, val4, val5, val6, val7)));
-                        }
-                    } catch(NonFatalException nonFatal) {
-                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.none());
-                    }
-                }
-                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
-                return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(NonFatalException nonFatal) {
-                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), Option.none());
-            }
+        public Property7<T1, T2, T3, T4, T5, T6, T7> shrinking(Shrink<T1> s1, Shrink<T2> s2, Shrink<T3> s3, Shrink<T4> s4, Shrink<T5> s5, Shrink<T6> s6, Shrink<T7> s7) {
+            return new Property7<>(name, predicate, arbitrary, ShrinkTuple.of(s1, s2, s3, s4, s5, s6, s7));
         }
     }
 
@@ -1182,30 +697,10 @@ public class Property {
      * @author Daniel Dietrich
      * @since 1.2.0
      */
-    public static class Property8<T1, T2, T3, T4, T5, T6, T7, T8> implements Checkable {
+    public static class Property8<T1, T2, T3, T4, T5, T6, T7, T8> extends PropertyCheck<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> {
 
-        private final String name;
-        private final Arbitrary<T1> a1;
-        private final Arbitrary<T2> a2;
-        private final Arbitrary<T3> a3;
-        private final Arbitrary<T4> a4;
-        private final Arbitrary<T5> a5;
-        private final Arbitrary<T6> a6;
-        private final Arbitrary<T7> a7;
-        private final Arbitrary<T8> a8;
-        private final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate;
-
-        Property8(String name, Arbitrary<T1> a1, Arbitrary<T2> a2, Arbitrary<T3> a3, Arbitrary<T4> a4, Arbitrary<T5> a5, Arbitrary<T6> a6, Arbitrary<T7> a7, Arbitrary<T8> a8, CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> predicate) {
-            this.name = name;
-            this.a1 = a1;
-            this.a2 = a2;
-            this.a3 = a3;
-            this.a4 = a4;
-            this.a5 = a5;
-            this.a6 = a6;
-            this.a7 = a7;
-            this.a8 = a8;
-            this.predicate = predicate;
+        Property8(String name, CheckedFunction1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, Condition> predicate, Arbitrary<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> arbitrary, Shrink<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> shrink) {
+            super(name, arbitrary, predicate, shrink);
         }
 
         /**
@@ -1214,69 +709,20 @@ public class Property {
          * @param postcondition The postcondition of this implication
          * @return A new Checkable implication
          */
-        public Checkable implies(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> postcondition) {
-            final CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Condition> implication = (t1, t2, t3, t4, t5, t6, t7, t8) -> {
-                final Condition precondition = predicate.apply(t1, t2, t3, t4, t5, t6, t7, t8);
+        public Checkable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> implies(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, Boolean> postcondition) {
+            final CheckedFunction1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, Condition> implication = (t) -> {
+                final Condition precondition = predicate.apply(t);
                 if (precondition.isFalse()) {
                     return Condition.EX_FALSO_QUODLIBET;
                 } else {
-                    return new Condition(true, postcondition.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                    return new Condition(true, postcondition.tupled().apply(t));
                 }
             };
-            return new Property8<>(name, a1, a2, a3, a4, a5, a6, a7, a8, implication);
+            return new Property8<>(name, implication, arbitrary, shrink);
         }
 
-        @Override
-        public CheckResult check(Random random, int size, int tries) {
-            Objects.requireNonNull(random, "random is null");
-            if (tries < 0) {
-                throw new IllegalArgumentException("tries < 0");
-            }
-            final long startTime = System.currentTimeMillis();
-            try {
-                final Gen<T1> gen1 = Try.of(() -> a1.apply(size)).recover(x -> { throw arbitraryError(1, size, x); }).get();
-                final Gen<T2> gen2 = Try.of(() -> a2.apply(size)).recover(x -> { throw arbitraryError(2, size, x); }).get();
-                final Gen<T3> gen3 = Try.of(() -> a3.apply(size)).recover(x -> { throw arbitraryError(3, size, x); }).get();
-                final Gen<T4> gen4 = Try.of(() -> a4.apply(size)).recover(x -> { throw arbitraryError(4, size, x); }).get();
-                final Gen<T5> gen5 = Try.of(() -> a5.apply(size)).recover(x -> { throw arbitraryError(5, size, x); }).get();
-                final Gen<T6> gen6 = Try.of(() -> a6.apply(size)).recover(x -> { throw arbitraryError(6, size, x); }).get();
-                final Gen<T7> gen7 = Try.of(() -> a7.apply(size)).recover(x -> { throw arbitraryError(7, size, x); }).get();
-                final Gen<T8> gen8 = Try.of(() -> a8.apply(size)).recover(x -> { throw arbitraryError(8, size, x); }).get();
-                boolean exhausted = true;
-                for (int i = 1; i <= tries; i++) {
-                    try {
-                        final T1 val1 = Try.of(() -> gen1.apply(random)).recover(x -> { throw genError(1, size, x); }).get();
-                        final T2 val2 = Try.of(() -> gen2.apply(random)).recover(x -> { throw genError(2, size, x); }).get();
-                        final T3 val3 = Try.of(() -> gen3.apply(random)).recover(x -> { throw genError(3, size, x); }).get();
-                        final T4 val4 = Try.of(() -> gen4.apply(random)).recover(x -> { throw genError(4, size, x); }).get();
-                        final T5 val5 = Try.of(() -> gen5.apply(random)).recover(x -> { throw genError(5, size, x); }).get();
-                        final T6 val6 = Try.of(() -> gen6.apply(random)).recover(x -> { throw genError(6, size, x); }).get();
-                        final T7 val7 = Try.of(() -> gen7.apply(random)).recover(x -> { throw genError(7, size, x); }).get();
-                        final T8 val8 = Try.of(() -> gen8.apply(random)).recover(x -> { throw genError(8, size, x); }).get();
-                        try {
-                            final Condition condition = Try.of(() -> predicate.apply(val1, val2, val3, val4, val5, val6, val7, val8)).recover(x -> { throw predicateError(x); }).get();
-                            if (condition.precondition) {
-                                exhausted = false;
-                                if (!condition.postcondition) {
-                                    logFalsified(name, i, System.currentTimeMillis() - startTime);
-                                    return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
-                                }
-                            }
-                        } catch(NonFatalException nonFatal) {
-                            logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                            return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.some(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8)));
-                        }
-                    } catch(NonFatalException nonFatal) {
-                        logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                        return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), Option.none());
-                    }
-                }
-                logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
-                return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(NonFatalException nonFatal) {
-                logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), Option.none());
-            }
+        public Property8<T1, T2, T3, T4, T5, T6, T7, T8> shrinking(Shrink<T1> s1, Shrink<T2> s2, Shrink<T3> s3, Shrink<T4> s4, Shrink<T5> s5, Shrink<T6> s6, Shrink<T7> s7, Shrink<T8> s8) {
+            return new Property8<>(name, predicate, arbitrary, ShrinkTuple.of(s1, s2, s3, s4, s5, s6, s7, s8));
         }
     }
 

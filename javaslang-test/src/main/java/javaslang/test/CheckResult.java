@@ -5,7 +5,6 @@
  */
 package javaslang.test;
 
-import javaslang.Tuple;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -27,7 +26,7 @@ import java.util.Objects;
  * @author Daniel Dietrich
  * @since 1.2.0
  */
-public interface CheckResult {
+public interface CheckResult<T> {
 
     /**
      * If this check result is satisfied as specified above.
@@ -76,7 +75,7 @@ public interface CheckResult {
      *
      * @return an optional sample
      */
-    Option<Tuple> sample();
+    Option<T> sample();
 
     /**
      * An optional error.
@@ -85,6 +84,13 @@ public interface CheckResult {
      * @since 1.2.0
      */
     Option<Error> error();
+
+    /**
+     * The number of shrinks performed.
+     *
+     * @return the number of shrinks performed
+     */
+    int shrinks();
 
     /**
      * Asserts that this CheckResult is satisfied.
@@ -136,7 +142,7 @@ public interface CheckResult {
     /**
      * Represents a satisfied property check.
      */
-    class Satisfied implements CheckResult, Serializable {
+    class Satisfied<T> implements CheckResult<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -181,7 +187,7 @@ public interface CheckResult {
         }
 
         @Override
-        public Option<Tuple> sample() {
+        public Option<T> sample() {
             return Option.none();
         }
 
@@ -191,11 +197,16 @@ public interface CheckResult {
         }
 
         @Override
+        public int shrinks() {
+            return 0;
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
             } else if (o instanceof Satisfied) {
-                final Satisfied that = (Satisfied) o;
+                final Satisfied<?> that = (Satisfied) o;
                 return Objects.equals(this.propertyName, that.propertyName)
                         && this.count == that.count
                         && this.exhausted == that.exhausted;
@@ -211,7 +222,8 @@ public interface CheckResult {
 
         @Override
         public String toString() {
-            return String.format("%s(propertyName = %s, count = %s, exhausted = %s)", getClass().getSimpleName(), propertyName, count, exhausted);
+            return String.format("%s(propertyName = %s, count = %s, exhausted = %s)",
+                    getClass().getSimpleName(), propertyName, count, exhausted);
         }
     }
 
@@ -220,18 +232,20 @@ public interface CheckResult {
      *
      * @since 1.2.0
      */
-    class Falsified implements CheckResult, Serializable {
+    class Falsified<T> implements CheckResult<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
         private final String propertyName;
         private final int count;
-        private final Tuple sample;
+        private final T sample;
+        private final int shrinks;
 
-        Falsified(String propertyName, int count, Tuple sample) {
+        Falsified(String propertyName, int count, T sample, int shrinks) {
             this.propertyName = propertyName;
             this.count = count;
             this.sample = sample;
+            this.shrinks = shrinks;
         }
 
         @Override
@@ -265,7 +279,7 @@ public interface CheckResult {
         }
 
         @Override
-        public Option<Tuple> sample() {
+        public Option<T> sample() {
             return Option.some(sample);
         }
 
@@ -275,13 +289,19 @@ public interface CheckResult {
         }
 
         @Override
+        public int shrinks() {
+            return shrinks;
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
             } else if (o instanceof Falsified) {
-                final Falsified that = (Falsified) o;
+                final Falsified<?> that = (Falsified) o;
                 return Objects.equals(this.propertyName, that.propertyName)
                         && this.count == that.count
+                        && this.shrinks == that.shrinks
                         && Objects.equals(this.sample, that.sample);
             } else {
                 return false;
@@ -290,12 +310,13 @@ public interface CheckResult {
 
         @Override
         public int hashCode() {
-            return Objects.hash(propertyName, count, sample);
+            return Objects.hash(propertyName, count, sample, shrinks);
         }
 
         @Override
         public String toString() {
-            return String.format("%s(propertyName = %s, count = %s, sample = %s)", getClass().getSimpleName(), propertyName, count, sample);
+            return String.format("%s(propertyName = %s, count = %s, sample = %s, shrinks = %s)",
+                    getClass().getSimpleName(), propertyName, count, sample, shrinks);
         }
     }
 
@@ -304,20 +325,22 @@ public interface CheckResult {
      *
      * @since 1.2.0
      */
-    class Erroneous implements CheckResult, Serializable {
+    class Erroneous<T> implements CheckResult<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
         private final String propertyName;
         private final int count;
         private final Error error;
-        private final Option<Tuple> sample;
+        private final Option<T> sample;
+        private final int shrinks;
 
-        Erroneous(String propertyName, int count, Error error, Option<Tuple> sample) {
+        Erroneous(String propertyName, int count, Error error, Option<T> sample, int shrinks) {
             this.propertyName = propertyName;
             this.count = count;
             this.error = error;
             this.sample = sample;
+            this.shrinks = shrinks;
         }
 
         @Override
@@ -351,7 +374,7 @@ public interface CheckResult {
         }
 
         @Override
-        public Option<Tuple> sample() {
+        public Option<T> sample() {
             return sample;
         }
 
@@ -361,13 +384,19 @@ public interface CheckResult {
         }
 
         @Override
+        public int shrinks() {
+            return shrinks;
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
             } else if (o instanceof Erroneous) {
-                final Erroneous that = (Erroneous) o;
+                final Erroneous<?> that = (Erroneous) o;
                 return Objects.equals(this.propertyName, that.propertyName)
                         && this.count == that.count
+                        && this.shrinks == that.shrinks
                         && deepEquals(this.error, that.error)
                         && Objects.equals(this.sample, that.sample);
             } else {
@@ -385,7 +414,7 @@ public interface CheckResult {
 
         @Override
         public int hashCode() {
-            return Objects.hash(propertyName, count, deepHashCode(error), sample);
+            return Objects.hash(propertyName, count, deepHashCode(error), sample, shrinks);
         }
 
         int deepHashCode(Throwable t) {
@@ -398,7 +427,8 @@ public interface CheckResult {
 
         @Override
         public String toString() {
-            return String.format("%s(propertyName = %s, count = %s, error = %s, sample = %s)", getClass().getSimpleName(), propertyName, count, error.getMessage(), sample);
+            return String.format("%s(propertyName = %s, count = %s, error = %s, sample = %s, shrinks = %s)",
+                    getClass().getSimpleName(), propertyName, count, error.getMessage(), sample, shrinks);
         }
     }
 }
