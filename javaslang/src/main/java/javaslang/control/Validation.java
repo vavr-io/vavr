@@ -526,9 +526,9 @@ public interface Validation<E, T> extends Value<T> {
      * @param f   a function that maps the error in this Invalid
      * @return an instance of Validation&lt;U,T&gt;
      * @throws NullPointerException if mapping operation f is null
-     * @deprecated replaced by {@link #mapError(Function)}
+     * @deprecated replaced by {@link #mapError(Function)}, will be removed in 3.0.0
      */
-    @Deprecated
+    @Deprecated(/* Use mapError instead. Will be removed in 3.0.0 */)
     default <U> Validation<U, T> leftMap(Function<? super E, ? extends U> f) {
         return mapError(f);
     }

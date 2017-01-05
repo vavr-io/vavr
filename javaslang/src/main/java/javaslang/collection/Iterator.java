@@ -57,7 +57,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @deprecated Will be removed because class loading may cause a deadlock under certain circumstances (see #1773 and https://bugs.openjdk.java.net/browse/JDK-8037567)
      */
-    @Deprecated
+    @Deprecated(/* Not used any more, will be removed in 3.0.0 */)
     Iterator<Object> EMPTY = EmptyIterator.INSTANCE;
 
     /**

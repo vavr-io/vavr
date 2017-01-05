@@ -146,9 +146,9 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @param objects An Iterable instance containing zero or more objects.
      * @param <T>     Component type
      * @return The hashcode
-     * @deprecated Will be removed in next major release.
+     * @deprecated Will be removed in 3.0.0.
      */
-    @Deprecated
+    @Deprecated(/* Will be removed in 3.0.0 */)
     static <T> int hash(Iterable<? extends T> objects) {
         int hashCode = 1;
         for (Object o : objects) {

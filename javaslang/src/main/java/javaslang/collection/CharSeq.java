@@ -2268,6 +2268,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
+     * @deprecated Use {@link #splitSeq(String, int)} instead, will be removed in 3.0.0
      */
     @Deprecated(/* Use splitSeq instead, will be removed in 3.0.0 */)
     @GwtIncompatible
@@ -2307,6 +2308,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
+     * @deprecated Use {@link #splitSeq(String)} instead, will be removed in 3.0.0
      */
     @Deprecated(/* Use splitSeq instead, will be removed in 3.0.0 */)
     @GwtIncompatible
