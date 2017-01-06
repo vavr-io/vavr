@@ -91,6 +91,7 @@ final class Collections {
         return results;
 
     }
+
     private static <T, C> java.util.Set<java.util.Map.Entry<C, Collection<T>>> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier) {
         final java.util.Map<C, Collection<T>> results = new java.util.LinkedHashMap<>(source.isTraversableAgain() ? source.size() : 16);
         for (T value : source) {
@@ -286,5 +287,31 @@ final class Collections {
         } else {
             return new IterableWithSize<>(iterable, ((Traversable<?>) iterable).size());
         }
+    }
+
+    static <T, U extends Iterable<? extends Iterable<T>>> U transpose(U source, Function<Iterable<?>, Iterable<?>> mapper) {
+        if (source.iterator().hasNext()) {
+            return transposeIterables(source, mapper);
+        } else {
+            return source;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T, U extends Iterable<? extends Iterable<T>>> U transposeIterables(U source, Function<Iterable<?>, Iterable<?>> mapper) {
+        final ArrayList<ArrayList<T>> results = new ArrayList<>();
+
+        for (Iterable<T> row : source) {
+            int c = 0;
+            for (T element : row) {
+                if (results.size() == c) {
+                    results.add(new ArrayList<T>());
+                }
+                results.get(c).add(element);
+                c++;
+            }
+        }
+
+        return (U) mapper.apply(Iterator.ofAll(results).map(mapper::apply));
     }
 }

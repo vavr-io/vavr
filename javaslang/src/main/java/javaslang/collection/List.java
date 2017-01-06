@@ -656,6 +656,21 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         return Iterator.unfold(seed, f).toList();
     }
 
+    /**
+     * Transposes the rows and columns of a {@link List}.
+     *
+     * @param rows to be transposed.
+     * @return a transposed {@link List}.
+     * <p>
+     * ex: {@code
+     * List.transpose(List(List(1,2,3), List(4,5,6))) → List(List(1,4), List(2,5), List(3,6))
+     * List.transpose(List(List(1,2), List(3))) → List(List(1,3), List(2))
+     * }
+     */
+    static <T> List<List<T>> transpose(List<List<T>> rows) {
+        return Collections.transpose(rows, List::ofAll);
+    }
+
     @Override
     default List<T> append(T element) {
         return foldRight(of(element), (x, xs) -> xs.prepend(x));

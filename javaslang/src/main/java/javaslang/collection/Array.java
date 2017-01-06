@@ -554,6 +554,21 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         return Iterator.unfold(seed, f).toArray();
     }
 
+    /**
+     * Transposes the rows and columns of an {@link Array}.
+     *
+     * @param rows to be transposed.
+     * @return a transposed {@link Array}.
+     * <p>
+     * ex: {@code
+     * Array.transpose(Array(Array(1,2,3), Array(4,5,6))) → Array(Array(1,4), Array(2,5), Array(3,6))
+     * Array.transpose(Array(Array(1,2), Array(3))) → Array(Array(1,3), Array(2))
+     * }
+     */
+    static <T> Array<Array<T>> transpose(Array<Array<T>> rows) {
+        return Collections.transpose(rows, Array::ofAll);
+    }
+
     @Override
     public Array<T> append(T element) {
         final Object[] copy = copyOf(delegate, delegate.length + 1);
@@ -1048,11 +1063,15 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> reverse() {
-        final Object[] arr = new Object[delegate.length];
-        for (int i = 0; i < delegate.length; i++) {
-            arr[delegate.length - 1 - i] = delegate[i];
+        if (size() <= 1) {
+            return this;
+        } else {
+            final Object[] arr = new Object[delegate.length];
+            for (int i = 0; i < delegate.length; i++) {
+                arr[delegate.length - 1 - i] = delegate[i];
+            }
+            return wrap(arr);
         }
-        return wrap(arr);
     }
 
     @Override

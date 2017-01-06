@@ -183,6 +183,12 @@ public class ListTest extends AbstractLinearSeqTest {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    protected <T> List<List<T>> transpose(Seq<? extends Seq<T>> rows) {
+        return List.transpose((List<List<T>>) rows);
+    }
+
+    @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
     }

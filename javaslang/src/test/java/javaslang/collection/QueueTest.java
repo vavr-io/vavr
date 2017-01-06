@@ -181,6 +181,12 @@ public class QueueTest extends AbstractLinearSeqTest {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    protected <T> Queue<Queue<T>> transpose(Seq<? extends Seq<T>> rows) {
+        return Queue.transpose((Queue<Queue<T>>) rows);
+    }
+
+    @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
     }

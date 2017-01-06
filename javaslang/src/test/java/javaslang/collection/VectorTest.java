@@ -187,6 +187,12 @@ public class VectorTest extends AbstractIndexedSeqTest {
         return Vector.rangeClosedBy(from, toInclusive, step);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <T> Vector<Vector<T>> transpose(Seq<? extends Seq<T>> rows) {
+        return Vector.transpose((Vector<Vector<T>>) rows);
+    }
+
     // -- static narrow
 
     @Test
