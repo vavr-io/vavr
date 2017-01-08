@@ -180,6 +180,18 @@ public abstract class AbstractValueTest {
         });
     }
 
+    // -- getOrNull
+
+    @Test
+    public void shouldReturnNullWhenGetOrNullOfEmpty() {
+        assertThat(empty().getOrNull()).isEqualTo(null);
+    }
+
+    @Test
+    public void shouldReturnValueWhenGetOrNullOfNonEmpty() {
+        assertThat(of(1).getOrNull()).isEqualTo(1);
+    }
+
     // -- forEach
 
     @Test
