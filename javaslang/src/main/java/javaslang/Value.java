@@ -53,6 +53,8 @@ import static javaslang.API.*;
  * <li>{@link #getOrElse(Object)}</li>
  * <li>{@link #getOrElse(Supplier)}</li>
  * <li>{@link #getOrElseThrow(Supplier)}</li>
+ * <li>{@link #getOrElseTry(Try.CheckedSupplier)}</li>
+ * <li>{@link #getOrNull()}</li>
  * <li>{@link #isEmpty()}</li>
  * <li>{@link #isSingleValued()}</li>
  * <li>{@link #map(Function)}</li>
@@ -385,6 +387,15 @@ public interface Value<T> extends Iterable<T> {
     default T getOrElseTry(Try.CheckedSupplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? Try.of(supplier).get() : get();
+    }
+
+    /**
+     * Returns the underlying value if present, otherwise {@code null}.
+     *
+     * @return A value of type {@code T} or {@code null}.
+     */
+    default T getOrNull() {
+        return isEmpty() ? null : get();
     }
 
     /**
