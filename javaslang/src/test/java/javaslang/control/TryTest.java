@@ -163,6 +163,11 @@ public class TryTest extends AbstractValueTest {
         }) instanceof Try.Failure).isTrue();
     }
 
+    @Test
+    public void shouldCreateSuccessWhenCallingTryOfVoidSupplier() {
+        assertThat(Try.of(() -> Thread.sleep(0)) instanceof Try.Success).isTrue();
+    }
+
     // -- Try.run
 
     @Test
