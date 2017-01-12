@@ -5,14 +5,20 @@
  */
 package javaslang.control;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.function.*;
-
 import javaslang.Value;
 import javaslang.collection.Iterator;
-import javaslang.collection.*;
+import javaslang.collection.Seq;
 import javaslang.collection.Vector;
+
+import java.io.Serializable;
+import java.util.Arrays;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -39,6 +45,39 @@ public interface Try<T> extends Value<T> {
         }
     }
 
+
+    /**
+     * Creates a Try of a Supplier.
+     *
+     * @param supplier A supplier
+     * @param <T>      Component type
+     * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(throwable)} if an
+     * exception occurs calling {@code supplier.get()}.
+     */
+    static <T> Try<T> ofSupplier(Supplier<? extends T> supplier) {
+        try {
+            return new Success<>(supplier.get());
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
+    }
+
+    /**
+     * Creates a Try of a Callable.
+     *
+     * @param callable A callable
+     * @param <T>      Component type
+     * @return {@code Success(callable.call())} if no exception occurs, otherwise {@code Failure(throwable)} if an
+     * exception occurs calling {@code callable.call()}.
+     */
+    static <T> Try<T> ofCallable(Callable<? extends T> callable) {
+        try {
+            return new Success<>(callable.call());
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
+    }
+
     /**
      * Creates a Try of a CheckedRunnable.
      *
@@ -47,6 +86,22 @@ public interface Try<T> extends Value<T> {
      * calling {@code runnable.run()}.
      */
     static Try<Void> run(CheckedRunnable runnable) {
+        try {
+            runnable.run();
+            return new Success<>(null); // null represents the absence of an value, i.e. Void
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
+    }
+
+    /**
+     * Creates a Try of a Runnable.
+     *
+     * @param runnable A runnable
+     * @return {@code Success(null)} if no exception occurs, otherwise {@code Failure(throwable)} if an exception occurs
+     * calling {@code runnable.run()}.
+     */
+    static Try<Void> runRunnable(Runnable runnable) {
         try {
             runnable.run();
             return new Success<>(null); // null represents the absence of an value, i.e. Void

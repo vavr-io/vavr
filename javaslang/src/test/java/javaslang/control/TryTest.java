@@ -5,7 +5,12 @@
  */
 package javaslang.control;
 
-import static org.assertj.core.api.Assertions.*;
+import javaslang.AbstractValueTest;
+import javaslang.Serializables;
+import javaslang.collection.Seq;
+import javaslang.control.Try.NonFatalException;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.util.*;
@@ -14,13 +19,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-
-import javaslang.AbstractValueTest;
-import javaslang.Serializables;
-import javaslang.collection.Seq;
-import javaslang.control.Try.NonFatalException;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
 public class TryTest extends AbstractValueTest {
 
@@ -152,28 +152,72 @@ public class TryTest extends AbstractValueTest {
     // -- Try.of
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryOfSupplier() {
+    public void shouldCreateSuccessWhenCallingTryOfCheckedSupplier() {
         assertThat(Try.of(() -> 1) instanceof Try.Success).isTrue();
     }
 
     @Test
-    public void shouldCreateFailureWhenCallingTryOfSupplier() {
+    public void shouldCreateFailureWhenCallingTryOfCheckedSupplier() {
         assertThat(Try.of(() -> {
             throw new Error("error");
         }) instanceof Try.Failure).isTrue();
     }
 
+    // -- Try.ofSupplier
+
+    @Test
+    public void shouldCreateSuccessWhenCallingTryOfSupplier() {
+        assertThat(Try.ofSupplier(() -> 1) instanceof Try.Success).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureWhenCallingTryOfSupplier() {
+        assertThat(Try.ofSupplier(() -> {
+            throw new Error("error");
+        }) instanceof Try.Failure).isTrue();
+    }
+
+    // -- Try.ofCallable
+
+    @Test
+    public void shouldCreateSuccessWhenCallingTryOfCallable() {
+        assertThat(Try.ofCallable(() -> 1) instanceof Try.Success).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureWhenCallingTryOfCallable() {
+        assertThat(Try.ofCallable(() -> {
+            throw new Error("error");
+        }) instanceof Try.Failure).isTrue();
+    }
+
+
     // -- Try.run
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryRunRunnable() {
+    public void shouldCreateSuccessWhenCallingTryRunCheckedRunnable() {
         assertThat(Try.run(() -> {
         }) instanceof Try.Success).isTrue();
     }
 
     @Test
-    public void shouldCreateFailureWhenCallingTryRunRunnable() {
+    public void shouldCreateFailureWhenCallingTryRunCheckedRunnable() {
         assertThat(Try.run(() -> {
+            throw new Error("error");
+        }) instanceof Try.Failure).isTrue();
+    }
+
+    // -- Try.runRunnable
+
+    @Test
+    public void shouldCreateSuccessWhenCallingTryRunRunnable() {
+        assertThat(Try.runRunnable(() -> {
+        }) instanceof Try.Success).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureWhenCallingTryRunRunnable() {
+        assertThat(Try.runRunnable(() -> {
             throw new Error("error");
         }) instanceof Try.Failure).isTrue();
     }
