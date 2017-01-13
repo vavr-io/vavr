@@ -38,6 +38,7 @@ public interface Try<T> extends Value<T> {
      * exception occurs calling {@code supplier.get()}.
      */
     static <T> Try<T> of(CheckedSupplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         try {
             return new Success<>(supplier.get());
         } catch (Throwable t) {
@@ -55,11 +56,7 @@ public interface Try<T> extends Value<T> {
      * exception occurs calling {@code supplier.get()}.
      */
     static <T> Try<T> ofSupplier(Supplier<? extends T> supplier) {
-        try {
-            return new Success<>(supplier.get());
-        } catch (Throwable t) {
-            return new Failure<>(t);
-        }
+        return of(supplier::get);
     }
 
     /**
@@ -71,11 +68,7 @@ public interface Try<T> extends Value<T> {
      * exception occurs calling {@code callable.call()}.
      */
     static <T> Try<T> ofCallable(Callable<? extends T> callable) {
-        try {
-            return new Success<>(callable.call());
-        } catch (Throwable t) {
-            return new Failure<>(t);
-        }
+        return of(callable::call);
     }
 
     /**
@@ -86,6 +79,7 @@ public interface Try<T> extends Value<T> {
      * calling {@code runnable.run()}.
      */
     static Try<Void> run(CheckedRunnable runnable) {
+        Objects.requireNonNull(runnable, "runnable is null");
         try {
             runnable.run();
             return new Success<>(null); // null represents the absence of an value, i.e. Void
@@ -102,12 +96,7 @@ public interface Try<T> extends Value<T> {
      * calling {@code runnable.run()}.
      */
     static Try<Void> runRunnable(Runnable runnable) {
-        try {
-            runnable.run();
-            return new Success<>(null); // null represents the absence of an value, i.e. Void
-        } catch (Throwable t) {
-            return new Failure<>(t);
-        }
+        return run(runnable::run);
     }
 
     /**
