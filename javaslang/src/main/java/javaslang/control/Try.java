@@ -56,6 +56,7 @@ public interface Try<T> extends Value<T> {
      * exception occurs calling {@code supplier.get()}.
      */
     static <T> Try<T> ofSupplier(Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         return of(supplier::get);
     }
 
@@ -68,6 +69,7 @@ public interface Try<T> extends Value<T> {
      * exception occurs calling {@code callable.call()}.
      */
     static <T> Try<T> ofCallable(Callable<? extends T> callable) {
+        Objects.requireNonNull(callable, "callable is null");
         return of(callable::call);
     }
 
@@ -96,6 +98,7 @@ public interface Try<T> extends Value<T> {
      * calling {@code runnable.run()}.
      */
     static Try<Void> runRunnable(Runnable runnable) {
+        Objects.requireNonNull(runnable, "runnable is null");
         return run(runnable::run);
     }
 

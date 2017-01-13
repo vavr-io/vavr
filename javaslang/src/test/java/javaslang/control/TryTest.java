@@ -163,11 +163,21 @@ public class TryTest extends AbstractValueTest {
         }) instanceof Try.Failure).isTrue();
     }
 
+    @Test
+    public void shouldThrowNullPointerExceptionWhenCallingTryOfCheckedSupplier() {
+        assertThatThrownBy(() -> Try.of(null)).isInstanceOf(NullPointerException.class).hasMessage("supplier is null");
+    }
+
     // -- Try.ofSupplier
 
     @Test
     public void shouldCreateSuccessWhenCallingTryOfSupplier() {
         assertThat(Try.ofSupplier(() -> 1) instanceof Try.Success).isTrue();
+    }
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenCallingTryOfSupplier() {
+        assertThatThrownBy(() -> Try.ofSupplier(null)).isInstanceOf(NullPointerException.class).hasMessage("supplier is null");
     }
 
     @Test
@@ -191,6 +201,10 @@ public class TryTest extends AbstractValueTest {
         }) instanceof Try.Failure).isTrue();
     }
 
+    @Test
+    public void shouldThrowNullPointerExceptionWhenCallingTryOfCallable() {
+        assertThatThrownBy(() -> Try.ofCallable(null)).isInstanceOf(NullPointerException.class).hasMessage("callable is null");
+    }
 
     // -- Try.run
 
@@ -207,6 +221,11 @@ public class TryTest extends AbstractValueTest {
         }) instanceof Try.Failure).isTrue();
     }
 
+    @Test
+    public void shouldThrowNullPointerExceptionWhenCallingTryRunCheckedRunnable() {
+        assertThatThrownBy(() -> Try.run(null)).isInstanceOf(NullPointerException.class).hasMessage("runnable is null");
+    }
+
     // -- Try.runRunnable
 
     @Test
@@ -220,6 +239,11 @@ public class TryTest extends AbstractValueTest {
         assertThat(Try.runRunnable(() -> {
             throw new Error("error");
         }) instanceof Try.Failure).isTrue();
+    }
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenCallingTryRunRunnable() {
+        assertThatThrownBy(() -> Try.runRunnable(null)).isInstanceOf(NullPointerException.class).hasMessage("runnable is null");
     }
 
     // -- Failure.Cause
