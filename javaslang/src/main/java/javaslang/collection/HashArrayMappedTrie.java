@@ -239,7 +239,19 @@ interface HashArrayMappedTrieModule {
                 return true;
             } else if (o instanceof HashArrayMappedTrie) {
                 final HashArrayMappedTrie<Object, ?> that = (HashArrayMappedTrie<Object, ?>) o;
-                return (this.size() == that.size()) && Collections.equals(this, that);
+                if (this.size() == that.size()) {
+                    final java.util.Iterator<Tuple2<K, V>> it = iterator();
+                    while (it.hasNext()) {
+                        Tuple2<K, V> thisEntry = it.next();
+                        Option<?> thatValue = that.get(thisEntry._1);
+                        if (!thatValue.isDefined() || !thatValue.get().equals(thisEntry._2)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
                 return false;
             }
