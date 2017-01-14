@@ -142,6 +142,13 @@ public class HashArrayMappedTrieTest {
         assertThat(of(1, 2).equals(of(1, 2, 3))).isFalse();
     }
 
+    @Test
+    public void shouldEqualsIgnoreOrder() {
+        HashArrayMappedTrie<String, Integer> map = HashArrayMappedTrie.<String, Integer> empty().put("Aa", 1).put("BB", 2);
+        HashArrayMappedTrie<String, Integer> map2 = HashArrayMappedTrie.<String, Integer> empty().put("BB", 2).put("Aa", 1);
+        assertThat(map).isEqualTo(map2);
+    }
+
     // -- hashCode
 
     @Test
