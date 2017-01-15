@@ -2556,7 +2556,7 @@ public class CharSeqTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetWithNegativeIndexOnNil() {
-        empty().update(-1, null);
+        empty().update(-1, (Character) null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -2566,7 +2566,7 @@ public class CharSeqTest {
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowWhenSetOnNil() {
-        empty().update(0, null);
+        empty().update(0, (Character) null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

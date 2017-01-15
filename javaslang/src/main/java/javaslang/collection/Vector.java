@@ -1135,6 +1135,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
+    public Vector<T> update(int index, Function<? super T, ? extends T> updater) {
+        Objects.requireNonNull(updater, "updater is null");
+        return update(index, updater.apply(get(index)));
+    }
+
+    @Override
     public <U> Vector<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }

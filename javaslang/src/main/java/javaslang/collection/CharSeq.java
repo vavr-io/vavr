@@ -1016,13 +1016,17 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public CharSeq update(int index, Character element) {
-        if (index < 0) {
+        if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("update(" + index + ")");
+        } else {
+            return of(back.substring(0, index) + element + back.substring(index + 1));
         }
-        if (index >= length()) {
-            throw new IndexOutOfBoundsException("update(" + index + ")");
-        }
-        return of(back.substring(0, index) + element + back.substring(index + 1));
+    }
+
+    @Override
+    public CharSeq update(int index, Function<? super Character, ? extends Character> updater) {
+        Objects.requireNonNull(updater, "updater is null");
+        return update(index, updater.apply(get(index)));
     }
 
     @Override

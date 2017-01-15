@@ -1528,6 +1528,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> update(int index, Function<? super T, ? extends T> updater) {
+        Objects.requireNonNull(updater, "updater is null");
+        return update(index, updater.apply(get(index)));
+    }
+
+    @Override
     default <U> Stream<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
