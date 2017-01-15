@@ -294,6 +294,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> update(int index, T element);
 
     @Override
+    LinearSeq<T> update(int index, Function<? super T, ? extends T> updater);
+
+    @Override
     <U> LinearSeq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override

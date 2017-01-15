@@ -357,6 +357,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> update(int index, T element);
 
     @Override
+    IndexedSeq<T> update(int index, Function<? super T, ? extends T> updater);
+
+    @Override
     <U> IndexedSeq<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override

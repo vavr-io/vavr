@@ -1311,15 +1311,19 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> update(int index, T element) {
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("update(" + index + ")");
-        } else if (index >= length()) {
+        if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("update(" + index + ")");
         } else {
             final Object[] arr = toArray(this);
             arr[index] = element;
             return wrap(arr);
         }
+    }
+
+    @Override
+    public Array<T> update(int index, Function<? super T, ? extends T> updater) {
+        Objects.requireNonNull(updater, "updater is null");
+        return update(index, updater.apply(get(index)));
     }
 
     @Override

@@ -973,10 +973,20 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      *
      * @param index   an index
      * @param element an element
-     * @return a new Seq consisting of this elements and the given element is set at the given index
+     * @return a new Seq consisting of all previous elements, with a single one (at the given index), changed to the new value.
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
     Seq<T> update(int index, T element);
+
+    /**
+     * Updates the given element at the specified index using the specified function.
+     *
+     * @param index   an index
+     * @param updater a function transforming the previous value
+     * @return a new Seq consisting of all previous elements, with a single one (at the given index), changed to the new value.
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
+    Seq<T> update(int index, Function<? super T, ? extends T> updater);
 
     /**
      * Searches this sequence for a specific element. The sequence must already be sorted into ascending natural

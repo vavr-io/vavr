@@ -1156,6 +1156,12 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
+    public Queue<T> update(int index, Function<? super T, ? extends T> updater) {
+        Objects.requireNonNull(updater, "updater is null");
+        return update(index, updater.apply(get(index)));
+    }
+
+    @Override
     public <U> Queue<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }

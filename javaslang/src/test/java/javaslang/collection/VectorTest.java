@@ -205,7 +205,7 @@ public class VectorTest extends AbstractIndexedSeqTest {
 
         assertThat(primitives.append(null)).isEqualTo(of(0, 1, 2, null));
         assertThat(primitives.prepend(null)).isEqualTo(of(null, 0, 1, 2));
-        assertThat(primitives.update(1, null)).isEqualTo(of(0, null, 2));
+        assertThat(primitives.update(1, (Integer) null)).isEqualTo(of(0, null, 2));
     }
 
     @Test

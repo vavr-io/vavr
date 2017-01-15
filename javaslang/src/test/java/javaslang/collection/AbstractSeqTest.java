@@ -1290,41 +1290,51 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(shuffled.indexOf(4)).isEqualTo(-1);
     }
 
-    // -- set
+    // -- update
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetWithNegativeIndexOnNil() {
-        empty().update(-1, null);
+    public void shouldThrowWhenUpdatedWithNegativeIndexOnNil() {
+        empty().update(-1, (Integer) null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetWithNegativeIndexOnNonNil() {
+    public void shouldThrowWhenUpdatedWithNegativeIndexOnNonNil() {
         of(1).update(-1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetOnNil() {
-        empty().update(0, null);
+    public void shouldThrowWhenUpdatedOnNil() {
+        empty().update(0, (Integer) null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetWithIndexExceedingByOneOnNonNil() {
+    public void shouldThrowWhenUpdatedWithIndexExceedingByOneOnNonNil() {
         of(1).update(1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetWithIndexExceedingByTwoOnNonNil() {
+    public void shouldThrowWhenUpdatedWithIndexExceedingByTwoOnNonNil() {
         of(1).update(2, 2);
     }
 
     @Test
-    public void shouldSetFirstElement() {
+    public void shouldUpdateFirstElement() {
         assertThat(of(1, 2, 3).update(0, 4)).isEqualTo(of(4, 2, 3));
     }
 
     @Test
-    public void shouldSetLastElement() {
+    public void shouldUpdateLastElement() {
         assertThat(of(1, 2, 3).update(2, 4)).isEqualTo(of(1, 2, 4));
+    }
+
+
+    // -- higher order update
+
+    @Test
+    public void shouldUpdateViaFunction() throws Exception {
+        final Seq<Character> actual = ofAll("hello".toCharArray()).update(0, Character::toUpperCase);
+        final Seq<Character> expected = ofAll("Hello".toCharArray());
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- slice(beginIndex, endIndex)
