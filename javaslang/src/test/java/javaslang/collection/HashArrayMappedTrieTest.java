@@ -143,6 +143,7 @@ public class HashArrayMappedTrieTest {
     public void shouldEqualsIgnoreOrder() {
         HashArrayMappedTrie<String, Integer> map = HashArrayMappedTrie.<String, Integer> empty().put("Aa", 1).put("BB", 2);
         HashArrayMappedTrie<String, Integer> map2 = HashArrayMappedTrie.<String, Integer> empty().put("BB", 2).put("Aa", 1);
+        assertThat(map.hashCode()).isEqualTo(map2.hashCode());
         assertThat(map).isEqualTo(map2);
     }
 

@@ -548,7 +548,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public int hashCode() {
-            return Objects.hash(hash, value, tail);
+            return Objects.hash(hash, value) + tail.hashCode();
         }
 
         @Override
