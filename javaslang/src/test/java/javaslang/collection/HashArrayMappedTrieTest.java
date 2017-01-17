@@ -146,7 +146,17 @@ public class HashArrayMappedTrieTest {
     public void shouldEqualsIgnoreOrder() {
         HashArrayMappedTrie<String, Integer> map = HashArrayMappedTrie.<String, Integer> empty().put("Aa", 1).put("BB", 2);
         HashArrayMappedTrie<String, Integer> map2 = HashArrayMappedTrie.<String, Integer> empty().put("BB", 2).put("Aa", 1);
+        assertThat(map.hashCode()).isEqualTo(map2.hashCode());
         assertThat(map).isEqualTo(map2);
+    }
+
+    @Test
+    public void shouldCalculateHashCodeOfLongLeafList() {
+        HashArrayMappedTrie<WeakInteger, Integer> h1 = HashArrayMappedTrie.empty();
+        for (int i = 0; i < 100000; i++) {
+            h1 = h1.put(new WeakInteger(i), i);
+        }
+        assertThat(h1.hashCode()).isNotZero();
     }
 
     // -- hashCode

@@ -572,7 +572,13 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public int hashCode() {
-            return Objects.hash(hash, value, tail);
+            Iterator<LeafNode<K, V>> it = nodes();
+            int hashCode = 0;
+            while (it.hasNext()) {
+                final LeafNode<K, V> node = it.next();
+                hashCode += Objects.hash(node.key(), node.value());
+            }
+            return hashCode;
         }
 
         @Override
