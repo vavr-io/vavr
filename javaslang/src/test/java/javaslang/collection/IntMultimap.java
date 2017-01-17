@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class IntMultimap<T> implements Traversable<T>, Serializable {
+public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,6 +27,11 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     public static <T> IntMultimap<T> of(Multimap<Integer, T> original) {
         return new IntMultimap<>(original);
+    }
+
+    // DEV-NOTE: needs to be used internally to ensure the isSameAs property of the original is reflected by this impl
+    private IntMultimap<T> unit(Multimap<Integer, T> original) {
+        return (this.original == original) ? this : of(original);
     }
 
     private IntMultimap(Multimap<Integer, T> original) {
@@ -68,44 +73,44 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMultimap<T> distinct() {
-        return IntMultimap.of(original.distinct());
+        return unit(original.distinct());
     }
 
     @Override
     public IntMultimap<T> distinctBy(Comparator<? super T> comparator) {
-        return IntMultimap.of(original.distinctBy((o1, o2) -> comparator.compare(o1._2, o2._2)));
+        return unit(original.distinctBy((o1, o2) -> comparator.compare(o1._2, o2._2)));
     }
 
     @Override
     public <U> IntMultimap<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        return IntMultimap.of(original.distinctBy(f -> keyExtractor.apply(f._2)));
+        return unit(original.distinctBy(f -> keyExtractor.apply(f._2)));
     }
 
     @Override
     public IntMultimap<T> drop(int n) {
         final Multimap<Integer, T> dropped = original.drop(n);
-        return dropped == original ? this : IntMultimap.of(dropped);
+        return dropped == original ? this : unit(dropped);
     }
 
     @Override
     public IntMultimap<T> dropRight(int n) {
         final Multimap<Integer, T> dropped = original.dropRight(n);
-        return dropped == original ? this : IntMultimap.of(dropped);
+        return dropped == original ? this : unit(dropped);
     }
 
     @Override
     public IntMultimap<T> dropUntil(Predicate<? super T> predicate) {
-        return IntMultimap.of(original.dropUntil(p -> predicate.test(p._2)));
+        return unit(original.dropUntil(p -> predicate.test(p._2)));
     }
 
     @Override
     public IntMultimap<T> dropWhile(Predicate<? super T> predicate) {
-        return IntMultimap.of(original.dropWhile(p -> predicate.test(p._2)));
+        return unit(original.dropWhile(p -> predicate.test(p._2)));
     }
 
     @Override
     public IntMultimap<T> filter(Predicate<? super T> predicate) {
-        return IntMultimap.of(original.filter(p -> predicate.test(p._2)));
+        return unit(original.filter(p -> predicate.test(p._2)));
     }
 
     @Override
@@ -182,7 +187,8 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMultimap<T> peek(Consumer<? super T> action) {
-        return IntMultimap.of(original.peek(e -> action.accept(e._2)));
+        original.peek(e -> action.accept(e._2));
+        return this;
     }
 
     @Override
@@ -190,7 +196,7 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
         final Option<Tuple2<Integer, T>> currentEntryOpt = original.find(e -> e._2.equals(currentElement));
         if (currentEntryOpt.isDefined()) {
             final Tuple2<Integer, T> currentEntry = currentEntryOpt.get();
-            return IntMultimap.of(original.replace(currentEntry, Tuple.of(original.size() + 1, newElement)));
+            return unit(original.replace(currentEntry, Tuple.of(original.size() + 1, newElement)));
         } else {
             return this;
         }
@@ -202,13 +208,13 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
         for (Tuple2<Integer, T> entry : original.filter(e -> e._2.equals(currentElement))) {
             result = result.replaceAll(entry, Tuple.of(entry._1, newElement));
         }
-        return IntMultimap.of(result);
+        return unit(result);
     }
 
     @Override
     public IntMultimap<T> retainAll(Iterable<? extends T> elements) {
         final Set<T> elementsSet = HashSet.ofAll(elements);
-        return IntMultimap.of(original.retainAll(original.filter(e -> elementsSet.contains(e._2))));
+        return unit(original.retainAll(original.filter(e -> elementsSet.contains(e._2))));
     }
 
     @Override
@@ -290,22 +296,22 @@ public class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMultimap<T> take(int n) {
-        return IntMultimap.of(original.take(n));
+        return unit(original.take(n));
     }
 
     @Override
     public IntMultimap<T> takeRight(int n) {
-        return IntMultimap.of(original.takeRight(n));
+        return unit(original.takeRight(n));
     }
 
     @Override
     public Traversable<T> takeUntil(Predicate<? super T> predicate) {
-        return IntMultimap.of(original.takeUntil(p -> predicate.test(p._2)));
+        return unit(original.takeUntil(p -> predicate.test(p._2)));
     }
 
     @Override
     public IntMultimap<T> takeWhile(Predicate<? super T> predicate) {
-        return IntMultimap.of(original.takeWhile(p -> predicate.test(p._2)));
+        return unit(original.takeWhile(p -> predicate.test(p._2)));
     }
 
     @Override
