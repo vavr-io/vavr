@@ -1066,9 +1066,10 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (size() <= 1) {
             return this;
         } else {
-            final Object[] arr = new Object[delegate.length];
-            for (int i = 0; i < delegate.length; i++) {
-                arr[delegate.length - 1 - i] = delegate[i];
+            final int length = delegate.length;
+            final Object[] arr = new Object[length];
+            for (int i = 0, j = length - 1; i < length; i++, j--) {
+                arr[j] = delegate[i];
             }
             return wrap(arr);
         }
