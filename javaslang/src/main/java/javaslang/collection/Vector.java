@@ -482,6 +482,21 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     /**
+     * Transposes the rows and columns of a {@link Vector}.
+     *
+     * @param rows to be transposed.
+     * @return a transposed {@link Vector}.
+     * <p>
+     * ex: {@code
+     * Vector.transpose(Vector(Vector(1,2,3), Vector(4,5,6))) → Vector(Vector(1,4), Vector(2,5), Vector(3,6))
+     * Vector.transpose(Vector(Vector(1,2), Vector(3))) → Vector(Vector(1,3), Vector(2))
+     * }
+     */
+    public static <T> Vector<Vector<T>> transpose(Vector<Vector<T>> rows) {
+        return Collections.transpose(rows, Vector::ofAll, Vector::ofAll);
+    }
+
+    /**
      * Creates a Vector from a seed value and a function.
      * The function takes the seed at first.
      * The function should return {@code None} when it's
@@ -565,21 +580,6 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      */
     public static <T> Vector<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toVector();
-    }
-
-    /**
-     * Transposes the rows and columns of a {@link Vector}.
-     *
-     * @param rows to be transposed.
-     * @return a transposed {@link Vector}.
-     * <p>
-     * ex: {@code
-     * Vector.transpose(Vector(Vector(1,2,3), Vector(4,5,6))) → Vector(Vector(1,4), Vector(2,5), Vector(3,6))
-     * Vector.transpose(Vector(Vector(1,2), Vector(3))) → Vector(Vector(1,3), Vector(2))
-     * }
-     */
-    public static <T> Vector<Vector<T>> transpose(Vector<Vector<T>> rows) {
-        return Collections.transpose(rows, Vector::ofAll);
     }
 
     @Override

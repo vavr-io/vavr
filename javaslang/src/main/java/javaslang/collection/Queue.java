@@ -477,6 +477,21 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     /**
+     * Transposes the rows and columns of a {@link Queue}.
+     *
+     * @param rows to be transposed.
+     * @return a transposed {@link Queue}.
+     * <p>
+     * ex: {@code
+     * Queue.transpose(Queue(Queue(1,2,3), Queue(4,5,6))) → Queue(Queue(1,4), Queue(2,5), Queue(3,6))
+     * Queue.transpose(Queue(Queue(1,2), Queue(3))) → Queue(Queue(1,3), Queue(2))
+     * }
+     */
+    public static <T> Queue<Queue<T>> transpose(Queue<Queue<T>> rows) {
+        return Collections.transpose(rows, Queue::ofAll, Queue::ofAll);
+    }
+
+    /**
      * Creates a Queue of long numbers starting from {@code from}, extending to {@code toInclusive},
      * with {@code step}.
      * <p>
@@ -500,21 +515,6 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      */
     public static Queue<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
-    }
-
-    /**
-     * Transposes the rows and columns of a {@link Queue}.
-     *
-     * @param rows to be transposed.
-     * @return a transposed {@link Queue}.
-     * <p>
-     * ex: {@code
-     * Queue.transpose(Queue(Queue(1,2,3), Queue(4,5,6))) → Queue(Queue(1,4), Queue(2,5), Queue(3,6))
-     * Queue.transpose(Queue(Queue(1,2), Queue(3))) → Queue(Queue(1,3), Queue(2))
-     * }
-     */
-    public static <T> Queue<Queue<T>> transpose(Queue<Queue<T>> rows) {
-        return Collections.transpose(rows, Queue::ofAll);
     }
 
     /**
