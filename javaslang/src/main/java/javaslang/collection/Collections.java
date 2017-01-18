@@ -289,29 +289,32 @@ final class Collections {
         }
     }
 
-    static <T, U extends Iterable<? extends Iterable<T>>> U transpose(U source, Function<Iterable<?>, Iterable<?>> mapper) {
-        if (source.iterator().hasNext()) {
-            return transposeIterables(source, mapper);
-        } else {
+    static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V source, Function<Iterable<U>, V> outerMapper, Function<Iterable<T>, U> innerMapper) {
+        if (source.isEmpty() || (source.length() == 1 && source.head().length() <= 1)) {
             return source;
+        } else {
+            return transposeIterables(source, outerMapper, innerMapper);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private static <T, U extends Iterable<? extends Iterable<T>>> U transposeIterables(U source, Function<Iterable<?>, Iterable<?>> mapper) {
-        final ArrayList<ArrayList<T>> results = new ArrayList<>();
+    private static <T, U extends Seq<T>, V extends Seq<U>> V transposeIterables(V source, Function<Iterable<U>, V> outerMapper, Function<Iterable<T>, U> innerMapper) {
+        final java.util.List<java.util.List<T>> results = new ArrayList<>();
 
-        for (Iterable<T> row : source) {
-            int c = 0;
+        for (U row : source) {
+            int columnIndex = 0;
             for (T element : row) {
-                if (results.size() == c) {
-                    results.add(new ArrayList<T>());
+                final java.util.List<T> newRow;
+                if (results.size() == columnIndex) {
+                    newRow = new ArrayList<>();
+                    results.add(newRow);
+                } else {
+                    newRow = results.get(columnIndex);
                 }
-                results.get(c).add(element);
-                c++;
+                newRow.add(element);
+                columnIndex++;
             }
         }
 
-        return (U) mapper.apply(Iterator.ofAll(results).map(mapper::apply));
+        return outerMapper.apply(Iterator.ofAll(results).map(innerMapper::apply));
     }
 }

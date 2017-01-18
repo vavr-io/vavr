@@ -1822,6 +1822,18 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     }
 
     @Test
+    public void shouldTransposeIfIs1x0() {
+        final Seq<Seq<Integer>> actual = of(empty());
+        assertThat(transpose(actual)).isSameAs(actual);
+    }
+
+    @Test
+    public void shouldTransposeIfIs1x1() {
+        final Seq<Seq<Integer>> actual = of(of(1));
+        assertThat(transpose(actual)).isSameAs(actual);
+    }
+
+    @Test
     public void shouldTransposeIfSingleValued() {
         final Seq<Seq<Integer>> actual = of(of(0));
         final Seq<Seq<Integer>> expected = of(of(0));
