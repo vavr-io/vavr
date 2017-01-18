@@ -183,6 +183,12 @@ public class StreamTest extends AbstractLinearSeqTest {
         return Stream.rangeClosedBy(from, toInclusive, step);
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    protected <T> Stream<Stream<T>> transpose(Seq<? extends Seq<T>> rows) {
+        return Stream.transpose((Stream<Stream<T>>) rows);
+    }
+
     // -- static concat()
 
     @Test

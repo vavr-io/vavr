@@ -106,6 +106,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Override
     abstract protected Seq<Long> rangeClosedBy(long from, long toInclusive, long step);
 
+    abstract protected <T> Seq<? extends Seq<T>> transpose(Seq<? extends Seq<T>> rows);
+
     // -- static narrow
 
     @Test
@@ -1809,5 +1811,132 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(withDef.apply(2)).isEqualTo("c");
         assertThat(withDef.apply(-1)).isEqualTo("-1");
         assertThat(withDef.apply(3)).isEqualTo("3");
+    }
+
+    // -- transpose()
+
+    @Test
+    public void shouldTransposeIfEmpty() {
+        final Seq<Seq<Integer>> actual = empty();
+        assertThat(transpose(actual)).isSameAs(actual);
+    }
+
+    @Test
+    public void shouldTransposeIfSingleValued() {
+        final Seq<Seq<Integer>> actual = of(of(0));
+        final Seq<Seq<Integer>> expected = of(of(0));
+        assertThat(transpose(actual)).isEqualTo(expected);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldTransposeIfMultiValuedColumn() {
+        final Seq<Seq<Integer>> actual = of(of(0, 1, 2));
+        final Seq<Seq<Integer>> expected = of(of(0), of(1), of(2));
+        assertThat(transpose(actual)).isEqualTo(expected);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldTransposeIfMultiValuedRow() {
+        final Seq<Seq<Integer>> actual = of(of(0), of(1), of(2));
+        final Seq<Seq<Integer>> expected = of(of(0, 1, 2));
+        assertThat(transpose(actual)).isEqualTo(expected);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldTransposeIfMultiValuedIfSymmetric() {
+        Seq<Seq<Integer>> actual = of(
+                of(1, 2, 3),
+                of(4, 5, 6),
+                of(7, 8, 9));
+        Seq<Seq<Integer>> expected = of(
+                of(1, 4, 7),
+                of(2, 5, 8),
+                of(3, 6, 9));
+        assertThat(transpose(actual)).isEqualTo(expected);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldTransposeIfMultiValuedWithMoreColumnsThanRows() {
+        Seq<Seq<Integer>> actual = of(
+                of(1, 2, 3),
+                of(4, 5, 6));
+        Seq<Seq<Integer>> expected = of(
+                of(1, 4),
+                of(2, 5),
+                of(3, 6));
+        assertThat(transpose(actual)).isEqualTo(expected);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldTransposeIfMultiValuedWithMoreRowsThanColumns() {
+        Seq<Seq<Integer>> actual = of(
+                of(1, 2),
+                of(3, 4),
+                of(5, 6));
+        Seq<Seq<Integer>> expected = of(
+                of(1, 3, 5),
+                of(2, 4, 6));
+        assertThat(transpose(actual)).isEqualTo(expected);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldBeEqualIfTransposedTwiceWithNoMissingValues() {
+        Seq<Seq<Integer>> actual = of(
+                of(1, 2, 3),
+                of(4, 5, 6));
+        Seq<Seq<Integer>> transposedOnce = of(
+                of(1, 4),
+                of(2, 5),
+                of(3, 6));
+        assertThat(transpose(transposedOnce)).isEqualTo(actual);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldNotBeEqualIfTransposedTwiceWithMissingValues() {
+        Seq<Seq<Integer>> actual = of(
+                of(1, 2),
+                of(3, 4, 5));
+        Seq<Seq<Integer>> transposedOnce = of(
+                of(1, 3),
+                of(2, 4),
+                of(5));
+        assertThat(transpose(transposedOnce)).isNotEqualTo(actual);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldTransposeIfMissingValues() {
+        Seq<Seq<Integer>> actual = of(
+                of(1),
+                of(2, 3),
+                of(4));
+        Seq<Seq<Integer>> expected = of(
+                of(1, 2, 4),
+                of(3));
+        assertThat(transpose(actual)).isEqualTo(expected);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldTransposeIfMissingAndEmptyValues() {
+        Seq<Seq<Integer>> actual = of(
+                of(),
+                of(0, 1),
+                of(2, 3, 4, 5),
+                of(),
+                of(6, 7, 8));
+        Seq<Seq<Integer>> expected = of(
+                of(0, 2, 6),
+                of(1, 3, 7),
+                of(4, 8),
+                of(5));
+        assertThat(transpose(actual)).isEqualTo(expected);
     }
 }

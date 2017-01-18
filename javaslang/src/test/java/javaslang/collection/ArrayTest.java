@@ -177,6 +177,12 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    protected <T> Array<Array<T>> transpose(Seq<? extends Seq<T>> rows) {
+        return Array.transpose((Array<Array<T>>) rows);
+    }
+
+    @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
     }
