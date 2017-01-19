@@ -571,18 +571,18 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     /**
-     * Transposes the rows and columns of a {@link List}.
+     * Transposes the rows and columns of a {@link List} matrix.
      *
      * @param matrix to be transposed.
-     * @return a transposed {@link List}.
+     * @return a transposed {@link List} matrix.
+     * @throws IllegalArgumentException if the row lengths of {@code matrix} differ.
      * <p>
      * ex: {@code
      * List.transpose(List(List(1,2,3), List(4,5,6))) → List(List(1,4), List(2,5), List(3,6))
-     * List.transpose(List(List(1,2), List(3))) → List(List(1,3), List(2))
      * }
      */
     static <T> List<List<T>> transpose(List<List<T>> matrix) {
-        return Collections.transpose(matrix, List::ofAll, List::ofAll);
+        return Collections.transpose(matrix, List::ofAll, List::of);
     }
 
     /**

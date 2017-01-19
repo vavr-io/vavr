@@ -482,18 +482,18 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     /**
-     * Transposes the rows and columns of a {@link Vector}.
+     * Transposes the rows and columns of a {@link Vector} matrix.
      *
      * @param matrix to be transposed.
-     * @return a transposed {@link Vector}.
+     * @return a transposed {@link Vector} matrix.
+     * @throws IllegalArgumentException if the row lengths of {@code matrix} differ.
      * <p>
      * ex: {@code
      * Vector.transpose(Vector(Vector(1,2,3), Vector(4,5,6))) → Vector(Vector(1,4), Vector(2,5), Vector(3,6))
-     * Vector.transpose(Vector(Vector(1,2), Vector(3))) → Vector(Vector(1,3), Vector(2))
      * }
      */
     public static <T> Vector<Vector<T>> transpose(Vector<Vector<T>> matrix) {
-        return Collections.transpose(matrix, Vector::ofAll, Vector::ofAll);
+        return Collections.transpose(matrix, Vector::ofAll, Vector::of);
     }
 
     /**
