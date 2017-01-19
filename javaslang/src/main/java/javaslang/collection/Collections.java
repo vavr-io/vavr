@@ -289,32 +289,31 @@ final class Collections {
         }
     }
 
-    static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V source, Function<Iterable<U>, V> outerMapper, Function<Iterable<T>, U> innerMapper) {
-        if (source.isEmpty() || (source.length() == 1 && source.head().length() <= 1)) {
-            return source;
+    static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
+        if (matrix.isEmpty() || (matrix.length() == 1 && matrix.head().length() <= 1)) {
+            return matrix;
         } else {
-            return transposeIterables(source, outerMapper, innerMapper);
+            return transposeNonEmptyMatrix(matrix, rowFactory, columnFactory);
         }
     }
+    private static <T, U extends Seq<T>, V extends Seq<U>> V transposeNonEmptyMatrix(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
+        final int newHeight = matrix.head().size(), newWidth = matrix.size();
+        @SuppressWarnings("unchecked") final T[][] results = (T[][]) new Object[newHeight][newWidth];
 
-    private static <T, U extends Seq<T>, V extends Seq<U>> V transposeIterables(V source, Function<Iterable<U>, V> outerMapper, Function<Iterable<T>, U> innerMapper) {
-        final java.util.List<java.util.List<T>> results = new ArrayList<>();
-
-        for (U row : source) {
-            int columnIndex = 0;
-            for (T element : row) {
-                final java.util.List<T> newRow;
-                if (results.size() == columnIndex) {
-                    newRow = new ArrayList<>();
-                    results.add(newRow);
-                } else {
-                    newRow = results.get(columnIndex);
-                }
-                newRow.add(element);
-                columnIndex++;
-            }
+        if (matrix.exists(r -> r.size() != newHeight)) {
+            throw new IllegalArgumentException("the parameter `matrix` is invalid!");
         }
 
-        return outerMapper.apply(Iterator.ofAll(results).map(innerMapper::apply));
+        int rowIndex = 0;
+        for (U row : matrix) {
+            int columnIndex = 0;
+            for (T element : row) {
+                results[columnIndex][rowIndex] = element;
+                columnIndex++;
+            }
+            rowIndex++;
+        }
+
+        return rowFactory.apply(Iterator.of(results).map(columnFactory));
     }
 }
