@@ -666,7 +666,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     /**
      * Transposes the rows and columns of a {@link Stream}.
      *
-     * @param rows to be transposed.
+     * @param matrix to be transposed.
      * @return a transposed {@link Stream}.
      * <p>
      * ex: {@code
@@ -674,8 +674,8 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
      * Stream.transpose(Stream(Stream(1,2), Stream(3))) → Stream(Stream(1,3), Stream(2))
      * }
      */
-    static <T> Stream<Stream<T>> transpose(Stream<Stream<T>> rows) {
-        return Collections.transpose(rows, Stream::ofAll, Stream::ofAll);
+    static <T> Stream<Stream<T>> transpose(Stream<Stream<T>> matrix) {
+        return Collections.transpose(matrix, Stream::ofAll, Stream::ofAll);
     }
 
     /**

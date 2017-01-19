@@ -479,7 +479,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     /**
      * Transposes the rows and columns of a {@link Queue}.
      *
-     * @param rows to be transposed.
+     * @param matrix to be transposed.
      * @return a transposed {@link Queue}.
      * <p>
      * ex: {@code
@@ -487,8 +487,8 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
      * Queue.transpose(Queue(Queue(1,2), Queue(3))) → Queue(Queue(1,3), Queue(2))
      * }
      */
-    public static <T> Queue<Queue<T>> transpose(Queue<Queue<T>> rows) {
-        return Collections.transpose(rows, Queue::ofAll, Queue::ofAll);
+    public static <T> Queue<Queue<T>> transpose(Queue<Queue<T>> matrix) {
+        return Collections.transpose(matrix, Queue::ofAll, Queue::ofAll);
     }
 
     /**

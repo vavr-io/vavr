@@ -289,18 +289,17 @@ final class Collections {
         }
     }
 
-    static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V source, Function<Iterable<U>, V> outerMapper, Function<Iterable<T>, U> innerMapper) {
-        if (source.isEmpty() || (source.length() == 1 && source.head().length() <= 1)) {
-            return source;
+    static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<Iterable<T>, U> columnFactory) {
+        if (matrix.isEmpty() || (matrix.length() == 1 && matrix.head().length() <= 1)) {
+            return matrix;
         } else {
-            return transposeIterables(source, outerMapper, innerMapper);
+            return transposeNonEmptyMatrix(matrix, rowFactory, columnFactory);
         }
     }
-
-    private static <T, U extends Seq<T>, V extends Seq<U>> V transposeIterables(V source, Function<Iterable<U>, V> outerMapper, Function<Iterable<T>, U> innerMapper) {
+    private static <T, U extends Seq<T>, V extends Seq<U>> V transposeNonEmptyMatrix(V matrix, Function<Iterable<U>, V> rowFactory, Function<Iterable<T>, U> columnFactory) {
         final java.util.List<java.util.List<T>> results = new ArrayList<>();
 
-        for (U row : source) {
+        for (U row : matrix) {
             int columnIndex = 0;
             for (T element : row) {
                 final java.util.List<T> newRow;
@@ -315,6 +314,6 @@ final class Collections {
             }
         }
 
-        return outerMapper.apply(Iterator.ofAll(results).map(innerMapper::apply));
+        return rowFactory.apply(Iterator.ofAll(results).map(columnFactory::apply));
     }
 }

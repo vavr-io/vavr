@@ -484,7 +484,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     /**
      * Transposes the rows and columns of a {@link Vector}.
      *
-     * @param rows to be transposed.
+     * @param matrix to be transposed.
      * @return a transposed {@link Vector}.
      * <p>
      * ex: {@code
@@ -492,8 +492,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
      * Vector.transpose(Vector(Vector(1,2), Vector(3))) → Vector(Vector(1,3), Vector(2))
      * }
      */
-    public static <T> Vector<Vector<T>> transpose(Vector<Vector<T>> rows) {
-        return Collections.transpose(rows, Vector::ofAll, Vector::ofAll);
+    public static <T> Vector<Vector<T>> transpose(Vector<Vector<T>> matrix) {
+        return Collections.transpose(matrix, Vector::ofAll, Vector::ofAll);
     }
 
     /**

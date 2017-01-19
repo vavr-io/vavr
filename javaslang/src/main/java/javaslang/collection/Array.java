@@ -471,7 +471,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     /**
      * Transposes the rows and columns of an {@link Array}.
      *
-     * @param rows to be transposed.
+     * @param matrix to be transposed.
      * @return a transposed {@link Array}.
      * <p>
      * ex: {@code
@@ -479,8 +479,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
      * Array.transpose(Array(Array(1,2), Array(3))) → Array(Array(1,3), Array(2))
      * }
      */
-    static <T> Array<Array<T>> transpose(Array<Array<T>> rows) {
-        return Collections.transpose(rows, Array::ofAll, Array::ofAll);
+    static <T> Array<Array<T>> transpose(Array<Array<T>> matrix) {
+        return Collections.transpose(matrix, Array::ofAll, Array::ofAll);
     }
 
     /**
