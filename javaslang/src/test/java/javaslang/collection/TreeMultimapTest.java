@@ -238,12 +238,4 @@ public class TreeMultimapTest extends AbstractMultimapTest {
         assertThat(actual).isEqualTo(3);
     }
 
-    // -- hashCode
-
-    @Override
-    @Test
-    public void shouldNotThrowStackOverflowErrorWhenCalculatingHashCodeOf1000000Integers() {
-        // TODO: does not return / runs infinitely
-    }
-
 }

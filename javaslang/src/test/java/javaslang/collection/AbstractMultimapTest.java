@@ -201,8 +201,9 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @Override
     protected <T> IntMultimap<T> ofAll(Iterable<? extends T> elements) {
         Multimap<Integer, T> map = emptyMap();
+        int i = 0;
         for (T element : elements) {
-            map = map.put(map.size(), element);
+            map = map.put(i++, element);
         }
         return IntMultimap.of(map);
     }
