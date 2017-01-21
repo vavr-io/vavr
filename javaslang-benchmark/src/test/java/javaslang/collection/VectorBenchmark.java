@@ -11,7 +11,10 @@ import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import scala.collection.generic.CanBuildFrom;
+import scala.math.Ordering;
+import scala.math.Ordering$;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Random;
 
@@ -21,6 +24,7 @@ import static java.util.stream.Collectors.toList;
 import static javaslang.JmhRunner.Includes.*;
 import static javaslang.JmhRunner.*;
 import static javaslang.collection.Collections.areEqual;
+import static javaslang.collection.Vector.collector;
 import static scala.collection.JavaConversions.asJavaCollection;
 import static scala.collection.JavaConversions.asScalaBuffer;
 
@@ -41,6 +45,7 @@ public class VectorBenchmark {
             Insert.class,
             GroupBy.class,
             Slice.class,
+            Sort.class,
             Iterate.class
     );
 
@@ -875,6 +880,45 @@ public class VectorBenchmark {
                 values = values.slice(0, values.size() - 1);
                 bh.consume(values);
             }
+        }
+    }
+
+    public static class Sort extends Base {
+        static final Ordering<Integer> SCALA_ORDERING = Ordering$.MODULE$.comparatorToOrdering(Integer::compareTo);
+
+        @State(Scope.Thread)
+        public static class Initialized {
+            final java.util.ArrayList<Integer> javaMutable = new java.util.ArrayList<>();
+
+            @Setup(Level.Invocation)
+            public void initializeMutable(Base state) {
+                java.util.Collections.addAll(javaMutable, state.ELEMENTS);
+                assert areEqual(javaMutable, asList(state.ELEMENTS));
+            }
+
+            @TearDown(Level.Invocation)
+            public void tearDown() { javaMutable.clear(); }
+        }
+
+        @Benchmark
+        public Object java_mutable(Initialized state) {
+            state.javaMutable.sort(Comparator.naturalOrder());
+            assert areEqual(state.javaMutable, slangPersistent.sorted());
+            return state.javaMutable;
+        }
+
+        @Benchmark
+        public Object scala_persistent() {
+            final scala.collection.Seq<Integer> results = (scala.collection.Seq<Integer>) scalaPersistent.sorted(SCALA_ORDERING);
+            assert areEqual(asJavaCollection(results), slangPersistent.sorted());
+            return results;
+        }
+
+        @Benchmark
+        public Object slang_persistent() {
+            final Vector<Integer> results = slangPersistent.sorted();
+            assert areEqual(results, slangPersistent.toJavaStream().sorted().collect(collector()));
+            return results;
         }
     }
 

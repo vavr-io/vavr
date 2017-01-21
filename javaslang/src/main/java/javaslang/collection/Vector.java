@@ -109,7 +109,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @SafeVarargs
     @SuppressWarnings("varargs")
     public static <T> Vector<T> of(T... elements) {
-        return ofAll(Iterator.of(elements));
+        Objects.requireNonNull(elements, "elements is null");
+        return ofAll(BitMappedTrie.ofAll(elements));
     }
 
     /**
@@ -979,8 +980,18 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
+    public Object[] toJavaArray() { return trie.toArray(); }
+
+    @Override
     public Vector<T> sorted() {
-        return isEmpty() ? this : toJavaStream().sorted().collect(collector());
+        if (isEmpty()) {
+            return this;
+        } else {
+            @SuppressWarnings("unchecked")
+            final T[] list = (T[]) toJavaArray();
+            Arrays.sort(list);
+            return Vector.of(list);
+        }
     }
 
     @Override
