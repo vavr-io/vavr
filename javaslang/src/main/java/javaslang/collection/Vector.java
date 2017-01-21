@@ -980,7 +980,9 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Object[] toJavaArray() { return trie.toArray(); }
+    public Object[] toJavaArray() {
+        return trie.toArray();
+    }
 
     @Override
     public Vector<T> sorted() {

@@ -675,6 +675,23 @@ public class VectorBenchmark {
     }
 
     public static class PrependAll extends Base {
+        final CanBuildFrom canBuildFrom = scala.collection.immutable.Vector.canBuildFrom();
+
+        @Benchmark
+        public void scala_persistent(Blackhole bh) {
+            for (int i = 0; i < CONTAINER_SIZE; i++) {
+                final java.util.List<Integer> front = javaMutable.subList(0, i);
+                final scala.collection.immutable.Vector<Integer> back = scalaPersistent.slice(i, CONTAINER_SIZE);
+
+                scala.collection.immutable.Vector<Integer> values = back;
+                for (int j = front.size() - 1; j >= 0; j--) {
+                    values = values.appendFront(front.get(j));
+                }
+                assert areEqual(asJavaCollection(values), javaMutable);
+                bh.consume(values);
+            }
+        }
+
         @Benchmark
         public void slang_persistent(Blackhole bh) {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
