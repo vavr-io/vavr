@@ -12,7 +12,16 @@ import java.math.BigDecimal;
 public abstract class AbstractSortedMapTest extends AbstractMapTest {
 
     @Override
-    abstract protected <K extends Comparable<? super K>, V> SortedMap<K, V> mapOf(K key, V value);
+    abstract protected <K extends Comparable<? super K>, V> SortedMap<K, V> mapOf(K k1, V v1);
+
+    // -- isOrdered
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldReturnOrdered() {
+        final Map<Integer, String> actual = mapOf(1, "1", 1, "2");
+        assertThat(actual.isOrdered()).isTrue();
+    }
 
     // -- narrow
 

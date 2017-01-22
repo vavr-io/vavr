@@ -143,11 +143,25 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
 
-    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K key, V value);
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10);
 
     protected abstract <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
             Function<? super T, ? extends K> keyMapper,
@@ -276,8 +290,87 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(mapOf(1, 2)).isEqualTo(emptyInt().put(1, 2));
     }
 
-    private static java.util.Map.Entry<String, Integer> utilEntry(String key, Integer value) {
+    protected static java.util.Map.Entry<Integer, String> asJavaEntry(int key, String value) {
         return new java.util.AbstractMap.SimpleEntry<>(key, value);
+    }
+
+    @SafeVarargs
+    protected final <K, V> java.util.Map<K, V> asJavaMap(java.util.Map.Entry<K, V>... entries) {
+        final java.util.Map<K, V> results = javaEmptyMap();
+        for (java.util.Map.Entry<K, V> entry : entries) {
+            results.put(entry.getKey(), entry.getValue());
+        }
+        return results;
+    }
+
+    @Test
+    public void shouldConstructFrom1Entry() {
+        final Map<Integer, String> actual = mapOf(1, "1");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom2Entries() {
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom3Entries() {
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom4Entries() {
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3", 4, "4");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom5Entries() {
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3", 4, "4", 5, "5");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom6Entries() {
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom7Entries() {
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom8Entries() {
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7", 8, "8");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"), asJavaEntry(8, "8"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom9Entries() {
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7", 8, "8", 9, "9");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"), asJavaEntry(8, "8"), asJavaEntry(9, "9"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom10Entries() {
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7", 8, "8", 9, "9", 10, "10");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"), asJavaEntry(8, "8"), asJavaEntry(9, "9"), asJavaEntry(10, "10"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
     }
 
     @Test
@@ -294,24 +387,48 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
     }
 
-    @SuppressWarnings("unchecked")
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldConstructFromUtilEntries() {
-        final Map<String, Integer> map = mapOfEntries(utilEntry("1", 1), utilEntry("2", 2), utilEntry("3", 3));
-        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        final Map<Integer, String> actual = mapOfEntries(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"));
+        final Map<Integer, String> expected = this.<Integer, String>emptyMap().put(1, "1").put(2, "2").put(3, "3");
+        assertThat(actual).isEqualTo(expected);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldConstructFromEntries() {
-        final Map<String, Integer> map = mapOfTuples(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3));
-        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        final Map<String, Integer> actual = mapOfTuples(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3));
+        final Map<String, Integer> expected = this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3);
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldConstructFromPairs() {
-        final Map<String, Integer> map = mapOf("1", 1, "2", 2, "3", 3);
-        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+        final Map<String, Integer> actual = mapOf("1", 1, "2", 2, "3", 3);
+        final Map<String, Integer> expected = this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- head
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowWhenHeadEmpty() {
+        emptyMap().head();
+    }
+
+    // -- init
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenInitEmpty() {
+        emptyMap().init();
+    }
+
+    // -- tail
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void shouldThrowWhenTailEmpty() {
+        emptyMap().tail();
     }
 
     // -- toString
@@ -326,12 +443,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConvertToJavaMap() {
-        final Map<String, Integer> javaslang = mapOf("1", 1, "2", 2, "3", 3);
-        final java.util.Map<String, Integer> java = javaEmptyMap();
-        java.put("1", 1);
-        java.put("2", 2);
-        java.put("3", 3);
-        assertThat(javaslang.toJavaMap()).isEqualTo(java);
+        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
     }
 
     // -- apply
@@ -1108,6 +1222,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     // -- getOrElse
 
+    @Test
     public void shouldReturnDefaultValue() {
         final Map<String, String> map = mapOf("1", "a").put("2", "b");
         assertThat(map.getOrElse("3", "3")).isEqualTo("3");
