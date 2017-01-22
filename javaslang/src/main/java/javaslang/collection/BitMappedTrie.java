@@ -345,18 +345,6 @@ final class BitMappedTrie<T> implements Serializable {
         return index;
     }
 
-    Object[] toArray() {
-        final Object[] results = new Object[length];
-        visit((index, leaf, start, end) -> {
-            final int copied = end - start;
-            for (int i = start; i < end; i++) {
-                results[index + i] = type.getAt(leaf, i);
-            }
-            return index + copied;
-        });
-        return results;
-    }
-
     int length() { return length; }
 }
 
