@@ -1234,8 +1234,8 @@ public interface Value<T> extends Iterable<T> {
 }
 
 interface ValueModule {
-    static <T extends Traversable<V>, V>
-    T toTraversable(Value<V> value, T empty, Function<V, T> ofElement, Function<Iterable<V>, T> ofAll) {
+    static <T extends Traversable<V>, V> T toTraversable(
+            Value<V> value, T empty, Function<V, T> ofElement, Function<Iterable<V>, T> ofAll) {
         if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
@@ -1245,8 +1245,8 @@ interface ValueModule {
         }
     }
 
-    static <T, K, V, M extends Map<K, V>, TT extends Tuple2<? extends K, ? extends V>>
-    M toMap(Value<T> value, M empty, Function<TT, M> ofElement, Function<Iterable<TT>, M> ofAll, Function<? super T, ? extends TT> f) {
+    static <T, K, V, M extends Map<K, V>, TT extends Tuple2<? extends K, ? extends V>> M toMap(
+            Value<T> value, M empty, Function<TT, M> ofElement, Function<Iterable<TT>, M> ofAll, Function<? super T, ? extends TT> f) {
         if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
@@ -1256,8 +1256,8 @@ interface ValueModule {
         }
     }
 
-    static <T extends java.util.Collection<V>, V>
-    T toJavaCollection(Value<V> value, Function<Integer, T> containerSupplier) {
+    static <T extends java.util.Collection<V>, V> T toJavaCollection(
+            Value<V> value, Function<Integer, T> containerSupplier) {
         final int size = (value instanceof Traversable) && ((Traversable) value).isTraversableAgain()
                 ? ((Traversable<V>) value).size()
                 : 16;
