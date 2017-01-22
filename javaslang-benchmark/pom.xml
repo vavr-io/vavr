@@ -30,8 +30,8 @@
         <dependency>
             <groupId>org.scalaz</groupId>
             <artifactId>scalaz-core_2.12</artifactId>
-            <version>7.3.0-M6</version>
-            <!--contains scala-library 2.12.0-->
+            <version>7.3.0-M8</version>
+            <!--contains scala-library 2.12.1-->
         </dependency>
         <dependency>
             <groupId>org.clojure</groupId>
@@ -45,7 +45,7 @@
         </dependency>
         <dependency>
             <groupId>org.functionaljava</groupId>
-            <artifactId>functionaljava</artifactId>
+            <artifactId>functionaljava-java8</artifactId>
             <version>4.6</version>
         </dependency>
         <dependency>
@@ -56,7 +56,7 @@
         <dependency>
             <groupId>org.openjdk.jol</groupId>
             <artifactId>jol-core</artifactId>
-            <version>0.6</version>
+            <version>0.7.1</version>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
