@@ -77,37 +77,72 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K key, V value) {
-        return TreeMap.of(key, value);
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1) {
+        return TreeMap.of(k1, v1);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2) {
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1, K k2, V v2) {
         return TreeMap.of(k1, v1, k2, v2);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
         return TreeMap.of(k1, v1, k2, v2, k3, v3);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+        return TreeMap.of(k1, v1, k2, v2, k3, v3, k4, v4);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+        return TreeMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+        return TreeMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
+        return TreeMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
+        return TreeMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
+        return TreeMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
+        return TreeMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
         return TreeMap.of(nullsFirst(naturalComparator()), k1, v1, k2, v2);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3) {
+    protected <K extends Comparable<? super K>, V> TreeMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3) {
         return TreeMap.of(nullsFirst(naturalComparator()), k1, v1, k2, v2, k3, v3);
     }
 
     @Override
-    protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+    protected <T, K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(Stream<? extends T> stream, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         return TreeMap.ofAll(stream, keyMapper, valueMapper);
     }
 
     @Override
-    protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, Tuple2<? extends K, ? extends V>> f) {
+    protected <T, K extends Comparable<? super K>, V> TreeMap<K, V> mapOf(Stream<? extends T> stream, Function<? super T, Tuple2<? extends K, ? extends V>> f) {
         return TreeMap.ofAll(stream, f);
     }
 
@@ -121,20 +156,106 @@ public class TreeMapTest extends AbstractSortedMapTest {
         return TreeMap.fill(n, s);
     }
 
+    // -- construct
+
+    @Test
+    public void shouldReturnSingletonFromTupleUsingComparator() {
+        final TreeMap<Integer, String> actual = TreeMap.of(naturalComparator(), Tuple.of(1, "1"));
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom1EntryWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom2EntriesWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1", 2, "2");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom3EntriesWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1", 2, "2", 3, "3");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom4EntriesWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1", 2, "2", 3, "3", 4, "4");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom5EntriesWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1", 2, "2", 3, "3", 4, "4", 5, "5");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom6EntriesWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom7EntriesWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom8EntriesWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7", 8, "8");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"), asJavaEntry(8, "8"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom9EntriesWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7", 8, "8", 9, "9");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"), asJavaEntry(8, "8"), asJavaEntry(9, "9"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFrom10EntriesWithComparator() {
+        final Map<Integer, String> actual = TreeMap.of(naturalComparator(), 1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7", 8, "8", 9, "9", 10, "10");
+        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"), asJavaEntry(8, "8"), asJavaEntry(9, "9"), asJavaEntry(10, "10"));
+        assertThat(actual.toJavaMap()).isEqualTo(expected);
+    }
+
     // -- static factories
 
     @Test
     public void shouldCreateOfEntriesUsingNoComparator() {
-        final List<Tuple2<Integer, String>> entries = List(Tuple(1, "a"), Tuple(2, "b"));
-        final TreeMap<Integer, String> map = TreeMap.ofEntries(entries);
-        assertThat(map.toList()).isEqualTo(entries);
+        final List<Tuple2<Integer, String>> expected = List(Tuple(1, "a"), Tuple(2, "b"));
+        final TreeMap<Integer, String> actual = TreeMap.ofEntries(expected);
+        assertThat(actual.toList()).isEqualTo(expected);
     }
 
     @Test
     public void shouldCreateOfEntriesUsingNaturalComparator() {
-        final List<Tuple2<Integer, String>> entries = List(Tuple(1, "a"), Tuple(2, "b"));
-        final TreeMap<Integer, String> map = TreeMap.ofEntries(naturalComparator(), entries);
-        assertThat(map.toList()).isEqualTo(entries);
+        final List<Tuple2<Integer, String>> expected = List(Tuple(1, "a"), Tuple(2, "b"));
+        final TreeMap<Integer, String> actual = TreeMap.ofEntries(naturalComparator(), expected);
+        assertThat(actual.toList()).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldCreateOfEntriesUsingKeyComparator() {
+        final TreeMap<Integer, String> actual = TreeMap.ofEntries(naturalComparator(), asJavaEntry(1, "a"), asJavaEntry(2, "b"));
+        final List<Tuple2<Integer, String>> expected = List(Tuple(1, "a"), Tuple(2, "b"));
+        assertThat(actual.toList()).isEqualTo(expected);
     }
 
     // -- static narrow
@@ -224,5 +345,4 @@ public class TreeMapTest extends AbstractSortedMapTest {
     public void shouldPreserveSingletonInstanceOnDeserialization() {
         // The empty TreeMap encapsulates a comparator and therefore cannot be a singleton
     }
-
 }
