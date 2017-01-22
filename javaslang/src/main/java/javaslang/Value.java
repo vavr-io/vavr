@@ -24,7 +24,6 @@ import javaslang.control.Validation;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
@@ -584,7 +583,17 @@ public interface Value<T> extends Iterable<T> {
      * @return A new Java array.
      */
     default Object[] toJavaArray() {
-        return toJavaList().toArray();
+        if ((this instanceof Traversable<?>) && ((Traversable<?>) this).isTraversableAgain()) {
+            final Object[] results = new Object[((Traversable<T>) this).size()];
+            final Iterator<T> iter = iterator();
+            for (int i = 0; i < results.length; i++) {
+                results[i] = iter.next();
+            }
+            return results;
+
+        } else {
+            return toJavaList().toArray();
+        }
     }
 
     /**
@@ -1225,11 +1234,8 @@ public interface Value<T> extends Iterable<T> {
 }
 
 interface ValueModule {
-
-    @SuppressWarnings("unchecked")
-    static <T extends Traversable<V>, V> T toTraversable(Value<V> value, T empty,
-            Function<V, T> ofElement,
-            Function<Iterable<V>, T> ofAll) {
+    static <T extends Traversable<V>, V> T toTraversable(
+            Value<V> value, T empty, Function<V, T> ofElement, Function<Iterable<V>, T> ofAll) {
         if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
@@ -1240,11 +1246,7 @@ interface ValueModule {
     }
 
     static <T, K, V, M extends Map<K, V>, TT extends Tuple2<? extends K, ? extends V>> M toMap(
-            Value<T> value, M empty,
-            Function<TT, M> ofElement,
-            Function<Iterable<TT>, M> ofAll,
-            Function<? super T, ? extends TT> f
-    ) {
+            Value<T> value, M empty, Function<TT, M> ofElement, Function<Iterable<TT>, M> ofAll, Function<? super T, ? extends TT> f) {
         if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
@@ -1254,22 +1256,13 @@ interface ValueModule {
         }
     }
 
-    static <T extends java.util.Collection<V>, V> T toJavaCollection(Value<V> value, Function<Integer, T> containerSupplier) {
-        final T container;
-        if (value.isEmpty()) {
-            container = containerSupplier.apply(0);
-        } else {
-            if (value.isSingleValued()) {
-                container = containerSupplier.apply(1);
-                container.add(value.get());
-            } else {
-                final int size = value instanceof Traversable && ((Traversable) value).isTraversableAgain()
-                                 ? ((Traversable<V>) value).size()
-                                 : 0;
-                container = containerSupplier.apply(size);
-                value.forEach(container::add);
-            }
-        }
+    static <T extends java.util.Collection<V>, V> T toJavaCollection(
+            Value<V> value, Function<Integer, T> containerSupplier) {
+        final int size = (value instanceof Traversable) && ((Traversable) value).isTraversableAgain()
+                ? ((Traversable<V>) value).size()
+                : 16;
+        final T container = containerSupplier.apply(size);
+        value.forEach(container::add);
         return container;
     }
 }
