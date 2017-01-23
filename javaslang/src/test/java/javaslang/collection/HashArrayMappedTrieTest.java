@@ -19,6 +19,32 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class HashArrayMappedTrieTest {
 
     @Test
+    public void testLeafSingleton() {
+        HashArrayMappedTrie<WeakInteger, Integer> hamt = empty();
+        hamt = hamt.put(new WeakInteger(1), 1);
+        assertThat(hamt.get(new WeakInteger(1))).isEqualTo(Option.some(1));
+        assertThat(hamt.get(new WeakInteger(11))).isEqualTo(Option.none());
+        assertThat(hamt.getOrElse(new WeakInteger(1), 2)).isEqualTo(1);
+        assertThat(hamt.getOrElse(new WeakInteger(11), 2)).isEqualTo(2);
+        assertThat(hamt.get(new WeakInteger(2))).isEqualTo(Option.none());
+        assertThat(hamt.getOrElse(new WeakInteger(2), 2)).isEqualTo(2);
+    }
+
+    @Test
+    public void testLeafList() {
+        HashArrayMappedTrie<WeakInteger, Integer> hamt = empty();
+        hamt = hamt.put(new WeakInteger(1), 1).put(new WeakInteger(31), 31);
+        assertThat(hamt.get(new WeakInteger(1))).isEqualTo(Option.some(1));
+        assertThat(hamt.get(new WeakInteger(11))).isEqualTo(Option.none());
+        assertThat(hamt.get(new WeakInteger(31))).isEqualTo(Option.some(31));
+        assertThat(hamt.getOrElse(new WeakInteger(1), 2)).isEqualTo(1);
+        assertThat(hamt.getOrElse(new WeakInteger(11), 2)).isEqualTo(2);
+        assertThat(hamt.getOrElse(new WeakInteger(31), 2)).isEqualTo(31);
+        assertThat(hamt.get(new WeakInteger(2))).isEqualTo(Option.none());
+        assertThat(hamt.getOrElse(new WeakInteger(2), 2)).isEqualTo(2);
+    }
+
+    @Test
     public void testGetExistingKey() {
         HashArrayMappedTrie<Integer, Integer> hamt = empty();
         hamt = hamt.put(1, 2).put(4, 5).put(null, 7);
@@ -34,6 +60,8 @@ public class HashArrayMappedTrieTest {
     @Test
     public void testGetUnknownKey() {
         HashArrayMappedTrie<Integer, Integer> hamt = empty();
+        assertThat(hamt.get(2)).isEqualTo(Option.none());
+        assertThat(hamt.getOrElse(2, 42)).isEqualTo(42);
         hamt = hamt.put(1, 2).put(4, 5);
         assertThat(hamt.containsKey(2)).isFalse();
         assertThat(hamt.get(2)).isEqualTo(Option.none());
@@ -251,7 +279,10 @@ public class HashArrayMappedTrieTest {
         void test() {
             assertThat(hamt.size()).isEqualTo(classic.size());
             hamt.iterator().forEachRemaining(e -> assertThat(classic.get(e._1)).isEqualTo(e._2));
-            classic.forEach((k, v) -> assertThat(hamt.get(k).get()).isEqualTo(v));
+            classic.forEach((k, v) -> {
+                assertThat(hamt.get(k).get()).isEqualTo(v);
+                assertThat(hamt.getOrElse(k, null)).isEqualTo(v);
+            });
         }
 
         void set(K key, V value) {
