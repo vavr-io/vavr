@@ -8,7 +8,11 @@ package javaslang.control;
 import javaslang.AbstractValueTest;
 import org.junit.Test;
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
+
+import static javaslang.API.Left;
+import static javaslang.API.Right;
 
 public class EitherTest extends AbstractValueTest {
 
@@ -80,6 +84,22 @@ public class EitherTest extends AbstractValueTest {
     public void shouldFoldRight() {
         final String value = Either.right("R").fold(l -> l + "-", r -> r + "+");
         assertThat(value).isEqualTo("R+");
+    }
+
+    @Test
+    public void shouldReturnSameWhenCallingMapOnLeft() {
+        final Either<Integer, Object> actual = Left(1);
+        assertThat(actual.map(v -> { throw new IllegalStateException(); })).isSameAs(actual);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowIfRightGetLeft() {
+        Right(1).getLeft();
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowIfLeftGet() {
+        Left(1).get();
     }
 
     @Test

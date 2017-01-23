@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.API;
 import javaslang.AbstractValueTest;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -12,6 +13,9 @@ import javaslang.control.Either.LeftProjection;
 import org.junit.Test;
 
 import java.util.*;
+
+import static javaslang.API.Left;
+import static javaslang.API.Right;
 
 public class EitherLeftProjectionTest extends AbstractValueTest {
 
@@ -66,8 +70,16 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldLeftProjectionOrElseLeftProjection() {
-        assertThat(Either.left(1).left().orElse(Either.left(2).left()).get()).isEqualTo(1);
-        assertThat(Either.<Integer, Integer> right(1).left().orElse(Either.<Integer, Integer> left(2).left()).get()).isEqualTo(2);
+        final LeftProjection<Integer, Integer> elseProjection = API.<Integer, Integer>Left(2).left();
+        assertThat(Left(1).left().orElse(elseProjection).get()).isEqualTo(1);
+        assertThat(Right(1).left().orElse(elseProjection).get()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldLeftProjectionOrElseLeftProjectionFromSupplier() {
+        final LeftProjection<Integer, Integer> elseProjection = API.<Integer, Integer>Left(2).left();
+        assertThat(Left(1).left().orElse(() -> elseProjection).get()).isEqualTo(1);
+        assertThat(Right(1).left().orElse(() -> elseProjection).get()).isEqualTo(2);
     }
 
     // getOrElse
@@ -377,4 +389,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
         assertThat(Either.right(1).left().toString()).isEqualTo("LeftProjection(Right(1))");
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        final String transformed = of(1).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("1");
+    }
 }
