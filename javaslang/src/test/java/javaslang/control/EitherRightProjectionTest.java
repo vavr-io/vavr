@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.API;
 import javaslang.AbstractValueTest;
 import javaslang.Tuple;
 import javaslang.Tuple2;
@@ -12,6 +13,9 @@ import javaslang.control.Either.RightProjection;
 import org.junit.Test;
 
 import java.util.*;
+
+import static javaslang.API.Left;
+import static javaslang.API.Right;
 
 public class EitherRightProjectionTest extends AbstractValueTest {
 
@@ -66,8 +70,16 @@ public class EitherRightProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldRightProjectionOrElseRightProjection() {
-        assertThat(Either.right(1).right().orElse(Either.right(2).right()).get()).isEqualTo(1);
-        assertThat(Either.<Integer, Integer> left(1).right().orElse(Either.<Integer, Integer> right(2).right()).get()).isEqualTo(2);
+        final RightProjection<Integer, Integer> elseProjection = API.<Integer, Integer>Right(2).right();
+        assertThat(Right(1).right().orElse(elseProjection).get()).isEqualTo(1);
+        assertThat(Left(1).right().orElse(elseProjection).get()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldRightProjectionOrElseRightProjectionFromSupplier() {
+        final RightProjection<Integer, Integer> elseProjection = API.<Integer, Integer>Right(2).right();
+        assertThat(Right(1).right().orElse(() -> elseProjection).get()).isEqualTo(1);
+        assertThat(Left(1).right().orElse(() -> elseProjection).get()).isEqualTo(2);
     }
 
     // getOrElse
@@ -167,6 +179,14 @@ public class EitherRightProjectionTest extends AbstractValueTest {
     @Test
     public void shouldConvertRightProjectionOfRightToJavaOptional() {
         assertThat(Either.<Integer, String> right("1").right().toJavaOptional()).isEqualTo(Optional.of("1"));
+    }
+
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        final String transformed = of(1).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("1");
     }
 
     // filter
