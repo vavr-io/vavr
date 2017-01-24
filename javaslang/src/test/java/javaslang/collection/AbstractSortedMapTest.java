@@ -17,7 +17,6 @@ public abstract class AbstractSortedMapTest extends AbstractMapTest {
     // -- isOrdered
 
     @Test
-    @SuppressWarnings("unchecked")
     public void shouldReturnOrdered() {
         final Map<Integer, String> actual = mapOf(1, "1", 1, "2");
         assertThat(actual.isOrdered()).isTrue();

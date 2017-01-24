@@ -568,16 +568,12 @@ final class PriorityQueueBase {
      * *     in fold insert xs' (meld (ts, ts')) end
      **/
     static <T> Tuple2<T, Seq<Node<T>>> deleteMin(Comparator<? super T> comparator, Seq<Node<T>> forest) {
-        if (forest.isEmpty()) {
-            throw new NoSuchElementException();
-        } else {
-                /* get the minimum tree and the rest of the forest */
-            final Node<T> minTree = findMin(comparator, forest);
-            final Seq<Node<T>> forestTail = (minTree == forest.head()) ? forest.tail() : forest.remove(minTree);
+        /* get the minimum tree and the rest of the forest */
+        final Node<T> minTree = findMin(comparator, forest);
+        final Seq<Node<T>> forestTail = (minTree == forest.head()) ? forest.tail() : forest.remove(minTree);
 
-            final Seq<Node<T>> newForest = rebuild(comparator, minTree.children);
-            return Tuple.of(minTree.root, meld(comparator, newForest, forestTail));
-        }
+        final Seq<Node<T>> newForest = rebuild(comparator, minTree.children);
+        return Tuple.of(minTree.root, meld(comparator, newForest, forestTail));
     }
 
     /**
@@ -691,11 +687,9 @@ final class PriorityQueueBase {
             } else {
                 if (tree1.rank < tree2.rank) {
                     final Seq<Node<T>> forest = meldUnique(comparator, forest1.tail(), forest2);
-                    assert forest.isEmpty() || tree1.rank < forest.head().rank;
                     return tree1.appendTo(forest);
                 } else {
                     final Seq<Node<T>> forest = meldUnique(comparator, forest1, forest2.tail());
-                    assert forest.isEmpty() || tree2.rank < forest.head().rank;
                     return tree2.appendTo(forest);
                 }
             }
@@ -715,8 +709,6 @@ final class PriorityQueueBase {
             this.root = root;
             this.rank = rank;
             this.children = children;
-
-            assert children.forAll(c -> c.rank < this.rank);
         }
 
         static <T> Node<T> of(T value, int rank, Seq<Node<T>> children) {
@@ -729,8 +721,6 @@ final class PriorityQueueBase {
          * *  else                     Node (x2,r2+1,t1 :: c2
          */
         Node<T> link(Comparator<? super T> comparator, Node<T> tree) {
-            assert rank == tree.rank;
-
             return comparator.compare(this.root, tree.root) <= 0
                    ? of(this.root, this.rank + 1, tree.appendTo(this.children))
                    : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
@@ -743,26 +733,17 @@ final class PriorityQueueBase {
          * *  else                                                   Node (x0,r1+1,[t1, t2])
          */
         Node<T> skewLink(Comparator<? super T> comparator, Node<T> left, Node<T> right) {
-            assert rank == 0 && left.rank == right.rank;
-
             if (comparator.compare(left.root, root) <= 0 && comparator.compare(left.root, right.root) <= 0) {
                 return of(left.root, left.rank + 1, appendTo(right.appendTo(left.children)));
             } else if (comparator.compare(right.root, root) <= 0) {
-                assert comparator.compare(right.root, left.root) <= 0;
                 return of(right.root, right.rank + 1, appendTo(left.appendTo(right.children)));
             } else {
-                assert children.isEmpty();
                 return of(root, left.rank + 1, List.of(left, right));
             }
         }
 
         Seq<Node<T>> appendTo(Seq<Node<T>> forest) {
             return forest.prepend(this);
-        }
-
-        @Override
-        public String toString() {
-            return "Node(" + root + ", " + rank + ", " + children + ')';
         }
     }
 
