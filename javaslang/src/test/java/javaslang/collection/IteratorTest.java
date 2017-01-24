@@ -8,7 +8,6 @@ package javaslang.collection;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
-import javaslang.Value;
 import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
@@ -368,6 +367,11 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(continually(() -> 1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
     }
 
+    @Test
+    public void shouldGenerateInfiniteStreamBasedOnConstant() {
+        assertThat(continually(1).take(13).reduce((i, j) -> i + j)).isEqualTo(13);
+    }
+
     // -- static iterate(T, Function)
 
     @Test
@@ -457,6 +461,21 @@ public class IteratorTest extends AbstractTraversableTest {
     public void shouldCreateDoubleRangeClosedByFromMaxToInfinity() {
         assertThat(rangeClosedBy(Double.MAX_VALUE, Double.POSITIVE_INFINITY, 3E307)).isEqualTo(of(Double.MAX_VALUE));
         assertThat(rangeClosedBy(-Double.MAX_VALUE, Double.NEGATIVE_INFINITY, -3E307)).isEqualTo(of(-Double.MAX_VALUE));
+    }
+
+    @Test
+    @Override
+    public void shouldTakeUntilAllOnFalseCondition() {
+        final Iterator<Integer> actual = of(1, 2, 3).takeUntil(x -> false);
+        assertThat(actual).isEqualTo(of(1, 2, 3));
+        assertThat(actual.hasNext()).isFalse();
+    }
+
+    @Test
+    public void shouldTakeUntilAllOnTrueCondition() {
+        final Iterator<Integer> actual = of(1, 2, 3).takeUntil(x -> true);
+        assertThat(actual).isEqualTo(empty());
+        assertThat(actual.hasNext()).isFalse();
     }
 
     // -- unfoldRight

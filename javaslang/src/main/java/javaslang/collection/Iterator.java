@@ -2068,9 +2068,6 @@ interface IteratorModule {
         public Object next() { throw new NoSuchElementException(stringPrefix() + ".next()"); }
 
         @Override
-        public void remove() { throw new IllegalStateException(stringPrefix() + ".remove()"); }
-
-        @Override
         public String stringPrefix() {
             return "EmptyIterator";
         }
