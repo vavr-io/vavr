@@ -224,6 +224,11 @@ public class VectorTest extends AbstractIndexedSeqTest {
         assertThat(primitives.update(1, object)).isEqualTo(of(0, object, 2));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void shouldThrowForVoidType() {
+        ArrayType.of(void.class);
+    }
+
     // -- transform()
 
     @Test
