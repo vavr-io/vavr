@@ -175,14 +175,9 @@ public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
         if (isMemoized()) {
             return this;
         } else {
-            final Object lock = new Object();
             final Map<Tuple2<T1, T2>, R> cache = new HashMap<>();
-            final Function1<Tuple2<T1, T2>, R> tupled = tupled();
-            return (Function2<T1, T2, R> & Memoized) (t1, t2) -> {
-                synchronized (lock) {
-                    return cache.computeIfAbsent(Tuple.of(t1, t2), tupled);
-                }
-            };
+            return (Function2<T1, T2, R> & Memoized) (t1, t2)
+                    -> Memoized.of(cache, Tuple.of(t1, t2), tupled());
         }
     }
 

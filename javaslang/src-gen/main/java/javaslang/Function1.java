@@ -167,13 +167,9 @@ public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
         if (isMemoized()) {
             return this;
         } else {
-            final Object lock = new Object();
-            final Map<T1, R> cache = new HashMap<>();
-            return (Function1<T1, R> & Memoized) t1 -> {
-                synchronized (lock) {
-                    return cache.computeIfAbsent(t1, this);
-                }
-            };
+            final Map<Tuple1<T1>, R> cache = new HashMap<>();
+            return (Function1<T1, R> & Memoized) (t1)
+                    -> Memoized.of(cache, Tuple.of(t1), tupled());
         }
     }
 
