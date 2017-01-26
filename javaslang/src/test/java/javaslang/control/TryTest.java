@@ -1089,6 +1089,14 @@ public class TryTest extends AbstractValueTest {
         assertThat(count.getValue()).isEqualTo(1);
     }
 
+    @Test
+    public void shouldExecuteAndFinallyTryOnFailureWithFailure(){
+        Try<Object> result = Try.of(() -> {throw new IllegalStateException(FAILURE);})
+            .andFinallyTry(() -> {throw new IllegalStateException(FAILURE);});
+
+        assertThat(result.isFailure());
+    }
+
     // -- helpers
 
     private RuntimeException error() {
