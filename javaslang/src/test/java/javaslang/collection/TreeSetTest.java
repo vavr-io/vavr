@@ -14,7 +14,6 @@ import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 import static java.util.Comparator.nullsFirst;
 import static javaslang.TestComparators.toStringComparator;
@@ -57,9 +56,9 @@ public class TreeSetTest extends AbstractSortedSetTest {
         return TreeSet.of(comparator, element);
     }
 
-    @SuppressWarnings("varargs")
-    @SafeVarargs
     @Override
+    @SafeVarargs
+    @SuppressWarnings("varargs")
     protected final <T> TreeSet<T> of(T... elements) {
         return TreeSet.<T> of(naturalComparator(), elements);
     }
@@ -139,38 +138,6 @@ public class TreeSetTest extends AbstractSortedSetTest {
         return true;
     }
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowTreeSet() {
-        final TreeSet<Double> doubles = TreeSet.of(toStringComparator(), 1.0d);
-        final TreeSet<Number> numbers = TreeSet.narrow(doubles);
-        final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
-    }
-
-    // -- addAll
-
-    @Test
-    public void shouldKeepComparator() {
-        final List<?> list = TreeSet.empty(inverseIntComparator()).addAll(TreeSet.of(1, 2, 3)).toList();
-        assertThat(list).isEqualTo(List.of(3, 2, 1));
-    }
-
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("42");
-    }
-
-    // -- helpers
-
-    private static Comparator<Integer> inverseIntComparator() {
-        return (i1, i2) -> Integer.compare(i2, i1);
-    }
-
     @Override
     protected TreeSet<Character> range(char from, char toExclusive) {
         return TreeSet.range(from, toExclusive);
@@ -241,6 +208,125 @@ public class TreeSetTest extends AbstractSortedSetTest {
         return TreeSet.rangeClosedBy(from, toInclusive, step);
     }
 
+    private static Comparator<Integer> inverseIntComparator() {
+        return (i1, i2) -> Integer.compare(i2, i1);
+    }
+
+    // -- collector
+
+    @Test
+    public void shouldCollectEmpty() {
+        final TreeSet<Integer> actual = java.util.stream.Stream.<Integer>empty().collect(TreeSet.collector());
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldCollectNonEmpty() {
+        final TreeSet<Integer> actual = java.util.stream.Stream.of(1, 2, 3).collect(TreeSet.collector());
+        final TreeSet<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- construct
+
+    @Test
+    public void shouldConstructStreamFromEmptyJavaStream() {
+        final TreeSet<Integer> actual = ofJavaStream(java.util.stream.Stream.<Integer>empty());
+        final TreeSet<Integer> expected = empty();
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructStreamFromNonEmptyJavaStream() {
+        final TreeSet<Integer> actual = TreeSet.ofAll(naturalComparator(), java.util.stream.Stream.of(1, 2, 3));
+        final TreeSet<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructStreamFromNonEmptyJavaStreamWithoutComparator() {
+        final TreeSet<Integer> actual = ofJavaStream(java.util.stream.Stream.of(1, 2, 3));
+        final TreeSet<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFromTreeSetWithoutComparator() {
+        final TreeSet<Integer> actual = TreeSet.ofAll(TreeSet.of(1));
+        final TreeSet<Integer> expected = of(1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- static narrow
+
+    @Test
+    public void shouldNarrowTreeSet() {
+        final TreeSet<Double> doubles = TreeSet.of(toStringComparator(), 1.0d);
+        final TreeSet<Number> numbers = TreeSet.narrow(doubles);
+        final int actual = numbers.add(new BigDecimal("2.0")).sum().intValue();
+        assertThat(actual).isEqualTo(3);
+    }
+
+    // -- addAll
+
+    @Test
+    public void shouldKeepComparator() {
+        final List<Integer> actual = TreeSet.empty(inverseIntComparator()).addAll(TreeSet.of(1, 2, 3)).toList();
+        final List<Integer> expected = List.of(3, 2, 1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- diff
+
+    @Test
+    public void shouldCalculateDiffIfNotTreeSet() {
+        final TreeSet<Integer> actual = of(1, 2, 3).diff(HashSet.of(1, 2));
+        final TreeSet<Integer> expected = of(3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- union
+
+    @Test
+    public void shouldCalculateUnionIfNotTreeSet() {
+        final TreeSet<Integer> actual = of(1, 2, 3).union(HashSet.of(4));
+        final TreeSet<Integer> expected = of(1, 2, 3, 4);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- intersect
+
+    @Test
+    public void shouldCalculateEmptyIntersectIfNotTreeSet() {
+        final TreeSet<Integer> actual = of(1, 2, 3).intersect(HashSet.of(4));
+        assertThat(actual).isEmpty();
+    }
+
+    @Test
+    public void shouldCalculateIntersectIfNotTreeSet() {
+        final TreeSet<Integer> actual = of(1, 2, 3).intersect(HashSet.of(3));
+        final TreeSet<Integer> expected = of(3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- fill
+
+    @Test
+    public void shouldFillWithoutComparator() {
+        final TreeSet<Integer> actual = TreeSet.fill(3, () -> 1);
+        final TreeSet<Integer> expected = of(1, 1, 1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- tabulate
+
+    @Test
+    public void shouldTabulateWithoutComparator() {
+        final TreeSet<Integer> actual = TreeSet.tabulate(3, Function.identity());
+        final TreeSet<Integer> expected = of(0, 1, 2);
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- toSortedSet
 
     @Test
@@ -267,4 +353,11 @@ public class TreeSetTest extends AbstractSortedSetTest {
         assertThat(value.toSortedSet().mkString(",")).isEqualTo("3,2,1");
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
 }
