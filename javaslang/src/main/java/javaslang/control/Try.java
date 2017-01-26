@@ -728,8 +728,7 @@ public interface Try<T> extends Value<T> {
      */
     default Try<T> andFinally(Runnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
-        runnable.run();
-        return this;
+        return andFinallyTry(runnable::run);
     }
 
     /**
