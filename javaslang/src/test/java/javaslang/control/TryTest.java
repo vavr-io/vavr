@@ -1055,9 +1055,7 @@ public class TryTest extends AbstractValueTest {
     public void shouldExecuteAndFinallyOnSuccess(){
         MutableInteger count = new MutableInteger(0);
 
-        Try result = Try.success(count).andFinally(() -> {
-            count.setValue(1);
-        });
+        Try.run(() -> count.setValue(0)).andFinally(() -> count.setValue(1));
 
         assertThat(count.getValue()).isEqualTo(1);
     }
@@ -1066,9 +1064,7 @@ public class TryTest extends AbstractValueTest {
     public void shouldExecuteAndFinallyTryOnSuccess(){
         MutableInteger count = new MutableInteger(0);
 
-        Try result = Try.success(count).andFinallyTry(() -> {
-            count.setValue(1);
-        });
+        Try.run(() -> count.setValue(0)).andFinallyTry(() -> count.setValue(1));
 
         assertThat(count.getValue()).isEqualTo(1);
     }
@@ -1077,9 +1073,8 @@ public class TryTest extends AbstractValueTest {
     public void shouldExecuteAndFinallyOnFailure(){
         MutableInteger count = new MutableInteger(0);
 
-        Try result = Try.run(() -> {throw new IllegalStateException(FAILURE);}).andFinally(() -> {
-            count.setValue(1);
-        });
+        Try.run(() -> {throw new IllegalStateException(FAILURE);})
+            .andFinally(() -> count.setValue(1));
 
         assertThat(count.getValue()).isEqualTo(1);
     }
@@ -1088,9 +1083,8 @@ public class TryTest extends AbstractValueTest {
     public void shouldExecuteAndFinallyTryOnFailure(){
         MutableInteger count = new MutableInteger(0);
 
-        Try result = Try.run(() -> {throw new IllegalStateException(FAILURE);}).andFinallyTry(() -> {
-            count.setValue(1);
-        });
+        Try.run(() -> {throw new IllegalStateException(FAILURE);})
+            .andFinallyTry(() -> count.setValue(1));
 
         assertThat(count.getValue()).isEqualTo(1);
     }
