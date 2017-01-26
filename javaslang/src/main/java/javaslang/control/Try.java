@@ -739,7 +739,7 @@ public interface Try<T> extends Value<T> {
      * @return this {@code Try}.
      * @throws NullPointerException if {@code runnable} is null
      */
-    default Try<T> andFinallyTry(Runnable runnable) {
+    default Try<T> andFinallyTry(CheckedRunnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
         try {
             runnable.run();
