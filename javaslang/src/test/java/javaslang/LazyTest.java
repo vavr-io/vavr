@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 import javaslang.collection.Vector;
@@ -23,6 +24,15 @@ import static javaslang.collection.Iterator.range;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LazyTest {
+    // -- static narrow
+
+    @Test
+    public void shouldNarrow() {
+        final String expected = "Zero args";
+        final Lazy<String> wideFunction = Lazy.of(() -> expected);
+        final Lazy<CharSequence> actual = Lazy.narrow(wideFunction);
+        assertThat(actual.get()).isEqualTo(expected);
+    }
 
     // -- of(Supplier)
 
@@ -45,6 +55,24 @@ public class LazyTest {
             final double actual = testee.get();
             assertThat(actual).isEqualTo(expected);
         }
+    }
+
+    // -- iterate
+
+    @Test
+    public void shouldIterate() {
+        final Iterator<Integer> iterator = Lazy.of(() -> 1).iterator();
+        assertThat(iterator.next()).isEqualTo(1);
+        assertThat(iterator.hasNext()).isFalse();
+    }
+
+    // -- peek
+
+    @Test
+    public void shouldPeek() {
+        final Lazy<Integer> lazy = Lazy.of(() -> 1);
+        final Lazy<Integer> peek = lazy.peek(v -> assertThat(v).isEqualTo(1));
+        assertThat(peek).isSameAs(lazy);
     }
 
     // -- sequence(Iterable)
@@ -262,5 +290,4 @@ public class LazyTest {
         lazy.get();
         assertThat(lazy.toString()).isEqualTo("Lazy(1)");
     }
-
 }
