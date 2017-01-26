@@ -175,14 +175,9 @@ public interface CheckedFunction2<T1, T2, R> extends λ<R> {
         if (isMemoized()) {
             return this;
         } else {
-            final Object lock = new Object();
             final Map<Tuple2<T1, T2>, R> cache = new HashMap<>();
-            final CheckedFunction1<Tuple2<T1, T2>, R> tupled = tupled();
-            return (CheckedFunction2<T1, T2, R> & Memoized) (t1, t2) -> {
-                synchronized (lock) {
-                    return cache.computeIfAbsent(Tuple.of(t1, t2), t -> Try.of(() -> tupled.apply(t)).get());
-                }
-            };
+            return (CheckedFunction2<T1, T2, R> & Memoized) (t1, t2)
+                    -> Memoized.of(cache, Tuple.of(t1, t2), t -> Try.of(() -> apply(t1, t2)).get());
         }
     }
 

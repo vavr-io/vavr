@@ -1639,36 +1639,16 @@ def generateMainClasses(): Unit = {
                   } else {
                       ${val mappingFunction = (checked, i) match {
                           case (true, 0) => s"() -> $Try.of(this::apply).get()"
-                          case (true, 1) => s"t -> $Try.of(() -> this.apply(t)).get()"
-                          case (true, _) => s"t -> $Try.of(() -> tupled.apply(t)).get()"
+                          case (true, _) => s"t -> $Try.of(() -> apply($params)).get()"
                           case (false, 0) => s"this::apply"
-                          case (false, 1) => s"this"
-                          case (false, _) => s"tupled"
-                        }
-                        val forNull = (checked, i) match {
-                          case (true, 1) => s"$Try.of(() -> apply(null))::get"
-                          case (false, 1) => s"() -> apply(null)"
-                          case _ => null
+                          case (false, _) => s"tupled()"
                         }
                         if (i == 0) xs"""
                           return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
-                        """ else if (i == 1) xs"""
-                          final Object lock = new Object();
-                          final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.HashMap")}<>();
-                          return ($className$fullGenerics & Memoized) t1 -> {
-                              synchronized (lock) {
-                                  return cache.computeIfAbsent(t1, $mappingFunction);
-                              }
-                          };
                         """ else xs"""
-                          final Object lock = new Object();
                           final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
-                          final ${checked.gen("Checked")}Function1<Tuple$i<$generics>, R> tupled = tupled();
-                          return ($className$fullGenerics & Memoized) ($params) -> {
-                              synchronized (lock) {
-                                  return cache.computeIfAbsent(Tuple.of($params), $mappingFunction);
-                              }
-                          };
+                          return ($className$fullGenerics & Memoized) ($params)
+                                  -> Memoized.of(cache, Tuple.of($params), $mappingFunction);
                         """
                       }
                   }
