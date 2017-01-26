@@ -16,8 +16,6 @@ import javaslang.control.Try.NonFatalException;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import sun.java2d.xr.MutableInteger;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1130,5 +1128,21 @@ public class TryTest extends AbstractValueTest {
 
     private Try<String> success() {
         return Try.of(() -> "ok");
+    }
+
+    private class MutableInteger {
+        private int value;
+
+        public MutableInteger(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public void setValue(int value) {
+            this.value = value;
+        }
     }
 }
