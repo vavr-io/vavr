@@ -5,22 +5,31 @@
  */
 package javaslang.control;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
+
 import javaslang.AbstractValueTest;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
 import javaslang.control.Try.NonFatalException;
+
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
+import sun.java2d.xr.MutableInteger;
+
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.fail;
 
 public class TryTest extends AbstractValueTest {
 
@@ -1042,6 +1051,50 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldReturnRecoveredValueOnFailure(){
         assertThat(Try.of(() -> {throw new IllegalStateException(FAILURE);}).recoverWith(IllegalStateException.class, success()).get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldExecuteAndFinallyOnSuccess(){
+        MutableInteger count = new MutableInteger(0);
+
+        Try.success(count).andFinally(() -> {
+            count.setValue(1);
+        });
+
+        assertThat(count.getValue()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldExecuteAndFinallyTryOnSuccess(){
+        MutableInteger count = new MutableInteger(0);
+
+        Try.success(count).andFinallyTry(() -> {
+            count.setValue(1);
+        });
+
+        assertThat(count.getValue()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldExecuteAndFinallyOnFailure(){
+        MutableInteger count = new MutableInteger(0);
+
+        Try.run(() -> {throw new IllegalStateException(FAILURE);}).andFinally(() -> {
+            count.setValue(1);
+        });
+
+        assertThat(count.getValue()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldExecuteAndFinallyTryOnFailure(){
+        MutableInteger count = new MutableInteger(0);
+
+        Try.run(() -> {throw new IllegalStateException(FAILURE);}).andFinallyTry(() -> {
+            count.setValue(1);
+        });
+
+        assertThat(count.getValue()).isEqualTo(1);
     }
 
     // -- helpers

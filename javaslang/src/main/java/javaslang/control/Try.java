@@ -719,6 +719,36 @@ public interface Try<T> extends Value<T> {
         return f.apply(this);
     }
 
+    /**
+     * Provides try's finally behavior no matter what the result of the operation is.
+     *
+     * @param runnable A runnable
+     * @return this {@code Try}.
+     * @throws NullPointerException if {@code runnable} is null
+     */
+    default Try<T> andFinally(Runnable runnable) {
+        Objects.requireNonNull(runnable, "runnable is null");
+        runnable.run();
+        return this;
+    }
+
+    /**
+     * Provides try's finally behavior no matter what the result of the operation is.
+     *
+     * @param runnable A runnable
+     * @return this {@code Try}.
+     * @throws NullPointerException if {@code runnable} is null
+     */
+    default Try<T> andFinallyTry(Runnable runnable) {
+        Objects.requireNonNull(runnable, "runnable is null");
+        try {
+            runnable.run();
+            return this;
+        } catch (Throwable t) {
+            return new Failure<>(t);
+        }
+    }
+
     @Override
     boolean equals(Object o);
 
