@@ -156,9 +156,20 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         // makes no sense because sorted sets contain ordered elements
     }
 
+    @Test
+    public void shouldCreateFromStream() {
+        final PriorityQueue<Integer> source = PriorityQueue.ofAll(values.toJavaStream());
+        assertThat(source).isEqualTo(ofAll(values));
+    }
+
+    @Test
+    public void shouldReturnOrdered() {
+        final PriorityQueue<Integer> source = of(3, 1, 4);
+        assertThat(source.isOrdered()).isTrue();
+    }
+
     // -- static narrow
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldNarrowPriorityQueue() {
         final PriorityQueue<Double> doubles = PriorityQueue.of(toStringComparator(), 1.0d);

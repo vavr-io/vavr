@@ -967,8 +967,8 @@ public class CharSeqTest {
     @Test
     public void shouldMapElementsToSequentialValuesInTheRightOrder() {
         final AtomicInteger seq = new AtomicInteger('0');
-        final Vector<Character> expectedInts = Vector.of('0', '1', '2', '3', '4');
-        final Vector<Character> actualInts = expectedInts.map(ignored -> (char) seq.getAndIncrement());
+        final Traversable<Character> expectedInts = Vector.of('0', '1', '2', '3', '4');
+        final Traversable<Character> actualInts = expectedInts.map(ignored -> (char) seq.getAndIncrement());
         assertThat(actualInts).isEqualTo(expectedInts);
     }
 
@@ -1251,6 +1251,62 @@ public class CharSeqTest {
         assertThat(of('1', '2', '3').retainAll(of('4', '5'))).isSameAs(empty());
     }
 
+    // -- shuffle
+
+    @Test
+    public void shouldShuffleEmpty() {
+        assertThat(empty().shuffle().isEmpty());
+    }
+
+    @Test
+    public void shouldShuffleHaveSameLength() {
+        final CharSeq actual = of('1', '2', '3');
+        assertThat(actual.shuffle().size()).isEqualTo(actual.size());
+    }
+
+    @Test
+    public void shouldShuffleHaveSameElements() {
+        final CharSeq actual = of('1', '2', '3');
+        final CharSeq shuffled = actual.shuffle();
+        assertThat(shuffled.containsAll(actual)).isTrue();
+        assertThat(shuffled.indexOf(4)).isEqualTo(-1);
+    }
+
+    // -- slideBy(classifier)
+
+    @Test
+    public void shouldSlideNilByClassifier() {
+        assertThat(empty().slideBy(Function.identity())).isEmpty();
+    }
+
+    @Test
+    public void shouldSlideSingularByClassifier() {
+        final List<Traversable<Character>> actual = of('1').slideBy(Function.identity()).toList().map(Vector::ofAll);
+        final List<Traversable<Character>> expected = List.of(Vector.of('1'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSlideNonNilByIdentityClassifier() {
+        final List<Traversable<Character>> actual = of('1', '2', '3').slideBy(Function.identity()).toList().map(Vector::ofAll);
+        final List<Traversable<Character>> expected = List.of(Vector.of('1'), Vector.of('2'), Vector.of('3'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSlideNonNilByConstantClassifier() {
+        final List<Traversable<Character>> actual = of('1', '2', '3').slideBy(e -> "same").toList().map(Vector::ofAll);
+        final List<Traversable<Character>> expected = List.of(Vector.of('1', '2', '3'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSlideNonNilBySomeClassifier() {
+        final List<Traversable<Character>> actual = of('1', '1', '1', '2', '2', '3', '4').slideBy(Function.identity()).toList().map(Vector::ofAll);
+        final List<Traversable<Character>> expected = List.of(Vector.of('1', '1', '1'), Vector.of('2', '2'), Vector.of('3'), Vector.of('4'));
+        assertThat(actual).isEqualTo(expected);
+    }
+    
     // -- sliding(size)
 
     @Test(expected = IllegalArgumentException.class)
@@ -2552,41 +2608,50 @@ public class CharSeqTest {
         assertThat(of('1', '2', '3').reverse()).isEqualTo(of('3', '2', '1'));
     }
 
-    // -- set
+    // -- update
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetWithNegativeIndexOnNil() {
+    public void shouldThrowWhenUpdateWithNegativeIndexOnNil() {
         empty().update(-1, (Character) null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetWithNegativeIndexOnNonNil() {
+    public void shouldThrowWhenUpdateWithNegativeIndexOnNonNil() {
         of('1').update(-1, '2');
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetOnNil() {
+    public void shouldThrowWhenUpdateOnNil() {
         empty().update(0, (Character) null);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetWithIndexExceedingByOneOnNonNil() {
+    public void shouldThrowWhenUpdateWithIndexExceedingByOneOnNonNil() {
         of('1').update(1, '2');
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
-    public void shouldThrowWhenSetWithIndexExceedingByTwoOnNonNil() {
+    public void shouldThrowWhenUpdateWithIndexExceedingByTwoOnNonNil() {
         of('1').update(2, '2');
     }
 
     @Test
-    public void shouldSetFirstElement() {
+    public void shouldUpdateFirstElement() {
         assertThat(of('1', '2', '3').update(0, '4')).isEqualTo(of('4', '2', '3'));
     }
 
     @Test
-    public void shouldSetLastElement() {
+    public void shouldUpdateLastElement() {
         assertThat(of('1', '2', '3').update(2, '4')).isEqualTo(of('1', '2', '4'));
+    }
+
+    // -- higher order update
+
+    @Test
+    public void shouldUpdateViaFunction() throws Exception {
+        final Seq<Character> actual = of("hello").update(0, Character::toUpperCase);
+        final Seq<Character> expected = of("Hello");
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- slice()

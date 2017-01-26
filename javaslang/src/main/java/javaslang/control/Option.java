@@ -159,7 +159,7 @@ public interface Option<T> extends Value<T> {
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     static <T> Option<T> ofOptional(Optional<? extends T> optional) {
         Objects.requireNonNull(optional, "optional is null");
-        return optional.isPresent() ? of(optional.get()) : none();
+        return optional.<Option<T>>map(Option::of).orElseGet(Option::none);
     }
 
     /**

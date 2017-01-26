@@ -1,9 +1,6 @@
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.Value;
+import javaslang.*;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;

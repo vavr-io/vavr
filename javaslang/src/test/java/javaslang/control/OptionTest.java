@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -51,6 +52,16 @@ public class OptionTest extends AbstractValueTest {
     }
 
     // -- Option
+
+    // -- narrow
+
+    @Test
+    public void shouldNarrowOption() {
+        final Option<Integer> option = Option.of(42);
+        final Option<Number> narrow = Option.narrow(option);
+        assertThat(narrow.get()).isEqualTo(42);
+    }
+
 
     // -- construction
 
@@ -119,8 +130,8 @@ public class OptionTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertListOfNonEmptyOptionsToOptionOfList() {
-        List<Option<String>> options = Arrays.asList(Option.of("a"), Option.of("b"), Option.of("c"));
-        Option<Seq<String>> reducedOption = Option.sequence(options);
+        final List<Option<String>> options = Arrays.asList(Option.of("a"), Option.of("b"), Option.of("c"));
+        final Option<Seq<String>> reducedOption = Option.sequence(options);
         assertThat(reducedOption instanceof Option.Some).isTrue();
         assertThat(reducedOption.get().size()).isEqualTo(3);
         assertThat(reducedOption.get().mkString()).isEqualTo("abc");
@@ -128,15 +139,15 @@ public class OptionTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertListOfEmptyOptionsToOptionOfList() {
-        List<Option<String>> options = Arrays.asList(Option.none(), Option.none(), Option.none());
-        Option<Seq<String>> option = Option.sequence(options);
+        final List<Option<String>> options = Arrays.asList(Option.none(), Option.none(), Option.none());
+        final Option<Seq<String>> option = Option.sequence(options);
         assertThat(option instanceof Option.None).isTrue();
     }
 
     @Test
     public void shouldConvertListOfMixedOptionsToOptionOfList() {
-        List<Option<String>> options = Arrays.asList(Option.of("a"), Option.none(), Option.of("c"));
-        Option<Seq<String>> option = Option.sequence(options);
+        final List<Option<String>> options = Arrays.asList(Option.of("a"), Option.none(), Option.of("c"));
+        final Option<Seq<String>> option = Option.sequence(options);
         assertThat(option instanceof Option.None).isTrue();
     }
 
@@ -156,25 +167,25 @@ public class OptionTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSelfOnOrElseIfValueIsPresent() {
-        Option<Integer> opt = Option.of(42);
+        final Option<Integer> opt = Option.of(42);
         assertThat(opt.orElse(Option.of(0))).isSameAs(opt);
     }
 
     @Test
     public void shouldReturnSelfOnOrElseSupplierIfValueIsPresent() {
-        Option<Integer> opt = Option.of(42);
+        final Option<Integer> opt = Option.of(42);
         assertThat(opt.orElse(() -> Option.of(0))).isSameAs(opt);
     }
 
     @Test
     public void shouldReturnAlternativeOnOrElseIfValueIsNotDefined() {
-        Option<Integer> opt = Option.of(42);
+        final Option<Integer> opt = Option.of(42);
         assertThat(Option.none().orElse(opt)).isSameAs(opt);
     }
 
     @Test
     public void shouldReturnAlternativeOnOrElseSupplierIfValueIsNotDefined() {
-        Option<Integer> opt = Option.of(42);
+        final Option<Integer> opt = Option.of(42);
         assertThat(Option.none().orElse(() -> opt)).isSameAs(opt);
     }
 
@@ -266,16 +277,11 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldThrowExceptionIfOnEmptySetAndOptionIsEmpty() {
-        try {
-            final Option<String> none = Option.none();
-            none.onEmpty(() -> {
-                throw new RuntimeException("Exception from empty option!");
-            });
-            Assert.fail("No exception was thrown");
-        } catch (RuntimeException exc) {
-            assertThat(exc.getMessage()).isEqualTo("Exception from empty option!");
-        }
+    public void shouldExecuteRunnableWhenOptionIsEmpty() {
+        final AtomicBoolean state = new AtomicBoolean();
+        final Option<?> option = Option.none().onEmpty(() -> state.set(false));
+        assertThat(state.get()).isFalse();
+        assertThat(option).isSameAs(Option.none());
     }
 
     @Test
@@ -334,13 +340,13 @@ public class OptionTest extends AbstractValueTest {
     @Test
     public void shouldFlatMapNonEmptyIterable() {
         final Option<Integer> option = Option.some(2);
-        assertThat(Option.of(1).<Integer> flatMap(i -> option)).isEqualTo(Option.of(2));
+        assertThat(Option.of(1).flatMap(i -> option)).isEqualTo(Option.of(2));
     }
 
     @Test
     public void shouldFlatMapEmptyIterable() {
         final Option<Integer> option = Option.none();
-        assertThat(Option.of(1).<Integer> flatMap(i -> option)).isEqualTo(Option.none());
+        assertThat(Option.of(1).flatMap(i -> option)).isEqualTo(Option.none());
     }
 
     // -- exists
@@ -449,15 +455,14 @@ public class OptionTest extends AbstractValueTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionOnNullTransformFunction() {
-        Option<Integer> option = Option.some(1);
-        option.transform(null);
+        Option.some(1).transform(null);
     }
 
     @Test
     public void shouldApplyTransformFunctionToSome() {
-        Option<Integer> option = Option.some(1);
-        Function<Option<Integer>, String> f = o -> o.get().toString().concat("-transformed");
-        assertThat(option.<String> transform(f)).isEqualTo("1-transformed");
+        final Option<Integer> option = Option.some(1);
+        final Function<Option<Integer>, String> f = o -> o.get().toString().concat("-transformed");
+        assertThat(option.transform(f)).isEqualTo("1-transformed");
     }
 
     @Test
