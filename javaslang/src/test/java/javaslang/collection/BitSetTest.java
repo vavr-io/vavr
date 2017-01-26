@@ -14,7 +14,6 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 import static javaslang.Serializables.deserialize;
@@ -135,7 +134,7 @@ public class BitSetTest extends AbstractSortedSetTest {
     }
 
     @Override
-    protected <T> BitSet<T> ofJavaStream(Stream<? extends T> javaStream) {
+    protected <T extends Comparable<? super T>> BitSet<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
         return this.<T> bsBuilder().ofAll(javaStream);
     }
 

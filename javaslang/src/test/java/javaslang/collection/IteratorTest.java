@@ -22,7 +22,6 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 import static javaslang.collection.Iterator.*;
 
@@ -129,7 +128,7 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected <T> Iterator<T> ofJavaStream(Stream<? extends T> javaStream) {
+    protected <T extends Comparable<? super T>> Iterator<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
         return Iterator.ofAll(javaStream.iterator());
     }
 

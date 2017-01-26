@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toList;
@@ -55,7 +54,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected <T> Traversable<T> ofJavaStream(Stream<? extends T> javaStream) {
+    protected <T extends Comparable<? super T>> Traversable<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
         return PriorityQueue.ofAll(naturalComparator(), javaStream);
     }
 

@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 public class ArrayTest extends AbstractIndexedSeqTest {
 
@@ -52,7 +51,7 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     }
 
     @Override
-    protected <T> Array<T> ofJavaStream(Stream<? extends T> javaStream) {
+    protected <T extends Comparable<? super T>> Array<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
         return Array.ofAll(javaStream);
     }
 

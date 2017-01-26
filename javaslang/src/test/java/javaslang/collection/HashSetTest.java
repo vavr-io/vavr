@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.assertTrue;
 
@@ -120,7 +119,7 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
-    protected <T> HashSet<T> ofJavaStream(Stream<? extends T> javaStream) {
+    protected <T extends Comparable<? super T>> HashSet<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
         return HashSet.ofAll(javaStream);
     }
 

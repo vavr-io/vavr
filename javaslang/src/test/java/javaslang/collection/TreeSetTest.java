@@ -70,8 +70,8 @@ public class TreeSetTest extends AbstractSortedSetTest {
     }
 
     @Override
-    protected <T> TreeSet<T> ofJavaStream(Stream<? extends T> javaStream) {
-        return TreeSet.ofAll(naturalComparator(), javaStream);
+    protected <T extends Comparable<? super T>> TreeSet<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
+        return TreeSet.ofAll(javaStream);
     }
 
     @Override

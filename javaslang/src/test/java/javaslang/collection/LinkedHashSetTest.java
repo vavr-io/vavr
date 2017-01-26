@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 public class LinkedHashSetTest extends AbstractSetTest {
 
@@ -61,7 +60,7 @@ public class LinkedHashSetTest extends AbstractSetTest {
     }
 
     @Override
-    protected <T> LinkedHashSet<T> ofJavaStream(Stream<? extends T> javaStream) {
+    protected <T extends Comparable<? super T>> LinkedHashSet<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
         return LinkedHashSet.ofAll(javaStream);
     }
 
