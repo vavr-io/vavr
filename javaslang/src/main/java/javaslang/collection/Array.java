@@ -736,7 +736,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
                     list.add(u);
                 }
             }
-            return wrap(toArray(list));
+            return wrap(list.toArray());
         }
     }
 
@@ -1334,7 +1334,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("update(" + index + ")");
         } else {
-            final Object[] arr = toArray(this);
+            final Object[] arr = copyOf(delegate, delegate.length);
             arr[index] = element;
             return wrap(arr);
         }
@@ -1403,9 +1403,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     }
 
     private static <T> Object[] toArray(Iterable<T> elements) {
-        if (elements instanceof java.util.List) {
-            final java.util.List<T> list = (java.util.List<T>) elements;
-            return list.toArray();
+        if (elements instanceof Array) {
+            final Array<T> array = (Array<T>) elements;
+            return array.delegate;
+        } else if (elements instanceof java.util.Collection) {
+            final java.util.Collection<T> collection = (java.util.Collection<T>) elements;
+            return collection.toArray();
         } else {
             final java.util.Iterator<? extends T> it = elements.iterator();
             final java.util.List<T> list = new java.util.ArrayList<>();
