@@ -6,6 +6,7 @@
 package javaslang;
 
 import java.io.Serializable;
+import java.util.Map;
 
 /**
  * This is a general definition of a (checked/unchecked) function of unknown parameters and a return type R.
@@ -74,5 +75,17 @@ public interface λ<R> extends Serializable {
      * Zero Abstract Method (ZAM) interface for marking functions as memoized using intersection types.
      */
     interface Memoized {
+        static <T extends Tuple, R> R of(Map<T, R> cache, T key, Function1<T, R> tupled) {
+            synchronized (cache) {
+                if (cache.containsKey(key)) {
+                    return cache.get(key);
+                } else {
+                    final R value = tupled.apply(key);
+                    cache.put(key, value);
+                    return value;
+                }
+            }
+        }
+
     }
 }

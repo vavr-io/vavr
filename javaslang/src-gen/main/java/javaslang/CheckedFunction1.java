@@ -126,20 +126,9 @@ public interface CheckedFunction1<T1, R> extends λ<R> {
         if (isMemoized()) {
             return this;
         } else {
-            final Lazy<R> forNull = Lazy.of(Try.of(() -> apply(null))::get);
-            final Object lock = new Object();
-            final Map<T1, R> cache = new HashMap<>();
-            return (CheckedFunction1<T1, R> & Memoized) t1 -> {
-                if (t1 == null) {
-                    return forNull.get();
-                } else {
-                    final R result;
-                    synchronized (lock) {
-                        result = cache.computeIfAbsent(t1, t -> Try.of(() -> this.apply(t)).get());
-                    }
-                    return result;
-                }
-            };
+            final Map<Tuple1<T1>, R> cache = new HashMap<>();
+            return (CheckedFunction1<T1, R> & Memoized) (t1) ->
+                    Memoized.of(cache, Tuple.of(t1), t -> Try.of(() -> apply(t1)).get());
         }
     }
 

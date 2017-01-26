@@ -183,16 +183,9 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends λ<R> {
         if (isMemoized()) {
             return this;
         } else {
-            final Object lock = new Object();
             final Map<Tuple5<T1, T2, T3, T4, T5>, R> cache = new HashMap<>();
-            final Function1<Tuple5<T1, T2, T3, T4, T5>, R> tupled = tupled();
-            return (Function5<T1, T2, T3, T4, T5, R> & Memoized) (t1, t2, t3, t4, t5) -> {
-                final R result;
-                synchronized (lock) {
-                    result = cache.computeIfAbsent(Tuple.of(t1, t2, t3, t4, t5), tupled::apply);
-                }
-                return result;
-            };
+            return (Function5<T1, T2, T3, T4, T5, R> & Memoized) (t1, t2, t3, t4, t5) ->
+                    Memoized.of(cache, Tuple.of(t1, t2, t3, t4, t5), tupled());
         }
     }
 
