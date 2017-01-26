@@ -53,7 +53,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     protected abstract <T> Traversable<T> ofAll(Iterable<? extends T> elements);
 
-    protected abstract <T> Traversable<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream);
+    protected abstract <T extends Comparable<? super T>> Traversable<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream);
 
     protected abstract Traversable<Boolean> ofAll(boolean... elements);
 

@@ -19,7 +19,6 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import java.util.stream.Stream;
 
 public class ListTest extends AbstractLinearSeqTest {
 
@@ -58,7 +57,7 @@ public class ListTest extends AbstractLinearSeqTest {
     }
 
     @Override
-    protected <T> List<T> ofJavaStream(Stream<? extends T> javaStream) {
+    protected <T extends Comparable<? super T>> List<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
         return List.ofAll(javaStream);
     }
 

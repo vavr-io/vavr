@@ -129,7 +129,7 @@ public class TreeTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected <T> Tree<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
+    protected <T extends Comparable<? super T>> Tree<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
         return Tree.ofAll(javaStream);
     }
 

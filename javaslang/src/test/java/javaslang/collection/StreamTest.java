@@ -59,7 +59,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Override
-    protected <T> Stream<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
+    protected <T extends Comparable<? super T>> Stream<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
         return Stream.ofAll(javaStream);
     }
 
