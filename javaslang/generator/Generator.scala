@@ -11,7 +11,7 @@ import JavaGenerator._
 import collection.immutable.ListMap
 import scala.language.implicitConversions
 
-val N = 8
+val N = 10
 val VARARGS = 10
 val TARGET_MAIN = "javaslang/src-gen/main/java"
 val TARGET_TEST = "javaslang/src-gen/test/java"
@@ -353,7 +353,7 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * Alias for {@link Function$i#of(Function$i)}
                *
-               ${(0 to i).gen(j => if (j == 0) "* @param <R>             return type" else s"* @param <T$j>            type of the ${j.ordinal} argument")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R>             return type" else s"* @param <T$j>${if (j < 10) " " else ""}           type of the ${j.ordinal} argument")("\n")}
                * @param methodReference A method reference
                * @return A {@link Function$i}
                */
@@ -3201,7 +3201,7 @@ def generateTestClasses(): Unit = {
               ${(i > 0).gen(xs"""
                 @$test
                 public void shouldReturnElements() {
-                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "});
+                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j")(", ")});
                     ${(1 to i).gen(j => s"$assertThat(tuple._$j).isEqualTo($j);\n")}
                 }
               """)}
@@ -3210,7 +3210,7 @@ def generateTestClasses(): Unit = {
                 xs"""
                   @$test
                   public void shouldUpdate$j() {
-                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j") mkString ", "}).update$j(42);
+                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j")(", ")}).update$j(42);
                     ${(1 to i).gen(k => s"$assertThat(tuple._$k).isEqualTo(${if (j == k) 42 else k});\n")}
                   }
                 """)("\n\n")}
@@ -3522,16 +3522,16 @@ object Generator {
 
     // returns i as ordinal, i.e. 1st, 2nd, 3rd, 4th, ...
     def ordinal: String =
-      if (i / 10 == 1) {
-        s"${i}th"
+      s"$i" + (if (i >= 4 && i <= 20) {
+        "th"
       } else {
         i % 10 match {
-          case 1 => "1st"
-          case 2 => "2nd"
-          case 3 => "3rd"
-          case _ => s"${i}th"
+          case 1 => "st"
+          case 2 => "nd"
+          case 3 => "rd"
+          case _ => "th"
         }
-      }
+      })
 
     // returns the grammatical number of a string, i.e. `i.numerus("name")` is
     // 0: "no name", 1: "one name", 2: "two names", 3: "three names", 4: "4 names", ...
