@@ -1406,16 +1406,8 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         if (elements instanceof Array) {
             final Array<T> array = (Array<T>) elements;
             return array.delegate;
-        } else if (elements instanceof java.util.Collection) {
-            final java.util.Collection<T> collection = (java.util.Collection<T>) elements;
-            return collection.toArray();
         } else {
-            final java.util.Iterator<? extends T> it = elements.iterator();
-            final java.util.List<T> list = new java.util.ArrayList<>();
-            while (it.hasNext()) {
-                list.add(it.next());
-            }
-            return list.toArray();
+            return Collections.withSize(elements).toArray();
         }
     }
 }
