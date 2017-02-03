@@ -164,6 +164,14 @@ public class LinkedHashMapTest extends AbstractMapTest {
         assertThat(LinkedHashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 
+    // -- keySet
+
+    @Test
+    public void shouldKeepKeySetOrder() {
+        final Set<Integer> keySet = LinkedHashMap.of(4, "d", 1, "a", 2, "b").keySet();
+        assertThat(keySet.mkString()).isEqualTo("412");
+    }
+
     // -- replace
 
     @Test
