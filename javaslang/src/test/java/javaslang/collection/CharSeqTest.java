@@ -2845,6 +2845,23 @@ public class CharSeqTest {
         assertThat(repeat('!', 5)).isEqualTo(of("!!!!!"));
     }
 
+    @Test
+    public void shouldCompareRepeatAgainstTestImpl() {
+        final String value = ".";
+        for (int i = 0; i < 10; i++) {
+            final String source = testRepeat(value, i);
+            for (int j = 0; j < 100; j++) {
+                final String actual = CharSeq.of(source).repeat(j).mkString();
+                final String expected = testRepeat(source, j);
+                assertThat(actual).isEqualTo(expected);
+            }
+        }
+    }
+
+    private String testRepeat(String source, int times) {
+        return Stream.continually(source).take(times).mkString();
+    }
+
     // -- transform()
 
     @Test

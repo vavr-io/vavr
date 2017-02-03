@@ -22,6 +22,7 @@ public class CharSeqBenchmark {
             Tail.class,
             Get.class,
             Update.class,
+            Repeat.class,
             Prepend.class,
             Append.class,
             Iterate.class
@@ -33,6 +34,7 @@ public class CharSeqBenchmark {
     }
 
     public static void main(java.lang.String... args) {
+        JmhRunner.runDebugWithAsserts(CLASSES);
         JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
@@ -172,6 +174,15 @@ public class CharSeqBenchmark {
             }
             assert values.forAll(c -> c == replacement);
             return values;
+        }
+    }
+
+    public static class Repeat extends Base {
+        final char value = '❤';
+
+        @Benchmark
+        public Object slang_persistent() {
+            return CharSeq.of(value).repeat(CONTAINER_SIZE);
         }
     }
 
