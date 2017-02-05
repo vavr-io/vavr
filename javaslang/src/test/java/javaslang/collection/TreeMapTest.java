@@ -13,11 +13,13 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
+import static java.util.Arrays.asList;
 import static java.util.Comparator.nullsFirst;
 import static javaslang.API.List;
 import static javaslang.API.Tuple;
@@ -156,7 +158,55 @@ public class TreeMapTest extends AbstractSortedMapTest {
         return TreeMap.fill(n, s);
     }
 
+    // -- bimap
+
+    @Test
+    public void shouldBiMapEmpty() {
+        assertThat(TreeMap.empty().bimap(Function.identity(), Function.identity())).isEmpty();
+    }
+
+    @Test
+    public void shouldBiMapNonEmpty() {
+        final TreeMap<String, Integer> actual = TreeMap.of(1, "1", 2, "2").bimap(naturalComparator(), String::valueOf, Integer::parseInt);
+        final TreeMap<String, Integer> expected = TreeMap.of("1", 1, "2", 2);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- collector
+
+    @Test
+    public void shouldCollectFromJavaStream() {
+        final TreeMap<Integer, String> actual = java.util.stream.Stream.of(Tuple.of(1, "1"), Tuple.of(2, "2")).collect(TreeMap.collector(naturalComparator()));
+        final TreeMap<Integer, String> expected = TreeMap.of(1, "1", 2, "2");
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- construct
+
+    @Test
+    @SuppressWarnings({"unchecked", "rawtypes" })
+    public void shouldConstructFromJavaStreamWithKeyMapperAndValueMapper() {
+        final java.util.stream.Stream javaStream = java.util.stream.Stream.of(1, 2, 3);
+        final TreeMap<Integer, String> actual = TreeMap.ofAll(naturalComparator(), javaStream, Function.identity(), String::valueOf);
+        final TreeMap<Integer, String> expected = TreeMap.of(1, "1", 2, "2", 3, "3");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFromJavaStreamWithEntryMapper() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
+        final Map<Integer, String> actual = TreeMap.ofAll(naturalComparator(), javaStream, i -> Tuple.of(i, String.valueOf(i)));
+        final TreeMap<Integer, String> expected = TreeMap.of(1, "1", 2, "2", 3, "3");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldConstructFromUtilEntries() {
+        final TreeMap<Integer, String> actual = TreeMap.ofAll(naturalComparator(), asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3")));
+        final TreeMap<Integer, String> expected = TreeMap.of(1, "1", 2, "2", 3, "3");
+        assertThat(actual).isEqualTo(expected);
+    }
 
     @Test
     public void shouldReturnSingletonFromTupleUsingComparator() {
@@ -313,6 +363,17 @@ public class TreeMapTest extends AbstractSortedMapTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- fill
+
+    @Test
+    public void shouldFillWithComparator() {
+        final LinkedList<Integer> ints = new LinkedList<>(asList(0, 0, 1, 1, 2, 2));
+        final Supplier<Tuple2<Long, Float>> supplier = () -> Tuple.of(ints.remove().longValue(), ints.remove().floatValue());
+        final TreeMap<Long, Float> actual = TreeMap.fill(naturalComparator(), 3, supplier);
+        final TreeMap<Long, Float> expected = TreeMap.of(0l, 0f, 1l, 1f, 2l, 2f);
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- flatMap
 
     @Test
@@ -336,6 +397,15 @@ public class TreeMapTest extends AbstractSortedMapTest {
                 .of(3, "3", 1, "1", 2, "2")
                 .mapKeys(Integer::toHexString).mapKeys(String::length);
         final TreeMap<Integer, String> expected = TreeMap.of(1, "3");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- tabulate
+
+    @Test
+    public void shouldTabulateWithComparator() {
+        final TreeMap<Integer, String> actual = TreeMap.tabulate(naturalComparator(), 3, i -> Tuple.of(i, String.valueOf(i)));
+        final TreeMap<Integer, String> expected = TreeMap.of(0, "0", 1, "1", 2, "2");
         assertThat(actual).isEqualTo(expected);
     }
 
