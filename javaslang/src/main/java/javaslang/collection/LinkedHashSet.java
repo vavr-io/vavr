@@ -29,15 +29,19 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(LinkedHashMap.empty());
 
-    private final LinkedHashMap<T, T> map;
+    private final LinkedHashMap<T, Object> map;
 
-    private LinkedHashSet(LinkedHashMap<T, T> map) {
+    private LinkedHashSet(LinkedHashMap<T, Object> map) {
         this.map = map;
     }
 
     @SuppressWarnings("unchecked")
     public static <T> LinkedHashSet<T> empty() {
         return (LinkedHashSet<T>) EMPTY;
+    }
+
+    static <T> LinkedHashSet<T> wrap(LinkedHashMap<T, Object> map) {
+        return new LinkedHashSet<>(map);
     }
 
     /**
@@ -96,7 +100,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     @SafeVarargs
     public static <T> LinkedHashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        LinkedHashMap<T, T> map = LinkedHashMap.empty();
+        LinkedHashMap<T, Object> map = LinkedHashMap.empty();
         for (T element : elements) {
             map = map.put(element, element);
         }
@@ -145,7 +149,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         if (elements instanceof LinkedHashSet) {
             return (LinkedHashSet<T>) elements;
         } else {
-            final LinkedHashMap<T, T> mao = addAll(LinkedHashMap.empty(), elements);
+            final LinkedHashMap<T, Object> mao = addAll(LinkedHashMap.empty(), elements);
             return mao.isEmpty() ? empty() : new LinkedHashSet<>(mao);
         }
     }
@@ -454,7 +458,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     @Override
     public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final LinkedHashMap<T, T> that = addAll(map, elements);
+        final LinkedHashMap<T, Object> that = addAll(map, elements);
         if (that.size() == map.size()) {
             return this;
         } else {
@@ -538,7 +542,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         if (isEmpty()) {
             return empty();
         } else {
-            final LinkedHashMap<U, U> that = foldLeft(LinkedHashMap.empty(),
+            final LinkedHashMap<U, Object> that = foldLeft(LinkedHashMap.empty(),
                     (tree, t) -> addAll(tree, mapper.apply(t)));
             return new LinkedHashSet<>(that);
         }
@@ -632,7 +636,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         if (isEmpty()) {
             return empty();
         } else {
-            final LinkedHashMap<U, U> that = foldLeft(LinkedHashMap.empty(), (tree, t) -> {
+            final LinkedHashMap<U, Object> that = foldLeft(LinkedHashMap.empty(), (tree, t) -> {
                 final U u = mapper.apply(t);
                 return tree.put(u, u);
             });
@@ -663,14 +667,14 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public LinkedHashSet<T> remove(T element) {
-        final LinkedHashMap<T, T> newMap = map.remove(element);
+        final LinkedHashMap<T, Object> newMap = map.remove(element);
         return (newMap == map) ? this : new LinkedHashSet<>(newMap);
     }
 
     @Override
     public LinkedHashSet<T> removeAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        LinkedHashMap<T, T> that = map;
+        LinkedHashMap<T, Object> that = map;
         for (T element : elements) {
             that = that.remove(element);
         }
@@ -680,9 +684,9 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     @Override
     public LinkedHashSet<T> replace(T currentElement, T newElement) {
         if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
-            final Tuple2<T, T> currentPair = Tuple.of(currentElement, currentElement);
-            final Tuple2<T, T> newPair = Tuple.of(newElement, newElement);
-            final LinkedHashMap<T, T> newMap = map.replace(currentPair, newPair);
+            final Tuple2<T, Object> currentPair = Tuple.of(currentElement, currentElement);
+            final Tuple2<T, Object> newPair = Tuple.of(newElement, newElement);
+            final LinkedHashMap<T, Object> newMap = map.replace(currentPair, newPair);
             return new LinkedHashSet<>(newMap);
         } else {
             return this;
@@ -697,8 +701,8 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     @Override
     public LinkedHashSet<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final LinkedHashMap<T, T> kept = addAll(LinkedHashMap.empty(), elements);
-        LinkedHashMap<T, T> that = LinkedHashMap.empty();
+        final LinkedHashMap<T, Object> kept = addAll(LinkedHashMap.empty(), elements);
+        LinkedHashMap<T, Object> that = LinkedHashMap.empty();
         for (T element : this) {
             if (kept.containsKey(element)) {
                 that = that.put(element, element);
@@ -817,7 +821,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         } else if (elements.isEmpty()) {
             return this;
         } else {
-            final LinkedHashMap<T, T> that = addAll(map, elements);
+            final LinkedHashMap<T, Object> that = addAll(map, elements);
             if (that.size() == map.size()) {
                 return this;
             } else {
@@ -889,9 +893,9 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static <T> LinkedHashMap<T, T> addAll(LinkedHashMap<T, T> initial,
-                                                  Iterable<? extends T> additional) {
-        LinkedHashMap<T, T> that = initial;
+    private static <T> LinkedHashMap<T, Object> addAll(LinkedHashMap<T, Object> initial,
+            Iterable<? extends T> additional) {
+        LinkedHashMap<T, Object> that = initial;
         for (T t : additional) {
             that = that.put(t, t);
         }
@@ -937,7 +941,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
-        private transient LinkedHashMap<T, T> map;
+        private transient LinkedHashMap<T, Object> map;
 
         /**
          * Constructor for the case of serialization, called by {@link LinkedHashSet#writeReplace()}.
@@ -947,7 +951,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
          *
          * @param map a Cons
          */
-        SerializationProxy(LinkedHashMap<T, T> map) {
+        SerializationProxy(LinkedHashMap<T, Object> map) {
             this.map = map;
         }
 
@@ -960,7 +964,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeInt(map.size());
-            for (Tuple2<T, T> e : map) {
+            for (Tuple2<T, Object> e : map) {
                 s.writeObject(e._1);
             }
         }
@@ -979,7 +983,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            LinkedHashMap<T, T> temp = LinkedHashMap.empty();
+            LinkedHashMap<T, Object> temp = LinkedHashMap.empty();
             for (int i = 0; i < size; i++) {
                 @SuppressWarnings("unchecked")
                 final T element = (T) s.readObject();
