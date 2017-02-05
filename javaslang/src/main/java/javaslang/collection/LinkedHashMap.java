@@ -610,9 +610,10 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
         return list.iterator();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Set<K> keySet() {
-        return map.keySet();
+        return LinkedHashSet.wrap((LinkedHashMap<K, Object>) this);
     }
 
     @Override
