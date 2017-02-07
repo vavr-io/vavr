@@ -2840,6 +2840,7 @@ public class CharSeqTest {
         assertThat(empty().repeat(0)).isEqualTo(empty());
         assertThat(empty().repeat(5)).isEqualTo(empty());
         assertThat(of("123").repeat(0)).isEqualTo(empty());
+        assertThat(of("123").repeat(4)).isEqualTo(of("123123123123"));
         assertThat(of("123").repeat(5)).isEqualTo(of("123123123123123"));
         assertThat(repeat('1', 0)).isEqualTo(empty());
         assertThat(repeat('!', 5)).isEqualTo(of("!!!!!"));

@@ -333,19 +333,20 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      * @return A CharSeq representing {@code this * times}
      */
     public CharSeq repeat(int times) {
-        if (times <= 0) return empty();
+        if (times <= 0 || isEmpty()) return empty();
         else if (times == 1) return this;
         else {
             final int finalLength = length() * times;
-            final StringBuilder result = new StringBuilder(2 * finalLength);
-            result.append(back);
+            final char[] result = new char[finalLength];
+            back.getChars(0, length(), result, 0);
 
-            for (int i = 1; i <= times; i *= 2) {
-                result.append(result);
+            int i = length();
+            for (; i <= (finalLength >>> 1); i <<= 1) {
+                System.arraycopy(result, 0, result, i, i);
             }
-            result.setLength(finalLength);
+            System.arraycopy(result, 0, result, i, finalLength - i);
 
-            return of(result);
+            return of(new String(result));
         }
     }
 
