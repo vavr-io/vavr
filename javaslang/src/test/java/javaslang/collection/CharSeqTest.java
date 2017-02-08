@@ -2840,9 +2840,27 @@ public class CharSeqTest {
         assertThat(empty().repeat(0)).isEqualTo(empty());
         assertThat(empty().repeat(5)).isEqualTo(empty());
         assertThat(of("123").repeat(0)).isEqualTo(empty());
+        assertThat(of("123").repeat(4)).isEqualTo(of("123123123123"));
         assertThat(of("123").repeat(5)).isEqualTo(of("123123123123123"));
         assertThat(repeat('1', 0)).isEqualTo(empty());
         assertThat(repeat('!', 5)).isEqualTo(of("!!!!!"));
+    }
+
+    @Test
+    public void shouldCompareRepeatAgainstTestImpl() {
+        final String value = ".";
+        for (int i = 0; i < 10; i++) {
+            final String source = testRepeat(value, i);
+            for (int j = 0; j < 100; j++) {
+                final String actual = CharSeq.of(source).repeat(j).mkString();
+                final String expected = testRepeat(source, j);
+                assertThat(actual).isEqualTo(expected);
+            }
+        }
+    }
+
+    private String testRepeat(String source, int times) {
+        return Stream.continually(source).take(times).mkString();
     }
 
     // -- transform()
