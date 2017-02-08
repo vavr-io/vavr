@@ -10,7 +10,7 @@ import JavaGenerator._
 
 import scala.language.implicitConversions
 
-val N = 8
+val N = 10
 val TARGET_MAIN = "javaslang-test/src-gen/main/java"
 val TARGET_TEST = "javaslang-test/src-gen/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
@@ -798,16 +798,16 @@ object Generator {
 
     // returns i as ordinal, i.e. 1st, 2nd, 3rd, 4th, ...
     def ordinal: String =
-      if (i / 10 == 1) {
-        s"${i}th"
+      s"$i" + (if (i >= 4 && i <= 20) {
+        "th"
       } else {
         i % 10 match {
-          case 1 => "1st"
-          case 2 => "2nd"
-          case 3 => "3rd"
-          case _ => s"${i}th"
+          case 1 => "st"
+          case 2 => "nd"
+          case 3 => "rd"
+          case _ => "th"
         }
-      }
+      })
 
     // returns the grammatical number of a string, i.e. `i.numerus("name")` is
     // 0: "no name", 1: "one name", 2: "two names", 3: "three names", 4: "4 names", ...

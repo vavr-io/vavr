@@ -318,6 +318,47 @@ public final class API {
         return Function8.of(methodReference);
     }
 
+    /**
+     * Alias for {@link Function9#of(Function9)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param <T8>            type of the 8th argument
+     * @param <T9>            type of the 9th argument
+     * @param methodReference A method reference
+     * @return A {@link Function9}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function(Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> methodReference) {
+        return Function9.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link Function10#of(Function10)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param <T8>            type of the 8th argument
+     * @param <T9>            type of the 9th argument
+     * @param <T10>           type of the 10th argument
+     * @param methodReference A method reference
+     * @return A {@link Function10}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> Function(Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> methodReference) {
+        return Function10.of(methodReference);
+    }
+
     // -- CheckedFunction
 
     /**
@@ -455,6 +496,47 @@ public final class API {
         return CheckedFunction8.of(methodReference);
     }
 
+    /**
+     * Alias for {@link CheckedFunction9#of(CheckedFunction9)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param <T8>            type of the 8th argument
+     * @param <T9>            type of the 9th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction9}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> CheckedFunction(CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> methodReference) {
+        return CheckedFunction9.of(methodReference);
+    }
+
+    /**
+     * Alias for {@link CheckedFunction10#of(CheckedFunction10)}
+     *
+     * @param <R>             return type
+     * @param <T1>            type of the 1st argument
+     * @param <T2>            type of the 2nd argument
+     * @param <T3>            type of the 3rd argument
+     * @param <T4>            type of the 4th argument
+     * @param <T5>            type of the 5th argument
+     * @param <T6>            type of the 6th argument
+     * @param <T7>            type of the 7th argument
+     * @param <T8>            type of the 8th argument
+     * @param <T9>            type of the 9th argument
+     * @param <T10>            type of the 10th argument
+     * @param methodReference A method reference
+     * @return A {@link CheckedFunction10}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> CheckedFunction(CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> methodReference) {
+        return CheckedFunction10.of(methodReference);
+    }
+
     // -- unchecked
 
     /**
@@ -589,6 +671,47 @@ public final class API {
      * @return A unchecked wrapper of supplied {@link CheckedFunction8}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction9#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @param <T2> type of the 2nd argument
+     * @param <T3> type of the 3rd argument
+     * @param <T4> type of the 4th argument
+     * @param <T5> type of the 5th argument
+     * @param <T6> type of the 6th argument
+     * @param <T7> type of the 7th argument
+     * @param <T8> type of the 8th argument
+     * @param <T9> type of the 9th argument
+     * @param f    A method reference
+     * @return A unchecked wrapper of supplied {@link CheckedFunction9}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Function9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> unchecked(CheckedFunction9<T1, T2, T3, T4, T5, T6, T7, T8, T9, R> f) {
+        return f.unchecked();
+    }
+
+    /**
+     * Alias for {@link CheckedFunction10#unchecked}
+     *
+     * @param <R>  return type
+     * @param <T1> type of the 1st argument
+     * @param <T2> type of the 2nd argument
+     * @param <T3> type of the 3rd argument
+     * @param <T4> type of the 4th argument
+     * @param <T5> type of the 5th argument
+     * @param <T6> type of the 6th argument
+     * @param <T7> type of the 7th argument
+     * @param <T8> type of the 8th argument
+     * @param <T9> type of the 9th argument
+     * @param <T10> type of the 10th argument
+     * @param f    A method reference
+     * @return A unchecked wrapper of supplied {@link CheckedFunction10}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> Function10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> unchecked(CheckedFunction10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> f) {
         return f.unchecked();
     }
 
@@ -761,6 +884,66 @@ public final class API {
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) {
         return Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 9 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param <T6> type of the 6th element
+     * @param <T7> type of the 7th element
+     * @param <T8> type of the 8th element
+     * @param <T9> type of the 9th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @param t6   the 6th element
+     * @param t7   the 7th element
+     * @param t8   the 8th element
+     * @param t9   the 9th element
+     * @return a tuple of 9 elements.
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9> Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9) {
+        return Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8, t9);
+    }
+
+    /**
+     * Alias for {@link Tuple#of(Object, Object, Object, Object, Object, Object, Object, Object, Object, Object)}
+     *
+     * Creates a tuple of 10 elements.
+     *
+     * @param <T1> type of the 1st element
+     * @param <T2> type of the 2nd element
+     * @param <T3> type of the 3rd element
+     * @param <T4> type of the 4th element
+     * @param <T5> type of the 5th element
+     * @param <T6> type of the 6th element
+     * @param <T7> type of the 7th element
+     * @param <T8> type of the 8th element
+     * @param <T9> type of the 9th element
+     * @param <T10> type of the 10th element
+     * @param t1   the 1st element
+     * @param t2   the 2nd element
+     * @param t3   the 3rd element
+     * @param t4   the 4th element
+     * @param t5   the 5th element
+     * @param t6   the 6th element
+     * @param t7   the 7th element
+     * @param t8   the 8th element
+     * @param t9   the 9th element
+     * @param t10   the 10th element
+     * @return a tuple of 10 elements.
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> Tuple(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8, T9 t9, T10 t10) {
+        return Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10);
     }
 
     // -- Either
@@ -2490,6 +2673,81 @@ public final class API {
     }
 
     /**
+     * Creates a {@code For}-comprehension of 9 Iterables.
+     *
+     * @param ts1 the 1st Iterable
+     * @param ts2 the 2nd Iterable
+     * @param ts3 the 3rd Iterable
+     * @param ts4 the 4th Iterable
+     * @param ts5 the 5th Iterable
+     * @param ts6 the 6th Iterable
+     * @param ts7 the 7th Iterable
+     * @param ts8 the 8th Iterable
+     * @param ts9 the 9th Iterable
+     * @param <T1> component type of the 1st Iterable
+     * @param <T2> component type of the 2nd Iterable
+     * @param <T3> component type of the 3rd Iterable
+     * @param <T4> component type of the 4th Iterable
+     * @param <T5> component type of the 5th Iterable
+     * @param <T6> component type of the 6th Iterable
+     * @param <T7> component type of the 7th Iterable
+     * @param <T8> component type of the 8th Iterable
+     * @param <T9> component type of the 9th Iterable
+     * @return a new {@code For}-comprehension of arity 9
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9> For9<T1, T2, T3, T4, T5, T6, T7, T8, T9> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7, Iterable<T8> ts8, Iterable<T9> ts9) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        Objects.requireNonNull(ts9, "ts9 is null");
+        return new For9<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8, ts9);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 10 Iterables.
+     *
+     * @param ts1 the 1st Iterable
+     * @param ts2 the 2nd Iterable
+     * @param ts3 the 3rd Iterable
+     * @param ts4 the 4th Iterable
+     * @param ts5 the 5th Iterable
+     * @param ts6 the 6th Iterable
+     * @param ts7 the 7th Iterable
+     * @param ts8 the 8th Iterable
+     * @param ts9 the 9th Iterable
+     * @param ts10 the 10th Iterable
+     * @param <T1> component type of the 1st Iterable
+     * @param <T2> component type of the 2nd Iterable
+     * @param <T3> component type of the 3rd Iterable
+     * @param <T4> component type of the 4th Iterable
+     * @param <T5> component type of the 5th Iterable
+     * @param <T6> component type of the 6th Iterable
+     * @param <T7> component type of the 7th Iterable
+     * @param <T8> component type of the 8th Iterable
+     * @param <T9> component type of the 9th Iterable
+     * @param <T10> component type of the 10th Iterable
+     * @return a new {@code For}-comprehension of arity 10
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> For10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7, Iterable<T8> ts8, Iterable<T9> ts9, Iterable<T10> ts10) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        Objects.requireNonNull(ts9, "ts9 is null");
+        Objects.requireNonNull(ts10, "ts10 is null");
+        return new For10<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8, ts9, ts10);
+    }
+
+    /**
      * For-comprehension with one Iterable.
      */
     public static class For1<T1> {
@@ -2788,6 +3046,109 @@ public final class API {
 
     }
 
+    /**
+     * For-comprehension with 9 Iterables.
+     */
+    public static class For9<T1, T2, T3, T4, T5, T6, T7, T8, T9> {
+
+        private final Iterable<T1> ts1;
+        private final Iterable<T2> ts2;
+        private final Iterable<T3> ts3;
+        private final Iterable<T4> ts4;
+        private final Iterable<T5> ts5;
+        private final Iterable<T6> ts6;
+        private final Iterable<T7> ts7;
+        private final Iterable<T8> ts8;
+        private final Iterable<T9> ts9;
+
+        private For9(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7, Iterable<T8> ts8, Iterable<T9> ts9) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+            this.ts8 = ts8;
+            this.ts9 = ts9;
+        }
+
+        /**
+         * Yields a result for elements of the cross product of the underlying Iterables.
+         *
+         * @param f a function that maps an element of the cross product to a result
+         * @param <R> type of the resulting {@code Iterator} elements
+         * @return an {@code Iterator} of mapped results
+         */
+        public <R> Iterator<R> yield(Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return
+                Iterator.ofAll(ts1).flatMap(t1 ->
+                Iterator.ofAll(ts2).flatMap(t2 ->
+                Iterator.ofAll(ts3).flatMap(t3 ->
+                Iterator.ofAll(ts4).flatMap(t4 ->
+                Iterator.ofAll(ts5).flatMap(t5 ->
+                Iterator.ofAll(ts6).flatMap(t6 ->
+                Iterator.ofAll(ts7).flatMap(t7 ->
+                Iterator.ofAll(ts8).flatMap(t8 ->
+                Iterator.ofAll(ts9).map(t9 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9))))))))));
+        }
+
+    }
+
+    /**
+     * For-comprehension with 10 Iterables.
+     */
+    public static class For10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> {
+
+        private final Iterable<T1> ts1;
+        private final Iterable<T2> ts2;
+        private final Iterable<T3> ts3;
+        private final Iterable<T4> ts4;
+        private final Iterable<T5> ts5;
+        private final Iterable<T6> ts6;
+        private final Iterable<T7> ts7;
+        private final Iterable<T8> ts8;
+        private final Iterable<T9> ts9;
+        private final Iterable<T10> ts10;
+
+        private For10(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7, Iterable<T8> ts8, Iterable<T9> ts9, Iterable<T10> ts10) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+            this.ts8 = ts8;
+            this.ts9 = ts9;
+            this.ts10 = ts10;
+        }
+
+        /**
+         * Yields a result for elements of the cross product of the underlying Iterables.
+         *
+         * @param f a function that maps an element of the cross product to a result
+         * @param <R> type of the resulting {@code Iterator} elements
+         * @return an {@code Iterator} of mapped results
+         */
+        public <R> Iterator<R> yield(Function10<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return
+                Iterator.ofAll(ts1).flatMap(t1 ->
+                Iterator.ofAll(ts2).flatMap(t2 ->
+                Iterator.ofAll(ts3).flatMap(t3 ->
+                Iterator.ofAll(ts4).flatMap(t4 ->
+                Iterator.ofAll(ts5).flatMap(t5 ->
+                Iterator.ofAll(ts6).flatMap(t6 ->
+                Iterator.ofAll(ts7).flatMap(t7 ->
+                Iterator.ofAll(ts8).flatMap(t8 ->
+                Iterator.ofAll(ts9).flatMap(t9 ->
+                Iterator.ofAll(ts10).map(t10 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8, t9, t10)))))))))));
+        }
+
+    }
+
     //
     // Structural Pattern Matching
     //
@@ -3041,6 +3402,50 @@ public final class API {
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case8<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8) -> retVal);
+    }
+
+    // - Pattern9
+
+    @GwtIncompatible
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Case<T, R> Case(Pattern9<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> pattern, Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case9<>(pattern, f);
+    }
+
+    @GwtIncompatible
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Case<T, R> Case(Pattern9<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case9<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8, _9) -> supplier.get());
+    }
+
+    @GwtIncompatible
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> Case<T, R> Case(Pattern9<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case9<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8, _9) -> retVal);
+    }
+
+    // - Pattern10
+
+    @GwtIncompatible
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> Case<T, R> Case(Pattern10<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> pattern, Function10<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? extends R> f) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(f, "f is null");
+        return new Case10<>(pattern, f);
+    }
+
+    @GwtIncompatible
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> Case<T, R> Case(Pattern10<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> pattern, Supplier<? extends R> supplier) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new Case10<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) -> supplier.get());
+    }
+
+    @GwtIncompatible
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> Case<T, R> Case(Pattern10<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> pattern, R retVal) {
+        Objects.requireNonNull(pattern, "pattern is null");
+        return new Case10<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8, _9, _10) -> retVal);
     }
 
     // PRE-DEFINED PATTERNS
@@ -3326,6 +3731,38 @@ public final class API {
             }
         }
 
+        public static final class Case9<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, R> implements Case<T, R> {
+
+            private final Pattern9<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> pattern;
+            private final Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> f;
+
+            private Case9(Pattern9<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> pattern, Function9<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public Option<R> apply(T obj) {
+                return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9));
+            }
+        }
+
+        public static final class Case10<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, R> implements Case<T, R> {
+
+            private final Pattern10<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> pattern;
+            private final Function10<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? extends R> f;
+
+            private Case10(Pattern10<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> pattern, Function10<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? super T9, ? super T10, ? extends R> f) {
+                this.pattern = pattern;
+                this.f = f;
+            }
+
+            @Override
+            public Option<R> apply(T obj) {
+                return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8, t._9, t._10));
+            }
+        }
+
         // -- PATTERNS
 
         /**
@@ -3578,6 +4015,69 @@ public final class API {
             }
 
             private Pattern8() {
+            }
+        }
+
+        public static abstract class Pattern9<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements Pattern<T, Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> {
+
+            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7, T8 extends U8, U8, T9 extends U9, U9> Pattern9<T, T1, T2, T3, T4, T5, T6, T7, T8, T9> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Pattern<T8, ?> p8, Pattern<T9, ?> p9, Function<T, Tuple9<U1, U2, U3, U4, U5, U6, U7, U8, U9>> unapply) {
+                return new Pattern9<T, T1, T2, T3, T4, T5, T6, T7, T8, T9>() {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public Option<Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>> apply(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return Option.none();
+                        } else {
+                            final Tuple9<U1, U2, U3, U4, U5, U6, U7, U8, U9> unapplied = unapply.apply(obj);
+                            return unapplied.apply((u1, u2, u3, u4, u5, u6, u7, u8, u9) ->
+                                    ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
+                                    ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
+                                    ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
+                                    ((Pattern<U4, ?>) p4).apply(u4).flatMap(_4 ->
+                                    ((Pattern<U5, ?>) p5).apply(u5).flatMap(_5 ->
+                                    ((Pattern<U6, ?>) p6).apply(u6).flatMap(_6 ->
+                                    ((Pattern<U7, ?>) p7).apply(u7).flatMap(_7 ->
+                                    ((Pattern<U8, ?>) p8).apply(u8).flatMap(_8 ->
+                                    ((Pattern<U9, ?>) p9).apply(u9).map(_9 -> (Tuple9<T1, T2, T3, T4, T5, T6, T7, T8, T9>) unapplied)
+                            )))))))));
+                        }
+                    }
+                };
+            }
+
+            private Pattern9() {
+            }
+        }
+
+        public static abstract class Pattern10<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> implements Pattern<T, Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> {
+
+            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7, T8 extends U8, U8, T9 extends U9, U9, T10 extends U10, U10> Pattern10<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Pattern<T8, ?> p8, Pattern<T9, ?> p9, Pattern<T10, ?> p10, Function<T, Tuple10<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10>> unapply) {
+                return new Pattern10<T, T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>() {
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public Option<Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>> apply(T obj) {
+                        if (obj == null || !type.isAssignableFrom(obj.getClass())) {
+                            return Option.none();
+                        } else {
+                            final Tuple10<U1, U2, U3, U4, U5, U6, U7, U8, U9, U10> unapplied = unapply.apply(obj);
+                            return unapplied.apply((u1, u2, u3, u4, u5, u6, u7, u8, u9, u10) ->
+                                    ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
+                                    ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
+                                    ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
+                                    ((Pattern<U4, ?>) p4).apply(u4).flatMap(_4 ->
+                                    ((Pattern<U5, ?>) p5).apply(u5).flatMap(_5 ->
+                                    ((Pattern<U6, ?>) p6).apply(u6).flatMap(_6 ->
+                                    ((Pattern<U7, ?>) p7).apply(u7).flatMap(_7 ->
+                                    ((Pattern<U8, ?>) p8).apply(u8).flatMap(_8 ->
+                                    ((Pattern<U9, ?>) p9).apply(u9).flatMap(_9 ->
+                                    ((Pattern<U10, ?>) p10).apply(u10).map(_10 -> (Tuple10<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>) unapplied)
+                            ))))))))));
+                        }
+                    }
+                };
+            }
+
+            private Pattern10() {
             }
         }
     }
