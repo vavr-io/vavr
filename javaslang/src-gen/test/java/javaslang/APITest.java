@@ -171,26 +171,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldFunction9ReturnNotNull() {
-        assertThat(Function((v1, v2, v3, v4, v5, v6, v7, v8, v9) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction9ReturnNotNull() {
-        assertThat(CheckedFunction((v1, v2, v3, v4, v5, v6, v7, v8, v9) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFunction10ReturnNotNull() {
-        assertThat(Function((v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction10ReturnNotNull() {
-        assertThat(CheckedFunction((v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) -> null)).isNotNull();
-    }
-
-    @Test
     public void shouldUnchecked0ReturnNonCheckedFunction() {
         assertThat(unchecked(() -> null)).isInstanceOf(Function0.class);
     }
@@ -236,16 +216,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldUnchecked9ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7, v8, v9) -> null)).isInstanceOf(Function9.class);
-    }
-
-    @Test
-    public void shouldUnchecked10ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7, v8, v9, v10) -> null)).isInstanceOf(Function10.class);
-    }
-
-    @Test
     public void shouldTuple0ReturnNotNull() {
         assertThat(Tuple()).isNotNull();
     }
@@ -288,16 +258,6 @@ public class APITest {
     @Test
     public void shouldTuple8ReturnNotNull() {
         assertThat(Tuple(1, 2, 3, 4, 5, 6, 7, 8)).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple9ReturnNotNull() {
-        assertThat(Tuple(1, 2, 3, 4, 5, 6, 7, 8, 9)).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple10ReturnNotNull() {
-        assertThat(Tuple(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)).isNotNull();
     }
 
     @Test
@@ -1117,43 +1077,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldIterateFor9() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5, i6, i7, i8, i9) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 9));
-        assertThat(result.head()).isEqualTo(9);
-        assertThat(result.last()).isEqualTo(3 * 9);
-    }
-
-    @Test
-    public void shouldIterateFor10() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5, i6, i7, i8, i9, i10) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8 + i9 + i10).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 10));
-        assertThat(result.head()).isEqualTo(10);
-        assertThat(result.last()).isEqualTo(3 * 10);
-    }
-
-    @Test
     public void shouldIterateNestedFor() {
         final List<String> result =
                 For(Arrays.asList(1, 2), i ->
@@ -1401,60 +1324,6 @@ public class APITest {
         final String match = Match(c).of(
                 Case(API.Match.Pattern8.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null)), "fail"),
                 Case(API.Match.Pattern8.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
-    }
-
-    @Test
-    public void shouldMatchPattern9() {
-        final Tuple9<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1, 1, 1);
-        final String func = Match(tuple).of(
-                Case(Patterns.Tuple9($(0), $(), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8, m9) -> "fail"),
-                Case(Patterns.Tuple9($(), $(), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8, m9) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case(Patterns.Tuple9($(0), $(), $(), $(), $(), $(), $(), $(), $()), () -> "fail"),
-                Case(Patterns.Tuple9($(), $(), $(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case(Patterns.Tuple9($(0), $(), $(), $(), $(), $(), $(), $(), $()), "fail"),
-                Case(Patterns.Tuple9($(), $(), $(), $(), $(), $(), $(), $(), $()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
-
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(API.Match.Pattern9.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null, null)), "fail"),
-                Case(API.Match.Pattern9.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null, null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
-    }
-
-    @Test
-    public void shouldMatchPattern10() {
-        final Tuple10<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-        final String func = Match(tuple).of(
-                Case(Patterns.Tuple10($(0), $(), $(), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8, m9, m10) -> "fail"),
-                Case(Patterns.Tuple10($(), $(), $(), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8, m9, m10) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case(Patterns.Tuple10($(0), $(), $(), $(), $(), $(), $(), $(), $(), $()), () -> "fail"),
-                Case(Patterns.Tuple10($(), $(), $(), $(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case(Patterns.Tuple10($(0), $(), $(), $(), $(), $(), $(), $(), $(), $()), "fail"),
-                Case(Patterns.Tuple10($(), $(), $(), $(), $(), $(), $(), $(), $(), $()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
-
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(API.Match.Pattern10.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null, null, null)), "fail"),
-                Case(API.Match.Pattern10.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null, null, null)), "okMatch")
         );
         assertThat(match).isEqualTo("okMatch");
     }

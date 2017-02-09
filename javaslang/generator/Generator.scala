@@ -11,7 +11,7 @@ import JavaGenerator._
 import collection.immutable.ListMap
 import scala.language.implicitConversions
 
-val N = 10
+val N = 8
 val VARARGS = 10
 val TARGET_MAIN = "javaslang/src-gen/main/java"
 val TARGET_TEST = "javaslang/src-gen/test/java"
