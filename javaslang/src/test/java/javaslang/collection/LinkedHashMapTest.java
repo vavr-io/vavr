@@ -172,6 +172,34 @@ public class LinkedHashMapTest extends AbstractMapTest {
         assertThat(keySet.mkString()).isEqualTo("412");
     }
 
+    // -- map
+
+    @Test
+    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
+        final Map<Integer, String> actual = LinkedHashMap.of(3, "3").put(1, "1").put(2, "2")
+                .mapKeys(Integer::toHexString).mapKeys(String::length);
+        final Map<Integer, String> expected = LinkedHashMap.of(1, "2");
+        assertThat(actual).isEqualTo(expected);
+    }
+    
+    // -- put
+
+    @Test
+    public void shouldAppendToTheEndWhenPuttingAnExistingKeyAndNonExistingValue() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+        final Map<Integer, String> actual = map.put(1, "d");
+        final Map<Integer, String> expected = mapOf(2, "b", 3, "c", 1, "d");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldAppendToTheEndWhenPuttingAnExistingKeyAndExistingValue() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+        final Map<Integer, String> actual = map.put(1, "a");
+        final Map<Integer, String> expected = mapOf(2, "b", 3, "c", 1, "a");
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- replace
 
     @Test
@@ -270,16 +298,6 @@ public class LinkedHashMapTest extends AbstractMapTest {
                 Tuple.of(7, "cdx"),
                 Tuple.of(4, "dx"),
                 Tuple.of(0, "x")));
-    }
-
-    // -- map
-
-    @Test
-    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
-        final Map<Integer, String> actual = LinkedHashMap.of(3, "3").put(1, "1").put(2, "2")
-                .mapKeys(Integer::toHexString).mapKeys(String::length);
-        final Map<Integer, String> expected = LinkedHashMap.of(1, "2");
-        assertThat(actual).isEqualTo(expected);
     }
 
 }

@@ -473,7 +473,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public HashSet<T> add(T element) {
-        return new HashSet<>(tree.put(element, element));
+        return contains(element) ? this : new HashSet<>(tree.put(element, element));
     }
 
     @Override

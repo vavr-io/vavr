@@ -661,6 +661,28 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(map.put(null, "!")).isEqualTo(mapOfNullKey(1, "a", null, "!", 2, "c"));
     }
 
+    @Test
+    public void shouldPutExistingKeyAndNonEqualValue() {
+        final Map<IntMod2, String> map = mapOf(new IntMod2(1), "a");
+
+        // we need to compare Strings because equals (intentionally) does not work for IntMod2
+        final String actual = map.put(new IntMod2(3), "b").toString();
+        final String expected = map.stringPrefix() + "((3, b))";
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldPutExistingKeyAndEqualValue() {
+        final Map<IntMod2, String> map = mapOf(new IntMod2(1), "a");
+
+        // we need to compare Strings because equals (intentionally) does not work for IntMod2
+        final String actual = map.put(new IntMod2(3), "a").toString();
+        final String expected = map.stringPrefix() + "((3, a))";
+
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- remove
 
     @Test
