@@ -108,8 +108,8 @@ import java.util.function.Predicate;
  * <ul>
  * <li>{@link #existsUnique(Predicate)}</li>
  * <li>{@link #hasDefiniteSize()}</li>
- * <li>{@link #isDistinct}</li>
- * <li>{@link #isOrdered}</li>
+ * <li>{@link #isDistinct()}</li>
+ * <li>{@link #isOrdered()}</li>
  * <li>{@link #isTraversableAgain()}</li>
  * </ul>
  *

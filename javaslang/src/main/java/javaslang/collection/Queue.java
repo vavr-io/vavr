@@ -800,7 +800,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     @Override
     public Queue<T> insert(int index, T element) {
         if (index < 0) {
-            throw new IndexOutOfBoundsException("insert(" + index + ", e)");
+            throw new IndexOutOfBoundsException("insert(" + index + ", element)");
         }
         final int length = front.length();
         if (index <= length) {
@@ -812,28 +812,35 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
                 final int reverseRearIndex = rearLength - rearIndex;
                 return new Queue<>(front, rear.insert(reverseRearIndex, element));
             } else {
-                throw new IndexOutOfBoundsException("insert(" + index + ", e) on Queue of length " + length());
+                throw new IndexOutOfBoundsException("insert(" + index + ", element) on Queue of length " + length());
             }
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Queue<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
-            throw new IndexOutOfBoundsException("insertAll(" + index + ", e)");
+            throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         }
         final int length = front.length();
         if (index <= length) {
-            return new Queue<>(front.insertAll(index, elements), rear);
+            if (isEmpty() && elements instanceof Queue) {
+                return (Queue<T>) elements;
+            } else {
+                final List<T> newFront = front.insertAll(index, elements);
+                return (newFront == front) ? this : new Queue<>(newFront, rear);
+            }
         } else {
             final int rearIndex = index - length;
             final int rearLength = rear.length();
             if (rearIndex <= rearLength) {
                 final int reverseRearIndex = rearLength - rearIndex;
-                return new Queue<>(front, rear.insertAll(reverseRearIndex, List.ofAll(elements).reverse()));
+                final List<T> newRear = rear.insertAll(reverseRearIndex, List.ofAll(elements).reverse());
+                return (newRear == rear) ? this : new Queue<>(front, newRear);
             } else {
-                throw new IndexOutOfBoundsException("insertAll(" + index + ", e) on Queue of length " + length());
+                throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on Queue of length " + length());
             }
         }
     }
@@ -921,10 +928,16 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         return new Queue<>(front.prepend(element), rear);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Queue<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new Queue<>(front.prependAll(elements), rear);
+        if (isEmpty() && elements instanceof Queue) {
+            return (Queue<T>) elements;
+        } else {
+            final List<T> newFront = front.prependAll(elements);
+            return (newFront == front) ? this : new Queue<>(newFront, rear);
+        }
     }
 
     @Override

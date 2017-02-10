@@ -554,7 +554,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof TreeSet) {
             final TreeSet<T> that = (TreeSet<T>) elements;
-            return new TreeSet<>(tree.difference(that.tree));
+            return that.isEmpty() ? this : new TreeSet<>(tree.difference(that.tree));
         } else {
             return removeAll(elements);
         }
@@ -905,7 +905,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof TreeSet) {
             final TreeSet<T> that = (TreeSet<T>) elements;
-            return new TreeSet<>(tree.union(that.tree));
+            return that.isEmpty() ? this : new TreeSet<>(tree.union(that.tree));
         } else {
             return addAll(elements);
         }

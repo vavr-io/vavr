@@ -227,7 +227,11 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @Override
     public M filter(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return (M) createFromEntries(iterator().filter(predicate));
+        if (isEmpty()) {
+            return (M) this;
+        } else {
+            return (M) createFromEntries(iterator().filter(predicate));
+        }
     }
 
     @Override

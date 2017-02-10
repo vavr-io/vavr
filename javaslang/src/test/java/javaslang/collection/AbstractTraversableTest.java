@@ -29,11 +29,13 @@ import static org.assertj.core.api.Assertions.within;
 
 public abstract class AbstractTraversableTest extends AbstractValueTest {
 
-    protected boolean isTraversableAgain() {
-        return true;
+    protected final boolean isTraversableAgain() {
+        return empty().isTraversableAgain();
     }
 
-    protected abstract boolean isDistinctElements();
+    protected final boolean isDistinctElements() {
+        return empty().isDistinct();
+    }
 
     protected abstract <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
 
@@ -74,14 +76,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     protected abstract <T> Traversable<T> tabulate(int n, Function<? super Integer, ? extends T> f);
 
     protected abstract <T> Traversable<T> fill(int n, Supplier<? extends T> s);
-
-    // -- isDistinct()
-
-    @Test
-    public void shouldTestDistinct() {
-        assertThat(empty().isDistinct()).isEqualTo(isDistinctElements());
-        assertThat(of(1).isDistinct()).isEqualTo(isDistinctElements());
-    }
 
     // -- static empty()
 
@@ -331,7 +325,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeDistinctOfNonEmptyTraversable() {
-        assertThat(of(1, 1, 2, 2, 3, 3).distinct()).isEqualTo(of(1, 2, 3));
+        final Traversable<Integer> testee = of(1, 1, 2, 2, 3, 3);
+        final Traversable<Integer> actual = testee.distinct();
+        final Traversable<Integer> expected = of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+        if (testee.isDistinct()) {
+            assertThat(actual).isSameAs(testee);
+        }
     }
 
     // -- distinct(Comparator)
@@ -549,6 +549,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
             assertThat(this.<Integer> empty().filter(i -> i == 0)).isSameAs(empty());
             assertThat(of(1, 2, 3).filter(i -> i == 0)).isSameAs(empty());
         }
+    }
+
+    @Test
+    public void shouldReturnSameInstanceWhenFilteringEmptyTraversable() {
+        final Traversable<?> empty = empty();
+        assertThat(empty.filter(v -> true)).isSameAs(empty);
     }
 
     // -- find

@@ -22,11 +22,6 @@ import static javaslang.collection.Comparators.naturalComparator;
 public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
-    protected boolean isDistinctElements() {
-        return true;
-    }
-
-    @Override
     protected <T> Collector<T, ArrayList<T>, ? extends TreeSet<T>> collector() {
         return TreeSet.collector(naturalComparator());
     }
@@ -134,11 +129,6 @@ public class TreeSetTest extends AbstractSortedSetTest {
     }
 
     @Override
-    protected boolean isOrdered() {
-        return true;
-    }
-
-    @Override
     protected TreeSet<Character> range(char from, char toExclusive) {
         return TreeSet.range(from, toExclusive);
     }
@@ -206,10 +196,6 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @Override
     protected TreeSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return TreeSet.rangeClosedBy(from, toInclusive, step);
-    }
-
-    private static Comparator<Integer> inverseIntComparator() {
-        return (i1, i2) -> Integer.compare(i2, i1);
     }
 
     // -- collector
@@ -359,5 +345,11 @@ public class TreeSetTest extends AbstractSortedSetTest {
     public void shouldTransform() {
         final String transformed = of(42).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("42");
+    }
+
+    // -- helpers
+
+    private static Comparator<Integer> inverseIntComparator() {
+        return (i1, i2) -> Integer.compare(i2, i1);
     }
 }

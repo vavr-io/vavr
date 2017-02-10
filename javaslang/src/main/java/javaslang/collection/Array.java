@@ -579,6 +579,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty() && elements instanceof Array) {
+            @SuppressWarnings("unchecked")
+            final Array<T> array = (Array<T>) elements;
+            return array;
+        }
         final Object[] source = toArray(elements);
         if (source.length == 0) {
             return this;
@@ -808,6 +813,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     public Array<T> insertAll(int index, Iterable<? extends T> elements) {
         if (index < 0 || index > length()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Array of length " + length());
+        }
+        if (isEmpty() && elements instanceof Array) {
+            @SuppressWarnings("unchecked")
+            final Array<T> array = (Array<T>) elements;
+            return array;
         }
         final Object[] list = toArray(elements);
         if (list.length == 0) {

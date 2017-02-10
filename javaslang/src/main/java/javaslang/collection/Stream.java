@@ -783,7 +783,17 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default Stream<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.ofAll(isEmpty() ? elements : Iterator.concat(this, elements));
+        if (isEmpty()) {
+            if (elements instanceof Stream) {
+                @SuppressWarnings("unchecked")
+                final Stream<T> stream = (Stream<T>) elements;
+                return stream;
+            } else {
+                return Stream.ofAll(elements);
+            }
+        } else {
+            return Stream.ofAll(Iterator.concat(this, elements));
+        }
     }
 
     /**
@@ -953,13 +963,17 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default Stream<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        Stream<T> stream = this;
-        while (!stream.isEmpty() && !predicate.test(stream.head())) {
-            stream = stream.tail();
+        if (isEmpty()) {
+            return this;
+        } else {
+            Stream<T> stream = this;
+            while (!stream.isEmpty() && !predicate.test(stream.head())) {
+                stream = stream.tail();
+            }
+            final Stream<T> finalStream = stream;
+            return stream.isEmpty() ? Stream.empty()
+                                    : cons(stream.head(), () -> finalStream.tail().filter(predicate));
         }
-        final Stream<T> finalStream = stream;
-        return stream.isEmpty() ? Stream.empty()
-                                : cons(stream.head(), () -> finalStream.tail().filter(predicate));
     }
 
     @Override
@@ -1194,7 +1208,17 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default Stream<T> prependAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return Stream.<T> ofAll(elements).appendAll(this);
+        if (isEmpty()) {
+            if (elements instanceof Stream) {
+                @SuppressWarnings("unchecked")
+                final Stream<T> stream = (Stream<T>) elements;
+                return stream;
+            } else {
+                return Stream.ofAll(elements);
+            }
+        } else {
+            return Stream.<T> ofAll(elements).appendAll(this);
+        }
     }
 
     @Override

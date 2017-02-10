@@ -136,26 +136,42 @@ final class Collections {
     @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C removeAll(C source, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final Set<T> removed = HashSet.ofAll(elements);
-        return (C) source.filter(e -> !removed.contains(e));
+        if (source.isEmpty()) {
+            return source;
+        } else {
+            final Set<T> removed = HashSet.ofAll(elements);
+            return removed.isEmpty() ? source : (C) source.filter(e -> !removed.contains(e));
+        }
     }
 
     @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C removeAll(C source, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return (C) source.filter(predicate.negate());
+        if (source.isEmpty()) {
+            return source;
+        } else {
+            return (C) source.filter(predicate.negate());
+        }
     }
 
+    @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C removeAll(C source, T element) {
-        Objects.requireNonNull(element, "element is null");
-        return removeAll(source, List.of(element));
+        if (source.isEmpty()) {
+            return source;
+        } else {
+            return (C) source.filter(e -> !Objects.equals(e, element));
+        }
     }
 
     @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C retainAll(C source, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final Set<T> removed = HashSet.ofAll(elements);
-        return (C) source.filter(removed::contains);
+        if (source.isEmpty()) {
+            return source;
+        } else {
+            final Set<T> retained = HashSet.ofAll(elements);
+            return (C) source.filter(retained::contains);
+        }
     }
 
     static <T> Iterator<T> reverseIterator(Iterable<T> iterable) {

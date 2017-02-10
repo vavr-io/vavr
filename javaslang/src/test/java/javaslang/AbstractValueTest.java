@@ -240,17 +240,6 @@ public abstract class AbstractValueTest {
 
     // -- Conversions toXxx()
 
-    /**
-     * States whether the Value's elements are ordered by a Comparator.
-     * <p>
-     * Test classes override this method to return {@code true} if needed.
-     *
-     * @return false (by default), if the Value's elements are ordered, true otherwise
-     */
-    protected boolean isOrdered() {
-        return false;
-    }
-
     @Test
     public void shouldConvertToArray() {
         final Value<Integer> value = of(1, 2, 3);
@@ -305,27 +294,23 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToLinkedMap() {
-        final Value<Integer> value = of(9, 5, 1);
+        final Value<Integer> value = of(1, 5, 9);
         final Map<Integer, Integer> map = value.toLinkedMap(i -> Tuple.of(i, i));
         if (value.isSingleValued()) {
-            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9));
-        } else if (isOrdered()) {
-            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1, 5, 5, 9, 9));
+            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1));
         } else {
-            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9, 5, 5, 1, 1));
+            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1, 5, 5, 9, 9));
         }
     }
 
     @Test
     public void shouldConvertToLinkedMapTwoFunctions() {
-        final Value<Integer> value = of(9, 5, 1);
+        final Value<Integer> value = of(1, 5, 9);
         final Map<Integer, Integer> map = value.toLinkedMap(Function.identity(), Function.identity());
         if (value.isSingleValued()) {
-            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9));
-        } else if (isOrdered()) {
-            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1, 5, 5, 9, 9));
+            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1));
         } else {
-            assertThat(map).isEqualTo(LinkedHashMap.of(9, 9, 5, 5, 1, 1));
+            assertThat(map).isEqualTo(LinkedHashMap.of(1, 1, 5, 5, 9, 9));
         }
     }
 

@@ -19,10 +19,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 public class VectorTest extends AbstractIndexedSeqTest {
-    @Override
-    protected boolean isDistinctElements() {
-        return false;
-    }
 
     @Override
     protected <T> Collector<T, ArrayList<T>, Vector<T>> collector() {

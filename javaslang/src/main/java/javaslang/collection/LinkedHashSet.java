@@ -483,6 +483,11 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     @Override
     public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty() && elements instanceof LinkedHashSet) {
+            @SuppressWarnings("unchecked")
+            final LinkedHashSet<T> set = (LinkedHashSet<T>) elements;
+            return set;
+        }
         final LinkedHashMap<T, Object> that = addAll(map, elements);
         if (that.size() == map.size()) {
             return this;

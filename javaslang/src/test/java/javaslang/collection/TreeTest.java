@@ -11,6 +11,7 @@ import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -94,11 +95,6 @@ public class TreeTest extends AbstractTraversableTest {
                 }
             }
         };
-    }
-
-    @Override
-    protected boolean isDistinctElements() {
-        return true;
     }
 
     @Override
@@ -248,7 +244,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     public void shouldNotGetValueOfNonNil() {
-        assertThat(tree.getValue()).isEqualTo(1);
+        assertThat(tree.get()).isEqualTo(1);
     }
 
     // -- size
@@ -672,4 +668,13 @@ public class TreeTest extends AbstractTraversableTest {
         final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toTree()).isSameAs(value);
     }
+
+    // -- ignored tests
+
+    @Ignore
+    @Test
+    public void shouldReturnSameInstanceWhenFilteringEmptyTraversable() {
+        // TODO: remove this overriden method with #1826
+    }
+
 }

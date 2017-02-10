@@ -27,11 +27,6 @@ public class StreamTest extends AbstractLinearSeqTest {
     // -- construction
 
     @Override
-    protected boolean isDistinctElements() {
-        return false;
-    }
-
-    @Override
     protected <T> Collector<T, ArrayList<T>, Stream<T>> collector() {
         return Stream.collector();
     }

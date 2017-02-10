@@ -311,7 +311,11 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     @Override
     public PriorityQueue<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return ofAll(comparator, iterator().filter(predicate));
+        if (isEmpty()) {
+            return this;
+        } else {
+            return ofAll(comparator, iterator().filter(predicate));
+        }
     }
 
     @Override

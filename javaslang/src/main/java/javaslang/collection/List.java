@@ -761,14 +761,17 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final List<T> filtered = foldLeft(empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
-
-        if (filtered.isEmpty()) {
-            return empty();
-        } else if (filtered.length() == length()) {
+        if (isEmpty()) {
             return this;
         } else {
-            return filtered.reverse();
+            final List<T> filtered = foldLeft(empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
+            if (filtered.isEmpty()) {
+                return empty();
+            } else if (filtered.length() == length()) {
+                return this;
+            } else {
+                return filtered.reverse();
+            }
         }
     }
 
