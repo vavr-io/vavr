@@ -12,6 +12,7 @@ import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -375,38 +376,6 @@ public class IteratorTest extends AbstractTraversableTest {
         }).head()).isEqualTo(2);
     }
 
-    // ++++++ OBJECT ++++++
-
-    // -- equals
-
-    @Override
-    @Test
-    public void shouldRecognizeEqualityOfNonNils() {
-        // a equals impl would enforce evaluation which is not wanted
-    }
-
-    // TODO: equals of same object and different objects of same shape
-
-    // -- hashCode
-
-    @Override
-    @Test
-    public void shouldCalculateHashCodeOfNonNil() {
-        // a hashCode impl would enforce evaluation which is not wanted
-    }
-
-    @Override
-    @Test
-    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
-        // a hashCode impl would enforce evaluation which is not wanted
-    }
-
-    @Override
-    @Test
-    public void shouldComputeHashCodeOfEmpty() {
-        // a hashCode impl would enforce evaluation which is not wanted
-    }
-
     // -- groupBy
 
     @Override
@@ -511,26 +480,6 @@ public class IteratorTest extends AbstractTraversableTest {
                 .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
-    @Override
-    @Test
-    public void shouldHaveAReasonableToString() {
-        // iterators are intermediate objects and should not have an equals, hashCode or toString
-    }
-
-    // -- equals
-
-    @Override
-    @Test
-    public void shouldRecognizeEqualObjects() {
-        // Iterator equality undefined
-    }
-
-    @Override
-    @Test
-    public void shouldRecognizeUnequalObjects() {
-        // Iterator equality undefined
-    }
-
     // -- class initialization (see #1773)
 
     @Test(timeout = 5_000)
@@ -560,4 +509,80 @@ public class IteratorTest extends AbstractTraversableTest {
             }
         }
     }
+
+    // ~~~~~~~ DISABLED TESTS ~~~~~~~
+
+    // -- equals
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldRecognizeEqualityOfNonNils() {
+        // a equals impl would enforce evaluation which is not wanted
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldRecognizeEqualObjects() {
+        // Iterator equality undefined
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldRecognizeUnequalObjects() {
+        // Iterator equality undefined
+    }
+
+    // -- hashCode
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldCalculateHashCodeOfNonNil() {
+        // a hashCode impl would enforce evaluation which is not wanted
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+        // a hashCode impl would enforce evaluation which is not wanted
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldComputeHashCodeOfEmpty() {
+        // a hashCode impl would enforce evaluation which is not wanted
+    }
+
+    // -- take
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceIfTakeAll() {
+        // take consumes the Iterator
+    }
+
+    // -- takeRight
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceIfTakeRightAll() {
+        // takeRight consumes the Iterator
+    }
+
+    // -- toString
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldHaveAReasonableToString() {
+        // iterators are intermediate objects and should not have an equals, hashCode or toString
+    }
+
 }

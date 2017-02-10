@@ -1464,7 +1464,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
     @Override
     default Stream<T> take(int n) {
         if (n < 1 || isEmpty()) {
-            return Empty.instance();
+            return empty();
         } else if (n == 1) {
             return cons(head(), Stream::empty);
         } else {

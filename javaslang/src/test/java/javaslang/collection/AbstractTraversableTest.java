@@ -1953,6 +1953,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         }
     }
 
+    @Test
+    public void shouldReturnSameInstanceIfTakeAll() {
+        final Traversable<?> t = of(1, 2, 3);
+        assertThat(t.take(3)).isSameAs(t);
+        assertThat(t.take(4)).isSameAs(t);
+    }
+
     // -- takeRight
 
     @Test
@@ -1986,6 +1993,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
             final Traversable<Integer> t = of(1, 2, 3);
             assertThat(t.takeRight(4)).isSameAs(t);
         }
+    }
+
+    @Test
+    public void shouldReturnSameInstanceIfTakeRightAll() {
+        final Traversable<?> t = of(1, 2, 3);
+        assertThat(t.takeRight(3)).isSameAs(t);
+        assertThat(t.takeRight(4)).isSameAs(t);
     }
 
     // -- takeUntil

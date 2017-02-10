@@ -485,12 +485,24 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     @Override
     public PriorityQueue<T> take(int n) {
-        return ofAll(comparator, iterator().take(n));
+        if (n >= size() || isEmpty()) {
+            return this;
+        } else if (n <= 0) {
+            return empty(comparator);
+        } else {
+            return ofAll(comparator, iterator().take(n));
+        }
     }
 
     @Override
     public PriorityQueue<T> takeRight(int n) {
-        return ofAll(comparator, toArray().takeRight(n));
+        if (n >= size() || isEmpty()) {
+            return this;
+        } else if (n <= 0) {
+            return empty(comparator);
+        } else {
+            return ofAll(comparator, toArray().takeRight(n));
+        }
     }
 
     @Override

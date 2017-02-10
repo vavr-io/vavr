@@ -746,6 +746,24 @@ public class TreeTest extends AbstractTraversableTest {
         // TODO: remove this overridden method with #1826
     }
 
+    // -- take
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceIfTakeAll() {
+        // Tree.take returns Seq
+    }
+
+    // -- takeRight
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceIfTakeRightAll() {
+        // Tree.takeRight returns Seq
+    }
+
     // -- takeUntil
 
     @Ignore

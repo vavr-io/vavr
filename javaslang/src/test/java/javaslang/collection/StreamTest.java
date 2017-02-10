@@ -5,9 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Serializables;
-import javaslang.Tuple2;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
 import javaslang.control.Try;
 import org.junit.Ignore;
@@ -16,7 +14,9 @@ import org.junit.Test;
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
@@ -182,6 +182,11 @@ public class StreamTest extends AbstractLinearSeqTest {
     @SuppressWarnings("unchecked")
     protected <T> Stream<Stream<T>> transpose(Seq<? extends Seq<T>> rows) {
         return Stream.transpose((Stream<Stream<T>>) rows);
+    }
+
+    @Override
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
+        return true;
     }
 
     // -- static concat()
@@ -426,13 +431,6 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(actual).isTrue();
     }
 
-    // -- lazy dropRight
-
-    @Test
-    public void shouldLazyDropRight() {
-        assertThat(Stream.from(1).takeUntil(i -> i == 18).dropRight(7)).isEqualTo(Stream.range(1, 11));
-    }
-
     // -- cycle
 
     @Test
@@ -460,13 +458,14 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(of(1, 2, 3).cycle(3)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
     }
 
-    // -- transform()
+    // -- dropRight
 
     @Test
-    public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("42");
+    public void shouldLazyDropRight() {
+        assertThat(Stream.from(1).takeUntil(i -> i == 18).dropRight(7)).isEqualTo(Stream.range(1, 11));
     }
+
+    // -- extend
 
     @Test
     public void shouldExtendStreamWithConstantValue() {
@@ -513,6 +512,132 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.continually(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
     }
 
+    // -- subSequence(int, int)
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceIfSubSequenceStartsAtZeroAndEndsAtLastElement() {
+        // Stream is lazy
+    }
+
+    // -- tail
+
+    @Test
+    public void shouldEvaluateTailAtMostOnce() {
+        final int[] counter = { 0 };
+        final Stream<Integer> stream = Stream.continually(() -> counter[0]++);
+        // this test ensures that the `tail.append(100)` does not modify the tail elements
+        final Stream<Integer> tail = stream.tail().append(100);
+        final String expected = stream.drop(1).take(3).mkString(",");
+        final String actual = tail.take(3).mkString(",");
+        assertThat(expected).isEqualTo("1,2,3");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldNotProduceStackOverflow() {
+        Stream.range(0, 1_000_000)
+                .map(String::valueOf)
+                .foldLeft(Stream.<String> empty(), Stream::append)
+                .mkString();
+    }
+
+    @Test // See #327, #594
+    public void shouldNotEvaluateHeadOfTailWhenCallingIteratorHasNext() {
+
+        final Integer[] vals = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        final CheckedFunction2<StringBuilder, Integer, Void> doStuff = (builder, i) -> {
+            builder.append(i);
+            if (i == 5) {
+                throw new Exception("Some error !!!");
+            } else {
+                return null;
+            }
+        };
+
+        final StringBuilder actual = new StringBuilder();
+        final CheckedFunction1<Integer, Void> consumer1 = doStuff.apply(actual);
+        Stream.of(vals)
+                .map(v -> Try.run(() -> consumer1.apply(v)))
+                .find(Try::isFailure)
+                .getOrElse(() -> Try.success(null));
+
+        final StringBuilder expected = new StringBuilder();
+        final CheckedFunction1<Integer, Void> consumer2 = doStuff.apply(expected);
+        java.util.stream.Stream.of(vals)
+                .map(v -> Try.run(() -> consumer2.apply(v)))
+                .filter(Try::isFailure)
+                .findFirst()
+                .orElseGet(() -> Try.success(null));
+
+        assertThat(actual.toString()).isEqualTo(expected.toString());
+    }
+
+    // -- take
+
+    @Test
+    public void shouldNotEvaluateNplusOneWhenTakeN() {
+        final Predicate<Integer> hiddenThrow = i -> {
+            if (i == 0) {
+                return true;
+            } else {
+                throw new IllegalArgumentException();
+            }
+        };
+        assertThat(Stream.from(0).filter(hiddenThrow).take(1).sum().intValue()).isEqualTo(0);
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceIfTakeAll() {
+        // the size of a possibly infinite stream is unknown
+    }
+
+    // -- toStream
+
+    @Test
+    public void shouldReturnSelfOnConvertToStream() {
+        final Value<Integer> value = of(1, 2, 3);
+        assertThat(value.toStream()).isSameAs(value);
+    }
+
+    // -- toString
+
+    @Test
+    public void shouldStringifyNil() {
+        assertThat(empty().toString()).isEqualTo("Stream()");
+    }
+
+    @Test
+    public void shouldStringifyNonNil() {
+        assertThat(of(1, 2, 3).toString()).isEqualTo("Stream(1, ?)");
+    }
+
+    @Test
+    public void shouldStringifyNonNilEvaluatingFirstTail() {
+        final Stream<Integer> stream = this.of(1, 2, 3);
+        stream.tail(); // evaluates second head element
+        assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
+    }
+
+    @Test
+    public void shouldStringifyNonNilAndNilTail() {
+        final Stream<Integer> stream = this.of(1);
+        stream.tail(); // evaluates empty tail
+        assertThat(stream.toString()).isEqualTo("Stream(1)");
+    }
+
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
     // -- unfold
 
     @Test
@@ -557,32 +682,6 @@ public class StreamTest extends AbstractLinearSeqTest {
                 .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
-    // -- toString
-
-    @Test
-    public void shouldStringifyNil() {
-        assertThat(empty().toString()).isEqualTo("Stream()");
-    }
-
-    @Test
-    public void shouldStringifyNonNil() {
-        assertThat(of(1, 2, 3).toString()).isEqualTo("Stream(1, ?)");
-    }
-
-    @Test
-    public void shouldStringifyNonNilEvaluatingFirstTail() {
-        final Stream<Integer> stream = this.of(1, 2, 3);
-        stream.tail(); // evaluates second head element
-        assertThat(stream.toString()).isEqualTo("Stream(1, 2, ?)");
-    }
-
-    @Test
-    public void shouldStringifyNonNilAndNilTail() {
-        final Stream<Integer> stream = this.of(1);
-        stream.tail(); // evaluates empty tail
-        assertThat(stream.toString()).isEqualTo("Stream(1)");
-    }
-
     // -- Serializable
 
     @Test(expected = InvalidObjectException.class)
@@ -624,87 +723,4 @@ public class StreamTest extends AbstractLinearSeqTest {
         }
     }
 
-    @Override
-    protected boolean useIsEqualToInsteadOfIsSameAs() {
-        return true;
-    }
-
-    @Test
-    public void shouldEvaluateTailAtMostOnce() {
-        final int[] counter = { 0 };
-        final Stream<Integer> stream = Stream.continually(() -> counter[0]++);
-        // this test ensures that the `tail.append(100)` does not modify the tail elements
-        final Stream<Integer> tail = stream.tail().append(100);
-        final String expected = stream.drop(1).take(3).mkString(",");
-        final String actual = tail.take(3).mkString(",");
-        assertThat(expected).isEqualTo("1,2,3");
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Ignore
-    @Test
-    public void shouldNotProduceStackOverflow() {
-        Stream.range(0, 1_000_000)
-                .map(String::valueOf)
-                .foldLeft(Stream.<String> empty(), Stream::append)
-                .mkString();
-    }
-
-    @Test // See #327, #594
-    public void shouldNotEvaluateHeadOfTailWhenCallingIteratorHasNext() {
-
-        final Integer[] vals = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-
-        final StringBuilder actual = new StringBuilder();
-        flatTryWithJavaslangStream(vals, i -> doStuff(i, actual));
-
-        final StringBuilder expected = new StringBuilder();
-        flatTryWithJavaStream(vals, i -> doStuff(i, expected));
-
-        assertThat(actual.toString()).isEqualTo(expected.toString());
-    }
-
-    @Test
-    public void shouldNotEvaluateNplusOneWhenTakeN() {
-        assertThat(Stream.from(0).filter(this::hiddenThrow).take(1).sum().intValue()).isEqualTo(0);
-
-    }
-
-    private boolean hiddenThrow(final int i) {
-        if (i == 0) {
-            return true;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    private Try<Void> flatTryWithJavaslangStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
-        return Stream.of(vals)
-                .map(v -> Try.run(() -> func.accept(v)))
-                .find(Try::isFailure)
-                .getOrElse(() -> Try.success(null));
-    }
-
-    private Try<Void> flatTryWithJavaStream(Integer[] vals, Try.CheckedConsumer<Integer> func) {
-        return java.util.stream.Stream.of(vals)
-                .map(v -> Try.run(() -> func.accept(v)))
-                .filter(Try::isFailure)
-                .findFirst()
-                .orElseGet(() -> Try.success(null));
-    }
-
-    private String doStuff(int i, StringBuilder builder) throws Exception {
-        builder.append(i);
-        if (i == 5) {
-            throw new Exception("Some error !!!");
-        }
-        return i + " Value";
-    }
-
-    // -- toStream
-
-    @Test
-    public void shouldReturnSelfOnConvertToStream() {
-        Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toStream()).isSameAs(value);
-    }
 }

@@ -1204,9 +1204,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> subSequence(int beginIndex) {
-        if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
-        } else if (beginIndex > length()) {
+        if (beginIndex < 0 || beginIndex > length()) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
         } else {
             return drop(beginIndex);
@@ -1216,9 +1214,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + length());
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on Array of length " + length());
         } else if (beginIndex == endIndex) {
             return empty();
+        } else if (beginIndex == 0 && endIndex == length()) {
+            return this;
         } else {
             final Object[] arr = new Object[endIndex - beginIndex];
             System.arraycopy(delegate, beginIndex, arr, 0, arr.length);

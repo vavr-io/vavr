@@ -1751,6 +1751,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         of(1, 2, 3).subSequence(4);
     }
 
+    @Test
+    public void shouldReturnSameInstanceIfSubSequenceStartsAtZero() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.subSequence(0)).isSameAs(seq);
+    }
+
     // -- subSequence(beginIndex, endIndex)
 
     @Test
@@ -1822,6 +1828,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceWhenBeginIndexIsGreaterThanEndIndex() {
         of(1, 2, 3).subSequence(2, 1).mkString(); // force computation of last element, e.g. because Stream is lazy
+    }
+
+    @Test
+    public void shouldReturnSameInstanceIfSubSequenceStartsAtZeroAndEndsAtLastElement() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.subSequence(0, 3)).isSameAs(seq);
     }
 
     // -- search(element)

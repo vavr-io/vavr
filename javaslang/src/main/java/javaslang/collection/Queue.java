@@ -1088,12 +1088,24 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
 
     @Override
     public Queue<T> subSequence(int beginIndex) {
-        return ofAll(toList().subSequence(beginIndex));
+        if (beginIndex < 0 || beginIndex > length()) {
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
+        } else {
+            return drop(beginIndex);
+        }
     }
 
     @Override
     public Queue<T> subSequence(int beginIndex, int endIndex) {
-        return ofAll(toList().subSequence(beginIndex, endIndex));
+        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on Queue of length " + length());
+        } else if (beginIndex == endIndex) {
+            return empty();
+        } else if (beginIndex == 0 && endIndex == length()) {
+            return this;
+        } else {
+            return ofAll(toList().subSequence(beginIndex, endIndex));
+        }
     }
 
     @Override
