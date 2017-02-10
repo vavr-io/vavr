@@ -93,6 +93,7 @@ public abstract class AbstractValueTest {
     @SuppressWarnings("unchecked")
     abstract protected <T> Value<T> of(T... elements);
 
+    // TODO: Eliminate this method. Switching the behavior of unit tests is evil. Tests should not contain additional logic.
     abstract protected boolean useIsEqualToInsteadOfIsSameAs();
 
     // returns the peek result of the specific Traversable implementation

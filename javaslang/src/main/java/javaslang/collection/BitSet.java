@@ -663,18 +663,18 @@ interface BitSetModule {
         @Override
         public BitSet<T> distinctBy(Comparator<? super T> comparator) {
             Objects.requireNonNull(comparator, "comparator is null");
-            return createFromAll(iterator().distinctBy(comparator));
+            return isEmpty() ? this : createFromAll(iterator().distinctBy(comparator));
         }
 
         @Override
         public <U> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
             Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-            return createFromAll(iterator().distinctBy(keyExtractor));
+            return isEmpty() ? this : createFromAll(iterator().distinctBy(keyExtractor));
         }
 
         @Override
         public BitSet<T> drop(int n) {
-            if (n <= 0) {
+            if (n <= 0 || isEmpty()) {
                 return this;
             } else if (n >= length()) {
                 return createEmpty();
@@ -685,7 +685,7 @@ interface BitSetModule {
 
         @Override
         public BitSet<T> dropRight(int n) {
-            if (n <= 0) {
+            if (n <= 0 || isEmpty()) {
                 return this;
             } else if (n >= length()) {
                 return createEmpty();
@@ -817,10 +817,10 @@ interface BitSetModule {
 
         @Override
         public BitSet<T> take(int n) {
-            if (n <= 0) {
-                return createEmpty();
-            } else if (n >= length()) {
+            if (isEmpty() || n >= length()) {
                 return this;
+            } else if (n <= 0) {
+                return createEmpty();
             } else {
                 return createFromAll(iterator().take(n));
             }
@@ -828,10 +828,10 @@ interface BitSetModule {
 
         @Override
         public BitSet<T> takeRight(int n) {
-            if (n <= 0) {
-                return createEmpty();
-            } else if (n >= length()) {
+            if (isEmpty() || n >= length()) {
                 return this;
+            } else if (n <= 0) {
+                return createEmpty();
             } else {
                 return createFromAll(iterator().takeRight(n));
             }

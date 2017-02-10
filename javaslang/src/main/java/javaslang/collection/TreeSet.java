@@ -577,18 +577,18 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @Override
     public TreeSet<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return TreeSet.ofAll(tree.comparator(), iterator().distinctBy(comparator));
+        return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> TreeSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return TreeSet.ofAll(tree.comparator(), iterator().distinctBy(keyExtractor));
+        return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(keyExtractor));
     }
 
     @Override
     public TreeSet<T> drop(int n) {
-        if (n <= 0) {
+        if (n <= 0 || isEmpty()) {
             return this;
         } else if (n >= length()) {
             return empty(tree.comparator());
@@ -599,7 +599,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public TreeSet<T> dropRight(int n) {
-        if (n <= 0) {
+        if (n <= 0 || isEmpty()) {
             return this;
         } else if (n >= length()) {
             return empty(tree.comparator());

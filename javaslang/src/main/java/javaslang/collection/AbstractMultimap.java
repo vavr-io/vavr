@@ -177,19 +177,20 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @Override
     public M distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return (M) createFromEntries(iterator().distinctBy(comparator));
+        return (M) (isEmpty() ? this : createFromEntries(iterator().distinctBy(comparator)));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <U> Multimap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
+    public <U> M distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return createFromEntries(iterator().distinctBy(keyExtractor));
+        return (M) (isEmpty() ? this : createFromEntries(iterator().distinctBy(keyExtractor)));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public M drop(int n) {
-        if (n <= 0) {
+        if (n <= 0 || isEmpty()) {
             return (M) this;
         } else if (n >= length()) {
             return (M) this.emptyInstance();
@@ -201,7 +202,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @Override
     @SuppressWarnings("unchecked")
     public M dropRight(int n) {
-        if (n <= 0) {
+        if (n <= 0 || isEmpty()) {
             return (M) this;
         } else if (n >= length()) {
             return (M) this.emptyInstance();
@@ -220,7 +221,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @Override
     public M dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return (M) createFromEntries(iterator().dropWhile(predicate));
+        return (M) (isEmpty() ? this : createFromEntries(iterator().dropWhile(predicate)));
     }
 
     @SuppressWarnings("unchecked")
@@ -446,13 +447,25 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @Override
     @SuppressWarnings("unchecked")
     public M take(int n) {
-        return (M) (size() <= n ? this : createFromEntries(iterator().take(n)));
+        if (isEmpty() || n >= length()) {
+            return (M) this;
+        } else if (n <= 0) {
+            return (M) this.emptyInstance();
+        } else {
+            return (M) createFromEntries(iterator().take(n));
+        }
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public M takeRight(int n) {
-        return (M) (size() <= n ? this : createFromEntries(iterator().takeRight(n)));
+        if (isEmpty() || n >= length()) {
+            return (M) this;
+        } else if (n <= 0) {
+            return (M) this.emptyInstance();
+        } else {
+            return (M) createFromEntries(iterator().takeRight(n));
+        }
     }
 
     @Override

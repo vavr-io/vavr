@@ -378,22 +378,6 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(tree.contains(0)).isFalse();
     }
 
-    // -- drop
-
-    @Test
-    @Override
-    public void shouldDropNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).drop(-1)).isEqualTo(of(1, 2, 3));
-    }
-
-    // -- dropRight
-
-    @Test
-    @Override
-    public void shouldDropRightNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).dropRight(-1)).isEqualTo(of(1, 2, 3));
-    }
-
     // -- flatMap
 
     @Test
@@ -669,12 +653,115 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(value.toTree()).isSameAs(value);
     }
 
-    // -- ignored tests
+    // ~~~~~~~ DISABLED TESTS ~~~~~~~
+
+    // -- distinctBy(Comparator)
 
     @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDistinctByComparatorEmptyTraversable() {
+        // TODO: remove this overridden method with #1826
+    }
+
+    // -- distinctBy(Function)
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDistinctByFunctionEmptyTraversable() {
+        // TODO: remove this overridden method with #1826
+    }
+
+    // -- drop
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDropZeroCount() {
+        // Tree.drop() returns a Seq
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDropNegativeCount() {
+        // Tree.drop() returns a Seq
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyDropOne() {
+        // Tree.drop() returns a Seq
+    }
+
+    // -- dropRight
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDropRightZeroCount() {
+        // Tree.dropRight() returns a Seq
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDropRightNegativeCount() {
+        // Tree.dropRight() returns a Seq
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyDropRightOne() {
+        // Tree.dropRight() returns a Seq
+    }
+
+    // -- dropUntil
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyDropUntil() {
+        // Tree.dropUntil returns a Seq
+    }
+
+    // -- dropWhile
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyDropWhile() {
+        // Tree.dropWhile returns a Seq
+    }
+
+    // -- filter
+
+    @Ignore
+    @Override
     @Test
     public void shouldReturnSameInstanceWhenFilteringEmptyTraversable() {
-        // TODO: remove this overriden method with #1826
+        // TODO: remove this overridden method with #1826
+    }
+
+    // -- takeUntil
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyTakeUntil() {
+        // Tree.takeUntil() returns a Seq
+    }
+
+    // -- takeWhile
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyTakeWhile() {
+        // Tree.takeWhile() returns a Seq
     }
 
 }
