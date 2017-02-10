@@ -52,6 +52,11 @@ public class LinkedHashMapTest extends AbstractMapTest {
         return LinkedHashMap.of(key, value);
     }
 
+    // copied from 2.1.0 for 2.0.6
+    private <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return LinkedHashMap.of(k1, v1, k2, v2, k3, v3);
+    }
+
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
         return LinkedHashMap.of(k1, v1, k2, v2);
@@ -110,6 +115,24 @@ public class LinkedHashMapTest extends AbstractMapTest {
     public void shouldKeepKeySetOrder() {
         final Set<Integer> keySet = LinkedHashMap.<Integer, String> of(4, "d", 1, "a", 2, "b").keySet();
         assertThat(keySet.mkString()).isEqualTo("412");
+    }
+    
+    // -- put
+
+    @Test
+    public void shouldAppendToTheEndWhenPuttingAnExistingKeyAndNonExistingValue() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+        final Map<Integer, String> actual = map.put(1, "d");
+        final Map<Integer, String> expected = mapOf(2, "b", 3, "c", 1, "d");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldAppendToTheEndWhenPuttingAnExistingKeyAndExistingValue() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+        final Map<Integer, String> actual = map.put(1, "a");
+        final Map<Integer, String> expected = mapOf(2, "b", 3, "c", 1, "a");
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- replace

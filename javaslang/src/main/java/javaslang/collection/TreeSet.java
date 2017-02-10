@@ -494,7 +494,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public TreeSet<T> add(T element) {
-        return new TreeSet<>(tree.insert(element));
+        return contains(element) ? this : new TreeSet<>(tree.insert(element));
     }
 
     @Override

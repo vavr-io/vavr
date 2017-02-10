@@ -91,6 +91,12 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
         assertThat(emptyWithNull().add(1).add(null)).contains(null, 1);
     }
 
+    @Test
+    public void shouldNotAddAnExistingElementTwice() {
+        final Set<IntMod2> set = of(new IntMod2(2));
+        assertThat(set.add(new IntMod2(4))).isSameAs(set);
+    }
+
     // -- map
 
     @Test

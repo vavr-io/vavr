@@ -452,7 +452,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public LinkedHashSet<T> add(T element) {
-        return new LinkedHashSet<>(map.put(element, element));
+        return contains(element) ? this : new LinkedHashSet<>(map.put(element, element));
     }
 
     @Override
