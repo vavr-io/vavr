@@ -5,10 +5,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 import static javaslang.collection.Comparators.naturalComparator;
 
@@ -25,7 +27,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap() {
+    protected <T1 extends Comparable<T1>, T2> HashMultimap<T1, T2> emptyMap() {
         switch (containerType) {
             case SEQ:
                 return HashMultimap.withSeq().empty();
@@ -53,7 +55,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<K>, V> HashMultimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
                 return HashMultimap.withSeq().ofEntries(entries);
@@ -68,7 +70,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<K>, V> HashMultimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
                 return HashMultimap.withSeq().ofEntries(entries);
@@ -81,7 +83,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <K extends Comparable<K>, V> Multimap<K, V> mapOfPairs(K k1, V v1, K k2, V v2, K k3, V v3) {
+    protected <K extends Comparable<K>, V> HashMultimap<K, V> mapOfPairs(K k1, V v1, K k2, V v2, K k3, V v3) {
         switch (containerType) {
             case SEQ:
                 return HashMultimap.withSeq().of(k1, v1, k2, v2, k3, v3);
@@ -94,12 +96,59 @@ public class HashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K key, V value) {
-        return HashMultimap.withSeq().of(key, value);
+    protected <K extends Comparable<K>, V> HashMultimap<K, V> mapOf(K key, V value) {
+        switch (containerType) {
+            case SEQ:
+                return HashMultimap.withSeq().of(key, value);
+            case SET:
+                return HashMultimap.withSet().of(key, value);
+            case SORTED_SET:
+                return HashMultimap.withSortedSet(naturalComparator()).of(key, value);
+        }
+        throw new RuntimeException();
     }
 
     @Override
-    protected <K extends Comparable<K>, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    protected <K extends Comparable<? super K>, V> HashMultimap<K, V> mapOf(Map<? extends K, ? extends V> map) {
+        switch (containerType) {
+            case SEQ:
+                return HashMultimap.withSeq().ofAll(map);
+            case SET:
+                return HashMultimap.withSet().ofAll(map);
+            case SORTED_SET:
+                return HashMultimap.withSortedSet(naturalComparator()).ofAll(map);
+        }
+        throw new RuntimeException();
+    }
+
+    @Override
+    protected <T, K extends Comparable<? super K>, V> HashMultimap<K, V> mapOf(Stream<? extends T> stream, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        switch (containerType) {
+            case SEQ:
+                return HashMultimap.withSeq().ofAll(stream, keyMapper, valueMapper);
+            case SET:
+                return HashMultimap.withSet().ofAll(stream, keyMapper, valueMapper);
+            case SORTED_SET:
+                return HashMultimap.withSortedSet(naturalComparator()).ofAll(stream, keyMapper, valueMapper);
+        }
+        throw new RuntimeException();
+    }
+
+    @Override
+    protected <T, K extends Comparable<? super K>, V> HashMultimap<K, V> mapOf(Stream<? extends T> stream, Function<? super T, Tuple2<? extends K, ? extends V>> f) {
+        switch (containerType) {
+            case SEQ:
+                return HashMultimap.withSeq().ofAll(stream, f);
+            case SET:
+                return HashMultimap.withSet().ofAll(stream, f);
+            case SORTED_SET:
+                return HashMultimap.withSortedSet(naturalComparator()).ofAll(stream, f);
+        }
+        throw new RuntimeException();
+    }
+
+    @Override
+    protected <K extends Comparable<K>, V> HashMultimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         switch (containerType) {
             case SEQ:
                 return HashMultimap.withSeq().tabulate(n, f);
@@ -112,7 +161,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <K extends Comparable<K>, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    protected <K extends Comparable<K>, V> HashMultimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         switch (containerType) {
             case SEQ:
                 return HashMultimap.withSeq().fill(n, s);
@@ -232,7 +281,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldNarrowMap() {
-        final HashMultimap<Integer, Number> int2doubleMap = (HashMultimap<Integer, Number>) this.<Integer, Number> emptyMap().put(1, 1.0d);
+        final HashMultimap<Integer, Number> int2doubleMap = this.<Integer, Number> emptyMap().put(1, 1.0d);
         final HashMultimap<Number, Number> number2numberMap = HashMultimap.narrow(int2doubleMap);
         final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);

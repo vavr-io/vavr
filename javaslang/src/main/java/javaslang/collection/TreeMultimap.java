@@ -20,7 +20,7 @@ import java.util.stream.Collector;
 import static javaslang.collection.Comparators.naturalComparator;
 
 /**
- * An {@link HashMap}-based implementation of {@link Multimap}
+ * An {@link TreeMap}-based implementation of {@link Multimap}
  *
  * @param <K> Key type
  * @param <V> Value type
@@ -114,6 +114,99 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
                 result = result.put(entry.getKey(), entry.getValue());
             }
             return result;
+        }
+
+        /**
+         * Returns a {@code TreeMultimap}, from a source java.util.Map.
+         *
+         * @param map A map entry.
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given map
+         */
+        public <K, V2 extends V> TreeMultimap<K, V2> ofAll(Comparator<? super K> keyComparator, java.util.Map<? extends K, ? extends V2> map) {
+            return Multimaps.ofJavaMap(empty(keyComparator), map);
+        }
+
+        /**
+         * Returns a {@code TreeMultimap}, from a source java.util.Map.
+         *
+         * @param map A map entry.
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given map
+         */
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofAll(java.util.Map<? extends K, ? extends V2> map) {
+            return Multimaps.ofJavaMap(this.<K, V2>empty(), map);
+        }
+
+        /**
+         * Returns a {@code TreeMultimap}, from entries mapped from stream.
+         *
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @param stream      the source stream
+         * @param keyMapper   the key mapper
+         * @param valueMapper the value mapper
+         * @param <T>         The stream type
+         * @param <K>         The key type
+         * @param <V2>         The value type
+         * @return A new Multimap
+         */
+        public <T, K, V2 extends V> TreeMultimap<K, V2> ofAll(Comparator<? super K> keyComparator,
+                                                              java.util.stream.Stream<? extends T> stream,
+                                                              Function<? super T, ? extends K> keyMapper,
+                                                              Function<? super T, ? extends V2> valueMapper) {
+            return Multimaps.ofStream(empty(keyComparator), stream, keyMapper, valueMapper);
+        }
+
+        /**
+         * Returns a {@code TreeMultimap}, from entries mapped from stream.
+         *
+         * @param stream      the source stream
+         * @param keyMapper   the key mapper
+         * @param valueMapper the value mapper
+         * @param <T>         The stream type
+         * @param <K>         The key type
+         * @param <V2>        The value type
+         * @return A new Multimap
+         */
+        public <T, K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                              Function<? super T, ? extends K> keyMapper,
+                                                              Function<? super T, ? extends V2> valueMapper) {
+            return Multimaps.ofStream(this.<K, V2>empty(), stream, keyMapper, valueMapper);
+        }
+
+        /**
+         * Returns a {@code TreeMultimap}, from entries mapped from stream.
+         *
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @param stream      the source stream
+         * @param entryMapper the entry mapper
+         * @param <T>         The stream type
+         * @param <K>         The key type
+         * @param <V2>        The value type
+         * @return A new Multimap
+         */
+        public <T, K, V2 extends V> TreeMultimap<K, V2> ofAll(Comparator<? super K> keyComparator,
+                                                              java.util.stream.Stream<? extends T> stream,
+                                                              Function<? super T, Tuple2<? extends K, ? extends V2>> entryMapper) {
+            return Multimaps.ofStream(empty(keyComparator), stream, entryMapper);
+        }
+
+        /**
+         * Returns a {@code TreeMultimap}, from entries mapped from stream.
+         *
+         * @param stream      the source stream
+         * @param entryMapper the entry mapper
+         * @param <T>         The stream type
+         * @param <K>         The key type
+         * @param <V2>        The value type
+         * @return A new Multimap
+         */
+        public <T, K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                              Function<? super T, Tuple2<? extends K, ? extends V2>> entryMapper) {
+            return Multimaps.ofStream(empty(), stream, entryMapper);
         }
 
         @SuppressWarnings("unchecked")
