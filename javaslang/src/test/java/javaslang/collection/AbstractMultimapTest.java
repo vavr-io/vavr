@@ -145,8 +145,9 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
                 return "HashSet";
             case SORTED_SET:
                 return "TreeSet";
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     abstract protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap();

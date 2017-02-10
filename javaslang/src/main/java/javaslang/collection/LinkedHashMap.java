@@ -94,7 +94,7 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     /**
      * Returns a {@code LinkedHashMap}, from a source java.util.Map.
      *
-     * @param map A map entry.
+     * @param map A map
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given map
@@ -113,7 +113,7 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
      *
      * @param stream      the source stream
      * @param entryMapper the entry mapper
-     * @param <T>         The stream type
+     * @param <T>         The stream element type
      * @param <K>         The key type
      * @param <V>         The value type
      * @return A new Map
@@ -129,7 +129,7 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
      * @param stream      the source stream
      * @param keyMapper   the key mapper
      * @param valueMapper the value mapper
-     * @param <T>         The stream type
+     * @param <T>         The stream element type
      * @param <K>         The key type
      * @param <V>         The value type
      * @return A new Map

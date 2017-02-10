@@ -35,8 +35,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().empty();
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).empty();
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -48,8 +49,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().collector();
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).collector();
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @SuppressWarnings("varargs")
@@ -63,8 +65,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @SuppressWarnings("varargs")
@@ -78,8 +81,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -91,8 +95,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().of(k1, v1, k2, v2, k3, v3);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).of(k1, v1, k2, v2, k3, v3);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -104,8 +109,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().of(key, value);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).of(key, value);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -117,8 +123,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().ofAll(map);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).ofAll(map);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -130,8 +137,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().ofAll(stream, keyMapper, valueMapper);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).ofAll(stream, keyMapper, valueMapper);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -143,8 +151,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().ofAll(stream, f);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).ofAll(stream, f);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -156,8 +165,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().tabulate(n, f);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).tabulate(n, f);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -169,8 +179,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().fill(n, s);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).fill(n, s);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override

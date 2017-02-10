@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * An {@link HashMap}-based implementation of {@link Multimap}
+ * A {@link HashMap}-based implementation of {@link Multimap}
  *
  * @param <K> Key type
  * @param <V> Value type
@@ -91,10 +91,10 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
         /**
          * Returns a {@code HashMultimap}, from a source java.util.Map.
          *
-         * @param map A map entry.
+         * @param map A map
          * @param <K> The key type
          * @param <V2> The value type
-         * @return A new Multimap containing the given map
+         * @return A new Multimap containing the given map entries
          */
         public <K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.Map<? extends K, ? extends V2> map) {
             return Multimaps.ofJavaMap(empty(), map);
@@ -106,7 +106,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param stream      the source stream
          * @param keyMapper   the key mapper
          * @param valueMapper the value mapper
-         * @param <T>         The stream type
+         * @param <T>         The stream element type
          * @param <K>         The key type
          * @param <V2>        The value type
          * @return A new Multimap
@@ -122,7 +122,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          *
          * @param stream      the source stream
          * @param entryMapper the entry mapper
-         * @param <T>         The stream type
+         * @param <T>         The stream element type
          * @param <K>         The key type
          * @param <V2>        The value type
          * @return A new Multimap
