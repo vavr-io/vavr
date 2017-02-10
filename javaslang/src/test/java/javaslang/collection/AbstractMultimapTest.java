@@ -145,8 +145,9 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
                 return "HashSet";
             case SORTED_SET:
                 return "TreeSet";
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     abstract protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap();
@@ -166,6 +167,15 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOfPairs(K k1, V v1, K k, V v2, K k3, V v3);
 
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K key, V value);
+
+    abstract protected <K extends Comparable<? super K>, V> Multimap<K, V> mapOf(java.util.Map<? extends K, ? extends V> map);
+
+    abstract protected <T, K extends Comparable<? super K>, V> Multimap<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
+                                                                                    Function<? super T, ? extends K> keyMapper,
+                                                                                    Function<? super T, ? extends V> valueMapper);
+
+    abstract protected <T, K extends Comparable<? super K>, V> Multimap<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
+                                                                                    Function<? super T, Tuple2<? extends K, ? extends V>> f);
 
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
 
@@ -289,6 +299,29 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public void shouldConstructFromPairs() {
         final Multimap<String, Integer> map = mapOfPairs("1", 1, "2", 2, "3", 3);
         assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+    }
+
+    @Test
+    public void shouldConstructFromJavaStream() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
+        final Multimap<String, Integer> map = mapOf(javaStream, String::valueOf, Function.identity());
+        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+    }
+
+    @Test
+    public void shouldConstructFromJavaStreamEntries() {
+        final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
+        final Multimap<String, Integer> map = mapOf(javaStream, i -> Tuple.of(String.valueOf(i), i));
+        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+    }
+
+    @Test
+    public void shouldConstructFromJavaMap() {
+        final java.util.Map<String, Integer> source = new java.util.HashMap<>();
+        source.put("1", 2);
+        source.put("3", 4);
+        final Multimap<String, Integer> map = mapOf(source);
+        assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 2).put("3", 4));
     }
 
     // -- toString

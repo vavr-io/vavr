@@ -139,7 +139,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     /**
      * Returns a {@code TreeMap}, from a source java.util.Map.
      *
-     * @param map A map entry.
+     * @param map A map
      * @param <K> The key type
      * @param <V> The value type
      * @return A new Map containing the given map
@@ -155,7 +155,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @param stream      the source stream
      * @param keyMapper   the key mapper
      * @param valueMapper the value mapper
-     * @param <T>         The stream type
+     * @param <T>         The stream element type
      * @param <K>         The key type
      * @param <V>         The value type
      * @return A new Map
@@ -173,7 +173,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @param stream        the source stream
      * @param keyMapper     the key mapper
      * @param valueMapper   the value mapper
-     * @param <T>           The stream type
+     * @param <T>           The stream element type
      * @param <K>           The key type
      * @param <V>           The value type
      * @return A new Map
@@ -190,7 +190,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      *
      * @param stream      the source stream
      * @param entryMapper the entry mapper
-     * @param <T>         The stream type
+     * @param <T>         The stream element type
      * @param <K>         The key type
      * @param <V>         The value type
      * @return A new Map
@@ -206,7 +206,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * @param keyComparator The comparator used to sort the entries by their key.
      * @param stream      the source stream
      * @param entryMapper the entry mapper
-     * @param <T>         The stream type
+     * @param <T>         The stream element type
      * @param <K>         The key type
      * @param <V>         The value type
      * @return A new Map
@@ -221,7 +221,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
      * Returns a {@code TreeMap}, from a source java.util.Map.
      *
      * @param keyComparator The comparator used to sort the entries by their key.
-     * @param map           A map entry.
+     * @param map           A map
      * @param <K>           The key type
      * @param <V>           The value type
      * @return A new Map containing the given map

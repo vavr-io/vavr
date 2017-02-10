@@ -5,10 +5,12 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collector;
+import java.util.stream.*;
+import java.util.stream.Stream;
 
 import static javaslang.collection.Comparators.naturalComparator;
 
@@ -25,7 +27,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap() {
+    protected <T1 extends Comparable<T1>, T2> LinkedHashMultimap<T1, T2> emptyMap() {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().empty();
@@ -33,8 +35,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().empty();
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).empty();
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -46,14 +49,15 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().collector();
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).collector();
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<K>, V> LinkedHashMultimap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().ofEntries(entries);
@@ -61,14 +65,15 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K extends Comparable<K>, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+    protected final <K extends Comparable<K>, V> LinkedHashMultimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().ofEntries(entries);
@@ -76,12 +81,13 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().ofEntries(entries);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).ofEntries(entries);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
-    protected <K extends Comparable<K>, V> Multimap<K, V> mapOfPairs(K k1, V v1, K k2, V v2, K k3, V v3) {
+    protected <K extends Comparable<K>, V> LinkedHashMultimap<K, V> mapOfPairs(K k1, V v1, K k2, V v2, K k3, V v3) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().of(k1, v1, k2, v2, k3, v3);
@@ -89,17 +95,69 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().of(k1, v1, k2, v2, k3, v3);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).of(k1, v1, k2, v2, k3, v3);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
-    protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K key, V value) {
-        return LinkedHashMultimap.withSeq().of(key, value);
+    protected <K extends Comparable<K>, V> LinkedHashMultimap<K, V> mapOf(K key, V value) {
+        switch (containerType) {
+            case SEQ:
+                return LinkedHashMultimap.withSeq().of(key, value);
+            case SET:
+                return LinkedHashMultimap.withSet().of(key, value);
+            case SORTED_SET:
+                return LinkedHashMultimap.withSortedSet(naturalComparator()).of(key, value);
+            default:
+                throw new RuntimeException();
+        }
     }
 
     @Override
-    protected <K extends Comparable<K>, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    protected <K extends Comparable<? super K>, V> LinkedHashMultimap<K, V> mapOf(Map<? extends K, ? extends V> map) {
+        switch (containerType) {
+            case SEQ:
+                return LinkedHashMultimap.withSeq().ofAll(map);
+            case SET:
+                return LinkedHashMultimap.withSet().ofAll(map);
+            case SORTED_SET:
+                return LinkedHashMultimap.withSortedSet(naturalComparator()).ofAll(map);
+            default:
+                throw new RuntimeException();
+        }
+    }
+
+    @Override
+    protected <T, K extends Comparable<? super K>, V> LinkedHashMultimap<K, V> mapOf(Stream<? extends T> stream, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        switch (containerType) {
+            case SEQ:
+                return LinkedHashMultimap.withSeq().ofAll(stream, keyMapper, valueMapper);
+            case SET:
+                return LinkedHashMultimap.withSet().ofAll(stream, keyMapper, valueMapper);
+            case SORTED_SET:
+                return LinkedHashMultimap.withSortedSet(naturalComparator()).ofAll(stream, keyMapper, valueMapper);
+            default:
+                throw new RuntimeException();
+        }
+    }
+
+    @Override
+    protected <T, K extends Comparable<? super K>, V> LinkedHashMultimap<K, V> mapOf(Stream<? extends T> stream, Function<? super T, Tuple2<? extends K, ? extends V>> f) {
+        switch (containerType) {
+            case SEQ:
+                return LinkedHashMultimap.withSeq().ofAll(stream, f);
+            case SET:
+                return LinkedHashMultimap.withSet().ofAll(stream, f);
+            case SORTED_SET:
+                return LinkedHashMultimap.withSortedSet(naturalComparator()).ofAll(stream, f);
+            default:
+                throw new RuntimeException();
+        }
+    }
+
+    @Override
+    protected <K extends Comparable<K>, V> LinkedHashMultimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().tabulate(n, f);
@@ -107,12 +165,13 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().tabulate(n, f);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).tabulate(n, f);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
-    protected <K extends Comparable<K>, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    protected <K extends Comparable<K>, V> LinkedHashMultimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().fill(n, s);
@@ -120,8 +179,9 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
                 return LinkedHashMultimap.withSet().fill(n, s);
             case SORTED_SET:
                 return LinkedHashMultimap.withSortedSet(naturalComparator()).fill(n, s);
+            default:
+                throw new RuntimeException();
         }
-        throw new RuntimeException();
     }
 
     @Override
@@ -232,7 +292,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldNarrowMap() {
-        final LinkedHashMultimap<Integer, Number> int2doubleMap = (LinkedHashMultimap<Integer, Number>) this.<Integer, Number> emptyMap().put(1, 1.0d);
+        final LinkedHashMultimap<Integer, Number> int2doubleMap = this.<Integer, Number> emptyMap().put(1, 1.0d);
         final LinkedHashMultimap<Number, Number> number2numberMap = LinkedHashMultimap.narrow(int2doubleMap);
         final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);

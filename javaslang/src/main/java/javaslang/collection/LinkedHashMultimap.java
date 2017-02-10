@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * An {@link LinkedHashMap}-based implementation of {@link Multimap}
+ * A {@link LinkedHashMap}-based implementation of {@link Multimap}
  *
  * @param <K> Key type
  * @param <V> Value type
@@ -86,6 +86,50 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
                 result = result.put(entry.getKey(), entry.getValue());
             }
             return result;
+        }
+
+        /**
+         * Returns a {@code LinkedHashMultimap}, from a source java.util.Map.
+         *
+         * @param map A map
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new Multimap containing the given map entries
+         */
+        public <K, V2 extends V> LinkedHashMultimap<K, V2> ofAll(java.util.Map<? extends K, ? extends V2> map) {
+            return Multimaps.ofJavaMap(empty(), map);
+        }
+
+        /**
+         * Returns a {@code LinkedHashMultimap}, from entries mapped from stream.
+         *
+         * @param stream      the source stream
+         * @param keyMapper   the key mapper
+         * @param valueMapper the value mapper
+         * @param <T>         The stream element type
+         * @param <K>         The key type
+         * @param <V2>        The value type
+         * @return A new Multimap
+         */
+        public <T, K, V2 extends V> LinkedHashMultimap<K, V2> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                              Function<? super T, ? extends K> keyMapper,
+                                                              Function<? super T, ? extends V2> valueMapper) {
+            return Multimaps.ofStream(empty(), stream, keyMapper, valueMapper);
+        }
+
+        /**
+         * Returns a {@code LinkedHashMultimap}, from entries mapped from stream.
+         *
+         * @param stream      the source stream
+         * @param entryMapper the entry mapper
+         * @param <T>         The stream element type
+         * @param <K>         The key type
+         * @param <V2>        The value type
+         * @return A new Multimap
+         */
+        public <T, K, V2 extends V> LinkedHashMultimap<K, V2> ofAll(java.util.stream.Stream<? extends T> stream,
+                                                             Function<? super T, Tuple2<? extends K, ? extends V2>> entryMapper) {
+            return Multimaps.ofStream(empty(), stream, entryMapper);
         }
 
         @SuppressWarnings("unchecked")
