@@ -1161,6 +1161,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         return f.apply(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public <U> Queue<U> unit(Iterable<? extends U> iterable) {
         return ofAll(iterable);

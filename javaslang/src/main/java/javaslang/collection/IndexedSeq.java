@@ -344,6 +344,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     IndexedSeq<T> takeWhile(Predicate<? super T> predicate);
 
+    @SuppressWarnings("deprecation")
     @Override
     <U> IndexedSeq<U> unit(Iterable<? extends U> iterable);
 

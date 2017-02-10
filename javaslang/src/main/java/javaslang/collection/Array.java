@@ -1297,6 +1297,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         return f.apply(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public <U> Array<U> unit(Iterable<? extends U> iterable) {
         return ofAll(iterable);

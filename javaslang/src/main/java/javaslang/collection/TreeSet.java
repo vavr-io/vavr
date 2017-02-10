@@ -534,7 +534,9 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         Objects.requireNonNull(elements, "elements is null");
         RedBlackTree<T> that = tree;
         for (T element : elements) {
-            that = that.insert(element);
+            if (!that.contains(element)) {
+                that = that.insert(element);
+            }
         }
         if (tree == that) {
             return this;
@@ -552,7 +554,9 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @Override
     public TreeSet<T> diff(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof TreeSet) {
+        if (isEmpty()) {
+            return this;
+        } else if (elements instanceof TreeSet) {
             final TreeSet<T> that = (TreeSet<T>) elements;
             return that.isEmpty() ? this : new TreeSet<>(tree.difference(that.tree));
         } else {
@@ -689,7 +693,9 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @Override
     public TreeSet<T> intersect(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof TreeSet) {
+        if (isEmpty()) {
+            return this;
+        } else if (elements instanceof TreeSet) {
             final TreeSet<T> that = (TreeSet<T>) elements;
             return new TreeSet<>(tree.intersection(that.tree));
         } else {

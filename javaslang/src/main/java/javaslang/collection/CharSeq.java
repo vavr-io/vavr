@@ -991,6 +991,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         return f.apply(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public <U> IndexedSeq<U> unit(Iterable<? extends U> iterable) {
         return Vector.ofAll(iterable);

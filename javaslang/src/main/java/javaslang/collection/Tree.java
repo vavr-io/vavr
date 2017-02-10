@@ -1074,7 +1074,7 @@ interface TreeModule {
                     .getChildren()
                     .map(child -> flatMap(child, mapper))
                     .filter(Tree::nonEmpty);
-            return of(mapped.getValue(), children.prependAll(mapped.getChildren()));
+            return of(mapped.get(), children.prependAll(mapped.getChildren()));
         }
     }
 

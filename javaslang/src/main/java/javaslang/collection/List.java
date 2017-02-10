@@ -1435,6 +1435,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         return f.apply(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     default <U> List<U> unit(Iterable<? extends U> iterable) {
         return ofAll(iterable);

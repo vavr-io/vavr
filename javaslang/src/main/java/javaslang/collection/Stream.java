@@ -1517,6 +1517,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         return f.apply(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     default <U> Stream<U> unit(Iterable<? extends U> iterable) {
         return Stream.ofAll(iterable);
