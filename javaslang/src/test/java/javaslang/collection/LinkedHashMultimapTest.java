@@ -184,11 +184,6 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
         }
     }
 
-    @Override
-    protected boolean isDistinctElements() {
-        return true;
-    }
-
     @Test
     public void shouldCreateSortedMapFrom2Pairs() {
         final Multimap<Integer, Integer> map = LinkedHashMultimap.withSeq().of(1, 2, 2, 4);

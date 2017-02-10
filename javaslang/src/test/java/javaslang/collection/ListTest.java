@@ -25,11 +25,6 @@ public class ListTest extends AbstractLinearSeqTest {
     // -- construction
 
     @Override
-    protected boolean isDistinctElements() {
-        return false;
-    }
-
-    @Override
     protected <T> Collector<T, ArrayList<T>, List<T>> collector() {
         return List.collector();
     }

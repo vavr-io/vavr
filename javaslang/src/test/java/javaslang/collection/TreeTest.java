@@ -11,6 +11,7 @@ import javaslang.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.InvalidObjectException;
@@ -94,11 +95,6 @@ public class TreeTest extends AbstractTraversableTest {
                 }
             }
         };
-    }
-
-    @Override
-    protected boolean isDistinctElements() {
-        return true;
     }
 
     @Override
@@ -248,7 +244,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     @Test
     public void shouldNotGetValueOfNonNil() {
-        assertThat(tree.getValue()).isEqualTo(1);
+        assertThat(tree.get()).isEqualTo(1);
     }
 
     // -- size
@@ -380,22 +376,6 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     public void shouldNotFindNonExistingNodeInNonNil() {
         assertThat(tree.contains(0)).isFalse();
-    }
-
-    // -- drop
-
-    @Test
-    @Override
-    public void shouldDropNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).drop(-1)).isEqualTo(of(1, 2, 3));
-    }
-
-    // -- dropRight
-
-    @Test
-    @Override
-    public void shouldDropRightNoneIfCountIsNegative() {
-        assertThat(of(1, 2, 3).dropRight(-1)).isEqualTo(of(1, 2, 3));
     }
 
     // -- flatMap
@@ -672,4 +652,134 @@ public class TreeTest extends AbstractTraversableTest {
         final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toTree()).isSameAs(value);
     }
+
+    // ~~~~~~~ DISABLED TESTS ~~~~~~~
+
+    // -- distinctBy(Comparator)
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDistinctByComparatorEmptyTraversable() {
+        // TODO: remove this overridden method with #1826
+    }
+
+    // -- distinctBy(Function)
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDistinctByFunctionEmptyTraversable() {
+        // TODO: remove this overridden method with #1826
+    }
+
+    // -- drop
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDropZeroCount() {
+        // Tree.drop() returns a Seq
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDropNegativeCount() {
+        // Tree.drop() returns a Seq
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyDropOne() {
+        // Tree.drop() returns a Seq
+    }
+
+    // -- dropRight
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDropRightZeroCount() {
+        // Tree.dropRight() returns a Seq
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenDropRightNegativeCount() {
+        // Tree.dropRight() returns a Seq
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyDropRightOne() {
+        // Tree.dropRight() returns a Seq
+    }
+
+    // -- dropUntil
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyDropUntil() {
+        // Tree.dropUntil returns a Seq
+    }
+
+    // -- dropWhile
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyDropWhile() {
+        // Tree.dropWhile returns a Seq
+    }
+
+    // -- filter
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenFilteringEmptyTraversable() {
+        // TODO: remove this overridden method with #1826
+    }
+
+    // -- take
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceIfTakeAll() {
+        // Tree.take returns Seq
+    }
+
+    // -- takeRight
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceIfTakeRightAll() {
+        // Tree.takeRight returns Seq
+    }
+
+    // -- takeUntil
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyTakeUntil() {
+        // Tree.takeUntil() returns a Seq
+    }
+
+    // -- takeWhile
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnSameInstanceWhenEmptyTakeWhile() {
+        // Tree.takeWhile() returns a Seq
+    }
+
 }

@@ -479,6 +479,11 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     @Override
     public HashSet<T> addAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty() && elements instanceof HashSet) {
+            @SuppressWarnings("unchecked")
+            final HashSet<T> set = (HashSet<T>) elements;
+            return set;
+        }
         final HashArrayMappedTrie<T, T> that = addAll(tree, elements);
         if (that.size() == tree.size()) {
             return this;
@@ -772,10 +777,13 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public HashSet<T> take(int n) {
-        if (tree.size() <= n) {
+        if (n >= size() || isEmpty()) {
             return this;
+        } else if (n <= 0) {
+            return empty();
+        } else {
+            return ofAll(() -> iterator().take(n));
         }
-        return HashSet.ofAll(() -> iterator().take(n));
     }
 
     @Override

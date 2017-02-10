@@ -263,27 +263,29 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     @Override
     public PriorityQueue<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return ofAll(comparator, iterator().distinctBy(comparator));
+        return isEmpty() ? this : ofAll(comparator, iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> PriorityQueue<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return ofAll(comparator, iterator().distinctBy(keyExtractor));
+        return isEmpty() ? this : ofAll(comparator, iterator().distinctBy(keyExtractor));
     }
 
     @Override
     public PriorityQueue<T> drop(int n) {
-        PriorityQueue<T> result = this;
-        for (long i = n; i > 0 && !result.isEmpty(); i--) {
-            result = result.tail();
+        if (n <= 0 || isEmpty()) {
+            return this;
+        } else if (n >= length()) {
+            return empty(comparator);
+        } else {
+            return ofAll(comparator, iterator().drop(n));
         }
-        return result;
     }
 
     @Override
     public PriorityQueue<T> dropRight(int n) {
-        if (n <= 0) {
+        if (n <= 0 || isEmpty()) {
             return this;
         } else if (n >= length()) {
             return empty(comparator);
@@ -311,7 +313,11 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     @Override
     public PriorityQueue<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return ofAll(comparator, iterator().filter(predicate));
+        if (isEmpty()) {
+            return this;
+        } else {
+            return ofAll(comparator, iterator().filter(predicate));
+        }
     }
 
     @Override
@@ -479,18 +485,30 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     @Override
     public PriorityQueue<T> take(int n) {
-        return ofAll(comparator, iterator().take(n));
+        if (n >= size() || isEmpty()) {
+            return this;
+        } else if (n <= 0) {
+            return empty(comparator);
+        } else {
+            return ofAll(comparator, iterator().take(n));
+        }
     }
 
     @Override
     public PriorityQueue<T> takeRight(int n) {
-        return ofAll(comparator, toList().takeRight(n));
+        if (n >= size() || isEmpty()) {
+            return this;
+        } else if (n <= 0) {
+            return empty(comparator);
+        } else {
+            return ofAll(comparator, toArray().takeRight(n));
+        }
     }
 
     @Override
     public PriorityQueue<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return ofAll(comparator, iterator().takeUntil(predicate));
+        return isEmpty() ? this : ofAll(comparator, iterator().takeUntil(predicate));
     }
 
     @Override

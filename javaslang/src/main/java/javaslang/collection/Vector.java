@@ -589,9 +589,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<T> appendAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        return isEmpty()
-               ? ofAll(iterable)
-               : new Vector<>(trie.appendAll(iterable));
+        if (isEmpty()) {
+            return ofAll(iterable);
+        } else {
+            final BitMappedTrie<T> that = trie.appendAll(iterable);
+            return (that == trie) ? this : new Vector<>(that);
+        }
     }
 
     @Override
@@ -838,9 +841,12 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     @Override
     public Vector<T> prependAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        return isEmpty()
-               ? ofAll(iterable)
-               : new Vector<>(trie.prependAll(iterable));
+        if (isEmpty()) {
+            return ofAll(iterable);
+        } else {
+            final BitMappedTrie<T> that = trie.prependAll(iterable);
+            return (that == trie) ? this : new Vector<>(that);
+        }
     }
 
     @Override
@@ -1117,6 +1123,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
         return f.apply(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public <U> Vector<U> unit(Iterable<? extends U> iterable) { return ofAll(iterable); }
 

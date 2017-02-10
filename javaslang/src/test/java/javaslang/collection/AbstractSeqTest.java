@@ -181,6 +181,28 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldReturnSameSeqWhenEmptyAppendAllEmpty() {
+        final Seq<Integer> empty = empty();
+        assertThat(empty.appendAll(empty())).isSameAs(empty);
+    }
+
+    @Test
+    public void shouldReturnSameSeqWhenEmptyAppendAllNonEmpty() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(empty().appendAll(seq)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldReturnSameSeqWhenNonEmptyAppendAllEmpty() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        if (seq.hasDefiniteSize()) {
+            assertThat(seq.appendAll(empty())).isSameAs(seq);
+        } else {
+            assertThat(seq.appendAll(empty())).isEqualTo(seq);
+        }
+    }
+
     // -- apply
 
     @Test
@@ -725,6 +747,24 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         empty().insertAll(1, empty());
     }
 
+    @Test
+    public void shouldReturnSameSeqWhenEmptyInsertAllEmpty() {
+        final Seq<Integer> empty = empty();
+        assertThat(empty.insertAll(0, empty())).isSameAs(empty);
+    }
+
+    @Test
+    public void shouldReturnSameSeqWhenEmptyInsertAllNonEmpty() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(empty().insertAll(0, seq)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldReturnSameSeqWhenNonEmptyInsertAllEmpty() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.insertAll(0, empty())).isSameAs(seq);
+    }
+
     // -- intersperse
 
     @Test
@@ -987,6 +1027,24 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actualSecondPartLarger).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldReturnSameSeqWhenEmptyPrependAllEmpty() {
+        final Seq<Integer> empty = empty();
+        assertThat(empty.prependAll(empty())).isSameAs(empty);
+    }
+
+    @Test
+    public void shouldReturnSameSeqWhenEmptyPrependAllNonEmpty() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(empty().prependAll(seq)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldReturnSameSeqWhenNonEmptyPrependAllEmpty() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.prependAll(empty())).isSameAs(seq);
+    }
+
     // -- remove
 
     @Test
@@ -1130,6 +1188,18 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
     }
 
+    @Test
+    public void shouldReturnSameSeqWhenNonEmptyRemoveAllEmpty() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.removeAll(empty())).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldReturnSameSeqWhenEmptyRemoveAllNonEmpty() {
+        final Seq<Integer> empty = empty();
+        assertThat(empty.removeAll(of(1, 2, 3))).isSameAs(empty);
+    }
+
     // -- removeAll(Predicate)
 
     @Test
@@ -1197,12 +1267,18 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
-        final Seq<Integer> t = of(1, 2, 3);
+        final Seq<Integer> seq = of(1, 2, 3);
         if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeAll(4)).isEqualTo(t);
+            assertThat(seq.removeAll(4)).isEqualTo(seq);
         } else {
-            assertThat(t.removeAll(4)).isSameAs(t);
+            assertThat(seq.removeAll(4)).isSameAs(seq);
         }
+    }
+
+    @Test
+    public void shouldRemoveAllNullsFromNonEmpty() {
+        final Seq<Integer> seq = of(1, null, 2, null, 3);
+        assertThat(seq.removeAll((Integer) null)).isEqualTo(of(1, 2, 3));
     }
 
     // -- removeAt(index)
@@ -1675,6 +1751,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         of(1, 2, 3).subSequence(4);
     }
 
+    @Test
+    public void shouldReturnSameInstanceIfSubSequenceStartsAtZero() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.subSequence(0)).isSameAs(seq);
+    }
+
     // -- subSequence(beginIndex, endIndex)
 
     @Test
@@ -1746,6 +1828,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceWhenBeginIndexIsGreaterThanEndIndex() {
         of(1, 2, 3).subSequence(2, 1).mkString(); // force computation of last element, e.g. because Stream is lazy
+    }
+
+    @Test
+    public void shouldReturnSameInstanceIfSubSequenceStartsAtZeroAndEndsAtLastElement() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.subSequence(0, 3)).isSameAs(seq);
     }
 
     // -- search(element)

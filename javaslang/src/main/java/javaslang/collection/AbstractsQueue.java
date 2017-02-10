@@ -76,8 +76,12 @@ abstract class AbstractsQueue<T, Q extends AbstractsQueue<T, Q>> implements Trav
     @SuppressWarnings("unchecked")
     public Q enqueueAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-
-        return List.ofAll(elements).foldLeft((Q) this, AbstractsQueue<T, Q>::enqueue);
+        // TODO: With #1716 we should generate all these methods directly in Queue & PriorityQueue and check `elements instanceof <type>`
+        if (isEmpty() && getClass().isAssignableFrom(elements.getClass())) {
+            return (Q) elements;
+        } else {
+            return List.ofAll(elements).foldLeft((Q) this, AbstractsQueue<T, Q>::enqueue);
+        }
     }
 
     /**

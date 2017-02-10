@@ -127,11 +127,6 @@ public class LinkedHashMapTest extends AbstractMapTest {
         return LinkedHashMap.fill(n, s);
     }
 
-    @Override
-    protected boolean isDistinctElements() {
-        return true;
-    }
-
     @Test
     public void shouldKeepOrder() {
         final List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').foldLeft(List.empty(), (s, t) -> s.append(t._2));

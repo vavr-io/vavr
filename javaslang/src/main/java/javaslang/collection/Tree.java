@@ -194,7 +194,9 @@ public interface Tree<T> extends Traversable<T> {
      *
      * @return The value of this tree.
      * @throws java.lang.UnsupportedOperationException if this tree is empty
+     * @deprecated Will be removed in 3.0.0. Use get() instead.
      */
+    @Deprecated
     T getValue();
 
     /**
@@ -222,8 +224,9 @@ public interface Tree<T> extends Traversable<T> {
         return !(isEmpty() || isLeaf());
     }
 
+    @Override
     default boolean isDistinct() {
-        return true;
+        return false;
     }
 
     /**
@@ -1071,7 +1074,7 @@ interface TreeModule {
                     .getChildren()
                     .map(child -> flatMap(child, mapper))
                     .filter(Tree::nonEmpty);
-            return of(mapped.getValue(), children.prependAll(mapped.getChildren()));
+            return of(mapped.get(), children.prependAll(mapped.getChildren()));
         }
     }
 

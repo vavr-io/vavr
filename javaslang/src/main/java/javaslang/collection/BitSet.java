@@ -534,7 +534,7 @@ public interface BitSet<T> extends SortedSet<T> {
     @Override
     default BitSet<T> union(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return addAll(elements);
+        return elements.isEmpty() ? this : addAll(elements);
     }
 
     @Override
@@ -663,18 +663,18 @@ interface BitSetModule {
         @Override
         public BitSet<T> distinctBy(Comparator<? super T> comparator) {
             Objects.requireNonNull(comparator, "comparator is null");
-            return createFromAll(iterator().distinctBy(comparator));
+            return isEmpty() ? this : createFromAll(iterator().distinctBy(comparator));
         }
 
         @Override
         public <U> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
             Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-            return createFromAll(iterator().distinctBy(keyExtractor));
+            return isEmpty() ? this : createFromAll(iterator().distinctBy(keyExtractor));
         }
 
         @Override
         public BitSet<T> drop(int n) {
-            if (n <= 0) {
+            if (n <= 0 || isEmpty()) {
                 return this;
             } else if (n >= length()) {
                 return createEmpty();
@@ -685,7 +685,7 @@ interface BitSetModule {
 
         @Override
         public BitSet<T> dropRight(int n) {
-            if (n <= 0) {
+            if (n <= 0 || isEmpty()) {
                 return this;
             } else if (n >= length()) {
                 return createEmpty();
@@ -704,7 +704,9 @@ interface BitSetModule {
         @Override
         public BitSet<T> intersect(Set<? extends T> elements) {
             Objects.requireNonNull(elements, "elements is null");
-            if (isEmpty() || elements.isEmpty()) {
+            if (isEmpty()) {
+                return this;
+            } else if (elements.isEmpty()) {
                 return createEmpty();
             } else {
                 final int size = size();
@@ -772,14 +774,19 @@ interface BitSetModule {
         @SuppressWarnings("unchecked")
         public BitSet<T> addAll(Iterable<? extends T> elements) {
             final Stream<Integer> source = Stream.ofAll(elements).map(toInt);
-            final long[] copy = copyExpand(1 + (source.max().getOrElse(0) >> ADDRESS_BITS_PER_WORD));
-            source.forEach(element -> {
-                if (element < 0) {
-                    throw new IllegalArgumentException("bitset element must be >= 0");
-                }
-                setElement(copy, element);
-            });
-            return fromBitMaskNoCopy(copy);
+            if (source.isEmpty()) {
+                return this;
+            } else {
+                final long[] copy = copyExpand(1 + (source.max().getOrElse(0) >> ADDRESS_BITS_PER_WORD));
+                source.forEach(element -> {
+                    if (element < 0) {
+                        throw new IllegalArgumentException("bitset element must be >= 0");
+                    }
+                    setElement(copy, element);
+                });
+                final BitSet<T> bitSet = fromBitMaskNoCopy(copy);
+                return (bitSet.length() == length()) ? this : bitSet;
+            }
         }
 
         @Override
@@ -810,10 +817,10 @@ interface BitSetModule {
 
         @Override
         public BitSet<T> take(int n) {
-            if (n <= 0) {
-                return createEmpty();
-            } else if (n >= length()) {
+            if (isEmpty() || n >= length()) {
                 return this;
+            } else if (n <= 0) {
+                return createEmpty();
             } else {
                 return createFromAll(iterator().take(n));
             }
@@ -821,10 +828,10 @@ interface BitSetModule {
 
         @Override
         public BitSet<T> takeRight(int n) {
-            if (n <= 0) {
-                return createEmpty();
-            } else if (n >= length()) {
+            if (isEmpty() || n >= length()) {
                 return this;
+            } else if (n <= 0) {
+                return createEmpty();
             } else {
                 return createFromAll(iterator().takeRight(n));
             }
@@ -844,10 +851,18 @@ interface BitSetModule {
 
         @Override
         public BitSet<T> removeAll(Iterable<? extends T> elements) {
-            final Stream<Integer> source = Stream.ofAll(elements).map(toInt);
-            final long[] copy = copyExpand(getWordsNum());
-            source.forEach(element -> unsetElement(copy, element));
-            return fromBitMaskNoCopy(shrink(copy));
+            if (isEmpty()) {
+                return this;
+            } else {
+                final Stream<Integer> source = Stream.ofAll(elements).map(toInt);
+                if (source.isEmpty()) {
+                    return this;
+                } else {
+                    final long[] copy = copyExpand(getWordsNum());
+                    source.forEach(element -> unsetElement(copy, element));
+                    return fromBitMaskNoCopy(shrink(copy));
+                }
+            }
         }
 
         @Override

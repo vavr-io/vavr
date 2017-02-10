@@ -966,7 +966,16 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
      */
     Seq<T> subSequence(int beginIndex, int endIndex);
 
-    <U> Seq<U> unit(Iterable<? extends U> iterable);
+    /**
+     * Constructs a Seq containing the given elements.
+     *
+     * @param elements The elements to be wrapped in an instance of this Seq type
+     * @param <U> element type
+     * @return An instance of this Seq type
+     * @deprecated This method is meant to be used internally only. It will be removed from the public API with 3.0.0.
+     */
+    @Deprecated
+    <U> Seq<U> unit(Iterable<? extends U> elements);
 
     /**
      * Updates the given element at the specified index.

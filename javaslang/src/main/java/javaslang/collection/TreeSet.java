@@ -534,7 +534,9 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         Objects.requireNonNull(elements, "elements is null");
         RedBlackTree<T> that = tree;
         for (T element : elements) {
-            that = that.insert(element);
+            if (!that.contains(element)) {
+                that = that.insert(element);
+            }
         }
         if (tree == that) {
             return this;
@@ -552,9 +554,11 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @Override
     public TreeSet<T> diff(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof TreeSet) {
+        if (isEmpty()) {
+            return this;
+        } else if (elements instanceof TreeSet) {
             final TreeSet<T> that = (TreeSet<T>) elements;
-            return new TreeSet<>(tree.difference(that.tree));
+            return that.isEmpty() ? this : new TreeSet<>(tree.difference(that.tree));
         } else {
             return removeAll(elements);
         }
@@ -573,18 +577,18 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @Override
     public TreeSet<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return TreeSet.ofAll(tree.comparator(), iterator().distinctBy(comparator));
+        return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> TreeSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return TreeSet.ofAll(tree.comparator(), iterator().distinctBy(keyExtractor));
+        return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(keyExtractor));
     }
 
     @Override
     public TreeSet<T> drop(int n) {
-        if (n <= 0) {
+        if (n <= 0 || isEmpty()) {
             return this;
         } else if (n >= length()) {
             return empty(tree.comparator());
@@ -595,7 +599,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public TreeSet<T> dropRight(int n) {
-        if (n <= 0) {
+        if (n <= 0 || isEmpty()) {
             return this;
         } else if (n >= length()) {
             return empty(tree.comparator());
@@ -689,7 +693,9 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     @Override
     public TreeSet<T> intersect(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof TreeSet) {
+        if (isEmpty()) {
+            return this;
+        } else if (elements instanceof TreeSet) {
             final TreeSet<T> that = (TreeSet<T>) elements;
             return new TreeSet<>(tree.intersection(that.tree));
         } else {
@@ -905,7 +911,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof TreeSet) {
             final TreeSet<T> that = (TreeSet<T>) elements;
-            return new TreeSet<>(tree.union(that.tree));
+            return that.isEmpty() ? this : new TreeSet<>(tree.union(that.tree));
         } else {
             return addAll(elements);
         }

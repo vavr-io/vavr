@@ -615,18 +615,34 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(emptyIntInt().put(1, 1).put(2, 2).traverse((a, b) -> a + b)).isEqualTo(List.of(2, 4));
     }
 
-    // -- merge
+    // -- merge(Map)
 
     @Test
     public void shouldMerge() {
         final Map<Integer, Integer> m1 = emptyIntInt().put(1, 1).put(2, 2);
         final Map<Integer, Integer> m2 = emptyIntInt().put(1, 1).put(4, 4);
         final Map<Integer, Integer> m3 = emptyIntInt().put(3, 3).put(4, 4);
-        assertThat(emptyIntInt().merge(m2)).isEqualTo(m2);
-        assertThat(m2.merge(emptyIntInt())).isEqualTo(m2);
         assertThat(m1.merge(m2)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(4, 4));
         assertThat(m1.merge(m3)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
     }
+
+    @Test
+    public void shouldReturnSameMapWhenMergeNonEmptyWithEmpty() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+        assertThat(map.merge(emptyMap())).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReturnSameMapWhenMergeEmptyWithNonEmpty() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+        if (map.isOrdered()) {
+            assertThat(this.<Integer, String> emptyMap().merge(map)).isEqualTo(map);
+        } else {
+            assertThat(this.<Integer, String> emptyMap().merge(map)).isSameAs(map);
+        }
+    }
+
+    // -- merge(Map, BiFunction)
 
     @Test
     public void shouldMergeCollisions() {
@@ -637,6 +653,22 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(m2.merge(emptyIntInt(), Math::max)).isEqualTo(m2);
         assertThat(m1.merge(m2, Math::max)).isEqualTo(emptyIntInt().put(1, 2).put(2, 2).put(4, 4));
         assertThat(m1.merge(m3, Math::max)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
+    }
+
+    @Test
+    public void shouldReturnSameMapWhenMergeNonEmptyWithEmptyUsingCollisionResolution() {
+        final Map<Integer, Integer> map = mapOf(1, 1, 2, 2, 3, 3);
+        assertThat(map.merge(emptyMap(), Math::max)).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReturnSameMapWhenMergeEmptyWithNonEmptyUsingCollisionResolution() {
+        final Map<Integer, Integer> map = mapOf(1, 1, 2, 2, 3, 3);
+        if (map.isOrdered()) {
+            assertThat(this.<Integer, Integer> emptyMap().merge(map, Math::max)).isEqualTo(map);
+        } else {
+            assertThat(this.<Integer, Integer> emptyMap().merge(map, Math::max)).isSameAs(map);
+        }
     }
 
     // -- equality
@@ -706,6 +738,18 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(src.removeAll(List.of(1, 3))).isEqualTo(emptyInt().put(2, 'b'));
         assertThat(src.removeAll(List.of(33))).isSameAs(src);
         assertThat(src.removeAll(List.empty())).isSameAs(src);
+    }
+
+    @Test
+    public void shouldReturnSameMapWhenNonEmptyRemoveAllEmpty() {
+        final Map<Integer, String> map = mapOf(1, "a", 2, "b", 3, "c");
+        assertThat(map.removeAll(List.empty())).isSameAs(map);
+    }
+
+    @Test
+    public void shouldReturnSameMapWhenEmptyRemoveAllNonEmpty() {
+        final Map<Integer, String> empty = emptyMap();
+        assertThat(empty.removeAll(List.of(1, 2, 3))).isSameAs(empty);
     }
 
     // -- transform

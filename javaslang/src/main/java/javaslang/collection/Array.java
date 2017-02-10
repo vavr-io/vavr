@@ -579,6 +579,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty() && elements instanceof Array) {
+            @SuppressWarnings("unchecked")
+            final Array<T> array = (Array<T>) elements;
+            return array;
+        }
         final Object[] source = toArray(elements);
         if (source.length == 0) {
             return this;
@@ -808,6 +813,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     public Array<T> insertAll(int index, Iterable<? extends T> elements) {
         if (index < 0 || index > length()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Array of length " + length());
+        }
+        if (isEmpty() && elements instanceof Array) {
+            @SuppressWarnings("unchecked")
+            final Array<T> array = (Array<T>) elements;
+            return array;
         }
         final Object[] list = toArray(elements);
         if (list.length == 0) {
@@ -1194,9 +1204,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public Array<T> subSequence(int beginIndex) {
-        if (beginIndex < 0) {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
-        } else if (beginIndex > length()) {
+        if (beginIndex < 0 || beginIndex > length()) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
         } else {
             return drop(beginIndex);
@@ -1206,9 +1214,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @Override
     public Array<T> subSequence(int beginIndex, int endIndex) {
         if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + length());
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on Array of length " + length());
         } else if (beginIndex == endIndex) {
             return empty();
+        } else if (beginIndex == 0 && endIndex == length()) {
+            return this;
         } else {
             final Object[] arr = new Object[endIndex - beginIndex];
             System.arraycopy(delegate, beginIndex, arr, 0, arr.length);
@@ -1287,6 +1297,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         return f.apply(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public <U> Array<U> unit(Iterable<? extends U> iterable) {
         return ofAll(iterable);

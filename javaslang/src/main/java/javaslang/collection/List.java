@@ -761,14 +761,17 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     @Override
     default List<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final List<T> filtered = foldLeft(empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
-
-        if (filtered.isEmpty()) {
-            return empty();
-        } else if (filtered.length() == length()) {
+        if (isEmpty()) {
             return this;
         } else {
-            return filtered.reverse();
+            final List<T> filtered = foldLeft(empty(), (xs, x) -> predicate.test(x) ? xs.prepend(x) : xs);
+            if (filtered.isEmpty()) {
+                return empty();
+            } else if (filtered.length() == length()) {
+                return this;
+            } else {
+                return filtered.reverse();
+            }
         }
     }
 
@@ -1338,34 +1341,31 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> subSequence(int beginIndex) {
-        if (beginIndex < 0) {
+        if (beginIndex < 0 || beginIndex > length()) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");
+        } else {
+            return drop(beginIndex);
         }
-        List<T> result = this;
-        for (int i = 0; i < beginIndex; i++, result = result.tail()) {
-            if (result.isEmpty()) {
-                throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ") on List of length " + i);
-            }
-        }
-        return result;
     }
 
     @Override
     default List<T> subSequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex) {
+        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + length());
-        }
-        List<T> result = Nil.instance();
-        List<T> list = this;
-        for (int i = 0; i < endIndex; i++, list = list.tail()) {
-            if (list.isEmpty()) {
-                throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + i);
+        } else if (beginIndex == endIndex) {
+            return empty();
+        } else if (beginIndex == 0 && endIndex == length()) {
+            return this;
+        } else {
+            List<T> result = Nil.instance();
+            List<T> list = this;
+            for (int i = 0; i < endIndex; i++, list = list.tail()) {
+                if (i >= beginIndex) {
+                    result = result.prepend(list.head());
+                }
             }
-            if (i >= beginIndex) {
-                result = result.prepend(list.head());
-            }
+            return result.reverse();
         }
-        return result.reverse();
     }
 
     @Override
@@ -1432,6 +1432,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         return f.apply(this);
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     default <U> List<U> unit(Iterable<? extends U> iterable) {
         return ofAll(iterable);

@@ -13,11 +13,6 @@ import java.util.stream.Collector;
 public class LinkedHashSetTest extends AbstractSetTest {
 
     @Override
-    protected boolean isDistinctElements() {
-        return true;
-    }
-
-    @Override
     protected <T> Collector<T, ArrayList<T>, LinkedHashSet<T>> collector() {
         return LinkedHashSet.collector();
     }

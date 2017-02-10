@@ -284,6 +284,7 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     LinearSeq<T> takeWhile(Predicate<? super T> predicate);
 
+    @SuppressWarnings("deprecation")
     @Override
     <U> LinearSeq<U> unit(Iterable<? extends U> iterable);
 

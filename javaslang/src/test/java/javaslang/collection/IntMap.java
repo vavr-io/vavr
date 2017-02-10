@@ -19,7 +19,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class IntMap<T> implements Traversable<T>, Serializable {
+public final class IntMap<T> implements Traversable<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -31,6 +31,11 @@ public class IntMap<T> implements Traversable<T>, Serializable {
     public static <T> IntMap<T> of(Map<Integer, T> original) {
         return original.isEmpty() ? (IntMap<T>) EMPTY
                                   : new IntMap<>(original);
+    }
+
+    // DEV-NOTE: needs to be used internally to ensure the isSameAs property of the original is reflected by this impl
+    private IntMap<T> unit(Map<Integer, T> original) {
+        return (this.original == original) ? this : of(original);
     }
 
     private IntMap(Map<Integer, T> original) {
@@ -72,44 +77,44 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> distinct() {
-        return IntMap.of(original.distinct());
+        return unit(original.distinct());
     }
 
     @Override
     public IntMap<T> distinctBy(Comparator<? super T> comparator) {
-        return IntMap.of(original.distinctBy((o1, o2) -> comparator.compare(o1._2, o2._2)));
+        return unit(original.distinctBy((o1, o2) -> comparator.compare(o1._2, o2._2)));
     }
 
     @Override
     public <U> IntMap<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        return IntMap.of(original.distinctBy(f -> keyExtractor.apply(f._2)));
+        return unit(original.distinctBy(f -> keyExtractor.apply(f._2)));
     }
 
     @Override
     public IntMap<T> drop(int n) {
         final Map<Integer, T> dropped = original.drop(n);
-        return dropped == original ? this : IntMap.of(dropped);
+        return dropped == original ? this : unit(dropped);
     }
 
     @Override
     public IntMap<T> dropRight(int n) {
         final Map<Integer, T> dropped = original.dropRight(n);
-        return dropped == original ? this : IntMap.of(dropped);
+        return dropped == original ? this : unit(dropped);
     }
 
     @Override
     public IntMap<T> dropUntil(Predicate<? super T> predicate) {
-        return IntMap.of(original.dropUntil(p -> predicate.test(p._2)));
+        return unit(original.dropUntil(p -> predicate.test(p._2)));
     }
 
     @Override
     public IntMap<T> dropWhile(Predicate<? super T> predicate) {
-        return IntMap.of(original.dropWhile(p -> predicate.test(p._2)));
+        return unit(original.dropWhile(p -> predicate.test(p._2)));
     }
 
     @Override
     public IntMap<T> filter(Predicate<? super T> predicate) {
-        return IntMap.of(original.filter(p -> predicate.test(p._2)));
+        return unit(original.filter(p -> predicate.test(p._2)));
     }
 
     @Override
@@ -186,7 +191,8 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> peek(Consumer<? super T> action) {
-        return IntMap.of(original.peek(e -> action.accept(e._2)));
+        original.peek(e -> action.accept(e._2));
+        return this;
     }
 
     @Override
@@ -194,7 +200,7 @@ public class IntMap<T> implements Traversable<T>, Serializable {
         final Option<Tuple2<Integer, T>> currentEntryOpt = original.find(e -> e._2.equals(currentElement));
         if (currentEntryOpt.isDefined()) {
             final Tuple2<Integer, T> currentEntry = currentEntryOpt.get();
-            return IntMap.of(original.replace(currentEntry, Tuple.of(original.size() + 1, newElement)));
+            return unit(original.replace(currentEntry, Tuple.of(original.size() + 1, newElement)));
         } else {
             return this;
         }
@@ -206,13 +212,13 @@ public class IntMap<T> implements Traversable<T>, Serializable {
         for (Tuple2<Integer, T> entry : original.filter(e -> e._2.equals(currentElement))) {
             result = result.replaceAll(entry, Tuple.of(entry._1, newElement));
         }
-        return IntMap.of(result);
+        return unit(result);
     }
 
     @Override
     public IntMap<T> retainAll(Iterable<? extends T> elements) {
         final Set<T> elementsSet = HashSet.ofAll(elements);
-        return IntMap.of(original.retainAll(original.filter(e -> elementsSet.contains(e._2))));
+        return unit(original.retainAll(original.filter(e -> elementsSet.contains(e._2))));
     }
 
     @Override
@@ -294,22 +300,22 @@ public class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> take(int n) {
-        return IntMap.of(original.take(n));
+        return unit(original.take(n));
     }
 
     @Override
     public IntMap<T> takeRight(int n) {
-        return IntMap.of(original.takeRight(n));
+        return unit(original.takeRight(n));
     }
 
     @Override
     public Traversable<T> takeUntil(Predicate<? super T> predicate) {
-        return IntMap.of(original.takeUntil(p -> predicate.test(p._2)));
+        return unit(original.takeUntil(p -> predicate.test(p._2)));
     }
 
     @Override
     public IntMap<T> takeWhile(Predicate<? super T> predicate) {
-        return IntMap.of(original.takeWhile(p -> predicate.test(p._2)));
+        return unit(original.takeWhile(p -> predicate.test(p._2)));
     }
 
     @Override
