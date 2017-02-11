@@ -73,16 +73,7 @@ abstract class AbstractsQueue<T, Q extends AbstractsQueue<T, Q>> implements Trav
      * @return a new {@code Queue} instance, containing the new elements
      * @throws NullPointerException if elements is null
      */
-    @SuppressWarnings("unchecked")
-    public Q enqueueAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        // TODO: With #1716 we should generate all these methods directly in Queue & PriorityQueue and check `elements instanceof <type>`
-        if (isEmpty() && getClass().isAssignableFrom(elements.getClass())) {
-            return (Q) elements;
-        } else {
-            return List.ofAll(elements).foldLeft((Q) this, AbstractsQueue<T, Q>::enqueue);
-        }
-    }
+    public abstract Q enqueueAll(Iterable<? extends T> elements);
 
     /**
      * Returns the first element without modifying it.

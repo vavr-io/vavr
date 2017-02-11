@@ -56,7 +56,8 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     /**
-     * Enqueues the given elements.
+     * Enqueues the given elements. A queue has FIFO order, i.e. the first of the given elements is
+     * the first which will be retrieved.
      *
      * @param elements An {@link PriorityQueue} of elements, may be empty
      * @return a new {@link PriorityQueue} instance, containing the new elements
