@@ -615,6 +615,24 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         return new Queue<>(front, rear.prepend(element));
     }
 
+    /**
+     * Enqueues the given elements. A queue has FIFO order, i.e. the first of the given elements is
+     * the first which will be retrieved.
+     *
+     * @param elements An Iterable of elements, may be empty
+     * @return a new {@code Queue} instance, containing the new elements
+     * @throws NullPointerException if elements is null
+     */
+    @SuppressWarnings("unchecked")
+    public Queue<T> enqueueAll(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        if (isEmpty() && elements instanceof Queue) {
+            return (Queue<T>) elements;
+        } else {
+            return List.ofAll(elements).foldLeft(this, Queue::enqueue);
+        }
+    }
+
     // -- Adjusted return types of Seq methods
 
     @Override
