@@ -17,6 +17,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -434,6 +435,106 @@ public class IteratorTest extends AbstractTraversableTest {
         final Iterator<Integer> actual = of(1, 2, 3).takeUntil(x -> true);
         assertThat(actual).isEqualTo(empty());
         assertThat(actual.hasNext()).isFalse();
+    }
+
+    // -- hasNext
+
+    @Test
+    public void multipleHasNext() {
+        multipleHasNext(() -> Iterator.of(1));
+        multipleHasNext(() -> Iterator.of(1, 2, 3));
+        multipleHasNext(() -> Iterator.ofAll(true, true, false, true));
+        multipleHasNext(() -> Iterator.ofAll(new byte[] {1, 2, 3, 4}));
+        multipleHasNext(() -> Iterator.ofAll(new char[] {1, 2, 3, 4}));
+        multipleHasNext(() -> Iterator.ofAll(new double[] {1, 2, 3, 4}));
+        multipleHasNext(() -> Iterator.ofAll(new float[] {1, 2, 3, 4}));
+        multipleHasNext(() -> Iterator.ofAll(1, 2, 3, 4));
+        multipleHasNext(() -> Iterator.ofAll(new long[] {1, 2, 3, 4}));
+        multipleHasNext(() -> Iterator.ofAll(new short[] {1, 2, 3, 4}));
+        multipleHasNext(() -> Iterator.ofAll(Iterator.of(1, 2, 3).toJavaList().iterator()));
+        multipleHasNext(() -> Iterator.ofAll(Iterator.of(1, 2, 3).toJavaList()));
+
+        multipleHasNext(() -> Iterator.concat(List.of(Iterator.of(1, 2, 3), Iterator.of(1, 2, 3))));
+        multipleHasNext(() -> Iterator.concat(Iterator.of(1, 2, 3), Iterator.of(1, 2, 3)));
+        multipleHasNext(() -> Iterator.continually(() -> 1), 5);
+        multipleHasNext(() -> Iterator.continually(1), 5);
+        multipleHasNext(() -> Iterator.fill(3, () -> 1));
+        multipleHasNext(() -> Iterator.from(1), 5);
+        multipleHasNext(() -> Iterator.from(1, 2), 5);
+        multipleHasNext(() -> Iterator.from(1L), 5);
+        multipleHasNext(() -> Iterator.from(1L, 2L), 5);
+        multipleHasNext(() -> Iterator.iterate(1, i -> i + 1), 5);
+        multipleHasNext(() -> Iterator.tabulate(10, i -> i + 1));
+        multipleHasNext(() -> Iterator.unfold(10, x -> x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x))));
+        multipleHasNext(() -> Iterator.unfoldLeft(10, x -> x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x))));
+        multipleHasNext(() -> Iterator.unfoldRight(10, x -> x == 0 ? Option.none() : Option.of(new Tuple2<>(x, x - 1))));
+
+        multipleHasNext(() -> Iterator.range('a', 'd'));
+        multipleHasNext(() -> Iterator.range(1, 4));
+        multipleHasNext(() -> Iterator.range(1L, 4L));
+        multipleHasNext(() -> Iterator.rangeClosed('a', 'd'));
+        multipleHasNext(() -> Iterator.rangeClosed(1, 4));
+        multipleHasNext(() -> Iterator.rangeClosed(1L, 4L));
+        multipleHasNext(() -> Iterator.rangeBy('a', 'd', 1));
+        multipleHasNext(() -> Iterator.rangeBy(1, 4, 1));
+        multipleHasNext(() -> Iterator.rangeBy(1d, 4d, 1));
+        multipleHasNext(() -> Iterator.rangeBy(1L, 4L, 1));
+        multipleHasNext(() -> Iterator.rangeClosedBy('a', 'd', 1));
+        multipleHasNext(() -> Iterator.rangeClosedBy(1, 4, 1));
+        multipleHasNext(() -> Iterator.rangeClosedBy(1d, 4d, 1));
+        multipleHasNext(() -> Iterator.rangeClosedBy(1L, 4L, 1));
+
+        multipleHasNext(() -> Iterator.of(1, 2, 3).concat(Iterator.of(1, 2, 3)));
+        multipleHasNext(() -> Iterator.of(1, 2, 1, 2, 1, 2).distinct());
+        multipleHasNext(() -> Iterator.of(1, 2, 1, 2, 1, 2).distinctBy(e -> e % 2));
+        multipleHasNext(() -> Iterator.of(1, 2, 1, 2, 1, 2).distinctBy(Comparator.comparingInt(e -> e % 2)));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).drop(1));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).dropRight(1));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).dropUntil(e -> e == 3));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).dropWhile(e -> e == 1));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).filter(e -> e > 1));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).flatMap(e -> Iterator.of(e, e + 1)));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).grouped(2));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).intersperse(-1));
+        multipleHasNext(() -> Iterator.of(1, 2, 3).map(i -> i * 2));
+        multipleHasNext(() -> Iterator.of(1, 2, 3).partition(i -> i < 2)._1);
+        multipleHasNext(() -> Iterator.of(1, 2, 3).partition(i -> i < 2)._2);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 2).replace(2, 42));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 2).replaceAll(2, 42));
+        multipleHasNext(() -> Iterator.of(1, 2, 3).retainAll(List.of(2)));
+        multipleHasNext(() -> Iterator.of(1, 2, 3).scanLeft(1, (a, b) -> a + b));
+        multipleHasNext(() -> Iterator.of(1, 2, 3).scanRight(1, (a, b) -> a + b));
+        multipleHasNext(() -> Iterator.of(1, 2, 3).slideBy(Function.identity()));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).sliding(2));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).sliding(2, 1));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip(i -> Tuple.of(i, i + 1))._1);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip(i -> Tuple.of(i, i + 1))._2);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip3(i -> Tuple.of(i, i + 1, i + 2))._1);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip3(i -> Tuple.of(i, i + 1, i + 2))._2);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip3(i -> Tuple.of(i, i + 1, i + 2))._3);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).zip(Iterator.from(1)));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).zipAll(Iterator.of(1, 2), -1, -2));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).zipWith(Iterator.of(1, 2), (a, b) -> a + b));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).zipWithIndex());
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).zipWithIndex((a, i) -> a + i));
+    }
+
+    private <T> void multipleHasNext(Supplier<Iterator<T>> it) {
+        multipleHasNext(it, -1);
+    }
+
+    private <T> void multipleHasNext(Supplier<Iterator<T>> it, int maxLen) {
+        final Iterator<T> testee1 = it.get();
+        final Iterator<T> testee2 = it.get();
+        // ask 2 times
+        assertThat(testee2.hasNext()).isTrue();
+        assertThat(testee2.hasNext()).isTrue();
+        // results should be still the same
+        if (maxLen >= 0) {
+            assertThat(testee1.take(maxLen).toList()).isEqualTo(testee2.take(maxLen).toList());
+        } else {
+            assertThat(testee1.toList()).isEqualTo(testee2.toList());
+        }
     }
 
     // -- unfoldRight
