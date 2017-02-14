@@ -27,14 +27,14 @@ public class HashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <T1 extends Comparable<T1>, T2> HashMultimap<T1, T2> emptyMap() {
+    protected <T1 extends Comparable<T1>, T2> HashMultimap<T1, T2> emptyMap(Comparator<? super T2> comparator) {
         switch (containerType) {
             case SEQ:
                 return HashMultimap.withSeq().empty();
             case SET:
                 return HashMultimap.withSet().empty();
             case SORTED_SET:
-                return HashMultimap.withSortedSet(naturalComparator()).empty();
+                return HashMultimap.withSortedSet(comparator).empty();
             default:
                 throw new RuntimeException();
         }
@@ -287,7 +287,7 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldNarrowMap() {
-        final HashMultimap<Integer, Number> int2doubleMap = this.<Integer, Number> emptyMap().put(1, 1.0d);
+        final HashMultimap<Integer, Number> int2doubleMap = (HashMultimap<Integer, Number>) this.<Integer, Number> emptyMap().put(1, 1.0d);
         final HashMultimap<Number, Number> number2numberMap = HashMultimap.narrow(int2doubleMap);
         final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);

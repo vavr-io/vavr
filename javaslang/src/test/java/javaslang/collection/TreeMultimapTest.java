@@ -27,14 +27,14 @@ public class TreeMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <T1 extends Comparable<T1>, T2> TreeMultimap<T1, T2> emptyMap() {
+    protected <T1 extends Comparable<T1>, T2> TreeMultimap<T1, T2> emptyMap(Comparator<? super T2> comparator) {
         switch (containerType) {
             case SEQ:
                 return TreeMultimap.withSeq().empty();
             case SET:
                 return TreeMultimap.withSet().empty();
             case SORTED_SET:
-                return TreeMultimap.withSortedSet(naturalComparator()).empty();
+                return TreeMultimap.withSortedSet(comparator).empty();
             default:
                 throw new RuntimeException();
         }
@@ -287,7 +287,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldNarrowMap() {
-        final TreeMultimap<Integer, Number> int2doubleMap = this.<Integer, Number> emptyMap().put(1, 1.0d);
+        final TreeMultimap<Integer, Number> int2doubleMap = (TreeMultimap<Integer, Number>) this.<Integer, Number> emptyMap().put(1, 1.0d);
         final TreeMultimap<Number, Number> number2numberMap = TreeMultimap.narrow(int2doubleMap);
         final int actual = number2numberMap.put(2, new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);

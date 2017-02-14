@@ -27,14 +27,14 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
-    protected <T1 extends Comparable<T1>, T2> LinkedHashMultimap<T1, T2> emptyMap() {
+    protected <T1 extends Comparable<T1>, T2> LinkedHashMultimap<T1, T2> emptyMap(Comparator<? super T2> comparator) {
         switch (containerType) {
             case SEQ:
                 return LinkedHashMultimap.withSeq().empty();
             case SET:
                 return LinkedHashMultimap.withSet().empty();
             case SORTED_SET:
-                return LinkedHashMultimap.withSortedSet(naturalComparator()).empty();
+                return LinkedHashMultimap.withSortedSet(comparator).empty();
             default:
                 throw new RuntimeException();
         }
@@ -287,7 +287,7 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldNarrowMap() {
-        final LinkedHashMultimap<Integer, Number> int2doubleMap = this.<Integer, Number> emptyMap().put(1, 1.0d);
+        final LinkedHashMultimap<Integer, Number> int2doubleMap = (LinkedHashMultimap<Integer, Number>) this.<Integer, Number> emptyMap().put(1, 1.0d);
         final LinkedHashMultimap<Number, Number> number2numberMap = LinkedHashMultimap.narrow(int2doubleMap);
         final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);

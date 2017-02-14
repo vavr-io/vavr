@@ -13,10 +13,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -25,6 +22,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
 import static java.util.Arrays.asList;
+import static javaslang.collection.Comparators.naturalComparator;
 
 @RunWith(Parameterized.class)
 public abstract class AbstractMultimapTest extends AbstractTraversableTest {
@@ -150,7 +148,11 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         }
     }
 
-    abstract protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap();
+    protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap() {
+        return emptyMap(naturalComparator());
+    }
+
+    abstract protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap(Comparator<? super T2> comparator);
 
     protected boolean emptyMapShouldBeSingleton() {
         return true;
@@ -450,6 +452,57 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         final Seq<Integer> expected = Vector.of(1, 2);
         final Seq<Integer> actual = emptyInt().put(1, "1").put(2, "2").map(Tuple2::_1);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldMapComparableValues() {
+        final Multimap<Integer, String> map = this.<Integer, String>emptyMap()
+                .put(1, "1")
+                .put(1, "2")
+                .put(2, "3");
+        assertThat(map.map(v -> v)).isEqualTo(List.of(
+                Tuple.of(1, "1"),
+                Tuple.of(1, "2"),
+                Tuple.of(2, "3")));
+    }
+
+    @Test
+    public void shouldMapIncomparableValues() {
+        final Multimap<Integer, Incomparable> map = this.<Integer, Incomparable>emptyMap(Comparator.comparing(Incomparable::getS))
+                .put(1, new Incomparable("1"))
+                .put(1, new Incomparable("2"))
+                .put(2, new Incomparable("3"));
+        assertThat(map.map(v -> v)).isEqualTo(List.of(
+                Tuple.of(1, new Incomparable("1")),
+                Tuple.of(1, new Incomparable("2")),
+                Tuple.of(2, new Incomparable("3"))));
+    }
+
+    private static class Incomparable {
+        private String s;
+
+        Incomparable(String s) {
+            this.s = s;
+        }
+
+        public String getS() {
+            return s;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            Incomparable that = (Incomparable) o;
+
+            return s != null ? s.equals(that.s) : that.s == null;
+        }
+
+        @Override
+        public int hashCode() {
+            return s != null ? s.hashCode() : 0;
+        }
     }
 
     @Test
