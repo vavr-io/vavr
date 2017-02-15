@@ -478,7 +478,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
                 Tuple.of(2, new Incomparable("3"))));
     }
 
-    private static class Incomparable {
+    private final static class Incomparable {
         private String s;
 
         Incomparable(String s) {
@@ -491,17 +491,12 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-
-            Incomparable that = (Incomparable) o;
-
-            return s != null ? s.equals(that.s) : that.s == null;
+            return o == this || (o instanceof Incomparable && Objects.equals(s, ((Incomparable) o).s));
         }
 
         @Override
         public int hashCode() {
-            return s != null ? s.hashCode() : 0;
+            return Objects.hashCode(s);
         }
     }
 
