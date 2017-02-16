@@ -310,7 +310,11 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public Iterator<Tuple2<K, V>> iterator() {
-        return back.iterator().flatMap(t -> t._2.map(v -> Tuple.of(t._1, v)));
+        if (containerType == ContainerType.SORTED_SET) {
+            return back.iterator().flatMap(t -> t._2.iterator().map(v -> Tuple.of(t._1, v)));
+        } else {
+            return back.iterator().flatMap(t -> t._2.map(v -> Tuple.of(t._1, v)));
+        }
     }
 
     @Override
