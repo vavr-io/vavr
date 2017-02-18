@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.CheckedFunction1;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.Seq;
@@ -294,6 +295,21 @@ public interface Try<T> extends Value<T> {
     }
 
     /**
+     * Shortcut for {@code filterTry(predicate::test, errorProvider::apply)}, see
+     * {@link #filterTry(CheckedPredicate, CheckedFunction1)}}.
+     *
+     * @param predicate A predicate
+     * @param errorProvider A function that provides some kind of Throwable for T
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} or {@code errorProvider} is null
+     */
+    default Try<T> filter(Predicate<? super T> predicate, Function<? super T, ? extends Throwable> errorProvider) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        Objects.requireNonNull(errorProvider, "errorProvider is null");
+        return filterTry(predicate::test, errorProvider::apply);
+    }
+
+    /**
      * Shortcut for {@code filterTry(predicate::test)}, see {@link #filterTry(CheckedPredicate)}}.
      *
      * @param predicate A predicate
@@ -334,6 +350,24 @@ public interface Try<T> extends Value<T> {
                 return new Failure<>(t);
             }
         }
+    }
+
+    /**
+     * Returns {@code this} if this is a Failure or this is a Success and the value satisfies the predicate.
+     * <p>
+     * Returns a new Failure, if this is a Success and the value does not satisfy the Predicate or an exception
+     * occurs testing the predicate. The returned Failure wraps a Throwable instance provided by the given
+     * {@code errorProvider}.
+     *
+     * @param predicate         A checked predicate
+     * @param errorProvider     A provider of a throwable
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} or {@code errorProvider} is null
+     */
+    default Try<T> filterTry(CheckedPredicate<? super T> predicate, CheckedFunction1<? super T, ? extends Throwable> errorProvider) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        Objects.requireNonNull(errorProvider, "errorProvider is null");
+        return flatMapTry(t -> predicate.test(t) ? this : failure(errorProvider.apply(t)));
     }
 
     /**

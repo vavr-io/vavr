@@ -601,6 +601,12 @@ public class TryTest extends AbstractValueTest {
         assertThat(identity.filter(s -> true)).isEqualTo(identity);
     }
 
+    @Test
+    public void shouldReturnIdentityWhenFilterWithErrorProviderOnFailure() throws Exception {
+        final Try<String> identity = failure();
+        assertThat(identity.filter(s -> false, ignored -> new IllegalArgumentException())).isEqualTo(identity);
+    }
+
     // -- flatMap
 
     @Test
@@ -854,6 +860,11 @@ public class TryTest extends AbstractValueTest {
         assertThat(success().filter(s -> true).get()).isEqualTo(OK);
     }
 
+    @Test
+    public void shouldFilterMatchingPredicateWithErrorProviderOnSuccess() {
+        assertThat(success().filter(s -> true, s -> new IllegalArgumentException(s)).get()).isEqualTo(OK);
+    }
+
     @Test(expected = NonFatalException.class)
     public void shouldFilterNonMatchingPredicateOnSuccess() {
         success().filter(s -> false).get();
@@ -871,6 +882,12 @@ public class TryTest extends AbstractValueTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    public void shouldUseErrorProviderWhenFilterNonMatchingPredicateOnSuccess() throws Exception {
+        assertThat(success().filter(s -> false, str -> new IllegalArgumentException(str)).getCause())
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+    
     @Test(expected = RuntimeException.class)
     public void shouldFilterWithExceptionOnSuccess() {
         success().filter(s -> {
