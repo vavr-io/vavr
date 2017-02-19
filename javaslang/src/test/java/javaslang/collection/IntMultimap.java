@@ -181,9 +181,10 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
         return unit(original.orElse(List.ofAll(other).zipWithIndex().map(t -> Tuple.of(t._2, t._1))));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public IntMultimap<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
-        return unit(original.orElse(List.ofAll(supplier.get()).zipWithIndex().map(t -> Tuple.of(t._2, t._1))));
+        return unit(original.orElse(() -> (Iterable<? extends Tuple2<Integer, T>>) List.ofAll(supplier.get()).zipWithIndex().map(t -> Tuple.of(t._2, t._1))));
     }
 
     @Override

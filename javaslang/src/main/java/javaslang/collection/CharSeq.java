@@ -114,6 +114,9 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     public static CharSeq ofAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        if (elements instanceof CharSeq) {
+            return (CharSeq) elements;
+        }
         final StringBuilder sb = new StringBuilder();
         for (Character character : elements) {
             sb.append(character);

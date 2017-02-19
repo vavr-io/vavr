@@ -17,6 +17,7 @@ import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static java.util.Arrays.asList;
 import static javaslang.Serializables.deserialize;
@@ -125,6 +126,37 @@ public class CharSeqTest {
         assertThat(of('a').leftPadTo(2, 'a')).isEqualTo(of('a', 'a'));
         assertThat(of('a').leftPadTo(2, 'b')).isEqualTo(of('b', 'a'));
         assertThat(of('a').leftPadTo(3, 'b')).isEqualTo(of('b', 'b', 'a'));
+    }
+
+    // -- orElse
+
+    @Test
+    public void shouldCaclEmptyOrElseSameOther() {
+        CharSeq other = CharSeq.of("42");
+        assertThat(empty().orElse(other)).isSameAs(other);
+    }
+
+    @Test
+    public void shouldCaclEmptyOrElseEqualOther() {
+        assertThat(empty().orElse(Arrays.asList('1', '2'))).isEqualTo(CharSeq.of("12"));
+    }
+
+    @Test
+    public void shouldCaclNonemptyOrElseOther() {
+        CharSeq src = CharSeq.of("42");
+        assertThat(src.orElse(CharSeq.of("12"))).isSameAs(src);
+    }
+
+    @Test
+    public void shouldCaclEmptyOrElseSupplier() {
+        Supplier<CharSeq> other = () -> CharSeq.of("42");
+        assertThat(empty().orElse(other)).isEqualTo(CharSeq.of("42"));
+    }
+
+    @Test
+    public void shouldCaclNonemptyOrElseSupplier() {
+        CharSeq src = CharSeq.of("42");
+        assertThat(src.orElse(() -> CharSeq.of("12"))).isSameAs(src);
     }
 
     // -- patch
