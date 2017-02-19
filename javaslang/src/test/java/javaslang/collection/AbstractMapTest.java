@@ -523,6 +523,16 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- orElse
+
+    // DEV-Note: IntMap converts `other` to map
+    @Override
+    @Test
+    public void shouldCaclEmptyOrElseSameOther() {
+        Iterable<Integer> other = of(42);
+        assertThat(empty().orElse(other)).isEqualTo(other);
+    }
+
     // -- map
 
     @Test

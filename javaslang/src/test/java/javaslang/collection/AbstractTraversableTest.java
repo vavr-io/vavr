@@ -1244,6 +1244,37 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1).nonEmpty()).isTrue();
     }
 
+    // -- orElse
+
+    @Test
+    public void shouldCaclEmptyOrElseSameOther() {
+        Iterable<Integer> other = of(42);
+        assertThat(empty().orElse(other)).isSameAs(other);
+    }
+
+    @Test
+    public void shouldCaclEmptyOrElseEqualOther() {
+        assertThat(empty().orElse(Arrays.asList(1, 2))).isEqualTo(of(1, 2));
+    }
+
+    @Test
+    public void shouldCaclNonemptyOrElseOther() {
+        Traversable<Integer> src = of(42);
+        assertThat(src.orElse(List.of(1))).isSameAs(src);
+    }
+
+    @Test
+    public void shouldCaclEmptyOrElseSupplier() {
+        Supplier<Iterable<Integer>> other = () -> of(42);
+        assertThat(empty().orElse(other)).isEqualTo(of(42));
+    }
+
+    @Test
+    public void shouldCaclNonemptyOrElseSupplier() {
+        Traversable<Integer> src = of(42);
+        assertThat(src.orElse(() -> List.of(1))).isSameAs(src);
+    }
+
     // -- partition
 
     @Test(expected = NullPointerException.class)

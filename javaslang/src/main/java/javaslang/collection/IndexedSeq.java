@@ -171,6 +171,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
+    IndexedSeq<T> orElse(Iterable<? extends T> other);
+
+    @Override
+    IndexedSeq<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
+
+    @Override
     IndexedSeq<T> padTo(int length, T element);
 
     @Override

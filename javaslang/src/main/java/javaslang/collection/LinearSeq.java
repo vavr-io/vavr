@@ -151,6 +151,12 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
+    LinearSeq<T> orElse(Iterable<? extends T> other);
+
+    @Override
+    LinearSeq<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
+
+    @Override
     LinearSeq<T> padTo(int length, T element);
 
     @Override

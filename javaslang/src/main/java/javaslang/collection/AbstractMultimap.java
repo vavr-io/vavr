@@ -355,6 +355,18 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public M orElse(Iterable<? extends Tuple2<K, V>> other) {
+        return isEmpty() ? (M) createFromEntries(other) : (M) this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public M orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier) {
+        return isEmpty() ? (M) createFromEntries(supplier.get()) : (M) this;
+    }
+
     @Override
     public Tuple2<Multimap<K, V>, Multimap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

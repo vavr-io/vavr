@@ -550,6 +550,16 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(m1.merge(m3, (s1, s2) -> Iterator.concat(s1, s2))).isEqualTo(emptyIntInt().put(1, 1).put(2, 2).put(3, 3).put(4, 4));
     }
 
+    // -- orElse
+
+    // DEV-Note: IntMultimap converts `other` to multimap
+    @Override
+    @Test
+    public void shouldCaclEmptyOrElseSameOther() {
+        Iterable<Integer> other = of(42);
+        assertThat(empty().orElse(other)).isEqualTo(other);
+    }
+
     // -- equality
 
     @Test

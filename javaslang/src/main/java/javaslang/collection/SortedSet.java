@@ -11,10 +11,7 @@ import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * An immutable {@code SortedSet} interface.
@@ -139,6 +136,12 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
 
     @Override
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    SortedSet<T> orElse(Iterable<? extends T> other);
+
+    @Override
+    SortedSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
 
     @Override
     Tuple2<? extends SortedSet<T>, ? extends SortedSet<T>> partition(Predicate<? super T> predicate);

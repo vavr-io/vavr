@@ -114,6 +114,9 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
      */
     public static CharSeq ofAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        if (elements instanceof CharSeq) {
+            return (CharSeq) elements;
+        }
         final StringBuilder sb = new StringBuilder();
         for (Character character : elements) {
             sb.append(character);
@@ -606,6 +609,16 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         } else {
             return of(padding(element, length - actualLength).append(back));
         }
+    }
+
+    @Override
+    public CharSeq orElse(Iterable<? extends Character> other) {
+        return isEmpty() ? ofAll(other) : this;
+    }
+
+    @Override
+    public CharSeq orElse(Supplier<? extends Iterable<? extends Character>> supplier) {
+        return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
     private static StringBuilder padding(Character element, int limit) {

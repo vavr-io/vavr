@@ -577,6 +577,12 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     Option<? extends Multimap<K, V>> initOption();
 
     @Override
+    Multimap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other);
+
+    @Override
+    Multimap<K, V> orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier);
+
+    @Override
     Tuple2<? extends Multimap<K, V>, ? extends Multimap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override

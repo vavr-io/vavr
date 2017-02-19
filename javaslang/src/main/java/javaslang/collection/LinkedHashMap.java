@@ -651,6 +651,16 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     }
 
     @Override
+    public LinkedHashMap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other) {
+        return isEmpty() ? ofEntries(other) : this;
+    }
+
+    @Override
+    public LinkedHashMap<K, V> orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier) {
+        return isEmpty() ? ofEntries(supplier.get()) : this;
+    }
+
+    @Override
     public Tuple2<LinkedHashMap<K, V>, LinkedHashMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.partition(this, this::createFromEntries, predicate);
     }
