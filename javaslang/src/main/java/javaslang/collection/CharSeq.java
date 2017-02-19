@@ -608,6 +608,16 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         }
     }
 
+    @Override
+    public CharSeq orElse(Iterable<? extends Character> other) {
+        return isEmpty() ? ofAll(other) : this;
+    }
+
+    @Override
+    public CharSeq orElse(Supplier<? extends Iterable<? extends Character>> supplier) {
+        return isEmpty() ? ofAll(supplier.get()) : this;
+    }
+
     private static StringBuilder padding(Character element, int limit) {
         final StringBuilder padding = new StringBuilder();
         for (int i = 0; i < limit; i++) {

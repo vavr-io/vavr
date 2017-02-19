@@ -669,6 +669,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
     Option<? extends Map<K, V>> initOption();
 
     @Override
+    Map<K, V> orElse(Iterable<? extends Tuple2<K, V>> other);
+
+    @Override
+    Map<K, V> orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier);
+
+    @Override
     Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override

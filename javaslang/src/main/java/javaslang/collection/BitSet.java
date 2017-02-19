@@ -617,8 +617,9 @@ interface BitSetModule {
             return new BitSet1<>(fromInt, toInt, 0L);
         }
 
+        @SuppressWarnings("unchecked")
         BitSet<T> createFromAll(Iterable<? extends T> values) {
-            return createEmpty().addAll(values);
+            return values instanceof BitSet ? (BitSet<T>) values : createEmpty().addAll(values);
         }
 
         BitSet<T> fromBitMaskNoCopy(long[] elements) {
@@ -717,6 +718,16 @@ interface BitSetModule {
                     return (size == results.size()) ? this : results;
                 }
             }
+        }
+
+        @Override
+        public BitSet<T> orElse(Iterable<? extends T> other) {
+            return isEmpty() ? createFromAll(other) : this;
+        }
+
+        @Override
+        public BitSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+            return isEmpty() ? createFromAll(supplier.get()) : this;
         }
 
         @Override

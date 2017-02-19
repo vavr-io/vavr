@@ -13,10 +13,7 @@ import javaslang.control.Option;
 import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * An immutable {@code Set} interface.
@@ -231,6 +228,12 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
 
     @Override
     <U> Set<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    Set<T> orElse(Iterable<? extends T> other);
+
+    @Override
+    Set<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
 
     @Override
     Tuple2<? extends Set<T>, ? extends Set<T>> partition(Predicate<? super T> predicate);

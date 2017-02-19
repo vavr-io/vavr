@@ -13,10 +13,7 @@ import javaslang.control.Option;
 
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * Interface for immutable sequential data structures.
@@ -1101,6 +1098,12 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
 
     @Override
     <U> Seq<U> map(Function<? super T, ? extends U> mapper);
+
+    @Override
+    Seq<T> orElse(Iterable<? extends T> other);
+
+    @Override
+    Seq<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
 
     @Override
     Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(Predicate<? super T> predicate);

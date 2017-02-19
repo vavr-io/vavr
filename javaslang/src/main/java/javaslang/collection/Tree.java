@@ -497,6 +497,16 @@ public interface Tree<T> extends Traversable<T> {
         return isEmpty() ? Empty.instance() : TreeModule.map((Node<T>) this, mapper);
     }
 
+    @Override
+    default Tree<T> orElse(Iterable<? extends T> other) {
+        return isEmpty() ? ofAll(other) : this;
+    }
+
+    @Override
+    default Tree<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+        return isEmpty() ? ofAll(supplier.get()) : this;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     default Tuple2<Seq<T>, Seq<T>> partition(Predicate<? super T> predicate) {

@@ -188,6 +188,12 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     <U extends V> SortedMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
 
     @Override
+    SortedMap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other);
+
+    @Override
+    SortedMap<K, V> orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier);
+
+    @Override
     Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override

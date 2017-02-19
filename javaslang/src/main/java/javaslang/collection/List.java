@@ -921,6 +921,16 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default List<T> orElse(Iterable<? extends T> other) {
+        return isEmpty() ? ofAll(other) : this;
+    }
+
+    @Override
+    default List<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+        return isEmpty() ? ofAll(supplier.get()) : this;
+    }
+
+    @Override
     default List<T> padTo(int length, T element) {
         final int actualLength = length();
         if (length <= actualLength) {

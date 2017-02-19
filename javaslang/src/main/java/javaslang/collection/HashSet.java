@@ -676,6 +676,16 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     }
 
     @Override
+    public HashSet<T> orElse(Iterable<? extends T> other) {
+        return isEmpty() ? ofAll(other) : this;
+    }
+
+    @Override
+    public HashSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+        return isEmpty() ? ofAll(supplier.get()) : this;
+    }
+
+    @Override
     public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> p = iterator().partition(predicate);

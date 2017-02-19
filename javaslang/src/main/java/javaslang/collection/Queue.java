@@ -901,6 +901,16 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
+    public Queue<T> orElse(Iterable<? extends T> other) {
+        return isEmpty() ? ofAll(other) : this;
+    }
+
+    @Override
+    public Queue<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+        return isEmpty() ? ofAll(supplier.get()) : this;
+    }
+
+    @Override
     public Queue<T> padTo(int length, T element) {
         final int actualLength = length();
         if (length <= actualLength) {

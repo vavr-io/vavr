@@ -1034,6 +1034,16 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
     }
 
     @Override
+    public TreeMap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other) {
+        return isEmpty() ? ofEntries(comparator(), other) : this;
+    }
+
+    @Override
+    public TreeMap<K, V> orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier) {
+        return isEmpty() ? ofEntries(comparator(), supplier.get()) : this;
+    }
+
+    @Override
     public Tuple2<TreeMap<K, V>, TreeMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.partition(this, this::createFromEntries, predicate);
     }

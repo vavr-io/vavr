@@ -1614,6 +1614,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
+    default Iterator<T> orElse(Iterable<? extends T> other) {
+        return isEmpty() ? ofAll(other) : this;
+    }
+
+    @Override
+    default Iterator<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+        return isEmpty() ? ofAll(supplier.get()) : this;
+    }
+
+    @Override
     default Tuple2<Iterator<T>, Iterator<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (!hasNext()) {

@@ -14,10 +14,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Spliterator;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 public final class IntMap<T> implements Traversable<T>, Serializable {
 
@@ -181,6 +178,16 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public <U> Seq<U> map(Function<? super T, ? extends U> mapper) {
         return original.map(e -> mapper.apply(e._2));
+    }
+
+    @Override
+    public IntMap<T> orElse(Iterable<? extends T> other) {
+        return unit(original.orElse(List.ofAll(other).zipWithIndex().map(t -> Tuple.of(t._2, t._1))));
+    }
+
+    @Override
+    public IntMap<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+        return unit(original.orElse(List.ofAll(supplier.get()).zipWithIndex().map(t -> Tuple.of(t._2, t._1))));
     }
 
     @Override

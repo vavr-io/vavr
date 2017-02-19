@@ -419,6 +419,19 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         return ofAll(comparator, iterator().map(mapper));
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public PriorityQueue<T> orElse(Iterable<? extends T> other) {
+        return isEmpty()
+                ? other instanceof PriorityQueue ? (PriorityQueue<T>) other : ofAll(comparator, other)
+                : this;
+    }
+
+    @Override
+    public PriorityQueue<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+        return isEmpty() ? ofAll(comparator, supplier.get()) : this;
+    }
+
     @Override
     public Tuple2<? extends PriorityQueue<T>, ? extends PriorityQueue<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

@@ -745,6 +745,16 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
     }
 
     @Override
+    public TreeSet<T> orElse(Iterable<? extends T> other) {
+        return isEmpty() ? ofAll(tree.comparator(), other) : this;
+    }
+
+    @Override
+    public TreeSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+        return isEmpty() ? ofAll(tree.comparator(), supplier.get()) : this;
+    }
+
+    @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return iterator().partition(predicate).map(i1 -> TreeSet.ofAll(tree.comparator(), i1),

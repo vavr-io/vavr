@@ -14,10 +14,7 @@ import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
@@ -849,6 +846,22 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     default boolean nonEmpty() {
         return !isEmpty();
     }
+
+    /**
+     * Returns this {@code Traversable} if it is nonempty, otherwise return the alternative.
+     *
+     * @param other An alternative {@code Traversable}
+     * @return this {@code Traversable} if it is nonempty, otherwise return the alternative.
+     */
+    Traversable<T> orElse(Iterable<? extends T> other);
+
+    /**
+     * Returns this {@code Traversable} if it is nonempty, otherwise return the result of evaluating supplier.
+     *
+     * @param supplier An alternative {@code Traversable} supplier
+     * @return this {@code Traversable} if it is nonempty, otherwise return the result of evaluating supplier.
+     */
+    Traversable<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
 
     /**
      * Creates a partition of this {@code Traversable} by splitting this elements in two in distinct tarversables
