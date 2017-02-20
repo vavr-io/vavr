@@ -1264,9 +1264,15 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldCaclEmptyOrElseSupplier() {
-        Supplier<Iterable<Integer>> other = () -> of(42);
-        assertThat(empty().orElse(other)).isEqualTo(of(42));
+    public void shouldCaclEmptyOrElseSameSupplier() {
+        Iterable<Integer> other = of(42);
+        Supplier<Iterable<Integer>> supplier = () -> other;
+        assertThat(empty().orElse(supplier)).isSameAs(other);
+    }
+
+    @Test
+    public void shouldCaclEmptyOrElseEqualSupplier() {
+        assertThat(empty().orElse(() -> Arrays.asList(1, 2))).isEqualTo(of(1, 2));
     }
 
     @Test

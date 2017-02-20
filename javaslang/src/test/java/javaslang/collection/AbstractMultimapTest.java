@@ -551,13 +551,20 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     }
 
     // -- orElse
-
     // DEV-Note: IntMultimap converts `other` to multimap
+
     @Override
     @Test
     public void shouldCaclEmptyOrElseSameOther() {
         Iterable<Integer> other = of(42);
         assertThat(empty().orElse(other)).isEqualTo(other);
+    }
+
+    @Test
+    public void shouldCaclEmptyOrElseSameSupplier() {
+        Iterable<Integer> other = of(42);
+        Supplier<Iterable<Integer>> supplier = () -> other;
+        assertThat(empty().orElse(supplier)).isEqualTo(other);
     }
 
     // -- equality
