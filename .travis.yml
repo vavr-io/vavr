@@ -11,6 +11,7 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install --only-upgrade -y oracle-java8-installer
   - pip install --user codecov
+install: true
 script: .travis/run-tests.sh
 after_success:
   - codecov
