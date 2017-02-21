@@ -355,12 +355,28 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         }
     }
 
+    /**
+     * Returns this {@code Multimap} if it is nonempty,
+     * otherwise {@code Multimap} created from iterable, using existing multimap properties.
+     *
+     * @param other An alternative {@code Traversable}
+     * @return this {@code Multimap} if it is nonempty,
+     * otherwise {@code Multimap} created from iterable, using existing multimap properties.
+     */
     @SuppressWarnings("unchecked")
     @Override
     public M orElse(Iterable<? extends Tuple2<K, V>> other) {
         return isEmpty() ? (M) createFromEntries(other) : (M) this;
     }
 
+    /**
+     * Returns this {@code Multimap} if it is nonempty,
+     * otherwise {@code Multimap} created from result of evaluating supplier, using existing multimap properties.
+     *
+     * @param supplier An alternative {@code Traversable}
+     * @return this {@code Multimap} if it is nonempty,
+     * otherwise {@code Multimap} created from result of evaluating supplier, using existing multimap properties.
+     */
     @SuppressWarnings("unchecked")
     @Override
     public M orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier) {

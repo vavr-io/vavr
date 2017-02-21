@@ -191,16 +191,20 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         return ofAll(naturalComparator(), elements);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> PriorityQueue<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-
-        int size = 0;
-        Seq<Node<T>> forest = List.empty();
-        for (T value : elements) {
-            forest = insert(comparator, value, forest);
-            size++;
+        if (elements instanceof PriorityQueue && ((PriorityQueue) elements).comparator == comparator) {
+            return (PriorityQueue<T>) elements;
+        } else {
+            int size = 0;
+            Seq<Node<T>> forest = List.empty();
+            for (T value : elements) {
+                forest = insert(comparator, value, forest);
+                size++;
+            }
+            return new PriorityQueue<>(comparator, forest, size);
         }
-        return new PriorityQueue<>(comparator, forest, size);
     }
 
     public static <T extends Comparable<? super T>> PriorityQueue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
@@ -419,14 +423,27 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
         return ofAll(comparator, iterator().map(mapper));
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Returns this {@code PriorityQueue} if it is nonempty,
+     * otherwise {@code PriorityQueue} created from iterable, using existing comparator.
+     *
+     * @param other An alternative {@code Traversable}
+     * @return this {@code PriorityQueue} if it is nonempty,
+     * otherwise {@code PriorityQueue} created from iterable, using existing comparator.
+     */
     @Override
     public PriorityQueue<T> orElse(Iterable<? extends T> other) {
-        return isEmpty()
-                ? other instanceof PriorityQueue ? (PriorityQueue<T>) other : ofAll(comparator, other)
-                : this;
+        return isEmpty() ? ofAll(comparator, other) : this;
     }
 
+    /**
+     * Returns this {@code PriorityQueue} if it is nonempty,
+     * otherwise {@code PriorityQueue} created from result of evaluating supplier, using existing comparator.
+     *
+     * @param supplier An alternative {@code Traversable}
+     * @return this {@code PriorityQueue} if it is nonempty,
+     * otherwise {@code PriorityQueue} created from result of evaluating supplier, using existing comparator.
+     */
     @Override
     public PriorityQueue<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(comparator, supplier.get()) : this;

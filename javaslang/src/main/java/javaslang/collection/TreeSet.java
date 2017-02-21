@@ -744,11 +744,27 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
         return tree.min();
     }
 
+    /**
+     * Returns this {@code TreeSet} if it is nonempty,
+     * otherwise {@code TreeSet} created from iterable, using existing comparator.
+     *
+     * @param other An alternative {@code Traversable}
+     * @return this {@code TreeSet} if it is nonempty,
+     * otherwise {@code TreeSet} created from iterable, using existing comparator.
+     */
     @Override
     public TreeSet<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(tree.comparator(), other) : this;
     }
 
+    /**
+     * Returns this {@code TreeSet} if it is nonempty,
+     * otherwise {@code TreeSet} created from result of evaluating supplier, using existing comparator.
+     *
+     * @param supplier An alternative {@code Traversable}
+     * @return this {@code TreeSet} if it is nonempty,
+     * otherwise {@code TreeSet} created from result of evaluating supplier, using existing comparator.
+     */
     @Override
     public TreeSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(tree.comparator(), supplier.get()) : this;

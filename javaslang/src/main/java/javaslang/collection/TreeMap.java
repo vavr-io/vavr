@@ -1033,11 +1033,27 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
         return Maps.merge(this, this::createFromEntries, that, collisionResolution);
     }
 
+    /**
+     * Returns this {@code TreeMap} if it is nonempty,
+     * otherwise {@code TreeMap} created from iterable, using existing comparator.
+     *
+     * @param other An alternative {@code Traversable}
+     * @return this {@code TreeMap} if it is nonempty,
+     * otherwise {@code TreeMap} created from iterable, using existing comparator.
+     */
     @Override
     public TreeMap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other) {
         return isEmpty() ? ofEntries(comparator(), other) : this;
     }
 
+    /**
+     * Returns this {@code TreeMap} if it is nonempty,
+     * otherwise {@code TreeMap} created from result of evaluating supplier, using existing comparator.
+     *
+     * @param supplier An alternative {@code Traversable}
+     * @return this {@code TreeMap} if it is nonempty,
+     * otherwise {@code TreeMap} created from result of evaluating supplier, using existing comparator.
+     */
     @Override
     public TreeMap<K, V> orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier) {
         return isEmpty() ? ofEntries(comparator(), supplier.get()) : this;

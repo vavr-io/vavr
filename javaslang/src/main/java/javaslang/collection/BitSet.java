@@ -720,11 +720,27 @@ interface BitSetModule {
             }
         }
 
+        /**
+         * Returns this {@code BitSet} if it is nonempty,
+         * otherwise {@code BitSet} created from iterable, using existing bitset properties.
+         *
+         * @param other An alternative {@code Traversable}
+         * @return this {@code BitSet} if it is nonempty,
+         * otherwise {@code BitSet} created from iterable, using existing bitset properties.
+         */
         @Override
         public BitSet<T> orElse(Iterable<? extends T> other) {
             return isEmpty() ? createFromAll(other) : this;
         }
 
+        /**
+         * Returns this {@code BitSet} if it is nonempty,
+         * otherwise {@code BitSet} created from result of evaluating supplier, using existing bitset properties.
+         *
+         * @param supplier An alternative {@code Traversable}
+         * @return this {@code BitSet} if it is nonempty,
+         * otherwise {@code BitSet} created from result of evaluating supplier, using existing bitset properties.
+         */
         @Override
         public BitSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
             return isEmpty() ? createFromAll(supplier.get()) : this;
