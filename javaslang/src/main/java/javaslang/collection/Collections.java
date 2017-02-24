@@ -7,7 +7,9 @@ package javaslang.collection;
 
 import javaslang.control.Option;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Objects;
 import java.util.function.*;
 
 /**

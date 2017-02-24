@@ -1151,7 +1151,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator(), source.map(t -> (T3) t._3).iterator());
         }
     }
-
+    
     // -- Overridden methods of Traversable
 
     @Override

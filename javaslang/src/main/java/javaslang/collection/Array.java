@@ -471,7 +471,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
             return wrap(arr);
         }
     }
-
+    
     @Override
     public boolean hasDefiniteSize() {
         return true;

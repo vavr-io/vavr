@@ -226,7 +226,12 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     default boolean containsAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return List.ofAll(elements).distinct().find(e -> !this.contains(e)).isEmpty();
+        for (T element : elements) {
+            if (!contains(element)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
