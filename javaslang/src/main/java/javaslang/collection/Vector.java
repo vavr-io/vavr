@@ -485,6 +485,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     /**
      * Transposes the rows and columns of a {@link Vector} matrix.
      *
+     * @param <T> matrix element type
      * @param matrix to be transposed.
      * @return a transposed {@link Vector} matrix.
      * @throws IllegalArgumentException if the row lengths of {@code matrix} differ.
@@ -723,6 +724,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public Vector<T> insertAll(int index, Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
         if ((index >= 0) && (index <= length())) {
             final Vector<T> begin = take(index).appendAll(elements);
             final Vector<T> end = drop(index);
@@ -1020,6 +1022,8 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public <U> Vector<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        Objects.requireNonNull(mapper, "mapper is null");
         final Function<? super T, ? extends U> domain = Function1.of(mapper::apply).memoized();
         return toJavaStream()
                 .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))

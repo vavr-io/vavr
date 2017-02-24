@@ -479,6 +479,7 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     /**
      * Transposes the rows and columns of a {@link Queue} matrix.
      *
+     * @param <T> matrix element type
      * @param matrix to be transposed.
      * @return a transposed {@link Queue} matrix.
      * @throws IllegalArgumentException if the row lengths of {@code matrix} differ.

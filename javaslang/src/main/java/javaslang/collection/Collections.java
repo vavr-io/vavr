@@ -10,10 +10,7 @@ import javaslang.control.Option;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 import static javaslang.collection.ArrayType.asArray;
 
@@ -297,6 +294,7 @@ final class Collections {
     static <T> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
         return isTraversableAgain(iterable) ? withSizeTraversable(iterable) : withSizeTraversable(List.ofAll(iterable));
     }
+    
     private static <T> IterableWithSize<T> withSizeTraversable(Iterable<? extends T> iterable) {
         if (iterable instanceof Collection) {
             return new IterableWithSize<>(iterable, ((Collection<?>) iterable).size());
@@ -306,6 +304,7 @@ final class Collections {
     }
 
     static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
+        Objects.requireNonNull(matrix, "matrix is null");
         if (matrix.isEmpty() || (matrix.length() == 1 && matrix.head().length() <= 1)) {
             return matrix;
         } else {
