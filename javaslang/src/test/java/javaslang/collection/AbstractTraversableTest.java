@@ -24,6 +24,7 @@ import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingInt;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.within;
 
@@ -31,10 +32,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     protected final boolean isTraversableAgain() {
         return empty().isTraversableAgain();
-    }
-
-    protected final boolean isDistinctElements() {
-        return empty().isDistinct();
     }
 
     protected abstract <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
@@ -875,7 +872,21 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         }
         assertThat(iterator.hasNext()).isFalse();
     }
-    
+
+    @Test
+    public void shouldThrowWhenCallingNextOnEmptyIterator() {
+        assertThatThrownBy(() -> empty().iterator().next()).isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    public void shouldThrowWhenCallingNextTooOftenOnNonEmptyIterator() {
+        final Iterator<Integer> iterator = of(1).iterator();
+        assertThatThrownBy(() -> {
+            iterator.next();
+            iterator.next();
+        }).isInstanceOf(NoSuchElementException.class);
+    }
+
     // -- mkString()
 
     @Test

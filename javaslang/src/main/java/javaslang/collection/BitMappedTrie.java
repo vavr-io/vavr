@@ -270,7 +270,7 @@ final class BitMappedTrie<T> implements Serializable {
     }
 
     Iterator<T> iterator() {
-        return new Iterator<T>() {
+        return new AbstractIterator<T>() {
             private final int globalLength = BitMappedTrie.this.length;
             private int globalIndex = 0;
 
@@ -282,7 +282,7 @@ final class BitMappedTrie<T> implements Serializable {
             public boolean hasNext() { return globalIndex < globalLength; }
 
             @Override
-            public T next() {
+            public T getNext() {
                 if (index == length) { setCurrentArray(); }
                 final T next = type.getAt(leaf, index);
 
