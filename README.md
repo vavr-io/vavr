@@ -37,3 +37,7 @@ Currently, only basic microbenchmarks are available. To run:
 ```bash
 mvn clean test -P benchmark -pl javaslang-benchmark
 ```
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/javaslang/javaslang/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
