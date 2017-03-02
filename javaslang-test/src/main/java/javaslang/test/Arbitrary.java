@@ -5,7 +5,6 @@
  */
 package javaslang.test;
 
-import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Stream;
 
@@ -197,7 +196,7 @@ public interface Arbitrary<T> {
      * @return A new Arbitrary of Integer
      */
     static Arbitrary<Integer> integer() {
-        return size -> random -> Gen.choose(-size, size).apply(random);
+        return size -> Gen.choose(-size, size);
     }
 
     /**
@@ -298,14 +297,7 @@ public interface Arbitrary<T> {
     static <T> Arbitrary<List<T>> list(Arbitrary<T> arbitraryT) {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
-            return random -> Gen.choose(0, size).map(i -> {
-                List<T> list = List.empty();
-                for (int j = 0; j < i; j++) {
-                    final T element = genT.apply(random);
-                    list = list.prepend(element);
-                }
-                return list;
-            }).apply(random);
+            return random -> List.fill(Gen.choose(0, size).apply(random), () -> genT.apply(random));
         };
     }
 
@@ -326,20 +318,8 @@ public interface Arbitrary<T> {
     static <T> Arbitrary<Stream<T>> stream(Arbitrary<T> arbitraryT) {
         return size -> {
             final Gen<T> genT = arbitraryT.apply(size);
-            return random -> Gen.choose(0, size).map(i -> Stream.ofAll(new Iterator<T>() {
-
-                int count = i;
-
-                @Override
-                public boolean hasNext() {
-                    return count-- > 0;
-                }
-
-                @Override
-                public T next() {
-                    return genT.apply(random);
-                }
-            })).apply(random);
+            return random -> Stream.continually(() -> genT.apply(random))
+                    .take(Gen.choose(0, size).apply(random));
         };
     }
 }
