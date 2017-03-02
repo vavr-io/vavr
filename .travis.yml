@@ -15,7 +15,7 @@ install: true
 script: .travis/run-tests.sh
 after_success:
   - codecov
-  - python <(curl -s https://raw.githubusercontent.com/TouK/sputnik-ci/master/sputnik-ci.py)
+#  - python <(curl -s https://raw.githubusercontent.com/TouK/sputnik-ci/master/sputnik-ci.py)
   - mvn clean deploy -DskipTests --settings .travis/maven-settings.xml
   - .travis/trigger-build.sh javaslang-gwt
   - .travis/trigger-build.sh javaslang-jackson
