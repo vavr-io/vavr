@@ -156,7 +156,7 @@ public interface Gen<T> {
         if (min == max) {
             return ignored -> min;
         } else {
-            return random -> (char) (int) Gen.choose((int) min, (int) max).apply(random);
+            return Gen.choose((int) min, (int) max).map(i -> (char) (int) i);
         }
     }
 
@@ -181,7 +181,7 @@ public interface Gen<T> {
      */
     static <T extends Enum<T>> Gen<T> choose(Class<T> clazz) {
         Objects.requireNonNull(clazz, "clazz is null");
-        return random -> Gen.choose(clazz.getEnumConstants()).apply(random);
+        return Gen.choose(clazz.getEnumConstants());
     }
 
     /**
@@ -198,7 +198,7 @@ public interface Gen<T> {
         if (values.length == 0) {
             return Gen.fail("Empty array");
         } else {
-            return random -> Gen.choose(0, values.length - 1).map(i -> values[i]).apply(random);
+            return Gen.choose(0, values.length - 1).map(i -> values[i]);
         }
     }
 
@@ -283,10 +283,7 @@ public interface Gen<T> {
         if (filtered.isEmpty()) {
             throw new IllegalArgumentException("no generator with positive weight");
         }
-        final int size = filtered.map(t -> {
-            final int frequency = t._1;
-            return frequency;
-        }).sum().intValue();
+        final int size = filtered.map(t -> t._1).sum().intValue();
         return choose(1, size).flatMap(n -> GenModule.frequency(n, filtered.iterator()));
     }
 
