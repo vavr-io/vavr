@@ -4,6 +4,20 @@
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/javaslang/javaslang)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.png)](https://gitter.im/javaslang/javaslang)
 
+---
+
+**Our goal is to collect enough money to engage one full-time maintainer.**
+
+Currently we spend thousands of hours in our spare free time on _the most popular_ object-functional programming library for Java. Please support us if you like it by making a donation.
+
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8ZR8YCWB9K5WA">
+![donate-to-javaslang-via-paypal](https://cloud.githubusercontent.com/assets/743833/23549988/02d66ccc-000f-11e7-8764-a257b21377bd.gif)
+</a>
+
+**Thank you for your support! :heart:**
+
+---
+
 # [Javaslang](http://javaslang.io/)
 
 Javaslang is an object-functional language extension to Java 8, which aims to reduce the lines of code and increase code quality.
