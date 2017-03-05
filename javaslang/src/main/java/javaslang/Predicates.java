@@ -82,7 +82,7 @@ public final class Predicates {
     // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T> Predicate<T> allOf(Predicate<? super T>... predicates) {
+    public static <T> Predicate<T> allOf(Predicate<T>... predicates) {
         Objects.requireNonNull(predicates, "predicates is null");
         return t -> List.of(predicates).foldLeft(true, (bool, pred) -> bool && pred.test(t));
     }
@@ -97,7 +97,7 @@ public final class Predicates {
     // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T> Predicate<T> anyOf(Predicate<? super T>... predicates) {
+    public static <T> Predicate<T> anyOf(Predicate<T>... predicates) {
         Objects.requireNonNull(predicates, "predicates is null");
         return t -> List.of(predicates).find(pred -> pred.test(t)).isDefined();
     }
@@ -114,7 +114,7 @@ public final class Predicates {
     // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
-    public static <T> Predicate<T> noneOf(Predicate<? super T>... predicates) {
+    public static <T> Predicate<T> noneOf(Predicate<T>... predicates) {
         Objects.requireNonNull(predicates, "predicates is null");
         return anyOf(predicates).negate();
     }
