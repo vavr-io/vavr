@@ -10,6 +10,7 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -69,7 +70,7 @@ import java.util.function.*;
  * @author Daniel Dietrich, Ruslan Sennov
  * @since 2.0.0
  */
-public interface Set<T> extends Traversable<T>, Function1<T, Boolean> {
+public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializable {
 
     long serialVersionUID = 1L;
 

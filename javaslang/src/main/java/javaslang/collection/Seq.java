@@ -11,6 +11,7 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
 
+import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
@@ -87,7 +88,7 @@ import java.util.function.*;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
-public interface Seq<T> extends Traversable<T>, Function1<Integer, T> {
+public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializable {
 
     long serialVersionUID = 1L;
 

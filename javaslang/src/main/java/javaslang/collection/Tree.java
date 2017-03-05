@@ -27,7 +27,9 @@ import static javaslang.collection.Tree.*;
  * @author Daniel Dietrich, Grzegorz Piwowarek
  * @since 1.1.0
  */
-public interface Tree<T> extends Traversable<T> {
+public interface Tree<T> extends Traversable<T>, Serializable {
+
+    long serialVersionUID = 1L;
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with

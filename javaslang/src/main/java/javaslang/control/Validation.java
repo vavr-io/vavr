@@ -61,7 +61,9 @@ import java.util.function.Supplier;
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
  * @since 2.0.0
  */
-public interface Validation<E, T> extends Value<T> {
+public interface Validation<E, T> extends Value<T>, Serializable {
+
+    long serialVersionUID = 1L;
 
     /**
      * Creates a {@link Valid} that contains the given {@code value}.
