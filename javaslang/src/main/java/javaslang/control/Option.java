@@ -34,7 +34,9 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Option<T> extends Value<T> {
+public interface Option<T> extends Value<T>, Serializable {
+
+    long serialVersionUID = 1L;
 
     /**
      * Creates a new {@code Option} of a given value.

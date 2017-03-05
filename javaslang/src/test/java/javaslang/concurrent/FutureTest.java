@@ -74,11 +74,6 @@ public class FutureTest extends AbstractValueTest {
         return 1;
     }
 
-    @Override
-    protected boolean isSerializable() {
-        return false;
-    }
-
     // -- static failed()
 
     @Test

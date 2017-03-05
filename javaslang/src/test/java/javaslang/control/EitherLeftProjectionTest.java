@@ -47,11 +47,6 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
         return 1;
     }
 
-    @Override
-    protected boolean isSerializable() {
-        return false;
-    }
-
     // -- LeftProjection
 
     // get

@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.*;
 import javaslang.control.Option;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 
@@ -73,7 +74,7 @@ import java.util.function.*;
  * @author Ruslan Sennov
  * @since 2.1.0
  */
-public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, Traversable<V>>, Kind2<Multimap<?, ?>, K, V> {
+public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, Traversable<V>>, Kind2<Multimap<?, ?>, K, V>, Serializable {
 
     long serialVersionUID = 1L;
 

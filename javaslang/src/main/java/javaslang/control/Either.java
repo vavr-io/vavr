@@ -42,7 +42,9 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  * @since 1.0.0
  */
-public interface Either<L, R> extends Value<R> {
+public interface Either<L, R> extends Value<R>, Serializable {
+
+    long serialVersionUID = 1L;
 
     /**
      * Constructs a {@link Right}

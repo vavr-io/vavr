@@ -10,6 +10,7 @@ import javaslang.Tuple3;
 import javaslang.Value;
 import javaslang.control.Option;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.NoSuchElementException;

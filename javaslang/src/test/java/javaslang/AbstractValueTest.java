@@ -9,6 +9,7 @@ import javaslang.collection.Array;
 import javaslang.collection.CharSeq;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
+import javaslang.collection.Iterator;
 import javaslang.collection.LinkedHashMap;
 import javaslang.collection.LinkedHashSet;
 import javaslang.collection.List;
@@ -24,6 +25,7 @@ import javaslang.collection.*;
 import javaslang.collection.TreeMap;
 import javaslang.collection.TreeSet;
 import javaslang.collection.Vector;
+import javaslang.concurrent.Future;
 import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Try;
@@ -31,12 +33,15 @@ import javaslang.control.Validation;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.Collections;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static javaslang.API.*;
+import static javaslang.Predicates.anyOf;
+import static javaslang.Predicates.instanceOf;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 
@@ -93,7 +98,7 @@ public abstract class AbstractValueTest {
     @SuppressWarnings("unchecked")
     abstract protected <T> Value<T> of(T... elements);
 
-    // TODO: Eliminate this method. Switching the behavior of unit tests is evil. Tests should not contain additional logic.
+    // TODO: Eliminate this method. Switching the behavior of unit tests is evil. Tests should not contain additional logic. Also it seems currently to be used in different sematic contexts.
     abstract protected boolean useIsEqualToInsteadOfIsSameAs();
 
     // returns the peek result of the specific Traversable implementation
@@ -141,7 +146,8 @@ public abstract class AbstractValueTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowOnGetOrElseWithNullSupplier() {
-        empty().getOrElse((Supplier<?>) null);
+        final Supplier<?> supplier = null;
+        empty().getOrElse(supplier);
     }
 
     @Test
@@ -965,8 +971,28 @@ public abstract class AbstractValueTest {
      *
      * @return true (by default), if the Value is Serializable, false otherwise
      */
-    protected boolean isSerializable() {
-        return true;
+    private boolean isSerializable() {
+        if (empty() instanceof Serializable != of(1) instanceof Serializable) {
+            throw new Error("empty and non-empty do not consistently implement Serializable");
+        }
+        final boolean actual = empty() instanceof Serializable;
+        final boolean expected = Match(empty()).of(
+                Case(anyOf(
+                        instanceOf(Either.LeftProjection.class),
+                        instanceOf(Either.RightProjection.class),
+                        instanceOf(Future.class),
+                        instanceOf(Iterator.class)
+                ), false),
+                Case(anyOf(
+                        instanceOf(Either.class),
+                        instanceOf(Option.class),
+                        instanceOf(Try.class),
+                        instanceOf(Traversable.class),
+                        instanceOf(Validation.class)
+                ), true)
+        );
+        assertThat(actual).isEqualTo(expected);
+        return actual;
     }
 
     @Test
@@ -993,6 +1019,15 @@ public abstract class AbstractValueTest {
             final Value<?> testee = of(1, 2, 3);
             final Value<?> actual = deserialize(serialize(testee));
             assertThat(actual).isEqualTo(testee);
+        }
+    }
+
+    @Test
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        if (isSerializable() && !useIsEqualToInsteadOfIsSameAs()) {
+            final Value<?> empty = empty();
+            final Value<?> actual = deserialize(serialize(empty));
+            assertThat(actual).isSameAs(empty);
         }
     }
 
