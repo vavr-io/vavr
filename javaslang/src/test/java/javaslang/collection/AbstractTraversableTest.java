@@ -22,8 +22,6 @@ import java.util.stream.Collector;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingInt;
-import static javaslang.Serializables.deserialize;
-import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.within;
@@ -1259,7 +1257,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCaclEmptyOrElseSameOther() {
-        Iterable<Integer> other = of(42);
+        final Iterable<Integer> other = of(42);
         assertThat(empty().orElse(other)).isSameAs(other);
     }
 
@@ -1270,14 +1268,14 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCaclNonemptyOrElseOther() {
-        Traversable<Integer> src = of(42);
+        final Traversable<Integer> src = of(42);
         assertThat(src.orElse(List.of(1))).isSameAs(src);
     }
 
     @Test
     public void shouldCaclEmptyOrElseSameSupplier() {
-        Iterable<Integer> other = of(42);
-        Supplier<Iterable<Integer>> supplier = () -> other;
+        final Iterable<Integer> other = of(42);
+        final Supplier<Iterable<Integer>> supplier = () -> other;
         assertThat(empty().orElse(supplier)).isSameAs(other);
     }
 
@@ -1288,7 +1286,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCaclNonemptyOrElseSupplier() {
-        Traversable<Integer> src = of(42);
+        final Traversable<Integer> src = of(42);
         assertThat(src.orElse(() -> List.of(1))).isSameAs(src);
     }
 
@@ -2449,7 +2447,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldNotThrowStackOverflowErrorWhenCalculatingHashCodeOf1000000Integers() {
-        ofAll(Iterator.range(0, 1000000)).hashCode();
+        assertThat(ofAll(Iterator.range(0, 1000000)).hashCode()).isNotNull();
     }
 
     // -- toString
@@ -2480,34 +2478,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     private static String toString(Traversable<?> traversable) {
         return traversable.mkString(traversable.stringPrefix() + "(", ", ", ")");
-    }
-
-    // -- Serializable interface
-
-    @Test
-    public void shouldSerializeDeserializeNil() {
-        if (isSerializable()) {
-            final Object actual = deserialize(serialize(empty()));
-            final Object expected = empty();
-            assertThat(actual).isEqualTo(expected);
-        }
-    }
-
-    @Test
-    public void shouldPreserveSingletonInstanceOnDeserialization() {
-        if (isSerializable()) {
-            final Object actual = deserialize(serialize(empty()));
-            assertThat(actual).isSameAs(empty());
-        }
-    }
-
-    @Test
-    public void shouldSerializeDeserializeNonNil() {
-        if (isSerializable()) {
-            final Object actual = deserialize(serialize(of(1, 2, 3)));
-            final Object expected = of(1, 2, 3);
-            assertThat(actual).isEqualTo(expected);
-        }
     }
 
     // -- static collector()

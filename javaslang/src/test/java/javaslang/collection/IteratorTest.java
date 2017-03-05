@@ -88,11 +88,6 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Override
-    protected boolean isSerializable() {
-        return false;
-    }
-
-    @Override
     protected <T> Collector<T, ArrayList<T>, ? extends Iterator<T>> collector() {
         throw new UnsupportedOperationException();
     }
