@@ -40,7 +40,7 @@ public class ValidationTest extends AbstractValueTest {
 
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
-        return false;
+        return true;
     }
 
     @Override

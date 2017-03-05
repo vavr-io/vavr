@@ -10,6 +10,7 @@ import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
 
+import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -56,7 +57,9 @@ import java.util.function.Supplier;
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
  * @since 2.0.0
  */
-public interface Validation<E, T> extends Value<T> {
+public interface Validation<E, T> extends Value<T>, Serializable {
+
+    long serialVersionUID = 1L;
 
     /**
      * Creates a {@link Valid} that contains the given {@code value}.
@@ -436,10 +439,10 @@ public interface Validation<E, T> extends Value<T> {
         Objects.requireNonNull(fInvalid, "function fInvalid null");
         Objects.requireNonNull(fValid, "function fValid null");
         if (isInvalid()) {
-            E error = this.getError();
+            final E error = this.getError();
             return fInvalid.apply(error);
         } else {
-            T value = this.get();
+            final T value = this.get();
             return fValid.apply(value);
         }
     }
@@ -452,10 +455,10 @@ public interface Validation<E, T> extends Value<T> {
      */
     default Validation<T, E> swap() {
         if (isInvalid()) {
-            E error = this.getError();
+            final E error = this.getError();
             return Validation.valid(error);
         } else {
-            T value = this.get();
+            final T value = this.get();
             return Validation.invalid(value);
         }
     }
@@ -466,7 +469,7 @@ public interface Validation<E, T> extends Value<T> {
         if (isInvalid()) {
             return Validation.invalid(this.getError());
         } else {
-            T value = this.get();
+            final T value = this.get();
             return Validation.valid(f.apply(value));
         }
     }
@@ -489,10 +492,10 @@ public interface Validation<E, T> extends Value<T> {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         if (isInvalid()) {
-            E error = this.getError();
+            final E error = this.getError();
             return Validation.invalid(errorMapper.apply(error));
         } else {
-            T value = this.get();
+            final T value = this.get();
             return Validation.valid(valueMapper.apply(value));
         }
     }
@@ -509,7 +512,7 @@ public interface Validation<E, T> extends Value<T> {
     default <U> Validation<U, T> leftMap(Function<? super E, ? extends U> f) {
         Objects.requireNonNull(f, "function f is null");
         if (isInvalid()) {
-            E error = this.getError();
+            final E error = this.getError();
             return Validation.invalid(f.apply(error));
         } else {
             return Validation.valid(this.get());
@@ -520,20 +523,20 @@ public interface Validation<E, T> extends Value<T> {
         Objects.requireNonNull(validation, "validation is null");
         if (isValid()) {
             if (validation.isValid()) {
-                Function<? super T, ? extends U> f = validation.get();
-                U u = f.apply(this.get());
+                final Function<? super T, ? extends U> f = validation.get();
+                final U u = f.apply(this.get());
                 return valid(u);
             } else {
-                List<E> errors = validation.getError();
+                final List<E> errors = validation.getError();
                 return invalid(errors);
             }
         } else {
             if (validation.isValid()) {
-                E error = this.getError();
+                final E error = this.getError();
                 return invalid(List.of(error));
             } else {
-                List<E> errors = validation.getError();
-                E error = this.getError();
+                final List<E> errors = validation.getError();
+                final E error = this.getError();
                 return invalid(errors.append(error));
             }
         }
@@ -588,7 +591,9 @@ public interface Validation<E, T> extends Value<T> {
      * @param <E> type of the error of this Validation
      * @param <T> type of the value of this Validation
      */
-    final class Valid<E, T> implements Validation<E, T> {
+    final class Valid<E, T> implements Validation<E, T>, Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         private final T value;
 
@@ -649,7 +654,9 @@ public interface Validation<E, T> extends Value<T> {
      * @param <E> type of the error of this Validation
      * @param <T> type of the value of this Validation
      */
-    final class Invalid<E, T> implements Validation<E, T> {
+    final class Invalid<E, T> implements Validation<E, T>, Serializable {
+
+        private static final long serialVersionUID = 1L;
 
         private final E error;
 

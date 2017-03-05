@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PredicatesTest {
 
-    static final Predicate<? super Throwable> IS_RUNTIME_EXCEPTION = instanceOf(RuntimeException.class);
+    private static final Predicate<? super Throwable> IS_RUNTIME_EXCEPTION = instanceOf(RuntimeException.class);
 
     // -- instanceOf
 
@@ -65,8 +65,8 @@ public class PredicatesTest {
 
     // -- allOf
 
-    static final Predicate<Integer> P1 = i -> i > 1;
-    static final Predicate<? super Integer> P2 = i -> i > 2;
+    private static final Predicate<Integer> P1 = i -> i > 1;
+    private static final Predicate<Integer> P2 = i -> i > 2;
 
     @Test
     public void shouldTestAllOf_PositiveCase() {

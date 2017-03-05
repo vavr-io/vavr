@@ -9,7 +9,6 @@ import javaslang.AbstractValueTest;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.*;
@@ -21,8 +20,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static java.lang.System.lineSeparator;
-import static javaslang.Serializables.deserialize;
-import static javaslang.Serializables.serialize;
 import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.Assertions.within;
 
@@ -1106,7 +1103,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(empty().nonEmpty()).isFalse();
         assertThat(of(1).nonEmpty()).isTrue();
     }
-
+    
     // -- partition
 
     @Test(expected = NullPointerException.class)
@@ -2155,28 +2152,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2).hashCode() != of(2, 3).hashCode()).isTrue();
     }
 
-    // -- Serializable interface
-
     @Test
-    public void shouldSerializeDeserializeNil() {
-        final Object actual = deserialize(serialize(empty()));
-        final Object expected = empty();
-        assertThat(actual).isEqualTo(expected);
+    public void shouldNotThrowStackOverflowErrorWhenCalculatingHashCodeOf1000000Integers() {
+        assertThat(ofAll(Iterator.range(0, 1000000)).hashCode()).isNotNull();
     }
-
-    @Test
-    public void shouldPreserveSingletonInstanceOnDeserialization() {
-        final boolean actual = deserialize(serialize(empty())) == empty();
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldSerializeDeserializeNonNil() {
-        final Object actual = deserialize(serialize(of(1, 2, 3)));
-        final Object expected = of(1, 2, 3);
-        assertThat(actual).isEqualTo(expected);
-    }
-
+    
     // -- static collector()
 
     @Test

@@ -10,6 +10,7 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 
@@ -21,7 +22,7 @@ import java.util.function.*;
  * @author Daniel Dietrich, Ruslan Sennov
  * @since 2.0.0
  */
-public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V> {
+public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V>, Serializable {
 
     long serialVersionUID = 1L;
 

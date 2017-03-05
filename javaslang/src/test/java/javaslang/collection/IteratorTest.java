@@ -443,19 +443,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Override
     @Test
-    public void shouldSerializeDeserializeNil() {
-        // iterators are intermediate objects and not serializable/deserializable
-    }
-
-    @Override
-    @Test
     public void shouldPreserveSingletonInstanceOnDeserialization() {
-        // iterators are intermediate objects and not serializable/deserializable
-    }
-
-    @Override
-    @Test
-    public void shouldSerializeDeserializeNonNil() {
         // iterators are intermediate objects and not serializable/deserializable
     }
 

@@ -623,24 +623,10 @@ public class TreeTest extends AbstractTraversableTest {
                 "      └──9");
     }
 
-    // -- Serializable interface
+    // -- serialization
 
     @Test
-    public void shouldSerializeDeserializeEmpty() {
-        final Object actual = deserialize(serialize(Tree.empty()));
-        final Object expected = Tree.empty();
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Override
-    @Test
-    public void shouldPreserveSingletonInstanceOnDeserialization() {
-        final boolean actual = deserialize(serialize(Tree.empty())) == Tree.empty();
-        assertThat(actual).isTrue();
-    }
-
-    @Test
-    public void shouldSerializeDeserializeNonEmpty() {
+    public void shouldSerializeDeserializeComplexTree() {
         final Object actual = deserialize(serialize(tree));
         final Object expected = tree;
         assertThat(actual).isEqualTo(expected);

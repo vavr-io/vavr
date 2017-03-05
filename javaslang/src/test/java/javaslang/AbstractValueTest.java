@@ -8,20 +8,31 @@ package javaslang;
 import javaslang.collection.*;
 import javaslang.collection.HashMap;
 import javaslang.collection.HashSet;
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Map;
 import javaslang.collection.Queue;
 import javaslang.collection.Set;
 import javaslang.collection.Stack;
 import javaslang.collection.Vector;
+import javaslang.concurrent.Future;
 import javaslang.control.Either;
 import javaslang.control.Option;
 import javaslang.control.Try;
+import javaslang.control.Validation;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.Collections;
+import java.util.function.Supplier;
+
+import static javaslang.API.*;
+import static javaslang.Predicates.anyOf;
+import static javaslang.Predicates.instanceOf;
+import static javaslang.Serializables.deserialize;
+import static javaslang.Serializables.serialize;
 
 public abstract class AbstractValueTest {
 
@@ -108,6 +119,12 @@ public abstract class AbstractValueTest {
     }
 
     // -- getOrElse(Supplier)
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowOnGetOrElseWithNullSupplier() {
+        final Supplier<?> supplier = null;
+        empty().getOrElse(supplier);
+    }
 
     @Test
     public void shouldCalculateGetOrElseSupplier() {
@@ -626,6 +643,75 @@ public abstract class AbstractValueTest {
     public void shouldCorresponds() {
         assertThat(of(1, 2, 3).corresponds(of(3, 4, 5), (i1, i2) -> i1 == i2 - 2)).isTrue();
         assertThat(of(1, 2, 3).corresponds(of(1, 2, 3), (i1, i2) -> i1 == i2 + 1)).isFalse();
+    }
+
+    // -- Serialization
+
+    /**
+     * States whether the specific Value implementation is Serializable.
+     * <p>
+     * Test classes override this method to return false if needed.
+     *
+     * @return true (by default), if the Value is Serializable, false otherwise
+     */
+    private boolean isSerializable() {
+        if (empty() instanceof Serializable != of(1) instanceof Serializable) {
+            throw new Error("empty and non-empty do not consistently implement Serializable");
+        }
+        final boolean actual = empty() instanceof Serializable;
+        final boolean expected = Match(empty()).of(
+                Case(anyOf(
+                        instanceOf(Either.LeftProjection.class),
+                        instanceOf(Either.RightProjection.class),
+                        instanceOf(Future.class),
+                        instanceOf(Iterator.class)
+                ), false),
+                Case(anyOf(
+                        instanceOf(Either.class),
+                        instanceOf(Option.class),
+                        instanceOf(Try.class),
+                        instanceOf(Traversable.class),
+                        instanceOf(Validation.class)
+                ), true)
+        );
+        assertThat(actual).isEqualTo(expected);
+        return actual;
+    }
+
+    @Test
+    public void shouldSerializeDeserializeEmpty() {
+        if (isSerializable()) {
+            final Value<?> testee = empty();
+            final Value<?> actual = deserialize(serialize(testee));
+            assertThat(actual).isEqualTo(testee);
+        }
+    }
+
+    @Test
+    public void shouldSerializeDeserializeSingleValued() {
+        if (isSerializable()) {
+            final Value<?> testee = of(1);
+            final Value<?> actual = deserialize(serialize(testee));
+            assertThat(actual).isEqualTo(testee);
+        }
+    }
+
+    @Test
+    public void shouldSerializeDeserializeMultiValued() {
+        if (isSerializable()) {
+            final Value<?> testee = of(1, 2, 3);
+            final Value<?> actual = deserialize(serialize(testee));
+            assertThat(actual).isEqualTo(testee);
+        }
+    }
+
+    @Test
+    public void shouldPreserveSingletonInstanceOnDeserialization() {
+        if (isSerializable() && !useIsEqualToInsteadOfIsSameAs()) {
+            final Value<?> empty = empty();
+            final Value<?> actual = deserialize(serialize(empty));
+            assertThat(actual).isSameAs(empty);
+        }
     }
 
 }
