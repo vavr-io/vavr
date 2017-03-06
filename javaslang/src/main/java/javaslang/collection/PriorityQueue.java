@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.PriorityQueueBase.*;
 
 import java.io.Serializable;
@@ -25,6 +22,7 @@ import static javaslang.collection.PriorityQueueBase.*;
  * @author Pap Lőrinc
  * @since 2.1.0
  */
+@SuppressWarnings("deprecation")
 public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T>, Kind1<PriorityQueue<T>, T> {
 
     private static final long serialVersionUID = 1L;

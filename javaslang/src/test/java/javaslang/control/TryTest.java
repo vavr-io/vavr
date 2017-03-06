@@ -11,7 +11,6 @@ import static org.assertj.core.api.Assertions.fail;
 import javaslang.AbstractValueTest;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
-import javaslang.control.Try.NonFatalException;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
@@ -29,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+@SuppressWarnings("deprecation")
 public class TryTest extends AbstractValueTest {
 
     private static final String OK = "ok";
@@ -63,7 +63,7 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Override
-    @Test(expected = NonFatalException.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldGetEmpty() {
         empty().get();
     }
@@ -257,12 +257,12 @@ public class TryTest extends AbstractValueTest {
 
     @Test(expected = Try.FatalException.class)
     public void shouldDetectFatalException() throws Exception {
-        NonFatalException.of(new OutOfMemoryError());
+        Try.NonFatalException.of(new OutOfMemoryError());
     }
 
     @Test
     public void shouldDetectNonFatalException() throws Exception {
-        final NonFatalException cause = NonFatalException.of(new Exception());
+        final Try.NonFatalException cause = Try.NonFatalException.of(new Exception());
         assertThat(cause).isNotNull();
     }
 
@@ -291,21 +291,21 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnAndNotThrowOnNonFatal() {
-        final NonFatalException cause = NonFatalException.of(new Exception());
-        assertThat(NonFatalException.of(cause)).isNotNull();
+        final Try.NonFatalException cause = Try.NonFatalException.of(new Exception());
+        assertThat(Try.NonFatalException.of(cause)).isNotNull();
     }
 
     @Test
     public void shouldReturnToStringOnNonFatal() {
         final Exception exception = new java.lang.Exception();
-        final NonFatalException cause = NonFatalException.of(exception);
+        final Try.NonFatalException cause = Try.NonFatalException.of(exception);
         assertThat(cause.toString()).isEqualTo("NonFatal(" + exception.toString() + ")");
     }
 
     @Test
     public void shouldReturnHasCodeOnNonFatal() {
         final Exception exception = new java.lang.Exception();
-        final NonFatalException cause = NonFatalException.of(exception);
+        final Try.NonFatalException cause = Try.NonFatalException.of(exception);
         assertThat(cause.hashCode()).isEqualTo(Objects.hashCode(exception));
     }
 
@@ -388,7 +388,7 @@ public class TryTest extends AbstractValueTest {
 
     // -- get
 
-    @Test(expected = NonFatalException.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldThrowWhenGetOnFailure() {
         failure().get();
     }
@@ -865,7 +865,7 @@ public class TryTest extends AbstractValueTest {
         assertThat(success().filter(s -> true, s -> new IllegalArgumentException(s)).get()).isEqualTo(OK);
     }
 
-    @Test(expected = NonFatalException.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldFilterNonMatchingPredicateOnSuccess() {
         success().filter(s -> false).get();
     }
@@ -931,14 +931,14 @@ public class TryTest extends AbstractValueTest {
         assertThat(success().map(s -> s + "!").get()).isEqualTo(OK + "!");
     }
 
-    @Test(expected = NonFatalException.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldMapWithExceptionOnSuccess() {
         success().map(s -> {
             throw new RuntimeException("xxx");
         }).get();
     }
 
-    @Test(expected = NonFatalException.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldThrowWhenCallingFailedOnSuccess() {
         success().failed().get();
     }
@@ -1042,7 +1042,7 @@ public class TryTest extends AbstractValueTest {
         assertThat(Try.of(() -> OK).recoverWith(RuntimeException.class, (ex) -> failure()).get()).isEqualTo(OK);
     }
 
-    @Test(expected = NonFatalException.class)
+    @Test(expected = Try.NonFatalException.class)
     public void shouldReturnExceptionWhenRecoveryWasNotSuccess(){
         Try.of(() -> {throw error();}).recoverWith(IOException.class, (ex) -> failure()).get();
     }

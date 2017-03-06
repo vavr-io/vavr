@@ -47,6 +47,7 @@ def generateMainClasses(): Unit = {
        * @author Daniel Dietrich
        * @since 1.2.0
        */
+      @SuppressWarnings("deprecation")
       public class $className {
 
           private final String name;
@@ -189,7 +190,7 @@ def generateMainClasses(): Unit = {
               val optionType = im.getType("javaslang.control.Option")
               val randomType = im.getType("java.util.Random")
               val tryType = im.getType("javaslang.control.Try")
-              val nonFatalType = im.getType("javaslang.control.Try.NonFatalException")
+              val nonFatalType = "Try.NonFatalException"
               val tupleType = im.getType(s"javaslang.Tuple")
 
               val generics = (1 to i).gen(j => s"T$j")(", ")

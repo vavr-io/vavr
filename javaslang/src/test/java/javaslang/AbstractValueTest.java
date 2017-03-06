@@ -19,7 +19,6 @@ import javaslang.collection.Queue;
 import javaslang.collection.Set;
 import javaslang.collection.SortedMap;
 import javaslang.collection.SortedSet;
-import javaslang.collection.Stack;
 import javaslang.collection.Stream;
 import javaslang.collection.*;
 import javaslang.collection.TreeMap;
@@ -45,6 +44,7 @@ import static javaslang.Predicates.instanceOf;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 
+@SuppressWarnings("deprecation")
 public abstract class AbstractValueTest {
 
     protected Random getRandom(int seed) {
@@ -501,7 +501,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToStack() {
         final Value<Integer> value = of(1, 2, 3);
-        final Stack<Integer> stack = value.toStack();
+        final javaslang.collection.Stack<Integer> stack = value.toStack();
         if (value.isSingleValued()) {
             assertThat(stack).isEqualTo(List.of(1));
         } else {

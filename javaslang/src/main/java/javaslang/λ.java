@@ -17,7 +17,9 @@ import java.util.Map;
  * @param <R> Return type of the function.
  * @author Daniel Dietrich
  * @since 1.0.0
+ * @deprecated Will be removed from the public API (an internally renamed to Lambda) in 3.0.0
  */
+@Deprecated
 public interface λ<R> extends Serializable {
 
     /**
@@ -73,7 +75,9 @@ public interface λ<R> extends Serializable {
 
     /**
      * Zero Abstract Method (ZAM) interface for marking functions as memoized using intersection types.
+     * @deprecated Will be removed (from the public API) in 3.0.0
      */
+    @Deprecated
     interface Memoized {
         static <T extends Tuple, R> R of(Map<T, R> cache, T key, Function1<T, R> tupled) {
             synchronized (cache) {

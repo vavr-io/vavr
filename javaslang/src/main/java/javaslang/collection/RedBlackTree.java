@@ -34,6 +34,7 @@ import static javaslang.collection.RedBlackTree.Color.RED;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 interface RedBlackTree<T> extends Iterable<T> {
 
     static <T extends Comparable<? super T>> RedBlackTree<T> empty() {

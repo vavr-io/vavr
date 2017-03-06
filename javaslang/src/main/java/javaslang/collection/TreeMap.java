@@ -5,9 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Kind2;
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -29,6 +27,7 @@ import static javaslang.collection.Comparators.naturalComparator;
  * @since 2.0.0
  */
 // DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
+@SuppressWarnings("deprecation")
 public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMap<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;

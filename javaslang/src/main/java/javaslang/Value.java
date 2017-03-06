@@ -151,6 +151,7 @@ import static javaslang.API.*;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 public interface Value<T> extends Iterable<T> {
 
     /**

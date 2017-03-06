@@ -12,6 +12,8 @@ package javaslang;
  * @param <T>    The component type of TYPE
  * @author Daniel Dietrich
  * @since 2.0.0
+ * @deprecated Will be removed in 3.0.0
  */
+@Deprecated
 public interface Kind1<TYPE extends Kind1<TYPE, ?>, T> {
 }
