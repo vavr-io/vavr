@@ -1702,6 +1702,12 @@ public class CharSeqTest {
     // -- toJavaArray(Class)
 
     @Test
+    public void shouldHaveOverloadedToJavaArray() {
+        final Character[] actual = of('a', 'b', 'c').toJavaArray();
+        assertThat(actual).isEqualTo(new Character[] {'a', 'b', 'c'});
+    }
+
+    @Test
     public void shouldConvertNilToJavaArray() {
         final Character[] actual = empty().toJavaArray(Character.class);
         final Character[] expected = new Character[] {};
