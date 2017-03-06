@@ -3340,6 +3340,13 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
         return Short.valueOf(back, radix);
     }
 
+    // -- conversion overrides
+
+    @Override
+    public Character[] toJavaArray() {
+        return toJavaArray(Character.class);
+    }
+
     // -- functional interfaces
 
     @FunctionalInterface
