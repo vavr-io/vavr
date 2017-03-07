@@ -9,6 +9,7 @@ import javaslang.Tuple2;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -27,7 +28,7 @@ import static javaslang.collection.Comparators.naturalComparator;
  * @author Ruslan Sennov
  * @since 2.1.0
  */
-public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultimap<K, V>> implements Serializable {
+public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultimap<K, V>> implements Serializable, SortedMultimap<K, V> {
 
     private static final long serialVersionUID = 1L;
 
@@ -752,5 +753,21 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
     protected <K2, V2> TreeMultimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back) {
         return new TreeMultimap<>(back, getContainerType(), emptyContainer);
     }
+
+    @Override
+    public Comparator<K> comparator() {
+        return ((SortedMap<K, Traversable<V>>) back).comparator();
+    }
+
+    @Override
+    public SortedSet<K> keySet() {
+        return ((SortedMap<K, Traversable<V>>) back).keySet();
+    }
+
+    @Override
+    public java.util.SortedMap<K, Collection<V>> toJavaMap() {
+        return toJavaMap(new java.util.TreeMap<>());
+    }
+
 
 }

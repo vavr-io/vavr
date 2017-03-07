@@ -271,13 +271,14 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         return filterValues(predicate.negate());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public <C> Map<C, Multimap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
-        return Collections.groupBy(this, classifier, this::createFromEntries);
+    public <C> Map<C, M> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier) {
+        return (Map<C, M>) Collections.groupBy(this, classifier, this::createFromEntries);
     }
 
     @Override
-    public Iterator<Multimap<K, V>> grouped(int size) {
+    public Iterator<M> grouped(int size) {
         return sliding(size, size);
     }
 
@@ -337,13 +338,13 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @SuppressWarnings("unchecked")
     @Override
-    public <K2 extends K, V2 extends V> Multimap<K, V> merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
+    public <K2 extends K, V2 extends V> M merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
-            return createFromEntries(that);
+            return (M) createFromEntries(that);
         } else if (that.isEmpty()) {
-            return this;
+            return (M) this;
         } else {
             final Map<K, Traversable<V>> result = that.keySet().foldLeft(this.back, (map, key) -> {
                 final Traversable<V> thisValues = map.get(key).getOrElse((Traversable<V>) emptyContainer.get());
@@ -351,7 +352,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
                 final Traversable<V> newValues = collisionResolution.apply(thisValues, thatValues);
                 return map.put(key, newValues);
             });
-            return createFromMap(result);
+            return (M) createFromMap(result);
         }
     }
 
@@ -383,11 +384,12 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         return isEmpty() ? (M) createFromEntries(supplier.get()) : (M) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Tuple2<Multimap<K, V>, Multimap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate) {
+    public Tuple2<M, M> partition(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> p = iterator().partition(predicate);
-        return Tuple.of(createFromEntries(p._1), createFromEntries(p._2));
+        return Tuple.of((M) createFromEntries(p._1), (M) createFromEntries(p._2));
     }
 
     @SuppressWarnings("unchecked")
@@ -444,26 +446,29 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         return (M) Collections.scanLeft(this, zero, operation, this::createFromEntries);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Iterator<Multimap<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier) {
-        return iterator().slideBy(classifier).map(this::createFromEntries);
+    public Iterator<M> slideBy(Function<? super Tuple2<K, V>, ?> classifier) {
+        return (Iterator<M>) iterator().slideBy(classifier).map(this::createFromEntries);
     }
 
     @Override
-    public Iterator<Multimap<K, V>> sliding(int size) {
+    public Iterator<M> sliding(int size) {
         return sliding(size, 1);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Iterator<Multimap<K, V>> sliding(int size, int step) {
-        return iterator().sliding(size, step).map(this::createFromEntries);
+    public Iterator<M> sliding(int size, int step) {
+        return (Iterator<M>) iterator().sliding(size, step).map(this::createFromEntries);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Tuple2<Multimap<K, V>, Multimap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate) {
+    public Tuple2<M, M> span(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> t = iterator().span(predicate);
-        return Tuple.of(createFromEntries(t._1), createFromEntries(t._2));
+        return Tuple.of((M) createFromEntries(t._1), (M) createFromEntries(t._2));
     }
 
     @Override
@@ -543,7 +548,10 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public java.util.Map<K, Collection<V>> toJavaMap() {
-        final java.util.Map<K, Collection<V>> javaMap = new java.util.HashMap<>();
+        return toJavaMap(new java.util.HashMap<>());
+    }
+
+    protected <JM extends java.util.Map<K, Collection<V>>> JM toJavaMap(JM javaMap) {
         final Supplier<Collection<V>> javaContainerSupplier;
         if (containerType == ContainerType.SEQ) {
             javaContainerSupplier = java.util.ArrayList::new;

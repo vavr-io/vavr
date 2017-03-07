@@ -121,7 +121,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @param map A {@code Multimap}.
      * @param <K> Key type
      * @param <V> Value type
-     * @return the given {@code map} instance as narrowed type {@code Map<K, V>}.
+     * @return the given {@code multimap} instance as narrowed type {@code Multimap<K, V>}.
      */
     @SuppressWarnings("unchecked")
     static <K, V> Multimap<K, V> narrow(Multimap<? extends K, ? extends V> map) {
