@@ -3342,10 +3342,9 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     // -- conversion overrides
 
-    @GwtIncompatible
     @Override
     public Character[] toJavaArray() {
-        return toJavaArray(Character.class);
+        return toJavaList().toArray(new Character[size()]);
     }
 
     // -- functional interfaces
