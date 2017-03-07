@@ -71,8 +71,10 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     /**
      * Returns the underlying key-comparator which defines the order of the elements contained in this map.
      *
+     * @deprecated Use {@link SortedMap#comparator()} instead
      * @return This map's key-comparator.
      */
+    @Deprecated
     Comparator<K> keyComparator();
 
     /**
