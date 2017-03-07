@@ -106,7 +106,9 @@ public interface Option<T> extends Value<T>, Serializable {
      * Return the singleton instance of {@code Some<Void>}.
      *
      * @return {@code Some<Void>}
+     * @deprecated Will be removed in 3.0.0
      */
+    @Deprecated
     static Option<Void> nothing() {
         return Some.NOTHING;
     }
@@ -380,7 +382,9 @@ public interface Option<T> extends Value<T>, Serializable {
 
         /**
          * The singleton instance of {@code Some<Void>}.
+         * @deprecated Will be removed in 3.0.0
          */
+        @Deprecated
         private static final Some<Void> NOTHING = new Some<>(null);
 
         private final T value;

@@ -90,6 +90,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     long serialVersionUID = 1L;

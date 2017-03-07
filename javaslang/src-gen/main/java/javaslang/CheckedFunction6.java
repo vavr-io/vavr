@@ -29,6 +29,7 @@ import javaslang.control.Try;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 @FunctionalInterface
 public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends λ<R> {
 

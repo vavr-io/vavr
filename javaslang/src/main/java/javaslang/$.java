@@ -17,7 +17,9 @@ import javaslang.match.annotation.Unapply;
 
 /**
  * <strong>INTERNAL TYPE - turned to javaslang.Patterns by javaslang-match annotation processor.</strong>
+ * @deprecated Will be removed in 3.0.0
  */
+@Deprecated
 @Patterns
 class $ {
 

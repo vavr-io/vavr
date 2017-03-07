@@ -1032,7 +1032,9 @@ public interface Try<T> extends Value<T>, Serializable {
      * An unchecked wrapper for Fatal exceptions.
      * <p>
      * See {@link NonFatalException}.
+     * @deprecated Will be removed in 3.0.0. Instead we throw sneaky.
      */
+    @Deprecated
     final class FatalException extends RuntimeException implements Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -1075,7 +1077,9 @@ public interface Try<T> extends Value<T>, Serializable {
      * <li>{@linkplain ThreadDeath}</li>
      * <li>{@linkplain VirtualMachineError} (i.e. {@linkplain OutOfMemoryError} or {@linkplain StackOverflowError})</li>
      * </ul>
+     * @deprecated Will be removed in 3.0.0. Instead we throw sneaky.
      */
+    @Deprecated
     final class NonFatalException extends RuntimeException implements Serializable {
 
         private static final long serialVersionUID = 1L;

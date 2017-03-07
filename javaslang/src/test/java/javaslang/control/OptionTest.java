@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import static javaslang.API.*;
 import static javaslang.API.Option;
 
+@SuppressWarnings("deprecation")
 public class OptionTest extends AbstractValueTest {
 
     // -- AbstractValueTest

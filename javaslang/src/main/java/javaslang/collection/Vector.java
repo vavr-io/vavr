@@ -27,6 +27,7 @@ import static javaslang.collection.Collections.withSize;
  * @author Ruslan Sennov, Pap Lőrinc
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;
 

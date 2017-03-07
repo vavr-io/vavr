@@ -32,7 +32,9 @@ import javaslang.control.Option;
  * @param <T> component type
  * @author Daniel Dietrich
  * @since 2.0.0
+ * @deprecated Will be removed in 3.0.0
  */
+@Deprecated
 public interface Stack<T> {
 
     /**

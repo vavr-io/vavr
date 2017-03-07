@@ -13,6 +13,8 @@ package javaslang;
  * @param <T2>   The second component type of {@code TYPE}
  * @author Daniel Dietrich, Eric Nelson
  * @since 2.0.0
+ * @deprecated Will be removed in 3.0.0
  */
+@Deprecated
 public interface Kind2<TYPE extends Kind2<TYPE, ?, ?>, T1, T2> {
 }

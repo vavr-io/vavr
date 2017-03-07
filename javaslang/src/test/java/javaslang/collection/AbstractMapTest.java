@@ -31,6 +31,7 @@ import static javaslang.API.Some;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
 
+@SuppressWarnings("deprecation")
 public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Override

@@ -1453,6 +1453,7 @@ def generateMainClasses(): Unit = {
            * @author Daniel Dietrich
            * @since 1.1.0
            */
+          @SuppressWarnings("deprecation")
           @FunctionalInterface
           public interface $className$fullGenerics extends λ<R>$additionalExtends {
 

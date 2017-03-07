@@ -39,6 +39,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements LinearSeq<T>, Kind1<Queue<T>, T> {
 
     private static final long serialVersionUID = 1L;

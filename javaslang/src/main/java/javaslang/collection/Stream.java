@@ -96,6 +96,7 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich, Jörgen Andersson, Ruslan Sennov
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
     long serialVersionUID = 1L;

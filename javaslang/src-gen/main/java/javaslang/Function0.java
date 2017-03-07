@@ -22,6 +22,7 @@ import javaslang.control.Try;
  * @author Daniel Dietrich
  * @since 1.1.0
  */
+@SuppressWarnings("deprecation")
 @FunctionalInterface
 public interface Function0<R> extends λ<R>, Supplier<R> {
 
