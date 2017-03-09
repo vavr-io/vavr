@@ -3455,7 +3455,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public Character[] toJavaArray() {
-        return toJavaList().toArray(new Character[size()]);
+        return toJavaList().toArray(new Character[0]);
     }
 
     // -- functional interfaces
