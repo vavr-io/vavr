@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import java.io.Serializable;
+import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -270,7 +271,7 @@ final class BitMappedTrie<T> implements Serializable {
     }
 
     Iterator<T> iterator() {
-        return new AbstractIterator<T>() {
+        return new Iterator<T>() {
             private final int globalLength = BitMappedTrie.this.length;
             private int globalIndex = 0;
 
@@ -282,7 +283,11 @@ final class BitMappedTrie<T> implements Serializable {
             public boolean hasNext() { return globalIndex < globalLength; }
 
             @Override
-            public T getNext() {
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException("next() on empty iterator");
+                }
+                
                 if (index == length) { setCurrentArray(); }
                 final T next = type.getAt(leaf, index);
 
