@@ -584,11 +584,6 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
     }
 
     @Override
-    public Spliterator<T> spliterator() {
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
     public String stringPrefix() {
         return "PriorityQueue";
     }

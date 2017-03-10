@@ -591,12 +591,6 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Spliterator<T> spliterator() {
-        // the focus of the Stream API is on random-access collections of *known size*
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
     default String stringPrefix() {
         return "Tree";
     }
