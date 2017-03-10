@@ -21,6 +21,7 @@ import javaslang.control.Try.CheckedSupplier;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -317,6 +318,79 @@ public interface Future<T> extends Value<T> {
     @SuppressWarnings("unchecked")
     static <T> Future<T> narrow(Future<? extends T> future) {
         return (Future<T>) future;
+    }
+
+    /**
+     * Starts an asynchronous computation, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param computation A computation.
+     * @param <T>      Type of the computation result.
+     * @return A new Future instance
+     * @throws NullPointerException if computation is null.
+     */
+    static <T> Future<T> ofSupplier(Supplier<? extends T> computation) {
+        return of(DEFAULT_EXECUTOR_SERVICE, computation::get);
+    }
+
+    /**
+     * Starts an asynchronous computation, backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An executor service.
+     * @param computation A computation.
+     * @param <T>      Type of the computation result.
+     * @return A new Future instance
+     * @throws NullPointerException if one of executorService or computation is null.
+     */
+    static <T> Future<T> ofSupplier(ExecutorService executorService, Supplier<? extends T> computation) {
+        return of(executorService, computation::get);
+    }
+
+    /**
+     * Starts an asynchronous computation, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param computation A computation
+     * @param <T>      Type of the computation result.
+     * @return A new Future instance
+     * @throws NullPointerException if computation is null.
+     */
+    static <T> Future<T> ofCallable(Callable<? extends T> computation) {
+        return of(DEFAULT_EXECUTOR_SERVICE, computation::call);
+    }
+
+    /**
+     * Starts an asynchronous computation, backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An executor service.
+     * @param computation A computation.
+     * @param <T>      Type of the computation result.
+     * @return A new Future instance
+     * @throws NullPointerException if one of executorService or computation is null.
+     */
+    static <T> Future<T> ofCallable(ExecutorService executorService, Callable<? extends T> computation) {
+        return of(executorService, computation::call);
+    }
+
+    /**
+     * Starts an asynchronous computation, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
+     *
+     * @param computation A computation
+     * @return A new Future instance
+     * @throws NullPointerException if computation is null.
+     */
+    static Future<Void> runRunnable(Runnable computation) {
+        return run(DEFAULT_EXECUTOR_SERVICE, computation::run);
+    }
+
+    /**
+     * Starts an asynchronous computation, backed by the given {@link ExecutorService}.
+     *
+     * @param executorService An executor service.
+     * @param computation A computation.
+     * @return A new Future instance
+     * @throws NullPointerException if one of executorService or computation is null.
+     */
+    static Future<Void> runRunnable(ExecutorService executorService, Runnable computation) {
+        return run(executorService, computation::run);
     }
 
     /**
