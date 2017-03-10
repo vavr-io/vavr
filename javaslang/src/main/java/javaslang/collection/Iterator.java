@@ -11,6 +11,7 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
+import javaslang.collection.IteratorModule.GroupedIterator;
 import javaslang.control.Option;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import java.util.function.*;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.math.RoundingMode.HALF_UP;
+import static javaslang.API.*;
 import static javaslang.collection.IteratorModule.BigDecimalHelper.areEqual;
 import static javaslang.collection.IteratorModule.BigDecimalHelper.asDecimal;
 import static javaslang.collection.IteratorModule.EmptyIterator;
@@ -1535,9 +1537,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<Seq<T>> grouped(int size) {
-        return sliding(size, size);
+        return new GroupedIterator<>(this, size, size);
     }
-
+    
     @Override
     default boolean hasDefiniteSize() {
         return false;
@@ -1827,37 +1829,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<Seq<T>> sliding(int size, int step) {
-        if (size <= 0 || step <= 0) {
-            throw new IllegalArgumentException("size: " + size + " or step: " + step + " not positive");
-        }
-        if (!hasNext()) {
-            return empty();
-        } else {
-            final Stream<T> source = Stream.ofAll(this);
-            return new AbstractIterator<Seq<T>>() {
-                private Stream<T> that = source;
-                private IndexedSeq<T> next = null;
-
-                @Override
-                public boolean hasNext() {
-                    while (next == null && !that.isEmpty()) {
-                        final Tuple2<Stream<T>, Stream<T>> split = that.splitAt(size);
-                        next = split._1.toVector();
-                        that = split._2.isEmpty() ? Stream.empty() : that.drop(step);
-                    }
-                    return next != null;
-                }
-
-                @Override
-                public IndexedSeq<T> getNext() {
-                    final IndexedSeq<T> result = next;
-                    next = null;
-                    return result;
-                }
-            };
-        }
+        return new GroupedIterator<>(this, size, step);
     }
-
+    
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -2086,6 +2060,35 @@ interface IteratorModule {
         @Override
         public String toString() {
             return stringPrefix() + "()";
+        }
+    }
+
+    final class GroupedIterator<T> extends AbstractIterator<Seq<T>> {
+
+        private final Iterator<T> that;
+        private final int step;
+
+        private Seq<T> buffer;
+
+        GroupedIterator(Iterator<T> that, int size, int step) {
+            if (size < 1 || step < 1) {
+                throw new IllegalArgumentException("size (" + size + ") and step (" + step + ") must both be positive");
+            }
+            this.that = that;
+            this.step = step;
+            this.buffer = Vector.ofAll(that.take(size));
+        }
+
+        @Override
+        public boolean hasNext() {
+            return !buffer.isEmpty();
+        }
+
+        @Override
+        protected Seq<T> getNext() {
+            final Seq<T> result = buffer;
+            buffer = that.hasNext() ? buffer.appendAll(that.take(step)).drop(step) : buffer.take(0);
+            return result;
         }
     }
 
