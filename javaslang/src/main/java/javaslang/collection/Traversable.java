@@ -447,6 +447,21 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
 
     /**
+     * Matches each element with a unique key that you extract from it.
+     * If the same key is present twice, the function will return {@code None}.
+     *
+     * @param classifier A function which extracts a key from elements
+     * @param <K>        key class type
+     * @return A Map containing the elements arranged by their keys.
+     * @throws NullPointerException if {@code getKey} is null.
+     */
+    default <K> Option<Map<K, T>> arrangeBy(Function<? super T, K> getKey) {
+        return Option.of(groupBy(getKey).mapValues(Traversable<T>::singleOption))
+            .filter(map -> !map.exists(kv -> kv._2.isEmpty()))
+            .map(map -> map.mapValues(Option::get));
+    }
+
+    /**
      * Groups this {@code Traversable} into fixed size blocks.
      * <p>
      * Let length be the length of this Iterable. Then grouped is defined as follows:
