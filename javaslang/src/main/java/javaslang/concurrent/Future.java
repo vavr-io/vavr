@@ -329,6 +329,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if computation is null.
      */
     static <T> Future<T> ofSupplier(Supplier<? extends T> computation) {
+        Objects.requireNonNull(computation, "computation is null");
         return of(DEFAULT_EXECUTOR_SERVICE, computation::get);
     }
 
@@ -342,6 +343,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if one of executorService or computation is null.
      */
     static <T> Future<T> ofSupplier(ExecutorService executorService, Supplier<? extends T> computation) {
+        Objects.requireNonNull(computation, "computation is null");
         return of(executorService, computation::get);
     }
 
@@ -354,6 +356,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if computation is null.
      */
     static <T> Future<T> ofCallable(Callable<? extends T> computation) {
+        Objects.requireNonNull(computation, "computation is null");
         return of(DEFAULT_EXECUTOR_SERVICE, computation::call);
     }
 
@@ -367,6 +370,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if one of executorService or computation is null.
      */
     static <T> Future<T> ofCallable(ExecutorService executorService, Callable<? extends T> computation) {
+        Objects.requireNonNull(computation, "computation is null");
         return of(executorService, computation::call);
     }
 
@@ -378,6 +382,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if computation is null.
      */
     static Future<Void> runRunnable(Runnable computation) {
+        Objects.requireNonNull(computation, "computation is null");
         return run(DEFAULT_EXECUTOR_SERVICE, computation::run);
     }
 
@@ -390,6 +395,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if one of executorService or computation is null.
      */
     static Future<Void> runRunnable(ExecutorService executorService, Runnable computation) {
+        Objects.requireNonNull(computation, "computation is null");
         return run(executorService, computation::run);
     }
 
