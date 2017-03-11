@@ -474,7 +474,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final Traversable<?> empty = empty();
         assertThat(empty.dropRight(1)).isSameAs(empty);
     }
-    
+
     // -- dropUntil
 
     @Test
@@ -731,6 +731,27 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- arrangeBy
+
+    @Test
+    public void shouldNilArrangeBy() {
+        assertThat(empty().arrangeBy(Function.identity())).isEqualTo(Option.of(LinkedHashMap.empty()));
+    }
+
+    @Test
+    public void shouldNonNilArrangeByIdentity() {
+        final Option<Map<Character,Character>> actual = of('a', 'b', 'c').arrangeBy(Function.identity());
+        final Option<Map<?, ?>> expected = Option.of(LinkedHashMap.empty().put('a', 'a').put('b', 'b').put('c', 'c'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldNonNilArrangeByEqual() {
+        final Option<Map<Integer, Character>> actual = of('a', 'b', 'c').arrangeBy(c -> 1);
+        final Option<Map<?, ?>> expected = Option.none();
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- grouped
 
     @Test
@@ -768,7 +789,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2, 3, 4));
         assertThat(actual).isEqualTo(expected);
     }
-    
+
     // -- hasDefiniteSize
 
     @Test
