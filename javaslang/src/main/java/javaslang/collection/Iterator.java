@@ -2063,7 +2063,7 @@ interface IteratorModule {
         }
     }
 
-    final class GroupedIterator<T> extends AbstractIterator<Seq<T>> {
+    final class GroupedIterator<T> implements Iterator<Seq<T>> {
 
         private final Iterator<T> that;
         private final int step;
@@ -2087,7 +2087,10 @@ interface IteratorModule {
         }
 
         @Override
-        protected Seq<T> getNext() {
+        public Seq<T> next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
             final Seq<T> result = buffer;
             buffer = that.hasNext() ? buffer.drop(step).appendAll(that.drop(gap).take(step)) : buffer.take(0);
             return result;
