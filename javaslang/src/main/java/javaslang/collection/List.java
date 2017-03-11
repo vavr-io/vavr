@@ -720,6 +720,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> drop(int n) {
+        if (n <= 0) {
+            return this;
+        }
+        if (n >= size()) {
+            return empty();
+        }
         List<T> list = this;
         for (long i = n; i > 0 && !list.isEmpty(); i--) {
             list = list.tail();
@@ -1390,11 +1396,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> take(int n) {
-        if (n >= length()) {
-            return this;
-        }
         if (n <= 0) {
             return empty();
+        }
+        if (n >= length()) {
+            return this;
         }
         List<T> result = Nil.instance();
         List<T> list = this;
@@ -1406,11 +1412,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> takeRight(int n) {
-        if (n >= length()) {
-            return this;
-        }
         if (n <= 0) {
             return empty();
+        }
+        if (n >= length()) {
+            return this;
         }
         return reverse().take(n).reverse();
     }

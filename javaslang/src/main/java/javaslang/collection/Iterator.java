@@ -2069,7 +2069,7 @@ interface IteratorModule {
         private final int step;
         private final int gap;
 
-        private Seq<T> buffer;
+        private List<T> buffer;
 
         GroupedIterator(Iterator<T> that, int size, int step) {
             if (size < 1 || step < 1) {
@@ -2078,7 +2078,7 @@ interface IteratorModule {
             this.that = that;
             this.step = step;
             this.gap = Math.max(step - size, 0);
-            this.buffer = Vector.ofAll(that.take(size));
+            this.buffer = List.ofAll(that.take(size));
         }
 
         @Override
@@ -2092,7 +2092,7 @@ interface IteratorModule {
                 throw new NoSuchElementException();
             }
             final Seq<T> result = buffer;
-            buffer = that.hasNext() ? buffer.drop(step).appendAll(that.drop(gap).take(step)) : buffer.take(0);
+            buffer = that.hasNext() ? that.drop(gap).take(step).toList().prependAll(buffer.drop(step)) : buffer.take(0);
             return result;
         }
     }
