@@ -443,6 +443,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @param <C>        classified class type
      * @return A Map containing the grouped elements
      * @throws NullPointerException if {@code classifier} is null.
+     * @see #arrangeBy(Function)
      */
     <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
 
@@ -454,11 +455,12 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @param <K>        key class type
      * @return A Map containing the elements arranged by their keys.
      * @throws NullPointerException if {@code getKey} is null.
+     * @see #groupBy(Function)
      */
-    default <K> Option<Map<K, T>> arrangeBy(Function<? super T, K> getKey) {
+    default <K> Option<Map<K, T>> arrangeBy(Function<? super T, ? extends K> getKey) {
         return Option.of(groupBy(getKey).mapValues(Traversable<T>::singleOption))
             .filter(map -> !map.exists(kv -> kv._2.isEmpty()))
-            .map(map -> map.mapValues(Option::get));
+            .map(map -> Map.narrow(map.mapValues(Option::get)));
     }
 
     /**
