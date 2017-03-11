@@ -8,6 +8,7 @@ package javaslang.collection;
 import javaslang.Function1;
 import javaslang.Tuple;
 import javaslang.Tuple2;
+import javaslang.Value;
 import javaslang.control.Option;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
@@ -15,9 +16,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -1311,4 +1310,27 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<String, String> map = mapOf("1", "a").put("2", "b");
         assertThat(map.getOrElse("3", "3")).isEqualTo("3");
     }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
+    }
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+    }
+
+    @Test
+    public void shouldHaveDistinctSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT));
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
+
 }

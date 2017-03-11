@@ -1815,21 +1815,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
     }
 
-    @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
-    }
-
-    @Test
-    public void shouldHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().characteristics() & Spliterator.SIZED).isNotZero();
-    }
-
-    @Test
-    public void shouldReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
-    }
-
     // -- stderr
 
     private final static Object STD_ERR_LOCK = new Object();
