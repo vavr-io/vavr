@@ -2067,6 +2067,7 @@ interface IteratorModule {
 
         private final Iterator<T> that;
         private final int step;
+        private final int gap;
 
         private Seq<T> buffer;
 
@@ -2076,6 +2077,7 @@ interface IteratorModule {
             }
             this.that = that;
             this.step = step;
+            this.gap = Math.max(step - size, 0);
             this.buffer = Vector.ofAll(that.take(size));
         }
 
@@ -2087,7 +2089,7 @@ interface IteratorModule {
         @Override
         protected Seq<T> getNext() {
             final Seq<T> result = buffer;
-            buffer = that.hasNext() ? buffer.appendAll(that.take(step)).drop(step) : buffer.take(0);
+            buffer = that.hasNext() ? buffer.drop(step).appendAll(that.drop(gap).take(step)) : buffer.take(0);
             return result;
         }
     }
