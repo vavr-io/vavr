@@ -278,19 +278,23 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     // -- spliterator
 
     @Test
+    public void shouldHaveSortedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isTrue();
+    }
+
+    @Test
     public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
     }
 
     @Test
     public void shouldHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
     }
 
     @Test
     public void shouldNotHaveDistinctSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT))
-            .isFalse();
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isFalse();
     }
 
     @Test
@@ -301,7 +305,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     // -- isSequential()
 
     @Test
-    public void shouldReturnTrueWhenIsSequentialCalled() {
+    public void shouldReturnFalseWhenIsSequentialCalled() {
         assertThat(of(1, 2, 3).isSequential()).isFalse();
     }
 

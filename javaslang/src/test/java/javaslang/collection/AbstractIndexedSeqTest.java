@@ -8,6 +8,7 @@ package javaslang.collection;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.Spliterator;
 
 public abstract class AbstractIndexedSeqTest extends AbstractSeqTest {
 
@@ -25,6 +26,11 @@ public abstract class AbstractIndexedSeqTest extends AbstractSeqTest {
     }
 
     // -- spliterator
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    }
 
     @Test
     public void shouldReturnSizeWhenSpliterator() {

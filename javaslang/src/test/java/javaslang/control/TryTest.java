@@ -1162,18 +1162,13 @@ public class TryTest extends AbstractValueTest {
     // -- spliterator
 
     @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
-    }
-
-    @Test
     public void shouldHaveSizedSpliterator() {
-        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
     }
 
     @Test
     public void shouldHaveDistinctSpliterator() {
-        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.DISTINCT));
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isTrue();
     }
 
     @Test
