@@ -295,4 +295,11 @@ public class LinkedHashMapTest extends AbstractMapTest {
                 Tuple.of(0, "x")));
     }
 
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isTrue();
+    }
+
 }

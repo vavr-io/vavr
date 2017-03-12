@@ -293,4 +293,11 @@ public class TreeMultimapTest extends AbstractMultimapTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isFalse();
+    }
+
 }

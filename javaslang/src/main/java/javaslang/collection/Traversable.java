@@ -113,6 +113,7 @@ import java.util.function.Supplier;
  * <li>{@link #hasDefiniteSize()}</li>
  * <li>{@link #isDistinct()}</li>
  * <li>{@link #isOrdered()}</li>
+ * <li>{@link #isSequential()}</li>
  * <li>{@link #isTraversableAgain()}</li>
  * </ul>
  *
@@ -550,6 +551,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return true, if this Traversable is ordered, false otherwise.
      */
     default boolean isOrdered() {
+        return false;
+    }
+
+    /**
+     * Checks if the elements of this Traversable appear in encounter order.
+     *
+     * @return true, if the insertion order of elements is preserved, false otherwise.
+     */
+    default boolean isSequential() {
         return false;
     }
 
@@ -993,7 +1003,10 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             characteristics |= Spliterator.DISTINCT;
         }
         if (isOrdered()) {
-            characteristics |= (Spliterator.ORDERED | Spliterator.SORTED);
+            characteristics |= (Spliterator.SORTED | Spliterator.ORDERED);
+        }
+        if (isSequential()) {
+            characteristics |= Spliterator.ORDERED;
         }
         if (hasDefiniteSize()) {
             characteristics |= (Spliterator.SIZED | Spliterator.SUBSIZED);

@@ -31,4 +31,12 @@ public abstract class AbstractSortedMapTest extends AbstractMapTest {
         final int actual = number2numberMap.put(2, new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);
     }
+
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isFalse();
+    }
+
 }

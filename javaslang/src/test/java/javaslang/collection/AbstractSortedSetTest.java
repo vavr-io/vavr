@@ -73,4 +73,12 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
         super.shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable();
     }
+
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isFalse();
+    }
+
 }

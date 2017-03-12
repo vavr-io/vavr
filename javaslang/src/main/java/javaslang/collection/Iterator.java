@@ -1576,6 +1576,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
+    default boolean isSequential() {
+        return true;
+    }
+
+    @Override
     default Iterator<T> iterator() {
         return this;
     }

@@ -231,6 +231,11 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         return false;
     }
 
+    @Override
+    default boolean isSequential() {
+        return true;
+    }
+
     /**
      * Traverses this tree values in a specific {@link Order}.
      *

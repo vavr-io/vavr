@@ -2026,4 +2026,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
             .isFalse();
     }
 
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isTrue();
+    }
+
 }

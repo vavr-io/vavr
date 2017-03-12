@@ -791,4 +791,11 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
     }
 
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isTrue();
+    }
+
 }

@@ -244,4 +244,12 @@ public class LinkedHashSetTest extends AbstractSetTest {
         final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toLinkedSet()).isSameAs(value);
     }
+
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isTrue();
+    }
+
 }

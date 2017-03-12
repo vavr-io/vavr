@@ -1202,4 +1202,9 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
     default Function1<Integer, T> withDefault(Function<? super Integer, ? extends T> defaultFunction) {
         return i -> (i >= 0 && i < length()) ? apply(i) : defaultFunction.apply(i);
     }
+
+    @Override
+    default boolean isSequential() {
+        return true;
+    }
 }

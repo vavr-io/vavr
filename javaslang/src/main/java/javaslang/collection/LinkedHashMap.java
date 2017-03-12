@@ -605,6 +605,11 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
     }
 
     @Override
+    public boolean isSequential() {
+        return true;
+    }
+
+    @Override
     public Iterator<Tuple2<K, V>> iterator() {
         return list.iterator();
     }

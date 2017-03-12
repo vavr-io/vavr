@@ -291,7 +291,10 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
             @Override
             public Comparator<? super T> getComparator() {
-                return null;
+                if (hasCharacteristics(Spliterator.SORTED)) {
+                    return null;
+                }
+                throw new IllegalStateException();
             }
         }
         return new SpliteratorProxy(original.spliterator());

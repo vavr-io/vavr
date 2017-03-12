@@ -645,6 +645,11 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
+    public boolean isSequential() {
+        return true;
+    }
+
+    @Override
     public Iterator<T> iterator() {
         return map.iterator().map(t -> t._1);
     }

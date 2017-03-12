@@ -463,4 +463,12 @@ public class HashSetTest extends AbstractSetTest {
         final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toSet()).isSameAs(value);
     }
+
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isFalse();
+    }
+
 }
