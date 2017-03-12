@@ -212,13 +212,15 @@ We follow the [Semantic Versioning](http://semver.org) scheme.
 
 ### Backward compatibility
 
-We distinguish between 3 kinds of (backwward-)compatibilty:
+We distinguish between 3 kinds of (backward-)compatibilty:
 
 1. **Source** - Source compatibility concerns translating Java source code into class files.
 2. **Binary** - Binary compatibility is [defined](http://java.sun.com/docs/books/jls/third_edition/html/binaryComp.html#13.2) in The Java Language Specification as preserving the ability to link without error.
 3. **Behavioral** - Behavioral compatibility includes the semantics of the code that is executed at runtime.
 
 _Source: [OpenJDK Developers Guide v0.777, Kinds of Compatibility](http://cr.openjdk.java.net/~darcy/OpenJdkDevGuide/OpenJdkDevelopersGuide.v0.777.html#compatibility)_
+
+Javaslang retains binary backwards compatability (drop in replacement jar) for major versions. Semantic (intended) behavioral compatibility is also retained (bug fixes may change unintended behaviours).
 
 We currently check for API changes (which may affect the binary compatibility) using the maven-bundle-plugin:
 
