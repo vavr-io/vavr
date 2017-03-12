@@ -2069,8 +2069,9 @@ interface IteratorModule {
         private final int size;
         private final int step;
         private final int gap;
+        private final int preserve;
 
-        private List<T> buffer;
+        private Object[] buffer;
 
         GroupedIterator(Iterator<T> that, int size, int step) {
             if (size < 1 || step < 1) {
@@ -2080,24 +2081,57 @@ interface IteratorModule {
             this.size = size;
             this.step = step;
             this.gap = Math.max(step - size, 0);
-            this.buffer = List.ofAll(that.take(size));
+            this.preserve = Math.max(size - step, 0);
+            this.buffer = take(that, new Object[size], 0, size);
         }
 
         @Override
         public boolean hasNext() {
-            return !buffer.isEmpty();
+            return buffer.length > 0;
         }
 
         @Override
         public Seq<T> next() {
-            if (!hasNext()) {
+            if (buffer.length == 0) {
                 throw new NoSuchElementException();
             }
-            Seq<T> result = buffer;
-            buffer = that.hasNext()
-                     ? buffer.drop(step).appendAll(gap > 0 ? that.drop(gap).take(size) : that.take(step))
-                     : buffer.take(0);
-            return result;
+            final Object[] result = buffer;
+            if (that.hasNext()) {
+                buffer = new Object[size];
+                if (preserve > 0) {
+                    System.arraycopy(result, step, buffer, 0, preserve);
+                }
+                if (gap > 0) {
+                    drop(that, gap);
+                    buffer = take(that, buffer, preserve, size);
+                } else {
+                    buffer = take(that, buffer, preserve, step);
+                }
+            } else {
+                buffer = new Object[0];
+            }
+            return Array.wrap(result);
+        }
+
+        private static void drop(Iterator<?> source, int count) {
+            for (int i = 0; i < count && source.hasNext(); i++) {
+                source.next();
+            }
+        }
+
+        private static Object[] take(Iterator<?> source, Object[] target, int offset, int count) {
+            int i = offset;
+            while (i < count + offset && source.hasNext()) {
+                target[i] = source.next();
+                i++;
+            }
+            if (i < target.length) {
+                final Object[] result = new Object[i];
+                System.arraycopy(target, 0, result, 0, i);
+                return result;
+            } else {
+                return target;
+            }
         }
     }
 
