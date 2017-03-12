@@ -300,8 +300,8 @@ public class LazyTest {
     }
 
     @Test
-    public void shouldHaveDistinctSpliterator() {
-        assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isTrue();
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
     }
 
     @Test
