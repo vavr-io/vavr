@@ -1167,8 +1167,8 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldHaveDistinctSpliterator() {
-        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isTrue();
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
     }
 
     @Test

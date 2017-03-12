@@ -1204,7 +1204,7 @@ public interface Value<T> extends Iterable<T> {
     @Override
     default Spliterator<T> spliterator() {
         return Spliterators.spliterator(iterator(), isEmpty() ? 0 : 1,
-                Spliterator.IMMUTABLE | Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED);
+                Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED);
     }
 
     // -- Object
