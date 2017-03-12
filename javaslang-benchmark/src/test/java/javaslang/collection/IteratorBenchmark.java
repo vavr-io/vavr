@@ -12,7 +12,6 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.Random;
 
-import static java.util.Arrays.asList;
 import static javaslang.JmhRunner.Includes.*;
 import static javaslang.JmhRunner.getRandomValues;
 
@@ -38,7 +37,6 @@ public class IteratorBenchmark {
 
         Integer[] ELEMENTS;
 
-        /* Only use these for non-mutating operations */
         scala.collection.Iterator<Integer> scalaIterator;
         javaslang.collection.Iterator<Integer> slangIterator;
 

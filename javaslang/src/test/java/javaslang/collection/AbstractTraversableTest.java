@@ -1776,6 +1776,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldSlide7ElementsBySize1AndStep3() {
+        final List<Traversable<Integer>> actual = of(1, 2, 3, 4, 5, 6 ,7).sliding(1, 3).toList().map(Vector::ofAll);
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1), Vector.of(4), Vector.of(7));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSlide7ElementsBySize2AndStep3() {
+        final List<Traversable<Integer>> actual = of(1, 2, 3, 4, 5, 6 ,7).sliding(2, 3).toList().map(Vector::ofAll);
+        final List<Traversable<Integer>> expected = List.of(Vector.of(1, 2), Vector.of(4, 5), Vector.of(7));
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- span
 
     @Test
