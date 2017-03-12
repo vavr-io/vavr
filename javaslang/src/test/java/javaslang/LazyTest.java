@@ -295,11 +295,6 @@ public class LazyTest {
     // -- spliterator
 
     @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED)).isTrue();
-    }
-
-    @Test
     public void shouldHaveSizedSpliterator() {
         assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
     }
