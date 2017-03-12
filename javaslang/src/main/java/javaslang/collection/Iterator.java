@@ -1578,6 +1578,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
+    default boolean isSequential() {
+        return true;
+    }
+
+    @Override
     default Iterator<T> iterator() {
         return this;
     }
@@ -1841,14 +1846,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             final Stream<T> that = Stream.ofAll(this);
             return Tuple.of(that.iterator().takeWhile(predicate), that.iterator().dropWhile(predicate));
         }
-    }
-
-    @Override
-    default Spliterator<T> spliterator() {
-        // the focus of the Stream API is on random-access collections of *known size*
-        final Stream<T> stream = Stream.ofAll(this);
-        return Spliterators.spliterator(stream.iterator(), stream.length(),
-                Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override

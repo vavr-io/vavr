@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Spliterator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -721,6 +722,19 @@ public class StreamTest extends AbstractLinearSeqTest {
         } catch (IllegalStateException x) {
             throw (x.getCause() != null) ? x.getCause() : x;
         }
+    }
+
+    // -- spliterator
+
+    @Test
+    public void shouldNotHaveSizedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isFalse();
+    }
+
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(-1);
     }
 
 }

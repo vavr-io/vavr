@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -146,6 +147,25 @@ public class HashMapTest extends AbstractMapTest {
         source.put(1, 2);
         source.put(3, 4);
         assertThat(HashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+    }
+
+    // -- spliterator
+
+    @Test
+    public void shouldNotHaveSortedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHaveOrderedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isFalse();
+    }
+
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnFalseWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isFalse();
     }
 
 }

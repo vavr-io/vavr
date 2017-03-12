@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.Spliterator;
 
 import static javaslang.TestComparators.toStringComparator;
 
@@ -73,4 +74,24 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
         super.shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable();
     }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveSortedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isTrue();
+    }
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+    }
+
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnFalseWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isFalse();
+    }
+
 }

@@ -20,6 +20,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
 import java.util.concurrent.*;
 import java.util.function.Function;
 
@@ -1101,5 +1102,22 @@ public class FutureTest extends AbstractValueTest {
 
             return value;
         });
+    }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    }
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
     }
 }

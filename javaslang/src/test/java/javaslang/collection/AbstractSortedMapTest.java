@@ -8,6 +8,7 @@ package javaslang.collection;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.Spliterator;
 
 public abstract class AbstractSortedMapTest extends AbstractMapTest {
 
@@ -31,4 +32,24 @@ public abstract class AbstractSortedMapTest extends AbstractMapTest {
         final int actual = number2numberMap.put(2, new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);
     }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveSortedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isTrue();
+    }
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+    }
+
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnFalseWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isFalse();
+    }
+
 }

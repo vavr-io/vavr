@@ -16,6 +16,7 @@ import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -401,5 +402,18 @@ public class ListTest extends AbstractLinearSeqTest {
     public void shouldReturnSelfOnConvertToList() {
         final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toList()).isSameAs(value);
+    }
+
+    // -- spliterator
+
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
     }
 }

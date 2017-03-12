@@ -918,11 +918,6 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
-    public Spliterator<Character> spliterator() {
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
     public CharSeq subSequence(int beginIndex) {
         if (beginIndex < 0 || beginIndex > length()) {
             throw new IndexOutOfBoundsException("begin index " + beginIndex + " < 0");

@@ -1052,4 +1052,21 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         //   java.lang.NullPointerException at javaslang.collection.Comparators.lambda$naturalComparator
     }
 
+    // -- spliterator
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    }
+
+    @Test
+    public void shouldHaveDistinctSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
+
 }

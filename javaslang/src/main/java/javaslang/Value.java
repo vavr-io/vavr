@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.*;
 import java.util.function.Function;
@@ -1197,6 +1199,12 @@ public interface Value<T> extends Iterable<T> {
      */
     default Vector<T> toVector() {
         return ValueModule.toTraversable(this, Vector.empty(), Vector::of, Vector::ofAll);
+    }
+
+    @Override
+    default Spliterator<T> spliterator() {
+        return Spliterators.spliterator(iterator(), isEmpty() ? 0 : 1,
+                Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED);
     }
 
     // -- Object

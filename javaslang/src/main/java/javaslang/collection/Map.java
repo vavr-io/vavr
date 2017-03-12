@@ -514,11 +514,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V>, S
     @Override
     int size();
 
-    @Override
-    default Spliterator<Tuple2<K, V>> spliterator() {
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
     /**
      * Converts this Javaslang {@code Map} to a {@code java.util.Map} while preserving characteristics
      * like insertion order ({@code LinkedHashMap}) and sort order ({@code SortedMap}).

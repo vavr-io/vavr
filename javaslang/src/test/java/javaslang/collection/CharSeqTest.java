@@ -1444,17 +1444,13 @@ public class CharSeqTest {
 
     @Test
     public void shouldHaveImmutableSpliterator() {
-        assertThat(of('1', '2', '3').spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
-    }
-
-    @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of('1', '2', '3').spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
+        assertThat(of('1', '2', '3').spliterator().hasCharacteristics(Spliterator.IMMUTABLE)).isTrue();
     }
 
     @Test
     public void shouldHaveSizedSpliterator() {
-        assertThat(of('1', '2', '3').spliterator().characteristics() & Spliterator.SIZED).isNotZero();
+        assertThat(of('1', '2', '3').spliterator()
+                .hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
     }
 
     @Test

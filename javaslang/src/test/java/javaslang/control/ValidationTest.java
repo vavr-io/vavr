@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Spliterator;
 
 public class ValidationTest extends AbstractValueTest {
 
@@ -618,5 +619,22 @@ public class ValidationTest extends AbstractValueTest {
         public String toString() {
             return "Person(" + name + ", " + age + ")";
         }
+    }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    }
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
     }
 }

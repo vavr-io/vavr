@@ -1112,11 +1112,6 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
     }
 
     @Override
-    public Spliterator<T> spliterator() {
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
     public Queue<T> subSequence(int beginIndex) {
         if (beginIndex < 0 || beginIndex > length()) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ")");

@@ -10,12 +10,17 @@ import javaslang.Tuple3;
 import javaslang.Value;
 import javaslang.control.Option;
 
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
@@ -108,6 +113,7 @@ import java.util.function.*;
  * <li>{@link #hasDefiniteSize()}</li>
  * <li>{@link #isDistinct()}</li>
  * <li>{@link #isOrdered()}</li>
+ * <li>{@link #isSequential()}</li>
  * <li>{@link #isTraversableAgain()}</li>
  * </ul>
  *
@@ -566,6 +572,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Checks if the elements of this Traversable appear in encounter order.
+     *
+     * @return true, if the insertion order of elements is preserved, false otherwise.
+     */
+    default boolean isSequential() {
+        return false;
+    }
+
+    /**
      * Each of Javaslang's collections may contain more than one element.
      *
      * @return {@code false}
@@ -996,6 +1011,26 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return isEmpty() ? Option.none() : Option.some(reduceRight(op));
+    }
+
+    @Override
+    default Spliterator<T> spliterator() {
+        int characteristics = Spliterator.IMMUTABLE;
+        if (isDistinct()) {
+            characteristics |= Spliterator.DISTINCT;
+        }
+        if (isOrdered()) {
+            characteristics |= (Spliterator.SORTED | Spliterator.ORDERED);
+        }
+        if (isSequential()) {
+            characteristics |= Spliterator.ORDERED;
+        }
+        if (hasDefiniteSize()) {
+            characteristics |= (Spliterator.SIZED | Spliterator.SUBSIZED);
+            return Spliterators.spliterator(iterator(), length(), characteristics);
+        } else {
+            return Spliterators.spliteratorUnknownSize(iterator(), characteristics);
+        }
     }
 
     /**

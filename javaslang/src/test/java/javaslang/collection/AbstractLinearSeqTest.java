@@ -8,6 +8,7 @@ package javaslang.collection;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.Spliterator;
 
 public abstract class AbstractLinearSeqTest extends AbstractSeqTest {
 

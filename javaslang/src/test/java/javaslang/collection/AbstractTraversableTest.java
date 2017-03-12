@@ -1834,7 +1834,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldSplitNil() {
         final java.util.List<Integer> actual = new java.util.ArrayList<>();
-        this.<Integer> empty().spliterator().forEachRemaining(actual::add);
+        this.<Integer>empty().spliterator().forEachRemaining(actual::add);
         assertThat(actual).isEmpty();
     }
 
@@ -1847,22 +1847,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldHaveImmutableSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().characteristics() & Spliterator.IMMUTABLE).isNotZero();
-    }
-
-    @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().characteristics() & Spliterator.ORDERED).isNotZero();
-    }
-
-    @Test
-    public void shouldHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().characteristics() & Spliterator.SIZED).isNotZero();
-    }
-
-    @Test
-    public void shouldReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.IMMUTABLE)).isTrue();
     }
 
     // -- stderr

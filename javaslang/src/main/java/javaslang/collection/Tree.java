@@ -231,6 +231,11 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         return false;
     }
 
+    @Override
+    default boolean isSequential() {
+        return true;
+    }
+
     /**
      * Traverses this tree values in a specific {@link Order}.
      *
@@ -588,12 +593,6 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         } else {
             return (Tuple2<Seq<T>, Seq<T>>) values().span(predicate);
         }
-    }
-
-    @Override
-    default Spliterator<T> spliterator() {
-        // the focus of the Stream API is on random-access collections of *known size*
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override

@@ -416,4 +416,8 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
         return new LinkedHashMultimap<>(back, getContainerType(), emptyContainer);
     }
 
+    @Override
+    public boolean isSequential() {
+        return true;
+    }
 }

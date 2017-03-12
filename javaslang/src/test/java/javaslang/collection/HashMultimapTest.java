@@ -293,4 +293,24 @@ public class HashMultimapTest extends AbstractMultimapTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- spliterator
+
+    @Test
+    public void shouldNotHaveSortedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+    }
+
+    @Test
+    public void shouldNotHaveOrderedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isFalse();
+    }
+
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isFalse();
+    }
+
+
 }

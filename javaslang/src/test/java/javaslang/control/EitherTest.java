@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Spliterator;
 
 import static javaslang.API.Left;
 import static javaslang.API.Right;
@@ -290,4 +291,21 @@ public class EitherTest extends AbstractValueTest {
         assertThat(Either.right(1).toString()).isEqualTo("Right(1)");
     }
 
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    }
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
+    }
 }

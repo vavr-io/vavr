@@ -1063,11 +1063,6 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
-    public Spliterator<T> spliterator() {
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
     public Vector<T> subSequence(int beginIndex) {
         if ((beginIndex >= 0) && (beginIndex <= length())) {
             return drop(beginIndex);

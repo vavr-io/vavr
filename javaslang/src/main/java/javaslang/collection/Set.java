@@ -273,11 +273,6 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Tuple2<? extends Set<T>, ? extends Set<T>> span(Predicate<? super T> predicate);
 
     @Override
-    default Spliterator<T> spliterator() {
-        return Spliterators.spliterator(iterator(), length(), Spliterator.ORDERED | Spliterator.IMMUTABLE);
-    }
-
-    @Override
     Set<T> tail();
 
     @Override

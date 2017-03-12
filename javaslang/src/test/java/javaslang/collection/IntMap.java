@@ -292,6 +292,14 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
             public int characteristics() {
                 return spliterator.characteristics();
             }
+
+            @Override
+            public Comparator<? super T> getComparator() {
+                if (hasCharacteristics(Spliterator.SORTED)) {
+                    return null;
+                }
+                throw new IllegalStateException();
+            }
         }
         return new SpliteratorProxy(original.spliterator());
     }
