@@ -299,7 +299,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldReturnTrueWhenIsSequentialCalled() {
-        assertThat(of(1, 2, 3).isSequential()).isTrue();
+        assertThat(LinkedHashMap.of(1, 2, 3, 4).isSequential()).isTrue();
     }
 
 }

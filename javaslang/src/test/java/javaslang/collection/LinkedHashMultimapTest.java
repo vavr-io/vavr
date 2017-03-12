@@ -297,7 +297,8 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
 
     @Test
     public void shouldReturnTrueWhenIsSequentialCalled() {
-        assertThat(of(1, 2, 3).isSequential()).isTrue();
+        final Multimap<Integer, Integer> map = LinkedHashMultimap.withSeq().of(1, 2, 3, 4);
+        assertThat(map.isSequential()).isTrue();
     }
 
 }
