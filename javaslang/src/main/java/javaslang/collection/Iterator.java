@@ -11,6 +11,7 @@ import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
+import javaslang.collection.IteratorModule.GroupedIterator;
 import javaslang.control.Option;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ import java.util.function.*;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.math.RoundingMode.HALF_UP;
+import static javaslang.API.*;
 import static javaslang.collection.IteratorModule.BigDecimalHelper.areEqual;
 import static javaslang.collection.IteratorModule.BigDecimalHelper.asDecimal;
 import static javaslang.collection.IteratorModule.EmptyIterator;
@@ -1535,9 +1537,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<Seq<T>> grouped(int size) {
-        return sliding(size, size);
+        return new GroupedIterator<>(this, size, size);
     }
-
+    
     @Override
     default boolean hasDefiniteSize() {
         return false;
@@ -1827,37 +1829,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<Seq<T>> sliding(int size, int step) {
-        if (size <= 0 || step <= 0) {
-            throw new IllegalArgumentException("size: " + size + " or step: " + step + " not positive");
-        }
-        if (!hasNext()) {
-            return empty();
-        } else {
-            final Stream<T> source = Stream.ofAll(this);
-            return new AbstractIterator<Seq<T>>() {
-                private Stream<T> that = source;
-                private IndexedSeq<T> next = null;
-
-                @Override
-                public boolean hasNext() {
-                    while (next == null && !that.isEmpty()) {
-                        final Tuple2<Stream<T>, Stream<T>> split = that.splitAt(size);
-                        next = split._1.toVector();
-                        that = split._2.isEmpty() ? Stream.empty() : that.drop(step);
-                    }
-                    return next != null;
-                }
-
-                @Override
-                public IndexedSeq<T> getNext() {
-                    final IndexedSeq<T> result = next;
-                    next = null;
-                    return result;
-                }
-            };
-        }
+        return new GroupedIterator<>(this, size, step);
     }
-
+    
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -2086,6 +2060,78 @@ interface IteratorModule {
         @Override
         public String toString() {
             return stringPrefix() + "()";
+        }
+    }
+
+    final class GroupedIterator<T> implements Iterator<Seq<T>> {
+
+        private final Iterator<T> that;
+        private final int size;
+        private final int step;
+        private final int gap;
+        private final int preserve;
+
+        private Object[] buffer;
+
+        GroupedIterator(Iterator<T> that, int size, int step) {
+            if (size < 1 || step < 1) {
+                throw new IllegalArgumentException("size (" + size + ") and step (" + step + ") must both be positive");
+            }
+            this.that = that;
+            this.size = size;
+            this.step = step;
+            this.gap = Math.max(step - size, 0);
+            this.preserve = Math.max(size - step, 0);
+            this.buffer = take(that, new Object[size], 0, size);
+        }
+
+        @Override
+        public boolean hasNext() {
+            return buffer.length > 0;
+        }
+
+        @Override
+        public Seq<T> next() {
+            if (buffer.length == 0) {
+                throw new NoSuchElementException();
+            }
+            final Object[] result = buffer;
+            if (that.hasNext()) {
+                buffer = new Object[size];
+                if (preserve > 0) {
+                    System.arraycopy(result, step, buffer, 0, preserve);
+                }
+                if (gap > 0) {
+                    drop(that, gap);
+                    buffer = take(that, buffer, preserve, size);
+                } else {
+                    buffer = take(that, buffer, preserve, step);
+                }
+            } else {
+                buffer = new Object[0];
+            }
+            return Array.wrap(result);
+        }
+
+        private static void drop(Iterator<?> source, int count) {
+            for (int i = 0; i < count && source.hasNext(); i++) {
+                source.next();
+            }
+        }
+
+        private static Object[] take(Iterator<?> source, Object[] target, int offset, int count) {
+            int i = offset;
+            while (i < count + offset && source.hasNext()) {
+                target[i] = source.next();
+                i++;
+            }
+            if (i < target.length) {
+                final Object[] result = new Object[i];
+                System.arraycopy(target, 0, result, 0, i);
+                return result;
+            } else {
+                return target;
+            }
         }
     }
 
