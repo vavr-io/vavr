@@ -275,6 +275,29 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         }
     }
 
+    // -- spliterator
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
+    }
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+    }
+
+    @Test
+    public void shouldNotHaveDistinctSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT))
+            .isFalse();
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
+
     private void assertMinimumsAreEqual(java.util.PriorityQueue<Integer> oldQueue, PriorityQueue<Integer> newQueue) {
         assertThat(oldQueue.isEmpty()).isEqualTo(newQueue.isEmpty());
         if (!newQueue.isEmpty()) {

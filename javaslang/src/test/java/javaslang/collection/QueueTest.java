@@ -399,4 +399,11 @@ public class QueueTest extends AbstractLinearSeqTest {
         final Value<Integer> value = of(1, 2, 3);
         assertThat(value.toQueue()).isSameAs(value);
     }
+
+    // -- spliterator
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
 }

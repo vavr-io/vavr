@@ -8,6 +8,7 @@ package javaslang.collection;
 import org.junit.Test;
 
 import java.math.BigDecimal;
+import java.util.Spliterator;
 
 public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
 
@@ -200,5 +201,27 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldReplaceFirstOccurrenceOfNonNilUsingCurrNewWhenMultipleOccurrencesExist() {
         // sets have only distinct elements
+    }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
+    }
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+    }
+
+    @Test
+    public void shouldHaveDistinctSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT));
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
     }
 }

@@ -23,4 +23,11 @@ public abstract class AbstractIndexedSeqTest extends AbstractSeqTest {
         final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
         assertThat(actual).isEqualTo(3);
     }
+
+    // -- spliterator
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
 }

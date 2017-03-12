@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
+import java.util.Spliterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -679,6 +680,30 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldHaveAReasonableToString() {
         // iterators are intermediate objects and should not have an equals, hashCode or toString
+    }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
+    }
+
+    @Test
+    public void shouldNotHaveSizedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED))
+                .isFalse();
+    }
+
+    @Test
+    public void shouldNotHaveDistinctSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT))
+            .isFalse();
+    }
+
+    @Test
+    public void shouldNotReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(-1);
     }
 
 }

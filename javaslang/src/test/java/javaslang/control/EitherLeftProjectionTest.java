@@ -391,4 +391,26 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
         final String transformed = of(1).transform(v -> String.valueOf(v.get()));
         assertThat(transformed).isEqualTo("1");
     }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
+    }
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+    }
+
+    @Test
+    public void shouldHaveDistinctSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.DISTINCT));
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
+    }
 }

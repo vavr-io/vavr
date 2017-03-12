@@ -723,4 +723,11 @@ public class StreamTest extends AbstractLinearSeqTest {
         }
     }
 
+    // -- spliterator
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(-1);
+    }
+
 }

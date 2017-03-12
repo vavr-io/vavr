@@ -16,13 +16,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
@@ -1163,5 +1157,27 @@ public class TryTest extends AbstractValueTest {
         public void setValue(int value) {
             this.value = value;
         }
+    }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
+    }
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+    }
+
+    @Test
+    public void shouldHaveDistinctSpliterator() {
+        assertThat(of(1).spliterator().hasCharacteristics(Spliterator.DISTINCT));
+    }
+
+    @Test
+    public void shouldReturnSizeWhenSpliterator() {
+        assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
     }
 }
