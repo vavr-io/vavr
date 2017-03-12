@@ -15,7 +15,6 @@ import java.util.Random;
 import static java.util.Arrays.asList;
 import static javaslang.JmhRunner.Includes.*;
 import static javaslang.JmhRunner.getRandomValues;
-import static scala.collection.JavaConversions.asScalaBuffer;
 
 @SuppressWarnings({ "ALL", "unchecked", "rawtypes" })
 public class IteratorBenchmark {
@@ -40,17 +39,15 @@ public class IteratorBenchmark {
         Integer[] ELEMENTS;
 
         /* Only use these for non-mutating operations */
-        java.util.List<Integer> javaMutable;
-        scala.collection.Iterator<Integer> scalaPersistent;
-        javaslang.collection.Iterator<Integer> slangPersistent;
+        scala.collection.Iterator<Integer> scalaIterator;
+        javaslang.collection.Iterator<Integer> slangIterator;
 
         @Setup
         public void setup() {
             final Random random = new Random(0);
             ELEMENTS = getRandomValues(CONTAINER_SIZE, false, random);
-            javaMutable = asList(ELEMENTS);
-            scalaPersistent = (scala.collection.Iterator<Integer>) scala.collection.immutable.Seq$.MODULE$.apply(asScalaBuffer(javaMutable)).iterator();
-            slangPersistent = Iterator.of(ELEMENTS);
+            scalaIterator = (scala.collection.Iterator<Integer>) (Object) scala.collection.mutable.WrappedArray$.MODULE$.make(ELEMENTS).iterator();
+            slangIterator = Iterator.of(ELEMENTS);
         }
     }
 
@@ -58,7 +55,7 @@ public class IteratorBenchmark {
 
         @Benchmark
         public void scala_persistent(Blackhole bh) {
-            final scala.collection.Iterator.GroupedIterator values = scalaPersistent.sliding(3, 1);
+            final scala.collection.Iterator.GroupedIterator values = scalaIterator.sliding(3, 1);
             while (values.hasNext()) {
                 bh.consume(values.next());
             }
@@ -66,7 +63,7 @@ public class IteratorBenchmark {
 
         @Benchmark
         public void slang_persistent(Blackhole bh) {
-            final Iterator<Seq<Integer>> values = slangPersistent.sliding(3);
+            final Iterator<Seq<Integer>> values = slangIterator.sliding(3);
             while (values.hasNext()) {
                 bh.consume(values.next());
             }
