@@ -296,17 +296,17 @@ public class LazyTest {
 
     @Test
     public void shouldHaveOrderedSpliterator() {
-        assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED));
+        assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.ORDERED | Spliterator.SORTED)).isTrue();
     }
 
     @Test
     public void shouldHaveSizedSpliterator() {
-        assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED));
+        assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
     }
 
     @Test
     public void shouldHaveDistinctSpliterator() {
-        assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.DISTINCT));
+        assertThat(Lazy.of(() -> 1).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isTrue();
     }
 
     @Test
