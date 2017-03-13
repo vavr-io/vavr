@@ -220,7 +220,7 @@ We distinguish between 3 kinds of (backward-)compatibilty:
 
 _Source: [OpenJDK Developers Guide v0.777, Kinds of Compatibility](http://cr.openjdk.java.net/~darcy/OpenJdkDevGuide/OpenJdkDevelopersGuide.v0.777.html#compatibility)_
 
-Javaslang retains binary backwards compatability (drop in replacement jar) for major versions. Semantic (intended) behavioral compatibility is also retained (bug fixes may change unintended behaviours).
+Javaslang retains binary backwards compatability (drop in replacement jar) within the same major version. Behavioral compatibility is also retained (bug fixes may change unintended behaviours).
 
 We currently check for API changes (which may affect the binary compatibility) using the maven-bundle-plugin:
 
