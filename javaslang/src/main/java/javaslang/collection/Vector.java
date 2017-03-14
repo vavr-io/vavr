@@ -1212,12 +1212,14 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     private Object readResolve() { return isEmpty() ? EMPTY : this; }
 
     @Override
-    public boolean equals(Object that) {
-        return (that == this) || ((that instanceof Vector) && areEqual(this, (Vector<?>) that));
+    public boolean equals(Object o) {
+        return Collections.equals(this, o);
     }
 
     @Override
-    public int hashCode() { return Collections.hash(this); }
+    public int hashCode() {
+        return Collections.hash(this);
+    }
 
     @Override
     public String stringPrefix() { return "Vector"; }

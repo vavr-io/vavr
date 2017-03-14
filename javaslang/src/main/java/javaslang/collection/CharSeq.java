@@ -1187,18 +1187,12 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof CharSeq) {
-            return ((CharSeq) o).back.equals(back);
-        } else {
-            return false;
-        }
+        return Collections.equals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return back.hashCode();
+        return Collections.hash(this);
     }
 
     //

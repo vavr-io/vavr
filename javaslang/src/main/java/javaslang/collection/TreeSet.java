@@ -994,19 +994,12 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof TreeSet) {
-            final TreeSet<?> that = (TreeSet<?>) o;
-            return tree.equals(that.tree);
-        } else {
-            return false;
-        }
+        return Collections.equals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return tree.hashCode();
+        return Collections.hash(this);
     }
 
     @Override

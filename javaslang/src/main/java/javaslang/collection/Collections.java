@@ -22,6 +22,31 @@ import static javaslang.collection.ArrayType.asArray;
  */
 final class Collections {
 
+    @SuppressWarnings("unchecked")
+    static boolean equals(Traversable<?> traversable1, Object object) {
+        if (traversable1 == object) {
+            return true;
+        }
+        if (traversable1 == null || object == null) {
+            return false;
+        }
+        if (!(object instanceof Traversable)) {
+            return false;
+        }
+        Traversable traversable = (Traversable) object;
+        if (traversable.length() != traversable1.length()
+                || traversable1.isSequential() != traversable.isSequential()
+                || traversable1.isDistinct() != traversable.isDistinct()) {
+            return false;
+        }
+        if (traversable.isSequential()) {
+            return areEqual(traversable1, traversable);
+        } else if (traversable.isDistinct()) {
+            return traversable1.forAll(traversable::contains);
+        }
+        return false;
+    }
+
     // checks, if the *elements* of the given iterables are equal
     static boolean areEqual(Iterable<?> iterable1, Iterable<?> iterable2) {
         final java.util.Iterator<?> iter1 = iterable1.iterator();
@@ -177,7 +202,7 @@ final class Collections {
         } else if (iterable instanceof Seq) {
             return ((Seq<T>) iterable).reverseIterator();
         } else {
-            return List.<T> empty().pushAll(iterable).iterator();
+            return List.<T>empty().pushAll(iterable).iterator();
         }
     }
 
@@ -198,14 +223,14 @@ final class Collections {
     }
 
     static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,
-            U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
+                                                       U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<U> iterator = source.iterator().scanLeft(zero, operation);
         return finisher.apply(iterator);
     }
 
     static <T, U, R extends Traversable<U>> R scanRight(Traversable<? extends T> source,
-            U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
+                                                        U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<? extends T> reversedElements = reverseIterator(source);
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
@@ -294,7 +319,7 @@ final class Collections {
     static <T> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
         return isTraversableAgain(iterable) ? withSizeTraversable(iterable) : withSizeTraversable(List.ofAll(iterable));
     }
-    
+
     private static <T> IterableWithSize<T> withSizeTraversable(Iterable<? extends T> iterable) {
         if (iterable instanceof Collection) {
             return new IterableWithSize<>(iterable, ((Collection<?>) iterable).size());
@@ -311,6 +336,7 @@ final class Collections {
             return transposeNonEmptyMatrix(matrix, rowFactory, columnFactory);
         }
     }
+
     private static <T, U extends Seq<T>, V extends Seq<U>> V transposeNonEmptyMatrix(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
         final int newHeight = matrix.head().size(), newWidth = matrix.size();
         @SuppressWarnings("unchecked") final T[][] results = (T[][]) new Object[newHeight][newWidth];
