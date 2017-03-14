@@ -1250,19 +1250,12 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof TreeMap) {
-            final TreeMap<?, ?> that = (TreeMap<?, ?>) o;
-            return entries.equals(that.entries);
-        } else {
-            return false;
-        }
+        return Collections.equals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return entries.hashCode();
+        return Collections.hash(this);
     }
 
     @Override

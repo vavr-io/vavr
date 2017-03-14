@@ -1670,23 +1670,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
         @Override
         public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof List) {
-                List<?> list1 = this;
-                List<?> list2 = (List<?>) o;
-                while (!list1.isEmpty() && !list2.isEmpty()) {
-                    final boolean isEqual = Objects.equals(list1.head(), list2.head());
-                    if (!isEqual) {
-                        return false;
-                    }
-                    list1 = list1.tail();
-                    list2 = list2.tail();
-                }
-                return list1.isEmpty() && list2.isEmpty();
-            } else {
-                return false;
-            }
+            return Collections.equals(this, o);
         }
 
         @Override
