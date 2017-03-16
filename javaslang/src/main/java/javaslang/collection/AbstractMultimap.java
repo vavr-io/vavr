@@ -526,7 +526,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return back.hashCode();
     }
 
     @Override

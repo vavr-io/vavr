@@ -827,7 +827,7 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return trie.hashCode();
     }
 
     private Object readResolve() {
