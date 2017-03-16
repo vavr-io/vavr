@@ -56,7 +56,7 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public int hashCode() {
-        return Collections.hash(this.original);
+        return this.original.hashCode();
     }
 
     @Override

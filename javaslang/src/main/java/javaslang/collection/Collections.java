@@ -23,28 +23,75 @@ import static javaslang.collection.ArrayType.asArray;
 final class Collections {
 
     @SuppressWarnings("unchecked")
-    static boolean equals(Traversable<?> traversable1, Object object) {
-        if (traversable1 == object) {
+    static boolean equals(Map<?, ?> map1, Object object) {
+        if (map1 == null ^ object == null) {
+            return false;
+        }
+        if (map1 == object) {
             return true;
         }
-        if (traversable1 == null || object == null) {
+        if (!(object instanceof Map)) {
             return false;
         }
-        if (!(object instanceof Traversable)) {
+        Map map = (Map) object;
+        if (map1.size() != map.size()) {
             return false;
         }
-        Traversable traversable = (Traversable) object;
-        if (traversable.length() != traversable1.length()
-                || traversable1.isSequential() != traversable.isSequential()
-                || traversable1.isDistinct() != traversable.isDistinct()) {
+        return map1.forAll(map::contains);
+    }
+
+    @SuppressWarnings("unchecked")
+    static boolean equals(Set<?> set1, Object object) {
+        if (set1 == null ^ object == null) {
             return false;
         }
-        if (traversable.isSequential()) {
-            return areEqual(traversable1, traversable);
-        } else if (traversable.isDistinct()) {
-            return traversable1.forAll(traversable::contains);
+        if (set1 == object) {
+            return true;
         }
-        return false;
+        if (!(object instanceof Set)) {
+            return false;
+        }
+        Set set = (Set) object;
+        if (set1.size() != set.size()) {
+            return false;
+        }
+        return set1.forAll(set::contains);
+    }
+
+    @SuppressWarnings("unchecked")
+    static boolean equals(Multimap<?, ?> multimap1, Object object) {
+        if (multimap1 == null ^ object == null) {
+            return false;
+        }
+        if (multimap1 == object) {
+            return true;
+        }
+        if (!(object instanceof Multimap)) {
+            return false;
+        }
+        Multimap multimap = (Multimap) object;
+        if (multimap.size() != multimap1.size()) {
+            return false;
+        }
+        return multimap1.forAll(multimap::contains);
+    }
+
+    @SuppressWarnings("unchecked")
+    static boolean equals(Seq<?> seq1, Object object) {
+        if (seq1 == null ^ object == null) {
+            return false;
+        }
+        if (seq1 == object) {
+            return true;
+        }
+        if (!(object instanceof Seq)) {
+            return false;
+        }
+        Seq seq = (Seq) object;
+        if (seq.size() != seq1.size()) {
+            return false;
+        }
+        return areEqual(seq1, seq);
     }
 
     // checks, if the *elements* of the given iterables are equal
