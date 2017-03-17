@@ -22,7 +22,7 @@ import static javaslang.collection.ArrayType.asArray;
  */
 final class Collections {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static boolean equals(Map<?, ?> map1, Object object) {
         if (map1 == null ^ object == null) {
             return false;
@@ -40,7 +40,7 @@ final class Collections {
         return map1.forAll(map::contains);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static boolean equals(Set<?> set1, Object object) {
         if (set1 == null ^ object == null) {
             return false;
@@ -58,7 +58,7 @@ final class Collections {
         return set1.forAll(set::contains);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static boolean equals(Multimap<?, ?> multimap1, Object object) {
         if (multimap1 == null ^ object == null) {
             return false;
@@ -76,7 +76,7 @@ final class Collections {
         return multimap1.forAll(multimap::contains);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static boolean equals(Seq<?> seq1, Object object) {
         if (seq1 == null ^ object == null) {
             return false;
