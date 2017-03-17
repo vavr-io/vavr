@@ -1071,6 +1071,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Override
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
         assertThat(of(1, 2, 3, 4).partition(i -> i % 2 != 0))
                 .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0, 1), Tuple.of(2, 3)),
@@ -1079,6 +1080,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Override
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldSpanNonNil() {
         assertThat(of(0, 1, 2, 3).span(i -> i < 2))
                 .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0, 0), Tuple.of(1, 1)),
@@ -1087,6 +1089,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Override
     @Test
+    @SuppressWarnings("unchecked")
     public void shouldSpanAndNotTruncate() {
         assertThat(of(1, 1, 2, 2, 3, 3).span(x -> x % 2 == 1))
                 .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0,1), Tuple.of(1, 1)),
