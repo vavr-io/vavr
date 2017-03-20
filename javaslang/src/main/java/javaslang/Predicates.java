@@ -138,4 +138,28 @@ public final class Predicates {
         Objects.requireNonNull(predicates, "predicates is null");
         return anyOf(predicates).negate();
     }
+
+    /**
+     * A combinator that checks if <strong>one or more</strong> elements satisfy the {@code predicate}.
+     *
+     * @param predicate The predicate to check
+     * @param <T>        closure over tested object types
+     * @return A new {@code Predicate}
+     */
+    public static <T> Predicate<Value<T>> exists(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return obj -> obj.exists(predicate);
+    }
+
+    /**
+     * A combinator that checks if <strong>all</strong> elements satisfy the {@code predicate}.
+     *
+     * @param predicate The predicate to check
+     * @param <T>        closure over tested object types
+     * @return A new {@code Predicate}
+     */
+    public static <T> Predicate<Value<T>> forAll(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return obj -> obj.forAll(predicate);
+    }
 }

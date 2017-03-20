@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.collection.List;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -131,4 +132,27 @@ public class PredicatesTest {
         assertThat(isNotNull().test(null)).isFalse();
     }
 
+    // -- exits
+
+    @Test
+    public void shouldTestExists_PositiveCase() {
+        assertThat(exists(P1).test(List.of(1, 3))).isTrue();
+    }
+
+    @Test
+    public void shouldTestExists_NegativeCase() {
+        assertThat(exists(P1).test(List.of(1, 0))).isFalse();
+    }
+
+    // -- forAll
+
+    @Test
+    public void shouldTestForAll_PositiveCase() {
+        assertThat(forAll(P1).test(List.of(2, 3))).isTrue();
+    }
+
+    @Test
+    public void shouldTestForAll_NegativeCase() {
+        assertThat(forAll(P1).test(List.of(3, 0))).isFalse();
+    }
 }
