@@ -2,6 +2,10 @@
 target
 *.versionsBackup
 
+# -- Gradle
+.gradle
+build
+
 # -- Eclipse
 .classpath
 .project
@@ -12,8 +16,12 @@ bin
 .idea
 *.iml
 
+# -- Visual Studio Code
+.vscode
+
 # -- Mac OS
 .DS_Store
+*.log
 
 # -- Java
 hs_err_pid*
