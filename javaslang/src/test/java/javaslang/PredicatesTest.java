@@ -11,6 +11,8 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.function.Predicate;
 
+import static javaslang.API.$;
+import static javaslang.API.*;
 import static javaslang.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -144,6 +146,17 @@ public class PredicatesTest {
         assertThat(exists(P1).test(List.of(1, 0))).isFalse();
     }
 
+    @Test
+    public void shouldCheckExistsByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
+        final List<Integer> list = List(1, 2, 3);
+        final Predicate<Number> p = n -> n.intValue() % 2 == 0;
+        final boolean actual = Match(list).of(
+                Case(exists(p), true),
+                Case($(), false)
+        );
+        assertThat(actual).isTrue();
+    }
+
     // -- forAll
 
     @Test
@@ -154,5 +167,16 @@ public class PredicatesTest {
     @Test
     public void shouldTestForAll_NegativeCase() {
         assertThat(forAll(P1).test(List.of(3, 0))).isFalse();
+    }
+
+    @Test
+    public void shouldCheckForAllByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
+        final List<Integer> list = List(1, 2, 3);
+        final Predicate<Number> p = n -> n.intValue() > 0;
+        final boolean actual = Match(list).of(
+                Case(forAll(p), true),
+                Case($(), false)
+        );
+        assertThat(actual).isTrue();
     }
 }
