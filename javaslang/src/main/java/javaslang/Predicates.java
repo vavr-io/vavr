@@ -5,6 +5,7 @@
  */
 package javaslang;
 
+import javaslang.collection.Iterator;
 import javaslang.collection.List;
 
 import java.util.Objects;
@@ -140,26 +141,26 @@ public final class Predicates {
     }
 
     /**
-     * A combinator that checks if <strong>one or more</strong> elements satisfy the {@code predicate}.
+     * A combinator that checks if <strong>one or more</strong> elements of an {@code Iterable} satisfy the {@code predicate}.
      *
-     * @param predicate The predicate to check
+     * @param predicate A {@code Predicate} that tests elements of type {@code T}
      * @param <T>        closure over tested object types
      * @return A new {@code Predicate}
      */
-    public static <T> Predicate<Value<T>> exists(Predicate<? super T> predicate) {
+    public static <T> Predicate<Iterable<T>> exists(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return obj -> obj.exists(predicate);
+        return iterable -> Iterator.ofAll(iterable).exists(predicate);
     }
 
     /**
-     * A combinator that checks if <strong>all</strong> elements satisfy the {@code predicate}.
+     * A combinator that checks if <strong>all</strong> elements of an {@code Iterable} satisfy the {@code predicate}.
      *
-     * @param predicate The predicate to check
+     * @param predicate A {@code Predicate} that tests elements of type {@code T}
      * @param <T>        closure over tested object types
      * @return A new {@code Predicate}
      */
-    public static <T> Predicate<Value<T>> forAll(Predicate<? super T> predicate) {
+    public static <T> Predicate<Iterable<T>> forAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return obj -> obj.forAll(predicate);
+        return iterable -> Iterator.ofAll(iterable).forAll(predicate);
     }
 }
