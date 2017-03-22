@@ -525,6 +525,23 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Returns {@code this}, if this is a {@code Success}, otherwise
+     * return a new {@code Failure} with the mapped exception.
+     *
+     * @param mapper A function
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    default Try<T> mapFailure(Function<? super Throwable, ? extends Throwable> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (isFailure()) {
+            return failure(mapper.apply(getCause()));
+        } else {
+            return this;
+        }
+    }
+
+    /**
      * Consumes the throwable if this is a Failure.
      *
      * @param action An exception consumer
