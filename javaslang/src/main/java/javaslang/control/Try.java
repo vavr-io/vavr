@@ -5,8 +5,7 @@
  */
 package javaslang.control;
 
-import javaslang.CheckedFunction1;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.collection.Iterator;
 import javaslang.collection.Seq;
 import javaslang.collection.Vector;
@@ -20,6 +19,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import static javaslang.API.Match;
 
 /**
  * An implementation similar to Scala's Try control.
@@ -1027,6 +1028,478 @@ public interface Try<T> extends Value<T>, Serializable {
         }
 
     }
+
+    // -- try with resources
+
+    /**
+     * Creates a {@code Try}-with-resources builder that operates on one {@link AutoCloseable} resource.
+     *
+     * @param t1Supplier The supplier of the first resource.
+     * @param <T1> Type of the 1st resource.
+     * @return a new {@link WithResources1} instance.
+     */
+    static <T1 extends AutoCloseable> WithResources1<T1> withResources(CheckedSupplier<? extends T1> t1Supplier) {
+        return new WithResources1<>(t1Supplier);
+    }
+
+    /**
+     * Creates a {@code Try}-with-resources builder that operates on two {@link AutoCloseable} resources.
+     *
+     * @param t1Supplier The supplier of the 1st resource.
+     * @param t2Supplier The supplier of the 2nd resource.
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @return a new {@link WithResources2} instance.
+     */
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable> WithResources2<T1, T2> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier) {
+        return new WithResources2<>(t1Supplier, t2Supplier);
+    }
+
+    /**
+     * Creates a {@code Try}-with-resources builder that operates on three {@link AutoCloseable} resources.
+     *
+     * @param t1Supplier The supplier of the 1st resource.
+     * @param t2Supplier The supplier of the 2nd resource.
+     * @param t3Supplier The supplier of the 3rd resource.
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @return a new {@link WithResources3} instance.
+     */
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> WithResources3<T1, T2, T3> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier) {
+        return new WithResources3<>(t1Supplier, t2Supplier, t3Supplier);
+    }
+
+    /**
+     * Creates a {@code Try}-with-resources builder that operates on four {@link AutoCloseable} resources.
+     *
+     * @param t1Supplier The supplier of the 1st resource.
+     * @param t2Supplier The supplier of the 2nd resource.
+     * @param t3Supplier The supplier of the 3rd resource.
+     * @param t4Supplier The supplier of the 4th resource.
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     * @return a new {@link WithResources4} instance.
+     */
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> WithResources4<T1, T2, T3, T4> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier) {
+        return new WithResources4<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier);
+    }
+
+    /**
+     * Creates a {@code Try}-with-resources builder that operates on five {@link AutoCloseable} resources.
+     *
+     * @param t1Supplier The supplier of the 1st resource.
+     * @param t2Supplier The supplier of the 2nd resource.
+     * @param t3Supplier The supplier of the 3rd resource.
+     * @param t4Supplier The supplier of the 4th resource.
+     * @param t5Supplier The supplier of the 5th resource.
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     * @param <T5> Type of the 5th resource.
+     * @return a new {@link WithResources5} instance.
+     */
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> WithResources5<T1, T2, T3, T4, T5> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier) {
+        return new WithResources5<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier);
+    }
+
+    /**
+     * Creates a {@code Try}-with-resources builder that operates on six {@link AutoCloseable} resources.
+     *
+     * @param t1Supplier The supplier of the 1st resource.
+     * @param t2Supplier The supplier of the 2nd resource.
+     * @param t3Supplier The supplier of the 3rd resource.
+     * @param t4Supplier The supplier of the 4th resource.
+     * @param t5Supplier The supplier of the 5th resource.
+     * @param t6Supplier The supplier of the 6th resource.
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     * @param <T5> Type of the 5th resource.
+     * @param <T6> Type of the 6th resource.
+     * @return a new {@link WithResources6} instance.
+     */
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> WithResources6<T1, T2, T3, T4, T5, T6> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier) {
+        return new WithResources6<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier);
+    }
+
+    /**
+     * Creates a {@code Try}-with-resources builder that operates on seven {@link AutoCloseable} resources.
+     *
+     * @param t1Supplier The supplier of the 1st resource.
+     * @param t2Supplier The supplier of the 2nd resource.
+     * @param t3Supplier The supplier of the 3rd resource.
+     * @param t4Supplier The supplier of the 4th resource.
+     * @param t5Supplier The supplier of the 5th resource.
+     * @param t6Supplier The supplier of the 6th resource.
+     * @param t7Supplier The supplier of the 7th resource.
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     * @param <T5> Type of the 5th resource.
+     * @param <T6> Type of the 6th resource.
+     * @param <T7> Type of the 7th resource.
+     * @return a new {@link WithResources7} instance.
+     */
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> WithResources7<T1, T2, T3, T4, T5, T6, T7> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier, CheckedSupplier<? extends T7> t7Supplier) {
+        return new WithResources7<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier, t7Supplier);
+    }
+
+    /**
+     * Creates a {@code Try}-with-resources builder that operates on eight {@link AutoCloseable} resources.
+     *
+     * @param t1Supplier The supplier of the 1st resource.
+     * @param t2Supplier The supplier of the 2nd resource.
+     * @param t3Supplier The supplier of the 3rd resource.
+     * @param t4Supplier The supplier of the 4th resource.
+     * @param t5Supplier The supplier of the 5th resource.
+     * @param t6Supplier The supplier of the 6th resource.
+     * @param t7Supplier The supplier of the 7th resource.
+     * @param t8Supplier The supplier of the 8th resource.
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     * @param <T5> Type of the 5th resource.
+     * @param <T6> Type of the 6th resource.
+     * @param <T7> Type of the 7th resource.
+     * @param <T8> Type of the 8th resource.
+     * @return a new {@link WithResources8} instance.
+     */
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> WithResources8<T1, T2, T3, T4, T5, T6, T7, T8> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier, CheckedSupplier<? extends T7> t7Supplier, CheckedSupplier<? extends T8> t8Supplier) {
+        return new WithResources8<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier, t7Supplier, t8Supplier);
+    }
+
+    /**
+     * A {@code Try}-with-resources builder that operates on one {@link AutoCloseable} resource.
+     * 
+     * @param <T1> Type of the 1st resource.
+     */
+    final class WithResources1<T1 extends AutoCloseable> {
+
+        private final CheckedSupplier<? extends T1> t1Supplier;
+
+        private WithResources1(CheckedSupplier<? extends T1> t1Supplier) {
+            this.t1Supplier = t1Supplier;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f A computation that takes one {@code AutoClosable} resource.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+        public <R> Try<R> of(CheckedFunction1<? super T1, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.get()) {
+                    return f.apply(t1);
+                }
+            });
+        }
+    }
+
+    /**
+     * A {@code Try}-with-resources builder that operates on two {@link AutoCloseable} resources.
+     *
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     */
+    final class WithResources2<T1 extends AutoCloseable, T2 extends AutoCloseable> {
+
+        private final CheckedSupplier<? extends T1> t1Supplier;
+        private final CheckedSupplier<? extends T2> t2Supplier;
+
+        private WithResources2(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier) {
+            this.t1Supplier = t1Supplier;
+            this.t2Supplier = t2Supplier;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f A computation that takes two {@code AutoClosable} resources.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+        public <R> Try<R> of(CheckedFunction2<? super T1, ? super T2, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get()) {
+                    return f.apply(t1, t2);
+                }
+            });
+        }
+    }
+
+    /**
+     * A {@code Try}-with-resources builder that operates on three {@link AutoCloseable} resources.
+     *
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     */
+    final class WithResources3<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> {
+
+        private final CheckedSupplier<? extends T1> t1Supplier;
+        private final CheckedSupplier<? extends T2> t2Supplier;
+        private final CheckedSupplier<? extends T3> t3Supplier;
+
+        private WithResources3(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier) {
+            this.t1Supplier = t1Supplier;
+            this.t2Supplier = t2Supplier;
+            this.t3Supplier = t3Supplier;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f A computation that takes three {@code AutoClosable} resources.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+        public <R> Try<R> of(CheckedFunction3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get()) {
+                    return f.apply(t1, t2, t3);
+                }
+            });
+        }
+    }
+
+    /**
+     * A {@code Try}-with-resources builder that operates on four {@link AutoCloseable} resources.
+     *
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     */
+    final class WithResources4<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> {
+
+        private final CheckedSupplier<? extends T1> t1Supplier;
+        private final CheckedSupplier<? extends T2> t2Supplier;
+        private final CheckedSupplier<? extends T3> t3Supplier;
+        private final CheckedSupplier<? extends T4> t4Supplier;
+
+        private WithResources4(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier) {
+            this.t1Supplier = t1Supplier;
+            this.t2Supplier = t2Supplier;
+            this.t3Supplier = t3Supplier;
+            this.t4Supplier = t4Supplier;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f A computation that takes four {@code AutoClosable} resources.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+        public <R> Try<R> of(CheckedFunction4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get()) {
+                    return f.apply(t1, t2, t3, t4);
+                }
+            });
+        }
+    }
+
+    /**
+     * A {@code Try}-with-resources builder that operates on five {@link AutoCloseable} resources.
+     *
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     * @param <T5> Type of the 5th resource.
+     */
+    final class WithResources5<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> {
+
+        private final CheckedSupplier<? extends T1> t1Supplier;
+        private final CheckedSupplier<? extends T2> t2Supplier;
+        private final CheckedSupplier<? extends T3> t3Supplier;
+        private final CheckedSupplier<? extends T4> t4Supplier;
+        private final CheckedSupplier<? extends T5> t5Supplier;
+
+        private WithResources5(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier) {
+            this.t1Supplier = t1Supplier;
+            this.t2Supplier = t2Supplier;
+            this.t3Supplier = t3Supplier;
+            this.t4Supplier = t4Supplier;
+            this.t5Supplier = t5Supplier;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f A computation that takes five {@code AutoClosable} resources.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+        public <R> Try<R> of(CheckedFunction5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get(); T5 t5 = t5Supplier.get()) {
+                    return f.apply(t1, t2, t3, t4, t5);
+                }
+            });
+        }
+    }
+
+    /**
+     * A {@code Try}-with-resources builder that operates on six {@link AutoCloseable} resources.
+     *
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     * @param <T5> Type of the 5th resource.
+     * @param <T6> Type of the 6th resource.
+     */
+    final class WithResources6<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> {
+
+        private final CheckedSupplier<? extends T1> t1Supplier;
+        private final CheckedSupplier<? extends T2> t2Supplier;
+        private final CheckedSupplier<? extends T3> t3Supplier;
+        private final CheckedSupplier<? extends T4> t4Supplier;
+        private final CheckedSupplier<? extends T5> t5Supplier;
+        private final CheckedSupplier<? extends T6> t6Supplier;
+
+        private WithResources6(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier) {
+            this.t1Supplier = t1Supplier;
+            this.t2Supplier = t2Supplier;
+            this.t3Supplier = t3Supplier;
+            this.t4Supplier = t4Supplier;
+            this.t5Supplier = t5Supplier;
+            this.t6Supplier = t6Supplier;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f A computation that takes six {@code AutoClosable} resources.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+        public <R> Try<R> of(CheckedFunction6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get(); T5 t5 = t5Supplier.get(); T6 t6 = t6Supplier.get()) {
+                    return f.apply(t1, t2, t3, t4, t5, t6);
+                }
+            });
+        }
+    }
+
+    /**
+     * A {@code Try}-with-resources builder that operates on seven {@link AutoCloseable} resources.
+     *
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     * @param <T5> Type of the 5th resource.
+     * @param <T6> Type of the 6th resource.
+     * @param <T7> Type of the 7th resource.
+     */
+    final class WithResources7<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> {
+
+        private final CheckedSupplier<? extends T1> t1Supplier;
+        private final CheckedSupplier<? extends T2> t2Supplier;
+        private final CheckedSupplier<? extends T3> t3Supplier;
+        private final CheckedSupplier<? extends T4> t4Supplier;
+        private final CheckedSupplier<? extends T5> t5Supplier;
+        private final CheckedSupplier<? extends T6> t6Supplier;
+        private final CheckedSupplier<? extends T7> t7Supplier;
+
+        private WithResources7(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier, CheckedSupplier<? extends T7> t7Supplier) {
+            this.t1Supplier = t1Supplier;
+            this.t2Supplier = t2Supplier;
+            this.t3Supplier = t3Supplier;
+            this.t4Supplier = t4Supplier;
+            this.t5Supplier = t5Supplier;
+            this.t6Supplier = t6Supplier;
+            this.t7Supplier = t7Supplier;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f A computation that takes seven {@code AutoClosable} resources.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+        public <R> Try<R> of(CheckedFunction7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get(); T5 t5 = t5Supplier.get(); T6 t6 = t6Supplier.get(); T7 t7 = t7Supplier.get()) {
+                    return f.apply(t1, t2, t3, t4, t5, t6, t7);
+                }
+            });
+        }
+    }
+
+    /**
+     * A {@code Try}-with-resources builder that operates on eight {@link AutoCloseable} resources.
+     *
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @param <T4> Type of the 4th resource.
+     * @param <T5> Type of the 5th resource.
+     * @param <T6> Type of the 6th resource.
+     * @param <T7> Type of the 7th resource.
+     * @param <T8> Type of the 8th resource.
+     */
+    final class WithResources8<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> {
+
+        private final CheckedSupplier<? extends T1> t1Supplier;
+        private final CheckedSupplier<? extends T2> t2Supplier;
+        private final CheckedSupplier<? extends T3> t3Supplier;
+        private final CheckedSupplier<? extends T4> t4Supplier;
+        private final CheckedSupplier<? extends T5> t5Supplier;
+        private final CheckedSupplier<? extends T6> t6Supplier;
+        private final CheckedSupplier<? extends T7> t7Supplier;
+        private final CheckedSupplier<? extends T8> t8Supplier;
+
+        private WithResources8(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier, CheckedSupplier<? extends T7> t7Supplier, CheckedSupplier<? extends T8> t8Supplier) {
+            this.t1Supplier = t1Supplier;
+            this.t2Supplier = t2Supplier;
+            this.t3Supplier = t3Supplier;
+            this.t4Supplier = t4Supplier;
+            this.t5Supplier = t5Supplier;
+            this.t6Supplier = t6Supplier;
+            this.t7Supplier = t7Supplier;
+            this.t8Supplier = t8Supplier;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f A computation that takes eight {@code AutoClosable} resources.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try"/* https://bugs.openjdk.java.net/browse/JDK-8155591 */)
+        public <R> Try<R> of(CheckedFunction8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get(); T5 t5 = t5Supplier.get(); T6 t6 = t6Supplier.get(); T7 t7 = t7Supplier.get(); T8 t8 = t8Supplier.get()) {
+                    return f.apply(t1, t2, t3, t4, t5, t6, t7, t8);
+                }
+            });
+        }
+    }
+
+    // -- exception wrappers
 
     /**
      * An unchecked wrapper for Fatal exceptions.

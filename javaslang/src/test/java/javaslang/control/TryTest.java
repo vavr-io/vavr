@@ -5,10 +5,16 @@
  */
 package javaslang.control;
 
+import static javaslang.API.Case;
+import static javaslang.API.Failure;
+import static javaslang.API.Success;
+import static javaslang.Predicates.instanceOf;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
+import javaslang.API;
 import javaslang.AbstractValueTest;
+import javaslang.Predicates;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
 
@@ -245,6 +251,268 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldThrowNullPointerExceptionWhenCallingTryRunRunnable() {
         assertThatThrownBy(() -> Try.runRunnable(null)).isInstanceOf(NullPointerException.class).hasMessage("runnable is null");
+    }
+
+    // -- Try.withResources
+
+    @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+    static class Resource<T> implements AutoCloseable {
+
+        final T value;
+        boolean isClosed = false;
+
+        Resource(T value) {
+            this.value = value;
+        }
+
+        @Override
+        public void close() throws Exception {
+            isClosed = true;
+        }
+    }
+
+    private static <T> Resource<T> resource(T value) {
+        return new Resource<>(value);
+    }
+
+    @Test
+    public void shouldCreateSuccessTryWithResources1() {
+        final Resource<Integer> resource1 = resource(1);
+        final Try<String> actual = Try.withResources(() -> resource1).of(i1 -> "" + i1.value);
+        assertThat(actual).isEqualTo(Success("1"));
+        assertThat(resource1.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithResources1() {
+        final Resource<Integer> resource1 = resource(1);
+        final Try<?> actual = Try.withResources(() -> resource1).of(i -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(resource1.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessTryWithResources2() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2).of((i1, i2) -> "" + i1.value + i2.value);
+        assertThat(actual).isEqualTo(Success("12"));
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithResources2() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2).of((i1, i2) -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessTryWithResources3() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3).of((i1, i2, i3) -> "" + i1.value + i2.value + i3.value);
+        assertThat(actual).isEqualTo(Success("123"));
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithResources3() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3).of((i1, i2, i3) -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessTryWithResources4() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4).of((i1, i2, i3, i4) -> "" + i1.value + i2.value + i3.value + i4.value);
+        assertThat(actual).isEqualTo(Success("1234"));
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithResources4() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4).of((i1, i2, i3, i4) -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessTryWithResources5() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Resource<Integer> resource5 = resource(5);
+        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5).of((i1, i2, i3, i4, i5) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value);
+        assertThat(actual).isEqualTo(Success("12345"));
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+        assertThat(resource5.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithResources5() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Resource<Integer> resource5 = resource(5);
+        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5).of((i1, i2, i3, i4, i5) -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+        assertThat(resource5.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessTryWithResources6() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Resource<Integer> resource5 = resource(5);
+        final Resource<Integer> resource6 = resource(6);
+        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6).of((i1, i2, i3, i4, i5, i6) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value + i6.value);
+        assertThat(actual).isEqualTo(Success("123456"));
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+        assertThat(resource5.isClosed).isTrue();
+        assertThat(resource6.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithResources6() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Resource<Integer> resource5 = resource(5);
+        final Resource<Integer> resource6 = resource(6);
+        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6).of((i1, i2, i3, i4, i5, i6) -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+        assertThat(resource5.isClosed).isTrue();
+        assertThat(resource6.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessTryWithResources7() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Resource<Integer> resource5 = resource(5);
+        final Resource<Integer> resource6 = resource(6);
+        final Resource<Integer> resource7 = resource(7);
+        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6, () -> resource7).of((i1, i2, i3, i4, i5, i6, i7) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value + i6.value + i7.value);
+        assertThat(actual).isEqualTo(Success("1234567"));
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+        assertThat(resource5.isClosed).isTrue();
+        assertThat(resource6.isClosed).isTrue();
+        assertThat(resource7.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithResources7() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Resource<Integer> resource5 = resource(5);
+        final Resource<Integer> resource6 = resource(6);
+        final Resource<Integer> resource7 = resource(7);
+        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6, () -> resource7).of((i1, i2, i3, i4, i5, i6, i7) -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+        assertThat(resource5.isClosed).isTrue();
+        assertThat(resource6.isClosed).isTrue();
+        assertThat(resource7.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessTryWithResources8() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Resource<Integer> resource5 = resource(5);
+        final Resource<Integer> resource6 = resource(6);
+        final Resource<Integer> resource7 = resource(7);
+        final Resource<Integer> resource8 = resource(8);
+        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6, () -> resource7, () -> resource8).of((i1, i2, i3, i4, i5, i6, i7, i8) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value + i6.value + i7.value + i8.value);
+        assertThat(actual).isEqualTo(Success("12345678"));
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+        assertThat(resource5.isClosed).isTrue();
+        assertThat(resource6.isClosed).isTrue();
+        assertThat(resource7.isClosed).isTrue();
+        assertThat(resource8.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithResources8() {
+        final Resource<Integer> resource1 = resource(1);
+        final Resource<Integer> resource2 = resource(2);
+        final Resource<Integer> resource3 = resource(3);
+        final Resource<Integer> resource4 = resource(4);
+        final Resource<Integer> resource5 = resource(5);
+        final Resource<Integer> resource6 = resource(6);
+        final Resource<Integer> resource7 = resource(7);
+        final Resource<Integer> resource8 = resource(8);
+        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6, () -> resource7, () -> resource8).of((i1, i2, i3, i4, i5, i6, i7, i8) -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(resource1.isClosed).isTrue();
+        assertThat(resource2.isClosed).isTrue();
+        assertThat(resource3.isClosed).isTrue();
+        assertThat(resource4.isClosed).isTrue();
+        assertThat(resource5.isClosed).isTrue();
+        assertThat(resource6.isClosed).isTrue();
+        assertThat(resource7.isClosed).isTrue();
+        assertThat(resource8.isClosed).isTrue();
     }
 
     // -- Failure.Cause
@@ -656,7 +924,7 @@ public class TryTest extends AbstractValueTest {
                 .map(x -> x / 2);
         assertThat(actual.toString()).isEqualTo("Failure(java.lang.NumberFormatException: For input string: \"aaa\")");
     }
-
+    
     // -- andThen
 
     @Test
