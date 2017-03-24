@@ -5,20 +5,17 @@
  */
 package javaslang.control;
 
-import static javaslang.API.Case;
 import static javaslang.API.Failure;
 import static javaslang.API.Success;
-import static javaslang.Predicates.instanceOf;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
-import javaslang.API;
 import javaslang.AbstractValueTest;
-import javaslang.Predicates;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
 
 import org.assertj.core.api.Assertions;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -69,6 +66,54 @@ public class TryTest extends AbstractValueTest {
     }
 
     // -- Try
+
+    // -- andFinally
+
+    @Test
+    public void shouldExecuteAndFinallyOnSuccess(){
+        MutableInteger count = new MutableInteger(0);
+
+        Try.run(() -> count.setValue(0)).andFinally(() -> count.setValue(1));
+
+        assertThat(count.getValue()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldExecuteAndFinallyTryOnSuccess(){
+        MutableInteger count = new MutableInteger(0);
+
+        Try.run(() -> count.setValue(0)).andFinallyTry(() -> count.setValue(1));
+
+        assertThat(count.getValue()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldExecuteAndFinallyOnFailure(){
+        MutableInteger count = new MutableInteger(0);
+
+        Try.run(() -> {throw new IllegalStateException(FAILURE);})
+                .andFinally(() -> count.setValue(1));
+
+        assertThat(count.getValue()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldExecuteAndFinallyTryOnFailure(){
+        MutableInteger count = new MutableInteger(0);
+
+        Try.run(() -> {throw new IllegalStateException(FAILURE);})
+                .andFinallyTry(() -> count.setValue(1));
+
+        assertThat(count.getValue()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldExecuteAndFinallyTryOnFailureWithFailure(){
+        Try<Object> result = Try.of(() -> {throw new IllegalStateException(FAILURE);})
+                .andFinallyTry(() -> {throw new IllegalStateException(FAILURE);});
+
+        assertThat(result.isFailure());
+    }
 
     // -- exists
 
@@ -256,12 +301,16 @@ public class TryTest extends AbstractValueTest {
     // -- Try.withResources
 
     @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
-    static class Resource<T> implements AutoCloseable {
+    static class Closeable<T> implements AutoCloseable {
 
         final T value;
         boolean isClosed = false;
 
-        Resource(T value) {
+        static <T> Closeable<T> of(T value) {
+            return new Closeable<>(value);
+        }
+
+        Closeable(T value) {
             this.value = value;
         }
 
@@ -271,248 +320,244 @@ public class TryTest extends AbstractValueTest {
         }
     }
 
-    private static <T> Resource<T> resource(T value) {
-        return new Resource<>(value);
-    }
-
     @Test
     public void shouldCreateSuccessTryWithResources1() {
-        final Resource<Integer> resource1 = resource(1);
-        final Try<String> actual = Try.withResources(() -> resource1).of(i1 -> "" + i1.value);
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Try<String> actual = Try.withResources(() -> closeable1).of(i1 -> "" + i1.value);
         assertThat(actual).isEqualTo(Success("1"));
-        assertThat(resource1.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateFailureTryWithResources1() {
-        final Resource<Integer> resource1 = resource(1);
-        final Try<?> actual = Try.withResources(() -> resource1).of(i -> { throw new Error(); });
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Try<?> actual = Try.withResources(() -> closeable1).of(i -> { throw new Error(); });
         assertThat(actual.isFailure()).isTrue();
-        assertThat(resource1.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateSuccessTryWithResources2() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2).of((i1, i2) -> "" + i1.value + i2.value);
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Try<String> actual = Try.withResources(() -> closeable1, () -> closeable2).of((i1, i2) -> "" + i1.value + i2.value);
         assertThat(actual).isEqualTo(Success("12"));
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateFailureTryWithResources2() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2).of((i1, i2) -> { throw new Error(); });
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Try<?> actual = Try.withResources(() -> closeable1, () -> closeable2).of((i1, i2) -> { throw new Error(); });
         assertThat(actual.isFailure()).isTrue();
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateSuccessTryWithResources3() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3).of((i1, i2, i3) -> "" + i1.value + i2.value + i3.value);
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Try<String> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3).of((i1, i2, i3) -> "" + i1.value + i2.value + i3.value);
         assertThat(actual).isEqualTo(Success("123"));
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateFailureTryWithResources3() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3).of((i1, i2, i3) -> { throw new Error(); });
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Try<?> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3).of((i1, i2, i3) -> { throw new Error(); });
         assertThat(actual.isFailure()).isTrue();
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateSuccessTryWithResources4() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4).of((i1, i2, i3, i4) -> "" + i1.value + i2.value + i3.value + i4.value);
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Try<String> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4).of((i1, i2, i3, i4) -> "" + i1.value + i2.value + i3.value + i4.value);
         assertThat(actual).isEqualTo(Success("1234"));
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateFailureTryWithResources4() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4).of((i1, i2, i3, i4) -> { throw new Error(); });
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Try<?> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4).of((i1, i2, i3, i4) -> { throw new Error(); });
         assertThat(actual.isFailure()).isTrue();
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateSuccessTryWithResources5() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Resource<Integer> resource5 = resource(5);
-        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5).of((i1, i2, i3, i4, i5) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value);
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Closeable<Integer> closeable5 = Closeable.of(5);
+        final Try<String> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4, () -> closeable5).of((i1, i2, i3, i4, i5) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value);
         assertThat(actual).isEqualTo(Success("12345"));
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
-        assertThat(resource5.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
+        assertThat(closeable5.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateFailureTryWithResources5() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Resource<Integer> resource5 = resource(5);
-        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5).of((i1, i2, i3, i4, i5) -> { throw new Error(); });
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Closeable<Integer> closeable5 = Closeable.of(5);
+        final Try<?> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4, () -> closeable5).of((i1, i2, i3, i4, i5) -> { throw new Error(); });
         assertThat(actual.isFailure()).isTrue();
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
-        assertThat(resource5.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
+        assertThat(closeable5.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateSuccessTryWithResources6() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Resource<Integer> resource5 = resource(5);
-        final Resource<Integer> resource6 = resource(6);
-        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6).of((i1, i2, i3, i4, i5, i6) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value + i6.value);
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Closeable<Integer> closeable5 = Closeable.of(5);
+        final Closeable<Integer> closeable6 = Closeable.of(6);
+        final Try<String> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4, () -> closeable5, () -> closeable6).of((i1, i2, i3, i4, i5, i6) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value + i6.value);
         assertThat(actual).isEqualTo(Success("123456"));
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
-        assertThat(resource5.isClosed).isTrue();
-        assertThat(resource6.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
+        assertThat(closeable5.isClosed).isTrue();
+        assertThat(closeable6.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateFailureTryWithResources6() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Resource<Integer> resource5 = resource(5);
-        final Resource<Integer> resource6 = resource(6);
-        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6).of((i1, i2, i3, i4, i5, i6) -> { throw new Error(); });
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Closeable<Integer> closeable5 = Closeable.of(5);
+        final Closeable<Integer> closeable6 = Closeable.of(6);
+        final Try<?> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4, () -> closeable5, () -> closeable6).of((i1, i2, i3, i4, i5, i6) -> { throw new Error(); });
         assertThat(actual.isFailure()).isTrue();
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
-        assertThat(resource5.isClosed).isTrue();
-        assertThat(resource6.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
+        assertThat(closeable5.isClosed).isTrue();
+        assertThat(closeable6.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateSuccessTryWithResources7() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Resource<Integer> resource5 = resource(5);
-        final Resource<Integer> resource6 = resource(6);
-        final Resource<Integer> resource7 = resource(7);
-        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6, () -> resource7).of((i1, i2, i3, i4, i5, i6, i7) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value + i6.value + i7.value);
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Closeable<Integer> closeable5 = Closeable.of(5);
+        final Closeable<Integer> closeable6 = Closeable.of(6);
+        final Closeable<Integer> closeable7 = Closeable.of(7);
+        final Try<String> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4, () -> closeable5, () -> closeable6, () -> closeable7).of((i1, i2, i3, i4, i5, i6, i7) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value + i6.value + i7.value);
         assertThat(actual).isEqualTo(Success("1234567"));
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
-        assertThat(resource5.isClosed).isTrue();
-        assertThat(resource6.isClosed).isTrue();
-        assertThat(resource7.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
+        assertThat(closeable5.isClosed).isTrue();
+        assertThat(closeable6.isClosed).isTrue();
+        assertThat(closeable7.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateFailureTryWithResources7() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Resource<Integer> resource5 = resource(5);
-        final Resource<Integer> resource6 = resource(6);
-        final Resource<Integer> resource7 = resource(7);
-        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6, () -> resource7).of((i1, i2, i3, i4, i5, i6, i7) -> { throw new Error(); });
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Closeable<Integer> closeable5 = Closeable.of(5);
+        final Closeable<Integer> closeable6 = Closeable.of(6);
+        final Closeable<Integer> closeable7 = Closeable.of(7);
+        final Try<?> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4, () -> closeable5, () -> closeable6, () -> closeable7).of((i1, i2, i3, i4, i5, i6, i7) -> { throw new Error(); });
         assertThat(actual.isFailure()).isTrue();
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
-        assertThat(resource5.isClosed).isTrue();
-        assertThat(resource6.isClosed).isTrue();
-        assertThat(resource7.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
+        assertThat(closeable5.isClosed).isTrue();
+        assertThat(closeable6.isClosed).isTrue();
+        assertThat(closeable7.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateSuccessTryWithResources8() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Resource<Integer> resource5 = resource(5);
-        final Resource<Integer> resource6 = resource(6);
-        final Resource<Integer> resource7 = resource(7);
-        final Resource<Integer> resource8 = resource(8);
-        final Try<String> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6, () -> resource7, () -> resource8).of((i1, i2, i3, i4, i5, i6, i7, i8) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value + i6.value + i7.value + i8.value);
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Closeable<Integer> closeable5 = Closeable.of(5);
+        final Closeable<Integer> closeable6 = Closeable.of(6);
+        final Closeable<Integer> closeable7 = Closeable.of(7);
+        final Closeable<Integer> closeable8 = Closeable.of(8);
+        final Try<String> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4, () -> closeable5, () -> closeable6, () -> closeable7, () -> closeable8).of((i1, i2, i3, i4, i5, i6, i7, i8) -> "" + i1.value + i2.value + i3.value + i4.value + i5.value + i6.value + i7.value + i8.value);
         assertThat(actual).isEqualTo(Success("12345678"));
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
-        assertThat(resource5.isClosed).isTrue();
-        assertThat(resource6.isClosed).isTrue();
-        assertThat(resource7.isClosed).isTrue();
-        assertThat(resource8.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
+        assertThat(closeable5.isClosed).isTrue();
+        assertThat(closeable6.isClosed).isTrue();
+        assertThat(closeable7.isClosed).isTrue();
+        assertThat(closeable8.isClosed).isTrue();
     }
 
     @Test
     public void shouldCreateFailureTryWithResources8() {
-        final Resource<Integer> resource1 = resource(1);
-        final Resource<Integer> resource2 = resource(2);
-        final Resource<Integer> resource3 = resource(3);
-        final Resource<Integer> resource4 = resource(4);
-        final Resource<Integer> resource5 = resource(5);
-        final Resource<Integer> resource6 = resource(6);
-        final Resource<Integer> resource7 = resource(7);
-        final Resource<Integer> resource8 = resource(8);
-        final Try<?> actual = Try.withResources(() -> resource1, () -> resource2, () -> resource3, () -> resource4, () -> resource5, () -> resource6, () -> resource7, () -> resource8).of((i1, i2, i3, i4, i5, i6, i7, i8) -> { throw new Error(); });
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Closeable<Integer> closeable4 = Closeable.of(4);
+        final Closeable<Integer> closeable5 = Closeable.of(5);
+        final Closeable<Integer> closeable6 = Closeable.of(6);
+        final Closeable<Integer> closeable7 = Closeable.of(7);
+        final Closeable<Integer> closeable8 = Closeable.of(8);
+        final Try<?> actual = Try.withResources(() -> closeable1, () -> closeable2, () -> closeable3, () -> closeable4, () -> closeable5, () -> closeable6, () -> closeable7, () -> closeable8).of((i1, i2, i3, i4, i5, i6, i7, i8) -> { throw new Error(); });
         assertThat(actual.isFailure()).isTrue();
-        assertThat(resource1.isClosed).isTrue();
-        assertThat(resource2.isClosed).isTrue();
-        assertThat(resource3.isClosed).isTrue();
-        assertThat(resource4.isClosed).isTrue();
-        assertThat(resource5.isClosed).isTrue();
-        assertThat(resource6.isClosed).isTrue();
-        assertThat(resource7.isClosed).isTrue();
-        assertThat(resource8.isClosed).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+        assertThat(closeable4.isClosed).isTrue();
+        assertThat(closeable5.isClosed).isTrue();
+        assertThat(closeable6.isClosed).isTrue();
+        assertThat(closeable7.isClosed).isTrue();
+        assertThat(closeable8.isClosed).isTrue();
     }
 
     // -- Failure.Cause
@@ -750,7 +795,7 @@ public class TryTest extends AbstractValueTest {
         assertThat(testee.recover(x -> OK)).isSameAs(testee);
     }
 
-    // -- recoverWith
+    // -- recoverWith(Function)
 
     @Test
     public void shouldRecoverWithOnFailure() {
@@ -765,6 +810,54 @@ public class TryTest extends AbstractValueTest {
         })).isEqualTo(Try.failure(error));
     }
 
+    // -- recoverWith(Class, Function)
+
+    @Test
+    public void shouldNotTryToRecoverWhenItIsNotNeeded(){
+        assertThat(Try.of(() -> OK).recoverWith(RuntimeException.class, x -> failure()).get()).isEqualTo(OK);
+    }
+
+    @Test(expected = Try.NonFatalException.class)
+    public void shouldReturnExceptionWhenRecoveryWasNotSuccess(){
+        Try.of(() -> {throw error();}).recoverWith(IOException.class, x -> failure()).get();
+    }
+
+    @Test
+    public void shouldReturnErrorOfRecoveryWhenRecoveryFails(){
+        final Error error = new Error();
+        final Throwable actual = Try.failure(new IOException()).recoverWith(IOException.class, x -> { throw error; }).getCause();
+        assertThat(actual).isSameAs(error);
+    }
+
+    @Test
+    public void shouldReturnRecoveredValue(){
+        assertThat(Try.of(() -> {throw error();}).recoverWith(RuntimeException.class, x -> success()).get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldHandleErrorDuringRecovering(){
+        Try<?> t = Try.of(() -> {throw new IllegalArgumentException(OK);}).recoverWith(IOException.class, x -> { throw new IllegalStateException(FAILURE);});
+        assertThatThrownBy(t::get).hasRootCauseExactlyInstanceOf(IllegalArgumentException.class);
+    }
+
+    // -- recoverWith(Class, Try)
+
+    @Test
+    public void shouldNotReturnRecoveredValueOnSuccess(){
+        assertThat(Try.of(() -> OK).recoverWith(IOException.class, failure()).get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldReturnRecoveredValueOnFailure(){
+        assertThat(Try.of(() -> {throw new IllegalStateException(FAILURE);}).recoverWith(IllegalStateException.class, success()).get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldNotRecoverFailureWhenExceptionTypeIsntAssignable(){
+        final Throwable error = new IllegalStateException(FAILURE);
+        assertThat(Try.of(() -> { throw error; }).recoverWith(Error.class, success()).getCause()).isSameAs(error);
+    }
+
     // -- onFailure
 
     @Test
@@ -772,6 +865,26 @@ public class TryTest extends AbstractValueTest {
         final String[] result = new String[] { FAILURE };
         failure().onFailure(x -> result[0] = OK);
         assertThat(result[0]).isEqualTo(OK);
+    }
+
+    // -- transform
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenTransformationIsNull() {
+        Success(1).transform(null);
+    }
+
+    @Test
+    public void shouldTransformSuccess() {
+        final int actual = Success(1).transform(self -> self.get() - 1);
+        assertThat(actual).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldTransformFailure() {
+        final Error error = new Error();
+        final Throwable actual = Failure(error).transform(Try::getCause);
+        assertThat(actual).isSameAs(error);
     }
 
     // -- toOption
@@ -1300,80 +1413,15 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldNotTryToRecoverWhenItIsNotNeeded(){
-        assertThat(Try.of(() -> OK).recoverWith(RuntimeException.class, (ex) -> failure()).get()).isEqualTo(OK);
-    }
-
-    @Test(expected = Try.NonFatalException.class)
-    public void shouldReturnExceptionWhenRecoveryWasNotSuccess(){
-        Try.of(() -> {throw error();}).recoverWith(IOException.class, (ex) -> failure()).get();
-    }
-
-    @Test
-    public void shouldReturnRecoveredValue(){
-        assertThat(Try.of(() -> {throw error();}).recoverWith(RuntimeException.class, (ex) -> success()).get()).isEqualTo(OK);
-    }
-
-    @Test
-    public void shouldHandleErrorDuringRecovering(){
-        Try<?> t = Try.of(() -> {throw new IllegalArgumentException(OK);}).recoverWith(IOException.class, (ex) -> { throw new IllegalStateException(FAILURE);});
-         assertThatThrownBy(t::get).hasRootCauseExactlyInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    public void shouldNotReturnRecoveredValueOnSuccess(){
-        assertThat(Try.of(() -> OK).recoverWith(IOException.class, failure()).get()).isEqualTo(OK);
-    }
-
-    @Test
-    public void shouldReturnRecoveredValueOnFailure(){
-        assertThat(Try.of(() -> {throw new IllegalStateException(FAILURE);}).recoverWith(IllegalStateException.class, success()).get()).isEqualTo(OK);
-    }
-
-    @Test
-    public void shouldExecuteAndFinallyOnSuccess(){
-        MutableInteger count = new MutableInteger(0);
-
-        Try.run(() -> count.setValue(0)).andFinally(() -> count.setValue(1));
-
-        assertThat(count.getValue()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldExecuteAndFinallyTryOnSuccess(){
-        MutableInteger count = new MutableInteger(0);
-
-        Try.run(() -> count.setValue(0)).andFinallyTry(() -> count.setValue(1));
-
-        assertThat(count.getValue()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldExecuteAndFinallyOnFailure(){
-        MutableInteger count = new MutableInteger(0);
-
-        Try.run(() -> {throw new IllegalStateException(FAILURE);})
-            .andFinally(() -> count.setValue(1));
-
-        assertThat(count.getValue()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldExecuteAndFinallyTryOnFailure(){
-        MutableInteger count = new MutableInteger(0);
-
-        Try.run(() -> {throw new IllegalStateException(FAILURE);})
-            .andFinallyTry(() -> count.setValue(1));
-
-        assertThat(count.getValue()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldExecuteAndFinallyTryOnFailureWithFailure(){
-        Try<Object> result = Try.of(() -> {throw new IllegalStateException(FAILURE);})
-            .andFinallyTry(() -> {throw new IllegalStateException(FAILURE);});
-
-        assertThat(result.isFailure());
+    public void shouldNegateCheckedPredicate() {
+        final Try.CheckedPredicate<Integer> greaterThanZero = i -> i > 0;
+        final int num = 1;
+        try {
+            assertThat(greaterThanZero.test(num)).isTrue();
+            assertThat(greaterThanZero.negate().test(-num)).isTrue();
+        } catch(Throwable x) {
+            Assert.fail("should not throw");
+        }
     }
 
     // -- helpers
