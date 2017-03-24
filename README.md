@@ -43,5 +43,5 @@ mvn clean test -P benchmark -pl javaslang-benchmark
 If you like Javaslang you can support us by donating.
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8ZR8YCWB9K5WA">
-![donate-to-javaslang-via-paypal](https://cloud.githubusercontent.com/assets/743833/23549988/02d66ccc-000f-11e7-8764-a257b21377bd.gif)
+<img src="https://cloud.githubusercontent.com/assets/743833/23549988/02d66ccc-000f-11e7-8764-a257b21377bd.gif">
 </a>
