@@ -174,6 +174,22 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     static <T> Traversable<T> narrow(Traversable<? extends T> traversable) {
         return (Traversable<T>) traversable;
     }
+    
+    /**
+     * Matches each element with a unique key that you extract from it.
+     * If the same key is present twice, the function will return {@code None}.
+     *
+     * @param getKey A function which extracts a key from elements
+     * @param <K>    key class type
+     * @return A Map containing the elements arranged by their keys.
+     * @throws NullPointerException if {@code getKey} is null.
+     * @see #groupBy(Function)
+     */
+    default <K> Option<Map<K, T>> arrangeBy(Function<? super T, ? extends K> getKey) {
+        return Option.of(groupBy(getKey).mapValues(Traversable<T>::singleOption))
+                .filter(map -> !map.exists(kv -> kv._2.isEmpty()))
+                .map(map -> Map.narrow(map.mapValues(Option::get)));
+    }
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -414,35 +430,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * Returns the only element of a Traversable as {@code Option}.
-     *
-     * @return {@code Some(element)} or {@code None} if the Traversable does not contain a single element.
-     */
-    default Option<T> singleOption() {
-        final Iterator<T> it = iterator();
-        if (!it.hasNext()) {
-            return Option.none();
-        }
-        final T first = it.next();
-        if (it.hasNext()) {
-            return Option.none();
-        } else {
-            return Option.some(first);
-        }
-    }
-
-    /**
-     * if the Traversable contains a single element, return it,
-     * otherwise throws.
-     *
-     * @return the single element from the Traversable
-     * @throws NoSuchElementException if the Traversable does not contain a single element.
-     */
-    default T single() {
-        return singleOption().getOrElseThrow(() -> new NoSuchElementException("Does not contain a single value"));
-    }
-
-    /**
      * Groups this elements by classifying the elements.
      *
      * @param classifier A function which classifies elements into classes
@@ -452,22 +439,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @see #arrangeBy(Function)
      */
     <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
-
-    /**
-     * Matches each element with a unique key that you extract from it.
-     * If the same key is present twice, the function will return {@code None}.
-     *
-     * @param getKey A function which extracts a key from elements
-     * @param <K>    key class type
-     * @return A Map containing the elements arranged by their keys.
-     * @throws NullPointerException if {@code getKey} is null.
-     * @see #groupBy(Function)
-     */
-    default <K> Option<Map<K, T>> arrangeBy(Function<? super T, ? extends K> getKey) {
-        return Option.of(groupBy(getKey).mapValues(Traversable<T>::singleOption))
-            .filter(map -> !map.exists(kv -> kv._2.isEmpty()))
-            .map(map -> Map.narrow(map.mapValues(Option::get)));
-    }
 
     /**
      * Groups this {@code Traversable} into fixed size blocks.
@@ -796,6 +767,43 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             return Option.some(tm);
         }
     }
+    
+    /**
+     * Joins the elements of this by concatenating their string representations.
+     * <p>
+     * This has the same effect as calling {@code mkCharSeq("", "", "")}.
+     *
+     * @return a new {@link CharSeq}
+     */
+    default CharSeq mkCharSeq() {
+        return mkCharSeq("", "", "");
+    }
+
+    /**
+     * Joins the string representations of this elements using a specific delimiter.
+     * <p>
+     * This has the same effect as calling {@code mkCharSeq("", delimiter, "")}.
+     *
+     * @param delimiter A delimiter string put between string representations of elements of this
+     * @return A new {@link CharSeq}
+     */
+    default CharSeq mkCharSeq(CharSequence delimiter) {
+        return mkCharSeq("", delimiter, "");
+    }
+
+    /**
+     * Joins the string representations of this elements using a specific delimiter, prefix and suffix.
+     * <p>
+     * Example: {@code List.of("a", "b", "c").mkCharSeq("Chars(", ", ", ")") = CharSeq.of("Chars(a, b, c))"}
+     *
+     * @param prefix    prefix of the resulting {@link CharSeq}
+     * @param delimiter A delimiter string put between string representations of elements of this
+     * @param suffix    suffix of the resulting {@link CharSeq}
+     * @return a new {@link CharSeq}
+     */
+    default CharSeq mkCharSeq(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
+        return CharSeq.of(mkString(prefix, delimiter, suffix));
+    }
 
     /**
      * Joins the elements of this by concatenating their string representations.
@@ -834,43 +842,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         final StringBuilder builder = new StringBuilder(prefix);
         iterator().map(String::valueOf).intersperse(String.valueOf(delimiter)).forEach(builder::append);
         return builder.append(suffix).toString();
-    }
-
-    /**
-     * Joins the elements of this by concatenating their string representations.
-     * <p>
-     * This has the same effect as calling {@code mkCharSeq("", "", "")}.
-     *
-     * @return a new {@link CharSeq}
-     */
-    default CharSeq mkCharSeq() {
-        return mkCharSeq("", "", "");
-    }
-
-    /**
-     * Joins the string representations of this elements using a specific delimiter.
-     * <p>
-     * This has the same effect as calling {@code mkCharSeq("", delimiter, "")}.
-     *
-     * @param delimiter A delimiter string put between string representations of elements of this
-     * @return A new {@link CharSeq}
-     */
-    default CharSeq mkCharSeq(CharSequence delimiter) {
-        return mkCharSeq("", delimiter, "");
-    }
-
-    /**
-     * Joins the string representations of this elements using a specific delimiter, prefix and suffix.
-     * <p>
-     * Example: {@code List.of("a", "b", "c").mkCharSeq("Chars(", ", ", ")") = CharSeq.of("Chars(a, b, c))"}
-     *
-     * @param prefix    prefix of the resulting {@link CharSeq}
-     * @param delimiter A delimiter string put between string representations of elements of this
-     * @param suffix    suffix of the resulting {@link CharSeq}
-     * @return a new {@link CharSeq}
-     */
-    default CharSeq mkCharSeq(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
-        return CharSeq.of(mkString(prefix, delimiter, suffix));
     }
 
     /**
@@ -1013,26 +984,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         return isEmpty() ? Option.none() : Option.some(reduceRight(op));
     }
 
-    @Override
-    default Spliterator<T> spliterator() {
-        int characteristics = Spliterator.IMMUTABLE;
-        if (isDistinct()) {
-            characteristics |= Spliterator.DISTINCT;
-        }
-        if (isOrdered()) {
-            characteristics |= (Spliterator.SORTED | Spliterator.ORDERED);
-        }
-        if (isSequential()) {
-            characteristics |= Spliterator.ORDERED;
-        }
-        if (hasDefiniteSize()) {
-            characteristics |= (Spliterator.SIZED | Spliterator.SUBSIZED);
-            return Spliterators.spliterator(iterator(), length(), characteristics);
-        } else {
-            return Spliterators.spliteratorUnknownSize(iterator(), characteristics);
-        }
-    }
-
     /**
      * Replaces the first occurrence (if exists) of the given currentElement with newElement.
      *
@@ -1106,6 +1057,35 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code operation} is null.
      */
     <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    
+    /**
+     * if the Traversable contains a single element, return it,
+     * otherwise throws.
+     *
+     * @return the single element from the Traversable
+     * @throws NoSuchElementException if the Traversable does not contain a single element.
+     */
+    default T single() {
+        return singleOption().getOrElseThrow(() -> new NoSuchElementException("Does not contain a single value"));
+    }
+
+    /**
+     * Returns the only element of a Traversable as {@code Option}.
+     *
+     * @return {@code Some(element)} or {@code None} if the Traversable does not contain a single element.
+     */
+    default Option<T> singleOption() {
+        final Iterator<T> it = iterator();
+        if (!it.hasNext()) {
+            return Option.none();
+        }
+        final T first = it.next();
+        if (it.hasNext()) {
+            return Option.none();
+        } else {
+            return Option.some(first);
+        }
+    }
 
     /**
      * Computes the number of elements of this Traversable.
@@ -1180,6 +1160,26 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
+    @Override
+    default Spliterator<T> spliterator() {
+        int characteristics = Spliterator.IMMUTABLE;
+        if (isDistinct()) {
+            characteristics |= Spliterator.DISTINCT;
+        }
+        if (isOrdered()) {
+            characteristics |= (Spliterator.SORTED | Spliterator.ORDERED);
+        }
+        if (isSequential()) {
+            characteristics |= Spliterator.ORDERED;
+        }
+        if (hasDefiniteSize()) {
+            characteristics |= (Spliterator.SIZED | Spliterator.SUBSIZED);
+            return Spliterators.spliterator(iterator(), length(), characteristics);
+        } else {
+            return Spliterators.spliteratorUnknownSize(iterator(), characteristics);
+        }
+    }
+    
     /**
      * Calculates the sum of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
      * {@code Integer}, {@code Long}, {@code Short}, {@code BigInteger} and {@code BigDecimal}.
@@ -1323,22 +1323,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <U> Traversable<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     /**
-     * Returns a traversable formed from this traversable and another Iterable collection by mapping elements.
-     * If one of the two iterables is longer than the other, its remaining elements are ignored.
-     * <p>
-     * The length of the returned traversable is the minimum of the lengths of this traversable and {@code that}
-     * iterable.
-     *
-     * @param <U>    The type of the second parameter of the mapper.
-     * @param <R>    The type of the mapped elements.
-     * @param that   The Iterable providing the second parameter of the mapper.
-     * @param mapper a mapper.
-     * @return a new traversable containing mapped elements of this traversable and {@code that} iterable.
-     * @throws NullPointerException if {@code that} or {@code mapper} is null
-     */
-    <U, R> Traversable<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
-
-    /**
      * Returns a traversable formed from this traversable and another Iterable by combining corresponding elements in
      * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
      * shorter collection to the length of the longer.
@@ -1361,6 +1345,22 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code that} is null
      */
     <U> Traversable<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
+    
+    /**
+     * Returns a traversable formed from this traversable and another Iterable collection by mapping elements.
+     * If one of the two iterables is longer than the other, its remaining elements are ignored.
+     * <p>
+     * The length of the returned traversable is the minimum of the lengths of this traversable and {@code that}
+     * iterable.
+     *
+     * @param <U>    The type of the second parameter of the mapper.
+     * @param <R>    The type of the mapped elements.
+     * @param that   The Iterable providing the second parameter of the mapper.
+     * @param mapper a mapper.
+     * @return a new traversable containing mapped elements of this traversable and {@code that} iterable.
+     * @throws NullPointerException if {@code that} or {@code mapper} is null
+     */
+    <U, R> Traversable<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
 
     /**
      * Zips this traversable with its indices.
