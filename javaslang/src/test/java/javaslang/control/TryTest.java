@@ -5,8 +5,8 @@
  */
 package javaslang.control;
 
-import static javaslang.API.Failure;
-import static javaslang.API.Success;
+import static javaslang.API.*;
+import static javaslang.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -1036,6 +1036,38 @@ public class TryTest extends AbstractValueTest {
                 .map(x -> Integer.parseInt("aaa") + x)   //Throws exception.
                 .map(x -> x / 2);
         assertThat(actual.toString()).isEqualTo("Failure(java.lang.NumberFormatException: For input string: \"aaa\")");
+    }
+
+    // -- mapFailure
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMapFailureWhenSuccess() {
+        final Try<Integer> testee = Success(1);
+        final Try<Integer> actual = testee.mapFailure(
+                Case(instanceOf(RuntimeException.class), (Function<RuntimeException, Error>) Error::new)
+        );
+        assertThat(actual).isSameAs(testee);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMapFailureWhenFailureAndMatches() {
+        final Try<Integer> testee = Failure(new IOException());
+        final Try<Integer> actual = testee.mapFailure(
+                Case(instanceOf(IOException.class), (Function<IOException, Error>) Error::new)
+        );
+        assertThat(actual.getCause()).isInstanceOf(Error.class);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldMapFailureWhenFailureButDoesNotMatch() {
+        final Try<Integer> testee = Failure(new IOException());
+        final Try<Integer> actual = testee.mapFailure(
+                Case(instanceOf(RuntimeException.class), (Function<RuntimeException, Error>) Error::new)
+        );
+        assertThat(actual).isSameAs(testee);
     }
     
     // -- andThen
