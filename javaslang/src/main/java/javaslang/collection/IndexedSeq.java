@@ -41,6 +41,16 @@ public interface IndexedSeq<T> extends Seq<T> {
         return (IndexedSeq<T>) indexedSeq;
     }
 
+    @Override
+    default java.util.List<T> asImmutableJavaList() {
+        return JavaConverters.asImmutableJava(this);
+    }
+
+    @Override
+    default java.util.List<T> asMutableJavaList() {
+        return JavaConverters.asMutableJava(this);
+    }
+
     // -- Adjusted return types of Seq methods
 
     @Override

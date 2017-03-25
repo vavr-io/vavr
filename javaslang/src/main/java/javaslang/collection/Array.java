@@ -7,6 +7,7 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.collection.ArrayModule.Combinations;
+import javaslang.collection.JavaConverters.AbstractSeqAsJavaList;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -117,9 +118,13 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
     @SuppressWarnings("unchecked")
     public static <T> Array<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return elements instanceof Array
-               ? (Array<T>) elements
-               : wrap(toArray(elements));
+        if (elements instanceof Array) {
+            return (Array<T>) elements;
+        } else if (elements instanceof AbstractSeqAsJavaList) {
+            return ((AbstractSeqAsJavaList<T, ?>) elements).asArray();
+        } else {
+            return wrap(toArray(elements));
+        }
     }
 
     /**

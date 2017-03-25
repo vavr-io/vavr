@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.collection.JavaConverters.AbstractSeqAsJavaList;
 import javaslang.collection.List.Nil;
 import javaslang.collection.ListModule.Combinations;
 import javaslang.collection.ListModule.SplitAt;
@@ -187,7 +188,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
      *
      * @param <T>      Component type of the List.
      * @param elements An Iterable of elements.
-     * @return A list containing the given elements in the same order.
+     * @return A List containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
@@ -195,6 +196,8 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             return (List<T>) elements;
+        } else if (elements instanceof AbstractSeqAsJavaList) {
+            return ((AbstractSeqAsJavaList<T, ?>) elements).asList();
         } else if (elements instanceof java.util.List) {
             List<T> result = Nil.instance();
             final java.util.List<T> list = (java.util.List<T>) elements;

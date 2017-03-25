@@ -356,6 +356,15 @@ public interface LinearSeq<T> extends Seq<T> {
         return LinearSeqModule.Search.linearSearch(this, comparison);
     }
 
+    @Override
+    default java.util.List<T> asImmutableJavaList() {
+        return JavaConverters.asImmutableJava(this);
+    }
+
+    @Override
+    default java.util.List<T> asMutableJavaList() {
+        return JavaConverters.asMutableJava(this);
+    }
 }
 
 interface LinearSeqModule {

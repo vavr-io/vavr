@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.collection.JavaConverters.AbstractSeqAsJavaList;
 import javaslang.collection.Stream.Cons;
 import javaslang.collection.Stream.Empty;
 import javaslang.collection.StreamModule.*;
@@ -341,6 +342,8 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Stream) {
             return (Stream<T>) elements;
+        } else if (elements instanceof AbstractSeqAsJavaList) {
+            return ((AbstractSeqAsJavaList<T, ?>) elements).asStream();
         } else {
             return StreamFactory.create(elements.iterator());
         }

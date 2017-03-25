@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.*;
+import javaslang.collection.JavaConverters.AbstractSeqAsJavaList;
 import javaslang.control.Option;
 
 import java.util.*;
@@ -147,6 +148,8 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Queue) {
             return (Queue<T>) elements;
+        } else if (elements instanceof AbstractSeqAsJavaList) {
+            return ((AbstractSeqAsJavaList<T, ?>) elements).asQueue();
         } else if (!elements.iterator().hasNext()) {
             return empty();
         } else if (elements instanceof List) {
