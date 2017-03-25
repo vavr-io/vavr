@@ -457,8 +457,8 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * Matches each element with a unique key that you extract from it.
      * If the same key is present twice, the function will return {@code None}.
      *
-     * @param classifier A function which extracts a key from elements
-     * @param <K>        key class type
+     * @param getKey A function which extracts a key from elements
+     * @param <K>    key class type
      * @return A Map containing the elements arranged by their keys.
      * @throws NullPointerException if {@code getKey} is null.
      * @see #groupBy(Function)
