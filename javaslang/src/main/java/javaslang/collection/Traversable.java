@@ -5,10 +5,9 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
+import javaslang.control.Try;
 
 import java.math.BigInteger;
 import java.util.Comparator;
@@ -235,6 +234,16 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
                 throw new UnsupportedOperationException("not numeric");
             }
         }
+    }
+
+    /**
+     * 
+     * @param partialFunction
+     * @param <R>
+     * @return
+     */
+    default <R> Traversable<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return iterator().filter(partialFunction::isDefinedAt).map(partialFunction::apply);
     }
 
     /**
