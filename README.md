@@ -1,4 +1,5 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.javaslang/javaslang/badge.png)](https://maven-badges.herokuapp.com/maven-central/io.javaslang/javaslang)
+[![Code Scene](https://img.shields.io/badge/codescene-analyzed-brightgreen.svg)](https://codescene.io/projects/981/jobs/latest-successful/results)
 [![Build Status](https://travis-ci.org/javaslang/javaslang.png)](https://travis-ci.org/javaslang/javaslang)
 [![Coverage Status](https://codecov.io/github/javaslang/javaslang/coverage.png?branch=master)](https://codecov.io/github/javaslang/javaslang?branch=master)
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/javaslang/javaslang)
