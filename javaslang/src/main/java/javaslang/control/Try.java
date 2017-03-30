@@ -499,6 +499,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param cases A not necessarily exhaustive sequence of cases that will be matched against a cause.
      * @return A new {@code Try} if this is a {@code Failure}, otherwise this.
      */
+    @GwtIncompatible
     @SuppressWarnings({ "unchecked", "varargs" })
     default Try<T> mapFailure(Match.Case<? extends Throwable, ? extends Throwable>... cases) {
         if (isSuccess()) {
