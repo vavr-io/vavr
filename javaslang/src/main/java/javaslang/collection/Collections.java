@@ -23,11 +23,11 @@ import static javaslang.collection.ArrayType.asArray;
 final class Collections {
 
     @SuppressWarnings("unchecked")
-    static boolean equals(Map<?, ?> source, Object object) {
+    static <K, V> boolean equals(Map<K, V> source, Object object) {
         if (source == object) {
             return true;
         } else if (source != null && object instanceof Map) {
-            Map map = (Map) object;
+            Map<K, V> map = (Map<K, V>) object;
             if (source.size() != map.size()) {
                 return false;
             } else {
@@ -45,11 +45,11 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static boolean equals(Set<?> source, Object object) {
+    static <V> boolean equals(Set<V> source, Object object) {
         if (source == object) {
             return true;
         } else if (source != null && object instanceof Set) {
-            Set set = (Set) object;
+            Set<V> set = (Set<V>) object;
             if (source.size() != set.size()) {
                 return false;
             } else {
@@ -67,11 +67,11 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static boolean equals(Multimap<?, ?> source, Object object) {
+    static <K, V> boolean equals(Multimap<K, V> source, Object object) {
         if (source == object) {
             return true;
         } else if (source != null && object instanceof Multimap) {
-            Multimap multimap = (Multimap) object;
+            Multimap<K, V> multimap = (Multimap<K, V>) object;
             if (source.size() != multimap.size()) {
                 return false;
             } else {
@@ -89,11 +89,11 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static boolean equals(Seq<?> source, Object object) {
+    static <V> boolean equals(Seq<V> source, Object object) {
         if (object == source) {
             return true;
         } else if (source != null && object instanceof Seq) {
-            Seq seq = (Seq) object;
+            Seq<V> seq = (Seq<V>) object;
             return seq.size() == source.size() && areEqual(source, seq);
         }
         return false;

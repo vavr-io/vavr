@@ -21,12 +21,24 @@ public class CollectionsTest {
     }
 
     @Test
+    public void shouldNotBeEqualSets() throws Exception {
+        forAll(List.of(HashSet.ofAll(1, 2, 3),
+                HashSet.ofAll('a', 'b', 'c')), false);
+    }
+
+    @Test
     public void shouldBeEqualSeqs() throws Exception {
         forAll(List.of(Array.ofAll(1, 2, 3),
                 Stream.ofAll(1, 2, 3),
                 Vector.ofAll(1, 2, 3),
                 List.ofAll(1, 2, 3),
                 Queue.ofAll(1, 2, 3)), true);
+    }
+
+    @Test
+    public void shouldNotBeEqualSeqs() throws Exception {
+        forAll(List.of(Array.ofAll(1, 2, 3),
+                Array.ofAll('a', 'b', 'c')), false);
     }
 
     @Test
@@ -37,10 +49,23 @@ public class CollectionsTest {
     }
 
     @Test
+    public void shouldNotBeEqualMaps() throws Exception {
+        forAll(List.of(HashMap.of(1, 2, 2, 3, 3, 4),
+                HashMap.of('a', 'b', 'c', 'd', 'e', 'f')), false);
+    }
+
+    @Test
     public void shouldBeEqualMultimaps() throws Exception {
         forAll(List.of(TreeMultimap.withSeq().<Integer, Integer>empty().put(1, 1).put(1, 1).put(2, 2),
                 HashMultimap.withSeq().<Integer, Integer>empty().put(1, 1).put(1, 1).put(2, 2),
                 LinkedHashMultimap.withSeq().<Integer, Integer>empty().put(1, 1).put(1, 1).put(2, 2)), true);
+    }
+
+    @Test
+    public void shouldNotBeEqualMultimaps() throws Exception {
+        forAll(List.of(TreeMultimap.withSeq().<Integer, Integer>empty().put(1, 1).put(1, 1).put(2, 2),
+                HashMultimap.withSeq().<Character, Character>empty().put('a', 'b').put('c', 'd').put('e', 'f')),
+                false);
     }
 
     @Test
