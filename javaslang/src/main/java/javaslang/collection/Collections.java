@@ -22,76 +22,81 @@ import static javaslang.collection.ArrayType.asArray;
  */
 final class Collections {
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    static boolean equals(Map<?, ?> map1, Object object) {
-        if (map1 == null ^ object == null) {
-            return false;
-        }
-        if (map1 == object) {
+    @SuppressWarnings("unchecked")
+    static boolean equals(Map<?, ?> source, Object object) {
+        if (source == object) {
             return true;
+        } else if (source != null && object instanceof Map) {
+            Map map = (Map) object;
+            if (source.size() != map.size()) {
+                return false;
+            } else {
+                try {
+                    if (source.isOrdered() && map.isOrdered()) {
+                        return areEqual(source, map);
+                    }
+                    return source.forAll(map::contains);
+                } catch (ClassCastException e) {
+                    return false;
+                }
+            }
         }
-        if (!(object instanceof Map)) {
-            return false;
-        }
-        Map map = (Map) object;
-        if (map1.size() != map.size()) {
-            return false;
-        }
-        return map1.forAll(map::contains);
+        return false;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    static boolean equals(Set<?> set1, Object object) {
-        if (set1 == null ^ object == null) {
-            return false;
-        }
-        if (set1 == object) {
+    @SuppressWarnings("unchecked")
+    static boolean equals(Set<?> source, Object object) {
+        if (source == object) {
             return true;
+        } else if (source != null && object instanceof Set) {
+            Set set = (Set) object;
+            if (source.size() != set.size()) {
+                return false;
+            } else {
+                try {
+                    if (source.isOrdered() && set.isOrdered()) {
+                        return areEqual(source, set);
+                    }
+                    return source.forAll(set::contains);
+                } catch (ClassCastException e) {
+                    return false;
+                }
+            }
         }
-        if (!(object instanceof Set)) {
-            return false;
-        }
-        Set set = (Set) object;
-        if (set1.size() != set.size()) {
-            return false;
-        }
-        return set1.forAll(set::contains);
+        return false;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    static boolean equals(Multimap<?, ?> multimap1, Object object) {
-        if (multimap1 == null ^ object == null) {
-            return false;
-        }
-        if (multimap1 == object) {
+    @SuppressWarnings("unchecked")
+    static boolean equals(Multimap<?, ?> source, Object object) {
+        if (source == object) {
             return true;
+        } else if (source != null && object instanceof Multimap) {
+            Multimap multimap = (Multimap) object;
+            if (source.size() != multimap.size()) {
+                return false;
+            } else {
+                try {
+                    if (source.isOrdered() && multimap.isOrdered()) {
+                        return areEqual(source, multimap);
+                    }
+                    return source.forAll(multimap::contains);
+                } catch (ClassCastException e) {
+                    return false;
+                }
+            }
         }
-        if (!(object instanceof Multimap)) {
-            return false;
-        }
-        Multimap multimap = (Multimap) object;
-        if (multimap.size() != multimap1.size()) {
-            return false;
-        }
-        return multimap1.forAll(multimap::contains);
+        return false;
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    static boolean equals(Seq<?> seq1, Object object) {
-        if (seq1 == null ^ object == null) {
-            return false;
-        }
-        if (seq1 == object) {
+    @SuppressWarnings("unchecked")
+    static boolean equals(Seq<?> source, Object object) {
+        if (object == source) {
             return true;
+        } else if (source != null && object instanceof Seq) {
+            Seq seq = (Seq) object;
+            return seq.size() == source.size() && areEqual(source, seq);
         }
-        if (!(object instanceof Seq)) {
-            return false;
-        }
-        Seq seq = (Seq) object;
-        if (seq.size() != seq1.size()) {
-            return false;
-        }
-        return areEqual(seq1, seq);
+        return false;
     }
 
     // checks, if the *elements* of the given iterables are equal

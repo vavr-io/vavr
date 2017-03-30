@@ -60,6 +60,9 @@ public class CollectionsTest {
             for (Traversable<?> traversable2 : traversables) {
                 if (traversable1 != traversable2) {
                     assertThat(traversable1.equals(traversable2)).isEqualTo(value);
+                    if (value) {
+                        assertThat(traversable1.hashCode() == traversable2.hashCode()).isTrue();
+                    }
                 }
             }
         }
