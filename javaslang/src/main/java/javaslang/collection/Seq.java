@@ -24,6 +24,7 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #append(Object)}</li>
  * <li>{@link #appendAll(Iterable)}</li>
+ * <li>{@link #asJava()}</li>
  * <li>{@link #insert(int, Object)}</li>
  * <li>{@link #insertAll(int, Iterable)}</li>
  * <li>{@link #prepend(Object)}</li>
@@ -135,6 +136,8 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      * @throws NullPointerException if {@code elements} is null
      */
     Seq<T> appendAll(Iterable<? extends T> elements);
+
+    java.util.List<T> asJava();
 
     /**
      * Returns the union of all combinations from k = 0 to length().
