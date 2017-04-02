@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Lazy;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.collection.IteratorModule.ConcatIterator;
 import javaslang.collection.IteratorModule.DistinctIterator;
 import javaslang.collection.IteratorModule.GroupedIterator;
@@ -1018,6 +1015,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     // -- Additional methods of Iterator
+
+    @Override
+    default <R> Iterator<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        Objects.requireNonNull(partialFunction, "partialFunction is null");
+        return filter(partialFunction::isDefinedAt).map(partialFunction::apply);
+    }
 
     // DEV-NOTE: cannot use arg Iterable, it would be ambiguous
     default Iterator<T> concat(java.util.Iterator<? extends T> that) {

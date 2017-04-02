@@ -600,6 +600,11 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
+    public <R> Vector<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
+
+    @Override
     public Vector<Vector<T>> combinations() { return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity()); }
 
     @Override

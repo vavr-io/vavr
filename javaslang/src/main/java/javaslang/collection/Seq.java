@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -135,6 +132,9 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      * @throws NullPointerException if {@code elements} is null
      */
     Seq<T> appendAll(Iterable<? extends T> elements);
+
+    @Override
+    <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     /**
      * Returns the union of all combinations from k = 0 to length().

@@ -7,7 +7,6 @@ package javaslang.collection;
 
 import javaslang.*;
 import javaslang.control.Option;
-import javaslang.control.Try;
 
 import java.math.BigInteger;
 import java.util.Comparator;
@@ -29,6 +28,7 @@ import java.util.function.Supplier;
  * Basic operations:
  *
  * <ul>
+ * <li>{@link #collect(PartialFunction)}</li>
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #containsAll(Iterable)}</li>
  * <li>{@link #head()}</li>
@@ -237,14 +237,29 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * 
-     * @param partialFunction
-     * @param <R>
-     * @return
+     * Collects all elements that are in the domain of the given {@code partialFunction} by mapping the elements to type {@code R}.
+     * <p>
+     * More specifically, for each of this elements in iteration order first it is checked
+     *
+     * <pre><{@code
+     * partialFunction.isDefinedAt(element)
+     * }</pre>
+     *
+     * If the elements makes it through that filter, the mapped instance is added to the result collection
+     *
+     * <pre>{@code
+     * R newElement = partialFunction.apply(element)
+     * }</pre>
+     *
+     * <strong>Note:</strong>If this {@code Traversable} is ordered (i.e. extends {@link Ordered},
+     * the caller of {@code collect} has to ensure that the elements are comparable (i.e. extend {@link Comparable}).
+     *
+     * @param partialFunction A function that is not necessarily defined of all elements of this traversable.
+     * @param <R> The new element type
+     * @return A new {@code Traversable} instance containing elements of type {@code R}
+     * @throws NullPointerException if {@code partialFunction} is null
      */
-    default <R> Traversable<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        return iterator().filter(partialFunction::isDefinedAt).map(partialFunction::apply);
-    }
+    <R> Traversable<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     /**
      * Tests if this Traversable contains all given elements.
