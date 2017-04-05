@@ -64,10 +64,10 @@ Note: The maven build currently needs to be started from the javaslang root dir
     </developers>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <assertj.core.version>3.6.1</assertj.core.version>
+        <assertj.core.version>3.6.2</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <java.version>1.8</java.version>
-        <jmh.version>1.17.4</jmh.version>
+        <jmh.version>1.18</jmh.version>
         <junit.version>4.12</junit.version>
         <gwt.version>2.8.0</gwt.version>
         <maven.build-helper.version>1.12</maven.build-helper.version>
