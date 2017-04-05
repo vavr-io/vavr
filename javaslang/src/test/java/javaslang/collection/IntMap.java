@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.PartialFunction;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -70,6 +71,22 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    @Override
+    public <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        Objects.requireNonNull(partialFunction, "partialFunction is null");
+        final PartialFunction<Tuple2<Integer, T>, R> pf = new PartialFunction<Tuple2<Integer, T>, R>() {
+            @Override
+            public R apply(Tuple2<Integer, T> entry) {
+                return partialFunction.apply(entry._2);
+            }
+            @Override
+            public boolean isDefinedAt(Tuple2<Integer, T> entry) {
+                return partialFunction.isDefinedAt(entry._2);
+            }
+        };
+        return original.collect(pf);
     }
 
     @Override

@@ -5,10 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Function1;
-import javaslang.Tuple;
-import javaslang.Tuple2;
-import javaslang.Tuple3;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.io.Serializable;
@@ -132,6 +129,11 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V>, S
     @Override
     default V apply(K key) {
         return get(key).getOrElseThrow(() -> new NoSuchElementException(String.valueOf(key)));
+    }
+
+    @Override
+    default <R> Seq<R> collect(PartialFunction<? super Tuple2<K, V>, ? extends R> partialFunction) {
+        return Vector.ofAll(iterator().<R> collect(partialFunction));
     }
 
     /**

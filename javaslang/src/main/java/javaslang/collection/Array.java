@@ -594,6 +594,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
             return wrap(arr);
         }
     }
+
+    @Override
+    public <R> Array<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
     
     @Override
     public boolean hasDefiniteSize() {

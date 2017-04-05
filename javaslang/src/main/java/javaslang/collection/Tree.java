@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.PartialFunction;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -189,6 +190,11 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     static <T> Tree<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, empty(), Tree::of);
+    }
+
+    @Override
+    default <R> Tree<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
     }
 
     /**

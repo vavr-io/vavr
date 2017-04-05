@@ -685,6 +685,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default <R> List<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
+
+    @Override
     default List<List<T>> combinations() {
         return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }

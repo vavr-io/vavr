@@ -148,6 +148,11 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     <K2, V2> Multimap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
 
     @Override
+    default <R> Seq<R> collect(PartialFunction<? super Tuple2<K, V>, ? extends R> partialFunction) {
+        return Vector.ofAll(iterator().<R> collect(partialFunction));
+    }
+
+    @Override
     default boolean contains(Tuple2<K, V> element) {
         return get(element._1).map(v -> v.contains(element._2)).getOrElse(false);
     }

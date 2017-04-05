@@ -1655,6 +1655,30 @@ def generateMainClasses(): Unit = {
                   }
               }
 
+              ${(i == 1 && !checked).gen(xs"""
+                /$javadoc
+                 * Converts this {@code Function1} to a {@link PartialFunction} by adding an {@code isDefinedAt} condition.
+                 * <p>
+                 * @param isDefinedAt a predicate that states if an element is in the domain of the returned {@code PartialFunction}.
+                 * @return a new {@code PartialFunction} that has the same behavior like this function but is defined only for those elements that make it through the given {@code Predicate}
+                 * @throws NullPointerException if {@code isDefinedAt} is null
+                 */
+                default PartialFunction<T1, R> partial(${im.getType("java.util.function.Predicate")}<? super T1> isDefinedAt) {
+                    Objects.requireNonNull(isDefinedAt, "isDefinedAt is null");
+                    final Function1<T1, R> self = this;
+                    return new PartialFunction<T1, R>() {
+                        @Override
+                        public boolean isDefinedAt(T1 t1) {
+                            return isDefinedAt.test(t1);
+                        }
+                        @Override
+                        public R apply(T1 t1) {
+                          return self.apply(t1);
+                        }
+                    };
+                }
+              """)}
+
               ${checked.gen(xs"""
                 /$javadoc
                  * Return a composed function that first applies this $className to the given arguments and in case of throwable
@@ -2947,6 +2971,28 @@ def generateTestClasses(): Unit = {
                   $assertThat(f.isMemoized()).isFalse();
                   $assertThat(memo.isMemoized()).isTrue();
               }
+
+              ${(i == 1 && !checked).gen({
+                val assertThatThrownBy = im.getStatic("org.assertj.core.api.Assertions.assertThatThrownBy")
+                xs"""
+                  @$test
+                  public void shouldThrowOnPartialWithNullPredicate() {
+                      final Function1<Integer, String> f = String::valueOf;
+                      $assertThatThrownBy(() -> f.partial(null))
+                              .isInstanceOf(NullPointerException.class)
+                              .hasMessage("isDefinedAt is null");
+                  }
+
+                  @$test
+                  public void shouldCreatePartialFunction() {
+                      final Function1<Integer, String> f = String::valueOf;
+                      final PartialFunction<Integer, String> pf = f.partial(i -> i % 2 == 0);
+                      assertThat(pf.isDefinedAt(0)).isTrue();
+                      assertThat(pf.isDefinedAt(1)).isFalse();
+                      assertThat(pf.apply(0)).isEqualTo("0");
+                      assertThat(pf.apply(1)).isEqualTo("1"); // it is valid to return a value, even if isDefinedAt returns false
+                  }
+                """})}
 
               ${(!checked).gen(xs"""
                 @$test

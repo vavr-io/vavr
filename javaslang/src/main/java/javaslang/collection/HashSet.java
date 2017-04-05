@@ -491,6 +491,11 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     }
 
     @Override
+    public <R> HashSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
+
+    @Override
     public boolean contains(T element) {
         return tree.get(element).isDefined();
     }

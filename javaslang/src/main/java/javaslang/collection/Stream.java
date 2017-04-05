@@ -823,6 +823,11 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? this : new AppendSelf<>((Cons<T>) this, mapper).stream();
     }
+
+    @Override
+    default <R> Stream<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
     
     @Override
     default Stream<Stream<T>> combinations() {

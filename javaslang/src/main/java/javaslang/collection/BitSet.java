@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Function1;
+import javaslang.PartialFunction;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -335,6 +336,12 @@ public interface BitSet<T> extends SortedSet<T> {
 
     @Override
     BitSet<T> addAll(Iterable<? extends T> elements);
+
+    @Override
+    default <R> SortedSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        Objects.requireNonNull(partialFunction, "partialFunction is null");
+        return TreeSet.ofAll(naturalComparator(), iterator().collect(partialFunction));
+    }
 
     @Override
     default BitSet<T> diff(Set<? extends T> elements) {

@@ -23,7 +23,7 @@ import static javaslang.collection.PriorityQueueBase.*;
  * @since 2.1.0
  */
 @SuppressWarnings("deprecation")
-public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T>, Kind1<PriorityQueue<T>, T> {
+public final class PriorityQueue<T> extends AbstractQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T>, Kind1<PriorityQueue<T>, T> {
 
     private static final long serialVersionUID = 1L;
 
@@ -39,6 +39,11 @@ public final class PriorityQueue<T> extends AbstractsQueue<T, PriorityQueue<T>> 
 
     private PriorityQueue<T> with(Seq<Node<T>> forest, int size) {
         return new PriorityQueue<>(comparator, forest, size);
+    }
+
+    @Override
+    public <R> PriorityQueue<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(naturalComparator(), iterator().<R> collect(partialFunction));
     }
 
     /**

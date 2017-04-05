@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.PartialFunction;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -48,6 +49,9 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     IndexedSeq<T> appendAll(Iterable<? extends T> elements);
+
+    @Override
+    <R> IndexedSeq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     @Override
     IndexedSeq<? extends IndexedSeq<T>> combinations();

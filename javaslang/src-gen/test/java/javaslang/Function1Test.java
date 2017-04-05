@@ -10,6 +10,7 @@ package javaslang;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -108,6 +109,24 @@ public class Function1Test {
         final Function1<Integer, Integer> memo = f.memoized();
         assertThat(f.isMemoized()).isFalse();
         assertThat(memo.isMemoized()).isTrue();
+    }
+
+    @Test
+    public void shouldThrowOnPartialWithNullPredicate() {
+        final Function1<Integer, String> f = String::valueOf;
+        assertThatThrownBy(() -> f.partial(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("isDefinedAt is null");
+    }
+
+    @Test
+    public void shouldCreatePartialFunction() {
+        final Function1<Integer, String> f = String::valueOf;
+        final PartialFunction<Integer, String> pf = f.partial(i -> i % 2 == 0);
+        assertThat(pf.isDefinedAt(0)).isTrue();
+        assertThat(pf.isDefinedAt(1)).isFalse();
+        assertThat(pf.apply(0)).isEqualTo("0");
+        assertThat(pf.apply(1)).isEqualTo("1"); // it is valid to return a value, even if isDefinedAt returns false
     }
 
     @Test

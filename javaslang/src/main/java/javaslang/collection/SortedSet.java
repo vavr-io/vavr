@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.PartialFunction;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -78,6 +79,9 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
 
     @Override
     SortedSet<T> addAll(Iterable<? extends T> elements);
+
+    @Override
+    <R> SortedSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     @Override
     SortedSet<T> diff(Set<? extends T> elements);
