@@ -2836,7 +2836,6 @@ def generateTestClasses(): Unit = {
 
         val test = im.getType("org.junit.Test")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-        val assertThatThrownBy = im.getStatic("org.assertj.core.api.Assertions.assertThatThrownBy")
         val recFuncF1 = if (i == 0) "11;" else s"i1 <= 0 ? i1 : $className.recurrent2.apply(${(1 to i).gen(j => s"i$j" + (j == 1).gen(s" - 1"))(", ")}) + 1;"
 
         def curriedType(max: Int, function: String): String = max match {
@@ -2973,25 +2972,27 @@ def generateTestClasses(): Unit = {
                   $assertThat(memo.isMemoized()).isTrue();
               }
 
-              ${(i == 1 && !checked).gen(xs"""
-                @$test
-                public void shouldThrowOnPartialWithNullPredicate() {
-                    final Function1<Integer, String> f = String::valueOf;
-                    assertThatThrownBy(() -> f.partial(null))
-                            .isInstanceOf(NullPointerException.class)
-                            .hasMessage("isDefinedAt is null");
-                }
+              ${(i == 1 && !checked).gen({
+                val assertThatThrownBy = im.getStatic("org.assertj.core.api.Assertions.assertThatThrownBy")
+                xs"""
+                  @$test
+                  public void shouldThrowOnPartialWithNullPredicate() {
+                      final Function1<Integer, String> f = String::valueOf;
+                      $assertThatThrownBy(() -> f.partial(null))
+                              .isInstanceOf(NullPointerException.class)
+                              .hasMessage("isDefinedAt is null");
+                  }
 
-                @$test
-                public void shouldCreatePartialFunction() {
-                    final Function1<Integer, String> f = String::valueOf;
-                    final PartialFunction<Integer, String> pf = f.partial(i -> i % 2 == 0);
-                    assertThat(pf.isDefinedAt(0)).isTrue();
-                    assertThat(pf.isDefinedAt(1)).isFalse();
-                    assertThat(pf.apply(0)).isEqualTo("0");
-                    assertThat(pf.apply(1)).isEqualTo("1"); // it is valid to return a value, even if isDefinedAt returns false
-                }
-              """)}
+                  @$test
+                  public void shouldCreatePartialFunction() {
+                      final Function1<Integer, String> f = String::valueOf;
+                      final PartialFunction<Integer, String> pf = f.partial(i -> i % 2 == 0);
+                      assertThat(pf.isDefinedAt(0)).isTrue();
+                      assertThat(pf.isDefinedAt(1)).isFalse();
+                      assertThat(pf.apply(0)).isEqualTo("0");
+                      assertThat(pf.apply(1)).isEqualTo("1"); // it is valid to return a value, even if isDefinedAt returns false
+                  }
+                """})}
 
               ${(!checked).gen(xs"""
                 @$test

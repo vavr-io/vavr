@@ -340,7 +340,7 @@ public interface BitSet<T> extends SortedSet<T> {
     @Override
     default <R> SortedSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        return filter(partialFunction::isDefinedAt).map(partialFunction::apply);
+        return TreeSet.ofAll(naturalComparator(), iterator().collect(partialFunction));
     }
 
     @Override
