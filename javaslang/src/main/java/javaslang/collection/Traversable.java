@@ -678,10 +678,10 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> max() {
-        final Traversable<T> ts = isTraversableAgain() ? this : toStream();
         if (isEmpty()) {
             return Option.none();
         } else {
+            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
             return ts.maxBy(Comparators.naturalComparator());
         }
     }
@@ -740,10 +740,10 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
-        final Traversable<T> ts = isTraversableAgain() ? this : toStream();
         if (isEmpty()) {
             return Option.none();
         } else {
+            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
             return ts.minBy(Comparators.naturalComparator());
         }
     }
