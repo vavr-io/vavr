@@ -17,12 +17,12 @@ public class TraverableTest {
 
     @Test
     public void maxShouldBeTheOnlyValue() {
-        assertEquals(new Integer(5), Iterator.of(5).max().get());
+        assertEquals(Integer.valueOf(5), Iterator.of(5).max().get());
     }
 
     @Test
     public void maxShouldBeTheMaxValue() {
-        assertEquals(new Integer(3), Iterator.of(2, 3).max().get());
+        assertEquals(Integer.valueOf(3), Iterator.of(2, 3).max().get());
     }
 
     // -- min()
@@ -34,12 +34,12 @@ public class TraverableTest {
 
     @Test
     public void minShouldBeTheOnlyValue() {
-        assertEquals(new Integer(5), Iterator.of(5).min().get());
+        assertEquals(Integer.valueOf(5), Iterator.of(5).min().get());
     }
 
     @Test
-    public void minShouldBeTheMaxValue() {
-        assertEquals(new Integer(2), Iterator.of(2, 3).min().get());
+    public void minShouldBeTheMinValue() {
+        assertEquals(Integer.valueOf(2), Iterator.of(2, 3).min().get());
     }
 
 }
