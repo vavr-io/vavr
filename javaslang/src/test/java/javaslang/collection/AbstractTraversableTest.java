@@ -1048,6 +1048,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     @Test
+    public void shouldComputeMaxOfOneValue() { assertThat(of(5).max()).isEqualTo(Option.some(5)); }
+
+    @Test
     public void shouldComputeMaxOfStrings() {
         assertThat(of("1", "2", "3").max()).isEqualTo(Option.some("3"));
     }
@@ -1172,6 +1175,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldReturnNoneWhenComputingMinOfNil() {
         assertThat(empty().min()).isEqualTo(Option.none());
     }
+
+    @Test
+    public void shouldComputeMinOfOneValue() { assertThat(of(5).min()).isEqualTo(Option.some(5)); }
 
     @Test
     public void shouldComputeMinOfStrings() {
