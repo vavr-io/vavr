@@ -488,6 +488,7 @@ public class OptionTest extends AbstractValueTest {
         };
         assertThat(Option.of(3).collect(pf)).isEqualTo(Option.of("3"));
         assertThat(Option.of(2).collect(pf)).isEqualTo(Option.none());
+        assertThat(Option.<Integer>none().collect(pf)).isEqualTo(Option.none());
     }
 
     @Test(expected = NullPointerException.class)

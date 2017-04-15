@@ -182,15 +182,15 @@ public interface Option<T> extends Value<T>, Serializable {
      * }</pre>
      *
      *
-     * @param partialFunction A function that is not necessarily defined of value of this option.
+     * @param partialFunction A function that is not necessarily defined on value of this option.
      * @param <R> The new value type
      * @return A new {@code Option} instance containing value of type {@code R}
      * @throws NullPointerException if {@code partialFunction} is null
      */
     default <R> Option<R> collect(PartialFunction<? super T, ? extends R> partialFunction){
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        final Option<T> optionInDomain = filter(partialFunction::isDefinedAt);
-        return optionInDomain.isEmpty() ? none(): some(partialFunction.apply(optionInDomain.get()));
+        final Option<T> valueInDomain = filter(partialFunction::isDefinedAt);
+        return valueInDomain.isEmpty() ? none(): some(partialFunction.apply(valueInDomain.get()));
     }
 
     /**

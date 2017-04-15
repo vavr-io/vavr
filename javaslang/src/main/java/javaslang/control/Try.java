@@ -269,6 +269,40 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Collects value that is in the domain of the given {@code partialFunction} by mapping the value to type {@code R}.
+     * <p>
+     *
+     * <pre><{@code
+     * partialFunction.isDefinedAt(value)
+     * }</pre>
+     *
+     * If the element makes it through that filter, the mapped instance is wrapped in {@code Try}
+     *
+     * <pre>{@code
+     * R newValue = partialFunction.apply(value)
+     * }</pre>
+     *
+     *
+     * @param partialFunction A function that is not necessarily defined on value of this try.
+     * @param <R> The new value type
+     * @return A new {@code Try} instance containing value of type {@code R}
+     * @throws NullPointerException if {@code partialFunction} is null
+     */
+    default <R> Try<R> collect(PartialFunction<? super T, ? extends R> partialFunction){
+        Objects.requireNonNull(partialFunction, "partialFunction is null");
+        final Try<T> valueInDomain = filter(partialFunction::isDefinedAt);
+        if (valueInDomain.isFailure()) {
+            return (Failure<R>) valueInDomain;
+        } else {
+            try {
+                return new Success<>(partialFunction.apply(valueInDomain.get()));
+            } catch (Throwable t) {
+                return new Failure<>(t);
+            }
+        }
+    }
+
+    /**
      * Returns {@code Success(throwable)} if this is a {@code Failure(throwable)}, otherwise
      * a {@code Failure(new NoSuchElementException("Success.failed()"))} if this is a Success.
      *
