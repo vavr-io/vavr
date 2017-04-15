@@ -5,6 +5,7 @@
  */
 package javaslang.control;
 
+import javaslang.PartialFunction;
 import javaslang.Value;
 import javaslang.collection.Iterator;
 import javaslang.collection.Seq;
@@ -164,6 +165,32 @@ public interface Option<T> extends Value<T>, Serializable {
     static <T> Option<T> ofOptional(Optional<? extends T> optional) {
         Objects.requireNonNull(optional, "optional is null");
         return optional.<Option<T>>map(Option::of).orElseGet(Option::none);
+    }
+
+    /**
+     * Collects value that is in the domain of the given {@code partialFunction} by mapping the value to type {@code R}.
+     * <p>
+     *
+     * <pre><{@code
+     * partialFunction.isDefinedAt(value)
+     * }</pre>
+     *
+     * If the element makes it through that filter, the mapped instance is wrapped in {@code Option}
+     *
+     * <pre>{@code
+     * R newValue = partialFunction.apply(value)
+     * }</pre>
+     *
+     *
+     * @param partialFunction A function that is not necessarily defined of value of this option.
+     * @param <R> The new value type
+     * @return A new {@code Option} instance containing value of type {@code R}
+     * @throws NullPointerException if {@code partialFunction} is null
+     */
+    default <R> Option<R> collect(PartialFunction<? super T, ? extends R> partialFunction){
+        Objects.requireNonNull(partialFunction, "partialFunction is null");
+        final Option<T> optionInDomain = filter(partialFunction::isDefinedAt);
+        return optionInDomain.isEmpty() ? none(): some(partialFunction.apply(optionInDomain.get()));
     }
 
     /**

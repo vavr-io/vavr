@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.AbstractValueTest;
+import javaslang.PartialFunction;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
 import org.junit.Assert;
@@ -469,6 +470,30 @@ public class OptionTest extends AbstractValueTest {
     @Test
     public void shouldHandleTransformOnNone() {
         assertThat(Option.none().<String> transform(self -> self.isEmpty() ? "ok" : "failed")).isEqualTo("ok");
+    }
+
+    // -- collect
+
+    @Test
+    public void shouldCollectUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            @Override
+            public String apply(Integer i) {
+                return String.valueOf(i);
+            }
+            @Override
+            public boolean isDefinedAt(Integer i) {
+                return i % 2 == 1;
+            }
+        };
+        assertThat(Option.of(3).collect(pf)).isEqualTo(Option.of("3"));
+        assertThat(Option.of(2).collect(pf)).isEqualTo(Option.none());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullCollectPartialFunction() {
+        final PartialFunction<Integer, String> pf = null;
+        Option.some(1).collect(pf);
     }
 
     // -- iterator
