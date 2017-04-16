@@ -163,6 +163,21 @@ public class TryTest extends AbstractValueTest {
         assertThat(Try.<Integer>failure(new RuntimeException()).collect(pf).isFailure());
     }
 
+    @Test
+    public void shouldCollectFailureWhenPartialFunctionThrows() {
+        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            @Override
+            public String apply(Integer i) {
+                throw new Error("error");
+            }
+            @Override
+            public boolean isDefinedAt(Integer i) {
+                return i % 2 == 1;
+            }
+        };
+        assertThat(Try.success(3).collect(pf).isFailure());
+    }
+
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionOnNullCollectPartialFunction() {
         final PartialFunction<Integer, String> pf = null;
