@@ -22,9 +22,11 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static javaslang.API.Case;
 import static javaslang.concurrent.Concurrent.waitUntil;
 import static javaslang.concurrent.Concurrent.zZz;
 import static javaslang.concurrent.ExecutorServices.rejectingExecutorService;
@@ -769,6 +771,53 @@ public class FutureTest extends AbstractValueTest {
         assertThat(actual[0]).isEqualTo(1);
     }
 
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void shouldMatchCaseAfterFutureCompleted() {
+        final int[] actual = new int[] { -1 };
+        final Throwable[] holder = new Throwable[] { null };
+        final Consumer<Try<Integer>> successConsumer = success -> actual[0] = success.get();
+        final Consumer<Try<Integer>> failureConsumer = failed -> holder[0] = failed.getCause();
+
+        final Future<Integer> future = Future.of(trivialExecutorService(), () -> 1)
+                                             .onCompleteMatch(
+                                                     Case(Try::isSuccess, successConsumer),
+                                                     Case(Try::isFailure, failureConsumer)
+                                             );
+        waitUntil(future::isCompleted);
+        assertThat(actual[0]).isEqualTo(1);
+        assertThat(holder[0]).isNull();
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void shouldMatchCaseAfterFutureCompletedWithFailure() {
+        final int[] actual = new int[] { -1 };
+        final Throwable[] holder = new Throwable[] { null };
+        final Consumer<Try<Integer>> successConsumer = x -> actual[0] = x.get();
+        final Consumer<Try<Integer>> failureConsumer = failed -> holder[0] = failed.getCause();
+
+        final Try.CheckedSupplier<Integer> zZz = zZz(new Error());
+        final Future<Integer> future = Future.of(zZz)
+                                             .onCompleteMatch(
+                                                     Case(Try::isSuccess, successConsumer),
+                                                     Case(Try::isFailure, failureConsumer)
+                                             );
+        waitUntil(future::isCompleted);
+        assertThat(actual[0]).isEqualTo(-1);
+        assertThat(holder[0]).isNotNull();
+        assertThat(holder[0].getClass()).isEqualTo(Error.class);
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void shouldNotThrowMatchErrorAfterFutureCompletedWithoutMatchedCase() {
+        final Future<Integer> future = Future.of(trivialExecutorService(), () -> 1)
+                                             .onCompleteMatch();
+        waitUntil(future::isCompleted);
+        assertCompleted(future, 1);
+    }
+
     // -- onFailure()
 
     @Test
@@ -780,6 +829,49 @@ public class FutureTest extends AbstractValueTest {
         assertThat(holder[0].getClass()).isEqualTo(Error.class);
     }
 
+    // -- onFailureMatch()
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void shouldMatchFailCaseAfterFutureFails() {
+        final Throwable[] holder = new Throwable[] { null };
+        final Consumer<Throwable> errorConsumer = failed -> holder[0] = failed;
+
+        final Try.CheckedSupplier<Integer> zZz = zZz(new Error());
+        final Future<Integer> future = Future.of(zZz)
+                                             .onFailureMatch(
+                                                     Case(f -> f.getClass().equals(Exception.class), m -> {}),
+                                                     Case(f -> f.getClass().equals(Error.class), errorConsumer)
+                                             );
+        waitUntil(future::isCompleted);
+        assertThat(holder[0]).isNotNull();
+        assertThat(holder[0].getClass()).isEqualTo(Error.class);
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void shouldNotMatchFailCaseAfterFutureFails() {
+        final Throwable[] holder = new Throwable[] { null };
+        final Consumer<Throwable> errorConsumer = failed -> holder[0] = failed;
+
+        final Try.CheckedSupplier<Integer> zZz = zZz(new Error());
+        final Future<Integer> future = Future.of(trivialExecutorService(), () -> 1)
+                                             .onFailureMatch(
+                                                     Case(f -> f.getClass().equals(Error.class), errorConsumer)
+                                             );
+        waitUntil(future::isCompleted);
+        assertThat(holder[0]).isNull();
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void shouldNotThrowMatchErrorAfterFutureFailsWithoutMatchedCase() {
+        final Try.CheckedSupplier<Integer> zZz = zZz(new Error());
+        final Future<Integer> future = Future.of(zZz);
+        waitUntil(future::isCompleted);
+        assertFailed(future, Error.class);
+    }
+
     // -- onSuccess()
 
     @Test
@@ -789,6 +881,46 @@ public class FutureTest extends AbstractValueTest {
         future.onSuccess(i -> holder[0] = i);
         waitUntil(() -> holder[0] > 0);
         assertThat(holder[0]).isEqualTo(42);
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void shouldMatchSuccessCaseAfterFutureSucceeds() {
+        final int[] actual = new int[] { -1 };
+        final Consumer<Integer> valueConsumer = value -> actual[0] = value;
+
+        final Future<Integer> future = Future.of(trivialExecutorService(), () -> 1)
+                                             .onSuccessMatch(
+                                                     Case(v -> v == 5, m -> {}),
+                                                     Case(v -> v == 1, valueConsumer)
+                                             );
+        waitUntil(future::isCompleted);
+        assertThat(actual[0]).isEqualTo(1);
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void shouldNotMatchSuccessCaseAfterFutureFails() {
+        final int[] actual = new int[] { -1 };
+        final Consumer<Integer> valueConsumer = value -> actual[0] = value;
+
+        final Try.CheckedSupplier<Integer> zZz = zZz(new Error());
+        final Future<Integer> future = Future.of(zZz)
+                                             .onSuccessMatch(
+                                                     Case(v -> v == 1, valueConsumer)
+                                             );
+        waitUntil(future::isCompleted);
+        assertFailed(future, Error.class);
+        assertThat(actual[0]).isEqualTo(-1);
+    }
+
+    @Test
+    @SuppressWarnings({ "unchecked" })
+    public void shouldNotThrowMatchErrorAfterFutureSucceedsWithoutMatchedCase() {
+        final Future<Integer> future = Future.of(trivialExecutorService(), () -> 1)
+                                             .onSuccessMatch();
+        waitUntil(future::isCompleted);
+        assertCompleted(future, 1);
     }
 
     // -- recover()
