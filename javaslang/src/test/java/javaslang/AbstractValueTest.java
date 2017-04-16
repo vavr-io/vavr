@@ -43,6 +43,7 @@ import static javaslang.Predicates.anyOf;
 import static javaslang.Predicates.instanceOf;
 import static javaslang.Serializables.deserialize;
 import static javaslang.Serializables.serialize;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("deprecation")
 public abstract class AbstractValueTest {
@@ -207,6 +208,34 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         value.forEach(i -> consumer[0] += i);
         assertThat(consumer[0]).isEqualTo(value.isSingleValued() ? 1 : 6);
+    }
+
+    @Test
+    public void shouldNotCallIfEmptyActionIfValueIsNotEmpty() {
+        try {
+            final int[] consumer = new int[1];
+            final Value<Integer> value = of(1, 2, 3);
+            value.forEach(i -> consumer[0] += i, () -> {
+                throw new RuntimeException("should not be thrown");
+            });
+            assertThat(consumer[0]).isEqualTo(value.isSingleValued() ? 1 : 6);
+        } catch (RuntimeException e) {
+            fail("No exception should be thrown!");
+        }
+    }
+
+    @Test
+    public void shouldCallIfEmptyActionIfValueIsEmpty() {
+        try {
+            final Value<Integer> value = Option.none();
+            value.forEach(val -> {
+            }, () -> {
+                throw new RuntimeException("Empty value!");
+            });
+            fail("Should not get here!!");
+        } catch (RuntimeException e) {
+            assertThat(e.getMessage()).isEqualTo("Empty value!");
+        }
     }
 
     // -- isEmpty

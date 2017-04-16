@@ -151,6 +151,7 @@ import static javaslang.API.*;
  *
  * @param <T> The type of the wrapped value.
  * @author Daniel Dietrich
+ * @author Maciej Opala
  * @since 2.0.0
  */
 @SuppressWarnings("deprecation")
@@ -318,6 +319,26 @@ public interface Value<T> extends Iterable<T> {
         Objects.requireNonNull(action, "action is null");
         for (T t : this) {
             action.accept(t);
+        }
+    }
+
+    /**
+     * Performs an action on each element if this element is defined, otherwise invokes ifEmptyAction
+     *
+     * @param action action {@code Consumer}
+     * @param action ifEmptyAction {@code java.lang.Runnable}
+     * @throws NullPointerException if {@code action} is null
+     * @throws NullPointerException if {@code ifEmptyAction} is null
+     */
+    default void forEach(Consumer<? super T> action, Runnable ifEmptyAction) {
+        Objects.requireNonNull(action, "action is null");
+        Objects.requireNonNull(ifEmptyAction, "ifEmptyAction is null");
+        if (isEmpty()) {
+            ifEmptyAction.run();
+        } else {
+            for (T t : this) {
+                action.accept(t);
+            }
         }
     }
 
