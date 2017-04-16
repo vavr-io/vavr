@@ -119,7 +119,7 @@ public class TryTest extends AbstractValueTest {
     // -- collect
 
     @Test
-    public void shouldCollectUsingPartialFunction() {
+    public void shouldCollectDefinedValueUsingPartialFunction() {
         final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
             @Override
             public String apply(Integer i) {
@@ -131,7 +131,35 @@ public class TryTest extends AbstractValueTest {
             }
         };
         assertThat(Try.success(3).collect(pf)).isEqualTo(Try.success("3"));
+    }
+
+    @Test
+    public void shouldFilterNotDefinedValueUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            @Override
+            public String apply(Integer i) {
+                return String.valueOf(i);
+            }
+            @Override
+            public boolean isDefinedAt(Integer i) {
+                return i % 2 == 1;
+            }
+        };
         assertThat(Try.success(2).collect(pf).isFailure());
+    }
+
+    @Test
+    public void shouldCollectFailureUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            @Override
+            public String apply(Integer i) {
+                return String.valueOf(i);
+            }
+            @Override
+            public boolean isDefinedAt(Integer i) {
+                return i % 2 == 1;
+            }
+        };
         assertThat(Try.<Integer>failure(new RuntimeException()).collect(pf).isFailure());
     }
 

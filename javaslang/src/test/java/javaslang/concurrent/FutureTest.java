@@ -679,7 +679,7 @@ public class FutureTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldNotCollectNotDefinedValueUsingPartialFunction() {
+    public void shouldFilterNotDefinedValueUsingPartialFunction() {
         final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
             @Override
             public String apply(Integer i) {

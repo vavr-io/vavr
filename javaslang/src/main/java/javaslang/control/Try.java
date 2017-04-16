@@ -288,6 +288,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return A new {@code Try} instance containing value of type {@code R}
      * @throws NullPointerException if {@code partialFunction} is null
      */
+    @SuppressWarnings("unchecked")
     default <R> Try<R> collect(PartialFunction<? super T, ? extends R> partialFunction){
         Objects.requireNonNull(partialFunction, "partialFunction is null");
         final Try<T> valueInDomain = filter(partialFunction::isDefinedAt);

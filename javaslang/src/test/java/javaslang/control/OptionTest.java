@@ -475,7 +475,7 @@ public class OptionTest extends AbstractValueTest {
     // -- collect
 
     @Test
-    public void shouldCollectUsingPartialFunction() {
+    public void shouldCollectDefinedValueUsingPartialFunction() {
         final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
             @Override
             public String apply(Integer i) {
@@ -487,7 +487,35 @@ public class OptionTest extends AbstractValueTest {
             }
         };
         assertThat(Option.of(3).collect(pf)).isEqualTo(Option.of("3"));
+    }
+
+    @Test
+    public void shouldFilterNotDefinedValueUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            @Override
+            public String apply(Integer i) {
+                return String.valueOf(i);
+            }
+            @Override
+            public boolean isDefinedAt(Integer i) {
+                return i % 2 == 1;
+            }
+        };
         assertThat(Option.of(2).collect(pf)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldCollectEmptyOptionalUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            @Override
+            public String apply(Integer i) {
+                return String.valueOf(i);
+            }
+            @Override
+            public boolean isDefinedAt(Integer i) {
+                return i % 2 == 1;
+            }
+        };
         assertThat(Option.<Integer>none().collect(pf)).isEqualTo(Option.none());
     }
 
