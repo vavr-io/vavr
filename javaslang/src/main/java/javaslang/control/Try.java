@@ -941,7 +941,7 @@ public interface Try<T> extends Value<T>, Serializable {
 
         @Override
         public boolean isEmpty() {
-            return false;
+            return value == null;
         }
 
         @Override
