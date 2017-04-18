@@ -1223,7 +1223,7 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return Collections.hashOrdered(this);
     }
 
     @Override

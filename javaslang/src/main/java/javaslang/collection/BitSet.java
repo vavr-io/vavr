@@ -911,7 +911,7 @@ interface BitSetModule {
 
         @Override
         public int hashCode() {
-            return Collections.hash(this);
+            return Collections.hashUnordered(this);
         }
     }
 

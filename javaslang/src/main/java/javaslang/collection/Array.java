@@ -1404,7 +1404,7 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return Collections.hashOrdered(this);
     }
 
     @Override

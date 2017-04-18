@@ -1004,7 +1004,7 @@ public final class TreeSet<T> implements Kind1<TreeSet<?>, T>, SortedSet<T>, Ser
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return Collections.hashUnordered(this);
     }
 
     @Override

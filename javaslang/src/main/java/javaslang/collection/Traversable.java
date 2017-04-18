@@ -241,7 +241,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <p>
      * More specifically, for each of this elements in iteration order first it is checked
      *
-     * <pre><{@code
+     * <pre>{@code
      * partialFunction.isDefinedAt(element)
      * }</pre>
      *
@@ -353,7 +353,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     Traversable<T> dropUntil(Predicate<? super T> predicate);
 
     /**
-     * Drops elements while the predicate holds for the current element.
+     * Drops elements while the predicate holds for the current element.                                                                            
      * <p>
      * Note: This is essentially the same as {@code dropUntil(predicate.negate())}.
      * It is intended to be used with method references, which cannot be negated directly.
@@ -364,6 +364,48 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> dropWhile(Predicate<? super T> predicate);
+
+    /**
+     * In Javaslang there are four basic classes of collections:
+     *
+     * <ul>
+     * <li>Seq (sequential elements)</li>
+     * <li>Set (distinct elements)</li>
+     * <li>Map (indexed elements)</li>
+     * <li>Multimap (indexed collections)</li>
+     * </ul>
+     *
+     * Two collection instances of these classes are equal if and only if both collections
+     *
+     * <ul>
+     * <li>belong to the same basic collection class (Seq, Set, Map or Multimap)</li>
+     * <li>contain the same elements</li>
+     * <li>have the same element order, if the collections are of type Seq</li>
+     * </ul>
+     * 
+     * Two Map/Multimap elements, resp. entries, (key1, value1) and (key2, value2) are equal,
+     * if the keys are equal and the values are equal.
+     * <p>
+     * <strong>Notes:</strong>
+     *
+     * <ul>
+     * <li>No collection instance equals null, e.g. Queue(1) not equals null.</li>
+     * <li>Nulls are allowed and handled as expected, e.g. List(null, 1) equals Stream(null, 1)
+     * and HashMap((null, 1)) equals LinkedHashMap((null, 1)).
+     * </li>
+     * <li>The element order is taken into account for Seq only.
+     * E.g. List(null, 1) not equals Stream(1, null)
+     * and HashMap((null, 1), ("a", null)) equals LinkedHashMap(("a", null), (null, 1)).
+     * The reason is, that we do not know which implementations we compare when having
+     * two instances of type Map, Multimap or Set (see <a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Liskov Substitution Principle</a>).</li>
+     * <li>Other collection classes are equal if their types are equal and their elements are equal (in iteration order).</li>
+     * <li>Iterator equality is defined to be object reference equality.</li>
+     * </ul>
+     *
+     * @param obj an object, may be null
+     * @return true, if this collection equals the given object according to the rules described above, false otherwise.
+     */
+    boolean equals(Object obj);
 
     /**
      * Checks, if a unique elements exists such that the predicate holds.
@@ -521,6 +563,79 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     default Option<T> headOption() {
         return isEmpty() ? Option.none() : Option.some(head());
     }
+    
+    /**
+     * Returns the hash code of this collection.
+     * <br>
+     * We distinguish between two types of hashes, those for collections with predictable iteration order (like Seq) and those with arbitrary iteration order (like Set, Map and Multimap).
+     * <br>
+     * In all cases the hash of an empty collection is defined to be 1.
+     * <br>
+     * Collections with predictable iteration order are hashed as follows:
+     *
+     * <pre>{@code
+     * int hash = 1;
+     * for (T t : this) { hash = hash * 31 + Objects.hashCode(t); }
+     * }</pre>
+     *
+     * Collections with arbitrary iteration order are hashed in a way such that the hash of a fixed number of elements is independent of their iteration order.
+     *
+     * <pre>{@code
+     * int hash = 1;
+     * for (T t : this) { hash += Objects.hashCode(t); }
+     * }</pre>
+     *
+     * Please note that the particular hashing algorithms may change in a future version of Javaslang.
+     * <br>
+     * Generally, hash codes of collections aren't cached in Javaslang (opposed to the size/length).
+     * Storing hash codes in order to reduce the time complexity would increase the memory footprint.
+     * Persistent collections are built upon tree structures, it allows us to implement efficient memory sharing.
+     * A drawback of tree structures is that they make it necessary to store collection attributes at each tree node (read: element).
+     * <br>
+     * The computation of the hash code is linear in time, i.e. O(n). If the hash code of a collection is re-calculated often,
+     * e.g. when using a List as HashMap key, we might want to cache the hash code.
+     * This can be achieved by simply using a wrapper class, which is not included in Javaslang but could be implemented like this:
+     *
+     * <pre>{@code public final class Hashed<K> {
+     *
+     *     private final K key;
+     *     private final Lazy<Integer> hashCode;
+     *
+     *     public Hashed(K key) {
+     *         this.key = key;
+     *         this.hashCode = Lazy.of(() -> Objects.hashCode(key));
+     *     }
+     *
+     *     public K key() {
+     *         return key;
+     *     }
+     *
+     *     &#64;Override
+     *     public boolean equals(Object o) {
+     *         if (o == key) {
+     *             return true;
+     *         } else if (key != null && o instanceof Hashed) {
+     *             final Hashed that = (Hashed) o;
+     *             return key.equals(that.key);
+     *         } else {
+     *             return false;
+     *         }
+     *     }
+     *
+     *     &#64;Override
+     *     public int hashCode() {
+     *         return hashCode.get();
+     *     }
+     *
+     *     &#64;Override
+     *     public String toString() {
+     *         return "Hashed(" + (key == null ? "null" : key.toString()) + ")";
+     *     }
+     * }}</pre>
+     *
+     * @return The hash code of this collection
+     */
+    int hashCode();
 
     /**
      * Dual of {@linkplain #tail()}, returning all elements except the last.
@@ -1084,8 +1199,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
     
     /**
-     * if the Traversable contains a single element, return it,
-     * otherwise throws.
+     * Returns the single element of this Traversable or throws, if this is empty or contains more than one element.
      *
      * @return the single element from the Traversable
      * @throws NoSuchElementException if the Traversable does not contain a single element.

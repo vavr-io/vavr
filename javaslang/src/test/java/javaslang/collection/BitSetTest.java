@@ -109,6 +109,14 @@ public class BitSetTest extends AbstractSortedSetTest {
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
+    protected final <T> BitSet<T> of(Comparator<? super T> comparator, T... elements) {
+        // comparator is not used
+        return this.<T> bsBuilder().of(elements);
+    }
+
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    @Override
     protected final <T> BitSet<T> of(T... elements) {
         return this.<T> bsBuilder().of(elements);
     }

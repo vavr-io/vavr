@@ -1255,7 +1255,7 @@ public final class TreeMap<K, V> implements Kind2<TreeMap<?, ?>, K, V>, SortedMa
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return Collections.hashUnordered(this);
     }
 
     @Override

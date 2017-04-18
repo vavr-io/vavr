@@ -465,7 +465,7 @@ interface RedBlackTreeModule {
         public int hashCode() {
             // DEV-NOTE: Using `Objects.hash(this.value, this.left, this.right)` would leak the tree structure to the outside.
             //           We just want to hash the values in the right order.
-            return Collections.hash(this);
+            return Collections.hashOrdered(this);
         }
 
         @Override

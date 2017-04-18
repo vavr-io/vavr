@@ -911,7 +911,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return Collections.hashUnordered(this);
     }
 
     @Override

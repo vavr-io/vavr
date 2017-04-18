@@ -22,83 +22,6 @@ import static javaslang.collection.ArrayType.asArray;
  */
 final class Collections {
 
-    @SuppressWarnings("unchecked")
-    static <K, V> boolean equals(Map<K, V> source, Object object) {
-        if (source == object) {
-            return true;
-        } else if (source != null && object instanceof Map) {
-            Map<K, V> map = (Map<K, V>) object;
-            if (source.size() != map.size()) {
-                return false;
-            } else {
-                try {
-                    if (source.isOrdered() && map.isOrdered()) {
-                        return areEqual(source, map);
-                    }
-                    return source.forAll(map::contains);
-                } catch (ClassCastException e) {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    static <V> boolean equals(Set<V> source, Object object) {
-        if (source == object) {
-            return true;
-        } else if (source != null && object instanceof Set) {
-            Set<V> set = (Set<V>) object;
-            if (source.size() != set.size()) {
-                return false;
-            } else {
-                try {
-                    if (source.isOrdered() && set.isOrdered()) {
-                        return areEqual(source, set);
-                    }
-                    return source.forAll(set::contains);
-                } catch (ClassCastException e) {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    static <K, V> boolean equals(Multimap<K, V> source, Object object) {
-        if (source == object) {
-            return true;
-        } else if (source != null && object instanceof Multimap) {
-            Multimap<K, V> multimap = (Multimap<K, V>) object;
-            if (source.size() != multimap.size()) {
-                return false;
-            } else {
-                try {
-                    if (source.isOrdered() && multimap.isOrdered()) {
-                        return areEqual(source, multimap);
-                    }
-                    return source.forAll(multimap::contains);
-                } catch (ClassCastException e) {
-                    return false;
-                }
-            }
-        }
-        return false;
-    }
-
-    @SuppressWarnings("unchecked")
-    static <V> boolean equals(Seq<V> source, Object object) {
-        if (object == source) {
-            return true;
-        } else if (source != null && object instanceof Seq) {
-            Seq<V> seq = (Seq<V>) object;
-            return seq.size() == source.size() && areEqual(source, seq);
-        }
-        return false;
-    }
-
     // checks, if the *elements* of the given iterables are equal
     static boolean areEqual(Iterable<?> iterable1, Iterable<?> iterable2) {
         final java.util.Iterator<?> iter1 = iterable1.iterator();
@@ -109,6 +32,27 @@ final class Collections {
             }
         }
         return iter1.hasNext() == iter2.hasNext();
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T, S extends Seq<T>> Iterator<S> crossProduct(S empty, S seq, int power) {
+        if (power < 0) {
+            return Iterator.empty();
+        } else {
+            return Iterator.range(0, power)
+                    .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
+    static <T, S extends IndexedSeq<T>> S dropRightUntil(S seq, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (int i = seq.length() - 1; i >= 0; i--) {
+            if (predicate.test(seq.get(i))) {
+                return (S) seq.take(i + 1);
+            }
+        }
+        return (S) seq.take(0);
     }
 
     @SuppressWarnings("unchecked")
@@ -123,23 +67,74 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <T, S extends IndexedSeq<T>> S dropRightUntil(S seq, Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = seq.length() - 1; i >= 0; i--) {
-            if (predicate.test(seq.get(i))) {
-                return (S) seq.take(i + 1);
+    static <K, V> boolean equals(Map<K, V> source, Object object) {
+        if (source == object) {
+            return true;
+        } else if (source != null && object instanceof Map) {
+            final Map<K, V> map = (Map<K, V>) object;
+            if (source.size() != map.size()) {
+                return false;
+            } else {
+                try {
+                    return source.forAll(map::contains);
+                } catch (ClassCastException e) {
+                    return false;
+                }
             }
+        } else {
+            return false;
         }
-        return (S) seq.take(0);
     }
 
     @SuppressWarnings("unchecked")
-    static <T, S extends Seq<T>> Iterator<S> crossProduct(S empty, S seq, int power) {
-        if (power < 0) {
-            return Iterator.empty();
+    static <K, V> boolean equals(Multimap<K, V> source, Object object) {
+        if (source == object) {
+            return true;
+        } else if (source != null && object instanceof Multimap) {
+            final Multimap<K, V> multimap = (Multimap<K, V>) object;
+            if (source.size() != multimap.size()) {
+                return false;
+            } else {
+                try {
+                    return source.forAll(multimap::contains);
+                } catch (ClassCastException e) {
+                    return false;
+                }
+            }
         } else {
-            return Iterator.range(0, power)
-                    .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <V> boolean equals(Seq<V> source, Object object) {
+        if (object == source) {
+            return true;
+        } else if (source != null && object instanceof Seq) {
+            final Seq<V> seq = (Seq<V>) object;
+            return seq.size() == source.size() && areEqual(source, seq);
+        } else {
+            return false;
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <V> boolean equals(Set<V> source, Object object) {
+        if (source == object) {
+            return true;
+        } else if (source != null && object instanceof Set) {
+            final Set<V> set = (Set<V>) object;
+            if (source.size() != set.size()) {
+                return false;
+            } else {
+                try {
+                    return source.forAll(set::contains);
+                } catch (ClassCastException e) {
+                    return false;
+                }
+            }
+        } else {
+            return false;
         }
     }
 
@@ -175,13 +170,26 @@ final class Collections {
         return results.entrySet();
     }
 
-    // hashes the elements of an iterable
-    static int hash(Iterable<?> iterable) {
-        int hashCode = 1;
-        for (Object o : iterable) {
-            hashCode = 31 * hashCode + Objects.hashCode(o);
+    // hashes the elements respecting their order
+    static int hashOrdered(Iterable<?> iterable) {
+        return hash(iterable, (acc, hash) -> acc * 31 + hash);
+    }
+
+    // hashes the elements regardless of their order
+    static int hashUnordered(Iterable<?> iterable) {
+        return hash(iterable, (acc, hash) -> acc + hash);
+    }
+
+    private static int hash(Iterable<?> iterable, IntBinaryOperator accumulator) {
+        if (iterable == null) {
+            return 0;
+        } else {
+            int hashCode = 1;
+            for (Object o : iterable) {
+                hashCode = accumulator.applyAsInt(hashCode, Objects.hashCode(o));
+            }
+            return hashCode;
         }
-        return hashCode;
     }
 
     static Option<Integer> indexOption(int index) {
@@ -336,6 +344,49 @@ final class Collections {
         }
     }
 
+    static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
+        Objects.requireNonNull(matrix, "matrix is null");
+        if (matrix.isEmpty() || (matrix.length() == 1 && matrix.head().length() <= 1)) {
+            return matrix;
+        } else {
+            return transposeNonEmptyMatrix(matrix, rowFactory, columnFactory);
+        }
+    }
+
+    private static <T, U extends Seq<T>, V extends Seq<U>> V transposeNonEmptyMatrix(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
+        final int newHeight = matrix.head().size(), newWidth = matrix.size();
+        @SuppressWarnings("unchecked") final T[][] results = (T[][]) new Object[newHeight][newWidth];
+
+        if (matrix.exists(r -> r.size() != newHeight)) {
+            throw new IllegalArgumentException("the parameter `matrix` is invalid!");
+        }
+
+        int rowIndex = 0;
+        for (U row : matrix) {
+            int columnIndex = 0;
+            for (T element : row) {
+                results[columnIndex][rowIndex] = element;
+                columnIndex++;
+            }
+            rowIndex++;
+        }
+
+        return rowFactory.apply(Iterator.of(results).map(columnFactory));
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
+        return isTraversableAgain(iterable) ? withSizeTraversable(iterable) : withSizeTraversable(List.ofAll(iterable));
+    }
+
+    private static <T> IterableWithSize<T> withSizeTraversable(Iterable<? extends T> iterable) {
+        if (iterable instanceof Collection) {
+            return new IterableWithSize<>(iterable, ((Collection<?>) iterable).size());
+        } else {
+            return new IterableWithSize<>(iterable, ((Traversable<?>) iterable).size());
+        }
+    }
+    
     static class IterableWithSize<T> {
         private final Iterable<? extends T> iterable;
         private final int size;
@@ -367,46 +418,4 @@ final class Collections {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    static <T> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
-        return isTraversableAgain(iterable) ? withSizeTraversable(iterable) : withSizeTraversable(List.ofAll(iterable));
-    }
-
-    private static <T> IterableWithSize<T> withSizeTraversable(Iterable<? extends T> iterable) {
-        if (iterable instanceof Collection) {
-            return new IterableWithSize<>(iterable, ((Collection<?>) iterable).size());
-        } else {
-            return new IterableWithSize<>(iterable, ((Traversable<?>) iterable).size());
-        }
-    }
-
-    static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
-        Objects.requireNonNull(matrix, "matrix is null");
-        if (matrix.isEmpty() || (matrix.length() == 1 && matrix.head().length() <= 1)) {
-            return matrix;
-        } else {
-            return transposeNonEmptyMatrix(matrix, rowFactory, columnFactory);
-        }
-    }
-
-    private static <T, U extends Seq<T>, V extends Seq<U>> V transposeNonEmptyMatrix(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
-        final int newHeight = matrix.head().size(), newWidth = matrix.size();
-        @SuppressWarnings("unchecked") final T[][] results = (T[][]) new Object[newHeight][newWidth];
-
-        if (matrix.exists(r -> r.size() != newHeight)) {
-            throw new IllegalArgumentException("the parameter `matrix` is invalid!");
-        }
-
-        int rowIndex = 0;
-        for (U row : matrix) {
-            int columnIndex = 0;
-            for (T element : row) {
-                results[columnIndex][rowIndex] = element;
-                columnIndex++;
-            }
-            rowIndex++;
-        }
-
-        return rowFactory.apply(Iterator.of(results).map(columnFactory));
-    }
 }

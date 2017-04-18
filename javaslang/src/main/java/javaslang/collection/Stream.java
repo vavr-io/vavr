@@ -1721,12 +1721,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
         @Override
         public boolean equals(Object o) {
-            return o == this;
+            return Collections.equals(this, o);
         }
 
         @Override
         public int hashCode() {
-            return 1;
+            return Collections.hashOrdered(this);
         }
 
         @Override
@@ -1786,7 +1786,7 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
         @Override
         public int hashCode() {
-            return Collections.hash(this);
+            return Collections.hashOrdered(this);
         }
 
         @Override

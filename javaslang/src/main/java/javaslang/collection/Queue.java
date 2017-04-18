@@ -1279,6 +1279,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return Collections.hashOrdered(this);
     }
 }

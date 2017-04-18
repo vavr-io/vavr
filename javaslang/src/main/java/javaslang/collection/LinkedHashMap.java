@@ -886,7 +886,7 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return Collections.hashUnordered(this);
     }
 
     private Object readResolve() {

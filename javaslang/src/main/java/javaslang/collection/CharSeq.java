@@ -1197,7 +1197,7 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return Collections.hashOrdered(this);
     }
 
     //

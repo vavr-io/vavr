@@ -404,6 +404,29 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(testee.contains(Tuple.of("one", 1))).isTrue();
     }
 
+    // -- equality
+
+    @Test
+    public void shouldObeyEqualityConstraints() {
+
+        // sequential collections
+        assertThat(emptyMap().equals(HashMultimap.withSeq().empty())).isTrue();
+        assertThat(mapOf(1, "a").equals(HashMultimap.withSeq().of(1, "a"))).isTrue();
+        assertThat(mapOfPairs(1, "a", 2, "b", 3, "c").equals(HashMultimap.withSeq().of(1, "a", 2, "b",3, "c"))).isTrue();
+        assertThat(mapOfPairs(1, "a", 2, "b", 3, "c").equals(HashMultimap.withSeq().of(3, "c", 2, "b",1, "a"))).isTrue();
+
+        // other classes
+        assertThat(empty().equals(List.empty())).isFalse();
+        assertThat(empty().equals(HashMap.empty())).isFalse();
+        assertThat(empty().equals(HashSet.empty())).isFalse();
+
+        assertThat(empty().equals(LinkedHashMap.empty())).isFalse();
+        assertThat(empty().equals(LinkedHashSet.empty())).isFalse();
+
+        assertThat(empty().equals(TreeMap.empty())).isFalse();
+        assertThat(empty().equals(TreeSet.empty())).isFalse();
+    }
+
     // -- flatMap
 
     @SuppressWarnings("unchecked")

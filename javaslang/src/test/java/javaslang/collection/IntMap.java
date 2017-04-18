@@ -47,16 +47,13 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        Object map = o;
-        if (o instanceof IntMap) {
-            map = ((IntMap) o).original;
-        }
-        return Collections.equals(this.original, map);
+        final Object that = (o instanceof IntMap) ?((IntMap) o).original : o;
+        return Collections.equals(original, that);
     }
 
     @Override
     public int hashCode() {
-        return this.original.hashCode();
+        return original.hashCode();
     }
 
     @Override

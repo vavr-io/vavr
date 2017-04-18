@@ -599,6 +599,11 @@ public final class PriorityQueue<T> extends AbstractQueue<T, PriorityQueue<T>> i
     }
 
     @Override
+    public int hashCode() {
+        return Collections.hashOrdered(this);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public Comparator<T> comparator() {
         return (Comparator<T>) comparator;

@@ -410,6 +410,29 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- equality
+
+    @Test
+    public void shouldObeyEqualityConstraints() {
+
+        // sequential collections
+        assertThat(emptyMap().equals(HashMap.empty())).isTrue();
+        assertThat(mapOf(1, "a").equals(HashMap.of(1, "a"))).isTrue();
+        assertThat(mapOf(1, "a", 2, "b", 3, "c").equals(HashMap.of(1, "a", 2, "b",3, "c"))).isTrue();
+        assertThat(mapOf(1, "a", 2, "b", 3, "c").equals(HashMap.of(3, "c", 2, "b",1, "a"))).isTrue();
+
+        // other classes
+        assertThat(empty().equals(List.empty())).isFalse();
+        assertThat(empty().equals(HashMultimap.withSeq().empty())).isFalse();
+        assertThat(empty().equals(HashSet.empty())).isFalse();
+
+        assertThat(empty().equals(LinkedHashMultimap.withSeq().empty())).isFalse();
+        assertThat(empty().equals(LinkedHashSet.empty())).isFalse();
+
+        assertThat(empty().equals(TreeMultimap.withSeq().empty())).isFalse();
+        assertThat(empty().equals(TreeSet.empty())).isFalse();
+    }
+
     // -- head
 
     @Test(expected = NoSuchElementException.class)

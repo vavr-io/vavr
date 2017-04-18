@@ -1597,12 +1597,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
         @Override
         public boolean equals(Object o) {
-            return o == this;
+            return Collections.equals(this, o);
         }
 
         @Override
         public int hashCode() {
-            return 1;
+            return Collections.hashOrdered(this);
         }
 
         @Override
@@ -1675,7 +1675,7 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
         @Override
         public int hashCode() {
-            return Collections.hash(this);
+            return Collections.hashOrdered(this);
         }
 
         @Override

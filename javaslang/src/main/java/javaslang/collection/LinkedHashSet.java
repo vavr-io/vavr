@@ -915,7 +915,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
 
     @Override
     public int hashCode() {
-        return Collections.hash(this);
+        return Collections.hashUnordered(this);
     }
 
     @Override

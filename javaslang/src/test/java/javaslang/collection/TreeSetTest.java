@@ -57,6 +57,13 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @Override
     @SafeVarargs
     @SuppressWarnings("varargs")
+    protected final <T> TreeSet<T> of(Comparator<? super T> comparator, T... elements) {
+        return TreeSet.of(comparator, elements);
+    }
+
+    @Override
+    @SafeVarargs
+    @SuppressWarnings("varargs")
     protected final <T> TreeSet<T> of(T... elements) {
         return TreeSet.<T> of(naturalComparator(), elements);
     }

@@ -48,16 +48,13 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        Object map = o;
-        if (o instanceof IntMultimap) {
-            map = ((IntMultimap) o).original;
-        }
-        return Collections.equals(this.original, map);
+        final Object that = (o instanceof IntMultimap) ? ((IntMultimap) o).original : o;
+        return Collections.equals(original, that);
     }
 
     @Override
     public int hashCode() {
-        return this.original.hashCode();
+        return original.hashCode();
     }
 
     @Override
