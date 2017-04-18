@@ -291,16 +291,7 @@ public interface Try<T> extends Value<T>, Serializable {
     @SuppressWarnings("unchecked")
     default <R> Try<R> collect(PartialFunction<? super T, ? extends R> partialFunction){
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        final Try<T> valueInDomain = filter(partialFunction::isDefinedAt);
-        if (valueInDomain.isFailure()) {
-            return (Failure<R>) valueInDomain;
-        } else {
-            try {
-                return new Success<>(partialFunction.apply(valueInDomain.get()));
-            } catch (Throwable t) {
-                return new Failure<>(t);
-            }
-        }
+        return filter(partialFunction::isDefinedAt).map(partialFunction::apply);
     }
 
     /**

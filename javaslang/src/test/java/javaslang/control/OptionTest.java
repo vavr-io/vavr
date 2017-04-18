@@ -6,6 +6,7 @@
 package javaslang.control;
 
 import javaslang.AbstractValueTest;
+import javaslang.Function1;
 import javaslang.PartialFunction;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
@@ -476,46 +477,19 @@ public class OptionTest extends AbstractValueTest {
 
     @Test
     public void shouldCollectDefinedValueUsingPartialFunction() {
-        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
-            @Override
-            public String apply(Integer i) {
-                return String.valueOf(i);
-            }
-            @Override
-            public boolean isDefinedAt(Integer i) {
-                return i % 2 == 1;
-            }
-        };
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
         assertThat(Option.of(3).collect(pf)).isEqualTo(Option.of("3"));
     }
 
     @Test
     public void shouldFilterNotDefinedValueUsingPartialFunction() {
-        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
-            @Override
-            public String apply(Integer i) {
-                return String.valueOf(i);
-            }
-            @Override
-            public boolean isDefinedAt(Integer i) {
-                return i % 2 == 1;
-            }
-        };
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
         assertThat(Option.of(2).collect(pf)).isEqualTo(Option.none());
     }
 
     @Test
     public void shouldCollectEmptyOptionalUsingPartialFunction() {
-        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
-            @Override
-            public String apply(Integer i) {
-                return String.valueOf(i);
-            }
-            @Override
-            public boolean isDefinedAt(Integer i) {
-                return i % 2 == 1;
-            }
-        };
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
         assertThat(Option.<Integer>none().collect(pf)).isEqualTo(Option.none());
     }
 

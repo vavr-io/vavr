@@ -711,7 +711,7 @@ public interface Future<T> extends Value<T> {
     default <R> Future<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
         final Promise<R> promise = Promise.make(executorService());
-        onComplete((Try<T> result) -> promise.complete(result.collect(partialFunction)));
+        onComplete(result -> promise.complete(result.collect(partialFunction)));
         return promise.future();
     }
 

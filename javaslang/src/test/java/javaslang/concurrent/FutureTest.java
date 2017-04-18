@@ -5,10 +5,7 @@
  */
 package javaslang.concurrent;
 
-import javaslang.AbstractValueTest;
-import javaslang.PartialFunction;
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -663,16 +660,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldCollectDefinedValueUsingPartialFunction() {
-        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
-            @Override
-            public String apply(Integer i) {
-                return String.valueOf(i);
-            }
-            @Override
-            public boolean isDefinedAt(Integer i) {
-                return i % 2 == 1;
-            }
-        };
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
         final Future<String> future = Future.of(zZz(3)).collect(pf);
         waitUntil(future::isCompleted);
         assertThat(future.getValue().get()).isEqualTo(Try.success("3"));
@@ -680,16 +668,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldFilterNotDefinedValueUsingPartialFunction() {
-        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
-            @Override
-            public String apply(Integer i) {
-                return String.valueOf(i);
-            }
-            @Override
-            public boolean isDefinedAt(Integer i) {
-                return i % 2 == 1;
-            }
-        };
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
         final Future<String> future = Future.of(zZz(2)).collect(pf);
         waitUntil(future::isCompleted);
         assertThat(future.getValue().get().isFailure()).isTrue();
@@ -697,17 +676,8 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldCollectEmptyFutureUsingPartialFunction() {
-        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
-            @Override
-            public String apply(Integer i) {
-                return String.valueOf(i);
-            }
-            @Override
-            public boolean isDefinedAt(Integer i) {
-                return i % 2 == 1;
-            }
-        };
-        final Future<String> future = Future.<Integer>of(zZz(new Error())).collect(pf);
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        final Future<String> future = Future.<Integer> of(zZz(new Error())).collect(pf);
         waitUntil(future::isCompleted);
         assertThat(future.getValue().get().isFailure()).isTrue();
     }
