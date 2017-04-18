@@ -916,14 +916,7 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof LinkedHashSet) {
-            final LinkedHashSet<?> that = (LinkedHashSet<?>) o;
-            return this.map.equals(that.map);
-        } else {
-            return false;
-        }
+        return Sets.equals(this, o);
     }
 
     @Override

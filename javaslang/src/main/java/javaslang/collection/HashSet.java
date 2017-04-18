@@ -912,14 +912,7 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof HashSet) {
-            final HashSet<?> that = (HashSet<?>) o;
-            return this.tree.equals(that.tree);
-        } else {
-            return false;
-        }
+        return Sets.equals(this, o);
     }
 
     @Override

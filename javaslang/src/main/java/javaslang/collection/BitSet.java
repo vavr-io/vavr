@@ -906,14 +906,7 @@ interface BitSetModule {
 
         @Override
         public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof BitSet) {
-                final BitSet<?> that = (BitSet<?>) o;
-                return Collections.areEqual(this, that);
-            } else {
-                return false;
-            }
+            return Sets.equals(this, o);
         }
 
         @Override
