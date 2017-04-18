@@ -5,9 +5,7 @@
  */
 package javaslang.concurrent;
 
-import javaslang.AbstractValueTest;
-import javaslang.Tuple;
-import javaslang.Tuple2;
+import javaslang.*;
 import javaslang.collection.Iterator;
 import javaslang.collection.List;
 import javaslang.collection.Seq;
@@ -656,6 +654,38 @@ public class FutureTest extends AbstractValueTest {
         assertThat(isCancelled).isTrue();
         future.get();
         fail("Future was expected to throw on get() after cancellation!");
+    }
+
+    // -- collect()
+
+    @Test
+    public void shouldCollectDefinedValueUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        final Future<String> future = Future.of(zZz(3)).collect(pf);
+        waitUntil(future::isCompleted);
+        assertThat(future.getValue().get()).isEqualTo(Try.success("3"));
+    }
+
+    @Test
+    public void shouldFilterNotDefinedValueUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        final Future<String> future = Future.of(zZz(2)).collect(pf);
+        waitUntil(future::isCompleted);
+        assertThat(future.getValue().get().isFailure()).isTrue();
+    }
+
+    @Test
+    public void shouldCollectEmptyFutureUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        final Future<String> future = Future.<Integer> of(zZz(new Error())).collect(pf);
+        waitUntil(future::isCompleted);
+        assertThat(future.getValue().get().isFailure()).isTrue();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullCollectPartialFunction() {
+        final PartialFunction<Integer, String> pf = null;
+        Future.of(zZz(3)).collect(pf);
     }
 
     // -- executorService()

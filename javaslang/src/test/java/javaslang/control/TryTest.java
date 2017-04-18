@@ -11,6 +11,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
 import javaslang.AbstractValueTest;
+import javaslang.Function1;
+import javaslang.PartialFunction;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
 
@@ -113,6 +115,38 @@ public class TryTest extends AbstractValueTest {
                 .andFinallyTry(() -> {throw new IllegalStateException(FAILURE);});
 
         assertThat(result.isFailure());
+    }
+
+    // -- collect
+
+    @Test
+    public void shouldCollectDefinedValueUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        assertThat(Try.success(3).collect(pf)).isEqualTo(Try.success("3"));
+    }
+
+    @Test
+    public void shouldFilterNotDefinedValueUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        assertThat(Try.success(2).collect(pf).isFailure());
+    }
+
+    @Test
+    public void shouldCollectFailureUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        assertThat(Try.<Integer> failure(new RuntimeException()).collect(pf).isFailure());
+    }
+
+    @Test
+    public void shouldCollectFailureWhenPartialFunctionThrows() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        assertThat(Try.success(3).collect(pf).isFailure());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullCollectPartialFunction() {
+        final PartialFunction<Integer, String> pf = null;
+        Try.success(3).collect(pf);
     }
 
     // -- exists
