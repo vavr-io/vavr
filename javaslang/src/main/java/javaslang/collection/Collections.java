@@ -22,6 +22,83 @@ import static javaslang.collection.ArrayType.asArray;
  */
 final class Collections {
 
+    @SuppressWarnings("unchecked")
+    static <K, V> boolean equals(Map<K, V> source, Object object) {
+        if (source == object) {
+            return true;
+        } else if (source != null && object instanceof Map) {
+            Map<K, V> map = (Map<K, V>) object;
+            if (source.size() != map.size()) {
+                return false;
+            } else {
+                try {
+                    if (source.isOrdered() && map.isOrdered()) {
+                        return areEqual(source, map);
+                    }
+                    return source.forAll(map::contains);
+                } catch (ClassCastException e) {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    static <V> boolean equals(Set<V> source, Object object) {
+        if (source == object) {
+            return true;
+        } else if (source != null && object instanceof Set) {
+            Set<V> set = (Set<V>) object;
+            if (source.size() != set.size()) {
+                return false;
+            } else {
+                try {
+                    if (source.isOrdered() && set.isOrdered()) {
+                        return areEqual(source, set);
+                    }
+                    return source.forAll(set::contains);
+                } catch (ClassCastException e) {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    static <K, V> boolean equals(Multimap<K, V> source, Object object) {
+        if (source == object) {
+            return true;
+        } else if (source != null && object instanceof Multimap) {
+            Multimap<K, V> multimap = (Multimap<K, V>) object;
+            if (source.size() != multimap.size()) {
+                return false;
+            } else {
+                try {
+                    if (source.isOrdered() && multimap.isOrdered()) {
+                        return areEqual(source, multimap);
+                    }
+                    return source.forAll(multimap::contains);
+                } catch (ClassCastException e) {
+                    return false;
+                }
+            }
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    static <V> boolean equals(Seq<V> source, Object object) {
+        if (object == source) {
+            return true;
+        } else if (source != null && object instanceof Seq) {
+            Seq<V> seq = (Seq<V>) object;
+            return seq.size() == source.size() && areEqual(source, seq);
+        }
+        return false;
+    }
+
     // checks, if the *elements* of the given iterables are equal
     static boolean areEqual(Iterable<?> iterable1, Iterable<?> iterable2) {
         final java.util.Iterator<?> iter1 = iterable1.iterator();
@@ -177,7 +254,7 @@ final class Collections {
         } else if (iterable instanceof Seq) {
             return ((Seq<T>) iterable).reverseIterator();
         } else {
-            return List.<T> empty().pushAll(iterable).iterator();
+            return List.<T>empty().pushAll(iterable).iterator();
         }
     }
 
@@ -198,14 +275,14 @@ final class Collections {
     }
 
     static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,
-            U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
+                                                       U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<U> iterator = source.iterator().scanLeft(zero, operation);
         return finisher.apply(iterator);
     }
 
     static <T, U, R extends Traversable<U>> R scanRight(Traversable<? extends T> source,
-            U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
+                                                        U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<? extends T> reversedElements = reverseIterator(source);
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
@@ -294,7 +371,7 @@ final class Collections {
     static <T> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
         return isTraversableAgain(iterable) ? withSizeTraversable(iterable) : withSizeTraversable(List.ofAll(iterable));
     }
-    
+
     private static <T> IterableWithSize<T> withSizeTraversable(Iterable<? extends T> iterable) {
         if (iterable instanceof Collection) {
             return new IterableWithSize<>(iterable, ((Collection<?>) iterable).size());
@@ -311,6 +388,7 @@ final class Collections {
             return transposeNonEmptyMatrix(matrix, rowFactory, columnFactory);
         }
     }
+
     private static <T, U extends Seq<T>, V extends Seq<U>> V transposeNonEmptyMatrix(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
         final int newHeight = matrix.head().size(), newWidth = matrix.size();
         @SuppressWarnings("unchecked") final T[][] results = (T[][]) new Object[newHeight][newWidth];

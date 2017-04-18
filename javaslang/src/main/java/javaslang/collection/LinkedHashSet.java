@@ -909,21 +909,13 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     // -- Object
 
     @Override
-    public int hashCode() {
-        return map.hashCode();
+    public boolean equals(Object o) {
+        return Collections.equals(this, o);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof LinkedHashSet) {
-            final LinkedHashSet<?> that = (LinkedHashSet<?>) o;
-            return this.map.equals(that.map);
-        } else {
-            return false;
-        }
+    public int hashCode() {
+        return Collections.hash(this);
     }
 
     @Override

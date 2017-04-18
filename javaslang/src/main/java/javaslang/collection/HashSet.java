@@ -905,21 +905,13 @@ public final class HashSet<T> implements Kind1<HashSet<?>, T>, Set<T>, Serializa
     // -- Object
 
     @Override
-    public int hashCode() {
-        return tree.hashCode();
+    public boolean equals(Object o) {
+        return Collections.equals(this, o);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof HashSet) {
-            final HashSet<?> that = (HashSet<?>) o;
-            return this.tree.equals(that.tree);
-        } else {
-            return false;
-        }
+    public int hashCode() {
+        return Collections.hash(this);
     }
 
     @Override
