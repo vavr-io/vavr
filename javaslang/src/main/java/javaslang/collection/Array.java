@@ -594,6 +594,11 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
             return wrap(arr);
         }
     }
+
+    @Override
+    public <R> Array<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
     
     @Override
     public boolean hasDefiniteSize() {
@@ -1394,19 +1399,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof Array) {
-            final Array<?> that = (Array<?>) o;
-            return Objects.deepEquals(this.delegate, that.delegate);
-        } else {
-            return false;
-        }
+        return Collections.equals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(delegate);
+        return Collections.hashOrdered(this);
     }
 
     @Override

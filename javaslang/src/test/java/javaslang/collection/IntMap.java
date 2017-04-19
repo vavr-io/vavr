@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.PartialFunction;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -45,21 +46,14 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return original.values().hashCode();
+    public boolean equals(Object o) {
+        final Object that = (o instanceof IntMap) ?((IntMap) o).original : o;
+        return Collections.equals(original, that);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o instanceof IntMap) {
-            final IntMap<?> that = (IntMap<?>) o;
-            return original.equals(that.original) || original.values().equals(that.original.values());
-        } else if (o instanceof Iterable) {
-            final Iterable<?> that = (Iterable<?>) o;
-            return original.values().equals(that);
-        } else {
-            return false;
-        }
+    public int hashCode() {
+        return original.hashCode();
     }
 
     @Override
@@ -70,6 +64,22 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    @Override
+    public <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        Objects.requireNonNull(partialFunction, "partialFunction is null");
+        final PartialFunction<Tuple2<Integer, T>, R> pf = new PartialFunction<Tuple2<Integer, T>, R>() {
+            @Override
+            public R apply(Tuple2<Integer, T> entry) {
+                return partialFunction.apply(entry._2);
+            }
+            @Override
+            public boolean isDefinedAt(Tuple2<Integer, T> entry) {
+                return partialFunction.isDefinedAt(entry._2);
+            }
+        };
+        return original.collect(pf);
     }
 
     @Override

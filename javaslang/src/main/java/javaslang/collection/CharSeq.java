@@ -376,6 +376,11 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
     }
 
     @Override
+    public <R> IndexedSeq<R> collect(PartialFunction<? super Character, ? extends R> partialFunction) {
+        return Vector.ofAll(iterator().<R> collect(partialFunction));
+    }
+
+    @Override
     public IndexedSeq<CharSeq> combinations() {
         return Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
@@ -1187,18 +1192,12 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof CharSeq) {
-            return ((CharSeq) o).back.equals(back);
-        } else {
-            return false;
-        }
+        return Collections.equals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return back.hashCode();
+        return Collections.hashOrdered(this);
     }
 
     //

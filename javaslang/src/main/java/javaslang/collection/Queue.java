@@ -40,7 +40,7 @@ import java.util.stream.Collector;
  * @since 2.0.0
  */
 @SuppressWarnings("deprecation")
-public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements LinearSeq<T>, Kind1<Queue<T>, T> {
+public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements LinearSeq<T>, Kind1<Queue<T>, T> {
 
     private static final long serialVersionUID = 1L;
 
@@ -647,6 +647,11 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
         return enqueueAll(elements);
     }
 
+    @Override
+    public <R> Queue<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
+    
     @Override
     public Queue<Queue<T>> combinations() {
         return ofAll(toList().combinations().map(Queue::ofAll));
@@ -1269,6 +1274,11 @@ public final class Queue<T> extends AbstractsQueue<T, Queue<T>> implements Linea
 
     @Override
     public boolean equals(Object o) {
-        return o == this || o instanceof Queue && Collections.areEqual(this, (Iterable) o);
+        return Collections.equals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Collections.hashOrdered(this);
     }
 }

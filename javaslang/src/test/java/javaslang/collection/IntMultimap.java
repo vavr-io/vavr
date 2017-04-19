@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.PartialFunction;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
@@ -36,26 +37,24 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return original.values().hashCode();
-    }
-
-    @Override
     public boolean isDistinct() {
         return original.isDistinct();
     }
 
     @Override
+    public boolean isSequential() {
+        return original.isSequential();
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (o instanceof IntMultimap) {
-            final IntMultimap<?> that = (IntMultimap<?>) o;
-            return original.equals(that.original) || original.values().equals(that.original.values());
-        } else if (o instanceof Iterable) {
-            final Iterable<?> that = (Iterable<?>) o;
-            return original.values().equals(that);
-        } else {
-            return false;
-        }
+        final Object that = (o instanceof IntMultimap) ? ((IntMultimap) o).original : o;
+        return Collections.equals(original, that);
+    }
+
+    @Override
+    public int hashCode() {
+        return original.hashCode();
     }
 
     @Override
@@ -66,6 +65,22 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
+    }
+
+    @Override
+    public <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        Objects.requireNonNull(partialFunction, "partialFunction is null");
+        final PartialFunction<Tuple2<Integer, T>, R> pf = new PartialFunction<Tuple2<Integer, T>, R>() {
+            @Override
+            public R apply(Tuple2<Integer, T> entry) {
+                return partialFunction.apply(entry._2);
+            }
+            @Override
+            public boolean isDefinedAt(Tuple2<Integer, T> entry) {
+                return partialFunction.isDefinedAt(entry._2);
+            }
+        };
+        return original.collect(pf);
     }
 
     @Override

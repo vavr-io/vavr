@@ -653,6 +653,31 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3, 4).endsWith(of(2, 3, 5))).isFalse();
     }
 
+    // -- equality
+
+    @Test
+    public void shouldObeyEqualityConstraints() {
+
+        // sequential collections
+        assertThat(empty().equals(List.empty())).isTrue();
+        assertThat(of(1).equals(List.of(1))).isTrue();
+        assertThat(of(1, 2, 3).equals(List.of(1, 2, 3))).isTrue();
+        assertThat(of(1, 2, 3).equals(List.of(3, 2, 1))).isFalse();
+
+        // other classes
+        assertThat(empty().equals(HashMap.empty())).isFalse();
+        assertThat(empty().equals(HashMultimap.withSeq().empty())).isFalse();
+        assertThat(empty().equals(HashSet.empty())).isFalse();
+
+        assertThat(empty().equals(LinkedHashMap.empty())).isFalse();
+        assertThat(empty().equals(LinkedHashMultimap.withSeq().empty())).isFalse();
+        assertThat(empty().equals(LinkedHashSet.empty())).isFalse();
+
+        assertThat(empty().equals(TreeMap.empty())).isFalse();
+        assertThat(empty().equals(TreeMultimap.withSeq().empty())).isFalse();
+        assertThat(empty().equals(TreeSet.empty())).isFalse();
+    }
+
     // -- insert
 
     @Test

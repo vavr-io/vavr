@@ -5,6 +5,7 @@
  */
 package javaslang.collection;
 
+import javaslang.PartialFunction;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -47,6 +48,9 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<T> appendAll(Iterable<? extends T> elements);
+
+    @Override
+    <R> LinearSeq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     @Override
     LinearSeq<? extends LinearSeq<T>> combinations();

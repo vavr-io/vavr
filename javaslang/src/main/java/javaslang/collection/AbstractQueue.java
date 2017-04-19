@@ -19,7 +19,8 @@ import java.util.function.Predicate;
  * @author Pap Lőrinc, Daniel Dietrich
  * @since 2.1.0
  */
-abstract class AbstractsQueue<T, Q extends AbstractsQueue<T, Q>> implements Traversable<T> {
+abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traversable<T> {
+
     /**
      * Removes an element from this Queue.
      *
@@ -164,11 +165,6 @@ abstract class AbstractsQueue<T, Q extends AbstractsQueue<T, Q>> implements Trav
             action.accept(head());
         }
         return (Q) this;
-    }
-
-    @Override
-    public int hashCode() {
-        return Collections.hash(this);
     }
 
     @Override

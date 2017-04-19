@@ -685,6 +685,11 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
     }
 
     @Override
+    default <R> List<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
+
+    @Override
     default List<List<T>> combinations() {
         return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
@@ -1592,12 +1597,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
         @Override
         public boolean equals(Object o) {
-            return o == this;
+            return Collections.equals(this, o);
         }
 
         @Override
         public int hashCode() {
-            return 1;
+            return Collections.hashOrdered(this);
         }
 
         @Override
@@ -1665,28 +1670,12 @@ public interface List<T> extends Kind1<List<?>, T>, LinearSeq<T>, Stack<T> {
 
         @Override
         public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof List) {
-                List<?> list1 = this;
-                List<?> list2 = (List<?>) o;
-                while (!list1.isEmpty() && !list2.isEmpty()) {
-                    final boolean isEqual = Objects.equals(list1.head(), list2.head());
-                    if (!isEqual) {
-                        return false;
-                    }
-                    list1 = list1.tail();
-                    list2 = list2.tail();
-                }
-                return list1.isEmpty() && list2.isEmpty();
-            } else {
-                return false;
-            }
+            return Collections.equals(this, o);
         }
 
         @Override
         public int hashCode() {
-            return Collections.hash(this);
+            return Collections.hashOrdered(this);
         }
 
         @Override

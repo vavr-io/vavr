@@ -495,6 +495,11 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     }
 
     @Override
+    public <R> LinkedHashSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
+
+    @Override
     public boolean contains(T element) {
         return map.get(element).isDefined();
     }
@@ -904,21 +909,13 @@ public final class LinkedHashSet<T> implements Kind1<LinkedHashSet<?>, T>, Set<T
     // -- Object
 
     @Override
-    public int hashCode() {
-        return map.hashCode();
+    public boolean equals(Object o) {
+        return Collections.equals(this, o);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof LinkedHashSet) {
-            final LinkedHashSet<?> that = (LinkedHashSet<?>) o;
-            return this.map.equals(that.map);
-        } else {
-            return false;
-        }
+    public int hashCode() {
+        return Collections.hashUnordered(this);
     }
 
     @Override

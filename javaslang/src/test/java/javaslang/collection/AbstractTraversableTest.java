@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.AbstractValueTest;
+import javaslang.PartialFunction;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.control.Option;
@@ -237,6 +238,31 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldComputeAverageOfBigDecimal() {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).average().get()).isEqualTo(.5);
+    }
+
+    // -- collect
+
+    @Test
+    public void shouldThrowOnCollectWhenPartialFunctionIsNull() {
+        assertThatThrownBy(() -> empty().collect((PartialFunction<Object, ?>) null))
+                .isExactlyInstanceOf(NullPointerException.class)
+                .hasMessage("partialFunction is null");
+    }
+
+    @Test
+    public void shouldCollectUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            @Override
+            public String apply(Integer i) {
+                return String.valueOf(i);
+            }
+            @Override
+            public boolean isDefinedAt(Integer i) {
+                return i % 2 == 1;
+            }
+        };
+        final Traversable<String> actual = of(1, 2, 3).collect(pf);
+        assertThat(actual).isEqualTo(of("1", "3"));
     }
 
     // -- contains
@@ -1022,6 +1048,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     @Test
+    public void shouldComputeMaxOfOneValue() { assertThat(of(5).max()).isEqualTo(Option.some(5)); }
+
+    @Test
     public void shouldComputeMaxOfStrings() {
         assertThat(of("1", "2", "3").max()).isEqualTo(Option.some("3"));
     }
@@ -1146,6 +1175,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldReturnNoneWhenComputingMinOfNil() {
         assertThat(empty().min()).isEqualTo(Option.none());
     }
+
+    @Test
+    public void shouldComputeMinOfOneValue() { assertThat(of(5).min()).isEqualTo(Option.some(5)); }
 
     @Test
     public void shouldComputeMinOfStrings() {

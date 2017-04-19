@@ -5,6 +5,7 @@
  */
 package javaslang.concurrent;
 
+import javaslang.PartialFunction;
 import javaslang.Tuple;
 import javaslang.Tuple2;
 import javaslang.Value;
@@ -686,6 +687,33 @@ public interface Future<T> extends Value<T> {
      * @see java.util.concurrent.Future#cancel(boolean)
      */
     boolean cancel(boolean mayInterruptIfRunning);
+
+    /**
+     * Collects value that is in the domain of the given {@code partialFunction} by mapping the value to type {@code R}.
+     * <p>
+     *
+     * <pre><{@code
+     * partialFunction.isDefinedAt(value)
+     * }</pre>
+     *
+     * If the element makes it through that filter, the mapped instance is wrapped in {@code Future}
+     *
+     * <pre>{@code
+     * R newValue = partialFunction.apply(value)
+     * }</pre>
+     *
+     *
+     * @param partialFunction A function that is not necessarily defined on value of this future.
+     * @param <R> The new value type
+     * @return A new {@code Future} instance containing value of type {@code R}
+     * @throws NullPointerException if {@code partialFunction} is null
+     */
+    default <R> Future<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        Objects.requireNonNull(partialFunction, "partialFunction is null");
+        final Promise<R> promise = Promise.make(executorService());
+        onComplete(result -> promise.complete(result.collect(partialFunction)));
+        return promise.future();
+    }
 
     /**
      * Returns the {@link ExecutorService} used by this {@code Future}.

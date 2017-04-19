@@ -5,9 +5,7 @@
  */
 package javaslang.collection;
 
-import javaslang.Tuple2;
-import javaslang.Tuple3;
-import javaslang.Value;
+import javaslang.*;
 import javaslang.control.Option;
 
 import java.math.BigInteger;
@@ -30,6 +28,7 @@ import java.util.function.Supplier;
  * Basic operations:
  *
  * <ul>
+ * <li>{@link #collect(PartialFunction)}</li>
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #containsAll(Iterable)}</li>
  * <li>{@link #head()}</li>
@@ -174,6 +173,22 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     static <T> Traversable<T> narrow(Traversable<? extends T> traversable) {
         return (Traversable<T>) traversable;
     }
+    
+    /**
+     * Matches each element with a unique key that you extract from it.
+     * If the same key is present twice, the function will return {@code None}.
+     *
+     * @param getKey A function which extracts a key from elements
+     * @param <K>    key class type
+     * @return A Map containing the elements arranged by their keys.
+     * @throws NullPointerException if {@code getKey} is null.
+     * @see #groupBy(Function)
+     */
+    default <K> Option<Map<K, T>> arrangeBy(Function<? super T, ? extends K> getKey) {
+        return Option.of(groupBy(getKey).mapValues(Traversable<T>::singleOption))
+                .filter(map -> !map.exists(kv -> kv._2.isEmpty()))
+                .map(map -> Map.narrow(map.mapValues(Option::get)));
+    }
 
     /**
      * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
@@ -222,6 +237,31 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Collects all elements that are in the domain of the given {@code partialFunction} by mapping the elements to type {@code R}.
+     * <p>
+     * More specifically, for each of this elements in iteration order first it is checked
+     *
+     * <pre>{@code
+     * partialFunction.isDefinedAt(element)
+     * }</pre>
+     *
+     * If the elements makes it through that filter, the mapped instance is added to the result collection
+     *
+     * <pre>{@code
+     * R newElement = partialFunction.apply(element)
+     * }</pre>
+     *
+     * <strong>Note:</strong>If this {@code Traversable} is ordered (i.e. extends {@link Ordered},
+     * the caller of {@code collect} has to ensure that the elements are comparable (i.e. extend {@link Comparable}).
+     *
+     * @param partialFunction A function that is not necessarily defined of all elements of this traversable.
+     * @param <R> The new element type
+     * @return A new {@code Traversable} instance containing elements of type {@code R}
+     * @throws NullPointerException if {@code partialFunction} is null
+     */
+    <R> Traversable<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
+
+    /**
      * Tests if this Traversable contains all given elements.
      * <p>
      * The result is equivalent to
@@ -233,6 +273,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code elements} is null
      */
     default boolean containsAll(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
         for (T element : elements) {
             if (!contains(element)) {
                 return false;
@@ -312,7 +353,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     Traversable<T> dropUntil(Predicate<? super T> predicate);
 
     /**
-     * Drops elements while the predicate holds for the current element.
+     * Drops elements while the predicate holds for the current element.                                                                            
      * <p>
      * Note: This is essentially the same as {@code dropUntil(predicate.negate())}.
      * It is intended to be used with method references, which cannot be negated directly.
@@ -323,6 +364,48 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> dropWhile(Predicate<? super T> predicate);
+
+    /**
+     * In Javaslang there are four basic classes of collections:
+     *
+     * <ul>
+     * <li>Seq (sequential elements)</li>
+     * <li>Set (distinct elements)</li>
+     * <li>Map (indexed elements)</li>
+     * <li>Multimap (indexed collections)</li>
+     * </ul>
+     *
+     * Two collection instances of these classes are equal if and only if both collections
+     *
+     * <ul>
+     * <li>belong to the same basic collection class (Seq, Set, Map or Multimap)</li>
+     * <li>contain the same elements</li>
+     * <li>have the same element order, if the collections are of type Seq</li>
+     * </ul>
+     * 
+     * Two Map/Multimap elements, resp. entries, (key1, value1) and (key2, value2) are equal,
+     * if the keys are equal and the values are equal.
+     * <p>
+     * <strong>Notes:</strong>
+     *
+     * <ul>
+     * <li>No collection instance equals null, e.g. Queue(1) not equals null.</li>
+     * <li>Nulls are allowed and handled as expected, e.g. List(null, 1) equals Stream(null, 1)
+     * and HashMap((null, 1)) equals LinkedHashMap((null, 1)).
+     * </li>
+     * <li>The element order is taken into account for Seq only.
+     * E.g. List(null, 1) not equals Stream(1, null)
+     * and HashMap((null, 1), ("a", null)) equals LinkedHashMap(("a", null), (null, 1)).
+     * The reason is, that we do not know which implementations we compare when having
+     * two instances of type Map, Multimap or Set (see <a href="https://en.wikipedia.org/wiki/Liskov_substitution_principle">Liskov Substitution Principle</a>).</li>
+     * <li>Other collection classes are equal if their types are equal and their elements are equal (in iteration order).</li>
+     * <li>Iterator equality is defined to be object reference equality.</li>
+     * </ul>
+     *
+     * @param obj an object, may be null
+     * @return true, if this collection equals the given object according to the rules described above, false otherwise.
+     */
+    boolean equals(Object obj);
 
     /**
      * Checks, if a unique elements exists such that the predicate holds.
@@ -414,35 +497,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * Returns the only element of a Traversable as {@code Option}.
-     *
-     * @return {@code Some(element)} or {@code None} if the Traversable does not contain a single element.
-     */
-    default Option<T> singleOption() {
-        final Iterator<T> it = iterator();
-        if (!it.hasNext()) {
-            return Option.none();
-        }
-        final T first = it.next();
-        if (it.hasNext()) {
-            return Option.none();
-        } else {
-            return Option.some(first);
-        }
-    }
-
-    /**
-     * if the Traversable contains a single element, return it,
-     * otherwise throws.
-     *
-     * @return the single element from the Traversable
-     * @throws NoSuchElementException if the Traversable does not contain a single element.
-     */
-    default T single() {
-        return singleOption().getOrElseThrow(() -> new NoSuchElementException("Does not contain a single value"));
-    }
-
-    /**
      * Groups this elements by classifying the elements.
      *
      * @param classifier A function which classifies elements into classes
@@ -452,22 +506,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @see #arrangeBy(Function)
      */
     <C> Map<C, ? extends Traversable<T>> groupBy(Function<? super T, ? extends C> classifier);
-
-    /**
-     * Matches each element with a unique key that you extract from it.
-     * If the same key is present twice, the function will return {@code None}.
-     *
-     * @param classifier A function which extracts a key from elements
-     * @param <K>        key class type
-     * @return A Map containing the elements arranged by their keys.
-     * @throws NullPointerException if {@code getKey} is null.
-     * @see #groupBy(Function)
-     */
-    default <K> Option<Map<K, T>> arrangeBy(Function<? super T, ? extends K> getKey) {
-        return Option.of(groupBy(getKey).mapValues(Traversable<T>::singleOption))
-            .filter(map -> !map.exists(kv -> kv._2.isEmpty()))
-            .map(map -> Map.narrow(map.mapValues(Option::get)));
-    }
 
     /**
      * Groups this {@code Traversable} into fixed size blocks.
@@ -525,6 +563,79 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     default Option<T> headOption() {
         return isEmpty() ? Option.none() : Option.some(head());
     }
+    
+    /**
+     * Returns the hash code of this collection.
+     * <br>
+     * We distinguish between two types of hashes, those for collections with predictable iteration order (like Seq) and those with arbitrary iteration order (like Set, Map and Multimap).
+     * <br>
+     * In all cases the hash of an empty collection is defined to be 1.
+     * <br>
+     * Collections with predictable iteration order are hashed as follows:
+     *
+     * <pre>{@code
+     * int hash = 1;
+     * for (T t : this) { hash = hash * 31 + Objects.hashCode(t); }
+     * }</pre>
+     *
+     * Collections with arbitrary iteration order are hashed in a way such that the hash of a fixed number of elements is independent of their iteration order.
+     *
+     * <pre>{@code
+     * int hash = 1;
+     * for (T t : this) { hash += Objects.hashCode(t); }
+     * }</pre>
+     *
+     * Please note that the particular hashing algorithms may change in a future version of Javaslang.
+     * <br>
+     * Generally, hash codes of collections aren't cached in Javaslang (opposed to the size/length).
+     * Storing hash codes in order to reduce the time complexity would increase the memory footprint.
+     * Persistent collections are built upon tree structures, it allows us to implement efficient memory sharing.
+     * A drawback of tree structures is that they make it necessary to store collection attributes at each tree node (read: element).
+     * <br>
+     * The computation of the hash code is linear in time, i.e. O(n). If the hash code of a collection is re-calculated often,
+     * e.g. when using a List as HashMap key, we might want to cache the hash code.
+     * This can be achieved by simply using a wrapper class, which is not included in Javaslang but could be implemented like this:
+     *
+     * <pre>{@code public final class Hashed<K> {
+     *
+     *     private final K key;
+     *     private final Lazy<Integer> hashCode;
+     *
+     *     public Hashed(K key) {
+     *         this.key = key;
+     *         this.hashCode = Lazy.of(() -> Objects.hashCode(key));
+     *     }
+     *
+     *     public K key() {
+     *         return key;
+     *     }
+     *
+     *     &#64;Override
+     *     public boolean equals(Object o) {
+     *         if (o == key) {
+     *             return true;
+     *         } else if (key != null && o instanceof Hashed) {
+     *             final Hashed that = (Hashed) o;
+     *             return key.equals(that.key);
+     *         } else {
+     *             return false;
+     *         }
+     *     }
+     *
+     *     &#64;Override
+     *     public int hashCode() {
+     *         return hashCode.get();
+     *     }
+     *
+     *     &#64;Override
+     *     public String toString() {
+     *         return "Hashed(" + (key == null ? "null" : key.toString()) + ")";
+     *     }
+     * }}</pre>
+     *
+     * @return The hash code of this collection
+     */
+    int hashCode();
 
     /**
      * Dual of {@linkplain #tail()}, returning all elements except the last.
@@ -682,10 +793,10 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> max() {
-        final Traversable<T> ts = isTraversableAgain() ? this : toStream();
         if (isEmpty()) {
             return Option.none();
         } else {
+            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
             return ts.maxBy(Comparators.naturalComparator());
         }
     }
@@ -744,10 +855,10 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
-        final Traversable<T> ts = isTraversableAgain() ? this : toStream();
         if (isEmpty()) {
             return Option.none();
         } else {
+            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
             return ts.minBy(Comparators.naturalComparator());
         }
     }
@@ -796,6 +907,43 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             return Option.some(tm);
         }
     }
+    
+    /**
+     * Joins the elements of this by concatenating their string representations.
+     * <p>
+     * This has the same effect as calling {@code mkCharSeq("", "", "")}.
+     *
+     * @return a new {@link CharSeq}
+     */
+    default CharSeq mkCharSeq() {
+        return mkCharSeq("", "", "");
+    }
+
+    /**
+     * Joins the string representations of this elements using a specific delimiter.
+     * <p>
+     * This has the same effect as calling {@code mkCharSeq("", delimiter, "")}.
+     *
+     * @param delimiter A delimiter string put between string representations of elements of this
+     * @return A new {@link CharSeq}
+     */
+    default CharSeq mkCharSeq(CharSequence delimiter) {
+        return mkCharSeq("", delimiter, "");
+    }
+
+    /**
+     * Joins the string representations of this elements using a specific delimiter, prefix and suffix.
+     * <p>
+     * Example: {@code List.of("a", "b", "c").mkCharSeq("Chars(", ", ", ")") = CharSeq.of("Chars(a, b, c))"}
+     *
+     * @param prefix    prefix of the resulting {@link CharSeq}
+     * @param delimiter A delimiter string put between string representations of elements of this
+     * @param suffix    suffix of the resulting {@link CharSeq}
+     * @return a new {@link CharSeq}
+     */
+    default CharSeq mkCharSeq(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
+        return CharSeq.of(mkString(prefix, delimiter, suffix));
+    }
 
     /**
      * Joins the elements of this by concatenating their string representations.
@@ -834,43 +982,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         final StringBuilder builder = new StringBuilder(prefix);
         iterator().map(String::valueOf).intersperse(String.valueOf(delimiter)).forEach(builder::append);
         return builder.append(suffix).toString();
-    }
-
-    /**
-     * Joins the elements of this by concatenating their string representations.
-     * <p>
-     * This has the same effect as calling {@code mkCharSeq("", "", "")}.
-     *
-     * @return a new {@link CharSeq}
-     */
-    default CharSeq mkCharSeq() {
-        return mkCharSeq("", "", "");
-    }
-
-    /**
-     * Joins the string representations of this elements using a specific delimiter.
-     * <p>
-     * This has the same effect as calling {@code mkCharSeq("", delimiter, "")}.
-     *
-     * @param delimiter A delimiter string put between string representations of elements of this
-     * @return A new {@link CharSeq}
-     */
-    default CharSeq mkCharSeq(CharSequence delimiter) {
-        return mkCharSeq("", delimiter, "");
-    }
-
-    /**
-     * Joins the string representations of this elements using a specific delimiter, prefix and suffix.
-     * <p>
-     * Example: {@code List.of("a", "b", "c").mkCharSeq("Chars(", ", ", ")") = CharSeq.of("Chars(a, b, c))"}
-     *
-     * @param prefix    prefix of the resulting {@link CharSeq}
-     * @param delimiter A delimiter string put between string representations of elements of this
-     * @param suffix    suffix of the resulting {@link CharSeq}
-     * @return a new {@link CharSeq}
-     */
-    default CharSeq mkCharSeq(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
-        return CharSeq.of(mkString(prefix, delimiter, suffix));
     }
 
     /**
@@ -1013,26 +1124,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         return isEmpty() ? Option.none() : Option.some(reduceRight(op));
     }
 
-    @Override
-    default Spliterator<T> spliterator() {
-        int characteristics = Spliterator.IMMUTABLE;
-        if (isDistinct()) {
-            characteristics |= Spliterator.DISTINCT;
-        }
-        if (isOrdered()) {
-            characteristics |= (Spliterator.SORTED | Spliterator.ORDERED);
-        }
-        if (isSequential()) {
-            characteristics |= Spliterator.ORDERED;
-        }
-        if (hasDefiniteSize()) {
-            characteristics |= (Spliterator.SIZED | Spliterator.SUBSIZED);
-            return Spliterators.spliterator(iterator(), length(), characteristics);
-        } else {
-            return Spliterators.spliteratorUnknownSize(iterator(), characteristics);
-        }
-    }
-
     /**
      * Replaces the first occurrence (if exists) of the given currentElement with newElement.
      *
@@ -1106,6 +1197,34 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code operation} is null.
      */
     <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    
+    /**
+     * Returns the single element of this Traversable or throws, if this is empty or contains more than one element.
+     *
+     * @return the single element from the Traversable
+     * @throws NoSuchElementException if the Traversable does not contain a single element.
+     */
+    default T single() {
+        return singleOption().getOrElseThrow(() -> new NoSuchElementException("Does not contain a single value"));
+    }
+
+    /**
+     * Returns the only element of a Traversable as {@code Option}.
+     *
+     * @return {@code Some(element)} or {@code None} if the Traversable does not contain a single element.
+     */
+    default Option<T> singleOption() {
+        final Iterator<T> it = iterator();
+        if (!it.hasNext()) {
+            return Option.none();
+        }
+        final T first = it.next();
+        if (it.hasNext()) {
+            return Option.none();
+        } else {
+            return Option.some(first);
+        }
+    }
 
     /**
      * Computes the number of elements of this Traversable.
@@ -1180,6 +1299,26 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> span(Predicate<? super T> predicate);
 
+    @Override
+    default Spliterator<T> spliterator() {
+        int characteristics = Spliterator.IMMUTABLE;
+        if (isDistinct()) {
+            characteristics |= Spliterator.DISTINCT;
+        }
+        if (isOrdered()) {
+            characteristics |= (Spliterator.SORTED | Spliterator.ORDERED);
+        }
+        if (isSequential()) {
+            characteristics |= Spliterator.ORDERED;
+        }
+        if (hasDefiniteSize()) {
+            characteristics |= (Spliterator.SIZED | Spliterator.SUBSIZED);
+            return Spliterators.spliterator(iterator(), length(), characteristics);
+        } else {
+            return Spliterators.spliteratorUnknownSize(iterator(), characteristics);
+        }
+    }
+    
     /**
      * Calculates the sum of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
      * {@code Integer}, {@code Long}, {@code Short}, {@code BigInteger} and {@code BigDecimal}.
@@ -1323,22 +1462,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <U> Traversable<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     /**
-     * Returns a traversable formed from this traversable and another Iterable collection by mapping elements.
-     * If one of the two iterables is longer than the other, its remaining elements are ignored.
-     * <p>
-     * The length of the returned traversable is the minimum of the lengths of this traversable and {@code that}
-     * iterable.
-     *
-     * @param <U>    The type of the second parameter of the mapper.
-     * @param <R>    The type of the mapped elements.
-     * @param that   The Iterable providing the second parameter of the mapper.
-     * @param mapper a mapper.
-     * @return a new traversable containing mapped elements of this traversable and {@code that} iterable.
-     * @throws NullPointerException if {@code that} or {@code mapper} is null
-     */
-    <U, R> Traversable<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
-
-    /**
      * Returns a traversable formed from this traversable and another Iterable by combining corresponding elements in
      * pairs. If one of the two collections is shorter than the other, placeholder elements are used to extend the
      * shorter collection to the length of the longer.
@@ -1361,6 +1484,22 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code that} is null
      */
     <U> Traversable<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
+    
+    /**
+     * Returns a traversable formed from this traversable and another Iterable collection by mapping elements.
+     * If one of the two iterables is longer than the other, its remaining elements are ignored.
+     * <p>
+     * The length of the returned traversable is the minimum of the lengths of this traversable and {@code that}
+     * iterable.
+     *
+     * @param <U>    The type of the second parameter of the mapper.
+     * @param <R>    The type of the mapped elements.
+     * @param that   The Iterable providing the second parameter of the mapper.
+     * @param mapper a mapper.
+     * @return a new traversable containing mapped elements of this traversable and {@code that} iterable.
+     * @throws NullPointerException if {@code that} or {@code mapper} is null
+     */
+    <U, R> Traversable<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
 
     /**
      * Zips this traversable with its indices.

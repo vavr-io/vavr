@@ -823,6 +823,11 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? this : new AppendSelf<>((Cons<T>) this, mapper).stream();
     }
+
+    @Override
+    default <R> Stream<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
     
     @Override
     default Stream<Stream<T>> combinations() {
@@ -1716,12 +1721,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
         @Override
         public boolean equals(Object o) {
-            return o == this;
+            return Collections.equals(this, o);
         }
 
         @Override
         public int hashCode() {
-            return 1;
+            return Collections.hashOrdered(this);
         }
 
         @Override
@@ -1776,28 +1781,12 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
 
         @Override
         public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof Stream) {
-                Stream<?> stream1 = this;
-                Stream<?> stream2 = (Stream<?>) o;
-                while (!stream1.isEmpty() && !stream2.isEmpty()) {
-                    final boolean isEqual = Objects.equals(stream1.head(), stream2.head());
-                    if (!isEqual) {
-                        return false;
-                    }
-                    stream1 = stream1.tail();
-                    stream2 = stream2.tail();
-                }
-                return stream1.isEmpty() && stream2.isEmpty();
-            } else {
-                return false;
-            }
+            return Collections.equals(this, o);
         }
 
         @Override
         public int hashCode() {
-            return Collections.hash(this);
+            return Collections.hashOrdered(this);
         }
 
         @Override

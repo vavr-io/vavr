@@ -6,6 +6,7 @@
 package javaslang.collection;
 
 import javaslang.Function1;
+import javaslang.PartialFunction;
 import javaslang.Tuple2;
 import javaslang.Tuple3;
 import javaslang.control.Option;
@@ -173,6 +174,9 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> union(Set<? extends T> that);
 
     // -- Adjusted return types of Traversable methods
+
+    @Override
+    <R> Set<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     @Override
     boolean contains(T element);

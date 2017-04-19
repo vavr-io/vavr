@@ -821,20 +821,13 @@ public final class HashMap<K, V> implements Kind2<HashMap<?, ?>, K, V>, Map<K, V
     }
 
     @Override
-    public int hashCode() {
-        return trie.hashCode();
+    public boolean equals(Object o) {
+        return Collections.equals(this, o);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof HashMap) {
-            final HashMap<?, ?> that = (HashMap<?, ?>) o;
-            return this.trie.equals(that.trie);
-        } else {
-            return false;
-        }
+    public int hashCode() {
+        return Collections.hashUnordered(this);
     }
 
     private Object readResolve() {

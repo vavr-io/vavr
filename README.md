@@ -1,4 +1,5 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.javaslang/javaslang/badge.png)](https://maven-badges.herokuapp.com/maven-central/io.javaslang/javaslang)
+[![Code Scene](https://img.shields.io/badge/codescene-analyzed-brightgreen.svg)](https://codescene.io/projects/981/jobs/latest-successful/results)
 [![Build Status](https://travis-ci.org/javaslang/javaslang.png)](https://travis-ci.org/javaslang/javaslang)
 [![Coverage Status](https://codecov.io/github/javaslang/javaslang/coverage.png?branch=master)](https://codecov.io/github/javaslang/javaslang?branch=master)
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/javaslang/javaslang)
@@ -43,5 +44,5 @@ mvn clean test -P benchmark -pl javaslang-benchmark
 If you like Javaslang you can support us by donating.
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8ZR8YCWB9K5WA">
-![donate-to-javaslang-via-paypal](https://cloud.githubusercontent.com/assets/743833/23549988/02d66ccc-000f-11e7-8764-a257b21377bd.gif)
+<img src="https://cloud.githubusercontent.com/assets/743833/23549988/02d66ccc-000f-11e7-8764-a257b21377bd.gif">
 </a>

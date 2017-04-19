@@ -212,13 +212,53 @@ We follow the [Semantic Versioning](http://semver.org) scheme.
 
 ### Backward compatibility
 
-We distinguish between 3 kinds of (backwward-)compatibilty:
+We distinguish between 3 kinds of (backward-)compatibilty:
 
 1. **Source** - Source compatibility concerns translating Java source code into class files.
 2. **Binary** - Binary compatibility is [defined](http://java.sun.com/docs/books/jls/third_edition/html/binaryComp.html#13.2) in The Java Language Specification as preserving the ability to link without error.
 3. **Behavioral** - Behavioral compatibility includes the semantics of the code that is executed at runtime.
 
 _Source: [OpenJDK Developers Guide v0.777, Kinds of Compatibility](http://cr.openjdk.java.net/~darcy/OpenJdkDevGuide/OpenJdkDevelopersGuide.v0.777.html#compatibility)_
+
+Given a version number `<major>.<minor>.<path>` Javaslang
+
+* may affect **behavioral** compatibility in **all kind of releases**, especially bug fix/patch releases. For example we might decide to release a more effective hashing algorithm in the next minor release that reduces the probability of collisions.
+* may affect **source** compatibility in **patch** releases. For example this may be the case when generic type bounds of method signatures need to be fixed.
+* retains **binary** backwards compatibility (drop in replacement jar) within the same **minor** version (this includes **patch** versions)
+* is not **binary** backward compatible when the **major** version changes
+
+Summing up, drop-in replacements of Javaslang can be made for **minor** and **patch** releases.
+
+### Using multiple versions at once
+
+Javaslang 2.x has the following coordinates:
+
+```java
+Javaslang 1
+  group-id:    com.javaslang
+  artifact-id: javaslang
+  version:     1.x.y
+  package:     javaslang.*
+
+Javaslang 2
+  group-id:    io.javaslang
+  artifact-id: javaslang
+  version:     2.x.y
+  package:     javaslang.*
+```
+
+Starting with Javaslang 3.x we will change the coordinates as follows:
+
+```java
+Javaslang 3
+  group-id:    io.javaslang
+  artifact-id: javaslang
+  package:     io.javaslang.*
+```
+
+Currently there is no general strategy how to ensure that major versions may coexist.
+
+### Tool Support
 
 We currently check for API changes (which may affect the binary compatibility) using the maven-bundle-plugin:
 

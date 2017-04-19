@@ -600,6 +600,11 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     }
 
     @Override
+    public <R> Vector<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R> collect(partialFunction));
+    }
+
+    @Override
     public Vector<Vector<T>> combinations() { return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity()); }
 
     @Override
@@ -1212,12 +1217,14 @@ public final class Vector<T> implements Kind1<Vector<?>, T>, IndexedSeq<T>, Seri
     private Object readResolve() { return isEmpty() ? EMPTY : this; }
 
     @Override
-    public boolean equals(Object that) {
-        return (that == this) || ((that instanceof Vector) && areEqual(this, (Vector<?>) that));
+    public boolean equals(Object o) {
+        return Collections.equals(this, o);
     }
 
     @Override
-    public int hashCode() { return Collections.hash(this); }
+    public int hashCode() {
+        return Collections.hashOrdered(this);
+    }
 
     @Override
     public String stringPrefix() { return "Vector"; }

@@ -881,19 +881,12 @@ public final class LinkedHashMap<K, V> implements Kind2<LinkedHashMap<?, ?>, K, 
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof LinkedHashMap) {
-            final LinkedHashMap<?, ?> that = (LinkedHashMap<?, ?>) o;
-            return this.list.equals(that.list);
-        } else {
-            return false;
-        }
+        return Collections.equals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return list.hashCode();
+        return Collections.hashUnordered(this);
     }
 
     private Object readResolve() {

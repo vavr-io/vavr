@@ -6,6 +6,8 @@
 package javaslang.control;
 
 import javaslang.AbstractValueTest;
+import javaslang.Function1;
+import javaslang.PartialFunction;
 import javaslang.Serializables;
 import javaslang.collection.Seq;
 import org.junit.Assert;
@@ -469,6 +471,32 @@ public class OptionTest extends AbstractValueTest {
     @Test
     public void shouldHandleTransformOnNone() {
         assertThat(Option.none().<String> transform(self -> self.isEmpty() ? "ok" : "failed")).isEqualTo("ok");
+    }
+
+    // -- collect
+
+    @Test
+    public void shouldCollectDefinedValueUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        assertThat(Option.of(3).collect(pf)).isEqualTo(Option.of("3"));
+    }
+
+    @Test
+    public void shouldFilterNotDefinedValueUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        assertThat(Option.of(2).collect(pf)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldCollectEmptyOptionalUsingPartialFunction() {
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
+        assertThat(Option.<Integer>none().collect(pf)).isEqualTo(Option.none());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullCollectPartialFunction() {
+        final PartialFunction<Integer, String> pf = null;
+        Option.some(1).collect(pf);
     }
 
     // -- iterator
