@@ -286,11 +286,16 @@ Note: The maven build currently needs to be started from the javaslang root dir
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.version}</version>
+<!--
+ Disabled concurrent tests (enabling them improves build time by ~25% on my local machine).
+ If enabled, the Travis-CI builds stall because of JUnit's experimental @RunWith(Enclosed.class).
+ See javaslang.collection.JavaConvertersTest.java
                     <configuration>
                         <parallel>all</parallel>
-                        <threadCount>4</threadCount>
+                        <threadCount>2</threadCount>
                         <reuseForks>true</reuseForks>
                     </configuration>
+ -->
                 </plugin>
             </plugins>
         </pluginManagement>

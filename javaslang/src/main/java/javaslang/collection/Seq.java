@@ -81,6 +81,15 @@ import java.util.function.*;
  * <li>{@link #iterator(int)}</li>
  * </ul>
  *
+ * Views:
+ *
+ * <ul>
+ * <li>{@link #asJavaImmutable()}</li>
+ * <li>{@link #asJavaImmutable(Consumer)}</li>
+ * <li>{@link #asJavaMutable()}</li>
+ * <li>{@link #asJavaMutable(Consumer)}</li>
+ * </ul>
+ *
  * @param <T> Component type
  * @author Daniel Dietrich
  * @since 1.1.0
@@ -135,6 +144,50 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
 
     @Override
     <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
+
+    /**
+     * Creates an <strong>immutable</strong> {@link java.util.List} view on top of this {@code Seq},
+     * i.e. calling mutators will result in {@link UnsupportedOperationException} at runtime.
+     * <p>
+     * The difference to conversion methods {@code toJava*()} is that
+     *
+     * <ul>
+     * <li>A view is created in O(1) (constant time) whereas conversion takes O(n) (linear time), with n = collection size.</li>
+     * <li>The operations on a view have the same performance characteristics than the underlying persistent Javaslang collection whereas the performance characteristics of a converted collection are those of the Java standard collections.</li>
+     * </ul>
+     *
+     * @return A new immutable {@link java.util.Collection} view on this {@code Traversable}.
+     */
+    java.util.List<T> asJavaImmutable();
+
+    /**
+     * Creates an <strong>immutable</strong> {@link java.util.List} view on top of this {@code Seq}
+     * that is passed to the given {@code action}.
+     *
+     * @param action A side-effecting unit of work that operates on an immutable {@code java.util.List} view.
+     * @return this instance
+     * @see Seq#asJavaImmutable()
+     */
+    Seq<T> asJavaImmutable(Consumer<? super java.util.List<T>> action);
+
+    /**
+     * Creates a <strong>mutable</strong> {@link java.util.List} view on top of this {@code Seq},
+     * i.e. all mutator methods of the {@link java.util.List} are implemented.
+     *
+     * @return A new mutable {@link java.util.Collection} view on this {@code Traversable}.
+     * @see Seq#asJavaImmutable()
+     */
+    java.util.List<T> asJavaMutable();
+
+    /**
+     * Creates a <strong>mutable</strong> {@link java.util.List} view on top of this {@code Seq}
+     * that is passed to the given {@code action}.
+     *
+     * @param action A side-effecting unit of work that operates on a mutable {@code java.util.List} view.
+     * @return the (possibly mutated) instance of this type that was wrapped in the {@code java.util.List} view
+     * @see Seq#asJavaMutable()
+     */
+    Seq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
 
     /**
      * Returns the union of all combinations from k = 0 to length().

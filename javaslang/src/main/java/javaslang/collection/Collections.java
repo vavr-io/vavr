@@ -5,6 +5,8 @@
  */
 package javaslang.collection;
 
+import javaslang.collection.JavaConverters.ChangePolicy;
+import javaslang.collection.JavaConverters.ListView;
 import javaslang.control.Option;
 
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.Objects;
 import java.util.function.*;
 
 import static javaslang.collection.ArrayType.asArray;
+import static javaslang.collection.JavaConverters.ChangePolicy.MUTABLE;
 
 /**
  * Internal class, containing helpers.
@@ -32,6 +35,13 @@ final class Collections {
             }
         }
         return iter1.hasNext() == iter2.hasNext();
+    }
+
+    static <T, C extends Seq<T>> C asJava(C source, Consumer<? super java.util.List<T>> action, ChangePolicy changePolicy) {
+        Objects.requireNonNull(action, "action is null");
+        final ListView<T, C> view = JavaConverters.asJava(source, changePolicy);
+        action.accept(view);
+        return view.getDelegate();
     }
 
     @SuppressWarnings("unchecked")
