@@ -18,6 +18,9 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collector;
 
+import static javaslang.collection.JavaConverters.ChangePolicy.IMMUTABLE;
+import static javaslang.collection.JavaConverters.ChangePolicy.MUTABLE;
+
 /**
  * The CharSeq (read: character sequence) collection essentially is a rich String wrapper having all operations
  * we know from the functional Javaslang collections.
@@ -373,6 +376,26 @@ public final class CharSeq implements Kind1<CharSeq, Character>, CharSequence, I
             sb.append(element);
         }
         return of(sb);
+    }
+
+    @Override
+    public java.util.List<Character> asJavaImmutable() {
+        return JavaConverters.asJava(this, IMMUTABLE);
+    }
+
+    @Override
+    public CharSeq asJavaImmutable(Consumer<? super java.util.List<Character>> action) {
+        return Collections.asJava(this, action, IMMUTABLE);
+    }
+
+    @Override
+    public java.util.List<Character> asJavaMutable() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    public CharSeq asJavaMutable(Consumer<? super java.util.List<Character>> action) {
+        return Collections.asJava(this, action, MUTABLE);
     }
 
     @Override

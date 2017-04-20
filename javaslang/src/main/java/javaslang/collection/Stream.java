@@ -16,6 +16,9 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static javaslang.collection.JavaConverters.ChangePolicy.IMMUTABLE;
+import static javaslang.collection.JavaConverters.ChangePolicy.MUTABLE;
+
 /**
  * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
  * Its immutability makes it suitable for concurrent programming.
@@ -829,6 +832,26 @@ public interface Stream<T> extends Kind1<Stream<?>, T>, LinearSeq<T> {
         return ofAll(iterator().<R> collect(partialFunction));
     }
     
+    @Override
+    default java.util.List<T> asJavaImmutable() {
+        return JavaConverters.asJava(this, IMMUTABLE);
+    }
+
+    @Override
+    default Stream<T> asJavaImmutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, IMMUTABLE);
+    }
+
+    @Override
+    default java.util.List<T> asJavaMutable() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    default Stream<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, MUTABLE);
+    }
+
     @Override
     default Stream<Stream<T>> combinations() {
         return Stream.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());

@@ -16,6 +16,8 @@ import java.util.stream.Collector;
 
 import static java.util.Arrays.copyOf;
 import static java.util.Arrays.sort;
+import static javaslang.collection.JavaConverters.ChangePolicy.IMMUTABLE;
+import static javaslang.collection.JavaConverters.ChangePolicy.MUTABLE;
 
 /**
  * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
@@ -600,6 +602,26 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
         return ofAll(iterator().<R> collect(partialFunction));
     }
     
+    @Override
+    public java.util.List<T> asJavaImmutable() {
+        return JavaConverters.asJava(this, IMMUTABLE);
+    }
+
+    @Override
+    public Array<T> asJavaImmutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, IMMUTABLE);
+    }
+
+    @Override
+    public java.util.List<T> asJavaMutable() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    public Array<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, MUTABLE);
+    }
+
     @Override
     public boolean hasDefiniteSize() {
         return true;
