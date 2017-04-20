@@ -8,7 +8,7 @@ Before creating a pull request, the following goals should be executed locally:
 Tests & Code coverage:
 
 * Executing benchmark assertions: `mvn clean test -Pbenchmark`
-* Executing benchmarks (long running!): `mvn test -Pbenchmark -pl javaslang-benchmark`
+* Executing benchmarks (long running!): `mvn test -Pbenchmark -pl vavr-benchmark`
 * Executing code coverage report: `mvn -P ci clean test jacoco:report`
 
 We use these goals frequently to keep the dependencies and plugins up-to-date:
@@ -16,7 +16,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
 * Update version properties: `mvn versions:update-properties`
 * Check for new plugin version: `mvn versions:display-plugin-updates`
 
-Note: The maven build currently needs to be started from the javaslang root dir
+Note: The maven build currently needs to be started from the vavr root dir
       because the code generators write to hard-coded relative directories.
 
 -->
@@ -30,18 +30,18 @@ Note: The maven build currently needs to be started from the javaslang root dir
         <artifactId>oss-parent</artifactId>
         <version>9</version>
     </parent>
-    <groupId>io.javaslang</groupId>
-    <artifactId>javaslang-parent</artifactId>
+    <groupId>io.vavr</groupId>
+    <artifactId>vavr-parent</artifactId>
     <version>2.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-    <name>Javaslang Parent</name>
-    <description>Javaslang is a Java standard library extension built for Java 8 and above.</description>
+    <name>Vavr Parent</name>
+    <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
     <modules>
-        <module>javaslang</module>
-        <module>javaslang-match</module>
-        <module>javaslang-test</module>
+        <module>vavr</module>
+        <module>vavr-match</module>
+        <module>vavr-test</module>
     </modules>
-    <url>http://javaslang.io</url>
+    <url>http://vavr.io</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -50,9 +50,9 @@ Note: The maven build currently needs to be started from the javaslang root dir
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git@github.com:javaslang/javaslang.git</connection>
-        <developerConnection>scm:git:git@github.com:javaslang/javaslang.git</developerConnection>
-        <url>git@github.com:javaslang/javaslang.git</url>
+        <connection>scm:git:git@github.com:vavr-io/vavr.git</connection>
+        <developerConnection>scm:git:git@github.com:vavr-io/vavr.git</developerConnection>
+        <url>git@github.com:vavr-io/vavr.git</url>
         <tag>HEAD</tag>
     </scm>
     <developers>
@@ -441,10 +441,10 @@ Note: The maven build currently needs to be started from the javaslang root dir
         <profile>
             <id>benchmark</id>
             <modules>
-                <module>javaslang</module>
-                <module>javaslang-benchmark</module>
-                <module>javaslang-match</module>
-                <module>javaslang-test</module>
+                <module>vavr</module>
+                <module>vavr-benchmark</module>
+                <module>vavr-match</module>
+                <module>vavr-test</module>
             </modules>
             <build>
                 <plugins>
@@ -464,7 +464,7 @@ Note: The maven build currently needs to be started from the javaslang root dir
                                     <arguments>
                                         <argument>-classpath</argument>
                                         <classpath />
-                                        <argument>javaslang.JmhRunner</argument>
+                                        <argument>vavr.JmhRunner</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

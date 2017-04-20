@@ -4,16 +4,16 @@
         <maven>3.0.5</maven>
     </prerequisites>
     <parent>
-        <groupId>io.javaslang</groupId>
-        <artifactId>javaslang-parent</artifactId>
+        <groupId>io.vavr</groupId>
+        <artifactId>vavr-parent</artifactId>
         <version>2.1.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>javaslang-test</artifactId>
+    <artifactId>vavr-test</artifactId>
     <packaging>jar</packaging>
-    <name>Javaslang Test</name>
-    <description>A property check framework for Javaslang.</description>
-    <url>http://javaslang.io</url>
+    <name>Vavr Test</name>
+    <description>A property check framework for Vavr.</description>
+    <url>http://vavr.io</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -24,7 +24,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>javaslang</artifactId>
+            <artifactId>vavr</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

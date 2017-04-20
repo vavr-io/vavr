@@ -11,8 +11,8 @@ import JavaGenerator._
 import scala.language.implicitConversions
 
 val N = 8
-val TARGET_MAIN = "javaslang-test/src-gen/main/java"
-val TARGET_TEST = "javaslang-test/src-gen/test/java"
+val TARGET_MAIN = "vavr-test/src-gen/main/java"
+val TARGET_TEST = "vavr-test/src-gen/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
 
 /**
@@ -34,11 +34,11 @@ def generateMainClasses(): Unit = {
   genPropertyChecks()
 
   /**
-   * Generator of javaslang.test.Property
+   * Generator of io.vavr.test.Property
    */
   def genPropertyChecks(): Unit = {
 
-    genJavaslangFile("javaslang.test", "Property")(genProperty)
+    genJavaslangFile("io.vavr.test", "Property")(genProperty)
 
     def genProperty(im: ImportManager, packageName: String, className: String): String = xs"""
       /**
@@ -176,8 +176,8 @@ def generateMainClasses(): Unit = {
                        * @param predicate A $i-ary predicate
                        * @return a new {@code Property$i} of $i variables.
                        */
-                      public Property$i<$generics> suchThat(${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate) {
-                          final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
+                      public Property$i<$generics> suchThat(${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Boolean> predicate) {
+                          final ${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Condition> proposition = (${params("t")}) -> new Condition(true, predicate.apply(${params("t")}));
                           return new Property$i<>(name, ${params("a")}, proposition);
                       }
                   }
@@ -186,12 +186,12 @@ def generateMainClasses(): Unit = {
 
           ${(1 to N).gen(i => {
 
-              val checkedFunctionType = im.getType(s"javaslang.CheckedFunction$i")
-              val optionType = im.getType("javaslang.control.Option")
+              val checkedFunctionType = im.getType(s"io.vavr.CheckedFunction$i")
+              val optionType = im.getType("io.vavr.control.Option")
               val randomType = im.getType("java.util.Random")
-              val tryType = im.getType("javaslang.control.Try")
+              val tryType = im.getType("io.vavr.control.Try")
               val nonFatalType = "Try.NonFatalException"
-              val tupleType = im.getType(s"javaslang.Tuple")
+              val tupleType = im.getType(s"io.vavr.Tuple")
 
               val generics = (1 to i).gen(j => s"T$j")(", ")
               val params = (paramName: String) => (1 to i).gen(j => s"$paramName$j")(", ")
@@ -317,16 +317,16 @@ def generateTestClasses(): Unit = {
   genPropertyCheckTests()
 
   /**
-    * Generator of Property-check tests
+   * Generator of Property-check tests
    */
   def genPropertyCheckTests(): Unit = {
-    genJavaslangFile("javaslang.test", "PropertyTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+    genJavaslangFile("io.vavr.test", "PropertyTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
       // main classes
-      val list = im.getType("javaslang.collection.List")
-      val predicate = im.getType("javaslang.CheckedFunction1")
+      val list = im.getType("io.vavr.collection.List")
+      val predicate = im.getType("io.vavr.CheckedFunction1")
       val random = im.getType("java.util.Random")
-      val tuple = im.getType("javaslang.Tuple")
+      val tuple = im.getType("io.vavr.Tuple")
 
       // test classes
       val test = im.getType("org.junit.Test")
@@ -547,7 +547,7 @@ def generateTestClasses(): Unit = {
     })
 
     for (i <- 1 to N) {
-      genJavaslangFile("javaslang.test", s"PropertyCheck${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+      genJavaslangFile("io.vavr.test", s"PropertyCheck${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
         val generics = (1 to i).gen(j => "Object")(", ")
         val arbitraries = (1 to i).gen(j => "OBJECTS")(", ")
@@ -573,7 +573,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldApplySuchThatOfArity$i() {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
-                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
+                  final ${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
                   final Property.Property$i<$generics> suchThat = forAll.suchThat(predicate);
                   $assertThat(suchThat).isNotNull();
               }
@@ -581,7 +581,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldCheckTrueProperty$i() {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
-                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
+                  final ${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> true;
                   final CheckResult result = forAll.suchThat(predicate).check();
                   $assertThat(result.isSatisfied()).isTrue();
                   $assertThat(result.isExhausted()).isFalse();
@@ -590,7 +590,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldCheckFalseProperty$i() {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
-                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> false;
+                  final ${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> false;
                   final CheckResult result = forAll.suchThat(predicate).check();
                   $assertThat(result.isFalsified()).isTrue();
               }
@@ -598,7 +598,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldCheckErroneousProperty$i() {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
-                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> { throw new RuntimeException("$woops"); };
+                  final ${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Boolean> predicate = ($args) -> { throw new RuntimeException("$woops"); };
                   final CheckResult result = forAll.suchThat(predicate).check();
                   $assertThat(result.isErroneous()).isTrue();
               }
@@ -606,8 +606,8 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldCheckProperty${i}ImplicationWithTruePrecondition() {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
-                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> true;
-                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
+                  final ${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> true;
+                  final ${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
                   final CheckResult result = forAll.suchThat(p1).implies(p2).check();
                   $assertThat(result.isSatisfied()).isTrue();
                   $assertThat(result.isExhausted()).isFalse();
@@ -616,8 +616,8 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldCheckProperty${i}ImplicationWithFalsePrecondition() {
                   final Property.ForAll$i<$generics> forAll = Property.def("test").forAll($arbitraries);
-                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> false;
-                  final ${im.getType(s"javaslang.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
+                  final ${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Boolean> p1 = ($args) -> false;
+                  final ${im.getType(s"io.vavr.CheckedFunction$i")}<$generics, Boolean> p2 = ($args) -> true;
                   final CheckResult result = forAll.suchThat(p1).implies(p2).check();
                   $assertThat(result.isSatisfied()).isTrue();
                   $assertThat(result.isExhausted()).isTrue();
@@ -665,11 +665,12 @@ def generateTestClasses(): Unit = {
  */
 def genJavaslangFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
   genJavaFile(baseDir, packageName, className)(xraw"""
-      /*     / \____  _    _  ____   ______  / \ ____  __    _______
-       *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
-       *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
-       * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
-       */
+    /*                        __    __  __  __    __  ___
+     *                       \  \  /  /    \  \  /  /  __/
+     *                        \  \/  /  /\  \  \/  /  /
+     *                         \____/__/  \__\____/__/.ɪᴏ
+     * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+     */
   """)(gen)(CHARSET)
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\

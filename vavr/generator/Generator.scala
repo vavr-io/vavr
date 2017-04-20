@@ -13,8 +13,8 @@ import scala.language.implicitConversions
 
 val N = 8
 val VARARGS = 10
-val TARGET_MAIN = "javaslang/src-gen/main/java"
-val TARGET_TEST = "javaslang/src-gen/test/java"
+val TARGET_MAIN = "vavr/src-gen/main/java"
+val TARGET_TEST = "vavr/src-gen/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
 
 /**
@@ -43,36 +43,36 @@ def generateMainClasses(): Unit = {
    */
   def genAPI(): Unit = {
 
-    genJavaslangFile("javaslang", "API")(genAPI)
+    genJavaslangFile("io.vavr", "API")(genAPI)
 
     def genAPI(im: ImportManager, packageName: String, className: String): String = {
 
-      val OptionType = im.getType("javaslang.control.Option")
-      val IteratorType = im.getType("javaslang.collection.Iterator")
-      val EitherType = im.getType("javaslang.control.Either")
-      val FutureType = im.getType("javaslang.concurrent.Future")
-      val CheckedSupplierType = im.getType("javaslang.control.Try.CheckedSupplier")
-      val TryType = im.getType("javaslang.control.Try")
-      val ValidationType = im.getType("javaslang.control.Validation")
-      val CharSeqType = im.getType("javaslang.collection.CharSeq")
-      val ArrayType = im.getType("javaslang.collection.Array")
-      val VectorType = im.getType("javaslang.collection.Vector")
-      val ListType = im.getType("javaslang.collection.List")
-      val StreamType = im.getType("javaslang.collection.Stream")
-      val QueueType = im.getType("javaslang.collection.Queue")
-      val LinkedHashSetType = im.getType("javaslang.collection.LinkedHashSet")
-      val HashSetType = im.getType("javaslang.collection.HashSet")
-      val TreeSetType = im.getType("javaslang.collection.TreeSet")
-      val PriorityQueueType = im.getType("javaslang.collection.PriorityQueue")
-      val LinkedHashMapType = im.getType("javaslang.collection.LinkedHashMap")
-      val HashMapType = im.getType("javaslang.collection.HashMap")
-      val TreeMapType = im.getType("javaslang.collection.TreeMap")
-      val IndexedSeqType = im.getType("javaslang.collection.IndexedSeq")
-      val MapType = im.getType("javaslang.collection.Map")
-      val SeqType = im.getType("javaslang.collection.Seq")
-      val SetType = im.getType("javaslang.collection.Set")
-      val SortedMapType = im.getType("javaslang.collection.SortedMap")
-      val SortedSetType = im.getType("javaslang.collection.SortedSet")
+      val OptionType = im.getType("io.vavr.control.Option")
+      val IteratorType = im.getType("io.vavr.collection.Iterator")
+      val EitherType = im.getType("io.vavr.control.Either")
+      val FutureType = im.getType("io.vavr.concurrent.Future")
+      val CheckedSupplierType = im.getType("io.vavr.control.Try.CheckedSupplier")
+      val TryType = im.getType("io.vavr.control.Try")
+      val ValidationType = im.getType("io.vavr.control.Validation")
+      val CharSeqType = im.getType("io.vavr.collection.CharSeq")
+      val ArrayType = im.getType("io.vavr.collection.Array")
+      val VectorType = im.getType("io.vavr.collection.Vector")
+      val ListType = im.getType("io.vavr.collection.List")
+      val StreamType = im.getType("io.vavr.collection.Stream")
+      val QueueType = im.getType("io.vavr.collection.Queue")
+      val LinkedHashSetType = im.getType("io.vavr.collection.LinkedHashSet")
+      val HashSetType = im.getType("io.vavr.collection.HashSet")
+      val TreeSetType = im.getType("io.vavr.collection.TreeSet")
+      val PriorityQueueType = im.getType("io.vavr.collection.PriorityQueue")
+      val LinkedHashMapType = im.getType("io.vavr.collection.LinkedHashMap")
+      val HashMapType = im.getType("io.vavr.collection.HashMap")
+      val TreeMapType = im.getType("io.vavr.collection.TreeMap")
+      val IndexedSeqType = im.getType("io.vavr.collection.IndexedSeq")
+      val MapType = im.getType("io.vavr.collection.Map")
+      val SeqType = im.getType("io.vavr.collection.Seq")
+      val SetType = im.getType("io.vavr.collection.Set")
+      val SortedMapType = im.getType("io.vavr.collection.SortedMap")
+      val SortedSetType = im.getType("io.vavr.collection.SortedSet")
 
       // Note: import the Java stuff last in order to force full qualified names on import clashes
 
@@ -691,7 +691,7 @@ def generateMainClasses(): Unit = {
         """
       }
 
-      im.getStatic("javaslang.API.Match.*")
+      im.getStatic("io.vavr.API.Match.*")
 
       def genJavaTypeTweaks(im: ImportManager, packageName: String, className: String): String = {
         xs"""
@@ -1069,7 +1069,7 @@ def generateMainClasses(): Unit = {
               // -- CASES
 
               // javac needs fqn's here
-              public interface Case<T, R> extends java.util.function.Function<T, javaslang.control.Option<R>> {
+              public interface Case<T, R> extends java.util.function.Function<T, io.vavr.control.Option<R>> {
               }
 
               public static final class Case0<T, R> implements Case<T, R> {
@@ -1129,7 +1129,7 @@ def generateMainClasses(): Unit = {
                * @param <R> Type of the single or composite part this pattern decomposes
                */
               // javac needs fqn's here
-              public interface Pattern<T, R> extends java.util.function.Function<T, javaslang.control.Option<R>> {
+              public interface Pattern<T, R> extends java.util.function.Function<T, io.vavr.control.Option<R>> {
               }
 
               // These can't be @FunctionalInterfaces because of ambiguities.
@@ -1304,7 +1304,7 @@ def generateMainClasses(): Unit = {
          * The most basic Javaslang functionality is accessed through this API class.
          *
          * <pre><code>
-         * import static javaslang.API.*;
+         * import static io.vavr.API.*;
          * </code></pre>
          *
          * <h3>For-comprehension</h3>
@@ -1385,8 +1385,8 @@ def generateMainClasses(): Unit = {
 
     (0 to N).foreach(i => {
 
-      genJavaslangFile("javaslang", s"CheckedFunction$i")(genFunction("CheckedFunction", checked = true))
-      genJavaslangFile("javaslang", s"Function$i")(genFunction("Function", checked = false))
+      genJavaslangFile("io.vavr", s"CheckedFunction$i")(genFunction("CheckedFunction", checked = true))
+      genJavaslangFile("io.vavr", s"Function$i")(genFunction("Function", checked = false))
 
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
@@ -1398,8 +1398,8 @@ def generateMainClasses(): Unit = {
         val genericsTuple = if (i > 0) s"<$generics>" else ""
         val genericsFunction = if (i > 0) s"$generics, " else ""
         val genericsReversedFunction = if (i > 0) s"$genericsReversed, " else ""
-        val genericsOptionReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("javaslang.control.Option")}<R>>"
-        val genericsTryReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("javaslang.control.Try")}<R>>"
+        val genericsOptionReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("io.vavr.control.Option")}<R>>"
+        val genericsTryReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("io.vavr.control.Try")}<R>>"
         val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(" -> ")
         val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
         val params = (1 to i).gen(j => s"t$j")(", ")
@@ -1410,7 +1410,7 @@ def generateMainClasses(): Unit = {
         // imports
 
         val Objects = im.getType("java.util.Objects")
-        val Try = if (checked) im.getType("javaslang.control.Try") else ""
+        val Try = if (checked) im.getType("io.vavr.control.Try") else ""
         val additionalExtends = (checked, i) match {
           case (false, 0) => ", " + im.getType("java.util.function.Supplier") + "<R>"
           case (false, 1) => ", " + im.getType("java.util.function.Function") + "<T1, R>"
@@ -1418,11 +1418,11 @@ def generateMainClasses(): Unit = {
           case _ => ""
         }
         def fullGenericsTypeF(checked: Boolean, i: Int): String = (checked, i) match {
-          case (true, _) => im.getType(s"javaslang.CheckedFunction$i") + fullWideGenerics
+          case (true, _) => im.getType(s"io.vavr.CheckedFunction$i") + fullWideGenerics
           case (false, 0) => im.getType("java.util.function.Supplier") + "<? extends R>"
           case (false, 1) => im.getType("java.util.function.Function") + "<? super T1, ? extends R>"
           case (false, 2) => im.getType("java.util.function.BiFunction") + "<? super T1, ? super T2, ? extends R>"
-          case (false, _) => im.getType(s"javaslang.Function$i") + fullWideGenerics
+          case (false, _) => im.getType(s"io.vavr.Function$i") + fullWideGenerics
         }
         val fullGenericsType = fullGenericsTypeF(checked, i)
         val refApply = i match {
@@ -1508,13 +1508,13 @@ def generateMainClasses(): Unit = {
                *         if the function is defined for the given arguments, and {@code None} otherwise.
                */
               @SuppressWarnings("RedundantTypeArguments")
-              static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsOptionReturnType lift($fullGenericsType partialFunction) {
+              static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsOptionReturnType lift($fullGenericsType partialFunction) {
                   ${
                     val func = "partialFunction"
                     val supplier = if (!checked && i == 0) s"$func::get" else if (checked && i == 0) s"$func::apply" else s"() -> $func.apply($params)"
                     val lambdaArgs = if (i == 1) params else s"($params)"
                     xs"""
-                      return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.<R>of($supplier).getOption();
+                      return $lambdaArgs -> ${im.getType("io.vavr.control.Try")}.<R>of($supplier).getOption();
                     """
                   }
               }
@@ -1527,12 +1527,12 @@ def generateMainClasses(): Unit = {
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
                *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
                */
-              static $fullGenerics ${im.getType(s"javaslang.Function$i")}$genericsTryReturnType liftTry($fullGenericsType partialFunction) {
+              static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsTryReturnType liftTry($fullGenericsType partialFunction) {
                   ${
                     val supplier = if (!checked && i == 0) "partialFunction::get" else if (checked && i == 0) "partialFunction::apply" else s"() -> partialFunction.apply($params)"
                     val lambdaArgs = if (i == 1) params else s"($params)"
                     xs"""
-                      return $lambdaArgs -> ${im.getType("javaslang.control.Try")}.of($supplier);
+                      return $lambdaArgs -> ${im.getType("io.vavr.control.Try")}.of($supplier);
                     """
                   }
               }
@@ -1761,14 +1761,14 @@ def generateMainClasses(): Unit = {
   }
 
   /**
-   * Generator of javaslang.Tuple*
+   * Generator of io.vavr.Tuple*
    */
   def genTuples(): Unit = {
 
-    genJavaslangFile("javaslang", "Tuple")(genBaseTuple)
+    genJavaslangFile("io.vavr", "Tuple")(genBaseTuple)
 
     (0 to N).foreach { i =>
-      genJavaslangFile("javaslang", s"Tuple$i")(genTuple(i))
+      genJavaslangFile("io.vavr", s"Tuple$i")(genTuple(i))
     }
 
     /*
@@ -1795,9 +1795,9 @@ def generateMainClasses(): Unit = {
       }
       val Comparator = im.getType("java.util.Comparator")
       val Objects = im.getType("java.util.Objects")
-      val Seq = im.getType("javaslang.collection.Seq")
-      val List = im.getType("javaslang.collection.List")
-      val Iterator = im.getType("javaslang.collection.Iterator")
+      val Seq = im.getType("io.vavr.collection.Seq")
+      val List = im.getType("io.vavr.collection.List")
+      val Iterator = im.getType("io.vavr.collection.Iterator")
       if(i==2){
         im.getType("java.util.Map")
         im.getType("java.util.AbstractMap")
@@ -1977,7 +1977,7 @@ def generateMainClasses(): Unit = {
                */
               public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"${im.getType("java.util.function.Function")}<? super T$j, ? extends U$j> f$j")(", ")}) {
                   ${(1 to i).gen(j => s"""Objects.requireNonNull(f$j, "f$j is null");""")("\n")}
-                  return ${im.getType("javaslang.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(", ")});
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(", ")});
               }
             """)}
 
@@ -2101,7 +2101,7 @@ def generateMainClasses(): Unit = {
 
       val Map = im.getType("java.util.Map")
       val Objects = im.getType("java.util.Objects")
-      val Seq = im.getType("javaslang.collection.Seq")
+      val Seq = im.getType("io.vavr.collection.Seq")
 
       def genFactoryMethod(i: Int) = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
@@ -2124,7 +2124,7 @@ def generateMainClasses(): Unit = {
       def genSeqMethod(i: Int) = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val seqs = (1 to i).gen(j => s"Seq<T$j>")(", ")
-        val Stream = im.getType("javaslang.collection.Stream")
+        val Stream = im.getType("io.vavr.collection.Stream")
         val widenedGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
         xs"""
             /**
@@ -2228,8 +2228,8 @@ def generateMainClasses(): Unit = {
   }
 
   /**
-    * Generator of javaslang.collection.*ArrayType
-    */
+   * Generator of io.vavr.collection.*ArrayType
+   */
   def genArrayTypes(): Unit = {
 
     val types = ListMap(
@@ -2244,7 +2244,7 @@ def generateMainClasses(): Unit = {
       "Object" -> "Object" // fallback
     ) // note: there is no void[] in Java
 
-    genJavaslangFile("javaslang.collection", "ArrayType")((im: ImportManager, packageName: String, className: String) => xs"""
+    genJavaslangFile("io.vavr.collection", "ArrayType")((im: ImportManager, packageName: String, className: String) => xs"""
       import java.util.Collection;
 
       /**
@@ -2437,26 +2437,26 @@ def generateTestClasses(): Unit = {
    */
   def genAPITests(): Unit = {
 
-    genJavaslangFile("javaslang", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+    genJavaslangFile("io.vavr", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
       val test = im.getType("org.junit.Test")
 
-      val API = im.getType("javaslang.API")
-      val AssertionsExtensions = im.getType("javaslang.AssertionsExtensions")
-      val ListType = im.getType("javaslang.collection.List")
-      val MapType = im.getType("javaslang.collection.Map")
-      val OptionType = im.getType("javaslang.control.Option")
-      val FutureType = im.getType("javaslang.concurrent.Future")
+      val API = im.getType("io.vavr.API")
+      val AssertionsExtensions = im.getType("io.vavr.AssertionsExtensions")
+      val ListType = im.getType("io.vavr.collection.List")
+      val MapType = im.getType("io.vavr.collection.Map")
+      val OptionType = im.getType("io.vavr.control.Option")
+      val FutureType = im.getType("io.vavr.concurrent.Future")
       val ExecutorServiceType = im.getType("java.util.concurrent.Executors")
       val ExecutorService = s"$ExecutorServiceType.newSingleThreadExecutor()"
-      val TryType = im.getType("javaslang.control.Try")
+      val TryType = im.getType("io.vavr.control.Try")
       val JavaComparatorType = im.getType("java.util.Comparator")
       val JavaCollectionsType = im.getType("java.util.Collections")
 
       val d = "$"
 
-      im.getStatic("javaslang.API.*")
+      im.getStatic("io.vavr.API.*")
 
       def genFutureTests(name: String, value: String, success: Boolean): String = {
         val check = if (success) "isSuccess" else "isFailure"
@@ -2751,7 +2751,7 @@ def generateTestClasses(): Unit = {
             public void shouldIterateNestedFor() {
                 final $ListType<String> result =
                         For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
-                                For(${im.getType("javaslang.collection.CharSeq")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
+                                For(${im.getType("io.vavr.collection.CharSeq")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
                 assertThat(result).isEqualTo($ListType.of("1:a", "1:b", "2:a", "2:b"));
             }
 
@@ -2823,8 +2823,8 @@ def generateTestClasses(): Unit = {
 
     (0 to N).foreach(i => {
 
-      genJavaslangFile("javaslang", s"CheckedFunction${i}Test", baseDir = TARGET_TEST)(genFunctionTest("CheckedFunction", checked = true))
-      genJavaslangFile("javaslang", s"Function${i}Test", baseDir = TARGET_TEST)(genFunctionTest("Function", checked = false))
+      genJavaslangFile("io.vavr", s"CheckedFunction${i}Test", baseDir = TARGET_TEST)(genFunctionTest("CheckedFunction", checked = true))
+      genJavaslangFile("io.vavr", s"Function${i}Test", baseDir = TARGET_TEST)(genFunctionTest("Function", checked = false))
 
       def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
@@ -3001,7 +3001,7 @@ def generateTestClasses(): Unit = {
                     $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> divByZero = (${(1 to i).gen(j => s"i$j")(", ")}) -> 10 / integer.get();
                     $name$i<${(1 to i).gen(j => "Integer, ")("")}Try<Integer>> divByZeroTry = $name$i.liftTry(divByZero);
 
-                    ${im.getType("javaslang.control.Try")}<Integer> res = divByZeroTry.apply(${(1 to i).gen(j => s"0")(", ")});
+                    ${im.getType("io.vavr.control.Try")}<Integer> res = divByZeroTry.apply(${(1 to i).gen(j => s"0")(", ")});
                     assertThat(res.isFailure()).isTrue();
                     assertThat(res.getCause()).isNotNull();
                     assertThat(res.getCause().getMessage()).isEqualToIgnoringCase("/ by zero");
@@ -3040,7 +3040,7 @@ def generateTestClasses(): Unit = {
                       assertThat(md5.getDigestLength()).isEqualTo(16);
 
                       integer.incrementAndGet();
-                      ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply();
+                      ${im.getType("io.vavr.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply();
                       assertThat(unknown).isNotNull();
                       assertThat(unknown.isFailure()).isTrue();
                       assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
@@ -3069,14 +3069,14 @@ def generateTestClasses(): Unit = {
                       final $AtomicInteger integer = new $AtomicInteger();
                       $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
                       Function$i<Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
-                      ${im.getType("javaslang.control.Try")}<MessageDigest> md5 = liftTry.apply();
+                      ${im.getType("io.vavr.control.Try")}<MessageDigest> md5 = liftTry.apply();
                       assertThat(md5.isSuccess()).isTrue();
                       assertThat(md5.get()).isNotNull();
                       assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
                       assertThat(md5.get().getDigestLength()).isEqualTo(16);
 
                       integer.incrementAndGet();
-                      ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = liftTry.apply();
+                      ${im.getType("io.vavr.control.Try")}<MessageDigest> unknown = liftTry.apply();
                       assertThat(unknown.isFailure()).isTrue();
                       assertThat(unknown.getCause()).isNotNull();
                       assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");
@@ -3107,7 +3107,7 @@ def generateTestClasses(): Unit = {
                           assertThat(md5).isNotNull();
                           assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
                           assertThat(md5.getDigestLength()).isEqualTo(16);
-                          ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply(${toArgList("Unknown")});
+                          ${im.getType("io.vavr.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply(${toArgList("Unknown")});
                           assertThat(unknown).isNotNull();
                           assertThat(unknown.isFailure()).isTrue();
                           assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
@@ -3132,12 +3132,12 @@ def generateTestClasses(): Unit = {
                       @$test
                       public void shouldLiftTryPartialFunction() {
                           Function$i<${(1 to i).gen(j => "String")(", ")}, Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
-                          ${im.getType("javaslang.control.Try")}<MessageDigest> md5 = liftTry.apply(${toArgList("MD5")});
+                          ${im.getType("io.vavr.control.Try")}<MessageDigest> md5 = liftTry.apply(${toArgList("MD5")});
                           assertThat(md5.isSuccess()).isTrue();
                           assertThat(md5.get()).isNotNull();
                           assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
                           assertThat(md5.get().getDigestLength()).isEqualTo(16);
-                          ${im.getType("javaslang.control.Try")}<MessageDigest> unknown = liftTry.apply(${toArgList("Unknown")});
+                          ${im.getType("io.vavr.control.Try")}<MessageDigest> unknown = liftTry.apply(${toArgList("Unknown")});
                           assertThat(unknown.isFailure()).isTrue();
                           assertThat(unknown.getCause()).isNotNull();
                           assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");
@@ -3212,12 +3212,12 @@ def generateTestClasses(): Unit = {
 
     (0 to N).foreach(i => {
 
-      genJavaslangFile("javaslang", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+      genJavaslangFile("io.vavr", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
         val test = im.getType("org.junit.Test")
-        val seq = im.getType("javaslang.collection.Seq")
-        val list = im.getType("javaslang.collection.List")
-        val stream = if (i == 0) "" else im.getType("javaslang.collection.Stream")
+        val seq = im.getType("io.vavr.collection.Seq")
+        val list = im.getType("io.vavr.collection.List")
+        val stream = if (i == 0) "" else im.getType("io.vavr.collection.Stream")
         val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Object")(", ")}>"
@@ -3426,18 +3426,19 @@ def generateTestClasses(): Unit = {
 
 /**
  * Adds the Javaslang header to generated classes.
-  *
-  * @param packageName Java package name
+ *
+ * @param packageName Java package name
  * @param className Simple java class name
  * @param gen A generator which produces a String.
  */
 def genJavaslangFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
   genJavaFile(baseDir, packageName, className)(xraw"""
-      /*     / \____  _    _  ____   ______  / \ ____  __    _______
-       *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
-       *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
-       * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
-       */
+    /*                        __    __  __  __    __  ___
+     *                       \  \  /  /    \  \  /  /  __/
+     *                        \  \/  /  /\  \  \/  /  /
+     *                         \____/__/  \__\____/__/.ɪᴏ
+     * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+     */
   """)(gen)(CHARSET)
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
@@ -3452,8 +3453,8 @@ object JavaGenerator {
 
   /**
    * Generates a Java file.
-    *
-    * @param packageName Java package name
+   *
+   * @param packageName Java package name
    * @param className Simple java class name
    * @param classHeader A class file header
    * @param gen A generator which produces a String.
@@ -3482,8 +3483,8 @@ object JavaGenerator {
 
   /**
    * A <em>stateful</em> ImportManager which generates an import section of a Java class file.
-    *
-    * @param packageNameOfClass package name of the generated class
+   *
+   * @param packageNameOfClass package name of the generated class
    * @param knownSimpleClassNames a list of class names which may not be imported from other packages
    */
   class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[String], wildcardThreshold: Int = 5) {
@@ -3622,8 +3623,8 @@ object Generator {
    * (1 to 3).gen(i => s"x$i")(", ") // x1, x2, x3
    * (1 to 3).reverse.gen(i -> s"x$i")(", ") // x3, x2, x1
    * }}}
-    *
-    * @param range A Range
+   *
+   * @param range A Range
    */
   implicit class RangeExtensions(range: Range) {
     def gen(f: Int => String = String.valueOf)(implicit delimiter: String = ""): String =
@@ -3638,8 +3639,8 @@ object Generator {
    * // val c = "C"
    * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
    * }}}
-    *
-    * @param iterable An Interable
+   *
+   * @param iterable An Interable
    */
   implicit class IterableExtensions(iterable: Iterable[Any]) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
@@ -3662,8 +3663,8 @@ object Generator {
    * // val seq = Seq("a", "1", "true")
    * s"val seq = Seq(${("a", 1, true).gen(s => s""""$s"""")(", ")})"
    * }}}
-    *
-    * @param tuple A Tuple
+   *
+   * @param tuple A Tuple
    */
   implicit class Tuple3Extensions(tuple: (Any, Any, Any)) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
@@ -3767,8 +3768,8 @@ object Generator {
 
   /**
    * Provides StringContext extensions, e.g. indentation of cascaded rich strings.
-    *
-    * @param sc Current StringContext
+   *
+   * @param sc Current StringContext
    * @see <a href="https://gist.github.com/danieldietrich/5174348">this gist</a>
    */
   implicit class StringContextExtensions(sc: StringContext) {
@@ -3777,16 +3778,16 @@ object Generator {
 
     /**
      * Formats escaped strings.
-      *
-      * @param args StringContext parts
+     *
+     * @param args StringContext parts
      * @return An aligned String
      */
     def xs(args: Any*): String = align(sc.s, args)
 
     /**
      * Formats raw/unescaped strings.
-      *
-      * @param args StringContext parts
+     *
+     * @param args StringContext parts
      * @return An aligned String
      */
     def xraw(args: Any*): String = align(sc.raw, args)
