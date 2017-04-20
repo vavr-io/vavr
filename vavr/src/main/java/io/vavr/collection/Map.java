@@ -1,0 +1,761 @@
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+ */
+package io.vavr.collection;
+
+import io.vavr.*;
+import io.vavr.control.Option;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.function.*;
+
+/**
+ * An immutable {@code Map} interface.
+ *
+ * <p>
+ * Basic operations:
+ *
+ * <ul>
+ * <li>{@link #containsKey(Object)}</li>
+ * <li>{@link #containsValue(Object)}</li>
+ * <li>{@link #get(Object)}</li>
+ * <li>{@link #keySet()}</li>
+ * <li>{@link #merge(Map)}</li>
+ * <li>{@link #merge(Map, BiFunction)}</li>
+ * <li>{@link #put(Object, Object)}</li>
+ * <li>{@link #put(Tuple2)}</li>
+ * <li>{@link #put(Object, Object, BiFunction)}</li>
+ * <li>{@link #put(Tuple2, BiFunction)}</li>
+ * <li>{@link #values()}</li>
+ * </ul>
+ *
+ * Conversion:
+ *
+ * <ul>
+ * <li>{@link #toJavaMap()}</li>
+ * </ul>
+ *
+ * Filtering:
+ *
+ * <ul>
+ * <li>{@link #filter(BiPredicate)}</li>
+ * <li>{@link #filterKeys(Predicate)}</li>
+ * <li>{@link #filterValues(Predicate)}</li>
+ * <li>{@link #remove(Object)}</li>
+ * <li>{@link #removeAll(BiPredicate)}</li>
+ * <li>{@link #removeAll(Iterable)}</li>
+ * <li>{@link #removeKeys(Predicate)}</li>
+ * <li>{@link #removeValues(Predicate)}</li>
+ * </ul>
+ *
+ * Iteration:
+ *
+ * <ul>
+ * <li>{@link #forEach(BiConsumer)}</li>
+ * <li>{@link #traverse(BiFunction)}</li>
+ * </ul>
+ *
+ * Transformation:
+ *
+ * <ul>
+ * <li>{@link #bimap(Function, Function)}</li>
+ * <li>{@link #flatMap(BiFunction)}</li>
+ * <li>{@link #lift()}</li>
+ * <li>{@link #map(BiFunction)}</li>
+ * <li>{@link #mapKeys(Function)}</li>
+ * <li>{@link #mapKeys(Function, BiFunction)}</li>
+ * <li>{@link #mapValues(Function)}</li>
+ * <li>{@link #transform(Function)}</li>
+ * <li>{@link #unzip(BiFunction)}</li>
+ * <li>{@link #unzip3(BiFunction)}</li>
+ * <li>{@link #withDefault(Function)}</li>
+ * <li>{@link #withDefaultValue(Object)}</li>
+ * </ul>
+ *
+ * @param <K> Key type
+ * @param <V> Value type
+ * @author Daniel Dietrich, Ruslan Sennov
+ * @since 2.0.0
+ */
+public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V>, Serializable {
+
+    long serialVersionUID = 1L;
+
+    /**
+     * Narrows a widened {@code Map<? extends K, ? extends V>} to {@code Map<K, V>}
+     * by performing a type-safe cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param map A {@code Map}.
+     * @param <K> Key type
+     * @param <V> Value type
+     * @return the given {@code map} instance as narrowed type {@code Map<K, V>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <K, V> Map<K, V> narrow(Map<? extends K, ? extends V> map) {
+        return (Map<K, V>) map;
+    }
+
+    /**
+     * Convenience factory method to create a key/value pair.
+     * <p>
+     * If imported statically, this method allows to create a {@link Map} with arbitrary entries in a readable and
+     * type-safe way, e.g.:
+     * <pre>
+     * {@code
+     *
+     * HashMap.ofEntries(
+     *     entry(k1, v1),
+     *     entry(k2, v2),
+     *     entry(k3, v3)
+     * );
+     *
+     * }
+     * </pre>
+     *
+     * @param key   the entry's key
+     * @param value the entry's value
+     * @param <K>   Key type
+     * @param <V>   Value type
+     * @return a key/value pair
+     */
+    static <K, V> Tuple2<K, V> entry(K key, V value) {
+        return Tuple.of(key, value);
+    }
+
+    @Override
+    default V apply(K key) {
+        return get(key).getOrElseThrow(() -> new NoSuchElementException(String.valueOf(key)));
+    }
+
+    @Override
+    default <R> Seq<R> collect(PartialFunction<? super Tuple2<K, V>, ? extends R> partialFunction) {
+        return io.vavr.collection.Vector.ofAll(iterator().<R> collect(partialFunction));
+    }
+
+    /**
+     * Maps this {@code Map} to a new {@code Map} with different component type by applying a function to its elements.
+     *
+     * @param <K2>        key's component type of the map result
+     * @param <V2>        value's component type of the map result
+     * @param keyMapper   a {@code Function} that maps the keys of type {@code K} to keys of type {@code K2}
+     * @param valueMapper a {@code Function} that the values of type {@code V} to values of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} or {@code valueMapper} is null
+     */
+    <K2, V2> Map<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
+
+    @Override
+    default boolean contains(Tuple2<K, V> element) {
+        return get(element._1).map(v -> Objects.equals(v, element._2)).getOrElse(false);
+    }
+
+    /**
+     * If the specified key is not already associated with a value,
+     * attempts to compute its value using the given mapping
+     * function and enters it into this map.
+     *
+     * @param key             key whose presence in this map is to be tested
+     * @param mappingFunction mapping function
+     * @return the {@link Tuple2} of current or modified map and existing or computed value associated with the specified key
+     */
+    Tuple2<V, ? extends Map<K, V>> computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction);
+
+    /**
+     * If the value for the specified key is present, attempts to
+     * compute a new mapping given the key and its current mapped value.
+     *
+     * @param key               key whose presence in this map is to be tested
+     * @param remappingFunction remapping function
+     * @return the {@link Tuple2} of current or modified map and the {@code Some} of the value associated
+     * with the specified key, or {@code None} if none
+     */
+    Tuple2<Option<V>, ? extends Map<K, V>> computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction);
+
+    /**
+     * Returns <code>true</code> if this map contains a mapping for the specified key.
+     *
+     * @param key key whose presence in this map is to be tested
+     * @return <code>true</code> if this map contains a mapping for the specified key
+     */
+    boolean containsKey(K key);
+
+    /**
+     * Returns <code>true</code> if this map maps one or more keys to the
+     * specified value. This operation will require time linear in the map size.
+     *
+     * @param value value whose presence in this map is to be tested
+     * @return <code>true</code> if this map maps one or more keys to the
+     * specified value
+     */
+    default boolean containsValue(V value) {
+        return iterator().map(Tuple2::_2).contains(value);
+    }
+
+    /**
+     * Returns a new Map consisting of all elements which satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> filter(BiPredicate<? super K, ? super V> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements with keys which satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test keys of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> filterKeys(Predicate<? super K> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements with values which satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test values of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> filterValues(Predicate<? super V> predicate);
+
+    /**
+     * FlatMaps this {@code Map} to a new {@code Map} with different component type.
+     *
+     * @param mapper A mapper
+     * @param <K2>   key's component type of the mapped {@code Map}
+     * @param <V2>   value's component type of the mapped {@code Map}
+     * @return A new {@code Map}.
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    <K2, V2> Map<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
+
+    /**
+     * Flat-maps this entries to a sequence of values.
+     * <p>
+     * Please use {@link #flatMap(BiFunction)} if the result should be a {@code Map}
+     *
+     * @param mapper A mapper
+     * @param <U>    Component type
+     * @return A sequence of flat-mapped values.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) iterator().flatMap(mapper).toStream();
+    }
+
+    @Override
+    default <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return iterator().foldRight(zero, f);
+    }
+
+    /**
+     * Performs an action on key, value pair.
+     *
+     * @param action A {@code BiConsumer}
+     * @throws NullPointerException if {@code action} is null
+     */
+    default void forEach(BiConsumer<K, V> action) {
+        Objects.requireNonNull(action, "action is null");
+        for (Tuple2<K, V> t : this) {
+            action.accept(t._1, t._2);
+        }
+    }
+
+    /**
+     * Returns the {@code Some} of value to which the specified key
+     * is mapped, or {@code None} if this map contains no mapping for the key.
+     *
+     * @param key the key whose associated value is to be returned
+     * @return the {@code Some} of value to which the specified key
+     * is mapped, or {@code None} if this map contains no mapping
+     * for the key
+     */
+    Option<V> get(K key);
+
+    /**
+     * Returns the value associated with a key, or a default value if the key is not contained in the map.
+     *
+     * @param key          the key
+     * @param defaultValue a default value
+     * @return the value associated with key if it exists, otherwise the default value.
+     */
+    V getOrElse(K key, V defaultValue);
+
+    @Override
+    default boolean hasDefiniteSize() {
+        return true;
+    }
+
+    @Override
+    default boolean isTraversableAgain() {
+        return true;
+    }
+
+    @Override
+    io.vavr.collection.Iterator<Tuple2<K, V>> iterator();
+
+    /**
+     * Returns the keys contained in this map.
+     *
+     * @return {@code Set} of the keys contained in this map.
+     */
+    io.vavr.collection.Set<K> keySet();
+
+    @Override
+    default int length() {
+        return size();
+    }
+
+    /**
+     * Turns this map into a plain function returning an Option result.
+     *
+     * @return a function that takes a key k and returns its value in a Some if found, otherwise a None.
+     */
+    default Function1<K, Option<V>> lift() {
+        return this::get;
+    }
+
+    /**
+     * Maps the {@code Map} entries to a sequence of values.
+     * <p>
+     * Please use {@link #map(BiFunction)} if the result has to be of type {@code Map}.
+     *
+     * @param mapper A mapper
+     * @param <U>    Component type
+     * @return A sequence of mapped values.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    default <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        // don't remove cast, doesn't compile in Eclipse without it
+        return (Seq<U>) iterator().map(mapper).toStream();
+    }
+
+    /**
+     * Maps the entries of this {@code Map} to form a new {@code Map}.
+     *
+     * @param <K2>   key's component type of the map result
+     * @param <V2>   value's component type of the map result
+     * @param mapper a {@code Function} that maps entries of type {@code (K, V)} to entries of type {@code (K2, V2)}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    <K2, V2> Map<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
+
+    /**
+     * Maps the keys of this {@code Map} while preserving the corresponding values.
+     * <p>
+     * The size of the result map may be smaller if {@code keyMapper} maps two or more distinct keys to the same new key.
+     * In this case the value at the {@code latest} of the original keys is retained.
+     * Order of keys is predictable in {@code TreeMap} (by comparator) and {@code LinkedHashMap} (insertion-order) and not predictable in {@code HashMap}.
+     *
+     * @param <K2>      the new key type
+     * @param keyMapper a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} is null
+     */
+    <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
+
+    /**
+     * Maps the keys of this {@code Map} while preserving the corresponding values and applying a value merge function on collisions.
+     * <p>
+     * The size of the result map may be smaller if {@code keyMapper} maps two or more distinct keys to the same new key.
+     * In this case the associated values will be combined using {@code valueMerge}.
+     *
+     * @param <K2>       the new key type
+     * @param keyMapper  a {@code Function} that maps keys of type {@code V} to keys of type {@code V2}
+     * @param valueMerge a {@code BiFunction} that merges values
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code keyMapper} is null
+     */
+    <K2> Map<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge);
+
+    /**
+     * Maps the values of this {@code Map} while preserving the corresponding keys.
+     *
+     * @param <V2>        the new value type
+     * @param valueMapper a {@code Function} that maps values of type {@code V} to values of type {@code V2}
+     * @return a new {@code Map}
+     * @throws NullPointerException if {@code valueMapper} is null
+     */
+    <V2> Map<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
+
+    /**
+     * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
+     * <p>
+     * If collisions occur, the value of {@code this} map is taken.
+     *
+     * @param that the other map
+     * @return A merged map
+     * @throws NullPointerException if that map is null
+     */
+    Map<K, V> merge(Map<? extends K, ? extends V> that);
+
+    /**
+     * Creates a new map which by merging the entries of {@code this} map and {@code that} map.
+     * <p>
+     * Uses the specified collision resolution function if two keys are the same.
+     * The collision resolution function will always take the first argument from <code>this</code> map
+     * and the second from <code>that</code> map.
+     *
+     * @param <U>                 value type of that Map
+     * @param that                the other map
+     * @param collisionResolution the collision resolution function
+     * @return A merged map
+     * @throws NullPointerException if that map or the given collision resolution function is null
+     */
+    <U extends V> Map<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
+
+    /**
+     * Associates the specified value with the specified key in this map.
+     * If the map previously contained a mapping for the key, the old value is
+     * replaced by the specified value.
+     *
+     * @param key   key with which the specified value is to be associated
+     * @param value value to be associated with the specified key
+     * @return A new Map containing these elements and that entry.
+     */
+    Map<K, V> put(K key, V value);
+
+    /**
+     * Convenience method for {@code put(entry._1, entry._2)}.
+     *
+     * @param entry A Tuple2 containing the key and value
+     * @return A new Map containing these elements and that entry.
+     */
+    Map<K, V> put(Tuple2<? extends K, ? extends V> entry);
+
+    /**
+     * Associates the specified value with the specified key in this map.
+     * If the map previously contained a mapping for the key, the merge
+     * function is used to combine the previous value to the value to
+     * be inserted, and the result of that call is inserted in the map.
+     *
+     * @param <U>   the value type
+     * @param key   key with which the specified value is to be associated
+     * @param value value to be associated with the specified key
+     * @param merge function taking the old and new values and merging them.
+     * @return A new Map containing these elements and that entry.
+     */
+    <U extends V> Map<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge);
+
+    /**
+     * Convenience method for {@code put(entry._1, entry._2, merge)}.
+     *
+     * @param <U>   the value type
+     * @param entry A Tuple2 containing the key and value
+     * @param merge function taking the old and new values and merging them.
+     * @return A new Map containing these elements and that entry.
+     */
+    <U extends V> Map<K, V> put(Tuple2<? extends K, U> entry, BiFunction<? super V, ? super U, ? extends V> merge);
+
+    /**
+     * Removes the mapping for a key from this map if it is present.
+     *
+     * @param key key whose mapping is to be removed from the map
+     * @return A new Map containing these elements without the entry
+     * specified by that key.
+     */
+    Map<K, V> remove(K key);
+
+    /**
+     * Returns a new Map consisting of all elements which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
+
+    /**
+     * Removes the mapping for a key from this map if it is present.
+     *
+     * @param keys keys are to be removed from the map
+     * @return A new Map containing these elements without the entries
+     * specified by that keys.
+     */
+    Map<K, V> removeAll(Iterable<? extends K> keys);
+
+    /**
+     * Returns a new Map consisting of all elements with keys which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test keys of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> removeKeys(Predicate<? super K> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements with values which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test values of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> removeValues(Predicate<? super V> predicate);
+
+    @Override
+    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+        return io.vavr.collection.Collections.scanLeft(this, zero, operation, io.vavr.collection.Iterator::toVector);
+    }
+
+    @Override
+    default <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+        return io.vavr.collection.Collections.scanRight(this, zero, operation, io.vavr.collection.Iterator::toVector);
+    }
+
+    @Override
+    int size();
+
+    /**
+     * Converts this Vavr {@code Map} to a {@code java.util.Map} while preserving characteristics
+     * like insertion order ({@code LinkedHashMap}) and sort order ({@code SortedMap}).
+     *
+     * @return a new {@code java.util.Map} instance
+     */
+    java.util.Map<K, V> toJavaMap();
+
+    /**
+     * Transforms this {@code Map}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <U> U transform(Function<? super Map<K, V>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
+    /**
+     * Traverses this Map sequentially, mapping the (key, value) pairs to elements.
+     *
+     * @param mapper A function that maps (key, value) pairs to elements of type U
+     * @param <U> The type of the resulting elements
+     * @return A new sequence containing the mapped elements.
+     * @deprecated will be replaced by iterator(BiFunction) in 3.0.0
+     */
+    @Deprecated
+    default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return foldLeft(io.vavr.collection.Vector.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
+    }
+
+    default Tuple2<Seq<K>, Seq<V>> unzip() {
+        return unzip(Function.identity());
+    }
+
+    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return unzip(entry -> unzipper.apply(entry._1, entry._2));
+    }
+
+    @Override
+    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super Tuple2<K, V>, Tuple2<? extends T1, ? extends T2>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
+    }
+
+    default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(BiFunction<? super K, ? super V, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return unzip3(entry -> unzipper.apply(entry._1, entry._2));
+    }
+
+    @Override
+    default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(
+            Function<? super Tuple2<K, V>, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+        Objects.requireNonNull(unzipper, "unzipper is null");
+        return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
+    }
+
+    Seq<V> values();
+
+    /**
+     * Turns this map from a partial function into a total function that
+     * returns a value computed by defaultFunction for all keys
+     * absent from the map.
+     *
+     * @param defaultFunction function to evaluate for all keys not present in the map
+     * @return a total function from K to T
+     */
+    default Function1<K, V> withDefault(Function<? super K, ? extends V> defaultFunction) {
+        return k -> get(k).getOrElse(() -> defaultFunction.apply(k));
+    }
+
+    /**
+     * Turns this map from a partial function into a total function that
+     * returns defaultValue for all keys absent from the map.
+     *
+     * @param defaultValue default value to return for all keys not present in the map
+     * @return a total function from K to T
+     */
+    default Function1<K, V> withDefaultValue(V defaultValue) {
+        return k -> get(k).getOrElse(defaultValue);
+    }
+
+    @Override
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(Iterable<? extends U> that) {
+        return zipWith(that, Tuple::of);
+    }
+
+    @Override
+    default <U, R> Seq<R> zipWith(Iterable<? extends U> that, BiFunction<? super Tuple2<K, V>, ? super U, ? extends R> mapper) {
+        Objects.requireNonNull(that, "that is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Stream.ofAll(iterator().zipWith(that, mapper));
+    }
+
+    @Override
+    default <U> Seq<Tuple2<Tuple2<K, V>, U>> zipAll(Iterable<? extends U> that, Tuple2<K, V> thisElem, U thatElem) {
+        Objects.requireNonNull(that, "that is null");
+        return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
+    }
+
+    @Override
+    default Seq<Tuple2<Tuple2<K, V>, Integer>> zipWithIndex() {
+        return zipWithIndex(Tuple::of);
+    }
+
+    @Override
+    default <U> Seq<U> zipWithIndex(BiFunction<? super Tuple2<K, V>, ? super Integer, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return Stream.ofAll(iterator().zipWithIndex(mapper));
+    }
+
+    // -- Adjusted return types of Traversable methods
+
+    @Override
+    Map<K, V> distinct();
+
+    @Override
+    Map<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator);
+
+    @Override
+    <U> Map<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
+
+    @Override
+    Map<K, V> drop(int n);
+
+    @Override
+    Map<K, V> dropRight(int n);
+
+    @Override
+    Map<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
+
+    @Override
+    io.vavr.collection.Iterator<? extends Map<K, V>> grouped(int size);
+
+    @Override
+    default boolean isDistinct() {
+        return true;
+    }
+
+    @Override
+    Map<K, V> init();
+
+    @Override
+    Option<? extends Map<K, V>> initOption();
+
+    @Override
+    Map<K, V> orElse(Iterable<? extends Tuple2<K, V>> other);
+
+    @Override
+    Map<K, V> orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier);
+
+    @Override
+    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> peek(Consumer<? super Tuple2<K, V>> action);
+
+    @Override
+    Map<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+
+    /**
+     * Replaces the entry for the specified key only if it is currently mapped to some value.
+     *
+     * @param key   the key of the element to be substituted.
+     * @param value the new value to be associated with the key
+     * @return a new map containing key mapped to value if key was contained before. The old map otherwise.
+     */
+    Map<K, V> replaceValue(K key, V value);
+
+    /**
+     * Replaces the entry for the specified key only if currently mapped to the specified value.
+     *
+     * @param key      the key of the element to be substituted.
+     * @param oldValue the expected current value that the key is currently mapped to
+     * @param newValue the new value to be associated with the key
+     * @return a new map containing key mapped to newValue if key was contained before and oldValue matched. The old map otherwise.
+     */
+    Map<K, V> replace(K key, V oldValue, V newValue);
+
+    /**
+     * Replaces each entry's value with the result of invoking the given function on that entry until all entries have been processed or the function throws an exception.
+     *
+     * @param function function transforming key and current value to a new value
+     * @return a new map with the same keySet but transformed values.
+     */
+    Map<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function);
+
+    @Override
+    Map<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+
+    @Override
+    Map<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements);
+
+    @Override
+    Map<K, V> scan(Tuple2<K, V> zero,
+            BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+
+    @Override
+    io.vavr.collection.Iterator<? extends Map<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier);
+
+    @Override
+    io.vavr.collection.Iterator<? extends Map<K, V>> sliding(int size);
+
+    @Override
+    io.vavr.collection.Iterator<? extends Map<K, V>> sliding(int size, int step);
+
+    @Override
+    Tuple2<? extends Map<K, V>, ? extends Map<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> tail();
+
+    @Override
+    Option<? extends Map<K, V>> tailOption();
+
+    @Override
+    Map<K, V> take(int n);
+
+    @Override
+    Map<K, V> takeRight(int n);
+
+    @Override
+    Map<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
+
+}

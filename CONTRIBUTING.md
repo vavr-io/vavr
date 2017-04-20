@@ -1,12 +1,12 @@
 # How to Contribute
 
-Javaslang needs to be compiled with **jdk 1.8.0_40** at a minimum, which fixes many type inference bugs of the java compiler.
+Vavr needs to be compiled with **jdk 1.8.0_40** at a minimum, which fixes many type inference bugs of the java compiler.
 
 [Fork](https://help.github.com/articles/fork-a-repo) the GitHub, send a [pull request](https://help.github.com/articles/using-pull-requests) and keep your fork in [sync](https://help.github.com/articles/syncing-a-fork/) with the upstream repository.
 
 ## IDE
 
-We use recent IDE version to develop Javaslang. IntelliJ IDEA is preferred over Eclipse.
+We use recent IDE version to develop Vavr. IntelliJ IDEA is preferred over Eclipse.
 
 Using IntelliJ IDEA, the Community Edition works out-of-the-box. The idea-settings.jar can be found in the repo.
 
@@ -40,16 +40,17 @@ _Source: http://users.ece.utexas.edu/~adnan/pike.html_
 * All classes start with the following copyright notice, which contains the list of core developers:
 
 ```java
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 ```
 
 ### Packages
 
-* There is only one first-level package: javaslang.
+* There is only one first-level package: io.vavr.
 * The maximum package depth is two.
 * Package names are denoted in the singular.
 * Packages are sliced by domain (no util or tool packages).
@@ -117,7 +118,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
 
 ### 3rd party libraries
 
-* Javaslang has no dependencies other than Java.
+* Vavr has no dependencies other than Java.
 * Unit tests depend solely on junit and assertj.
 * Benchmarks are done with JMH
 
@@ -135,11 +136,11 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
 
 ### Benchmarks
 
-If you have dedicated hardware (i.e. no virtual machines) and are interested in how Javaslang compares to other alternatives,
-you can run all benchmarks from the `javaslang-benchmark` module via `javaslang.JmhRunner.main` or running the following Maven command:
+If you have dedicated hardware (i.e. no virtual machines) and are interested in how Vavr compares to other alternatives,
+you can run all benchmarks from the `vavr-benchmark` module via `io.vavr.JmhRunner.main` or running the following Maven command:
 
 ```bash
-mvn clean test -P benchmark -pl javaslang-benchmark 
+mvn clean test -P benchmark -pl vavr-benchmark 
 ```
 
 Note: running all the tests will require several hours, during which there should be no other activity done on the given machine.
@@ -220,43 +221,14 @@ We distinguish between 3 kinds of (backward-)compatibilty:
 
 _Source: [OpenJDK Developers Guide v0.777, Kinds of Compatibility](http://cr.openjdk.java.net/~darcy/OpenJdkDevGuide/OpenJdkDevelopersGuide.v0.777.html#compatibility)_
 
-Given a version number `<major>.<minor>.<path>` Javaslang
+Given a version number `<major>.<minor>.<path>` Vavr
 
 * may affect **behavioral** compatibility in **all kind of releases**, especially bug fix/patch releases. For example we might decide to release a more effective hashing algorithm in the next minor release that reduces the probability of collisions.
 * may affect **source** compatibility in **patch** releases. For example this may be the case when generic type bounds of method signatures need to be fixed.
 * retains **binary** backwards compatibility (drop in replacement jar) within the same **minor** version (this includes **patch** versions)
 * is not **binary** backward compatible when the **major** version changes
 
-Summing up, drop-in replacements of Javaslang can be made for **minor** and **patch** releases.
-
-### Using multiple versions at once
-
-Javaslang 2.x has the following coordinates:
-
-```java
-Javaslang 1
-  group-id:    com.javaslang
-  artifact-id: javaslang
-  version:     1.x.y
-  package:     javaslang.*
-
-Javaslang 2
-  group-id:    io.javaslang
-  artifact-id: javaslang
-  version:     2.x.y
-  package:     javaslang.*
-```
-
-Starting with Javaslang 3.x we will change the coordinates as follows:
-
-```java
-Javaslang 3
-  group-id:    io.javaslang
-  artifact-id: javaslang
-  package:     io.javaslang.*
-```
-
-Currently there is no general strategy how to ensure that major versions may coexist.
+Summing up, drop-in replacements of Vavr can be made for **minor** and **patch** releases.
 
 ### Tool Support
 
@@ -274,7 +246,7 @@ In the example above we check API changes between the current branch and the _2.
 
 Performing a release requires admin-rights.
 
-1. get a fresh copy of the repo `git clone https://github.com/javaslang/javaslang.git`
+1. get a fresh copy of the repo `git clone https://github.com/vavr-io/vavr.git`
 2. run `mvn clean test` and(!) `mvn javadoc:javadoc` to ensure all is working fine
 3. perform the release
 
@@ -332,7 +304,7 @@ Given a release 1.2.2, we create a bugfix release as follows.
 First, we clone the repository. We work on origin instead of a fork (this requires admin rights).
 
 ```bash
-git clone https://github.com/javaslang/javaslang.git javaslang-1.2.3
+git clone https://github.com/vavr-io/vavr.git vavr-1.2.3
 ```
 
 We checkout the release tag and create a new (local) branch.
