@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.collection;
 
@@ -75,7 +76,7 @@ public class StringTest {
 
     @Test
     public void equalsIgnoreCase() {
-        assertThat(CharSeq.of("JavaSlang").equalsIgnoreCase(CharSeq.of("Javaslang"))).isTrue();
+        assertThat(CharSeq.of("Vavr").equalsIgnoreCase(CharSeq.of("vavr"))).isTrue();
     }
 
     @Test
@@ -85,7 +86,7 @@ public class StringTest {
 
     @Test
     public void compareToIgnoreCase() {
-        assertThat(CharSeq.of("JavaSlang").compareToIgnoreCase(CharSeq.of("Javaslang"))).isEqualTo(0);
+        assertThat(CharSeq.of("Vavr").compareToIgnoreCase(CharSeq.of("vavr"))).isEqualTo(0);
     }
 
     @Test
@@ -232,12 +233,12 @@ public class StringTest {
 
     @Test
     public void toLowerCase() {
-        assertThat(CharSeq.of("JavaSlang").toLowerCase().toString()).isEqualTo("javaslang");
+        assertThat(CharSeq.of("Vavr").toLowerCase().toString()).isEqualTo("vavr");
     }
 
     @Test
     public void toUpperCase() {
-        assertThat(CharSeq.of("JavaSlang").toUpperCase().toString()).isEqualTo("JAVASLANG");
+        assertThat(CharSeq.of("Vavr").toUpperCase().toString()).isEqualTo("VAVR");
     }
 
     @Test

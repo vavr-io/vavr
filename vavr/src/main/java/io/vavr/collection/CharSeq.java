@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.collection;
 
@@ -20,7 +21,7 @@ import java.util.stream.Collector;
 
 /**
  * The CharSeq (read: character sequence) collection essentially is a rich String wrapper having all operations
- * we know from the functional Javaslang collections.
+ * we know from the functional Vavr collections.
  *
  * @author Ruslan Sennov, Daniel Dietrich
  * @since 2.0.0
@@ -63,7 +64,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * Creates a String of {@code CharSequence}.
      *
      * @param sequence {@code CharSequence} instance.
-     * @return A new {@code javaslang.String}
+     * @return A new {@link io.vavr.collection.CharSeq}
      */
     // DEV-NOTE: Needs to be 'of' instead of 'ofAll' because 'ofAll(CharSeq)' is ambiguous.
     public static CharSeq of(CharSequence sequence) {

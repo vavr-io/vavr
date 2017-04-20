@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.collection;
 
@@ -582,10 +583,10 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test(timeout = 5_000)
     public void shouldNotDeadlockOnConcurrentClassInitialization() throws InterruptedException {
         final ExecutorService executorService = Executors.newFixedThreadPool(2);
-        executorService.execute(new ClassInitializer("javaslang.collection.Iterator"));
-        executorService.execute(new ClassInitializer("javaslang.collection.AbstractIterator"));
+        executorService.execute(new ClassInitializer("io.vavr.collection.Iterator"));
+        executorService.execute(new ClassInitializer("io.vavr.collection.AbstractIterator"));
         executorService.shutdown();
-        // try to access javaslang iterator and it will hang
+        // try to access Vavr Iterator and it will hang
         Iterator.empty().iterator();
     }
 

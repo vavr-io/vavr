@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.collection;
 
@@ -338,12 +339,12 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldConvertToJavaMap() {
-        final Multimap<String, Integer> javaslang = mapOfPairs("1", 1, "2", 2, "3", 3);
+        final Multimap<String, Integer> vavr = mapOfPairs("1", 1, "2", 2, "3", 3);
         final java.util.Map<String, java.util.Collection<Integer>> java = javaEmptyMap();
         java.put("1", javaListOf(1));
         java.put("2", javaListOf(2));
         java.put("3", javaListOf(3));
-        assertThat(javaslang.toJavaMap()).isEqualTo(java);
+        assertThat(vavr.toJavaMap()).isEqualTo(java);
     }
 
     private java.util.Collection<Integer> javaListOf(Integer i) {
@@ -1064,14 +1065,14 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @Test
     public void shouldCreateSeqOfSeqUsingCons() {
         // this Traversable test is not suited for Multimaps:
-        //   javaslang.collection.List$Nil cannot be cast to java.lang.Comparable
+        //   io.vavr.collection.List$Nil cannot be cast to java.lang.Comparable
     }
 
     @Override
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveVoid() {
         // this Value test is not suited for Multimaps:
-        //   java.lang.NullPointerException at javaslang.collection.Comparators.lambda$naturalComparator
+        //   java.lang.NullPointerException at io.vavr.collection.Comparators.lambda$naturalComparator
     }
 
     // -- spliterator

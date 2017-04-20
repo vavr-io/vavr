@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.control;
 
@@ -124,9 +125,9 @@ public class EitherTest extends AbstractValueTest {
 
     @Test
     public void shouldNarrowLeftEither() {
-        Either<String, Integer> either = Either.left("javaslang");
+        Either<String, Integer> either = Either.left("vavr");
         Either<CharSequence, Number> narrow = Either.narrow(either);
-        assertThat(narrow.getLeft()).isEqualTo("javaslang");
+        assertThat(narrow.getLeft()).isEqualTo("vavr");
     }
 
     // orElse
@@ -166,7 +167,7 @@ public class EitherTest extends AbstractValueTest {
 
     @Test
     public void shouldFilterLeft() {
-        Either<String, Integer> either = Either.left("javaslang");
+        Either<String, Integer> either = Either.left("vavr");
         assertThat(either.filter(i -> true).get()).isSameAs(either);
         assertThat(either.filter(i -> false).get()).isSameAs(either);
     }
@@ -181,7 +182,7 @@ public class EitherTest extends AbstractValueTest {
 
     @Test
     public void shouldFlatMapLeft() {
-        Either<String, Integer> either = Either.left("javaslang");
+        Either<String, Integer> either = Either.left("vavr");
         assertThat(either.flatMap(v -> Either.right("ok"))).isSameAs(either);
     }
 

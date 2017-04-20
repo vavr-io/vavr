@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.collection;
 
@@ -369,7 +370,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     Traversable<T> dropWhile(Predicate<? super T> predicate);
 
     /**
-     * In Javaslang there are four basic classes of collections:
+     * In Vavr there are four basic classes of collections:
      *
      * <ul>
      * <li>Seq (sequential elements)</li>
@@ -588,16 +589,16 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * for (T t : this) { hash += Objects.hashCode(t); }
      * }</pre>
      *
-     * Please note that the particular hashing algorithms may change in a future version of Javaslang.
+     * Please note that the particular hashing algorithms may change in a future version of Vavr.
      * <br>
-     * Generally, hash codes of collections aren't cached in Javaslang (opposed to the size/length).
+     * Generally, hash codes of collections aren't cached in Vavr (opposed to the size/length).
      * Storing hash codes in order to reduce the time complexity would increase the memory footprint.
      * Persistent collections are built upon tree structures, it allows us to implement efficient memory sharing.
      * A drawback of tree structures is that they make it necessary to store collection attributes at each tree node (read: element).
      * <br>
      * The computation of the hash code is linear in time, i.e. O(n). If the hash code of a collection is re-calculated often,
      * e.g. when using a List as HashMap key, we might want to cache the hash code.
-     * This can be achieved by simply using a wrapper class, which is not included in Javaslang but could be implemented like this:
+     * This can be achieved by simply using a wrapper class, which is not included in Vavr but could be implemented like this:
      *
      * <pre>{@code public final class Hashed<K> {
      *
@@ -695,7 +696,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * Each of Javaslang's collections may contain more than one element.
+     * Each of Vavr's collections may contain more than one element.
      *
      * @return {@code false}
      */

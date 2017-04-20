@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.collection.euler;
 
@@ -105,7 +106,7 @@ public class Euler17Test {
     ).grouped(2).toSortedMap(pair -> Tuple.of((Integer) pair.get(0), (String) pair.get(1)));
 
     /**
-     * Solution using Javaslang Pattern Matching.
+     * Solution using Vavr Pattern Matching.
      */
     private static class SolutionA implements SolutionProblem17 {
         @Override
@@ -127,7 +128,7 @@ public class Euler17Test {
     }
 
     /**
-     * A more general solution using functionality of the Javaslang Collections.
+     * A more general solution using functionality of the Vavr Collections.
      */
     private static class SolutionB implements SolutionProblem17 {
         @Override

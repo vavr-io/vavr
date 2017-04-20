@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.collection;
 
@@ -1671,25 +1672,25 @@ public class CharSeqTest {
 
     @Test
     public void shouldConvertToLowerCase() {
-        assertThat(CharSeq.of("JaVasLAng").toLowerCase()).isEqualTo(CharSeq.of("javaslang"));
-        assertThat(CharSeq.of("JaVasLAng").toLowerCase(Locale.ENGLISH)).isEqualTo(CharSeq.of("javaslang"));
+        assertThat(CharSeq.of("Vavr").toLowerCase()).isEqualTo(CharSeq.of("vavr"));
+        assertThat(CharSeq.of("Vavr").toLowerCase(Locale.ENGLISH)).isEqualTo(CharSeq.of("vavr"));
     }
 
     // -- toUpperCase
 
     @Test
     public void shouldConvertTotoUpperCase() {
-        assertThat(CharSeq.of("JaVasLAng").toUpperCase()).isEqualTo(CharSeq.of("JAVASLANG"));
-        assertThat(CharSeq.of("JaVasLAng").toUpperCase(Locale.ENGLISH)).isEqualTo(CharSeq.of("JAVASLANG"));
+        assertThat(CharSeq.of("Vavr").toUpperCase()).isEqualTo(CharSeq.of("VAVR"));
+        assertThat(CharSeq.of("Vavr").toUpperCase(Locale.ENGLISH)).isEqualTo(CharSeq.of("VAVR"));
     }
 
     // -- capitalize
 
     @Test
     public void shouldCapitalize() {
-        assertThat(CharSeq.of("javasLang").capitalize()).isEqualTo(CharSeq.of("JavasLang"));
+        assertThat(CharSeq.of("vavr").capitalize()).isEqualTo(CharSeq.of("Vavr"));
         assertThat(CharSeq.of("").capitalize()).isEqualTo(CharSeq.of(""));
-        assertThat(CharSeq.of("javasLang").capitalize(Locale.ENGLISH)).isEqualTo(CharSeq.of("JavasLang"));
+        assertThat(CharSeq.of("vavr").capitalize(Locale.ENGLISH)).isEqualTo(CharSeq.of("Vavr"));
         assertThat(CharSeq.of("").capitalize(Locale.ENGLISH)).isEqualTo(CharSeq.of(""));
     }
 
@@ -3209,7 +3210,7 @@ public class CharSeqTest {
         assertThat(actual.length()).isEqualTo(0);
     }
 
-    // -- static javaslang.String.of()
+    // -- static of(String)
 
     @Test
     public void shouldWrapOtherCharSeq() {

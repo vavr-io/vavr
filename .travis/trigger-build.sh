@@ -1,6 +1,6 @@
 #!/bin/bash
 
-org="javaslang"
+org="vavr-io"
 repo=$1
 branch=$2
 

@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.collection;
 
@@ -23,7 +24,7 @@ import static io.vavr.collection.IteratorModule.BigDecimalHelper.asDecimal;
 import static io.vavr.collection.IteratorModule.EmptyIterator;
 
 /**
- * {@code javaslang.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
+ * {@code io.vavr.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
  * whose purpose is to iterate <em>once</em> over a sequence of elements.
  * <p>
  * It is recommended to create instances using {@link AbstractIterator} in favor of {@code Iterator}.
@@ -63,7 +64,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @param iterables The iterables
      * @param <T>       Component type.
-     * @return A new {@code javaslang.collection.Iterator}
+     * @return A new {@code io.vavr.collection.Iterator}
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
@@ -81,7 +82,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @param iterables The iterable of iterables
      * @param <T>       Component type.
-     * @return A new {@code javaslang.collection.Iterator}
+     * @return A new {@code io.vavr.collection.Iterator}
      */
     static <T> Iterator<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
@@ -178,7 +179,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @param iterable A {@link Iterable}
      * @param <T>      Component type.
-     * @return A new {@code javaslang.collection.Iterator}
+     * @return A new {@code io.vavr.collection.Iterator}
      */
     @SuppressWarnings("unchecked")
     static <T> Iterator<T> ofAll(Iterable<? extends T> iterable) {
@@ -196,7 +197,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @param iterator A {@link java.util.Iterator}
      * @param <T>      Component type.
-     * @return A new {@code javaslang.collection.Iterator}
+     * @return A new {@code io.vavr.collection.Iterator}
      */
     @SuppressWarnings("unchecked")
     static <T> Iterator<T> ofAll(java.util.Iterator<? extends T> iterator) {

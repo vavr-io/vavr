@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr;
 
@@ -16,14 +17,14 @@ import io.vavr.concurrent.Future;
 import io.vavr.control.Option;
 
 /**
- * <strong>INTERNAL TYPE - turned to javaslang.Patterns by javaslang-match annotation processor.</strong>
+ * <strong>INTERNAL TYPE - turned to io.vavr.Patterns by vavr-match annotation processor.</strong>
  * @deprecated Will be removed in 3.0.0
  */
 @Deprecated
 @Patterns
 class $ {
 
-    // -- javaslang
+    // -- io.vavr
 
     // Tuple0-N
     @Unapply
@@ -45,7 +46,7 @@ class $ {
     @Unapply
     static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> Tuple8(Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> tuple8) { return tuple8; }
 
-    // -- javaslang.collection
+    // -- io.vavr.collection
 
     // List
     @Unapply
@@ -59,12 +60,12 @@ class $ {
     @Unapply
     static <T> Tuple0 Stream(Stream.Empty<T> empty) { return Tuple.empty(); }
 
-    // -- javaslang.concurrent
+    // -- io.vavr.concurrent
 
     @Unapply
     static <T> Tuple1<Option<Try<T>>> Future(Future<T> future) { return Tuple.of(future.getValue()); }
 
-    // -- javaslang.control
+    // -- io.vavr.control
 
     // Either
     @Unapply

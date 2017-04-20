@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 
 // temporarily needed to circumvent https://issues.scala-lang.org/browse/SI-3772 (see case class Generics)
@@ -26,7 +27,7 @@ def run(): Unit = {
 }
 
 /**
- * Generate Javaslang src-gen/main/java classes
+ * Generate Vavr src-gen/main/java classes
  */
 def generateMainClasses(): Unit = {
 
@@ -43,7 +44,7 @@ def generateMainClasses(): Unit = {
    */
   def genAPI(): Unit = {
 
-    genJavaslangFile("io.vavr", "API")(genAPI)
+    genVavrFile("io.vavr", "API")(genAPI)
 
     def genAPI(im: ImportManager, packageName: String, className: String): String = {
 
@@ -996,7 +997,7 @@ def generateMainClasses(): Unit = {
            *
            * <strong>Note:</strong> Please take care when matching {@code Predicate} instances. In general,
            * <a href="http://cstheory.stackexchange.com/a/14152" target="_blank">function equality</a>
-           * is an undecidable problem in computer science. In Javaslang we are only able to check,
+           * is an undecidable problem in computer science. In Vavr we are only able to check,
            * if two functions are the same instance.
            * <p>
            * However, this code will fail:
@@ -1301,7 +1302,7 @@ def generateMainClasses(): Unit = {
 
       xs"""
         /**
-         * The most basic Javaslang functionality is accessed through this API class.
+         * The most basic Vavr functionality is accessed through this API class.
          *
          * <pre><code>
          * import static io.vavr.API.*;
@@ -1354,8 +1355,8 @@ def generateMainClasses(): Unit = {
          * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN }
          * </code></pre>
          *
-         * As with all Javaslang Values, the result of a For-comprehension can be converted
-         * to standard Java library and Javaslang types.
+         * As with all Vavr Values, the result of a For-comprehension can be converted
+         * to standard Java library and Vavr types.
          * @author Daniel Dietrich
          * @since 2.0.0
          */
@@ -1385,8 +1386,8 @@ def generateMainClasses(): Unit = {
 
     (0 to N).foreach(i => {
 
-      genJavaslangFile("io.vavr", s"CheckedFunction$i")(genFunction("CheckedFunction", checked = true))
-      genJavaslangFile("io.vavr", s"Function$i")(genFunction("Function", checked = false))
+      genVavrFile("io.vavr", s"CheckedFunction$i")(genFunction("CheckedFunction", checked = true))
+      genVavrFile("io.vavr", s"Function$i")(genFunction("Function", checked = false))
 
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
@@ -1765,10 +1766,10 @@ def generateMainClasses(): Unit = {
    */
   def genTuples(): Unit = {
 
-    genJavaslangFile("io.vavr", "Tuple")(genBaseTuple)
+    genVavrFile("io.vavr", "Tuple")(genBaseTuple)
 
     (0 to N).foreach { i =>
-      genJavaslangFile("io.vavr", s"Tuple$i")(genTuple(i))
+      genVavrFile("io.vavr", s"Tuple$i")(genTuple(i))
     }
 
     /*
@@ -2172,7 +2173,7 @@ def generateMainClasses(): Unit = {
             /**
              * The maximum arity of an Tuple.
              * <p>
-             * Note: This value might be changed in a future version of Javaslang.
+             * Note: This value might be changed in a future version of Vavr.
              * So it is recommended to use this constant instead of hardcoding the current maximum arity.
              */
             int MAX_ARITY = $N;
@@ -2244,7 +2245,7 @@ def generateMainClasses(): Unit = {
       "Object" -> "Object" // fallback
     ) // note: there is no void[] in Java
 
-    genJavaslangFile("io.vavr.collection", "ArrayType")((im: ImportManager, packageName: String, className: String) => xs"""
+    genVavrFile("io.vavr.collection", "ArrayType")((im: ImportManager, packageName: String, className: String) => xs"""
       import java.util.Collection;
 
       /**
@@ -2424,7 +2425,7 @@ def generateMainClasses(): Unit = {
 }
 
 /**
- * Generate Javaslang src-gen/test/java classes
+ * Generate Vavr src-gen/test/java classes
  */
 def generateTestClasses(): Unit = {
 
@@ -2437,7 +2438,7 @@ def generateTestClasses(): Unit = {
    */
   def genAPITests(): Unit = {
 
-    genJavaslangFile("io.vavr", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+    genVavrFile("io.vavr", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
       val test = im.getType("org.junit.Test")
@@ -2823,8 +2824,8 @@ def generateTestClasses(): Unit = {
 
     (0 to N).foreach(i => {
 
-      genJavaslangFile("io.vavr", s"CheckedFunction${i}Test", baseDir = TARGET_TEST)(genFunctionTest("CheckedFunction", checked = true))
-      genJavaslangFile("io.vavr", s"Function${i}Test", baseDir = TARGET_TEST)(genFunctionTest("Function", checked = false))
+      genVavrFile("io.vavr", s"CheckedFunction${i}Test", baseDir = TARGET_TEST)(genFunctionTest("CheckedFunction", checked = true))
+      genVavrFile("io.vavr", s"Function${i}Test", baseDir = TARGET_TEST)(genFunctionTest("Function", checked = false))
 
       def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
@@ -3212,7 +3213,7 @@ def generateTestClasses(): Unit = {
 
     (0 to N).foreach(i => {
 
-      genJavaslangFile("io.vavr", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+      genVavrFile("io.vavr", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
         val test = im.getType("org.junit.Test")
         val seq = im.getType("io.vavr.collection.Seq")
@@ -3425,13 +3426,13 @@ def generateTestClasses(): Unit = {
 }
 
 /**
- * Adds the Javaslang header to generated classes.
+ * Adds the Vavr header to generated classes.
  *
  * @param packageName Java package name
  * @param className Simple java class name
  * @param gen A generator which produces a String.
  */
-def genJavaslangFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
+def genVavrFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
   genJavaFile(baseDir, packageName, className)(xraw"""
     /*                        __    __  __  __    __  ___
      *                       \  \  /  /    \  \  /  /  __/

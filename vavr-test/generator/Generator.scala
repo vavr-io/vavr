@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 
 // temporarily needed to circumvent https://issues.scala-lang.org/browse/SI-3772 (see case class Generics)
@@ -24,7 +25,7 @@ def run(): Unit = {
 }
 
 /**
- * Generate Javaslang src-gen/main/java classes
+ * Generate Vavr src-gen/main/java classes
  */
 def generateMainClasses(): Unit = {
 
@@ -38,7 +39,7 @@ def generateMainClasses(): Unit = {
    */
   def genPropertyChecks(): Unit = {
 
-    genJavaslangFile("io.vavr.test", "Property")(genProperty)
+    genVavrFile("io.vavr.test", "Property")(genProperty)
 
     def genProperty(im: ImportManager, packageName: String, className: String): String = xs"""
       /**
@@ -310,7 +311,7 @@ def generateMainClasses(): Unit = {
 }
 
 /**
- * Generate Javaslang src-gen/test/java classes
+ * Generate Vavr src-gen/test/java classes
  */
 def generateTestClasses(): Unit = {
 
@@ -320,7 +321,7 @@ def generateTestClasses(): Unit = {
    * Generator of Property-check tests
    */
   def genPropertyCheckTests(): Unit = {
-    genJavaslangFile("io.vavr.test", "PropertyTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+    genVavrFile("io.vavr.test", "PropertyTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
       // main classes
       val list = im.getType("io.vavr.collection.List")
@@ -547,7 +548,7 @@ def generateTestClasses(): Unit = {
     })
 
     for (i <- 1 to N) {
-      genJavaslangFile("io.vavr.test", s"PropertyCheck${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+      genVavrFile("io.vavr.test", s"PropertyCheck${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
         val generics = (1 to i).gen(j => "Object")(", ")
         val arbitraries = (1 to i).gen(j => "OBJECTS")(", ")
@@ -658,12 +659,12 @@ def generateTestClasses(): Unit = {
 }
 
 /**
- * Adds the Javaslang header to generated classes.
+ * Adds the Vavr header to generated classes.
  * @param packageName Java package name
  * @param className Simple java class name
  * @param gen A generator which produces a String.
  */
-def genJavaslangFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
+def genVavrFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
   genJavaFile(baseDir, packageName, className)(xraw"""
     /*                        __    __  __  __    __  ___
      *                       \  \  /  /    \  \  /  /  __/

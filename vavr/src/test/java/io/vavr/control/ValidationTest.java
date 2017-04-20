@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.control;
 
@@ -74,9 +75,9 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateFromLeftEither() {
-        Validation<String, Integer> validation = Validation.fromEither(Either.left("javaslang"));
+        Validation<String, Integer> validation = Validation.fromEither(Either.left("vavr"));
         assertThat(validation.isValid()).isFalse();
-        assertThat(validation.getError()).isEqualTo("javaslang");
+        assertThat(validation.getError()).isEqualTo("vavr");
     }
 
     // -- Validation.narrow
@@ -90,9 +91,9 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldNarrowInvalid() {
-        Validation<String, Integer> validation = Validation.invalid("javaslang");
+        Validation<String, Integer> validation = Validation.invalid("vavr");
         Validation<CharSequence, Number> narrow = Validation.narrow(validation);
-        assertThat(narrow.getError()).isEqualTo("javaslang");
+        assertThat(narrow.getError()).isEqualTo("vavr");
     }
 
     // -- Validation.sequence
@@ -133,9 +134,9 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertToLeftEither() {
-        Either<String, ?> either = Validation.invalid("javaslang").toEither();
+        Either<String, ?> either = Validation.invalid("vavr").toEither();
         assertThat(either.isLeft()).isTrue();
-        assertThat(either.getLeft()).isEqualTo("javaslang");
+        assertThat(either.getLeft()).isEqualTo("vavr");
     }
 
     // -- filter
@@ -149,7 +150,7 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldFilterInvalid() {
-        Validation<String, Integer> invalid = Validation.invalid("javaslang");
+        Validation<String, Integer> invalid = Validation.invalid("vavr");
         assertThat(invalid.filter(i -> true).get()).isSameAs(invalid);
         assertThat(invalid.filter(i -> false).get()).isSameAs(invalid);
     }
@@ -164,7 +165,7 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldFlatMapInvalid() {
-        Validation<String, Integer> invalid = Validation.invalid("javaslang");
+        Validation<String, Integer> invalid = Validation.invalid("vavr");
         assertThat(invalid.flatMap(v -> Validation.valid("ok"))).isSameAs(invalid);
     }
 
@@ -544,7 +545,7 @@ public class ValidationTest extends AbstractValueTest {
         }
     }
 
-    // -- Complete Validation example, may be moved to javaslang-documentation later
+    // -- Complete Validation example, may be moved to Vavr documentation later
 
     @Test
     public void shouldValidateValidPerson() {

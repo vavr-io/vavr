@@ -17,4 +17,4 @@ default <U> U transform(Function<? super TYPE<? super T>, ? extends U> f) {
 }
 ```
 
-See also [#716](https://github.com/javaslang/javaslang/issues/716#issuecomment-163399633).
+See also [#716](https://github.com/vavr-io/vavr/issues/716#issuecomment-163399633).

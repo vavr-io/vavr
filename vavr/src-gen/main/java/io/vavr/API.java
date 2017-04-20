@@ -30,7 +30,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * The most basic Javaslang functionality is accessed through this API class.
+ * The most basic Vavr functionality is accessed through this API class.
  *
  * <pre><code>
  * import static io.vavr.API.*;
@@ -83,8 +83,8 @@ import java.util.function.Supplier;
  * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN }
  * </code></pre>
  *
- * As with all Javaslang Values, the result of a For-comprehension can be converted
- * to standard Java library and Javaslang types.
+ * As with all Vavr Values, the result of a For-comprehension can be converted
+ * to standard Java library and Vavr types.
  * @author Daniel Dietrich
  * @since 2.0.0
  */
@@ -3107,7 +3107,7 @@ public final class API {
      *
      * <strong>Note:</strong> Please take care when matching {@code Predicate} instances. In general,
      * <a href="http://cstheory.stackexchange.com/a/14152" target="_blank">function equality</a>
-     * is an undecidable problem in computer science. In Javaslang we are only able to check,
+     * is an undecidable problem in computer science. In Vavr we are only able to check,
      * if two functions are the same instance.
      * <p>
      * However, this code will fail:

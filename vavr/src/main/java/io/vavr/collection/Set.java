@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.collection;
 
@@ -18,7 +19,7 @@ import java.util.function.*;
 /**
  * An immutable {@code Set} interface.
  * <p>
- * CAUTION: The Javaslang {@code Set} implementations generally support {@code null} elements. However {@code SortedSet}
+ * CAUTION: The Vavr {@code Set} implementations generally support {@code null} elements. However {@code SortedSet}
  * implementations require an element {@code Comparator}, which may not support {@code null} elements.
  * <p>
  * Examples:
@@ -153,7 +154,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> removeAll(Iterable<? extends T> elements);
 
     /**
-     * Converts this Javaslang {@code Set} to a {@code java.util.Set} while preserving characteristics
+     * Converts this Vavr {@code Set} to a {@code java.util.Set} while preserving characteristics
      * like insertion order ({@code LinkedHashSet}) and sort order ({@code SortedSet}).
      *
      * @return a new {@code java.util.Set} instance

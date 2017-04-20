@@ -1,7 +1,8 @@
-/*     / \____  _    _  ____   ______  / \ ____  __    _______
- *    /  /    \/ \  / \/    \ /  /\__\/  //    \/  \  //  /\__\   JΛVΛSLΛNG
- *  _/  /  /\  \  \/  /  /\  \\__\\  \  //  /\  \ /\\/ \ /__\ \   Copyright 2014-2017 Javaslang, http://javaslang.io
- * /___/\_/  \_/\____/\_/  \_/\__\/__/\__\_/  \_//  \__/\_____/   Licensed under the Apache License, Version 2.0
+/*                        __    __  __  __    __  ___
+ *                       \  \  /  /    \  \  /  /  __/
+ *                        \  \/  /  /\  \  \/  /  /
+ *                         \____/__/  \__\____/__/.ɪᴏ
+ * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
  */
 package io.vavr.concurrent;
 
@@ -405,11 +406,11 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldReduceSequenceOfFutures() {
         final Future<String> future = Future.reduce(
-                List.of(Future.of(zZz("Java")), Future.of(zZz("slang"))),
+                List.of(Future.of(zZz("Va")), Future.of(zZz("vr"))),
                 (i1, i2) -> i1 + i2
         );
         waitUntil(future::isCompleted);
-        assertThat(future.get()).isEqualTo("Javaslang");
+        assertThat(future.get()).isEqualTo("Vavr");
     }
 
     @Test
