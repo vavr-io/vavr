@@ -192,6 +192,30 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.none().orElse(() -> opt)).isSameAs(opt);
     }
 
+    @Test
+    public void shouldReturnSelfOnOrElseOfIfValueIsPresent() {
+        final Option<Integer> opt = Option.of(42);
+        assertThat(opt.orElseOf(0)).isSameAs(opt);
+    }
+
+    @Test
+    public void shouldReturnSelfOnOrElseOfSupplierIfValueIsPresent() {
+        final Option<Integer> opt = Option.of(42);
+        assertThat(opt.orElseOf(() -> 0)).isSameAs(opt);
+    }
+
+    @Test
+    public void shouldReturnAlternativeValueOnOrElseOfValueIsNotDefined() {
+        final int value = 42;
+        assertThat(Option.none().orElseOf(value)).isEqualTo(Option.of(value));
+    }
+
+    @Test
+    public void shouldReturnAlternativeValueOnOrElseOfSupplierIfValueIsNotDefined() {
+        final int value = 42;
+        assertThat(Option.none().orElseOf(() -> value)).isEqualTo(Option.of(value));
+    }
+
     // -- getOrElse
 
     @Test

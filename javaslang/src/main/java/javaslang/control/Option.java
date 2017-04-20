@@ -281,6 +281,26 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Returns this {@code Option} if it is nonempty, otherwise return {@code Option} of the value.
+     *
+     * @param value A value
+     * @return this {@code Option} if it is nonempty, otherwise return {@code Option} of the value.
+     */
+    default Option<T> orElseOf(T value) {
+        return isEmpty() ? Option.of(value) : this;
+    }
+
+    /**
+     * Returns this {@code Option} if it is nonempty, otherwise return {@code Option} of the result of evaluating supplier.
+     *
+     * @param supplier An alternative supplier
+     * @return this {@code Option} if it is nonempty, otherwise return {@code Option} of the result of evaluating supplier.
+     */
+    default Option<T> orElseOf(Supplier<? extends T> supplier) {
+        return isEmpty() ? Option.of(supplier.get()) : this;
+    }
+
+    /**
      * Returns the value if this is a {@code Some}, otherwise the {@code other} value is returned,
      * if this is a {@code None}.
      * <p>
