@@ -7,11 +7,8 @@ package javaslang.collection;
 
 import java.io.Serializable;
 import java.util.*;
-import java.util.Iterator;
-import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static javaslang.API.TODO;
 
 /**
  * THIS CLASS IS INTENDED TO BE USED INTERNALLY ONLY!
@@ -30,33 +27,6 @@ class JavaConverters {
     static <T, C extends Seq<T>> ListView<T, C> asJava(C seq, ChangePolicy changePolicy) {
         return new ListView<>(seq, changePolicy.isMutable());
     }
-
-    static <T, C extends Set<T>> SetView<T> asJava(C set, ChangePolicy changePolicy) {
-        return TODO("new SetView<>(set, changePolicy.isMutable());");
-    }
-
-    static <T, C extends SortedSet<T>> NavigableSetView<T> asJava(C sortedSet, ChangePolicy changePolicy) {
-        return TODO("new NavigableSetView<>(set, changePolicy.isMutable());");
-    }
-
-    static <K, V, C extends Map<K, V>> MapView<K, V> asJava(C map, ChangePolicy changePolicy) {
-        return TODO("new MapView<>(map, changePolicy.isMutable());");
-    }
-
-    static <K, V, C extends SortedMap<K, V>> NavigableMapView<K, V> asJava(C sortedMap, ChangePolicy changePolicy) {
-        return TODO("new NavigableMapView<>(map, changePolicy.isMutable());");
-    }
-
-    /*
-    static <K, V, C extends Multimap<K, V>> MapView<K, java.util.Collection<V>> asJava(C multimap, ChangePolicy changePolicy) {
-        return TODO("new MapView<>(map, changePolicy.isMutable());");
-    }
-
-    TODO: create interface javaslang.collection.SortedMultimap
-    static <K, V, C extends SortedMultimap<K, V>> NavigableMapView<K, java.util.Collection<V>> asJava(C sortedMultimap, ChangePolicy changePolicy) {
-        return TODO("new NavigableMapView<>(map, changePolicy.isMutable());");
-    }
-    */
 
     enum ChangePolicy {
 
@@ -187,8 +157,8 @@ class JavaConverters {
         }
 
         @Override
-        public Iterator<T> iterator() {
-            return getDelegate().iterator();
+        public java.util.Iterator<T> iterator() {
+            return new Iterator<>(this);
         }
 
         @Override
@@ -248,7 +218,7 @@ class JavaConverters {
         }
 
         @Override
-        public List<T> subList(int fromIndex, int toIndex) {
+        public java.util.List<T> subList(int fromIndex, int toIndex) {
             return new ListView<>(getDelegate().subSequence(fromIndex, toIndex), isMutable());
         }
 
@@ -263,7 +233,8 @@ class JavaConverters {
         public <U> U[] toArray(U[] array) {
             Objects.requireNonNull(array, "array is null");
             final U[] target;
-            final int length = getDelegate().length();
+            final C delegate = getDelegate();
+            final int length = delegate.length();
             if (array.length < length) {
                 final Class<? extends Object[]> newType = array.getClass();
                 target = (newType == Object[].class)
@@ -275,7 +246,7 @@ class JavaConverters {
                 }
                 target = array;
             }
-            final Iterator<T> iter = iterator();
+            final java.util.Iterator<T> iter = delegate.iterator();
             for (int i = 0; i < length; i++) {
                 target[i] = (U) iter.next();
             }
@@ -286,13 +257,7 @@ class JavaConverters {
 
         @Override
         public boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof java.util.List) {
-                return Collections.areEqual(getDelegate(), (java.util.List<?>) o);
-            } else {
-                return false;
-            }
+            return o == this || o instanceof java.util.List && Collections.areEqual(getDelegate(), (java.util.List<?>) o);
         }
 
         @Override
@@ -315,135 +280,144 @@ class JavaConverters {
             return previousElement;
         }
 
-        // DEV-NOTE: ListIterator is intentionally not Serializable
-        private static class ListIterator<T, C extends Seq<T>> implements java.util.ListIterator<T> {
+        // DEV-NOTE: Iterator is intentionally not Serializable
+        private static class Iterator<T, C extends Seq<T>> implements java.util.Iterator<T> {
 
-            private ListView<T, C> list;
-            private int index;
-            private boolean dirty = true;
+            ListView<T, C> list;
+            int expectedSize;
+            int nextIndex = 0;
+            int lastIndex = -1;
 
-            ListIterator(ListView<T, C> list, int index) {
-                if (index < 0 || index > list.size()) {
-                    throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + list.size());
-                }
+            Iterator(ListView<T, C> list) {
                 this.list = list;
-                this.index = index;
+                expectedSize = list.size();
             }
 
             @Override
             public boolean hasNext() {
-                return index < list.size();
+                return nextIndex != list.size();
             }
 
             @Override
             public T next() {
-                if (!hasNext()) {
+                checkForComodification();
+                if (nextIndex >= list.size()) {
                     throw new NoSuchElementException();
                 }
-                dirty = false;
-                return list.get(index++);
-            }
-
-            @Override
-            public int nextIndex() {
-                return index;
-            }
-
-            @Override
-            public boolean hasPrevious() {
-                return index > 0;
-            }
-
-            @Override
-            public T previous() {
-                if (!hasPrevious()) {
-                    throw new NoSuchElementException();
+                try {
+                    return list.get(lastIndex = nextIndex++);
+                } catch (IndexOutOfBoundsException x) {
+                    throw new ConcurrentModificationException();
                 }
-                dirty = false;
-                return list.get(--index);
-            }
-
-            @Override
-            public int previousIndex() {
-                return index - 1;
             }
 
             @Override
             public void remove() {
-                checkDirty();
-                list.remove(index);
-                dirty = true;
-            }
-
-            @Override
-            public void set(T value) {
-                checkDirty();
-                list.set(index, value);
-            }
-
-            @Override
-            public void add(T value) {
-                /* TODO:
-                 * The new element is inserted before the implicit
-                 * cursor: a subsequent call to {@code next} would be unaffected, and a
-                 * subsequent call to {@code previous} would return the new element.
-                 * (This call increases by one the value that would be returned by a
-                 * call to {@code nextIndex} or {@code previousIndex}.)
-                 */
-                // may throw a ClassCastException accordingly to j.u.ListIterator.add(T)
-                list.add(index++, value);
-                dirty = true;
-            }
-
-            private void checkDirty() {
-                if (dirty) {
+                list.ensureMutable();
+                if (lastIndex < 0) {
                     throw new IllegalStateException();
+                }
+                checkForComodification();
+                try {
+                    list.remove(nextIndex = lastIndex);
+                    lastIndex = -1;
+                    expectedSize = list.size();
+                } catch (IndexOutOfBoundsException x) {
+                    throw new ConcurrentModificationException();
+                }
+            }
+
+            @Override
+            public void forEachRemaining(Consumer<? super T> consumer) {
+                Objects.requireNonNull(consumer, "consumer is  null");
+                checkForComodification();
+                if (nextIndex >= list.size()) {
+                    return;
+                }
+                int index = nextIndex;
+                final java.util.Iterator<T> iterator = list.getDelegate().iterator();
+                while (iterator.hasNext() && expectedSize == list.size()) {
+                    consumer.accept(iterator.next());
+                    index++;
+                }
+                nextIndex = index;
+                lastIndex = index - 1;
+                checkForComodification();
+            }
+
+            final void checkForComodification() {
+                if (expectedSize != list.size()) {
+                    throw new ConcurrentModificationException();
                 }
             }
         }
-    }
 
-    static abstract class SetView<T> extends HasDelegate<Set<T>> implements java.util.Set<T> {
+        // DEV-NOTE: ListIterator is intentionally not Serializable
+        private static class ListIterator<T, C extends Seq<T>> extends ListView.Iterator<T, C> implements java.util.ListIterator<T> {
 
-        private static final long serialVersionUID = 1L;
+            ListIterator(ListView<T, C> list, int index) {
+                super(list);
+                if (index < 0 || index > list.size()) {
+                    throw new IndexOutOfBoundsException("Index: " + index + ", Size: " + list.size());
+                }
+                this.nextIndex = index;
+            }
 
-        SetView(Set<T> delegate, boolean mutable) {
-            super(delegate, mutable);
+            @Override
+            public boolean hasPrevious() {
+                return nextIndex != 0;
+            }
+
+            @Override
+            public int nextIndex() {
+                return nextIndex;
+            }
+
+            @Override
+            public int previousIndex() {
+                return nextIndex - 1;
+            }
+
+            @Override
+            public T previous() {
+                checkForComodification();
+                if (nextIndex <= 0) {
+                    throw new NoSuchElementException();
+                }
+                if (nextIndex > list.size()) {
+                    throw new ConcurrentModificationException();
+                }
+                return list.get(lastIndex = --nextIndex);
+            }
+
+            @Override
+            public void set(T element) {
+                list.ensureMutable();
+                if (lastIndex < 0) {
+                    throw new IllegalStateException();
+                }
+                checkForComodification();
+                try {
+                    list.set(lastIndex, element);
+                } catch (IndexOutOfBoundsException x) {
+                    throw new ConcurrentModificationException();
+                }
+            }
+
+            @Override
+            public void add(T element) {
+                list.ensureMutable();
+                checkForComodification();
+                try {
+                    final int index = nextIndex;
+                    list.add(index, element);
+                    nextIndex = index + 1;
+                    lastIndex = -1;
+                    expectedSize = list.size();
+                } catch (IndexOutOfBoundsException ex) {
+                    throw new ConcurrentModificationException();
+                }
+            }
         }
-
-        // TODO
-    }
-
-    static abstract class NavigableSetView<T> extends HasDelegate<SortedSet<T>> implements java.util.NavigableSet<T> {
-
-        private static final long serialVersionUID = 1L;
-
-        NavigableSetView(SortedSet<T> delegate, boolean mutable) {
-            super(delegate, mutable);
-        }
-
-        // TODO
-    }
-
-    static abstract class MapView<K, V> extends HasDelegate<Map<K, V>> implements java.util.Map<K, V> {
-
-        private static final long serialVersionUID = 1L;
-
-        MapView(Map<K, V> delegate, boolean mutable) {
-            super(delegate, mutable);
-        }
-
-        // TODO
-    }
-
-    static abstract class NavigableMapView<K, V> extends HasDelegate<SortedMap<K, V>> implements java.util.NavigableMap<K, V> {
-
-        private static final long serialVersionUID = 1L;
-
-        NavigableMapView(SortedMap<K, V> delegate, boolean mutable) {
-            super(delegate, mutable);
-        }
-
-        // TODO
     }
 }

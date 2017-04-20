@@ -654,7 +654,14 @@ abstract class ListViewTest {
         assertThat(iterator.hasNext()).isFalse();
     }
 
-    // -- TODO: iterator().remove()
+    // -- iterator().remove()
+
+    @Test
+    public void shouldThrowWhenCallingRemoveOnEmptyIterator() {
+        ifSupported(() -> empty().iterator().remove(), IllegalStateException.class);
+    }
+
+    // -- TODO: more iterator().remove() tests
 
     // -- lastIndexOf()
 
