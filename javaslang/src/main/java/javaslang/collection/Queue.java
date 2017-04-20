@@ -1274,6 +1274,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public boolean equals(Object o) {
-        return o == this || o instanceof Queue && Collections.areEqual(this, (Iterable) o);
+        return Collections.equals(this, o);
+    }
+
+    @Override
+    public int hashCode() {
+        return Collections.hashOrdered(this);
     }
 }

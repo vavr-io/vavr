@@ -521,14 +521,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o != null && getClass().isAssignableFrom(o.getClass())) {
-            final AbstractMultimap<?, ?, ?> that = (AbstractMultimap<?, ?, ?>) o;
-            return this.back.equals(that.back);
-        } else {
-            return false;
-        }
+        return Collections.equals(this, o);
     }
 
     @Override

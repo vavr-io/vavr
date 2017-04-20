@@ -410,6 +410,29 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- equality
+
+    @Test
+    public void shouldObeyEqualityConstraints() {
+
+        // sequential collections
+        assertThat(emptyMap().equals(HashMap.empty())).isTrue();
+        assertThat(mapOf(1, "a").equals(HashMap.of(1, "a"))).isTrue();
+        assertThat(mapOf(1, "a", 2, "b", 3, "c").equals(HashMap.of(1, "a", 2, "b",3, "c"))).isTrue();
+        assertThat(mapOf(1, "a", 2, "b", 3, "c").equals(HashMap.of(3, "c", 2, "b",1, "a"))).isTrue();
+
+        // other classes
+        assertThat(empty().equals(List.empty())).isFalse();
+        assertThat(empty().equals(HashMultimap.withSeq().empty())).isFalse();
+        assertThat(empty().equals(HashSet.empty())).isFalse();
+
+        assertThat(empty().equals(LinkedHashMultimap.withSeq().empty())).isFalse();
+        assertThat(empty().equals(LinkedHashSet.empty())).isFalse();
+
+        assertThat(empty().equals(TreeMultimap.withSeq().empty())).isFalse();
+        assertThat(empty().equals(TreeSet.empty())).isFalse();
+    }
+
     // -- head
 
     @Test(expected = NoSuchElementException.class)
@@ -1326,6 +1349,47 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
+
+    @Override
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
+        assertThat(of(1, 2, 3, 4).partition(i -> i % 2 != 0))
+                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0, 1), Tuple.of(2, 3)),
+                        mapOfTuples(Tuple.of(1, 2), Tuple.of(3, 4))));
+    }
+
+    @Override
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldSpanNonNil() {
+        assertThat(of(0, 1, 2, 3).span(i -> i < 2))
+                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0, 0), Tuple.of(1, 1)),
+                mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 3))));
+    }
+
+    @Override
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldSpanAndNotTruncate() {
+        assertThat(of(1, 1, 2, 2, 3, 3).span(x -> x % 2 == 1))
+                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0,1), Tuple.of(1, 1)),
+                        mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 2),
+                                Tuple.of(4, 3), Tuple.of(5, 3))));
+        assertThat(of(1, 1, 2, 2, 4, 4).span(x -> x == 1))
+                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0,1), Tuple.of(1, 1)),
+                        mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 2),
+                        Tuple.of(4, 4), Tuple.of(5, 4))));
+    }
+
+    @Override
+    @Test
+    public void shouldNonNilGroupByIdentity() {
+        final Map<?, ?> actual = of('a', 'b', 'c').groupBy(Function.identity());
+        final Map<?, ?> expected = LinkedHashMap.empty().put('a', mapOf(0, 'a')).put('b', mapOf(1,'b'))
+                .put('c', mapOf(2,'c'));
+        assertThat(actual).isEqualTo(expected);
     }
 
 }

@@ -1399,19 +1399,12 @@ public final class Array<T> implements Kind1<Array<?>, T>, IndexedSeq<T>, Serial
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (o instanceof Array) {
-            final Array<?> that = (Array<?>) o;
-            return Objects.deepEquals(this.delegate, that.delegate);
-        } else {
-            return false;
-        }
+        return Collections.equals(this, o);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(delegate);
+        return Collections.hashOrdered(this);
     }
 
     @Override

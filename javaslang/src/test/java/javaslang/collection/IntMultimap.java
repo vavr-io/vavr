@@ -37,26 +37,24 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public int hashCode() {
-        return original.values().hashCode();
-    }
-
-    @Override
     public boolean isDistinct() {
         return original.isDistinct();
     }
 
     @Override
+    public boolean isSequential() {
+        return original.isSequential();
+    }
+
+    @Override
     public boolean equals(Object o) {
-        if (o instanceof IntMultimap) {
-            final IntMultimap<?> that = (IntMultimap<?>) o;
-            return original.equals(that.original) || original.values().equals(that.original.values());
-        } else if (o instanceof Iterable) {
-            final Iterable<?> that = (Iterable<?>) o;
-            return original.values().equals(that);
-        } else {
-            return false;
-        }
+        final Object that = (o instanceof IntMultimap) ? ((IntMultimap) o).original : o;
+        return Collections.equals(original, that);
+    }
+
+    @Override
+    public int hashCode() {
+        return original.hashCode();
     }
 
     @Override

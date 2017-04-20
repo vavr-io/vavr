@@ -12,6 +12,8 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Spliterator;
 
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.reverseOrder;
 import static javaslang.TestComparators.toStringComparator;
 
 public abstract class AbstractSortedSetTest extends AbstractSetTest {
@@ -26,6 +28,9 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     abstract protected <T> SortedSet<T> of(T element);
 
     abstract protected <T> SortedSet<T> of(Comparator<? super T> comparator, T element);
+
+    @SuppressWarnings("unchecked")
+    abstract protected <T> SortedSet<T> of(Comparator<? super T> comparator, T... elements);
 
     // -- static narrow
 
@@ -64,6 +69,15 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     @Test
     public void shouldNarrowTraversable() {
         // makes no sense because disjoint types share not the same ordering
+    }
+
+    // -- equals
+
+    @Test
+    public void shouldBeEqualWhenHavingSameElementsAndDifferentOrder() {
+        final SortedSet<Integer> set1 = of(naturalOrder(), 1, 2, 3);
+        final SortedSet<Integer> set2 = of(reverseOrder(), 3, 2, 1);
+        assertThat(set1).isEqualTo(set2);
     }
 
     // -- toSortedSet

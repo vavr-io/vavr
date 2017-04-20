@@ -102,6 +102,29 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
         assertThat(set.diff(empty())).isSameAs(set);
     }
 
+    // -- equality
+
+    @Test
+    public void shouldObeyEqualityConstraints() {
+
+        // sequential collections
+        assertThat(empty().equals(HashSet.empty())).isTrue();
+        assertThat(of(1).equals(HashSet.of(1))).isTrue();
+        assertThat(of(1, 2, 3).equals(HashSet.of(1, 2, 3))).isTrue();
+        assertThat(of(1, 2, 3).equals(HashSet.of(3, 2, 1))).isTrue();
+
+        // other classes
+        assertThat(empty().equals(List.empty())).isFalse();
+        assertThat(empty().equals(HashMap.empty())).isFalse();
+        assertThat(empty().equals(HashMultimap.withSeq().empty())).isFalse();
+
+        assertThat(empty().equals(LinkedHashMap.empty())).isFalse();
+        assertThat(empty().equals(LinkedHashMultimap.withSeq().empty())).isFalse();
+
+        assertThat(empty().equals(TreeMap.empty())).isFalse();
+        assertThat(empty().equals(TreeMultimap.withSeq().empty())).isFalse();
+    }
+
     // -- intersect
 
     @Test

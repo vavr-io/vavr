@@ -168,11 +168,6 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
     }
 
     @Override
-    public int hashCode() {
-        return Collections.hash(this);
-    }
-
-    @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
     }

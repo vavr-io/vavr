@@ -6,7 +6,7 @@
 package javaslang;
 
 /**
- * Represents a partial function T -> R that is not necessarily defined for all input values of type T.
+ * Represents a partial function T -&gt; R that is not necessarily defined for all input values of type T.
  * The caller is responsible for calling the method isDefinedAt() before this function is applied to the value.
  * <p>
  * If the function <em>is not defined</em> for a specific value, apply() may produce an arbitrary result.

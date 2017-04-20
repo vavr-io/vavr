@@ -18,7 +18,6 @@ import java.util.function.*;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.math.RoundingMode.HALF_UP;
-import static javaslang.API.*;
 import static javaslang.collection.IteratorModule.BigDecimalHelper.areEqual;
 import static javaslang.collection.IteratorModule.BigDecimalHelper.asDecimal;
 import static javaslang.collection.IteratorModule.EmptyIterator;
