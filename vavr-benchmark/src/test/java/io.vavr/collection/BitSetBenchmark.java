@@ -13,8 +13,8 @@ import org.openjdk.jmh.annotations.*;
 import static io.vavr.JmhRunner.create;
 import static io.vavr.JmhRunner.getRandomValues;
 import static io.vavr.collection.Collections.areEqual;
-import static scala.collection.JavaConversions.asJavaCollection;
-import static scala.collection.JavaConversions.asScalaBuffer;
+import static scala.collection.JavaConverters.asJavaCollection;
+import static scala.collection.JavaConverters.asScalaBuffer;
 
 public class BitSetBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -41,7 +41,7 @@ public class BitSetBenchmark {
         TreeSet<Integer> DISTINCT;
 
         scala.collection.immutable.BitSet scalaPersistent;
-        io.vavr.collection.BitSet<Integer> slangPersistent;
+        io.vavr.collection.BitSet<Integer> vavrPersistent;
 
         @Setup
         @SuppressWarnings("RedundantCast")
@@ -55,8 +55,9 @@ public class BitSetBenchmark {
             DISTINCT = TreeSet.ofAll(ELEMENTS);
             EXPECTED_AGGREGATE = DISTINCT.reduce(JmhRunner::aggregate);
 
-            scalaPersistent = create(v -> (scala.collection.immutable.BitSet) scala.collection.immutable.BitSet$.MODULE$.apply(asScalaBuffer(v)), DISTINCT.toJavaList(), v -> areEqual(asJavaCollection(v), DISTINCT));
-            slangPersistent = create(io.vavr.collection.BitSet::ofAll, ELEMENTS, ELEMENTS.length, v -> areEqual(v, DISTINCT));
+            //noinspection unchecked
+            scalaPersistent = create(v -> (scala.collection.immutable.BitSet) scala.collection.immutable.BitSet$.MODULE$.apply((scala.collection.mutable.Buffer<Object>) (Object) asScalaBuffer(v)), DISTINCT.toJavaList(), v -> areEqual(asJavaCollection(v), DISTINCT));
+            vavrPersistent = create(io.vavr.collection.BitSet::ofAll, ELEMENTS, ELEMENTS.length, v -> areEqual(v, DISTINCT));
         }
     }
 
@@ -67,17 +68,17 @@ public class BitSetBenchmark {
             for (int element : ELEMENTS) {
                 values = values.$plus(element);
             }
-            assert values.equals(scalaPersistent);
+            assert ((scala.collection.immutable.SortedSet) values).equals(scalaPersistent);
             return values;
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.Set<Integer> values = io.vavr.collection.BitSet.empty();
             for (Integer element : ELEMENTS) {
                 values = values.add(element);
             }
-            assert values.equals(slangPersistent);
+            assert values.equals(vavrPersistent);
             return values;
         }
     }
@@ -95,9 +96,9 @@ public class BitSetBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
-            for (final io.vavr.collection.Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
+            for (final io.vavr.collection.Iterator<Integer> iterator = vavrPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
             assert aggregate == EXPECTED_AGGREGATE;

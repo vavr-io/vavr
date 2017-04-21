@@ -72,7 +72,7 @@ public class LazyBenchmark {
         }
 
         @Benchmark
-        public void slang_inited_lazy(Blackhole bh) {
+        public void vavr_inited_lazy(Blackhole bh) {
             for (int i = 0; i < SIZE; i++) {
                 assert INITED_LAZIES[i].isEvaluated();
                 bh.consume(INITED_LAZIES[i].get());
@@ -80,7 +80,7 @@ public class LazyBenchmark {
         }
 
         @Benchmark
-        public void slang_lazy(Initialized state, Blackhole bh) {
+        public void vavr_lazy(Initialized state, Blackhole bh) {
             for (int i = 0; i < SIZE; i++) {
                 assert !state.LAZIES[i].isEvaluated();
                 bh.consume(state.LAZIES[i].get());

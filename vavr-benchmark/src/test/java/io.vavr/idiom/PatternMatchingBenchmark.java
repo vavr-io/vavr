@@ -25,8 +25,10 @@ import static io.vavr.API.*;
  * @see For2
  */
 public class PatternMatchingBenchmark {
+    
     static final Array<Class<?>> CLASSES = Array(
-            PatternMatching.class
+            MatchVsSwitchIntValues.class,
+            MatchVsIfBranchesObjectTree.class
     );
 
     @Test
@@ -39,18 +41,17 @@ public class PatternMatchingBenchmark {
     }
 
     @State(Scope.Benchmark)
-    public static class Base {
-        int INSTANCES = 1000;
-        int CASES = 5;
+    public static class MatchVsSwitchIntValues {
+
         int[] VALUES;
 
         @Setup
         public void setup() {
+            final int INSTANCES = 1000;
+            final int CASES = 5;
             VALUES = Array.range(0, INSTANCES).map(i -> new Random(0).nextInt(CASES)).toJavaStream().mapToInt(i -> i).toArray();
         }
-    }
-
-    public static class PatternMatching extends Base {
+        
         @Benchmark
         public void java_switch(Blackhole bh) {
             for (int i : VALUES) {
@@ -79,7 +80,62 @@ public class PatternMatchingBenchmark {
         }
 
         @Benchmark
-        public void slang_match(Blackhole bh) {
+        public void vavr_match(Blackhole bh) {
+            for (int i : VALUES) {
+                final String result = Match(i).of(
+                        Case($(0), "0"),
+                        Case($(1), "1"),
+                        Case($(2), "2"),
+                        Case($(3), "3"),
+                        Case($(), "4")
+                );
+                assert String.valueOf(i).equals(result);
+                bh.consume(result);
+            }
+        }
+    }
+
+    @State(Scope.Benchmark)
+    public static class MatchVsIfBranchesObjectTree {
+
+        int[] VALUES;
+
+        @Setup
+        public void setup() {
+            final int INSTANCES = 1000;
+            final int CASES = 5;
+            VALUES = Array.range(0, INSTANCES).map(i -> new Random(0).nextInt(CASES)).toJavaStream().mapToInt(i -> i).toArray();
+        }
+
+        @Benchmark
+        public void java_switch(Blackhole bh) {
+            for (int i : VALUES) {
+                final String result;
+                switch (i) {
+                    case 0:
+                        result = "0";
+                        break;
+                    case 1:
+                        result = "1";
+                        break;
+                    case 2:
+                        result = "2";
+                        break;
+                    case 3:
+                        result = "3";
+                        break;
+                    default:
+                        result = "4";
+                        break;
+                }
+
+                assert String.valueOf(i).equals(result);
+                bh.consume(result);
+            }
+        }
+
+        @Benchmark
+        public void vavr_match(Blackhole bh) {
             for (int i : VALUES) {
                 final String result = Match(i).of(
                         Case($(0), "0"),
