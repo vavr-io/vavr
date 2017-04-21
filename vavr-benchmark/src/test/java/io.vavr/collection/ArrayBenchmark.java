@@ -49,7 +49,7 @@ public class ArrayBenchmark {
 
         java.util.ArrayList<Integer> javaMutable;
         fj.data.Array<Integer> fjavaMutable;
-        io.vavr.collection.Array<Integer> slangPersistent;
+        io.vavr.collection.Array<Integer> vavrPersistent;
 
         @Setup
         public void setup() {
@@ -58,7 +58,7 @@ public class ArrayBenchmark {
 
             javaMutable = create(java.util.ArrayList::new, asList(ELEMENTS), v -> areEqual(v, asList(ELEMENTS)));
             fjavaMutable = create(fj.data.Array::array, ELEMENTS, ELEMENTS.length, v -> areEqual(v, asList(ELEMENTS)));
-            slangPersistent = create(io.vavr.collection.Array::ofAll, javaMutable, v -> areEqual(v, javaMutable));
+            vavrPersistent = create(io.vavr.collection.Array::ofAll, javaMutable, v -> areEqual(v, javaMutable));
         }
     }
 
@@ -78,9 +78,9 @@ public class ArrayBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             final io.vavr.collection.Array<Integer> values = io.vavr.collection.Array.ofAll(javaMutable);
-            assert areEqual(values, slangPersistent);
+            assert areEqual(values, vavrPersistent);
             return values.head();
         }
     }
@@ -101,8 +101,8 @@ public class ArrayBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            final Object head = slangPersistent.get(0);
+        public Object vavr_persistent() {
+            final Object head = vavrPersistent.get(0);
             assert Objects.equals(head, ELEMENTS[0]);
             return head;
         }
@@ -137,8 +137,8 @@ public class ArrayBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            io.vavr.collection.Array<Integer> values = slangPersistent;
+        public Object vavr_persistent() {
+            io.vavr.collection.Array<Integer> values = vavrPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
@@ -169,10 +169,10 @@ public class ArrayBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                aggregate ^= slangPersistent.get(i);
+                aggregate ^= vavrPersistent.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
@@ -201,8 +201,8 @@ public class ArrayBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            io.vavr.collection.Array<Integer> values = slangPersistent;
+        public Object vavr_persistent() {
+            io.vavr.collection.Array<Integer> values = vavrPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.update(i, 0);
             }
@@ -233,7 +233,7 @@ public class ArrayBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.Array<Integer> values = io.vavr.collection.Array.empty();
             for (Integer element : ELEMENTS) {
                 values = values.prepend(element);
@@ -266,7 +266,7 @@ public class ArrayBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.Array<Integer> values = io.vavr.collection.Array.empty();
             for (Integer element : ELEMENTS) {
                 values = values.append(element);
@@ -299,9 +299,9 @@ public class ArrayBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
-            for (final Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
+            for (final Iterator<Integer> iterator = vavrPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
             assert aggregate == EXPECTED_AGGREGATE;

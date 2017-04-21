@@ -22,7 +22,7 @@ import java.util.Collections;
 import static java.util.Arrays.asList;
 import static io.vavr.JmhRunner.create;
 import static io.vavr.JmhRunner.getRandomValues;
-import static scala.collection.JavaConversions.asScalaBuffer;
+import static scala.collection.JavaConverters.asScalaBuffer;
 
 @SuppressWarnings({ "UnnecessaryFullyQualifiedName", "UnnecessarilyQualifiedInnerClassAccess" })
 public class PriorityQueueBenchmark {
@@ -54,7 +54,7 @@ public class PriorityQueueBenchmark {
         Integer[] ELEMENTS;
 
         scalaz.Heap<Integer> scalazPersistent;
-        io.vavr.collection.PriorityQueue<Integer> slangPersistent;
+        io.vavr.collection.PriorityQueue<Integer> vavrPersistent;
         fj.data.PriorityQueue<Integer, Integer> fjava_persistent;
 
         @Setup
@@ -64,7 +64,7 @@ public class PriorityQueueBenchmark {
 
             scalazPersistent = create(v -> scalaz.Heap.Empty$.MODULE$.<Integer> apply().insertAll(asScalaBuffer(v), SCALAZ_ORDER), asList(ELEMENTS), v -> v.size() == CONTAINER_SIZE);
             fjava_persistent = create(v -> fj.data.PriorityQueue.<Integer> emptyInt().enqueue(v), List.of(ELEMENTS).map(v -> P.p(v, v)).toJavaList(), ELEMENTS.length, v -> v.toList().length() == CONTAINER_SIZE);
-            slangPersistent = create(io.vavr.collection.PriorityQueue::of, ELEMENTS, ELEMENTS.length, v -> v.size() == CONTAINER_SIZE);
+            vavrPersistent = create(io.vavr.collection.PriorityQueue::of, ELEMENTS, ELEMENTS.length, v -> v.size() == CONTAINER_SIZE);
         }
     }
 
@@ -122,7 +122,7 @@ public class PriorityQueueBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.PriorityQueue<Integer> values = io.vavr.collection.PriorityQueue.empty();
             for (Integer element : ELEMENTS) {
                 values = values.enqueue(element);
@@ -225,8 +225,8 @@ public class PriorityQueueBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            io.vavr.collection.PriorityQueue<Integer> values = slangPersistent;
+        public Object vavr_persistent() {
+            io.vavr.collection.PriorityQueue<Integer> values = vavrPersistent;
 
             int aggregate = 0;
             while (!values.isEmpty()) {
@@ -344,7 +344,7 @@ public class PriorityQueueBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.PriorityQueue<Integer> values = io.vavr.collection.PriorityQueue.of(ELEMENTS);
             assert values.size() == CONTAINER_SIZE;
 

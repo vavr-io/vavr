@@ -12,7 +12,7 @@ import org.openjdk.jmh.annotations.*;
 
 import static io.vavr.JmhRunner.create;
 import static io.vavr.JmhRunner.getRandomValues;
-import static scala.collection.JavaConversions.asScalaBuffer;
+import static scala.collection.JavaConverters.asScalaBuffer;
 
 public class HashSetBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
@@ -40,7 +40,7 @@ public class HashSetBenchmark {
 
         scala.collection.immutable.Set<Integer> scalaPersistent;
         org.pcollections.PSet<Integer> pcollectionsPersistent;
-        io.vavr.collection.Set<Integer> slangPersistent;
+        io.vavr.collection.Set<Integer> vavrPersistent;
 
         @Setup
         @SuppressWarnings("unchecked")
@@ -50,9 +50,9 @@ public class HashSetBenchmark {
             SET = TreeSet.of(ELEMENTS);
             EXPECTED_AGGREGATE = SET.reduce(JmhRunner::aggregate);
 
-            scalaPersistent = create(v -> scala.collection.immutable.HashSet$.MODULE$.apply(asScalaBuffer(v)), SET.toJavaList(), SET.size(), v -> SET.forAll(v::contains));
+            scalaPersistent = create(v -> (scala.collection.immutable.Set<Integer>) scala.collection.immutable.HashSet$.MODULE$.apply(asScalaBuffer(v)), SET.toJavaList(), SET.size(), v -> SET.forAll(v::contains));
             pcollectionsPersistent = create(org.pcollections.HashTreePSet::from, SET.toJavaList(), SET.size(), v -> SET.forAll(v::contains));
-            slangPersistent = create(io.vavr.collection.HashSet::ofAll, SET, SET.size(), v -> SET.forAll(v::contains));
+            vavrPersistent = create(io.vavr.collection.HashSet::ofAll, SET, SET.size(), v -> SET.forAll(v::contains));
         }
     }
 
@@ -78,7 +78,7 @@ public class HashSetBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.Set<Integer> values = io.vavr.collection.HashSet.empty();
             for (Integer element : ELEMENTS) {
                 values = values.add(element);
@@ -111,9 +111,9 @@ public class HashSetBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
-            for (final io.vavr.collection.Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
+            for (final io.vavr.collection.Iterator<Integer> iterator = vavrPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
             assert aggregate == EXPECTED_AGGREGATE;

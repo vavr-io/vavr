@@ -60,7 +60,7 @@ public class ListBenchmark {
         org.pcollections.PStack<Integer> pcollectionsPersistent;
         scala.collection.immutable.List<Integer> scalaPersistent;
         clojure.lang.IPersistentList clojurePersistent;
-        io.vavr.collection.List<Integer> slangPersistent;
+        io.vavr.collection.List<Integer> vavrPersistent;
 
         @Setup
         @SuppressWarnings("unchecked")
@@ -76,7 +76,7 @@ public class ListBenchmark {
             clojurePersistent = create(clojure.lang.PersistentList::create, javaMutable, v -> areEqual((Iterable<?>) v, javaMutable));
             fjavaPersistent = create(v -> fj.data.List.fromIterator(v.iterator()), javaMutable, v -> areEqual(v, javaMutable));
             pcollectionsPersistent = create(org.pcollections.ConsPStack::from, javaMutable, v -> areEqual(v, javaMutable));
-            slangPersistent = create(io.vavr.collection.List::ofAll, javaMutable, v -> areEqual(v, javaMutable));
+            vavrPersistent = create(io.vavr.collection.List::ofAll, javaMutable, v -> areEqual(v, javaMutable));
         }
     }
 
@@ -117,7 +117,7 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             final io.vavr.collection.List<Integer> values = io.vavr.collection.List.ofAll(javaMutable);
             assert areEqual(values, javaMutable);
             return values.head();
@@ -161,8 +161,8 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            final Object head = slangPersistent.head();
+        public Object vavr_persistent() {
+            final Object head = vavrPersistent.head();
             assert Objects.equals(head, javaMutable.get(0));
             return head;
         }
@@ -252,8 +252,8 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            io.vavr.collection.List<Integer> values = slangPersistent;
+        public Object vavr_persistent() {
+            io.vavr.collection.List<Integer> values = vavrPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
@@ -314,10 +314,10 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                aggregate ^= slangPersistent.get(i);
+                aggregate ^= vavrPersistent.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
@@ -393,8 +393,8 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            io.vavr.collection.List<Integer> values = slangPersistent;
+        public Object vavr_persistent() {
+            io.vavr.collection.List<Integer> values = vavrPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.update(i, 0);
             }
@@ -466,7 +466,7 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.List<Integer> values = io.vavr.collection.List.empty();
             for (Integer element : ELEMENTS) {
                 values = values.prepend(element);
@@ -529,7 +529,7 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.List<Integer> values = io.vavr.collection.List.empty();
             for (Integer element : ELEMENTS) {
                 values = values.append(element);
@@ -556,8 +556,8 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            return slangPersistent.groupBy(Integer::bitCount);
+        public Object vavr_persistent() {
+            return vavrPersistent.groupBy(Integer::bitCount);
         }
     }
 
@@ -624,9 +624,9 @@ public class ListBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
-            for (final java.util.Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
+            for (final java.util.Iterator<Integer> iterator = vavrPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
             assert aggregate == EXPECTED_AGGREGATE;
