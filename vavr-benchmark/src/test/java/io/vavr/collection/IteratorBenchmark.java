@@ -39,14 +39,14 @@ public class IteratorBenchmark {
         Integer[] ELEMENTS;
 
         scala.collection.Iterator<Integer> scalaIterator;
-        io.vavr.collection.Iterator<Integer> slangIterator;
+        io.vavr.collection.Iterator<Integer> vavrIterator;
 
         @Setup
         public void setup() {
             final Random random = new Random(0);
             ELEMENTS = getRandomValues(CONTAINER_SIZE, false, random);
             scalaIterator = (scala.collection.Iterator<Integer>) (Object) scala.collection.mutable.WrappedArray$.MODULE$.make(ELEMENTS).iterator();
-            slangIterator = Iterator.of(ELEMENTS);
+            vavrIterator = Iterator.of(ELEMENTS);
         }
     }
 
@@ -61,8 +61,8 @@ public class IteratorBenchmark {
         }
 
         @Benchmark
-        public void slang_persistent(Blackhole bh) {
-            final Iterator<Seq<Integer>> values = slangIterator.sliding(3);
+        public void vavr_persistent(Blackhole bh) {
+            final Iterator<Seq<Integer>> values = vavrIterator.sliding(3);
             while (values.hasNext()) {
                 bh.consume(values.next());
             }

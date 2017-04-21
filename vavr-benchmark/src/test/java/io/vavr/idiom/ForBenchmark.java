@@ -79,7 +79,7 @@ public class ForBenchmark {
         }
 
         @Benchmark
-        public Object slang_for() {
+        public Object vavr_for() {
             final List<Integer> result = For(ELEMENTS, ELEMENTS).yield(AGGREGATOR).collect(toList());
             assert Array(result).sum().intValue() == AGGREGATE;
             return result;

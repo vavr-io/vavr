@@ -55,7 +55,7 @@ public class TryBenchmark {
         }
 
         @Benchmark
-        public void slang_try(Blackhole bh) {
+        public void vavr_try(Blackhole bh) {
             for (int i = 0; i <= 1; i++) {
                 int i2 = i;
                 final int result = Try(() -> inverse(i2))

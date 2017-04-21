@@ -41,7 +41,7 @@ public class TupleBenchmark {
         public Object java_tuple() { return new Integer[] { 0, 1 }; }
 
         @Benchmark
-        public Object slang_tuple() { return Tuple.of(0, 1); }
+        public Object vavr_tuple() { return Tuple.of(0, 1); }
     }
 
     public static class Tuple4Benchmark {
@@ -49,7 +49,7 @@ public class TupleBenchmark {
         public Object java_tuple() { return new Integer[] { 0, 1, 2 }; }
 
         @Benchmark
-        public Object slang_tuple() { return Tuple.of(0, 1, 2, 3); }
+        public Object vavr_tuple() { return Tuple.of(0, 1, 2, 3); }
     }
 
     public static class Tuple8Benchmark {
@@ -57,6 +57,6 @@ public class TupleBenchmark {
         public Object java_tuple() { return new Integer[] { 0, 1, 2, 3, 4, 5, 6, 7 }; }
 
         @Benchmark
-        public Object slang_tuple() { return Tuple.of(0, 1, 2, 3, 4, 5, 6, 7); }
+        public Object vavr_tuple() { return Tuple.of(0, 1, 2, 3, 4, 5, 6, 7); }
     }
 }

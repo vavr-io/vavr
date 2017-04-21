@@ -25,8 +25,9 @@ import static io.vavr.API.*;
  * @see For2
  */
 public class PatternMatchingBenchmark {
+    
     static final Array<Class<?>> CLASSES = Array(
-            PatternMatching.class
+            MatchVsSwitchIntValues.class
     );
 
     @Test
@@ -39,18 +40,17 @@ public class PatternMatchingBenchmark {
     }
 
     @State(Scope.Benchmark)
-    public static class Base {
-        int INSTANCES = 1000;
-        int CASES = 5;
+    public static class MatchVsSwitchIntValues {
+
         int[] VALUES;
 
         @Setup
         public void setup() {
+            final int INSTANCES = 1000;
+            final int CASES = 5;
             VALUES = Array.range(0, INSTANCES).map(i -> new Random(0).nextInt(CASES)).toJavaStream().mapToInt(i -> i).toArray();
         }
-    }
-
-    public static class PatternMatching extends Base {
+        
         @Benchmark
         public void java_switch(Blackhole bh) {
             for (int i : VALUES) {
@@ -79,7 +79,7 @@ public class PatternMatchingBenchmark {
         }
 
         @Benchmark
-        public void slang_match(Blackhole bh) {
+        public void vavr_match(Blackhole bh) {
             for (int i : VALUES) {
                 final String result = Match(i).of(
                         Case($(0), "0"),

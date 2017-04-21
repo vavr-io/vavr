@@ -26,8 +26,8 @@ import static io.vavr.JmhRunner.Includes.*;
 import static io.vavr.JmhRunner.*;
 import static io.vavr.collection.Collections.areEqual;
 import static io.vavr.collection.Vector.collector;
-import static scala.collection.JavaConversions.asJavaCollection;
-import static scala.collection.JavaConversions.asScalaBuffer;
+import static scala.collection.JavaConverters.asJavaCollection;
+import static scala.collection.JavaConverters.asScalaBuffer;
 
 @SuppressWarnings({ "ALL", "unchecked", "rawtypes" })
 public class VectorBenchmark {
@@ -76,9 +76,9 @@ public class VectorBenchmark {
         org.eclipse.collections.api.list.ImmutableList<Integer> eCollectionsPersistent;
         clojure.lang.PersistentVector clojurePersistent;
         scala.collection.immutable.Vector<Integer> scalaPersistent;
-        io.vavr.collection.Vector<Integer> slangPersistent;
-        io.vavr.collection.Vector<Integer> slangPersistentInt;
-        io.vavr.collection.Vector<Byte> slangPersistentByte;
+        io.vavr.collection.Vector<Integer> vavrPersistent;
+        io.vavr.collection.Vector<Integer> vavrPersistentInt;
+        io.vavr.collection.Vector<Byte> vavrPersistentByte;
 
         @Setup
         public void setup() {
@@ -95,12 +95,12 @@ public class VectorBenchmark {
             eCollectionsPersistent = create(org.eclipse.collections.impl.factory.Lists.immutable::ofAll, javaMutable, v -> areEqual(v, javaMutable));
             clojurePersistent = create(clojure.lang.PersistentVector::create, javaMutable, v -> areEqual(v, javaMutable));
             scalaPersistent = create(v -> (scala.collection.immutable.Vector<Integer>) scala.collection.immutable.Vector$.MODULE$.apply(asScalaBuffer(v)), javaMutable, v -> areEqual(asJavaCollection(v), javaMutable));
-            slangPersistent = create(io.vavr.collection.Vector::ofAll, javaMutable, v -> areEqual(v, javaMutable));
-            slangPersistentInt = create(v -> io.vavr.collection.Vector.ofAll(INT_ELEMENTS), javaMutable, v -> areEqual(v, javaMutable) && (v.trie.type.type() == int.class));
+            vavrPersistent = create(io.vavr.collection.Vector::ofAll, javaMutable, v -> areEqual(v, javaMutable));
+            vavrPersistentInt = create(v -> io.vavr.collection.Vector.ofAll(INT_ELEMENTS), javaMutable, v -> areEqual(v, javaMutable) && (v.trie.type.type() == int.class));
 
             final byte[] BYTE_ELEMENTS = new byte[CONTAINER_SIZE];
             random.nextBytes(BYTE_ELEMENTS);
-            slangPersistentByte = create(v -> io.vavr.collection.Vector.ofAll(BYTE_ELEMENTS), javaMutable, v -> areEqual(v, Array.ofAll(BYTE_ELEMENTS)) && (v.trie.type.type() == byte.class));
+            vavrPersistentByte = create(v -> io.vavr.collection.Vector.ofAll(BYTE_ELEMENTS), javaMutable, v -> areEqual(v, Array.ofAll(BYTE_ELEMENTS)) && (v.trie.type.type() == byte.class));
         }
     }
 
@@ -166,14 +166,14 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             final io.vavr.collection.Vector<Integer> values = io.vavr.collection.Vector.ofAll(javaMutable);
             assert areEqual(values, javaMutable);
             return values;
         }
 
         @Benchmark
-        public Object slang_persistent_int() {
+        public Object vavr_persistent_int() {
             final io.vavr.collection.Vector<Integer> values = io.vavr.collection.Vector.ofAll(INT_ELEMENTS);
             assert (values.trie.type.type() == int.class) && areEqual(values, javaMutable);
             return values;
@@ -224,8 +224,8 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            final Object head = slangPersistent.head();
+        public Object vavr_persistent() {
+            final Object head = vavrPersistent.head();
             assert Objects.equals(head, javaMutable.get(0));
             return head;
         }
@@ -301,13 +301,13 @@ public class VectorBenchmark {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
-            assert values.isEmpty();
+            assert ((scala.collection.immutable.Seq) values).isEmpty();
             return values;
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            io.vavr.collection.Vector<Integer> values = slangPersistent;
+        public Object vavr_persistent() {
+            io.vavr.collection.Vector<Integer> values = vavrPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
@@ -316,8 +316,8 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent_int() {
-            io.vavr.collection.Vector<Integer> values = slangPersistentInt;
+        public Object vavr_persistent_int() {
+            io.vavr.collection.Vector<Integer> values = vavrPersistentInt;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
@@ -389,10 +389,10 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
             for (int i : RANDOMIZED_INDICES) {
-                aggregate ^= slangPersistent.get(i);
+                aggregate ^= vavrPersistent.get(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
@@ -478,8 +478,8 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            io.vavr.collection.Vector<Integer> values = slangPersistent;
+        public Object vavr_persistent() {
+            io.vavr.collection.Vector<Integer> values = vavrPersistent;
             for (int i : RANDOMIZED_INDICES) {
                 values = values.update(i, 0);
             }
@@ -488,8 +488,8 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent_int() {
-            io.vavr.collection.Vector<Integer> values = slangPersistentInt;
+        public Object vavr_persistent_int() {
+            io.vavr.collection.Vector<Integer> values = vavrPersistentInt;
             for (int i : RANDOMIZED_INDICES) {
                 values = values.update(i, 0);
             }
@@ -528,21 +528,21 @@ public class VectorBenchmark {
 
         @Benchmark
         public Object scala_persistent() {
-            final scala.collection.immutable.Vector<Integer> values = (scala.collection.immutable.Vector<Integer>) scalaPersistent.map(Map::mapper, canBuildFrom);
+            final scala.collection.immutable.Vector<Integer> values = (scala.collection.immutable.Vector<Integer>) ((scala.collection.Traversable<Integer>) scalaPersistent).map(Map::mapper, canBuildFrom);
             assert areEqual(asJavaCollection(values), Array.of(ELEMENTS).map(Map::mapper));
             return values;
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            final io.vavr.collection.Vector<Integer> values = slangPersistent.map(Map::mapper);
+        public Object vavr_persistent() {
+            final io.vavr.collection.Vector<Integer> values = vavrPersistent.map(Map::mapper);
             assert areEqual(values, Array.of(ELEMENTS).map(Map::mapper));
             return values;
         }
 
         @Benchmark
-        public Object slang_persistent_int() {
-            final io.vavr.collection.Vector<Integer> values = slangPersistentInt.map(Map::mapper);
+        public Object vavr_persistent_int() {
+            final io.vavr.collection.Vector<Integer> values = vavrPersistentInt.map(Map::mapper);
             assert areEqual(values, Array.of(ELEMENTS).map(Map::mapper));
             return values;
         }
@@ -567,21 +567,21 @@ public class VectorBenchmark {
 
         @Benchmark
         public Object scala_persistent() {
-            final scala.collection.immutable.Vector<Integer> someValues = (scala.collection.immutable.Vector<Integer>) scalaPersistent.filter(Filter::isOdd);
+            final scala.collection.immutable.Vector<Integer> someValues = (scala.collection.immutable.Vector<Integer>) ((scala.collection.Traversable<Integer>) scalaPersistent).filter(Filter::isOdd);
             assert areEqual(asJavaCollection(someValues), Array.of(ELEMENTS).filter(Filter::isOdd));
             return someValues;
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            final io.vavr.collection.Vector<Integer> someValues = slangPersistent.filter(Filter::isOdd);
+        public Object vavr_persistent() {
+            final io.vavr.collection.Vector<Integer> someValues = vavrPersistent.filter(Filter::isOdd);
             assert areEqual(someValues, Array.of(ELEMENTS).filter(Filter::isOdd));
             return someValues;
         }
 
         @Benchmark
-        public Object slang_persistent_int() {
-            final io.vavr.collection.Vector<Integer> someValues = slangPersistentInt.filter(Filter::isOdd);
+        public Object vavr_persistent_int() {
+            final io.vavr.collection.Vector<Integer> someValues = vavrPersistentInt.filter(Filter::isOdd);
             assert (someValues.trie.type.type() == int.class) && areEqual(someValues, Array.of(ELEMENTS).filter(Filter::isOdd));
             return someValues;
         }
@@ -655,7 +655,7 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.Vector<Integer> values = io.vavr.collection.Vector.empty();
             for (Integer element : ELEMENTS) {
                 values = values.prepend(element);
@@ -665,7 +665,7 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent_int() {
+        public Object vavr_persistent_int() {
             io.vavr.collection.Vector<Integer> values = io.vavr.collection.Vector.ofAll(ELEMENTS[0]);
             for (int i = 1; i < ELEMENTS.length; i++) {
                 values = values.prepend(ELEMENTS[i]);
@@ -694,10 +694,10 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public void slang_persistent(Blackhole bh) {
+        public void vavr_persistent(Blackhole bh) {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 final java.util.List<Integer> front = javaMutable.subList(0, i);
-                final io.vavr.collection.Vector<Integer> back = slangPersistent.slice(i, CONTAINER_SIZE);
+                final io.vavr.collection.Vector<Integer> back = vavrPersistent.slice(i, CONTAINER_SIZE);
                 final io.vavr.collection.Vector<Integer> values = back.prependAll(front);
                 assert areEqual(values, javaMutable);
                 bh.consume(values);
@@ -770,7 +770,7 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.Vector<Integer> values = io.vavr.collection.Vector.empty();
             for (Integer element : ELEMENTS) {
                 values = values.append(element);
@@ -780,7 +780,7 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent_int() {
+        public Object vavr_persistent_int() {
             io.vavr.collection.Vector<Integer> values = io.vavr.collection.Vector.ofAll(INT_ELEMENTS[0]);
             for (int i = 1; i < INT_ELEMENTS.length; i++) {
                 values = values.append(INT_ELEMENTS[i]);
@@ -805,9 +805,9 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public void slang_persistent(Blackhole bh) {
+        public void vavr_persistent(Blackhole bh) {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                final io.vavr.collection.Vector<Integer> front = slangPersistent.slice(0, i);
+                final io.vavr.collection.Vector<Integer> front = vavrPersistent.slice(0, i);
                 final java.util.List<Integer> back = javaMutable.subList(i, CONTAINER_SIZE);
                 final io.vavr.collection.Vector<Integer> values = front.appendAll(back);
                 assert areEqual(values, javaMutable);
@@ -818,9 +818,9 @@ public class VectorBenchmark {
 
     public static class Insert extends Base {
         @Benchmark
-        public void slang_persistent(Blackhole bh) {
+        public void vavr_persistent(Blackhole bh) {
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                final Vector<Integer> values = slangPersistent.insert(i, 0);
+                final Vector<Integer> values = vavrPersistent.insert(i, 0);
                 assert values.size() == CONTAINER_SIZE + 1;
                 bh.consume(values);
             }
@@ -832,10 +832,10 @@ public class VectorBenchmark {
         public Object java_mutable() { return javaMutable.stream().collect(groupingBy(Integer::bitCount)); }
 
         @Benchmark
-        public Object scala_persistent() { return scalaPersistent.groupBy(Integer::bitCount); }
+        public Object scala_persistent() { return ((scala.collection.Seq<Integer>) scalaPersistent).groupBy(Integer::bitCount); }
 
         @Benchmark
-        public Object slang_persistent() { return slangPersistent.groupBy(Integer::bitCount); }
+        public Object vavr_persistent() { return vavrPersistent.groupBy(Integer::bitCount); }
     }
 
     /** Consume the vector one-by-one, from the front and back */
@@ -881,8 +881,8 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public void slang_persistent(Blackhole bh) {
-            io.vavr.collection.Vector<Integer> values = slangPersistent;
+        public void vavr_persistent(Blackhole bh) {
+            io.vavr.collection.Vector<Integer> values = vavrPersistent;
             for (int i = 1; !values.isEmpty(); i++) {
                 values = values.slice(1, values.size());
                 values = values.slice(0, values.size() - 1);
@@ -891,8 +891,8 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public void slang_persistent_int(Blackhole bh) {
-            io.vavr.collection.Vector<Integer> values = this.slangPersistentInt;
+        public void vavr_persistent_int(Blackhole bh) {
+            io.vavr.collection.Vector<Integer> values = this.vavrPersistentInt;
             while (!values.isEmpty()) {
                 values = values.slice(1, values.size());
                 values = values.slice(0, values.size() - 1);
@@ -921,21 +921,21 @@ public class VectorBenchmark {
         @Benchmark
         public Object java_mutable(Initialized state) {
             state.javaMutable.sort(Comparator.naturalOrder());
-            assert areEqual(state.javaMutable, slangPersistent.sorted());
+            assert areEqual(state.javaMutable, vavrPersistent.sorted());
             return state.javaMutable;
         }
 
         @Benchmark
         public Object scala_persistent() {
-            final scala.collection.Seq<Integer> results = (scala.collection.Seq<Integer>) scalaPersistent.sorted(SCALA_ORDERING);
-            assert areEqual(asJavaCollection(results), slangPersistent.sorted());
+            final scala.collection.Seq<Integer> results = ((scala.collection.Seq<Integer>) scalaPersistent).sorted(SCALA_ORDERING);
+            assert areEqual(asJavaCollection(results), vavrPersistent.sorted());
             return results;
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            final Vector<Integer> results = slangPersistent.sorted();
-            assert areEqual(results, slangPersistent.toJavaStream().sorted().collect(collector()));
+        public Object vavr_persistent() {
+            final Vector<Integer> results = vavrPersistent.sorted();
+            assert areEqual(results, vavrPersistent.toJavaStream().sorted().collect(collector()));
             return results;
         }
     }
@@ -1003,9 +1003,9 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
-            for (final Iterator<Integer> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
+            for (final Iterator<Integer> iterator = vavrPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
             assert aggregate == EXPECTED_AGGREGATE;
@@ -1013,9 +1013,9 @@ public class VectorBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent_int() {
+        public int vavr_persistent_int() {
             final int[] aggregate = { 0 };
-            slangPersistentInt.trie.<int[]> visit((ordinal, leaf, start, end) -> {
+            vavrPersistentInt.trie.<int[]> visit((ordinal, leaf, start, end) -> {
                 for (int i = start; i < end; i++) {
                     aggregate[0] ^= leaf[i];
                 }

@@ -49,7 +49,7 @@ public class CharSeqBenchmark {
 
         java.lang.String javaPersistent;
         fj.data.LazyString fjavaPersistent;
-        io.vavr.collection.CharSeq slangPersistent;
+        io.vavr.collection.CharSeq vavrPersistent;
 
         @Setup
         public void setup() {
@@ -62,7 +62,7 @@ public class CharSeqBenchmark {
 
             javaPersistent = create(java.lang.String::new, ELEMENTS, ELEMENTS.length, v -> java.util.Arrays.equals(v.toCharArray(), ELEMENTS));
             fjavaPersistent = create(fj.data.LazyString::str, javaPersistent, javaPersistent.length(), v -> Objects.equals(v.toStringEager(), javaPersistent));
-            slangPersistent = create(io.vavr.collection.CharSeq::of, javaPersistent, javaPersistent.length(), v -> v.contentEquals(javaPersistent));
+            vavrPersistent = create(io.vavr.collection.CharSeq::of, javaPersistent, javaPersistent.length(), v -> v.contentEquals(javaPersistent));
         }
     }
 
@@ -82,8 +82,8 @@ public class CharSeqBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            final Object head = slangPersistent.head();
+        public Object vavr_persistent() {
+            final Object head = vavrPersistent.head();
             assert Objects.equals(head, ELEMENTS[0]);
             return head;
         }
@@ -112,8 +112,8 @@ public class CharSeqBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            io.vavr.collection.CharSeq values = slangPersistent;
+        public Object vavr_persistent() {
+            io.vavr.collection.CharSeq values = vavrPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.tail();
             }
@@ -144,10 +144,10 @@ public class CharSeqBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
-                aggregate ^= slangPersistent.charAt(i);
+                aggregate ^= vavrPersistent.charAt(i);
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
@@ -168,8 +168,8 @@ public class CharSeqBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
-            io.vavr.collection.CharSeq values = slangPersistent;
+        public Object vavr_persistent() {
+            io.vavr.collection.CharSeq values = vavrPersistent;
             for (int i = 0; i < CONTAINER_SIZE; i++) {
                 values = values.update(i, replacement);
             }
@@ -182,7 +182,7 @@ public class CharSeqBenchmark {
         final char value = '❤';
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             return CharSeq.of(value).repeat(CONTAINER_SIZE);
         }
     }
@@ -209,12 +209,12 @@ public class CharSeqBenchmark {
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.CharSeq values = io.vavr.collection.CharSeq.empty();
             for (int i = CONTAINER_SIZE - 1; i >= 0; i--) {
                 values = values.prepend(ELEMENTS[i]);
             }
-            assert values.contentEquals(slangPersistent);
+            assert values.contentEquals(vavrPersistent);
             return values;
         }
     }
@@ -236,17 +236,17 @@ public class CharSeqBenchmark {
             for (char c : ELEMENTS) {
                 values = values.append(valueOf(c));
             }
-            assert areEqual(values.toStream(), slangPersistent);
+            assert areEqual(values.toStream(), vavrPersistent);
             return values;
         }
 
         @Benchmark
-        public Object slang_persistent() {
+        public Object vavr_persistent() {
             io.vavr.collection.CharSeq values = io.vavr.collection.CharSeq.empty();
             for (char c : ELEMENTS) {
                 values = values.append(c);
             }
-            assert values.contentEquals(slangPersistent);
+            assert values.contentEquals(vavrPersistent);
             return values;
         }
     }
@@ -274,9 +274,9 @@ public class CharSeqBenchmark {
         }
 
         @Benchmark
-        public int slang_persistent() {
+        public int vavr_persistent() {
             int aggregate = 0;
-            for (final Iterator<Character> iterator = slangPersistent.iterator(); iterator.hasNext(); ) {
+            for (final Iterator<Character> iterator = vavrPersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
             assert aggregate == EXPECTED_AGGREGATE;
