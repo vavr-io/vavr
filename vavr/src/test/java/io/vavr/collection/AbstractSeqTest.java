@@ -7,6 +7,7 @@
 package io.vavr.collection;
 
 import io.vavr.Function1;
+import io.vavr.NotImplementedError;
 import io.vavr.Tuple;
 import io.vavr.control.Option;
 import io.vavr.Tuple2;
@@ -14,10 +15,13 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests all methods defined in {@link Seq}.
@@ -224,6 +228,54 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldComputeCombinationsOfNonEmptyList() {
         assertThat(of(1, 2, 3).combinations())
                 .isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
+    }
+
+    // -- asJava*
+
+    @Test
+    public void shouldConvertAsJava() {
+        final java.util.List<Integer> list = of(1, 2, 3).asJava();
+        list.add(4);
+        assertThat(list).isEqualTo(Arrays.asList(1, 2, 3, 4));
+    }
+
+    @Test
+    public void shouldConvertAsJavaWithConsumer() {
+        final Seq<Integer> seq = of(1, 2, 3).asJava(list -> {
+            assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
+            list.add(4);
+        });
+        assertThat(seq).isEqualTo(of(1, 2, 3, 4));
+    }
+
+    @Test
+    public void shouldConvertAsJavaAndRethrowException() {
+        assertThatThrownBy(() -> of(1, 2, 3).asJava(list -> { throw new RuntimeException("test");}))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("test");
+    }
+
+    @Test
+    public void shouldConvertAsJavaImmutable() {
+        final java.util.List<Integer> list = of(1, 2, 3).asJavaImmutable();
+        assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
+        assertThatThrownBy(() -> list.add(4)).isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    public void shouldConvertAsJavaImmutableWithConsumer() {
+        final Seq<Integer> seq = of(1, 2, 3).asJavaImmutable(list -> {
+            assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
+            assertThatThrownBy(() -> list.add(4)).isInstanceOf(UnsupportedOperationException.class);
+        });
+        assertThat(seq).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldConvertAsJavaImmutableAndRethrowException() {
+        assertThatThrownBy(() -> of(1, 2, 3).asJavaImmutable(list -> { throw new RuntimeException("test");}))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("test");
     }
 
     // -- combinations(k)

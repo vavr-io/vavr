@@ -82,6 +82,15 @@ import java.util.function.*;
  * <li>{@link #iterator(int)}</li>
  * </ul>
  *
+ * Views:
+ *
+ * <ul>
+ * <li>{@link #asJava()}</li>
+ * <li>{@link #asJava(Consumer)}</li>
+ * <li>{@link #asJavaImmutable()}</li>
+ * <li>{@link #asJavaImmutable(Consumer)}</li>
+ * </ul>
+ *
  * @param <T> Component type
  * @author Daniel Dietrich
  * @since 1.1.0
@@ -105,19 +114,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
     }
 
     /**
-     * A {@code Seq} is a partial function which returns the element at the specified index by calling
-     * {@linkplain #get(int)}.
-     *
-     * @param index an index
-     * @return the element at the given index
-     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
-     */
-    @Override
-    default T apply(Integer index) {
-        return get(index);
-    }
-
-    /**
      * Appends an element to this.
      *
      * @param element An element
@@ -133,6 +129,66 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      * @throws NullPointerException if {@code elements} is null
      */
     Seq<T> appendAll(Iterable<? extends T> elements);
+
+    /**
+     * A {@code Seq} is a partial function which returns the element at the specified index by calling
+     * {@linkplain #get(int)}.
+     *
+     * @param index an index
+     * @return the element at the given index
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
+    @Override
+    default T apply(Integer index) {
+        return get(index);
+    }
+
+    /**
+     * Creates a <strong>mutable</strong> {@link java.util.List} view on top of this {@code Seq},
+     * i.e. all mutator methods of the {@link java.util.List} are implemented.
+     *
+     * @return A new mutable {@link java.util.Collection} view on this {@code Traversable}.
+     * @see Seq#asJavaImmutable()
+     */
+    java.util.List<T> asJava();
+
+    /**
+     * Creates a <strong>mutable</strong> {@link java.util.List} view on top of this {@code Seq}
+     * that is passed to the given {@code action}.
+     *
+     * @param action A side-effecting unit of work that operates on a mutable {@code java.util.List} view.
+     * @return this instance, if only read operations are performed on the {@code java.util.List} view or a new instance of this type, if write operations are performed on the {@code java.util.List} view.
+     * @see Seq#asJava()
+     */
+    Seq<T> asJava(Consumer<? super java.util.List<T>> action);
+
+    /**
+     * Creates an <strong>immutable</strong> {@link java.util.List} view on top of this {@code Seq},
+     * i.e. calling mutators will result in {@link UnsupportedOperationException} at runtime.
+     * <p>
+     * The difference to conversion methods {@code toJava*()} is that
+     *
+     * <ul>
+     * <li>A view is created in O(1) (constant time) whereas conversion takes O(n) (linear time), with n = collection size.</li>
+     * <li>The operations on a view have the same performance characteristics than the underlying persistent Javaslang collection whereas the performance characteristics of a converted collection are those of the Java standard collections.</li>
+     * </ul>
+     *
+     * Please note that our immutable {@code java.util.List} view throws {@code UnsupportedOperationException} before
+     * checking method arguments. Java does handle this case inconsistently.
+     *
+     * @return A new immutable {@link java.util.Collection} view on this {@code Traversable}.
+     */
+    java.util.List<T> asJavaImmutable();
+
+    /**
+     * Creates an <strong>immutable</strong> {@link java.util.List} view on top of this {@code Seq}
+     * that is passed to the given {@code action}.
+     *
+     * @param action A side-effecting unit of work that operates on an immutable {@code java.util.List} view.
+     * @return this instance
+     * @see Seq#asJavaImmutable()
+     */
+    Seq<T> asJavaImmutable(Consumer<? super java.util.List<T>> action);
 
     @Override
     <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);

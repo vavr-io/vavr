@@ -6,6 +6,8 @@
  */
 package io.vavr.collection;
 
+import io.vavr.collection.JavaConverters.ChangePolicy;
+import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
 
 import java.util.ArrayList;
@@ -31,6 +33,13 @@ final class Collections {
             }
         }
         return iter1.hasNext() == iter2.hasNext();
+    }
+
+    static <T, C extends Seq<T>> C asJava(C source, Consumer<? super java.util.List<T>> action, ChangePolicy changePolicy) {
+        Objects.requireNonNull(action, "action is null");
+        final ListView<T, C> view = JavaConverters.asJava(source, changePolicy);
+        action.accept(view);
+        return view.getDelegate();
     }
 
     @SuppressWarnings("unchecked")
@@ -193,6 +202,13 @@ final class Collections {
 
     static Option<Integer> indexOption(int index) {
         return Option.when(index >= 0, index);
+    }
+
+    // @param iterable may not be null
+    static boolean isEmpty(Iterable<?> iterable) {
+        return iterable instanceof Traversable && ((Traversable) iterable).isEmpty()
+                || iterable instanceof Collection && ((Collection) iterable).isEmpty()
+                || !iterable.iterator().hasNext();
     }
 
     static <T> boolean isTraversableAgain(Iterable<? extends T> iterable) {

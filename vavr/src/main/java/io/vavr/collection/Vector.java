@@ -16,6 +16,8 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 import static io.vavr.collection.Collections.withSize;
+import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
+import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
 
 /**
  * Vector is the default Seq implementation that provides effectively constant time access to any element.
@@ -597,6 +599,26 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             final BitMappedTrie<T> that = trie.appendAll(iterable);
             return (that == trie) ? this : new Vector<>(that);
         }
+    }
+
+    @Override
+    public java.util.List<T> asJava() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    public Vector<T> asJava(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, MUTABLE);
+    }
+    
+    @Override
+    public java.util.List<T> asJavaImmutable() {
+        return JavaConverters.asJava(this, IMMUTABLE);
+    }
+
+    @Override
+    public Vector<T> asJavaImmutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, IMMUTABLE);
     }
 
     @Override

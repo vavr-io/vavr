@@ -52,6 +52,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> appendAll(Iterable<? extends T> elements);
 
     @Override
+    IndexedSeq<T> asJava(Consumer<? super java.util.List<T>> action);
+
+    @Override
+    IndexedSeq<T> asJavaImmutable(Consumer<? super java.util.List<T>> action);
+
+    @Override
     <R> IndexedSeq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     @Override
