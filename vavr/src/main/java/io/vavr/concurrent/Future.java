@@ -687,9 +687,8 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Collects value that is in the domain of the given {@code partialFunction} by mapping the value to type {@code R}.
-     * <p>
      *
-     * <pre><{@code
+     * <pre>{@code
      * partialFunction.isDefinedAt(value)
      * }</pre>
      *

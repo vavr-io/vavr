@@ -271,9 +271,8 @@ public interface Try<T> extends Value<T>, Serializable {
 
     /**
      * Collects value that is in the domain of the given {@code partialFunction} by mapping the value to type {@code R}.
-     * <p>
      *
-     * <pre><{@code
+     * <pre>{@code
      * partialFunction.isDefinedAt(value)
      * }</pre>
      *
