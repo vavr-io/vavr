@@ -872,7 +872,7 @@ public class VectorBenchmark {
 
         @Benchmark
         public void scala_persistent(Blackhole bh) {
-            scala.collection.immutable.Seq<Integer> values = scalaPersistent;
+            scala.collection.immutable.Vector<Integer> values = scalaPersistent;
             while (!values.isEmpty()) {
                 values = values.slice(1, values.size());
                 values = values.slice(0, values.size() - 1);

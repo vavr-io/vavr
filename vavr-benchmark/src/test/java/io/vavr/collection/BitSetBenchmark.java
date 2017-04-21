@@ -55,8 +55,7 @@ public class BitSetBenchmark {
             DISTINCT = TreeSet.ofAll(ELEMENTS);
             EXPECTED_AGGREGATE = DISTINCT.reduce(JmhRunner::aggregate);
 
-            //noinspection unchecked
-            scalaPersistent = create(v -> (scala.collection.immutable.BitSet) scala.collection.immutable.BitSet$.MODULE$.apply((scala.collection.mutable.Buffer<Object>) (Object) asScalaBuffer(v)), DISTINCT.toJavaList(), v -> areEqual(asJavaCollection(v), DISTINCT));
+            scalaPersistent = create(v -> (scala.collection.immutable.BitSet) scala.collection.immutable.BitSet$.MODULE$.apply(asScalaBuffer(v)), DISTINCT.toJavaList(), v -> areEqual(asJavaCollection(v), DISTINCT));
             vavrPersistent = create(io.vavr.collection.BitSet::ofAll, ELEMENTS, ELEMENTS.length, v -> areEqual(v, DISTINCT));
         }
     }

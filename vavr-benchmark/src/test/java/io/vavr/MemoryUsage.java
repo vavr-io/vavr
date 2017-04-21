@@ -59,7 +59,7 @@ public class MemoryUsage {
             Tuple.of("^scalaz\\.Heap", "Scalaz persistent @ "),
             Tuple.of("^scala\\.collection.immutable", "Scala persistent @ "),
             Tuple.of("^scala\\.collection.mutable", "Scala mutable @ "),
-            Tuple.of("^vavr\\.", "Vavr persistent @ ")
+            Tuple.of("^io.vavr\\.", "Vavr persistent @ ")
     ).mapKeys(r -> Pattern.compile(r).asPredicate());
     private static String toHumanReadableName(Object target) {
         final Class<?> type = target.getClass();
