@@ -139,6 +139,30 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
+     * Creates a HashMap of the given list of key-value pairs.
+     *
+     * @deprecated Should not be used any more because unsafe
+     *
+     * @param pairs A list of key-value pairs
+     * @param <K>   The key type
+     * @param <V>   The value type
+     * @return A new Map containing the given entries
+     */
+    @Deprecated
+    @SuppressWarnings("unchecked")
+    public static <K, V> HashMap<K, V> of(Object... pairs) {
+        Objects.requireNonNull(pairs, "pairs is null");
+        if ((pairs.length & 1) != 0) {
+            throw new IllegalArgumentException("Odd length of key-value pairs list");
+        }
+        HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
+        for (int i = 0; i < pairs.length; i += 2) {
+            trie = trie.put((K) pairs[i], (V) pairs[i + 1]);
+        }
+        return wrap(trie);
+    }
+
+    /**
      * Returns a singleton {@code HashMap}, i.e. a {@code HashMap} of one element.
      *
      * @param key   A singleton map key.
