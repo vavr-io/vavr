@@ -27,8 +27,7 @@ import static io.vavr.API.*;
 public class PatternMatchingBenchmark {
     
     static final Array<Class<?>> CLASSES = Array(
-            MatchVsSwitchIntValues.class,
-            MatchVsIfBranchesObjectTree.class
+            MatchVsSwitchIntValues.class
     );
 
     @Test
@@ -92,25 +91,6 @@ public class PatternMatchingBenchmark {
                 assert String.valueOf(i).equals(result);
                 bh.consume(result);
             }
-        }
-    }
-
-    @State(Scope.Benchmark)
-    public static class MatchVsIfBranchesObjectTree {
-
-        @Setup
-        public void setup() {
-            // TODO
-        }
-
-        @Benchmark
-        public void java_if_branches(Blackhole bh) {
-            // TODO
-        }
-
-        @Benchmark
-        public void vavr_match(Blackhole bh) {
-            // TODO
         }
     }
 }
