@@ -1566,7 +1566,7 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
 
         /**
-         * Returns the singleton instance of the liked list.
+         * Returns the singleton instance of the linked list.
          *
          * @param <T> Component type of the List
          * @return the singleton instance of the linked list.
