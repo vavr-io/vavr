@@ -110,6 +110,11 @@ public class CharSeqTest {
         assertThat(CharSeq.of('a').padTo(3, 'b')).isEqualTo(CharSeq.of('a', 'b', 'b'));
     }
 
+    @Test
+    public void shouldThrowWhenPadToAddingNulls() {
+        assertThatThrownBy(() -> CharSeq.of('a').padTo(2, null)).isInstanceOf(NullPointerException.class);
+    }
+
     // -- leftPadTo
 
     @Test
@@ -133,6 +138,11 @@ public class CharSeqTest {
         assertThat(CharSeq.of('a').leftPadTo(2, 'a')).isEqualTo(CharSeq.of('a', 'a'));
         assertThat(CharSeq.of('a').leftPadTo(2, 'b')).isEqualTo(CharSeq.of('b', 'a'));
         assertThat(CharSeq.of('a').leftPadTo(3, 'b')).isEqualTo(CharSeq.of('b', 'b', 'a'));
+    }
+
+    @Test
+    public void shouldThrowWhenLeftPadToAddingNulls() {
+        assertThatThrownBy(() -> CharSeq.of('a').leftPadTo(2, null)).isInstanceOf(NullPointerException.class);
     }
 
     // -- orElse
@@ -228,6 +238,11 @@ public class CharSeqTest {
         assertThat(s.patch(4, d, 0)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
         assertThat(s.patch(4, d, 1)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
         assertThat(s.patch(4, d, 3)).isEqualTo(CharSeq.of('1', '2', '3', '4', '5', '6'));
+    }
+
+    @Test
+    public void shouldThrowWhenPatchingWithNulls() {
+        assertThatThrownBy(() -> CharSeq.of('1').patch(0, List.of((Character) null), 1)).isInstanceOf(NullPointerException.class);
     }
 
     // -- peek
@@ -454,6 +469,11 @@ public class CharSeqTest {
         assertThat(actual).isTrue();
     }
 
+    @Test
+    public void shouldNotContainNull() {
+        assertThat(CharSeq.of('a').contains((Character) null)).isFalse();
+    }
+
     // -- containsAll
 
     @Test
@@ -668,6 +688,30 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '1', '2').existsUnique(i -> i == '1')).isFalse();
     }
 
+    // -- fill
+
+    @Test
+    public void shouldFillTheCharSeqCallingTheSupplierInTheRightOrder() {
+        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(asList('0', '1'));
+        final CharSeq actual = CharSeq.fill(2, () -> chars.remove());
+        assertThat(actual).isEqualTo(CharSeq.of('0', '1'));
+    }
+
+    @Test
+    public void shouldFillTheCharSeqWith0Elements() {
+        assertThat(CharSeq.fill(0, () -> 'a')).isEqualTo(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldFillTheCharSeqWith0ElementsWhenNIsNegative() {
+        assertThat(CharSeq.fill(-1, () -> 'a')).isEqualTo(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldThrowWhenFillingWithNullValue() {
+        assertThatThrownBy(() -> CharSeq.fill(1, () -> null)).isInstanceOf(NullPointerException.class);
+    }
+
     // -- filter
 
     @Test
@@ -685,7 +729,7 @@ public class CharSeqTest {
         final CharSeq t = CharSeq.of('1', '2', '3', '4');
         assertThat(t.filter(i -> true)).isSameAs(t);
     }
-
+    
     // -- find
 
     @Test
@@ -1260,6 +1304,23 @@ public class CharSeqTest {
         assertThat(CharSeq.of('0', '1', '2', '1').replace('1', '3')).isEqualTo(CharSeq.of('0', '3', '2', '1'));
     }
 
+    @Test
+    public void shouldReturnSameInstanceWhenReplacingNullCharWithNullChar() {
+        final CharSeq charSeq = CharSeq.of('a');
+        assertThat(charSeq.replace((Character) null, (Character) null)).isSameAs(charSeq);
+    }
+
+    @Test
+    public void shouldReturnSameInstanceWhenReplacingNullCharWithNonNullChar() {
+        final CharSeq charSeq = CharSeq.of('a');
+        assertThat(charSeq.replace((Character) null, 'b')).isSameAs(charSeq);
+    }
+
+    @Test
+    public void shouldThrowWhenReplacingNonNullCharWithNullChar() {
+        assertThatThrownBy(() -> CharSeq.of('a').replace('a', (Character) null)).isInstanceOf(NullPointerException.class);
+    }
+
     // -- replaceAll(curr, new)
 
     @Test
@@ -1270,6 +1331,23 @@ public class CharSeqTest {
     @Test
     public void shouldReplaceAllElementsOfNonNilUsingCurrNew() {
         assertThat(CharSeq.of('0', '1', '2', '1').replaceAll('1', '3')).isEqualTo(CharSeq.of('0', '3', '2', '3'));
+    }
+
+    @Test
+    public void shouldReturnSameInstanceWhenReplacingAllNullCharWithNullChar() {
+        final CharSeq charSeq = CharSeq.of('a');
+        assertThat(charSeq.replaceAll((Character) null, (Character) null)).isSameAs(charSeq);
+    }
+
+    @Test
+    public void shouldReturnSameInstanceWhenReplacingAllNullCharWithNonNullChar() {
+        final CharSeq charSeq = CharSeq.of('a');
+        assertThat(charSeq.replaceAll((Character) null, 'b')).isSameAs(charSeq);
+    }
+
+    @Test
+    public void shouldThrowWhenReplacingAllNonNullCharWithNullChar() {
+        assertThatThrownBy(() -> CharSeq.of('a').replaceAll('a', (Character) null)).isInstanceOf(NullPointerException.class);
     }
 
     // -- retainAll
@@ -1558,6 +1636,37 @@ public class CharSeqTest {
     @Test(expected = UnsupportedOperationException.class)
     public void shouldThrowWhenComputingSumOfStrings() {
         CharSeq.of('1', '2', '3').sum();
+    }
+
+    // -- tabulate
+
+    @Test
+    public void shouldTabulateTheCharSeq() {
+        final Function<Number, Character> f = i -> i.toString().charAt(0);
+        final CharSeq actual = CharSeq.tabulate(3, f);
+        assertThat(actual).isEqualTo(CharSeq.of('0', '1', '2'));
+    }
+
+    @Test
+    public void shouldTabulateTheCharSeqCallingTheFunctionInTheRightOrder() {
+        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(asList('0', '1', '2'));
+        final CharSeq actual = CharSeq.tabulate(3, i -> chars.remove());
+        assertThat(actual).isEqualTo(CharSeq.of('0', '1', '2'));
+    }
+
+    @Test
+    public void shouldTabulateTheCharSeqWith0Elements() {
+        assertThat(CharSeq.tabulate(0, i -> 'a')).isEqualTo(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldTabulateTheCharSeqWith0ElementsWhenNIsNegative() {
+        assertThat(CharSeq.tabulate(-1, i -> 'a')).isEqualTo(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldThrowWhenTabulatingNullValues() {
+        assertThatThrownBy(() -> CharSeq.tabulate(1, i -> null)).isInstanceOf(NullPointerException.class);
     }
 
     // -- take
@@ -1895,6 +2004,11 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldThrowWhenAppendingNull() {
+        assertThatThrownBy(() -> CharSeq.of('1').append(null)).isInstanceOf(NullPointerException.class);
+    }
+
     // -- appendAll
 
     @Test(expected = NullPointerException.class)
@@ -1928,6 +2042,11 @@ public class CharSeqTest {
         final CharSeq actual = CharSeq.of('1', '2', '3').appendAll(CharSeq.of('4', '5', '6'));
         final CharSeq expected = CharSeq.of('1', '2', '3', '4', '5', '6');
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldThrowWhenAppendingAllIterableThatContainsNull() {
+        assertThatThrownBy(() -> CharSeq.empty().appendAll(Arrays.asList('1', null))).isInstanceOf(NullPointerException.class);
     }
 
     // -- apply
@@ -2319,6 +2438,11 @@ public class CharSeqTest {
         CharSeq.empty().insert(1, null);
     }
 
+    @Test
+    public void shouldThrowWhenInsertingNull() {
+        assertThatThrownBy(() -> CharSeq.empty().insert(0, null)).isInstanceOf(NullPointerException.class);
+    }
+
     // -- insertAll
 
     @Test
@@ -2369,6 +2493,11 @@ public class CharSeqTest {
         CharSeq.empty().insertAll(1, CharSeq.empty());
     }
 
+    @Test
+    public void shouldThrowWhenInsertingAllIterableContainingNull() {
+        assertThatThrownBy(() -> CharSeq.empty().insertAll(0, Arrays.asList(null,null))).isInstanceOf(NullPointerException.class);
+    }
+
     // -- intersperse
 
     @Test
@@ -2384,6 +2513,11 @@ public class CharSeqTest {
     @Test
     public void shouldIntersperseMultipleElements() {
         assertThat(CharSeq.of('a', 'b').intersperse(',')).isEqualTo(CharSeq.of('a', ',', 'b'));
+    }
+
+    @Test
+    public void shouldThrowWhenInterspersingWillNullSeparator() {
+        assertThatThrownBy(() -> CharSeq.of('a', 'b').intersperse(null)).isInstanceOf(NullPointerException.class);
     }
 
     // -- iterator(int)
@@ -2423,6 +2557,11 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldThrowWhenPrependingNull() {
+        assertThatThrownBy(() -> CharSeq.empty().prepend(null)).isInstanceOf(NullPointerException.class);
+    }
+
     // -- prependAll
 
     @Test(expected = NullPointerException.class)
@@ -2458,6 +2597,11 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldThrowWhenPrependingIterableContainingNull() {
+        assertThatThrownBy(() -> CharSeq.empty().prependAll(List.of((Character) null))).isInstanceOf(NullPointerException.class);
+    }
+
     // -- remove
 
     @Test
@@ -2489,6 +2633,12 @@ public class CharSeqTest {
     public void shouldRemoveNonExistingElement() {
         final CharSeq t = CharSeq.of('1', '2', '3');
         assertThat(t.remove('4')).isSameAs(t);
+    }
+
+    @Test
+    public void shouldRemoveNull() {
+        final CharSeq charSeq = CharSeq.of('a');
+        assertThat(charSeq.remove(null)).isSameAs(charSeq);
     }
 
     // -- removeFirst(Predicate)
@@ -2600,6 +2750,12 @@ public class CharSeqTest {
         assertThat(t.removeAll(CharSeq.of('4', '5'))).isSameAs(t);
     }
 
+    @Test
+    public void shouldRemoveAllInterableContainingNull() {
+        final CharSeq charSeq = CharSeq.of('a');
+        assertThat(charSeq.removeAll(List.of((Character) null))).isSameAs(charSeq);
+    }
+
     // -- removeAll(Predicate)
 
     @Test
@@ -2635,6 +2791,12 @@ public class CharSeqTest {
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
         final CharSeq t = CharSeq.of('1', '2', '3');
         assertThat(t.removeAll('4')).isSameAs(t);
+    }
+
+    @Test
+    public void shouldRemoveAllNull() {
+        final CharSeq charSeq = CharSeq.of('a');
+        assertThat(charSeq.removeAll((Character) null)).isSameAs(charSeq);
     }
 
     // -- reverse
@@ -2686,6 +2848,11 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').update(2, '4')).isEqualTo(CharSeq.of('1', '2', '4'));
     }
 
+    @Test
+    public void shouldThrowWhenUpdatingCharAtIndexWithNullChar() {
+        assertThatThrownBy(() -> CharSeq.of('a').update(0, (Character) null)).isInstanceOf(NullPointerException.class);
+    }
+
     // -- higher order update
 
     @Test
@@ -2693,6 +2860,11 @@ public class CharSeqTest {
         final Seq<Character> actual = CharSeq.of("hello").update(0, Character::toUpperCase);
         final Seq<Character> expected = CharSeq.of("Hello");
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldThrowWhenUpdatingCharAtIndexWithNullCharUsingFunction() {
+        assertThatThrownBy(() -> CharSeq.of('a').update(0, c -> (Character) null)).isInstanceOf(NullPointerException.class);
     }
 
     // -- slice()
@@ -3244,47 +3416,6 @@ public class CharSeqTest {
         assertThat(actual.length()).isEqualTo(2);
         assertThat(actual.get(0)).isEqualTo('1');
         assertThat(actual.get(1)).isEqualTo('2');
-    }
-
-    @Test
-    public void shouldTabulateTheCharSeq() {
-        final Function<Number, Character> f = i -> i.toString().charAt(0);
-        final CharSeq actual = CharSeq.tabulate(3, f);
-        assertThat(actual).isEqualTo(CharSeq.of('0', '1', '2'));
-    }
-
-    @Test
-    public void shouldTabulateTheCharSeqCallingTheFunctionInTheRightOrder() {
-        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(asList('0', '1', '2'));
-        final CharSeq actual = CharSeq.tabulate(3, i -> chars.remove());
-        assertThat(actual).isEqualTo(CharSeq.of('0', '1', '2'));
-    }
-
-    @Test
-    public void shouldTabulateTheCharSeqWith0Elements() {
-        assertThat(CharSeq.tabulate(0, i -> 'a')).isEqualTo(CharSeq.empty());
-    }
-
-    @Test
-    public void shouldTabulateTheCharSeqWith0ElementsWhenNIsNegative() {
-        assertThat(CharSeq.tabulate(-1, i -> 'a')).isEqualTo(CharSeq.empty());
-    }
-
-    @Test
-    public void shouldFillTheCharSeqCallingTheSupplierInTheRightOrder() {
-        final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(asList('0', '1'));
-        final CharSeq actual = CharSeq.fill(2, () -> chars.remove());
-        assertThat(actual).isEqualTo(CharSeq.of('0', '1'));
-    }
-
-    @Test
-    public void shouldFillTheCharSeqWith0Elements() {
-        assertThat(CharSeq.fill(0, () -> 'a')).isEqualTo(CharSeq.empty());
-    }
-
-    @Test
-    public void shouldFillTheCharSeqWith0ElementsWhenNIsNegative() {
-        assertThat(CharSeq.fill(-1, () -> 'a')).isEqualTo(CharSeq.empty());
     }
 
     @Test

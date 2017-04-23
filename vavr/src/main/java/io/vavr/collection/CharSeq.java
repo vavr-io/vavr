@@ -22,6 +22,10 @@ import java.util.stream.Collector;
 /**
  * The CharSeq (read: character sequence) collection essentially is a rich String wrapper having all operations
  * we know from the functional Vavr collections.
+ * <p>
+ * <strong>Note:</strong>Because CharSeq represents a sequence of primitive characters (i.e. a String),
+ * it breaks the Liskov Substitution Principle in the way, that the CharSeq cannot contain {@code null} elements.
+ * In future version of Java, CharSeq should extend IndexedSeq&lt;char&gt; instead.
  *
  * @author Ruslan Sennov, Daniel Dietrich
  * @since 2.0.0
@@ -120,8 +124,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
             return (CharSeq) elements;
         }
         final StringBuilder sb = new StringBuilder();
-        for (Character character : elements) {
-            sb.append(character.charValue());
+        for (char character : elements) {
+            sb.append(character);
         }
         return sb.length() == 0 ? EMPTY : of(sb);
     }
@@ -139,7 +143,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         Objects.requireNonNull(f, "f is null");
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
-            sb.append(f.apply(i));
+            sb.append(f.apply(i).charValue());
         }
         return of(sb);
     }
@@ -363,7 +367,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq append(Character element) {
-        return of(back + element);
+        // DEV-NOTE: we need to unbox, otherwise "null" will be appended to back
+        final char c = element;
+        return of(back + c);
     }
 
     @Override
@@ -544,7 +550,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         if (index > length()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on String of length " + length());
         }
-        return of(new StringBuilder(back).insert(index, element).toString());
+        final char c = element;
+        return of(new StringBuilder(back).insert(index, c).toString());
     }
 
     @Override
@@ -556,12 +563,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         if (index > length()) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements) on String of length " + length());
         }
-        final String javaString = back;
-        final StringBuilder sb = new StringBuilder(javaString.substring(0, index));
-        for (Character element : elements) {
+        final StringBuilder sb = new StringBuilder(back.substring(0, index));
+        for (char element : elements) {
             sb.append(element);
         }
-        sb.append(javaString.substring(index));
+        sb.append(back.substring(index));
         return of(sb);
     }
 
@@ -572,15 +578,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq intersperse(Character element) {
-        final StringBuilder sb = new StringBuilder();
-        if (!isEmpty()) {
-            sb.append(head());
+        final char c = element; // intentionally throw when element is null
+        if (isEmpty()) {
+            return EMPTY;
+        } else {
+            final StringBuilder sb = new StringBuilder().append(head());
+            for (int i = 1; i < length(); i++) {
+                sb.append(c).append(get(i));
+            }
+            return of(sb);
         }
-        for (int i = 1; i < length(); i++) {
-            sb.append(element)
-                    .append(get(i));
-        }
-        return sb.length() == 0 ? EMPTY : of(sb);
     }
 
     @Override
@@ -628,7 +635,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
-    private static StringBuilder padding(Character element, int limit) {
+    private static StringBuilder padding(char element, int limit) {
         final StringBuilder padding = new StringBuilder();
         for (int i = 0; i < limit; i++) {
             padding.append(element);
@@ -641,7 +648,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         from = from < 0 ? 0 : from > length() ? length() : from;
         replaced = replaced < 0 ? 0 : replaced;
         final StringBuilder sb = new StringBuilder(back.substring(0, from));
-        for (Character character : that) {
+        for (char character : that) {
             sb.append(character);
         }
         from += replaced;
@@ -715,14 +722,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq prepend(Character element) {
-        return of(element + back);
+        final char c = element;
+        return of(c + back);
     }
 
     @Override
     public CharSeq prependAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         final StringBuilder sb = new StringBuilder();
-        for (Character element : elements) {
+        for (char element : elements) {
             sb.append(element);
         }
         sb.append(back);
@@ -731,6 +739,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq remove(Character element) {
+        if (element == null) {
+            return this;
+        }
         final StringBuilder sb = new StringBuilder();
         boolean found = false;
         for (int i = 0; i < length(); i++) {
@@ -782,6 +793,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq removeAll(Character element) {
+        if (element == null) {
+            return this;
+        }
         return io.vavr.collection.Collections.removeAll(this, element);
     }
 
@@ -797,12 +811,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq replace(Character currentElement, Character newElement) {
+        if (currentElement == null) {
+            return this;
+        }
+        final char currentChar = currentElement;
+        final char newChar = newElement;
         final StringBuilder sb = new StringBuilder();
         boolean found = false;
         for (int i = 0; i < length(); i++) {
             final char c = get(i);
-            if (c == currentElement && !found) {
-                sb.append(newElement);
+            if (!found && c == currentChar) {
+                sb.append(newChar);
                 found = true;
             } else {
                 sb.append(c);
@@ -813,12 +832,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq replaceAll(Character currentElement, Character newElement) {
+        if (currentElement == null) {
+            return this;
+        }
+        final char currentChar = currentElement;
+        final char newChar = newElement;
         final StringBuilder sb = new StringBuilder();
         boolean found = false;
         for (int i = 0; i < length(); i++) {
             final char c = get(i);
-            if (c == currentElement) {
-                sb.append(newElement);
+            if (c == currentChar) {
+                sb.append(newChar);
                 found = true;
             } else {
                 sb.append(c);
@@ -1045,14 +1069,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("update(" + index + ")");
         } else {
-            return of(back.substring(0, index) + element + back.substring(index + 1));
+            char c = element;
+            return of(back.substring(0, index) + c + back.substring(index + 1));
         }
     }
 
     @Override
     public CharSeq update(int index, Function<? super Character, ? extends Character> updater) {
         Objects.requireNonNull(updater, "updater is null");
-        return update(index, updater.apply(get(index)));
+        final char c = updater.apply(get(index));
+        return update(index, c);
     }
 
     @Override
