@@ -305,6 +305,14 @@ final class Collections {
         return ofAll.apply(list);
     }
 
+    static void subSequenceRangeCheck(int beginIndex, int endIndex, int length) {
+        if (beginIndex < 0 || endIndex > length) {
+            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + "), length = " + length);
+        } else if (beginIndex > endIndex) {
+            throw new IllegalArgumentException("subSequence(" + beginIndex + ", " + endIndex + ")");
+        }
+    }
+
     static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         if (n <= 0) {

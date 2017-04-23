@@ -1686,7 +1686,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
         final int subLen = endIndex - beginIndex;
         if (subLen < 0) {
-            throw new IndexOutOfBoundsException("beginIndex " + beginIndex + " > endIndex " + endIndex);
+            throw new IllegalArgumentException("beginIndex " + beginIndex + " > endIndex " + endIndex);
         }
         if (beginIndex == 0 && endIndex == length()) {
             return this;

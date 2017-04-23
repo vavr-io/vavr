@@ -3192,24 +3192,24 @@ public class CharSeqTest {
         assertThat(actual).isSameAs(CharSeq.empty());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
         CharSeq.of('1', '2', '3').subSequence(1, 0);
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void shouldThrowOnSubSequenceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
         CharSeq.empty().subSequence(1, 0);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        CharSeq.of('1', '2', '3').subSequence(-'1', '2');
+        CharSeq.of('1', '2', '3').subSequence(-1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
     public void shouldThrowOnSubSequenceOnNilWhenBeginIndexExceedsLowerBound() {
-        CharSeq.empty().subSequence(-'1', '2');
+        CharSeq.empty().subSequence(-1, 2);
     }
 
     @Test(expected = IndexOutOfBoundsException.class)

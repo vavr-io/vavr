@@ -959,9 +959,9 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      * @param beginIndex the beginning index, inclusive
      * @param endIndex   the end index, exclusive
      * @return the specified subsequence
-     * @throws IndexOutOfBoundsException if {@code beginIndex} or {@code endIndex} is negative,
-     *                                   if {@code endIndex} is greater than {@code length()},
-     *                                   or if {@code beginIndex} is greater than {@code endIndex}
+     * @throws IndexOutOfBoundsException if {@code beginIndex} or {@code endIndex} is negative or
+     *                                   if {@code endIndex} is greater than {@code length()}
+     * @throws IllegalArgumentException  if {@code beginIndex} is greater than {@code endIndex}
      */
     Seq<T> subSequence(int beginIndex, int endIndex);
 
