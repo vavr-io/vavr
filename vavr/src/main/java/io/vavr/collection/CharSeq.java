@@ -112,7 +112,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @param elements An Iterable of elements.
      * @return A string containing the given elements in the same order.
-     * @throws NullPointerException if {@code elements} is null
+     * @throws NullPointerException if {@code elements} is null or {@code elements} contains null
      */
     public static CharSeq ofAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -121,7 +121,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
         final StringBuilder sb = new StringBuilder();
         for (Character character : elements) {
-            sb.append(character);
+            sb.append(character.charValue());
         }
         return sb.length() == 0 ? EMPTY : of(sb);
     }
