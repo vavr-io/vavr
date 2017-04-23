@@ -342,9 +342,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A CharSeq representing {@code this * times}
      */
     public CharSeq repeat(int times) {
-        if (times <= 0 || isEmpty()) return empty();
-        else if (times == 1) return this;
-        else {
+        if (times <= 0 || isEmpty()) {
+            return empty();
+        } else if (times == 1) {
+            return this;
+        } else {
             final int finalLength = length() * times;
             final char[] result = new char[finalLength];
             back.getChars(0, length(), result, 0);
@@ -384,12 +386,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public <R> IndexedSeq<R> collect(PartialFunction<? super Character, ? extends R> partialFunction) {
-        return io.vavr.collection.Vector.ofAll(iterator().<R> collect(partialFunction));
+        return Vector.ofAll(iterator().<R> collect(partialFunction));
     }
 
     @Override
     public IndexedSeq<CharSeq> combinations() {
-        return io.vavr.collection.Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
+        return Vector.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
     }
 
     @Override
@@ -488,9 +490,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     public <U> IndexedSeq<U> flatMap(Function<? super Character, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
-            return io.vavr.collection.Vector.empty();
+            return Vector.empty();
         } else {
-            IndexedSeq<U> result = io.vavr.collection.Vector.empty();
+            IndexedSeq<U> result = Vector.empty();
             for (int i = 0; i < length(); i++) {
                 for (U u : mapper.apply(get(i))) {
                     result = result.append(u);
@@ -593,7 +595,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public <U> IndexedSeq<U> map(Function<? super Character, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        IndexedSeq<U> result = io.vavr.collection.Vector.empty();
+        IndexedSeq<U> result = Vector.empty();
         for (int i = 0; i < length(); i++) {
             result = result.append(mapper.apply(get(i)));
         }
@@ -704,12 +706,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public IndexedSeq<CharSeq> permutations() {
         if (isEmpty()) {
-            return io.vavr.collection.Vector.empty();
+            return Vector.empty();
         } else {
             if (length() == 1) {
-                return io.vavr.collection.Vector.of(this);
+                return Vector.of(this);
             } else {
-                IndexedSeq<CharSeq> result = io.vavr.collection.Vector.empty();
+                IndexedSeq<CharSeq> result = Vector.empty();
                 for (Character t : distinct()) {
                     for (CharSeq ts : remove(t).permutations()) {
                         result = result.append(CharSeq.of(t).appendAll(ts));
@@ -1033,14 +1035,14 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @SuppressWarnings("deprecation")
     @Override
     public <U> IndexedSeq<U> unit(Iterable<? extends U> iterable) {
-        return io.vavr.collection.Vector.ofAll(iterable);
+        return Vector.ofAll(iterable);
     }
 
     @Override
     public <T1, T2> Tuple2<IndexedSeq<T1>, IndexedSeq<T2>> unzip(Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        IndexedSeq<T1> xs = io.vavr.collection.Vector.empty();
-        IndexedSeq<T2> ys = io.vavr.collection.Vector.empty();
+        IndexedSeq<T1> xs = Vector.empty();
+        IndexedSeq<T2> ys = Vector.empty();
         for (int i = 0; i < length(); i++) {
             final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(get(i));
             xs = xs.append(t._1);
@@ -1052,9 +1054,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public <T1, T2, T3> Tuple3<IndexedSeq<T1>, IndexedSeq<T2>, IndexedSeq<T3>> unzip3(Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        IndexedSeq<T1> xs = io.vavr.collection.Vector.empty();
-        IndexedSeq<T2> ys = io.vavr.collection.Vector.empty();
-        IndexedSeq<T3> zs = io.vavr.collection.Vector.empty();
+        IndexedSeq<T1> xs = Vector.empty();
+        IndexedSeq<T2> ys = Vector.empty();
+        IndexedSeq<T3> zs = Vector.empty();
         for (int i = 0; i < length(); i++) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
             xs = xs.append(t._1);
@@ -1090,7 +1092,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     public <U, R> IndexedSeq<R> zipWith(Iterable<? extends U> that, BiFunction<? super Character, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
-        IndexedSeq<R> result = io.vavr.collection.Vector.empty();
+        IndexedSeq<R> result = Vector.empty();
         final io.vavr.collection.Iterator<Character> list1 = iterator();
         final java.util.Iterator<? extends U> list2 = that.iterator();
         while (list1.hasNext() && list2.hasNext()) {
@@ -1102,7 +1104,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public <U> IndexedSeq<Tuple2<Character, U>> zipAll(Iterable<? extends U> that, Character thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
-        IndexedSeq<Tuple2<Character, U>> result = io.vavr.collection.Vector.empty();
+        IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
         final io.vavr.collection.Iterator<Character> list1 = iterator();
         final java.util.Iterator<? extends U> list2 = that.iterator();
         while (list1.hasNext() || list2.hasNext()) {
@@ -1121,7 +1123,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public <U> IndexedSeq<U> zipWithIndex(BiFunction<? super Character, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        IndexedSeq<U> result = io.vavr.collection.Vector.empty();
+        IndexedSeq<U> result = Vector.empty();
         for (int i = 0; i < length(); i++) {
             result = result.append(mapper.apply(get(i), i));
         }
@@ -3496,7 +3498,7 @@ interface CharSeqModule {
     interface Combinations {
         static IndexedSeq<CharSeq> apply(CharSeq elements, int k) {
             if (k == 0) {
-                return io.vavr.collection.Vector.of(CharSeq.empty());
+                return Vector.of(CharSeq.empty());
             } else {
                 return elements.zipWithIndex().flatMap(
                         t -> apply(elements.drop(t._2 + 1), (k - 1)).map((CharSeq c) -> c.prepend(t._1))
