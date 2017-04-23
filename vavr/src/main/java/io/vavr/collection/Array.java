@@ -1225,9 +1225,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> subSequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on Array of length " + length());
-        } else if (beginIndex == endIndex) {
+        Collections.subSequenceRangeCheck(beginIndex, endIndex, length());
+        if (beginIndex == endIndex) {
             return empty();
         } else if (beginIndex == 0 && endIndex == length()) {
             return this;

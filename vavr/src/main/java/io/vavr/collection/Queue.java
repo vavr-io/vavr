@@ -1128,9 +1128,8 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> subSequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on Queue of length " + length());
-        } else if (beginIndex == endIndex) {
+        Collections.subSequenceRangeCheck(beginIndex, endIndex, length());
+        if (beginIndex == endIndex) {
             return empty();
         } else if (beginIndex == 0 && endIndex == length()) {
             return this;

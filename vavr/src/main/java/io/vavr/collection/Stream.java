@@ -1451,8 +1451,11 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> subSequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex) {
+        if (beginIndex < 0) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ")");
+        }
+        if (beginIndex > endIndex) {
+            throw new IllegalArgumentException("subSequence(" + beginIndex + ", " + endIndex + ")");
         }
         if (beginIndex == endIndex) {
             return Empty.instance();

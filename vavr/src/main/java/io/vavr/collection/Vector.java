@@ -1078,11 +1078,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Vector<T> subSequence(int beginIndex, int endIndex) {
-        if ((beginIndex >= 0) && (beginIndex <= endIndex) && (endIndex <= length())) {
-            return slice(beginIndex, endIndex);
-        } else {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on Vector of size " + length());
-        }
+        Collections.subSequenceRangeCheck(beginIndex, endIndex, length());
+        return slice(beginIndex, endIndex);
     }
 
     @Override

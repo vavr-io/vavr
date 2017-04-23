@@ -1369,9 +1369,8 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default List<T> subSequence(int beginIndex, int endIndex) {
-        if (beginIndex < 0 || beginIndex > endIndex || endIndex > length()) {
-            throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + ") on List of length " + length());
-        } else if (beginIndex == endIndex) {
+        Collections.subSequenceRangeCheck(beginIndex, endIndex, length());
+        if (beginIndex == endIndex) {
             return empty();
         } else if (beginIndex == 0 && endIndex == length()) {
             return this;
