@@ -22,6 +22,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.Arrays.asList;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class CharSeqTest {
 
@@ -51,6 +52,13 @@ public class CharSeqTest {
 
     protected StringAssert assertThat(String actual) {
         return new StringAssert(actual) {};
+    }
+
+    // -- ofAll
+
+    @Test
+    public void shouldThrowWhenCreatingCharSeqFromIterableThatContainsNull() {
+        assertThatThrownBy(() -> CharSeq.ofAll(Arrays.asList('1', null))).isInstanceOf(NullPointerException.class);
     }
 
     // -- exists
