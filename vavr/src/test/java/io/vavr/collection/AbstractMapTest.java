@@ -661,7 +661,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnListWithMappedValues() {
-        assertThat(emptyIntInt().put(1, 1).put(2, 2).traverse((a, b) -> a + b)).isEqualTo(io.vavr.collection.List.of(2, 4));
+        assertThat(emptyIntInt().put(1, 1).put(2, 2).iterator((a, b) -> a + b).toList()).isEqualTo(io.vavr.collection.List.of(2, 4));
     }
 
     // -- merge(Map)
