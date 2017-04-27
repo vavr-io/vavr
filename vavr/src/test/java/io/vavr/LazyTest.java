@@ -14,16 +14,47 @@ import io.vavr.collection.Vector;
 import io.vavr.control.Option;
 import org.junit.Test;
 
+import java.io.Serializable;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
 import static io.vavr.collection.Iterator.range;
-import static org.assertj.core.api.Assertions.assertThat;
 
-public class LazyTest {
+public class LazyTest extends AbstractValueTest {
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected <T> Undefined<T> empty() {
+        return (Undefined<T>) Undefined.INSTANCE;
+    }
+    
+    @Override
+    protected <T> Lazy<T> of(T element) {
+        return Lazy.of(() -> element);
+    }
+
+    @SafeVarargs
+    @Override
+    protected final <T> Lazy<T> of(T... elements) {
+        return of(elements[0]);
+    }
+    
+    @Override
+    protected boolean useIsEqualToInsteadOfIsSameAs() {
+        return false;
+    }
+    
+    @Override
+    protected int getPeekNonNilPerformingAnAction() {
+        return 1;
+    }
+
     // -- static narrow
 
     @Test
@@ -306,5 +337,107 @@ public class LazyTest {
     @Test
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(Lazy.of(() -> 1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
+    }
+
+    // === OVERRIDDEN
+
+    // -- isLazy
+
+    @Override
+    @Test
+    public void shouldVerifyLazyProperty() {
+        assertThat(empty().isLazy()).isTrue();
+        assertThat(of(1).isLazy()).isTrue();
+    }
+
+}
+
+/**
+ * Lazy can't be empty. It is a placeholder for an existing value, but only evaluated when needed.
+ * In order to re-use existing unit tests, that are valid for all Value implementations,
+ * we provide here an _imaginary_ empty Lazy implementation, called 'undefined'.
+ * <p>
+ * Note: It is no good idea to leak it outside of the test scope into the core library (otherwise Undefined will be the new null).
+ */
+final class Undefined<T> implements Value<T>, Serializable {
+
+    private static final long serialVersionUID = 1L;
+
+    static final Undefined<?> INSTANCE = new Undefined<>();
+
+    private Lazy<T> prototype = Lazy.of(() -> null);
+
+    private Undefined() {
+    }
+
+    @Override
+    public T get() {
+        throw new NoSuchElementException();
+    }
+
+    @Override
+    public boolean isAsync() {
+        return prototype.isAsync();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return true;
+    }
+
+    @Override
+    public boolean isLazy() {
+        return prototype.isLazy();
+    }
+
+    @Override
+    public boolean isSingleValued() {
+        return prototype.isSingleValued();
+    }
+
+    @Override
+    public Value<T> peek(Consumer<? super T> action) {
+        return this;
+    }
+
+    @Override
+    public String stringPrefix() {
+        return null;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return Iterator.empty();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <U> Value<U> map(Function<? super T, ? extends U> mapper) {
+        return (Value<U>) this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return o == INSTANCE;
+    }
+
+    @Override
+    public int hashCode() {
+        return 1;
+    }
+
+    @Override
+    public String toString() {
+        return "Lazy()";
+    }
+
+    /**
+     * Instance control for object serialization.
+     *
+     * @return The singleton instance of Undefined.
+     * @see java.io.Serializable
+     */
+    private Object readResolve() {
+        return INSTANCE;
     }
 }

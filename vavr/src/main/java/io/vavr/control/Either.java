@@ -349,6 +349,26 @@ public interface Either<L, R> extends Value<R>, Serializable {
     }
 
     /**
+     * A right-biased {@code Either}'s value is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isAsync() {
+        return false;
+    }
+
+    /**
+     * A right-biased {@code Either}'s value is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isLazy() {
+        return false;
+    }
+
+    /**
      * A right-biased {@code Either} is single-valued.
      *
      * @return {@code true}
@@ -416,9 +436,29 @@ public interface Either<L, R> extends Value<R>, Serializable {
             return either.<L2, R2> bimap(leftMapper, rightMapper).left();
         }
 
+        /**
+         * A {@code LeftProjection}'s value is computed synchronously.
+         *
+         * @return false
+         */
+        @Override
+        public boolean isAsync() {
+            return false;
+        }
+
         @Override
         public boolean isEmpty() {
             return either.isRight();
+        }
+
+        /**
+         * A {@code LeftProjection}'s value is computed eagerly.
+         *
+         * @return false
+         */
+        @Override
+        public boolean isLazy() {
+            return false;
         }
 
         /**
@@ -650,9 +690,29 @@ public interface Either<L, R> extends Value<R>, Serializable {
             return either.<L2, R2> bimap(leftMapper, rightMapper).right();
         }
 
+        /**
+         * A {@code RightProjection}'s value is computed synchronously.
+         *
+         * @return false
+         */
+        @Override
+        public boolean isAsync() {
+            return false;
+        }
+
         @Override
         public boolean isEmpty() {
             return either.isLeft();
+        }
+
+        /**
+         * A {@code RightProjection}'s value is computed eagerly.
+         *
+         * @return false
+         */
+        @Override
+        public boolean isLazy() {
+            return false;
         }
 
         /**

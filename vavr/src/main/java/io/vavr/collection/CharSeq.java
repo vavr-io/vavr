@@ -1231,9 +1231,29 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
     }
 
+    /**
+     * A {@code CharSeq} is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
     @Override
     public boolean isEmpty() {
         return back.isEmpty();
+    }
+
+    /**
+     * A {@code CharSeq} is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isLazy() {
+        return false;
     }
 
     @Override

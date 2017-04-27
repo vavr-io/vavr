@@ -1570,9 +1570,29 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         return hasNext() ? Option.some(init()) : Option.none();
     }
 
+    /**
+     * An {@code Iterator} is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isAsync() {
+        return false;
+    }
+
     @Override
     default boolean isEmpty() {
         return !hasNext();
+    }
+
+    /**
+     * An {@code Iterator} is computed lazily.
+     *
+     * @return true
+     */
+    @Override
+    default boolean isLazy() {
+        return true;
     }
 
     @Override

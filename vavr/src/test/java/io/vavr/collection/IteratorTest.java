@@ -656,6 +656,15 @@ public class IteratorTest extends AbstractTraversableTest {
         // a hashCode impl would enforce evaluation which is not wanted
     }
 
+    // -- isLazy
+
+    @Override
+    @Test
+    public void shouldVerifyLazyProperty() {
+        assertThat(empty().isLazy()).isTrue();
+        assertThat(of(1).isLazy()).isTrue();
+    }
+
     // -- take
 
     @Ignore

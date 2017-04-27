@@ -116,9 +116,29 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         return with(meld, this.size + target.size);
     }
 
+    /**
+     * A {@code PriorityQueue} is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
     @Override
     public boolean isEmpty() {
         return size == 0;
+    }
+    
+    /**
+     * A {@code PriorityQueue} is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isLazy() {
+        return false;
     }
 
     @Override

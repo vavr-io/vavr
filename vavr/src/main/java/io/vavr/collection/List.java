@@ -130,8 +130,28 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return Nil.instance();
     }
 
+    /**
+     * A {@code List} is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isAsync() {
+        return false;
+    }
+
     @Override
     boolean isEmpty();
+
+    /**
+     * A {@code List} is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isLazy() {
+        return false;
+    }
 
     /**
      * Narrows a widened {@code List<? extends T>} to {@code List<T>}

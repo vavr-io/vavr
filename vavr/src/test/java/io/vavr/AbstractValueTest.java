@@ -193,12 +193,28 @@ public abstract class AbstractValueTest {
         assertThat(consumer[0]).isEqualTo(value.isSingleValued() ? 1 : 6);
     }
 
+    // -- isAsync
+
+    @Test
+    public void shouldVerifyAsyncProperty() {
+        assertThat(empty().isAsync()).isFalse();
+        assertThat(of(1).isAsync()).isFalse();
+    }
+
     // -- isEmpty
 
     @Test
     public void shouldCalculateIsEmpty() {
         assertThat(empty().isEmpty()).isTrue();
         assertThat(of(1).isEmpty()).isFalse();
+    }
+
+    // -- isLazy
+
+    @Test
+    public void shouldVerifyLazyProperty() {
+        assertThat(empty().isLazy()).isFalse();
+        assertThat(of(1).isLazy()).isFalse();
     }
 
     // -- peek
@@ -956,11 +972,12 @@ public abstract class AbstractValueTest {
      * @return true (by default), if the Value is Serializable, false otherwise
      */
     private boolean isSerializable() {
-        if (empty() instanceof Serializable != of(1) instanceof Serializable) {
+        final Object nonEmpty = of(1);
+        if (empty() instanceof Serializable != nonEmpty instanceof Serializable) {
             throw new Error("empty and non-empty do not consistently implement Serializable");
         }
-        final boolean actual = empty() instanceof Serializable;
-        final boolean expected = Match(empty()).of(
+        final boolean actual = nonEmpty instanceof Serializable;
+        final boolean expected = Match(nonEmpty).of(
                 Case(anyOf(
                         instanceOf(Either.LeftProjection.class),
                         instanceOf(Either.RightProjection.class),
@@ -969,6 +986,7 @@ public abstract class AbstractValueTest {
                 ), false),
                 Case(anyOf(
                         instanceOf(Either.class),
+                        instanceOf(Lazy.class),
                         instanceOf(Option.class),
                         instanceOf(Try.class),
                         instanceOf(Traversable.class),

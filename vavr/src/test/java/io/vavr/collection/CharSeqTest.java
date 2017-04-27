@@ -971,6 +971,22 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').initOption()).isEqualTo(Option.some(CharSeq.of('1', '2')));
     }
 
+    // -- isAsync
+
+    @Test
+    public void shouldVerifyAsyncProperty() {
+        assertThat(CharSeq.empty().isAsync()).isFalse();
+        assertThat(CharSeq.of('1').isAsync()).isFalse();
+    }
+
+    // -- isLazy
+
+    @Test
+    public void shouldVerifyLazyProperty() {
+        assertThat(CharSeq.empty().isLazy()).isFalse();
+        assertThat(CharSeq.of('1').isLazy()).isFalse();
+    }
+
     // -- isEmpty
 
     @Test

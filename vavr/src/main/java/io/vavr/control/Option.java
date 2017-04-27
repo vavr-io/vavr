@@ -215,6 +215,16 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
+     * An {@code Option}'s value is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isAsync() {
+        return false;
+    }
+
+    /**
      * Returns true, if this is {@code Some}, otherwise false, if this is {@code None}.
      * <p>
      * Please note that it is possible to create {@code new Some(null)}, which is defined.
@@ -223,6 +233,16 @@ public interface Option<T> extends Value<T>, Serializable {
      */
     default boolean isDefined() {
         return !isEmpty();
+    }
+
+    /**
+     * An {@code Option}'s value is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isLazy() {
+        return false;
     }
 
     /**

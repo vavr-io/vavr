@@ -233,8 +233,28 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         return !(isEmpty() || isLeaf());
     }
 
+    /**
+     * A {@code Tree} is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isAsync() {
+        return false;
+    }
+
     @Override
     default boolean isDistinct() {
+        return false;
+    }
+
+    /**
+     * A {@code Tree} is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isLazy() {
         return false;
     }
 

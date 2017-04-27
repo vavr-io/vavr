@@ -1129,6 +1129,26 @@ public interface Stream<T> extends LinearSeq<T> {
         }
     }
 
+    /**
+     * A {@code Stream} is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isAsync() {
+        return false;
+    }
+
+    /**
+     * A {@code Stream} is computed lazily.
+     *
+     * @return true
+     */
+    @Override
+    default boolean isLazy() {
+        return true;
+    }
+
     @Override
     default boolean isTraversableAgain() {
         return true;

@@ -414,9 +414,29 @@ public interface BitSet<T> extends SortedSet<T> {
         return isEmpty() ? Option.none() : Option.some(init());
     }
 
+    /**
+     * An {@code BitSet}'s value is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isAsync() {
+        return false;
+    }
+
     @Override
     default boolean isTraversableAgain() {
         return true;
+    }
+
+    /**
+     * An {@code BitSet}'s value is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isLazy() {
+        return false;
     }
 
     @Override

@@ -640,9 +640,29 @@ public final class HashSet<T> implements Set<T>, Serializable {
         }
     }
 
+    /**
+     * A {@code HashSet} is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
     @Override
     public boolean isEmpty() {
         return tree.isEmpty();
+    }
+    
+    /**
+     * A {@code HashSet} is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isLazy() {
+        return false;
     }
 
     @Override
