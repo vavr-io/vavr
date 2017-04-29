@@ -738,18 +738,48 @@ public class FutureTest extends AbstractValueTest {
         assertThat(Future.failed(error).getValue()).isEqualTo(Option.some(Try.failure(error)));
     }
 
+    // -- isAsync
+
+    @Override
+    @Test
+    public void shouldVerifyAsyncProperty() {
+        assertThat(empty().isAsync()).isTrue();
+        assertThat(of(1).isAsync()).isTrue();
+    }
+
     // -- isCompleted()
 
-    // TODO
+    @Test
+    public void shouldBeCompletedWhenSuccessful() {
+        assertThat(Future.successful(null).isCompleted()).isTrue();
+    }
+
+    @Test
+    public void shouldBeCompletedWhenFailed() {
+        assertThat(Future.failed(new Exception()).isCompleted()).isTrue();
+    }
+
+    @Test
+    public void shouldBeCompletedWhenResultIsPresent() {
+        final Future<Integer> future = Future.of(() -> null);
+        waitUntil(future::isCompleted);
+        assertThat(future.isCompleted()).isTrue();
+    }
 
     // -- isSuccess()
 
-    // TODO
+    @Test
+    public void shouldBeSuccessful() {
+        assertThat(Future.successful(null).isSuccess()).isTrue();
+    }
 
     // -- isFailure()
 
-    // TODO
-
+    @Test
+    public void shouldBeFailed() {
+        assertThat(Future.failed(new Exception()).isFailure()).isTrue();
+    }
+    
     // -- onComplete()
 
     @Test

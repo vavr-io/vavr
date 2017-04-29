@@ -1001,9 +1001,29 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         return Maps.initOption(this);
     }
 
+    /**
+     * An {@code TreeMap}'s value is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
     @Override
     public boolean isEmpty() {
         return entries.isEmpty();
+    }
+
+    /**
+     * An {@code TreeMap}'s value is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isLazy() {
+        return false;
     }
 
     @Override

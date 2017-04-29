@@ -467,6 +467,16 @@ public interface Try<T> extends Value<T>, Serializable {
     Throwable getCause();
 
     /**
+     * A {@code Try}'s value is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isAsync() {
+        return false;
+    }
+
+    /**
      * Checks whether this Try has no result, i.e. is a Failure.
      *
      * @return true if this is a Failure, returns false if this is a Success.
@@ -480,6 +490,16 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return true, if this is a Failure, otherwise false, if this is a Success
      */
     boolean isFailure();
+
+    /**
+     * A {@code Try}'s value is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isLazy() {
+        return false;
+    }
 
     /**
      * A {@code Try} is a single-valued.

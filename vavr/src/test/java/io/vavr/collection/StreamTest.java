@@ -513,6 +513,15 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.continually(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
     }
 
+    // -- isLazy
+
+    @Override
+    @Test
+    public void shouldVerifyLazyProperty() {
+        assertThat(empty().isLazy()).isTrue();
+        assertThat(of(1).isLazy()).isTrue();
+    }
+
     // -- subSequence(int, int)
 
     @Ignore

@@ -611,6 +611,26 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         return this;
     }
 
+    /**
+     * A {@code Validation}'s value is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isAsync() {
+        return false;
+    }
+
+    /**
+     * A {@code Validation}'s value is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isLazy() {
+        return false;
+    }
+
     @Override
     default boolean isSingleValued() {
         return true;

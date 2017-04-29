@@ -1046,6 +1046,16 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
+     * A {@code Futures}'s value is computed asynchronously.
+     *
+     * @return true
+     */
+    @Override
+    default boolean isAsync() {
+        return true;
+    }
+
+    /**
      * Checks, if this future has a value.
      *
      * @return true, if this future succeeded with a value, false otherwise.
@@ -1057,6 +1067,16 @@ public interface Future<T> extends Value<T> {
             await();
         }
         return getValue().get().isEmpty();
+    }
+
+    /**
+     * A {@code Future}'s value is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    default boolean isLazy() {
+        return false;
     }
 
     /**

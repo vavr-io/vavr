@@ -306,8 +306,18 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
+    public boolean isAsync() {
+        return back.isAsync();
+    }
+
+    @Override
     public boolean isEmpty() {
         return back.isEmpty();
+    }
+
+    @Override
+    public boolean isLazy() {
+        return back.isLazy();
     }
 
     @Override

@@ -640,9 +640,29 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         }
     }
 
+    /**
+     * An {@code LinkedHashSet}'s value is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
     @Override
     public boolean isEmpty() {
         return map.isEmpty();
+    }
+
+    /**
+     * An {@code LinkedHashSet}'s value is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isLazy() {
+        return false;
     }
 
     @Override

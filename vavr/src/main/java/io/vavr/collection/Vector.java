@@ -767,8 +767,28 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Vector<T> intersperse(T element) { return ofAll(iterator().intersperse(element)); }
 
+    /**
+     * A {@code Vector} is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
     @Override
     public boolean isEmpty() { return length() == 0; }
+
+    /**
+     * A {@code Vector} is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isLazy() {
+        return false;
+    }
 
     @Override
     public boolean isTraversableAgain() { return true; }

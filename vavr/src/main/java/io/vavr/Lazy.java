@@ -152,6 +152,16 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
         return value;
     }
 
+    /**
+     * A {@code Lazy}'s value is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
     @Override
     public boolean isEmpty() {
         return false;
@@ -167,6 +177,16 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     public boolean isEvaluated() {
         return supplier == null;
+    }
+
+    /**
+     * A {@code Lazy}'s value is computed lazily.
+     *
+     * @return true
+     */
+    @Override
+    public boolean isLazy() {
+        return true;
     }
 
     @Override

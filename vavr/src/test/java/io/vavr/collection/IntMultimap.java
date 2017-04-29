@@ -38,8 +38,18 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public boolean isAsync() {
+        return original.isAsync();
+    }
+
+    @Override
     public boolean isDistinct() {
         return original.isDistinct();
+    }
+
+    @Override
+    public boolean isLazy() {
+        return original.isLazy();
     }
 
     @Override

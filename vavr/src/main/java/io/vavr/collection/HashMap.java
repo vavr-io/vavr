@@ -605,9 +605,29 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return Maps.initOption(this);
     }
 
+    /**
+     * A {@code HashMap} is computed synchronously.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isAsync() {
+        return false;
+    }
+
     @Override
     public boolean isEmpty() {
         return trie.isEmpty();
+    }
+
+    /**
+     * A {@code HashMap} is computed eagerly.
+     *
+     * @return false
+     */
+    @Override
+    public boolean isLazy() {
+        return false;
     }
 
     @Override

@@ -46,8 +46,6 @@ import static io.vavr.API.*;
  * <li>{@link #getOrElseThrow(Supplier)}</li>
  * <li>{@link #getOrElseTry(Try.CheckedSupplier)}</li>
  * <li>{@link #getOrNull()}</li>
- * <li>{@link #isEmpty()}</li>
- * <li>{@link #isSingleValued()}</li>
  * <li>{@link #map(Function)}</li>
  * <li>{@link #stringPrefix()}</li>
  * </ul>
@@ -77,6 +75,15 @@ import static io.vavr.API.*;
  * <li>{@link #peek(Consumer)}</li>
  * <li>{@link #stderr()}</li>
  * <li>{@link #stdout()}</li>
+ * </ul>
+ *
+ * Tests:
+ *
+ * <ul>
+ * <li>{@link #isAsync()}</li>
+ * <li>{@link #isEmpty()}</li>
+ * <li>{@link #isLazy()}</li>
+ * <li>{@link #isSingleValued()}</li>
  * </ul>
  *
  * Type conversion:
@@ -391,11 +398,28 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Checks if this {@code Value} is asynchronously (short: async) computed.
+     * <p>
+     * Methods of a {@code Value} instance that operate on the underlying value may block the current thread
+     * until the value is present and the computation can be performed.
+     *
+     * @return true if this {@code Value} is async (like {@link io.vavr.concurrent.Future}), false otherwise.
+     */
+    boolean isAsync();
+
+    /**
      * Checks, this {@code Value} is empty, i.e. if the underlying value is absent.
      *
      * @return false, if no underlying value is present, true otherwise.
      */
     boolean isEmpty();
+
+    /**
+     * Checks if this {@code Value} is lazily evaluated.
+     *
+     * @return true if this {@code Value} is lazy (like {@link Lazy} and {@link Stream}), false otherwise.
+     */
+    boolean isLazy();
 
     /**
      * States whether this is a single-valued type.
