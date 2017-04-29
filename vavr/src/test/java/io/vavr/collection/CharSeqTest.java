@@ -61,6 +61,54 @@ public class CharSeqTest {
         assertThatThrownBy(() -> CharSeq.ofAll(Arrays.asList('1', null))).isInstanceOf(NullPointerException.class);
     }
 
+    // -- asJava*
+
+    @Test
+    public void shouldConvertAsJava() {
+        final java.util.List<Character> list = CharSeq.of('1', '2', '3').asJava();
+        list.add('4');
+        assertThat(list).isEqualTo(Arrays.asList('1', '2', '3', '4'));
+    }
+
+    @Test
+    public void shouldConvertAsJavaWithConsumer() {
+        final CharSeq seq = CharSeq.of('1', '2', '3').asJava(list -> {
+            assertThat(list).isEqualTo(Arrays.asList('1', '2', '3'));
+            list.add('4');
+        });
+        assertThat(seq).isEqualTo(CharSeq.of('1', '2', '3', '4'));
+    }
+
+    @Test
+    public void shouldConvertAsJavaAndRethrowException() {
+        assertThatThrownBy(() -> CharSeq.of('1', '2', '3').asJava(list -> { throw new RuntimeException("test");}))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("test");
+    }
+
+    @Test
+    public void shouldConvertAsJavaImmutable() {
+        final java.util.List<Character> list = CharSeq.of('1', '2', '3').asJavaImmutable();
+        assertThat(list).isEqualTo(Arrays.asList('1', '2', '3'));
+        assertThatThrownBy(() -> list.add('4')).isInstanceOf(UnsupportedOperationException.class);
+    }
+
+    @Test
+    public void shouldConvertAsJavaImmutableWithConsumer() {
+        final CharSeq seq = CharSeq.of('1', '2', '3').asJavaImmutable(list -> {
+            assertThat(list).isEqualTo(Arrays.asList('1', '2', '3'));
+            assertThatThrownBy(() -> list.add('4')).isInstanceOf(UnsupportedOperationException.class);
+        });
+        assertThat(seq).isEqualTo(CharSeq.of('1', '2', '3'));
+    }
+
+    @Test
+    public void shouldConvertAsJavaImmutableAndRethrowException() {
+        assertThatThrownBy(() -> CharSeq.of('1', '2', '3').asJavaImmutable(list -> { throw new RuntimeException("test");}))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("test");
+    }
+
     // -- exists
 
     @Test

@@ -17,6 +17,9 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
+import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
+
 /**
  * An immutable {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
  * <p>
@@ -683,6 +686,26 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     default List<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return List.<T> ofAll(elements).prependAll(this);
+    }
+
+    @Override
+    default java.util.List<T> asJava() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    default List<T> asJava(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, MUTABLE);
+    }
+
+    @Override
+    default java.util.List<T> asJavaImmutable() {
+        return JavaConverters.asJava(this, IMMUTABLE);
+    }
+
+    @Override
+    default List<T> asJavaImmutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, IMMUTABLE);
     }
 
     @Override

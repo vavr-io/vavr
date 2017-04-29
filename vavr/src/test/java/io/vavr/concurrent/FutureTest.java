@@ -753,6 +753,15 @@ public class FutureTest extends AbstractValueTest {
     // -- onComplete()
 
     @Test
+    public void shouldExecuteOnCompleteOnCompletedFuture() {
+        final int[] actual = new int[] { 0 };
+        Future.successful(1).onComplete(t -> {
+            actual[0] = t.get();
+        });
+        waitUntil(() -> actual[0] == 1);
+    }
+
+    @Test
     public void shouldRegisterCallbackBeforeFutureCompletes() {
 
         // instead of delaying we wait/notify

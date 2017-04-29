@@ -17,6 +17,9 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
+import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
+
 /**
  * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
  * Its immutability makes it suitable for concurrent programming.
@@ -786,14 +789,10 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default Stream<T> appendAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            if (elements instanceof Stream) {
-                @SuppressWarnings("unchecked")
-                final Stream<T> stream = (Stream<T>) elements;
-                return stream;
-            } else {
-                return Stream.ofAll(elements);
-            }
+        if (Collections.isEmpty(elements)) {
+            return this;
+        } else if (isEmpty()) {
+            return Stream.ofAll(elements);
         } else {
             return Stream.ofAll(Iterator.concat(this, elements));
         }
@@ -823,6 +822,26 @@ public interface Stream<T> extends LinearSeq<T> {
     default Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? this : new AppendSelf<>((Cons<T>) this, mapper).stream();
+    }
+
+    @Override
+    default java.util.List<T> asJava() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    default Stream<T> asJava(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, MUTABLE);
+    }
+
+    @Override
+    default java.util.List<T> asJavaImmutable() {
+        return JavaConverters.asJava(this, IMMUTABLE);
+    }
+
+    @Override
+    default Stream<T> asJavaImmutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, IMMUTABLE);
     }
 
     @Override

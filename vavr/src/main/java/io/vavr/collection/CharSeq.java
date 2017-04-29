@@ -19,6 +19,9 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
+import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
+
 /**
  * The CharSeq (read: character sequence) collection essentially is a rich String wrapper having all operations
  * we know from the functional Vavr collections.
@@ -377,11 +380,34 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public CharSeq appendAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        if (Collections.isEmpty(elements)) {
+            return this;
+        }
         final StringBuilder sb = new StringBuilder(back);
         for (char element : elements) {
             sb.append(element);
         }
         return of(sb);
+    }
+
+    @Override
+    public java.util.List<Character> asJava() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    public CharSeq asJava(Consumer<? super java.util.List<Character>> action) {
+        return Collections.asJava(this, action, MUTABLE);
+    }
+
+    @Override
+    public java.util.List<Character> asJavaImmutable() {
+        return JavaConverters.asJava(this, IMMUTABLE);
+    }
+
+    @Override
+    public CharSeq asJavaImmutable(Consumer<? super java.util.List<Character>> action) {
+        return Collections.asJava(this, action, IMMUTABLE);
     }
 
     @Override

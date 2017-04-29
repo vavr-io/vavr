@@ -15,6 +15,8 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
+import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
 import static java.util.Arrays.copyOf;
 import static java.util.Arrays.sort;
 
@@ -597,6 +599,26 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public java.util.List<T> asJava() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    public Array<T> asJava(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, MUTABLE);
+    }
+
+    @Override
+    public java.util.List<T> asJavaImmutable() {
+        return JavaConverters.asJava(this, IMMUTABLE);
+    }
+
+    @Override
+    public Array<T> asJavaImmutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, IMMUTABLE);
+    }
+
+    @Override
     public <R> Array<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
@@ -970,7 +992,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         int index = -1;
         for (int i = 0; i < length(); i++) {
             final T value = get(i);
-            if (element.equals(value)) {
+            if (Objects.equals(element, value)) {
                 index = i;
                 break;
             }
@@ -1056,7 +1078,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             if (found) {
                 arr[i] = delegate[i];
             } else {
-                if (currentElement.equals(value)) {
+                if (Objects.equals(currentElement, value)) {
                     arr[i] = newElement;
                     found = true;
                 } else {
@@ -1073,7 +1095,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         boolean changed = false;
         for (int i = 0; i < length(); i++) {
             final T value = get(i);
-            if (currentElement.equals(value)) {
+            if (Objects.equals(currentElement, value)) {
                 arr[i] = newElement;
                 changed = true;
             } else {

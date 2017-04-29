@@ -51,6 +51,12 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> appendAll(Iterable<? extends T> elements);
 
     @Override
+    LinearSeq<T> asJava(Consumer<? super java.util.List<T>> action);
+
+    @Override
+    LinearSeq<T> asJavaImmutable(Consumer<? super java.util.List<T>> action);
+
+    @Override
     <R> LinearSeq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
 
     @Override
