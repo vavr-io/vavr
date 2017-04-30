@@ -6,15 +6,12 @@
  */
 package io.vavr.concurrent;
 
-import io.vavr.PartialFunction;
-import io.vavr.Tuple;
-import io.vavr.Value;
+import io.vavr.*;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import io.vavr.Tuple2;
 import io.vavr.collection.List;
 
 import java.util.NoSuchElementException;
@@ -1004,7 +1001,7 @@ public interface Future<T> extends Value<T> {
         return flatMapTry(mapper::apply);
     }
 
-    default <U> Future<U> flatMapTry(Try.CheckedFunction<? super T, ? extends Future<? extends U>> mapper) {
+    default <U> Future<U> flatMapTry(CheckedFunction1<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete((Try<T> result) -> result.mapTry(mapper)
@@ -1099,7 +1096,7 @@ public interface Future<T> extends Value<T> {
         return transformValue(t -> t.map(mapper::apply));
     }
 
-    default <U> Future<U> mapTry(Try.CheckedFunction<? super T, ? extends U> mapper) {
+    default <U> Future<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return transformValue(t -> t.mapTry(mapper::apply));
     }

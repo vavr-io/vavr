@@ -414,7 +414,7 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Shortcut for {@code flatMapTry(mapper::apply)}, see {@link #flatMapTry(CheckedFunction)}.
+     * Shortcut for {@code flatMapTry(mapper::apply)}, see {@link #flatMapTry(CheckedFunction1)}.
      *
      * @param mapper A mapper
      * @param <U>    The new component type
@@ -423,7 +423,7 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     default <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return flatMapTry((CheckedFunction<T, Try<? extends U>>) mapper::apply);
+        return flatMapTry((CheckedFunction1<T, Try<? extends U>>) mapper::apply);
     }
 
     /**
@@ -435,7 +435,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMapTry(CheckedFunction<? super T, ? extends Try<? extends U>> mapper) {
+    default <U> Try<U> flatMapTry(CheckedFunction1<? super T, ? extends Try<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isFailure()) {
             return (Failure<U>) this;
@@ -523,7 +523,7 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Shortcut for {@code mapTry(mapper::apply)}, see {@link #mapTry(CheckedFunction)}.
+     * Shortcut for {@code mapTry(mapper::apply)}, see {@link #mapTry(CheckedFunction1)}.
      *
      * @param <U>    The new component type
      * @param mapper A checked function
@@ -576,7 +576,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> mapTry(CheckedFunction<? super T, ? extends U> mapper) {
+    default <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isFailure()) {
             return (Failure<U>) this;
@@ -873,25 +873,6 @@ public interface Try<T> extends Value<T>, Serializable {
          * @throws Throwable if an error occurs
          */
         void accept(T value) throws Throwable;
-    }
-
-    /**
-     * A {@linkplain java.util.function.Function} which may throw.
-     *
-     * @param <T> the type of the input to the function
-     * @param <R> the result type of the function
-     */
-    @FunctionalInterface
-    interface CheckedFunction<T, R> {
-
-        /**
-         * Applies this function to the given argument.
-         *
-         * @param t the function argument
-         * @return the function result
-         * @throws Throwable if an error occurs
-         */
-        R apply(T t) throws Throwable;
     }
 
     /**
