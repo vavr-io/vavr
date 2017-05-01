@@ -24,7 +24,6 @@ import java.util.function.BiFunction;
  *
  * @param <T> Component type of this foldable
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 public interface Foldable<T> {
 

@@ -34,7 +34,6 @@ import java.util.function.Predicate;
  * @param <T> type of generated objects
  * @author Daniel Dietrich
  * @see Arbitrary
- * @since 1.2.0
  */
 @FunctionalInterface
 public interface Gen<T> {

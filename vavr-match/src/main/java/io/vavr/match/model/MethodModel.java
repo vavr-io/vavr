@@ -19,7 +19,6 @@ import static java.util.stream.Collectors.toList;
  * Representation of a method.
  *
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 public class MethodModel {
 

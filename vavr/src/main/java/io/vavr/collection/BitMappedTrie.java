@@ -28,7 +28,6 @@ import static io.vavr.collection.NodeModifier.IDENTITY;
  * `Slice` is done by trimming the path from the root and discarding any `leading`/`trailing` values in effectively constant time (without memory leak, as in `Java`/`Clojure`).
  *
  * @author Pap Lőrinc
- * @since 2.1.0
  */
 final class BitMappedTrie<T> implements Serializable {
 

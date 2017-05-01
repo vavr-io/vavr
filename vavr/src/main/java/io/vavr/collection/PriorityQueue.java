@@ -20,7 +20,6 @@ import static io.vavr.collection.PriorityQueueBase.*;
  * A PriorityQueue.
  *
  * @author Pap Lőrinc
- * @since 2.1.0
  */
 @SuppressWarnings("deprecation")
 public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T> {

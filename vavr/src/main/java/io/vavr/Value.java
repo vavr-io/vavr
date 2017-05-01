@@ -148,7 +148,6 @@ import static io.vavr.API.*;
  *
  * @param <T> The type of the wrapped value.
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 @SuppressWarnings("deprecation")
 public interface Value<T> extends Iterable<T> {

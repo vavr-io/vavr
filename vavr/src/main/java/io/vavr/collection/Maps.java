@@ -20,7 +20,6 @@ import static io.vavr.API.Tuple;
  * INTERNAL: Common {@code Map} functions (not intended to be public).
  *
  * @author Ruslan Sennov, Daniel Dietrich
- * @since 2.0.0
  */
 final class Maps {
 

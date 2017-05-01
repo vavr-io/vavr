@@ -37,12 +37,11 @@ import java.util.function.Supplier;
  * </code>
  * </pre>
  *
- * Since 2.0.0 you may also create a <em>real</em> lazy value (works only with interfaces):
+ * Example of creating a <em>real</em> lazy value (works only with interfaces):
  *
  * <pre><code>final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);</code></pre>
  *
  * @author Daniel Dietrich
- * @since 1.2.1
  */
 // DEV-NOTE: No flatMap and orElse because this more like a Functor than a Monad.
 //           It represents a value rather than capturing a specific state.

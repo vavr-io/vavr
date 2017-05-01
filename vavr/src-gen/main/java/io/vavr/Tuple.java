@@ -19,7 +19,6 @@ import java.util.Objects;
  * The base interface of all tuples.
  *
  * @author Daniel Dietrich
- * @since 1.1.0
  */
 public interface Tuple {
 

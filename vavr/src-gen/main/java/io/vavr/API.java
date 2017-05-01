@@ -86,7 +86,6 @@ import java.util.function.Supplier;
  * As with all Vavr Values, the result of a For-comprehension can be converted
  * to standard Java library and Vavr types.
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 public final class API {
 

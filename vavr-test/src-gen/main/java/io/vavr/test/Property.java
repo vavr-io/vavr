@@ -20,7 +20,6 @@ import java.util.Random;
  * A property builder which provides a fluent API to build checkable properties.
  *
  * @author Daniel Dietrich
- * @since 1.2.0
  */
 @SuppressWarnings("deprecation")
 public class Property {
@@ -250,7 +249,6 @@ public class Property {
      *
      * @param <T1> 1st variable type of this for all quantor
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class ForAll1<T1> {
 
@@ -280,7 +278,6 @@ public class Property {
      * @param <T1> 1st variable type of this for all quantor
      * @param <T2> 2nd variable type of this for all quantor
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class ForAll2<T1, T2> {
 
@@ -313,7 +310,6 @@ public class Property {
      * @param <T2> 2nd variable type of this for all quantor
      * @param <T3> 3rd variable type of this for all quantor
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class ForAll3<T1, T2, T3> {
 
@@ -349,7 +345,6 @@ public class Property {
      * @param <T3> 3rd variable type of this for all quantor
      * @param <T4> 4th variable type of this for all quantor
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class ForAll4<T1, T2, T3, T4> {
 
@@ -388,7 +383,6 @@ public class Property {
      * @param <T4> 4th variable type of this for all quantor
      * @param <T5> 5th variable type of this for all quantor
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class ForAll5<T1, T2, T3, T4, T5> {
 
@@ -430,7 +424,6 @@ public class Property {
      * @param <T5> 5th variable type of this for all quantor
      * @param <T6> 6th variable type of this for all quantor
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class ForAll6<T1, T2, T3, T4, T5, T6> {
 
@@ -475,7 +468,6 @@ public class Property {
      * @param <T6> 6th variable type of this for all quantor
      * @param <T7> 7th variable type of this for all quantor
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class ForAll7<T1, T2, T3, T4, T5, T6, T7> {
 
@@ -523,7 +515,6 @@ public class Property {
      * @param <T7> 7th variable type of this for all quantor
      * @param <T8> 8th variable type of this for all quantor
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class ForAll8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
@@ -565,7 +556,6 @@ public class Property {
      * Represents a 1-ary checkable property.
      *
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class Property1<T1> implements Checkable {
 
@@ -641,7 +631,6 @@ public class Property {
      * Represents a 2-ary checkable property.
      *
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class Property2<T1, T2> implements Checkable {
 
@@ -721,7 +710,6 @@ public class Property {
      * Represents a 3-ary checkable property.
      *
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class Property3<T1, T2, T3> implements Checkable {
 
@@ -805,7 +793,6 @@ public class Property {
      * Represents a 4-ary checkable property.
      *
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class Property4<T1, T2, T3, T4> implements Checkable {
 
@@ -893,7 +880,6 @@ public class Property {
      * Represents a 5-ary checkable property.
      *
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class Property5<T1, T2, T3, T4, T5> implements Checkable {
 
@@ -985,7 +971,6 @@ public class Property {
      * Represents a 6-ary checkable property.
      *
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class Property6<T1, T2, T3, T4, T5, T6> implements Checkable {
 
@@ -1081,7 +1066,6 @@ public class Property {
      * Represents a 7-ary checkable property.
      *
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class Property7<T1, T2, T3, T4, T5, T6, T7> implements Checkable {
 
@@ -1181,7 +1165,6 @@ public class Property {
      * Represents a 8-ary checkable property.
      *
      * @author Daniel Dietrich
-     * @since 1.2.0
      */
     public static class Property8<T1, T2, T3, T4, T5, T6, T7, T8> implements Checkable {
 

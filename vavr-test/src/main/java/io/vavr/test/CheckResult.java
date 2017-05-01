@@ -26,7 +26,6 @@ import java.util.Objects;
  * definition (see <a href="http://en.wikipedia.org/wiki/Principle_of_explosion">ex falso quodlibet</a>).
  *
  * @author Daniel Dietrich
- * @since 1.2.0
  */
 public interface CheckResult {
 
@@ -83,7 +82,6 @@ public interface CheckResult {
      * An optional error.
      *
      * @return an optional error
-     * @since 1.2.0
      */
     Option<Error> error();
 
@@ -218,8 +216,6 @@ public interface CheckResult {
 
     /**
      * Represents a falsified property check.
-     *
-     * @since 1.2.0
      */
     class Falsified implements CheckResult, Serializable {
 
@@ -302,8 +298,6 @@ public interface CheckResult {
 
     /**
      * Represents an erroneous property check.
-     *
-     * @since 1.2.0
      */
     class Erroneous implements CheckResult, Serializable {
 

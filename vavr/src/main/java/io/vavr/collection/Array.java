@@ -25,7 +25,6 @@ import static java.util.Arrays.sort;
  *
  * @param <T> Component type
  * @author Ruslan Sennov, Daniel Dietrich
- * @since 2.0.0
  */
 @SuppressWarnings("deprecation")
 public final class Array<T> implements IndexedSeq<T>, Serializable {

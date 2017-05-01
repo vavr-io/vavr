@@ -93,7 +93,6 @@ import java.util.function.*;
  *
  * @param <T> Component type
  * @author Daniel Dietrich
- * @since 1.1.0
  */
 public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializable {
 
@@ -1027,7 +1026,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      * @param elements The elements to be wrapped in an instance of this Seq type
      * @param <U> element type
      * @return An instance of this Seq type
-     * @deprecated This method is meant to be used internally only. It will be removed from the public API with 3.0.0.
+     * @deprecated This method is meant to be used internally only. It will be removed from the public API with 0.9.0.
      */
     @Deprecated
     <U> Seq<U> unit(Iterable<? extends U> elements);

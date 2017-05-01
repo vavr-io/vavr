@@ -15,7 +15,6 @@ import java.lang.annotation.Target;
  * Structural pattern matching annotation for unapply methods.
  *
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)

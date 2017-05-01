@@ -27,7 +27,6 @@ import static io.vavr.collection.Tree.*;
  *
  * @param <T> component type of this Tree
  * @author Daniel Dietrich, Grzegorz Piwowarek
- * @since 1.1.0
  */
 public interface Tree<T> extends Traversable<T>, Serializable {
 
@@ -203,7 +202,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return The value of this tree.
      * @throws java.lang.UnsupportedOperationException if this tree is empty
-     * @deprecated Will be removed in 3.0.0. Use get() instead.
+     * @deprecated Will be removed in 0.9.0. Use get() instead.
      */
     @Deprecated
     T getValue();

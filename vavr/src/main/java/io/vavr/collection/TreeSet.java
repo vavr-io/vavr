@@ -22,7 +22,6 @@ import java.util.stream.Collector;
  *
  * @param <T> Component type
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 // DEV-NOTE: it is not possible to create an EMPTY TreeSet without a Comparator type in scope
 @SuppressWarnings("deprecation")

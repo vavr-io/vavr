@@ -23,7 +23,6 @@ import java.util.function.Predicate;
  *
  * @param <T> The type of the arbitrary object.
  * @author Daniel Dietrich
- * @since 1.2.0
  */
 @FunctionalInterface
 public interface Arbitrary<T> {

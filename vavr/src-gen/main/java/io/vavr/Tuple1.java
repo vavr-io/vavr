@@ -23,7 +23,6 @@ import java.util.function.Function;
  *
  * @param <T1> type of the 1st element
  * @author Daniel Dietrich
- * @since 1.1.0
  */
 public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializable {
 
@@ -127,13 +126,13 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     /**
      * Transforms this tuple to an object of type U.
      *
-     * @deprecated Use {@link #apply(Function)} instead, will be removed in 3.0.0
+     * @deprecated Use {@link #apply(Function)} instead, will be removed in 0.9.0
      * @param f Transformation which creates a new object of type U based on this tuple's contents.
      * @param <U> type of the transformation result
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    @Deprecated(/* Use apply instead, will be removed in 3.0.0 */)
+    @Deprecated(/* Use apply instead, will be removed in 0.9.0 */)
     public <U> U transform(Function<? super T1, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1);

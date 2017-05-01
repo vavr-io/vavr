@@ -26,7 +26,6 @@ import java.util.function.Function;
  * @param <T4> argument 4 of the function
  * @param <R> return type of the function
  * @author Daniel Dietrich
- * @since 1.1.0
  */
 @SuppressWarnings("deprecation")
 @FunctionalInterface

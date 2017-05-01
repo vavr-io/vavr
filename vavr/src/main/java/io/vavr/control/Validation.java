@@ -60,7 +60,6 @@ import java.util.function.Supplier;
  * @param <T> value type in the case of valid
  * @author Eric Nelson
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
- * @since 2.0.0
  */
 public interface Validation<E, T> extends Value<T>, Serializable {
 
@@ -529,9 +528,9 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param f   a function that maps the error in this Invalid
      * @return an instance of Validation&lt;U,T&gt;
      * @throws NullPointerException if mapping operation f is null
-     * @deprecated replaced by {@link #mapError(Function)}, will be removed in 3.0.0
+     * @deprecated replaced by {@link #mapError(Function)}, will be removed in 0.9.0
      */
-    @Deprecated(/* Use mapError instead. Will be removed in 3.0.0 */)
+    @Deprecated(/* Use mapError instead. Will be removed in 0.9.0 */)
     default <U> Validation<U, T> leftMap(Function<? super E, ? extends U> f) {
         return mapError(f);
     }

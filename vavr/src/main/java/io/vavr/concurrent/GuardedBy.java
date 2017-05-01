@@ -23,7 +23,6 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * See also <a href="https://jcp.org/en/jsr/detail?id=305">JSR 305</a>
  *
  * @author Daniel Dietrich
- * @since 2.1.0
  */
 @Documented
 @Target(value = { FIELD, METHOD })

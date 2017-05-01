@@ -18,7 +18,6 @@ package io.vavr;
  * @param <T> type of the function input, called <em>domain</em> of the function
  * @param <R> type of the function output, called <em>codomain</em> of the function
  * @author Daniel Dietrich
- * @since 2.1.0
  */
 public interface PartialFunction<T, R> {
 

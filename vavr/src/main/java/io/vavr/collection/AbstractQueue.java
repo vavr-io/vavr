@@ -17,7 +17,6 @@ import java.util.function.Predicate;
 
 /**
  * @author Pap Lőrinc, Daniel Dietrich
- * @since 2.1.0
  */
 abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traversable<T> {
 

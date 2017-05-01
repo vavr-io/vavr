@@ -18,7 +18,6 @@ import static java.util.stream.Collectors.toList;
  * Representation of a class.
  *
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 public class ClassModel {
 

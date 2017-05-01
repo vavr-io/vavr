@@ -19,7 +19,6 @@ import java.util.function.*;
  * @param <K> Key type
  * @param <V> Value type
  * @author Ruslan Sennov
- * @since 2.1.0
  */
 public interface SortedMultimap<K, V> extends Multimap<K, V>, Ordered<K> {
 

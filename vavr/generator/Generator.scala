@@ -1358,7 +1358,6 @@ def generateMainClasses(): Unit = {
          * As with all Vavr Values, the result of a For-comprehension can be converted
          * to standard Java library and Vavr types.
          * @author Daniel Dietrich
-         * @since 2.0.0
          */
         public final class API {
 
@@ -1452,7 +1451,6 @@ def generateMainClasses(): Unit = {
            ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the function")("\n")}
            * @param <R> return type of the function
            * @author Daniel Dietrich
-           * @since 1.1.0
            */
           @SuppressWarnings("deprecation")
           @FunctionalInterface
@@ -1809,7 +1807,6 @@ def generateMainClasses(): Unit = {
          * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
          * @author Daniel Dietrich
-         * @since 1.1.0
          */
         public final class $className$generics implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
 
@@ -2020,13 +2017,13 @@ def generateMainClasses(): Unit = {
             /**
              * Transforms this tuple to an object of type U.
              *
-             * @deprecated Use {@link #apply($functionType)} instead, will be removed in 3.0.0
+             * @deprecated Use {@link #apply($functionType)} instead, will be removed in 0.9.0
              * @param f Transformation which creates a new object of type U based on this tuple's contents.
              * @param <U> type of the transformation result
              * @return An object of type U
              * @throws NullPointerException if {@code f} is null
              */
-            @Deprecated(/* Use apply instead, will be removed in 3.0.0 */)
+            @Deprecated(/* Use apply instead, will be removed in 0.9.0 */)
             ${if (i == 0) xs"""
               public <U> U transform($functionType<? extends U> f) {
                   $Objects.requireNonNull(f, "f is null");
@@ -2166,7 +2163,6 @@ def generateMainClasses(): Unit = {
          * The base interface of all tuples.
          *
          * @author Daniel Dietrich
-         * @since 1.1.0
          */
         public interface Tuple {
 
@@ -2252,7 +2248,6 @@ def generateMainClasses(): Unit = {
        * Helper to replace reflective array access.
        *
        * @author Pap Lőrinc
-       * @since 2.1.0
        */
       interface ArrayType<T> {
           @SuppressWarnings("unchecked")

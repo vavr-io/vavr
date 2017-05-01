@@ -40,7 +40,6 @@ import static java.util.stream.Collectors.toList;
  * See <a href="https://bugs.openjdk.java.net/browse/JDK-6999068">JDK-6999068 bug</a>.
  *
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 // See Difference between Element, Type and Mirror: http://stackoverflow.com/a/2127320/1110815
 public class PatternsProcessor extends AbstractProcessor {
