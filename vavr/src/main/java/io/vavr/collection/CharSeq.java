@@ -392,22 +392,22 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public java.util.List<Character> asJava() {
-        return JavaConverters.asJava(this, MUTABLE);
-    }
-
-    @Override
-    public CharSeq asJava(Consumer<? super java.util.List<Character>> action) {
-        return Collections.asJava(this, action, MUTABLE);
-    }
-
-    @Override
-    public java.util.List<Character> asJavaImmutable() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
     @Override
-    public CharSeq asJavaImmutable(Consumer<? super java.util.List<Character>> action) {
+    public CharSeq asJava(Consumer<? super java.util.List<Character>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
+    }
+
+    @Override
+    public java.util.List<Character> asJavaMutable() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    public CharSeq asJavaMutable(Consumer<? super java.util.List<Character>> action) {
+        return Collections.asJava(this, action, MUTABLE);
     }
 
     @Override

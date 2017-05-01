@@ -87,8 +87,8 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #asJava()}</li>
  * <li>{@link #asJava(Consumer)}</li>
- * <li>{@link #asJavaImmutable()}</li>
- * <li>{@link #asJavaImmutable(Consumer)}</li>
+ * <li>{@link #asJavaMutable()}</li>
+ * <li>{@link #asJavaMutable(Consumer)}</li>
  * </ul>
  *
  * @param <T> Component type
@@ -142,26 +142,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
     default T apply(Integer index) {
         return get(index);
     }
-
-    /**
-     * Creates a <strong>mutable</strong> {@link java.util.List} view on top of this {@code Seq},
-     * i.e. all mutator methods of the {@link java.util.List} are implemented.
-     *
-     * @return A new mutable {@link java.util.Collection} view on this {@code Traversable}.
-     * @see Seq#asJavaImmutable()
-     */
-    java.util.List<T> asJava();
-
-    /**
-     * Creates a <strong>mutable</strong> {@link java.util.List} view on top of this {@code Seq}
-     * that is passed to the given {@code action}.
-     *
-     * @param action A side-effecting unit of work that operates on a mutable {@code java.util.List} view.
-     * @return this instance, if only read operations are performed on the {@code java.util.List} view or a new instance of this type, if write operations are performed on the {@code java.util.List} view.
-     * @see Seq#asJava()
-     */
-    Seq<T> asJava(Consumer<? super java.util.List<T>> action);
-
+    
     /**
      * Creates an <strong>immutable</strong> {@link java.util.List} view on top of this {@code Seq},
      * i.e. calling mutators will result in {@link UnsupportedOperationException} at runtime.
@@ -178,7 +159,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      *
      * @return A new immutable {@link java.util.Collection} view on this {@code Traversable}.
      */
-    java.util.List<T> asJavaImmutable();
+    java.util.List<T> asJava();
 
     /**
      * Creates an <strong>immutable</strong> {@link java.util.List} view on top of this {@code Seq}
@@ -186,9 +167,28 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      *
      * @param action A side-effecting unit of work that operates on an immutable {@code java.util.List} view.
      * @return this instance
-     * @see Seq#asJavaImmutable()
+     * @see Seq#asJava()
      */
-    Seq<T> asJavaImmutable(Consumer<? super java.util.List<T>> action);
+    Seq<T> asJava(Consumer<? super java.util.List<T>> action);
+
+    /**
+     * Creates a <strong>mutable</strong> {@link java.util.List} view on top of this {@code Seq},
+     * i.e. all mutator methods of the {@link java.util.List} are implemented.
+     *
+     * @return A new mutable {@link java.util.Collection} view on this {@code Traversable}.
+     * @see Seq#asJava()
+     */
+    java.util.List<T> asJavaMutable();
+
+    /**
+     * Creates a <strong>mutable</strong> {@link java.util.List} view on top of this {@code Seq}
+     * that is passed to the given {@code action}.
+     *
+     * @param action A side-effecting unit of work that operates on a mutable {@code java.util.List} view.
+     * @return this instance, if only read operations are performed on the {@code java.util.List} view or a new instance of this type, if write operations are performed on the {@code java.util.List} view.
+     * @see Seq#asJavaMutable()
+     */
+    Seq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
 
     @Override
     <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);

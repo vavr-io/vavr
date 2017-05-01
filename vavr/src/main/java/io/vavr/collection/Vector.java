@@ -603,24 +603,24 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public java.util.List<T> asJava() {
-        return JavaConverters.asJava(this, MUTABLE);
-    }
-
-    @Override
-    public Vector<T> asJava(Consumer<? super java.util.List<T>> action) {
-        return Collections.asJava(this, action, MUTABLE);
-    }
-    
-    @Override
-    public java.util.List<T> asJavaImmutable() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
     @Override
-    public Vector<T> asJavaImmutable(Consumer<? super java.util.List<T>> action) {
+    public Vector<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
+    @Override
+    public java.util.List<T> asJavaMutable() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    public Vector<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, MUTABLE);
+    }
+    
     @Override
     public <R> Vector<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));

@@ -7,7 +7,6 @@
 package io.vavr.collection;
 
 import io.vavr.Function1;
-import io.vavr.NotImplementedError;
 import io.vavr.Tuple;
 import io.vavr.control.Option;
 import io.vavr.Tuple2;
@@ -230,18 +229,18 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
                 .isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
     }
 
-    // -- asJava*
+    // -- asJavaMutable*
 
     @Test
     public void shouldConvertAsJava() {
-        final java.util.List<Integer> list = of(1, 2, 3).asJava();
+        final java.util.List<Integer> list = of(1, 2, 3).asJavaMutable();
         list.add(4);
         assertThat(list).isEqualTo(Arrays.asList(1, 2, 3, 4));
     }
 
     @Test
     public void shouldConvertAsJavaWithConsumer() {
-        final Seq<Integer> seq = of(1, 2, 3).asJava(list -> {
+        final Seq<Integer> seq = of(1, 2, 3).asJavaMutable(list -> {
             assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
             list.add(4);
         });
@@ -250,21 +249,21 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldConvertAsJavaAndRethrowException() {
-        assertThatThrownBy(() -> of(1, 2, 3).asJava(list -> { throw new RuntimeException("test");}))
+        assertThatThrownBy(() -> of(1, 2, 3).asJavaMutable(list -> { throw new RuntimeException("test");}))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("test");
     }
 
     @Test
     public void shouldConvertAsJavaImmutable() {
-        final java.util.List<Integer> list = of(1, 2, 3).asJavaImmutable();
+        final java.util.List<Integer> list = of(1, 2, 3).asJava();
         assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
         assertThatThrownBy(() -> list.add(4)).isInstanceOf(UnsupportedOperationException.class);
     }
 
     @Test
     public void shouldConvertAsJavaImmutableWithConsumer() {
-        final Seq<Integer> seq = of(1, 2, 3).asJavaImmutable(list -> {
+        final Seq<Integer> seq = of(1, 2, 3).asJava(list -> {
             assertThat(list).isEqualTo(Arrays.asList(1, 2, 3));
             assertThatThrownBy(() -> list.add(4)).isInstanceOf(UnsupportedOperationException.class);
         });
@@ -273,7 +272,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldConvertAsJavaImmutableAndRethrowException() {
-        assertThatThrownBy(() -> of(1, 2, 3).asJavaImmutable(list -> { throw new RuntimeException("test");}))
+        assertThatThrownBy(() -> of(1, 2, 3).asJava(list -> { throw new RuntimeException("test");}))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("test");
     }

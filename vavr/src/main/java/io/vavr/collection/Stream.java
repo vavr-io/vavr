@@ -826,22 +826,22 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default java.util.List<T> asJava() {
-        return JavaConverters.asJava(this, MUTABLE);
-    }
-
-    @Override
-    default Stream<T> asJava(Consumer<? super java.util.List<T>> action) {
-        return Collections.asJava(this, action, MUTABLE);
-    }
-
-    @Override
-    default java.util.List<T> asJavaImmutable() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
     @Override
-    default Stream<T> asJavaImmutable(Consumer<? super java.util.List<T>> action) {
+    default Stream<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
+    }
+
+    @Override
+    default java.util.List<T> asJavaMutable() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    default Stream<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, MUTABLE);
     }
 
     @Override
