@@ -24,7 +24,6 @@ import static java.util.stream.Collectors.toList;
  * Code generator for structural pattern matching patterns.
  *
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 public class Generator {
 

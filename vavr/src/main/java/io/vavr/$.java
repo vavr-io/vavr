@@ -18,7 +18,7 @@ import io.vavr.control.Option;
 
 /**
  * <strong>INTERNAL TYPE - turned to io.vavr.Patterns by vavr-match annotation processor.</strong>
- * @deprecated Will be removed in 3.0.0
+ * @deprecated Will be removed in 0.9.0
  */
 @Deprecated
 @Patterns

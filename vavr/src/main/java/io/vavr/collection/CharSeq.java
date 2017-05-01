@@ -31,7 +31,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * In future version of Java, CharSeq should extend IndexedSeq&lt;char&gt; instead.
  *
  * @author Ruslan Sennov, Daniel Dietrich
- * @since 2.0.0
  */
 @SuppressWarnings("deprecation")
 public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable {
@@ -2326,7 +2325,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
-     * @deprecated Use {@link #splitSeq(String)} instead, will return Seq&lt;CharSeq&gt; starting with 3.0.0
+     * @deprecated Use {@link #splitSeq(String)} instead, will return Seq&lt;CharSeq&gt; starting with 0.9.0
      */
     @Deprecated
     @GwtIncompatible
@@ -2405,7 +2404,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
-     * @deprecated Use {@link #splitSeq(String, int)} instead, will return Seq&lt;CharSeq&gt; starting with 3.0.0
+     * @deprecated Use {@link #splitSeq(String, int)} instead, will return Seq&lt;CharSeq&gt; starting with 0.9.0
      */
     @Deprecated
     @GwtIncompatible
@@ -2443,7 +2442,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return the Seq of strings computed by splitting this string around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
-     * @deprecated Will be renamed to split(String) starting with 3.0.0
+     * @deprecated Will be renamed to split(String) starting with 0.9.0
      */
     @Deprecated
     public Seq<CharSeq> splitSeq(String regex) {
@@ -2520,7 +2519,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return the Seq of strings computed by splitting this string around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
-     * @deprecated Will be renamed to split(String, int) starting with 3.0.0
+     * @deprecated Will be renamed to split(String, int) starting with 0.9.0
      */
     @Deprecated
     public Seq<CharSeq> splitSeq(String regex, int limit) {
@@ -2825,7 +2824,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return a {@code Byte} object holding the byte value represented by this {@code CharSeq}
      * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable byte.
-     * @since 2.1.0
      */
     public Byte decodeByte() {
         return Byte.decode(back);
@@ -2848,7 +2846,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return an {@code Integer} object holding the int value represented by this {@code CharSeq}
      * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable int.
-     * @since 2.1.0
      */
     public Integer decodeInteger() {
         return Integer.decode(back);
@@ -2871,7 +2868,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return a {@code Long} object holding the long value represented by this {@code CharSeq}
      * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable long.
-     * @since 2.1.0
      */
     public Long decodeLong() {
         return Long.decode(back);
@@ -2894,7 +2890,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return a {@code Short} object holding the short value represented by this {@code CharSeq}
      * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable short.
-     * @since 2.1.0
      */
     public Short decodeShort() {
         return Short.decode(back);
@@ -2916,7 +2911,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * </code></pre>
      *
      * @return the boolean represented by this {@code CharSeq}
-     * @since 2.1.0
      */
     public boolean parseBoolean() {
         return Boolean.parseBoolean(back);
@@ -2939,7 +2933,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return the byte value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
-     * @since 2.1.0
      */
     public byte parseByte() {
         return Byte.parseByte(back);
@@ -2964,7 +2957,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the byte value represented by this {@code CharSeq} in the specified radix
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
-     * @since 2.1.0
      */
     public byte parseByte(int radix) {
         return Byte.parseByte(back, radix);
@@ -2987,7 +2979,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return the double value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable double.
-     * @since 2.1.0
      */
     public double parseDouble() {
         return Double.parseDouble(back);
@@ -3010,7 +3001,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return the float value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable float.
-     * @since 2.1.0
      */
     public float parseFloat() {
         return Float.parseFloat(back);
@@ -3033,7 +3023,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return the int value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
-     * @since 2.1.0
      */
     public int parseInt() {
         return Integer.parseInt(back);
@@ -3058,7 +3047,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the int value represented by this {@code CharSeq} in the specified radix
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
-     * @since 2.1.0
      */
     public int parseInt(int radix) {
         return Integer.parseInt(back, radix);
@@ -3081,7 +3069,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return the unsigned int value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned int.
-     * @since 2.1.0
      */
     @GwtIncompatible
     public int parseUnsignedInt() {
@@ -3107,7 +3094,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the unsigned int value represented by this {@code CharSeq} in the specified radix
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned int.
-     * @since 2.1.0
      */
     @GwtIncompatible
     public int parseUnsignedInt(int radix) {
@@ -3131,7 +3117,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return the long value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
-     * @since 2.1.0
      */
     public long parseLong() {
         return Long.parseLong(back);
@@ -3156,7 +3141,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the long value represented by this {@code CharSeq} in the specified radix
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
-     * @since 2.1.0
      */
     public long parseLong(int radix) {
         return Long.parseLong(back, radix);
@@ -3179,7 +3163,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return the unsigned long value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned long.
-     * @since 2.1.0
      */
     @GwtIncompatible
     public long parseUnsignedLong() {
@@ -3205,7 +3188,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the unsigned long value represented by this {@code CharSeq} in the specified radix
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned long.
-     * @since 2.1.0
      */
     @GwtIncompatible
     public long parseUnsignedLong(int radix) {
@@ -3229,7 +3211,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return the short value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
-     * @since 2.1.0
      */
     public short parseShort() {
         return Short.parseShort(back);
@@ -3254,7 +3235,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the short value represented by this {@code CharSeq} in the specified radix
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
-     * @since 2.1.0
      */
     public short parseShort(int radix) {
         return Short.parseShort(back, radix);
@@ -3276,7 +3256,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * </code></pre>
      *
      * @return the {@code Boolean} value represented by this {@code CharSeq}
-     * @since 2.1.0
      */
     public Boolean toBoolean() {
         return Boolean.valueOf(back);
@@ -3299,7 +3278,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return a {@code Byte} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
-     * @since 2.1.0
      */
     public Byte toByte() {
         return Byte.valueOf(back);
@@ -3324,7 +3302,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this char sequence
      * @return a {@code Byte} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
-     * @since 2.1.0
      */
     public Byte toByte(int radix) {
         return Byte.valueOf(back, radix);
@@ -3347,7 +3324,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return a {@code Double} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable double.
-     * @since 2.1.0
      */
     public Double toDouble() {
         return Double.valueOf(back);
@@ -3370,7 +3346,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return a {@code Float} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable float.
-     * @since 2.1.0
      */
     public Float toFloat() {
         return Float.valueOf(back);
@@ -3393,7 +3368,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return an {@code Integer} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
-     * @since 2.1.0
      */
     public Integer toInteger() {
         return Integer.valueOf(back);
@@ -3418,7 +3392,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this char sequence
      * @return an {@code Integer} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
-     * @since 2.1.0
      */
     public Integer toInteger(int radix) {
         return Integer.valueOf(back, radix);
@@ -3441,7 +3414,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return a {@code Long} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
-     * @since 2.1.0
      */
     public Long toLong() {
         return Long.valueOf(back);
@@ -3466,7 +3438,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this char sequence
      * @return a {@code Long} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
-     * @since 2.1.0
      */
     public Long toLong(int radix) {
         return Long.valueOf(back, radix);
@@ -3489,7 +3460,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      *
      * @return a {@code Short} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
-     * @since 2.1.0
      */
     public Short toShort() {
         return Short.valueOf(back);
@@ -3514,7 +3484,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @param radix the radix to be used in interpreting this char sequence
      * @return a {@code Short} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
-     * @since 2.1.0
      */
     public Short toShort(int radix) {
         return Short.valueOf(back, radix);

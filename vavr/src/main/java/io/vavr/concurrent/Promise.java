@@ -61,7 +61,6 @@ import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR_SERVICE;
  *
  * @param <T> The result type of the underlying {@code Future}.
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 public interface Promise<T> {
 
@@ -299,7 +298,6 @@ public interface Promise<T> {
  *
  * @param <T> result type
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 final class PromiseImpl<T> implements Promise<T> {
 

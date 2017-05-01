@@ -18,7 +18,6 @@ import java.util.function.Supplier;
  * The view creation and back conversion take O(1).
  *
  * @author Daniel Dietrich
- * @since 2.1.0
  */
 class JavaConverters {
 

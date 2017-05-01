@@ -143,7 +143,6 @@ import java.util.function.Supplier;
  *
  * @param <T> Component type
  * @author Daniel Dietrich and others
- * @since 1.1.0
  */
 public interface Traversable<T> extends Foldable<T>, Value<T> {
 
@@ -153,9 +152,9 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @param objects An Iterable instance containing zero or more objects.
      * @param <T>     Component type
      * @return The hashcode
-     * @deprecated Will be removed in 3.0.0.
+     * @deprecated Will be removed in 0.9.0.
      */
-    @Deprecated(/* Will be removed in 3.0.0 */)
+    @Deprecated(/* Will be removed in 0.9.0 */)
     static <T> int hash(Iterable<? extends T> objects) {
         int hashCode = 1;
         for (Object o : objects) {

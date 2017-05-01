@@ -41,7 +41,6 @@ import java.util.function.Supplier;
  * @param <L> The type of the Left value of an Either.
  * @param <R> The type of the Right value of an Either.
  * @author Daniel Dietrich
- * @since 1.0.0
  */
 public interface Either<L, R> extends Value<R>, Serializable {
 
@@ -422,7 +421,6 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param <L> The type of the Left value of an Either.
      * @param <R> The type of the Right value of an Either.
-     * @since 1.0.0
      */
     final class LeftProjection<L, R> implements Value<L> {
 
@@ -676,7 +674,6 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param <L> The type of the Left value of an Either.
      * @param <R> The type of the Right value of an Either.
-     * @since 1.0.0
      */
     final class RightProjection<L, R> implements Value<R> {
 
@@ -917,7 +914,6 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param <L> left component type
      * @param <R> right component type
      * @author Daniel Dietrich
-     * @since 1.0.0
      */
     final class Left<L, R> implements Either<L, R>, Serializable {
 
@@ -981,7 +977,6 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param <L> left component type
      * @param <R> right component type
      * @author Daniel Dietrich
-     * @since 1.0.0
      */
     final class Right<L, R> implements Either<L, R>, Serializable {
 

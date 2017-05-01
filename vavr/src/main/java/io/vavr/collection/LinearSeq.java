@@ -22,7 +22,6 @@ import java.util.function.*;
  *
  * @param <T> component type
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 public interface LinearSeq<T> extends Seq<T> {
 

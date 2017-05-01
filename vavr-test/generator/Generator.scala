@@ -46,7 +46,6 @@ def generateMainClasses(): Unit = {
        * A property builder which provides a fluent API to build checkable properties.
        *
        * @author Daniel Dietrich
-       * @since 1.2.0
        */
       @SuppressWarnings("deprecation")
       public class $className {
@@ -155,7 +154,6 @@ def generateMainClasses(): Unit = {
                    *
                    ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} variable type of this for all quantor")("\n")}
                    * @author Daniel Dietrich
-                   * @since 1.2.0
                    */
                   public static class ForAll$i<$generics> {
 
@@ -203,7 +201,6 @@ def generateMainClasses(): Unit = {
                    * Represents a $i-ary checkable property.
                    *
                    * @author Daniel Dietrich
-                   * @since 1.2.0
                    */
                   public static class Property$i<$generics> implements Checkable {
 

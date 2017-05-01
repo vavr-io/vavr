@@ -19,7 +19,6 @@ import java.util.function.*;
  * Internal class, containing helpers.
  *
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 final class Collections {
 

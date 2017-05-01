@@ -73,7 +73,6 @@ import java.util.function.*;
  * @param <K> Key type
  * @param <V> Value type
  * @author Ruslan Sennov
- * @since 2.1.0
  */
 @SuppressWarnings("deprecation")
 public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, Traversable<V>>, Serializable {
@@ -465,7 +464,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
      * @param mapper A function that maps (key, value) pairs to elements of type U
      * @param <U> The type of the resulting elements
      * @return A new sequence containing the mapped elements.
-     * @deprecated will be replaced by iterator(BiFunction) in 3.0.0     */
+     * @deprecated will be replaced by iterator(BiFunction) in 0.9.0     */
     @Deprecated
     default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");

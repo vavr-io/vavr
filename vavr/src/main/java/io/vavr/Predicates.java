@@ -17,7 +17,6 @@ import java.util.function.Predicate;
  * {@link API.Match}.
  *
  * @author Daniel Dietrich, Grzegorz Piwowarek
- * @since 2.0.0
  */
 public final class Predicates {
 

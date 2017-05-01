@@ -30,7 +30,6 @@ import java.util.function.Function;
  * @param <T7> type of the 7th element
  * @param <T8> type of the 8th element
  * @author Daniel Dietrich
- * @since 1.1.0
  */
 public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comparable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>, Serializable {
 
@@ -531,13 +530,13 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
     /**
      * Transforms this tuple to an object of type U.
      *
-     * @deprecated Use {@link #apply(Function8)} instead, will be removed in 3.0.0
+     * @deprecated Use {@link #apply(Function8)} instead, will be removed in 0.9.0
      * @param f Transformation which creates a new object of type U based on this tuple's contents.
      * @param <U> type of the transformation result
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    @Deprecated(/* Use apply instead, will be removed in 3.0.0 */)
+    @Deprecated(/* Use apply instead, will be removed in 0.9.0 */)
     public <U> U transform(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1, _2, _3, _4, _5, _6, _7, _8);

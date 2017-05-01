@@ -27,7 +27,5 @@
  * A Cause is unchecked, i.e. a RuntimeException, and is Fatal or NonFatal.
  * Fatal exceptions cannot be handled and are thrown without further processing.
  * NonFatal exceptions are wrapped in a Failure.
- *
- * @since 1.0.0
  */
 package io.vavr.control;

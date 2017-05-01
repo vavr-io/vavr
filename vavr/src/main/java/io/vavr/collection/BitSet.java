@@ -24,7 +24,6 @@ import java.util.stream.Collector;
  * An immutable {@code BitSet} implementation.
  *
  * @author Ruslan Sennov
- * @since 2.1.0
  */
 public interface BitSet<T> extends SortedSet<T> {
 

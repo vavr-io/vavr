@@ -22,7 +22,6 @@ import java.util.stream.Collector;
  *
  * @param <T> Component type
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
- * @since 2.0.0
  */
 @SuppressWarnings("deprecation")
 public final class LinkedHashSet<T> implements Set<T>, Serializable {

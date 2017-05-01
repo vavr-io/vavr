@@ -57,7 +57,5 @@
  * <li><small>log</small>&nbsp;&middot;&nbsp;logarithmic time</li>
  * <li><small>linear</small>&nbsp;&middot;&nbsp;linear time</li>
  * </ul>
- *
- * @since 1.1.0
  */
 package io.vavr.collection;

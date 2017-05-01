@@ -46,7 +46,6 @@ import static io.vavr.collection.IteratorModule.EmptyIterator;
  *
  * @param <T> Component type
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     // DEV-NOTE: we prefer returning empty() over this if !hasNext() == true in order to free memory.
@@ -56,7 +55,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @deprecated Will be removed because class loading may cause a deadlock under certain circumstances (see #1773 and https://bugs.openjdk.java.net/browse/JDK-8037567)
      */
-    @Deprecated(/* Not used any more, will be removed in 3.0.0 */)
+    @Deprecated(/* Not used any more, will be removed in 0.9.0 */)
     Iterator<Object> EMPTY = EmptyIterator.INSTANCE;
 
     /**

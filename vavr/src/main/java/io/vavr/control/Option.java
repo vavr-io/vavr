@@ -34,7 +34,6 @@ import java.util.function.Supplier;
  *
  * @param <T> The type of the optional value.
  * @author Daniel Dietrich
- * @since 1.0.0
  */
 public interface Option<T> extends Value<T>, Serializable {
 
@@ -108,7 +107,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * Return the singleton instance of {@code Some<Void>}.
      *
      * @return {@code Some<Void>}
-     * @deprecated Will be removed in 3.0.0
+     * @deprecated Will be removed in 0.9.0
      */
     @Deprecated
     static Option<Void> nothing() {
@@ -420,7 +419,6 @@ public interface Option<T> extends Value<T>, Serializable {
      *
      * @param <T> The type of the optional value.
      * @author Daniel Dietrich
-     * @since 1.0.0
      */
     final class Some<T> implements Option<T>, Serializable {
 
@@ -428,7 +426,7 @@ public interface Option<T> extends Value<T>, Serializable {
 
         /**
          * The singleton instance of {@code Some<Void>}.
-         * @deprecated Will be removed in 3.0.0
+         * @deprecated Will be removed in 0.9.0
          */
         @Deprecated
         private static final Some<Void> NOTHING = new Some<>(null);
@@ -480,7 +478,6 @@ public interface Option<T> extends Value<T>, Serializable {
      *
      * @param <T> The type of the optional value.
      * @author Daniel Dietrich
-     * @since 1.0.0
      */
     final class None<T> implements Option<T>, Serializable {
 

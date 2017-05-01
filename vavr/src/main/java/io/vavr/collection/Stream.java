@@ -98,7 +98,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  *
  * @param <T> component type of this Stream
  * @author Daniel Dietrich, Jörgen Andersson, Ruslan Sennov
- * @since 1.1.0
  */
 @SuppressWarnings("deprecation")
 public interface Stream<T> extends LinearSeq<T> {
@@ -1719,7 +1718,6 @@ public interface Stream<T> extends LinearSeq<T> {
      * This is a singleton, i.e. not Cloneable.
      *
      * @param <T> Component type of the Stream.
-     * @since 1.1.0
      */
     final class Empty<T> implements Stream<T>, Serializable {
 
@@ -1792,7 +1790,6 @@ public interface Stream<T> extends LinearSeq<T> {
      * Non-empty {@code Stream}, consisting of a {@code head}, and {@code tail}.
      *
      * @param <T> Component type of the Stream.
-     * @since 1.1.0
      */
     abstract class Cons<T> implements Stream<T> {
 

@@ -13,7 +13,6 @@ import java.util.Comparator;
  * INTERNAL: Common {@code Comparator} related functions (not intended to be public).
  *
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 final class Comparators {
 

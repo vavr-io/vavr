@@ -78,7 +78,6 @@ We organize our classes and interfaces in the following way:
  * </ul>
  * 
  * @author ...
- * @since ...
  */
 public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
     

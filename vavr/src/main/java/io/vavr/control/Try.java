@@ -28,7 +28,6 @@ import static io.vavr.API.Match;
  *
  * @param <T> Value type in the case of success.
  * @author Daniel Dietrich
- * @since 1.0.0
  */
 public interface Try<T> extends Value<T>, Serializable {
 
@@ -958,7 +957,6 @@ public interface Try<T> extends Value<T>, Serializable {
      *
      * @param <T> component type of this Success
      * @author Daniel Dietrich
-     * @since 1.0.0
      */
     final class Success<T> implements Try<T>, Serializable {
 
@@ -1026,7 +1024,6 @@ public interface Try<T> extends Value<T>, Serializable {
      *
      * @param <T> component type of this Failure
      * @author Daniel Dietrich
-     * @since 1.0.0
      */
     final class Failure<T> implements Try<T>, Serializable {
 
@@ -1570,7 +1567,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * An unchecked wrapper for Fatal exceptions.
      * <p>
      * See {@link NonFatalException}.
-     * @deprecated Will be removed in 3.0.0. Instead we throw sneaky.
+     * @deprecated Will be removed in 0.9.0. Instead we throw sneaky.
      */
     @Deprecated
     final class FatalException extends RuntimeException implements Serializable {
@@ -1615,7 +1612,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * <li>{@linkplain ThreadDeath}</li>
      * <li>{@linkplain VirtualMachineError} (i.e. {@linkplain OutOfMemoryError} or {@linkplain StackOverflowError})</li>
      * </ul>
-     * @deprecated Will be removed in 3.0.0. Instead we throw sneaky.
+     * @deprecated Will be removed in 0.9.0. Instead we throw sneaky.
      */
     @Deprecated
     final class NonFatalException extends RuntimeException implements Serializable {

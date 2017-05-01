@@ -9,6 +9,5 @@
  * While Futures are concurrent read-only tasks, a {@linkplain io.vavr.concurrent.Promise} creates a writable-once
  * Future. The {@code Promise} is used to complete its contained {@code Future}.
  *
- * @since 2.0.0
  */
 package io.vavr.concurrent;

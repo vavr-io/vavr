@@ -92,7 +92,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  *
  * @param <T> Component type of the List
  * @author Daniel Dietrich
- * @since 1.1.0
  */
 @SuppressWarnings("deprecation")
 public interface List<T> extends LinearSeq<T>, Stack<T> {
@@ -1595,7 +1594,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * Representation of the singleton empty {@code List}.
      *
      * @param <T> Component type of the List.
-     * @since 1.1.0
      */
     final class Nil<T> implements List<T>, Serializable {
 
@@ -1668,7 +1666,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
      * Non-empty {@code List}, consisting of a {@code head} and a {@code tail}.
      *
      * @param <T> Component type of the List.
-     * @since 1.1.0
      */
     // DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
     final class Cons<T> implements List<T>, Serializable {

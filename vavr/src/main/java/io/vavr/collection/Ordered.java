@@ -13,7 +13,6 @@ import java.util.Comparator;
  *
  * @param <T> Component type
  * @author Ruslan Sennov, Daniel Dietrich
- * @since 2.1.0
  */
 public interface Ordered<T> {
 

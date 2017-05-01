@@ -21,7 +21,6 @@ import java.util.stream.Collector;
  * An immutable {@code LinkedHashMap} implementation.
  *
  * @author Ruslan Sennov
- * @since 2.0.0
  */
 @SuppressWarnings("deprecation")
 public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {

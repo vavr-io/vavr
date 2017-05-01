@@ -15,7 +15,6 @@ import java.util.function.Function;
  * INTERNAL: Common {@code Multimap} functions (not intended to be public).
  *
  * @author Ruslan Sennov, Daniel Dietrich
- * @since 2.1.0
  */
 class Multimaps {
 

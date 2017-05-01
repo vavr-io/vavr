@@ -44,7 +44,6 @@ import java.util.function.*;
  *
  * @param <T> Type of the computation result.
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 public interface Future<T> extends Value<T> {
 

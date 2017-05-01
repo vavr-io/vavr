@@ -15,7 +15,6 @@ import java.lang.annotation.Target;
  * Structural pattern matching annotation for pattern declarations.
  *
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.CLASS)

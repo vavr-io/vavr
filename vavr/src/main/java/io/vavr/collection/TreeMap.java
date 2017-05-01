@@ -24,7 +24,6 @@ import java.util.stream.Collector;
  * @param <K> Key type
  * @param <V> Value type
  * @author Daniel Dietrich
- * @since 2.0.0
  */
 // DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
 @SuppressWarnings("deprecation")
