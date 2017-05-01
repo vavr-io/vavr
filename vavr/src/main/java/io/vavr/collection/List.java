@@ -710,22 +710,22 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
 
     @Override
     default java.util.List<T> asJava() {
-        return JavaConverters.asJava(this, MUTABLE);
-    }
-
-    @Override
-    default List<T> asJava(Consumer<? super java.util.List<T>> action) {
-        return Collections.asJava(this, action, MUTABLE);
-    }
-
-    @Override
-    default java.util.List<T> asJavaImmutable() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
     @Override
-    default List<T> asJavaImmutable(Consumer<? super java.util.List<T>> action) {
+    default List<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
+    }
+
+    @Override
+    default java.util.List<T> asJavaMutable() {
+        return JavaConverters.asJava(this, MUTABLE);
+    }
+
+    @Override
+    default List<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
+        return Collections.asJava(this, action, MUTABLE);
     }
 
     @Override

@@ -35,12 +35,12 @@ public class JavaConvertersTest {
 
                 // -- immutable classes
                 { "java.util.Arrays$ArrayList", new ListFactory(java.util.Arrays::asList), IMMUTABLE, GENERIC, NULLABLE },
-                { Array.class.getName(), new ListFactory(ts -> Array.of(ts).asJavaImmutable()), IMMUTABLE, GENERIC, NULLABLE },
-                { CharSeq.class.getName(), new ListFactory(ts -> (java.util.List<Object>) (Object) CharSeq.ofAll((List<Character>) (Object) (List.of(ts))).asJavaImmutable()), IMMUTABLE, FIXED, NON_NULLABLE },
-                { List.class.getName(), new ListFactory(ts -> List.of(ts).asJavaImmutable()), IMMUTABLE, GENERIC, NULLABLE },
-                { Queue.class.getName(), new ListFactory(ts -> Queue.of(ts).asJavaImmutable()), IMMUTABLE, GENERIC, NULLABLE },
-                { Stream.class.getName(), new ListFactory(ts -> Stream.of(ts).asJavaImmutable()), IMMUTABLE, GENERIC, NULLABLE },
-                { Vector.class.getName(), new ListFactory(ts -> Vector.of(ts).asJavaImmutable()), IMMUTABLE, GENERIC, NULLABLE },
+                { Array.class.getName(), new ListFactory(ts -> Array.of(ts).asJava()), IMMUTABLE, GENERIC, NULLABLE },
+                { CharSeq.class.getName(), new ListFactory(ts -> (java.util.List<Object>) (Object) CharSeq.ofAll((List<Character>) (Object) (List.of(ts))).asJava()), IMMUTABLE, FIXED, NON_NULLABLE },
+                { List.class.getName(), new ListFactory(ts -> List.of(ts).asJava()), IMMUTABLE, GENERIC, NULLABLE },
+                { Queue.class.getName(), new ListFactory(ts -> Queue.of(ts).asJava()), IMMUTABLE, GENERIC, NULLABLE },
+                { Stream.class.getName(), new ListFactory(ts -> Stream.of(ts).asJava()), IMMUTABLE, GENERIC, NULLABLE },
+                { Vector.class.getName(), new ListFactory(ts -> Vector.of(ts).asJava()), IMMUTABLE, GENERIC, NULLABLE },
 
                 // -- mutable classes
                 { java.util.ArrayList.class.getName(), new ListFactory(ts -> {
@@ -48,12 +48,12 @@ public class JavaConvertersTest {
                     java.util.Collections.addAll(list, ts);
                     return list;
                 }), MUTABLE, GENERIC, NULLABLE },
-                { Array.class.getName(), new ListFactory(ts -> Array.of(ts).asJava()), MUTABLE, GENERIC, NULLABLE },
-                { CharSeq.class.getName(), new ListFactory(ts -> (java.util.List<Object>) (Object) CharSeq.ofAll((List<Character>) (Object) (List.of(ts))).asJava()), MUTABLE, FIXED, NON_NULLABLE },
-                { List.class.getName(), new ListFactory(ts -> List.of(ts).asJava()), MUTABLE, GENERIC, NULLABLE },
-                { Queue.class.getName(), new ListFactory(ts -> Queue.of(ts).asJava()), MUTABLE, GENERIC, NULLABLE },
-                { Stream.class.getName(), new ListFactory(ts -> Stream.of(ts).asJava()), MUTABLE, GENERIC, NULLABLE },
-                { Vector.class.getName(), new ListFactory(ts -> Vector.of(ts).asJava()), MUTABLE, GENERIC, NULLABLE }
+                { Array.class.getName(), new ListFactory(ts -> Array.of(ts).asJavaMutable()), MUTABLE, GENERIC, NULLABLE },
+                { CharSeq.class.getName(), new ListFactory(ts -> (java.util.List<Object>) (Object) CharSeq.ofAll((List<Character>) (Object) (List.of(ts))).asJavaMutable()), MUTABLE, FIXED, NON_NULLABLE },
+                { List.class.getName(), new ListFactory(ts -> List.of(ts).asJavaMutable()), MUTABLE, GENERIC, NULLABLE },
+                { Queue.class.getName(), new ListFactory(ts -> Queue.of(ts).asJavaMutable()), MUTABLE, GENERIC, NULLABLE },
+                { Stream.class.getName(), new ListFactory(ts -> Stream.of(ts).asJavaMutable()), MUTABLE, GENERIC, NULLABLE },
+                { Vector.class.getName(), new ListFactory(ts -> Vector.of(ts).asJavaMutable()), MUTABLE, GENERIC, NULLABLE }
         });
     }
 
