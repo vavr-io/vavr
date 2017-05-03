@@ -239,19 +239,19 @@ public class TryTest extends AbstractValueTest {
     // -- Try.of
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryOfCheckedSupplier() {
+    public void shouldCreateSuccessWhenCallingTryOfCheckedFunction0() {
         assertThat(Try.of(() -> 1) instanceof Try.Success).isTrue();
     }
 
     @Test
-    public void shouldCreateFailureWhenCallingTryOfCheckedSupplier() {
+    public void shouldCreateFailureWhenCallingTryOfCheckedFunction0() {
         assertThat(Try.of(() -> {
             throw new Error("error");
         }) instanceof Try.Failure).isTrue();
     }
 
     @Test
-    public void shouldThrowNullPointerExceptionWhenCallingTryOfCheckedSupplier() {
+    public void shouldThrowNullPointerExceptionWhenCallingTryOfCheckedFunction0() {
         assertThatThrownBy(() -> Try.of(null)).isInstanceOf(NullPointerException.class).hasMessage("supplier is null");
     }
 

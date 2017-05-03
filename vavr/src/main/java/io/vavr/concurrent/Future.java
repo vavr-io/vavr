@@ -401,7 +401,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future instance.
      * @throws NullPointerException if computation is null.
      */
-    static <T> Future<T> of(Try.CheckedSupplier<? extends T> computation) {
+    static <T> Future<T> of(CheckedFunction0<? extends T> computation) {
         return Future.of(DEFAULT_EXECUTOR_SERVICE, computation);
     }
 
@@ -414,7 +414,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future instance.
      * @throws NullPointerException if one of executorService or computation is null.
      */
-    static <T> Future<T> of(ExecutorService executorService, Try.CheckedSupplier<? extends T> computation) {
+    static <T> Future<T> of(ExecutorService executorService, CheckedFunction0<? extends T> computation) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(computation, "computation is null");
         final FutureImpl<T> future = new FutureImpl<>(executorService);

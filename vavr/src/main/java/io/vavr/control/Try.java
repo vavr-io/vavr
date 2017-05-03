@@ -34,17 +34,17 @@ public interface Try<T> extends Value<T>, Serializable {
     long serialVersionUID = 1L;
 
     /**
-     * Creates a Try of a CheckedSupplier.
+     * Creates a Try of a CheckedFunction0.
      *
      * @param supplier A checked supplier
      * @param <T>      Component type
-     * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(throwable)} if an
-     * exception occurs calling {@code supplier.get()}.
+     * @return {@code Success(supplier.apply())} if no exception occurs, otherwise {@code Failure(throwable)} if an
+     * exception occurs calling {@code supplier.apply()}.
      */
-    static <T> Try<T> of(CheckedSupplier<? extends T> supplier) {
+    static <T> Try<T> of(CheckedFunction0<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         try {
-            return new Success<>(supplier.get());
+            return new Success<>(supplier.apply());
         } catch (Throwable t) {
             return new Failure<>(t);
         }
@@ -917,23 +917,6 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * A {@linkplain java.util.function.Supplier} which may throw.
-     *
-     * @param <R> the type of results supplied by this supplier
-     */
-    @FunctionalInterface
-    interface CheckedSupplier<R> {
-
-        /**
-         * Gets a result.
-         *
-         * @return a result
-         * @throws Throwable if an error occurs
-         */
-        R get() throws Throwable;
-    }
-
-    /**
      * A succeeded Try.
      *
      * @param <T> component type of this Success
@@ -1081,7 +1064,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T1> Type of the 1st resource.
      * @return a new {@link WithResources1} instance.
      */
-    static <T1 extends AutoCloseable> WithResources1<T1> withResources(CheckedSupplier<? extends T1> t1Supplier) {
+    static <T1 extends AutoCloseable> WithResources1<T1> withResources(CheckedFunction0<? extends T1> t1Supplier) {
         return new WithResources1<>(t1Supplier);
     }
 
@@ -1094,7 +1077,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T2> Type of the 2nd resource.
      * @return a new {@link WithResources2} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable> WithResources2<T1, T2> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable> WithResources2<T1, T2> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier) {
         return new WithResources2<>(t1Supplier, t2Supplier);
     }
 
@@ -1109,7 +1092,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T3> Type of the 3rd resource.
      * @return a new {@link WithResources3} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> WithResources3<T1, T2, T3> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> WithResources3<T1, T2, T3> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier) {
         return new WithResources3<>(t1Supplier, t2Supplier, t3Supplier);
     }
 
@@ -1126,7 +1109,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T4> Type of the 4th resource.
      * @return a new {@link WithResources4} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> WithResources4<T1, T2, T3, T4> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> WithResources4<T1, T2, T3, T4> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier) {
         return new WithResources4<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier);
     }
 
@@ -1145,7 +1128,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T5> Type of the 5th resource.
      * @return a new {@link WithResources5} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> WithResources5<T1, T2, T3, T4, T5> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> WithResources5<T1, T2, T3, T4, T5> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier) {
         return new WithResources5<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier);
     }
 
@@ -1166,7 +1149,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T6> Type of the 6th resource.
      * @return a new {@link WithResources6} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> WithResources6<T1, T2, T3, T4, T5, T6> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> WithResources6<T1, T2, T3, T4, T5, T6> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier) {
         return new WithResources6<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier);
     }
 
@@ -1189,7 +1172,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T7> Type of the 7th resource.
      * @return a new {@link WithResources7} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> WithResources7<T1, T2, T3, T4, T5, T6, T7> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier, CheckedSupplier<? extends T7> t7Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> WithResources7<T1, T2, T3, T4, T5, T6, T7> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier) {
         return new WithResources7<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier, t7Supplier);
     }
 
@@ -1214,7 +1197,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T8> Type of the 8th resource.
      * @return a new {@link WithResources8} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> WithResources8<T1, T2, T3, T4, T5, T6, T7, T8> withResources(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier, CheckedSupplier<? extends T7> t7Supplier, CheckedSupplier<? extends T8> t8Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> WithResources8<T1, T2, T3, T4, T5, T6, T7, T8> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier, CheckedFunction0<? extends T8> t8Supplier) {
         return new WithResources8<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier, t7Supplier, t8Supplier);
     }
 
@@ -1225,9 +1208,9 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class WithResources1<T1 extends AutoCloseable> {
 
-        private final CheckedSupplier<? extends T1> t1Supplier;
+        private final CheckedFunction0<? extends T1> t1Supplier;
 
-        private WithResources1(CheckedSupplier<? extends T1> t1Supplier) {
+        private WithResources1(CheckedFunction0<? extends T1> t1Supplier) {
             this.t1Supplier = t1Supplier;
         }
 
@@ -1241,7 +1224,7 @@ public interface Try<T> extends Value<T>, Serializable {
         @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
         public <R> Try<R> of(CheckedFunction1<? super T1, ? extends R> f) {
             return Try.of(() -> {
-                try (T1 t1 = t1Supplier.get()) {
+                try (T1 t1 = t1Supplier.apply()) {
                     return f.apply(t1);
                 }
             });
@@ -1256,10 +1239,10 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class WithResources2<T1 extends AutoCloseable, T2 extends AutoCloseable> {
 
-        private final CheckedSupplier<? extends T1> t1Supplier;
-        private final CheckedSupplier<? extends T2> t2Supplier;
+        private final CheckedFunction0<? extends T1> t1Supplier;
+        private final CheckedFunction0<? extends T2> t2Supplier;
 
-        private WithResources2(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier) {
+        private WithResources2(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
         }
@@ -1274,7 +1257,7 @@ public interface Try<T> extends Value<T>, Serializable {
         @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
         public <R> Try<R> of(CheckedFunction2<? super T1, ? super T2, ? extends R> f) {
             return Try.of(() -> {
-                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get()) {
+                try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Supplier.apply()) {
                     return f.apply(t1, t2);
                 }
             });
@@ -1290,11 +1273,11 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class WithResources3<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> {
 
-        private final CheckedSupplier<? extends T1> t1Supplier;
-        private final CheckedSupplier<? extends T2> t2Supplier;
-        private final CheckedSupplier<? extends T3> t3Supplier;
+        private final CheckedFunction0<? extends T1> t1Supplier;
+        private final CheckedFunction0<? extends T2> t2Supplier;
+        private final CheckedFunction0<? extends T3> t3Supplier;
 
-        private WithResources3(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier) {
+        private WithResources3(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1310,7 +1293,7 @@ public interface Try<T> extends Value<T>, Serializable {
         @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
         public <R> Try<R> of(CheckedFunction3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             return Try.of(() -> {
-                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get()) {
+                try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Supplier.apply(); T3 t3 = t3Supplier.apply()) {
                     return f.apply(t1, t2, t3);
                 }
             });
@@ -1327,12 +1310,12 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class WithResources4<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> {
 
-        private final CheckedSupplier<? extends T1> t1Supplier;
-        private final CheckedSupplier<? extends T2> t2Supplier;
-        private final CheckedSupplier<? extends T3> t3Supplier;
-        private final CheckedSupplier<? extends T4> t4Supplier;
+        private final CheckedFunction0<? extends T1> t1Supplier;
+        private final CheckedFunction0<? extends T2> t2Supplier;
+        private final CheckedFunction0<? extends T3> t3Supplier;
+        private final CheckedFunction0<? extends T4> t4Supplier;
 
-        private WithResources4(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier) {
+        private WithResources4(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1349,7 +1332,7 @@ public interface Try<T> extends Value<T>, Serializable {
         @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
         public <R> Try<R> of(CheckedFunction4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             return Try.of(() -> {
-                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get()) {
+                try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Supplier.apply(); T3 t3 = t3Supplier.apply(); T4 t4 = t4Supplier.apply()) {
                     return f.apply(t1, t2, t3, t4);
                 }
             });
@@ -1367,13 +1350,13 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class WithResources5<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> {
 
-        private final CheckedSupplier<? extends T1> t1Supplier;
-        private final CheckedSupplier<? extends T2> t2Supplier;
-        private final CheckedSupplier<? extends T3> t3Supplier;
-        private final CheckedSupplier<? extends T4> t4Supplier;
-        private final CheckedSupplier<? extends T5> t5Supplier;
+        private final CheckedFunction0<? extends T1> t1Supplier;
+        private final CheckedFunction0<? extends T2> t2Supplier;
+        private final CheckedFunction0<? extends T3> t3Supplier;
+        private final CheckedFunction0<? extends T4> t4Supplier;
+        private final CheckedFunction0<? extends T5> t5Supplier;
 
-        private WithResources5(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier) {
+        private WithResources5(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1391,7 +1374,7 @@ public interface Try<T> extends Value<T>, Serializable {
         @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
         public <R> Try<R> of(CheckedFunction5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             return Try.of(() -> {
-                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get(); T5 t5 = t5Supplier.get()) {
+                try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Supplier.apply(); T3 t3 = t3Supplier.apply(); T4 t4 = t4Supplier.apply(); T5 t5 = t5Supplier.apply()) {
                     return f.apply(t1, t2, t3, t4, t5);
                 }
             });
@@ -1410,14 +1393,14 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class WithResources6<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> {
 
-        private final CheckedSupplier<? extends T1> t1Supplier;
-        private final CheckedSupplier<? extends T2> t2Supplier;
-        private final CheckedSupplier<? extends T3> t3Supplier;
-        private final CheckedSupplier<? extends T4> t4Supplier;
-        private final CheckedSupplier<? extends T5> t5Supplier;
-        private final CheckedSupplier<? extends T6> t6Supplier;
+        private final CheckedFunction0<? extends T1> t1Supplier;
+        private final CheckedFunction0<? extends T2> t2Supplier;
+        private final CheckedFunction0<? extends T3> t3Supplier;
+        private final CheckedFunction0<? extends T4> t4Supplier;
+        private final CheckedFunction0<? extends T5> t5Supplier;
+        private final CheckedFunction0<? extends T6> t6Supplier;
 
-        private WithResources6(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier) {
+        private WithResources6(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1436,7 +1419,7 @@ public interface Try<T> extends Value<T>, Serializable {
         @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
         public <R> Try<R> of(CheckedFunction6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             return Try.of(() -> {
-                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get(); T5 t5 = t5Supplier.get(); T6 t6 = t6Supplier.get()) {
+                try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Supplier.apply(); T3 t3 = t3Supplier.apply(); T4 t4 = t4Supplier.apply(); T5 t5 = t5Supplier.apply(); T6 t6 = t6Supplier.apply()) {
                     return f.apply(t1, t2, t3, t4, t5, t6);
                 }
             });
@@ -1456,15 +1439,15 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class WithResources7<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> {
 
-        private final CheckedSupplier<? extends T1> t1Supplier;
-        private final CheckedSupplier<? extends T2> t2Supplier;
-        private final CheckedSupplier<? extends T3> t3Supplier;
-        private final CheckedSupplier<? extends T4> t4Supplier;
-        private final CheckedSupplier<? extends T5> t5Supplier;
-        private final CheckedSupplier<? extends T6> t6Supplier;
-        private final CheckedSupplier<? extends T7> t7Supplier;
+        private final CheckedFunction0<? extends T1> t1Supplier;
+        private final CheckedFunction0<? extends T2> t2Supplier;
+        private final CheckedFunction0<? extends T3> t3Supplier;
+        private final CheckedFunction0<? extends T4> t4Supplier;
+        private final CheckedFunction0<? extends T5> t5Supplier;
+        private final CheckedFunction0<? extends T6> t6Supplier;
+        private final CheckedFunction0<? extends T7> t7Supplier;
 
-        private WithResources7(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier, CheckedSupplier<? extends T7> t7Supplier) {
+        private WithResources7(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1484,7 +1467,7 @@ public interface Try<T> extends Value<T>, Serializable {
         @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
         public <R> Try<R> of(CheckedFunction7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             return Try.of(() -> {
-                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get(); T5 t5 = t5Supplier.get(); T6 t6 = t6Supplier.get(); T7 t7 = t7Supplier.get()) {
+                try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Supplier.apply(); T3 t3 = t3Supplier.apply(); T4 t4 = t4Supplier.apply(); T5 t5 = t5Supplier.apply(); T6 t6 = t6Supplier.apply(); T7 t7 = t7Supplier.apply()) {
                     return f.apply(t1, t2, t3, t4, t5, t6, t7);
                 }
             });
@@ -1505,16 +1488,16 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class WithResources8<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> {
 
-        private final CheckedSupplier<? extends T1> t1Supplier;
-        private final CheckedSupplier<? extends T2> t2Supplier;
-        private final CheckedSupplier<? extends T3> t3Supplier;
-        private final CheckedSupplier<? extends T4> t4Supplier;
-        private final CheckedSupplier<? extends T5> t5Supplier;
-        private final CheckedSupplier<? extends T6> t6Supplier;
-        private final CheckedSupplier<? extends T7> t7Supplier;
-        private final CheckedSupplier<? extends T8> t8Supplier;
+        private final CheckedFunction0<? extends T1> t1Supplier;
+        private final CheckedFunction0<? extends T2> t2Supplier;
+        private final CheckedFunction0<? extends T3> t3Supplier;
+        private final CheckedFunction0<? extends T4> t4Supplier;
+        private final CheckedFunction0<? extends T5> t5Supplier;
+        private final CheckedFunction0<? extends T6> t6Supplier;
+        private final CheckedFunction0<? extends T7> t7Supplier;
+        private final CheckedFunction0<? extends T8> t8Supplier;
 
-        private WithResources8(CheckedSupplier<? extends T1> t1Supplier, CheckedSupplier<? extends T2> t2Supplier, CheckedSupplier<? extends T3> t3Supplier, CheckedSupplier<? extends T4> t4Supplier, CheckedSupplier<? extends T5> t5Supplier, CheckedSupplier<? extends T6> t6Supplier, CheckedSupplier<? extends T7> t7Supplier, CheckedSupplier<? extends T8> t8Supplier) {
+        private WithResources8(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier, CheckedFunction0<? extends T8> t8Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1535,7 +1518,7 @@ public interface Try<T> extends Value<T>, Serializable {
         @SuppressWarnings("try"/* https://bugs.openjdk.java.net/browse/JDK-8155591 */)
         public <R> Try<R> of(CheckedFunction8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             return Try.of(() -> {
-                try (T1 t1 = t1Supplier.get(); T2 t2 = t2Supplier.get(); T3 t3 = t3Supplier.get(); T4 t4 = t4Supplier.get(); T5 t5 = t5Supplier.get(); T6 t6 = t6Supplier.get(); T7 t7 = t7Supplier.get(); T8 t8 = t8Supplier.get()) {
+                try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Supplier.apply(); T3 t3 = t3Supplier.apply(); T4 t4 = t4Supplier.apply(); T5 t5 = t5Supplier.apply(); T6 t6 = t6Supplier.apply(); T7 t7 = t7Supplier.apply(); T8 t8 = t8Supplier.apply()) {
                     return f.apply(t1, t2, t3, t4, t5, t6, t7, t8);
                 }
             });

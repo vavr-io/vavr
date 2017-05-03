@@ -6,6 +6,7 @@
  */
 package io.vavr.concurrent;
 
+import io.vavr.CheckedFunction0;
 import io.vavr.control.Try;
 
 import java.util.Random;
@@ -51,14 +52,14 @@ final class Concurrent {
         Try.run(() -> Thread.sleep(RND.nextInt(SLEEP_MAX_MILLIS)));
     }
 
-    static <T> Try.CheckedSupplier<T> zZz(T value) {
+    static <T> CheckedFunction0<T> zZz(T value) {
         return () -> {
             zZz();
             return value;
         };
     }
 
-    static <T, X extends Throwable> Try.CheckedSupplier<T> zZz(X exception) {
+    static <T, X extends Throwable> CheckedFunction0<T> zZz(X exception) {
         return () -> {
             zZz();
             throw exception;

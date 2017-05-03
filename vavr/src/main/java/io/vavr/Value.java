@@ -44,7 +44,7 @@ import static io.vavr.API.*;
  * <li>{@link #getOrElse(Object)}</li>
  * <li>{@link #getOrElse(Supplier)}</li>
  * <li>{@link #getOrElseThrow(Supplier)}</li>
- * <li>{@link #getOrElseTry(Try.CheckedSupplier)}</li>
+ * <li>{@link #getOrElseTry(CheckedFunction0)}</li>
  * <li>{@link #getOrNull()}</li>
  * <li>{@link #map(Function)}</li>
  * <li>{@link #stringPrefix()}</li>
@@ -382,7 +382,7 @@ public interface Value<T> extends Iterable<T> {
      * @throws NullPointerException  if supplier is null
      * @throws Try.NonFatalException containing the original exception if this Value was empty and the Try failed.
      */
-    default T getOrElseTry(Try.CheckedSupplier<? extends T> supplier) {
+    default T getOrElseTry(CheckedFunction0<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? Try.of(supplier).get() : get();
     }

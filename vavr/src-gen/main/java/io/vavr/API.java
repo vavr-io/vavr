@@ -17,7 +17,6 @@ import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import io.vavr.control.Try.CheckedSupplier;
 import io.vavr.control.Validation;
 import java.io.PrintStream;
 import java.util.Comparator;
@@ -794,19 +793,19 @@ public final class API {
     // -- Future
 
     /**
-     * Alias for {@link Future#of(Try.CheckedSupplier)}
+     * Alias for {@link Future#of(CheckedFunction0)}
      *
      * @param <T>         Type of the computation result.
      * @param computation A computation.
      * @return A new {@link Future} instance.
      * @throws NullPointerException if computation is null.
      */
-    public static <T> Future<T> Future(CheckedSupplier<? extends T> computation) {
+    public static <T> Future<T> Future(CheckedFunction0<? extends T> computation) {
         return Future.of(computation);
     }
 
     /**
-     * Alias for {@link Future#of(ExecutorService, Try.CheckedSupplier)}
+     * Alias for {@link Future#of(ExecutorService, CheckedFunction0)}
      *
      * @param <T>             Type of the computation result.
      * @param executorService An executor service.
@@ -814,7 +813,7 @@ public final class API {
      * @return A new {@link Future} instance.
      * @throws NullPointerException if one of executorService or computation is null.
      */
-    public static <T> Future<T> Future(ExecutorService executorService, CheckedSupplier<? extends T> computation) {
+    public static <T> Future<T> Future(ExecutorService executorService, CheckedFunction0<? extends T> computation) {
         return Future.of(executorService, computation);
     }
 
@@ -894,14 +893,14 @@ public final class API {
     // -- Try
 
     /**
-     * Alias for {@link Try#of(CheckedSupplier)}
+     * Alias for {@link Try#of(CheckedFunction0)}
      *
      * @param <T>      Component type
      * @param supplier A checked supplier
      * @return {@link Try.Success} if no exception occurs, otherwise {@link Try.Failure} if an
      * exception occurs calling {@code supplier.get()}.
      */
-    public static <T> Try<T> Try(CheckedSupplier<? extends T> supplier) {
+    public static <T> Try<T> Try(CheckedFunction0<? extends T> supplier) {
         return Try.of(supplier);
     }
 
