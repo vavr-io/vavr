@@ -164,7 +164,7 @@ public abstract class AbstractValueTest {
         assertThat(empty().getOrElseTry(() -> 2)).isEqualTo(2);
     }
 
-    @Test(expected = Try.NonFatalException.class)
+    @Test(expected = Error.class)
     public void shouldThrowWhenCallingGetOrElseTryOnEmptyValueAndTryIsAFailure() {
         empty().getOrElseTry(() -> {
             throw new Error();

@@ -50,7 +50,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Override
     protected <T> Future<T> empty() {
-        return Future.failed(trivialExecutorService(), new Error());
+        return Future.failed(trivialExecutorService(), new NoSuchElementException());
     }
 
     @Override
@@ -77,12 +77,22 @@ public class FutureTest extends AbstractValueTest {
     // -- static failed()
 
     @Test
-    public void shouldCreateFailerFuture() {
+    public void shouldCreateFailureThatFailsWithRuntimeException() {
         final Future<Void> failed = Future.failed(new RuntimeException("ooops"));
         waitUntil(failed::isCompleted);
         assertThat(failed.isFailure()).isTrue();
         final Throwable t = failed.getValue().get().getCause();
         assertThat(t.getClass()).isEqualTo(RuntimeException.class);
+        assertThat(t.getMessage()).isEqualTo("ooops");
+    }
+
+    @Test
+    public void shouldCreateFailureThatFailsWithError() {
+        final Future<Void> failed = Future.failed(new Error("ooops"));
+        waitUntil(failed::isCompleted);
+        assertThat(failed.isFailure()).isTrue();
+        final Throwable t = failed.getValue().get().getCause();
+        assertThat(t.getClass()).isEqualTo(Error.class);
         assertThat(t.getMessage()).isEqualTo("ooops");
     }
 
@@ -648,7 +658,7 @@ public class FutureTest extends AbstractValueTest {
         assertCancelled(future);
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test(expected = CancellationException.class)
     public void shouldThrowOnGetAfterCancellation() {
         final Future<?> future = Future.of(Concurrent::waitForever);
         final boolean isCancelled = future.cancel();

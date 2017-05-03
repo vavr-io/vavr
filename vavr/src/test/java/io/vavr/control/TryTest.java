@@ -19,6 +19,8 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Proxy;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -60,7 +62,7 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Override
-    @Test(expected = Try.NonFatalException.class)
+    @Test(expected = NoSuchElementException.class)
     public void shouldGetEmpty() {
         empty().get();
     }
@@ -594,15 +596,20 @@ public class TryTest extends AbstractValueTest {
 
     // -- Failure.Cause
 
-    @Test(expected = Try.FatalException.class)
-    public void shouldDetectFatalException() throws Exception {
-        Try.NonFatalException.of(new OutOfMemoryError());
+    @Test(expected = InterruptedException.class)
+    public void shouldRethrowInterruptedException() throws Exception {
+        Try.failure(new InterruptedException());
+    }
+
+    @Test(expected = OutOfMemoryError.class)
+    public void shouldRethrowOutOfMemoryError() throws Exception {
+        Try.failure(new OutOfMemoryError());
     }
 
     @Test
     public void shouldDetectNonFatalException() throws Exception {
-        final Try.NonFatalException cause = Try.NonFatalException.of(new Exception());
-        assertThat(cause).isNotNull();
+        final Exception exception = new Exception();
+        assertThat(Try.failure(exception).getCause()).isSameAs(exception);
     }
 
     @Test
@@ -614,8 +621,8 @@ public class TryTest extends AbstractValueTest {
         try {
             Try.of(outer::get).get();
             Assertions.fail("Exception expected");
-        } catch (Try.FatalException x) {
-            Assertions.assertThat(x.getCause().getMessage()).isEqualTo("\uD83D\uDCA9");
+        } catch (UnknownError x) {
+            Assertions.assertThat(x.getMessage()).isEqualTo("\uD83D\uDCA9");
         } catch (Throwable x) {
             Assertions.fail("Unexpected exception type: " + x.getClass().getName());
         }
@@ -630,22 +637,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnAndNotThrowOnNonFatal() {
-        final Try.NonFatalException cause = Try.NonFatalException.of(new Exception());
-        assertThat(Try.NonFatalException.of(cause)).isNotNull();
-    }
-
-    @Test
-    public void shouldReturnToStringOnNonFatal() {
-        final Exception exception = new java.lang.Exception();
-        final Try.NonFatalException cause = Try.NonFatalException.of(exception);
-        assertThat(cause.toString()).isEqualTo("NonFatal(" + exception.toString() + ")");
-    }
-
-    @Test
-    public void shouldReturnHasCodeOnNonFatal() {
-        final Exception exception = new java.lang.Exception();
-        final Try.NonFatalException cause = Try.NonFatalException.of(exception);
-        assertThat(cause.hashCode()).isEqualTo(Objects.hashCode(exception));
+        assertThat(Try.failure(new Exception())).isNotNull();
     }
 
     // -- Failure.Fatal
@@ -654,24 +646,11 @@ public class TryTest extends AbstractValueTest {
     public void shouldReturnToStringOnFatal() {
         try {
             Try.of(() -> {
-                throw new UnknownError();
+                throw new UnknownError("test");
             });
             fail("Exception Expected");
-        } catch (Try.FatalException x) {
-            assertThat(x.toString()).isEqualTo("Fatal(java.lang.UnknownError)");
-        }
-    }
-
-    @Test
-    public void shouldReturnHashCodeOnFatal() {
-        UnknownError error = new UnknownError();
-        try {
-            Try.of(() -> {
-                throw error;
-            });
-            fail("Exception Expected");
-        } catch (Try.FatalException x) {
-            assertThat(x.hashCode()).isEqualTo(Objects.hashCode(error));
+        } catch (UnknownError x) {
+            assertThat(x.getMessage()).isEqualTo("test");
         }
     }
 
@@ -683,13 +662,13 @@ public class TryTest extends AbstractValueTest {
                 throw error;
             });
             fail("Exception Expected");
-        } catch (Try.FatalException x) {
+        } catch (UnknownError x) {
             try {
                 Try.of(() -> {
                     throw error;
                 });
                 fail("Exception Expected");
-            } catch (Try.FatalException fatal) {
+            } catch (UnknownError fatal) {
                 assertThat(x.equals(fatal)).isEqualTo(true);
             }
         }
@@ -704,7 +683,7 @@ public class TryTest extends AbstractValueTest {
         }).isFailure()).isTrue();
     }
 
-    @Test(expected = Try.FatalException.class)
+    @Test(expected = UnknownError.class)
     public void shouldPassThroughFatalException() {
         Try.of(() -> {
             throw new UnknownError();
@@ -727,9 +706,20 @@ public class TryTest extends AbstractValueTest {
 
     // -- get
 
-    @Test(expected = Try.NonFatalException.class)
+    @Test(expected = RuntimeException.class)
     public void shouldThrowWhenGetOnFailure() {
         failure().get();
+    }
+
+    @Test
+    public void shouldThrowUndeclaredThrowableExceptionWhenUsingDynamicProxiesAndGetThrows() {
+        final Value<?> testee = (Value<?>) Proxy.newProxyInstance(
+                Value.class.getClassLoader(),
+                new Class<?>[] { Value.class },
+                (proxy, method, args) -> Try.failure(new Exception()).get());
+        assertThatThrownBy(testee::get)
+                .isInstanceOf(UndeclaredThrowableException.class)
+                .hasCauseExactlyInstanceOf(Exception.class);
     }
 
     // -- getOrElse
@@ -849,9 +839,10 @@ public class TryTest extends AbstractValueTest {
         assertThat(Try.of(() -> OK).recoverWith(RuntimeException.class, x -> failure()).get()).isEqualTo(OK);
     }
 
-    @Test(expected = Try.NonFatalException.class)
+    @Test
     public void shouldReturnExceptionWhenRecoveryWasNotSuccess(){
-        Try.of(() -> {throw error();}).recoverWith(IOException.class, x -> failure()).get();
+        final Try<?> testee = Try.of(() -> { throw error(); }).recoverWith(IOException.class, x -> failure());
+        assertThatThrownBy(testee::get).isInstanceOf(RuntimeException.class).hasMessage("error");
     }
 
     @Test
@@ -868,8 +859,8 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldHandleErrorDuringRecovering(){
-        Try<?> t = Try.of(() -> {throw new IllegalArgumentException(OK);}).recoverWith(IOException.class, x -> { throw new IllegalStateException(FAILURE);});
-        assertThatThrownBy(t::get).hasRootCauseExactlyInstanceOf(IllegalArgumentException.class);
+        final Try<?> t = Try.of(() -> {throw new IllegalArgumentException(OK);}).recoverWith(IOException.class, x -> { throw new IllegalStateException(FAILURE);});
+        assertThatThrownBy(t::get).isInstanceOf(IllegalArgumentException.class);
     }
 
     // -- recoverWith(Class, Try)
@@ -1101,7 +1092,7 @@ public class TryTest extends AbstractValueTest {
         );
         assertThat(actual).isSameAs(testee);
     }
-    
+
     // -- andThen
 
     @Test
@@ -1173,7 +1164,7 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldHashFailure() {
         final Throwable error = error();
-        assertThat(Try.failure(error).hashCode()).isEqualTo(Objects.hashCode(error));
+        assertThat(Try.failure(error).hashCode()).isEqualTo(Arrays.hashCode(error.getStackTrace()));
     }
 
     // toString
@@ -1304,9 +1295,10 @@ public class TryTest extends AbstractValueTest {
         assertThat(success().filter(s -> true, s -> new IllegalArgumentException(s)).get()).isEqualTo(OK);
     }
 
-    @Test(expected = Try.NonFatalException.class)
+    @Test
     public void shouldFilterNonMatchingPredicateOnSuccess() {
-        success().filter(s -> false).get();
+        final Try<?> testee = success().filter(s -> false);
+        assertThatThrownBy(testee::get).isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
@@ -1326,7 +1318,7 @@ public class TryTest extends AbstractValueTest {
         assertThat(success().filter(s -> false, str -> new IllegalArgumentException(str)).getCause())
                 .isInstanceOf(IllegalArgumentException.class);
     }
-    
+
     @Test(expected = RuntimeException.class)
     public void shouldFilterWithExceptionOnSuccess() {
         success().filter(s -> {
@@ -1370,16 +1362,18 @@ public class TryTest extends AbstractValueTest {
         assertThat(success().map(s -> s + "!").get()).isEqualTo(OK + "!");
     }
 
-    @Test(expected = Try.NonFatalException.class)
+    @Test
     public void shouldMapWithExceptionOnSuccess() {
-        success().map(s -> {
+        final Try<?> testee = success().map(s -> {
             throw new RuntimeException("xxx");
-        }).get();
+        });
+        assertThatThrownBy(testee::get).isInstanceOf(RuntimeException.class).hasMessage("xxx");
     }
 
-    @Test(expected = Try.NonFatalException.class)
+    @Test
     public void shouldThrowWhenCallingFailedOnSuccess() {
-        success().failed().get();
+        final Try<?> testee = success().failed();
+        assertThatThrownBy(testee::get).isInstanceOf(NoSuchElementException.class);
     }
 
     @Test(expected = UnsupportedOperationException.class)

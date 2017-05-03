@@ -494,6 +494,12 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     @Override
     <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f);
 
+    /**
+     * Gets the first value in iteration order if this {@code Traversable} is not empty, otherwise throws.
+     *
+     * @return the first value
+     * @throws NoSuchElementException if this {@code Traversable} is empty.
+     */
     @Override
     default T get() {
         return iterator().next();

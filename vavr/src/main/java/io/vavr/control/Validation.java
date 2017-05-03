@@ -371,10 +371,10 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Gets the value of this Validation if is a Valid or throws if this is an Invalid
+     * Gets the value of this {@code Validation} if is a {@code Valid} or throws if this is an {@code Invalid}.
      *
-     * @return The value of this Validation
-     * @throws NoSuchElementException if this is an Invalid
+     * @return The value of this {@code Validation}
+     * @throws NoSuchElementException if this is an {@code Invalid}
      */
     @Override
     T get();
