@@ -10,6 +10,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
+ * <strong>INTERNAL API - This class is subject to change.</strong>
+ * <p>
  * This is a general definition of a (checked/unchecked) function of unknown parameters and a return type R.
  * <p>
  * A checked function may throw an exception. The exception type cannot be expressed as a generic type parameter
@@ -17,10 +19,8 @@ import java.util.Map;
  *
  * @param <R> Return type of the function.
  * @author Daniel Dietrich
- * @deprecated Will be removed from the public API (an internally renamed to Lambda) in 0.9.0
  */
-@Deprecated
-public interface λ<R> extends Serializable {
+interface Lambda<R> extends Serializable {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -38,21 +38,21 @@ public interface λ<R> extends Serializable {
      *
      * @return a curried function equivalent to this.
      */
-    λ<?> curried();
+    Lambda<?> curried();
 
     /**
      * Returns a tupled version of this function.
      *
      * @return a tupled function equivalent to this.
      */
-    λ<R> tupled();
+    Lambda<R> tupled();
 
     /**
      * Returns a reversed version of this function. This may be useful in a recursive context.
      *
      * @return a reversed function equivalent to this.
      */
-    λ<R> reversed();
+    Lambda<R> reversed();
 
     /**
      * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
@@ -62,7 +62,7 @@ public interface λ<R> extends Serializable {
      *
      * @return a memoizing function equivalent to this.
      */
-    λ<R> memoized();
+    Lambda<R> memoized();
 
     /**
      * Checks if this function is memoizing (= caching) computed values.
@@ -75,9 +75,7 @@ public interface λ<R> extends Serializable {
 
     /**
      * Zero Abstract Method (ZAM) interface for marking functions as memoized using intersection types.
-     * @deprecated Will be removed (from the public API) in 0.9.0
      */
-    @Deprecated
     interface Memoized {
         static <T extends Tuple, R> R of(Map<T, R> cache, T key, Function1<T, R> tupled) {
             synchronized (cache) {
@@ -90,6 +88,5 @@ public interface λ<R> extends Serializable {
                 }
             }
         }
-
     }
 }

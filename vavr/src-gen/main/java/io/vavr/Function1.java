@@ -25,9 +25,8 @@ import java.util.function.Predicate;
  * @param <R> return type of the function
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 @FunctionalInterface
-public interface Function1<T1, R> extends λ<R>, Function<T1, R> {
+public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
