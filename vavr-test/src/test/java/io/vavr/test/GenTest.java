@@ -145,7 +145,7 @@ public class GenTest {
 
     @Test
     public void shouldChooseCharWhenMinEqualsMax() {
-        assertForAll(() -> Gen.choose('λ', 'λ').apply(RANDOM), c -> c == 'λ');
+        assertForAll(() -> Gen.choose('a', 'a').apply(RANDOM), c -> c == 'a');
     }
 
     // -- choose(array)

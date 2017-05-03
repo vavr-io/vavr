@@ -1452,9 +1452,8 @@ def generateMainClasses(): Unit = {
            * @param <R> return type of the function
            * @author Daniel Dietrich
            */
-          @SuppressWarnings("deprecation")
           @FunctionalInterface
-          public interface $className$fullGenerics extends λ<R>$additionalExtends {
+          public interface $className$fullGenerics extends Lambda<R>$additionalExtends {
 
               /$javadoc
                * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.

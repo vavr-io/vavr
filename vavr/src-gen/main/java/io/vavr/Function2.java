@@ -26,9 +26,8 @@ import java.util.function.Function;
  * @param <R> return type of the function
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 @FunctionalInterface
-public interface Function2<T1, T2, R> extends λ<R>, BiFunction<T1, T2, R> {
+public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.

@@ -22,9 +22,8 @@ import java.util.function.Supplier;
  * @param <R> return type of the function
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 @FunctionalInterface
-public interface Function0<R> extends λ<R>, Supplier<R> {
+public interface Function0<R> extends Lambda<R>, Supplier<R> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
