@@ -11,11 +11,8 @@ import static io.vavr.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
+import io.vavr.*;
 import io.vavr.collection.Seq;
-import io.vavr.AbstractValueTest;
-import io.vavr.Function1;
-import io.vavr.PartialFunction;
-import io.vavr.Serializables;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
@@ -1481,7 +1478,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldNegateCheckedPredicate() {
-        final Try.CheckedPredicate<Integer> greaterThanZero = i -> i > 0;
+        final CheckedPredicate<Integer> greaterThanZero = i -> i > 0;
         final int num = 1;
         try {
             assertThat(greaterThanZero.test(num)).isTrue();

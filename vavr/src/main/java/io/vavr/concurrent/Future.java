@@ -469,7 +469,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future instance which results in nothing.
      * @throws NullPointerException if unit is null.
      */
-    static Future<Void> run(Try.CheckedRunnable unit) {
+    static Future<Void> run(CheckedRunnable unit) {
         return run(DEFAULT_EXECUTOR_SERVICE, unit);
     }
 
@@ -481,7 +481,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future instance which results in nothing.
      * @throws NullPointerException if one of executorService or unit is null.
      */
-    static Future<Void> run(ExecutorService executorService, Try.CheckedRunnable unit) {
+    static Future<Void> run(ExecutorService executorService, CheckedRunnable unit) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(unit, "unit is null");
         return Future.of(executorService, () -> {
@@ -786,13 +786,13 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Filters the result of this {@code Future} by calling {@link Try#filterTry(Try.CheckedPredicate)}.
+     * Filters the result of this {@code Future} by calling {@link Try#filterTry(CheckedPredicate)}.
      *
      * @param predicate A checked predicate
      * @return A new {@code Future}
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Future<T> filterTry(Try.CheckedPredicate<? super T> predicate) {
+    default Future<T> filterTry(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Promise<T> promise = Promise.make(executorService());
         onComplete(result -> promise.complete(result.filterTry(predicate)));

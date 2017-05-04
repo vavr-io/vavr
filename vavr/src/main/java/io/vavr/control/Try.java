@@ -859,64 +859,6 @@ public interface Try<T> extends Value<T>, Serializable {
     String toString();
 
     /**
-     * A {@linkplain java.util.function.Consumer} which may throw.
-     *
-     * @param <T> the type of value supplied to this consumer.
-     */
-    @FunctionalInterface
-    interface CheckedConsumer<T> {
-
-        /**
-         * Performs side-effects.
-         *
-         * @param value a value
-         * @throws Throwable if an error occurs
-         */
-        void accept(T value) throws Throwable;
-    }
-
-    /**
-     * A {@linkplain java.util.function.Predicate} which may throw.
-     *
-     * @param <T> the type of the input to the predicate
-     */
-    @FunctionalInterface
-    interface CheckedPredicate<T> {
-
-        /**
-         * Evaluates this predicate on the given argument.
-         *
-         * @param t the input argument
-         * @return {@code true} if the input argument matches the predicate, otherwise {@code false}
-         * @throws Throwable if an error occurs
-         */
-        boolean test(T t) throws Throwable;
-
-        /**
-         * Negates this predicate.
-         *
-         * @return A new CheckedPredicate.
-         */
-        default CheckedPredicate<T> negate() {
-            return t -> !test(t);
-        }
-    }
-
-    /**
-     * A {@linkplain java.lang.Runnable} which may throw.
-     */
-    @FunctionalInterface
-    interface CheckedRunnable {
-
-        /**
-         * Performs side-effects.
-         *
-         * @throws Throwable if an error occurs
-         */
-        void run() throws Throwable;
-    }
-
-    /**
      * A succeeded Try.
      *
      * @param <T> component type of this Success
