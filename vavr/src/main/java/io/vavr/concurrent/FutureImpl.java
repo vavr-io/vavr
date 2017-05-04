@@ -6,6 +6,7 @@
  */
 package io.vavr.concurrent;
 
+import io.vavr.CheckedFunction0;
 import io.vavr.collection.Queue;
 import io.vavr.control.Try;
 import io.vavr.control.Option;
@@ -21,7 +22,7 @@ import java.util.function.Consumer;
  * Once a {@code FutureImpl} is created, one (and only one) of the following methods is called
  * to complete it with a result:
  * <ul>
- * <li>{@link #run(Try.CheckedSupplier)} - typically called within a {@code Future} factory method</li>
+ * <li>{@link #run(CheckedFunction0)} - typically called within a {@code Future} factory method</li>
  * <li>{@link #tryComplete(Try)} - explicit write operation, typically called by {@code Promise}</li>
  * </ul>
  * <p>
@@ -90,7 +91,7 @@ final class FutureImpl<T> implements Future<T> {
     private java.util.concurrent.Future<?> job = null;
 
     /**
-     * Creates a Future, {@link #run(Try.CheckedSupplier)} has to be called separately.
+     * Creates a Future, {@link #run(CheckedFunction0)} has to be called separately.
      *
      * @param executorService An {@link ExecutorService} to run and control the computation and to perform the actions.
      */
@@ -180,7 +181,7 @@ final class FutureImpl<T> implements Future<T> {
      * @throws IllegalStateException if the Future is pending, completed or cancelled
      * @throws NullPointerException  if {@code computation} is null.
      */
-    void run(Try.CheckedSupplier<? extends T> computation) {
+    void run(CheckedFunction0<? extends T> computation) {
         Objects.requireNonNull(computation, "computation is null");
         synchronized (lock) {
             if (job != null) {

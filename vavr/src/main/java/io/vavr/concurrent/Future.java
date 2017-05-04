@@ -6,15 +6,12 @@
  */
 package io.vavr.concurrent;
 
-import io.vavr.PartialFunction;
-import io.vavr.Tuple;
-import io.vavr.Value;
+import io.vavr.*;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import io.vavr.Tuple2;
 import io.vavr.collection.List;
 
 import java.util.NoSuchElementException;
@@ -404,7 +401,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future instance.
      * @throws NullPointerException if computation is null.
      */
-    static <T> Future<T> of(Try.CheckedSupplier<? extends T> computation) {
+    static <T> Future<T> of(CheckedFunction0<? extends T> computation) {
         return Future.of(DEFAULT_EXECUTOR_SERVICE, computation);
     }
 
@@ -417,7 +414,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future instance.
      * @throws NullPointerException if one of executorService or computation is null.
      */
-    static <T> Future<T> of(ExecutorService executorService, Try.CheckedSupplier<? extends T> computation) {
+    static <T> Future<T> of(ExecutorService executorService, CheckedFunction0<? extends T> computation) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(computation, "computation is null");
         final FutureImpl<T> future = new FutureImpl<>(executorService);
@@ -472,7 +469,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future instance which results in nothing.
      * @throws NullPointerException if unit is null.
      */
-    static Future<Void> run(Try.CheckedRunnable unit) {
+    static Future<Void> run(CheckedRunnable unit) {
         return run(DEFAULT_EXECUTOR_SERVICE, unit);
     }
 
@@ -484,7 +481,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future instance which results in nothing.
      * @throws NullPointerException if one of executorService or unit is null.
      */
-    static Future<Void> run(ExecutorService executorService, Try.CheckedRunnable unit) {
+    static Future<Void> run(ExecutorService executorService, CheckedRunnable unit) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(unit, "unit is null");
         return Future.of(executorService, () -> {
@@ -789,13 +786,13 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Filters the result of this {@code Future} by calling {@link Try#filterTry(Try.CheckedPredicate)}.
+     * Filters the result of this {@code Future} by calling {@link Try#filterTry(CheckedPredicate)}.
      *
      * @param predicate A checked predicate
      * @return A new {@code Future}
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Future<T> filterTry(Try.CheckedPredicate<? super T> predicate) {
+    default Future<T> filterTry(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Promise<T> promise = Promise.make(executorService());
         onComplete(result -> promise.complete(result.filterTry(predicate)));
@@ -1004,7 +1001,7 @@ public interface Future<T> extends Value<T> {
         return flatMapTry(mapper::apply);
     }
 
-    default <U> Future<U> flatMapTry(Try.CheckedFunction<? super T, ? extends Future<? extends U>> mapper) {
+    default <U> Future<U> flatMapTry(CheckedFunction1<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Promise<U> promise = Promise.make(executorService());
         onComplete((Try<T> result) -> result.mapTry(mapper)
@@ -1099,7 +1096,7 @@ public interface Future<T> extends Value<T> {
         return transformValue(t -> t.map(mapper::apply));
     }
 
-    default <U> Future<U> mapTry(Try.CheckedFunction<? super T, ? extends U> mapper) {
+    default <U> Future<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return transformValue(t -> t.mapTry(mapper::apply));
     }

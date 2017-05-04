@@ -52,7 +52,7 @@ def generateMainClasses(): Unit = {
       val IteratorType = im.getType("io.vavr.collection.Iterator")
       val EitherType = im.getType("io.vavr.control.Either")
       val FutureType = im.getType("io.vavr.concurrent.Future")
-      val CheckedSupplierType = im.getType("io.vavr.control.Try.CheckedSupplier")
+      val CheckedFunction0Type = im.getType("io.vavr.CheckedFunction0")
       val TryType = im.getType("io.vavr.control.Try")
       val ValidationType = im.getType("io.vavr.control.Validation")
       val CharSeqType = im.getType("io.vavr.collection.CharSeq")
@@ -465,19 +465,19 @@ def generateMainClasses(): Unit = {
           // -- Future
 
           /$javadoc
-           * Alias for {@link $FutureType#of($TryType.$CheckedSupplierType)}
+           * Alias for {@link $FutureType#of($CheckedFunction0Type)}
            *
            * @param <T>         Type of the computation result.
            * @param computation A computation.
            * @return A new {@link $FutureType} instance.
            * @throws NullPointerException if computation is null.
            */
-          public static <T> $FutureType<T> Future($CheckedSupplierType<? extends T> computation) {
+          public static <T> $FutureType<T> Future($CheckedFunction0Type<? extends T> computation) {
               return $FutureType.of(computation);
           }
 
           /$javadoc
-           * Alias for {@link $FutureType#of($ExecutorServiceType, $TryType.$CheckedSupplierType)}
+           * Alias for {@link $FutureType#of($ExecutorServiceType, $CheckedFunction0Type)}
            *
            * @param <T>             Type of the computation result.
            * @param executorService An executor service.
@@ -485,7 +485,7 @@ def generateMainClasses(): Unit = {
            * @return A new {@link $FutureType} instance.
            * @throws NullPointerException if one of executorService or computation is null.
            */
-          public static <T> $FutureType<T> Future($ExecutorServiceType executorService, $CheckedSupplierType<? extends T> computation) {
+          public static <T> $FutureType<T> Future($ExecutorServiceType executorService, $CheckedFunction0Type<? extends T> computation) {
               return $FutureType.of(executorService, computation);
           }
 
@@ -565,14 +565,14 @@ def generateMainClasses(): Unit = {
           // -- Try
 
           /$javadoc
-           * Alias for {@link $TryType#of($CheckedSupplierType)}
+           * Alias for {@link $TryType#of($CheckedFunction0Type)}
            *
            * @param <T>      Component type
            * @param supplier A checked supplier
            * @return {@link $TryType.Success} if no exception occurs, otherwise {@link $TryType.Failure} if an
            * exception occurs calling {@code supplier.get()}.
            */
-          public static <T> $TryType<T> Try($CheckedSupplierType<? extends T> supplier) {
+          public static <T> $TryType<T> Try($CheckedFunction0Type<? extends T> supplier) {
               return $TryType.of(supplier);
           }
 
