@@ -1033,11 +1033,7 @@ public interface Future<T> extends Value<T> {
      */
     @Override
     default T get() {
-        // does not need to be synchronized, await() has to check the completed state again
-        if (!isCompleted()) {
-            await();
-        }
-        return getValue().get().get();
+        return await().getValue().get().get();
     }
 
     /**
@@ -1057,11 +1053,7 @@ public interface Future<T> extends Value<T> {
      */
     @Override
     default boolean isEmpty() {
-        // does not need to be synchronized, await() has to check the completed state again
-        if (!isCompleted()) {
-            await();
-        }
-        return getValue().get().isEmpty();
+        return await().getValue().get().isEmpty();
     }
 
     /**
