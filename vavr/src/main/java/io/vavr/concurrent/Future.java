@@ -1024,21 +1024,20 @@ public interface Future<T> extends Value<T> {
     }
 
     /**
-     * Returns the value of the future. Waits for the result if necessary.
-     *
-     * @return The value of this future.
-     * @throws NoSuchElementException if the computation unexpectedly failed or was interrupted.
+     * Gets the value if the computation result is a {@code Success} or throws if it was a {@code Failure}.
+     * Waits for the result if necessary by blocking the current thread.
+     * <p>
+     * <strong>IMPORTANT! If the computation result is a {@link Try.Failure}, the underlying {@code cause} of type {@link Throwable} is thrown.</strong>
+     * 
+     * @return The value of this {@code Future}.
      */
-    // DEV-NOTE: A NoSuchElementException is thrown instead of the exception of the underlying Failure in order to
-    //           be conform to Value#get
     @Override
     default T get() {
-        // is empty will block until result is available
-        if (isEmpty()) {
-            throw new NoSuchElementException("get on failed future");
-        } else {
-            return getValue().get().get();
+        // does not need to be synchronized, await() has to check the completed state again
+        if (!isCompleted()) {
+            await();
         }
+        return getValue().get().get();
     }
 
     /**
@@ -1058,7 +1057,7 @@ public interface Future<T> extends Value<T> {
      */
     @Override
     default boolean isEmpty() {
-        // does not need to be synchronized, wait() has to check the completed state again
+        // does not need to be synchronized, await() has to check the completed state again
         if (!isCompleted()) {
             await();
         }

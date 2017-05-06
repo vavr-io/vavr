@@ -325,7 +325,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * Gets the right value if this is a {@code Right} or throws if this is a {@code Left}.
      *
      * @return the right value
-     * @throws NoSuchElementException if this is a Left.
+     * @throws NoSuchElementException if this is a {@code Left}.
      */
     @Override
     R get();
@@ -470,10 +470,10 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         /**
-         * Gets the Left value or throws.
+         * Gets the {@code Left} value or throws.
          *
-         * @return the left value, if the underlying Either is a Left
-         * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
+         * @return the left value, if the underlying {@code Either} is a {@code Left}
+         * @throws NoSuchElementException if the underlying {@code Either} of this {@code LeftProjection} is a {@code Right}
          */
         @Override
         public L get() {
@@ -723,10 +723,10 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         /**
-         * Gets the Right value or throws.
+         * Gets the {@code Right} value or throws.
          *
-         * @return the left value, if the underlying Either is a Right
-         * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
+         * @return the right value, if the underlying {@code Either} is a {@code Right}
+         * @throws NoSuchElementException if the underlying {@code Either} of this {@code RightProjection} is a {@code Left}
          */
         @Override
         public R get() {

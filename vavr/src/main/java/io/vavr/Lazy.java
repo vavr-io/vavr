@@ -136,12 +136,12 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * On subsequent calls, returns the cached value.
      *
      * @return the lazy evaluated value
-     * @throws NoSuchElementException if this value is undefined
      */
     @Override
     public T get() {
         return (supplier == null) ? value : computeValue();
     }
+    
     private synchronized T computeValue() {
         final Supplier<? extends T> s = supplier;
         if (s != null) {

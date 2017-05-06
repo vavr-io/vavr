@@ -254,6 +254,12 @@ public interface Option<T> extends Value<T>, Serializable {
         return true;
     }
 
+    /**
+     * Gets the value if this is a {@code Some} or throws if this is a {@code None}.
+     *
+     * @return the value
+     * @throws NoSuchElementException if this is a {@code None}.
+     */
     @Override
     T get();
 

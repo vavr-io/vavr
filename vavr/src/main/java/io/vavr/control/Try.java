@@ -22,9 +22,24 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static io.vavr.API.Match;
+import static io.vavr.control.TryModule.isFatal;
+import static io.vavr.control.TryModule.sneakyThrow;
 
 /**
- * An implementation similar to Scala's Try control.
+ * The Try control gives us the ability write safe code without focusing on try-catch blocks in the presence of exceptions.
+ * <p>
+ * The following exceptions are considered to be fatal/non-recoverable:
+ * <ul>
+ * <li>{@linkplain InterruptedException}</li>
+ * <li>{@linkplain LinkageError}</li>
+ * <li>{@linkplain ThreadDeath}</li>
+ * <li>{@linkplain VirtualMachineError} (i.e. {@linkplain OutOfMemoryError} or {@linkplain StackOverflowError})</li>
+ * </ul>
+ * <p>
+ * <strong>Important note:</strong> Try may re-throw (undeclared) exceptions, e.g. on {@code get()}. From within a
+ * dynamic proxy {@link java.lang.reflect.InvocationHandler} this will lead to an
+ * {@link java.lang.reflect.UndeclaredThrowableException}. For more information, please read
+ * <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/proxy.html">Dynamic Proxy Classes</a>.
  *
  * @param <T> Value type in the case of success.
  * @author Daniel Dietrich
@@ -449,10 +464,13 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Gets the result of this Try if this is a Success or throws if this is a Failure.
+     * Gets the result of this Try if this is a {@code Success} or throws if this is a {@code Failure}.
+     * <p>
+     * <strong>IMPORTANT! If this is a {@link Failure}, the underlying {@code cause} of type {@link Throwable} is thrown.</strong>
+     * <p>
+     * The thrown exception is exactly the same as the result of {@link #getCause()}.
      *
-     * @return The result of this Try.
-     * @throws NonFatalException if this is a Failure
+     * @return The result of this {@code Try}.
      */
     @Override
     T get();
@@ -935,29 +953,31 @@ public interface Try<T> extends Value<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private final NonFatalException cause;
+        private final Throwable cause;
 
         /**
          * Constructs a Failure.
          *
-         * @param exception A cause of type Throwable, may not be null.
-         * @throws NullPointerException if exception is null
-         * @throws Error                if the given exception if fatal, i.e. non-recoverable
+         * @param cause A cause of type Throwable, may not be null.
+         * @throws NullPointerException if {@code cause} is null
+         * @throws Throwable            if the given {@code cause} is fatal, i.e. non-recoverable
          */
-        private Failure(Throwable exception) {
-            Objects.requireNonNull(exception, "exception is null");
-            cause = NonFatalException.of(exception);
+        private Failure(Throwable cause) {
+            Objects.requireNonNull(cause, "cause is null");
+            if (isFatal(cause)) {
+                sneakyThrow(cause);
+            }
+            this.cause = cause;
         }
 
-        // Throws NonFatal instead of Throwable because it is a RuntimeException which does not need to be checked.
         @Override
-        public T get() throws NonFatalException {
-            throw cause;
+        public T get() {
+            return sneakyThrow(cause);
         }
 
         @Override
         public Throwable getCause() {
-            return cause.getCause();
+            return cause;
         }
 
         @Override
@@ -977,7 +997,7 @@ public interface Try<T> extends Value<T>, Serializable {
 
         @Override
         public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof Failure && Objects.equals(cause, ((Failure<?>) obj).cause));
+            return (obj == this) || (obj instanceof Failure && Arrays.deepEquals(cause.getStackTrace(), ((Failure<?>) obj).cause.getStackTrace()));
         }
 
         @Override
@@ -987,12 +1007,12 @@ public interface Try<T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(cause.getCause());
+            return Arrays.hashCode(cause.getStackTrace());
         }
 
         @Override
         public String toString() {
-            return stringPrefix() + "(" + cause.getCause() + ")";
+            return stringPrefix() + "(" + cause + ")";
         }
 
     }
@@ -1466,120 +1486,21 @@ public interface Try<T> extends Value<T>, Serializable {
             });
         }
     }
+}
 
-    // -- exception wrappers
+interface TryModule {
 
-    /**
-     * An unchecked wrapper for Fatal exceptions.
-     * <p>
-     * See {@link NonFatalException}.
-     * @deprecated Will be removed in 0.9.0. Instead we throw sneaky.
-     */
-    @Deprecated
-    final class FatalException extends RuntimeException implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        private FatalException(Throwable exception) {
-            super(exception);
-        }
-
-        /**
-         * Two Fatal exceptions are equal, if they have the same stack trace.
-         *
-         * @param o An object
-         * @return true, if o equals this, false otherwise.
-         */
-        @Override
-        public boolean equals(Object o) {
-            return (o == this) || (o instanceof FatalException
-                    && Arrays.deepEquals(getCause().getStackTrace(), ((FatalException) o).getCause().getStackTrace()));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(getCause());
-        }
-
-        @Override
-        public String toString() {
-            return "Fatal(" + getCause() + ")";
-        }
+    static boolean isFatal(Throwable throwable) {
+        return throwable instanceof InterruptedException
+                || throwable instanceof LinkageError
+                || throwable instanceof ThreadDeath
+                || throwable instanceof VirtualMachineError;
     }
 
-    /**
-     * An unchecked wrapper for non-fatal/recoverable exceptions. The underlying exception can
-     * be accessed via {@link #getCause()}.
-     * <p>
-     * The following exceptions are considered to be fatal/non-recoverable:
-     * <ul>
-     * <li>{@linkplain InterruptedException}</li>
-     * <li>{@linkplain LinkageError}</li>
-     * <li>{@linkplain ThreadDeath}</li>
-     * <li>{@linkplain VirtualMachineError} (i.e. {@linkplain OutOfMemoryError} or {@linkplain StackOverflowError})</li>
-     * </ul>
-     * @deprecated Will be removed in 0.9.0. Instead we throw sneaky.
-     */
-    @Deprecated
-    final class NonFatalException extends RuntimeException implements Serializable {
-
-        private static final long serialVersionUID = 1L;
-
-        private NonFatalException(Throwable exception) {
-            super(exception);
-        }
-
-        /**
-         * Wraps the given exception in a {@code NonFatal} or throws an {@link Error} if the given exception is fatal.
-         * <p>
-         * Note: InterruptedException is not considered to be fatal. It should be handled explicitly but we cannot
-         * throw it directly because it is not an Error. If we would wrap it in an Error, we couldn't handle it
-         * directly. Therefore it is not thrown as fatal exception.
-         *
-         * @param exception A Throwable
-         * @return A new {@code NonFatal} if the given exception is recoverable
-         * @throws Error                if the given exception is fatal, i.e. not recoverable
-         * @throws NullPointerException if exception is null
-         */
-        static NonFatalException of(Throwable exception) {
-            Objects.requireNonNull(exception, "exception is null");
-            if (exception instanceof NonFatalException) {
-                return (NonFatalException) exception;
-            } else if (exception instanceof FatalException) {
-                throw (FatalException) exception;
-            } else {
-                final boolean isFatal = exception instanceof InterruptedException
-                        || exception instanceof LinkageError
-                        || exception instanceof ThreadDeath
-                        || exception instanceof VirtualMachineError;
-                if (isFatal) {
-                    throw new FatalException(exception);
-                } else {
-                    return new NonFatalException(exception);
-                }
-            }
-        }
-
-        /**
-         * Two NonFatal exceptions are equal, if they have the same stack trace.
-         *
-         * @param o An object
-         * @return true, if o equals this, false otherwise.
-         */
-        @Override
-        public boolean equals(Object o) {
-            return (o == this) || (o instanceof NonFatalException
-                    && Arrays.deepEquals(getCause().getStackTrace(), ((NonFatalException) o).getCause().getStackTrace()));
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(getCause());
-        }
-
-        @Override
-        public String toString() {
-            return "NonFatal(" + getCause() + ")";
-        }
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
     }
+
 }

@@ -93,37 +93,37 @@ def generateMainClasses(): Unit = {
           }
 
           /**
-           * Creates an Error caused by an exception when obtaining a generator.
+           * Creates a CheckError caused by an exception when obtaining a generator.
            *
            * @param position The position of the argument within the argument list of the property, starting with 1.
            * @param size     The size hint passed to the {@linkplain Arbitrary} which caused the error.
            * @param cause    The error which occurred when the {@linkplain Arbitrary} tried to obtain the generator {@linkplain Gen}.
-           * @return a new Error instance.
+           * @return a new CheckError instance.
            */
-          private static Error arbitraryError(int position, int size, Throwable cause) {
-              return new Error(String.format("Arbitrary %s of size %s: %s", position, size, cause.getMessage()), cause);
+          private static CheckError arbitraryError(int position, int size, Throwable cause) {
+              return new CheckError(String.format("Arbitrary %s of size %s: %s", position, size, cause.getMessage()), cause);
           }
 
           /**
-           * Creates an Error caused by an exception when generating a value.
+           * Creates a CheckError caused by an exception when generating a value.
            *
            * @param position The position of the argument within the argument list of the property, starting with 1.
            * @param size     The size hint of the arbitrary which called the generator {@linkplain Gen} which caused the error.
            * @param cause    The error which occurred when the {@linkplain Gen} tried to generate a random value.
-           * @return a new Error instance.
+           * @return a new CheckError instance.
            */
-          private static Error genError(int position, int size, Throwable cause) {
-              return new Error(String.format("Gen %s of size %s: %s", position, size, cause.getMessage()), cause);
+          private static CheckError genError(int position, int size, Throwable cause) {
+              return new CheckError(String.format("Gen %s of size %s: %s", position, size, cause.getMessage()), cause);
           }
 
           /**
-           * Creates an Error caused by an exception when testing a Predicate.
+           * Creates a CheckError caused by an exception when testing a Predicate.
            *
            * @param cause The error which occurred when applying the {@linkplain java.util.function.Predicate}.
-           * @return a new Error instance.
+           * @return a new CheckError instance.
            */
-          private static Error predicateError(Throwable cause) {
-              return new Error("Applying predicate: " + cause.getMessage(), cause);
+          private static CheckError predicateError(Throwable cause) {
+              return new CheckError("Applying predicate: " + cause.getMessage(), cause);
           }
 
           ${(1 to N).gen(i => {
@@ -189,7 +189,7 @@ def generateMainClasses(): Unit = {
               val optionType = im.getType("io.vavr.control.Option")
               val randomType = im.getType("java.util.Random")
               val tryType = im.getType("io.vavr.control.Try")
-              val nonFatalType = "Try.NonFatalException"
+              val checkException = "CheckException"
               val tupleType = im.getType(s"io.vavr.Tuple")
 
               val generics = (1 to i).gen(j => s"T$j")(", ")
@@ -262,20 +262,20 @@ def generateMainClasses(): Unit = {
                                                   return new CheckResult.Falsified(name, i, $tupleType.of(${(1 to i).gen(j => s"val$j")(", ")}));
                                               }
                                           }
-                                      } catch($nonFatalType nonFatal) {
-                                          logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                                          return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), $optionType.some($tupleType.of(${(1 to i).gen(j => s"val$j")(", ")})));
+                                      } catch(CheckError err) {
+                                          logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
+                                          return new CheckResult.Erroneous(name, i, err, $optionType.some($tupleType.of(${(1 to i).gen(j => s"val$j")(", ")})));
                                       }
-                                  } catch($nonFatalType nonFatal) {
-                                      logErroneous(name, i, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                                      return new CheckResult.Erroneous(name, i, (Error) nonFatal.getCause(), $optionType.none());
+                                  } catch(CheckError err) {
+                                      logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
+                                      return new CheckResult.Erroneous(name, i, err, $optionType.none());
                                   }
                               }
                               logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                               return new CheckResult.Satisfied(name, tries, exhausted);
-                          } catch($nonFatalType nonFatal) {
-                              logErroneous(name, 0, System.currentTimeMillis() - startTime, nonFatal.getCause().getMessage());
-                              return new CheckResult.Erroneous(name, 0, (Error) nonFatal.getCause(), $optionType.none());
+                          } catch(CheckError err) {
+                              logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
+                              return new CheckResult.Erroneous(name, 0, err, $optionType.none());
                           }
                       }
                   }
@@ -300,6 +300,18 @@ def generateMainClasses(): Unit = {
               // ¬(p => q) ≡ ¬(¬p ∨ q) ≡ p ∧ ¬q
               boolean isFalse() {
                   return precondition && !postcondition;
+              }
+          }
+
+          /**
+           * Internally used to provide more specific error messages.
+           */
+          static class CheckError extends Error {
+
+              private static final long serialVersionUID = 1L;
+
+              CheckError(String message, Throwable cause) {
+                  super(message, cause);
               }
           }
       }

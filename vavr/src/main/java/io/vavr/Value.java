@@ -319,9 +319,20 @@ public interface Value<T> extends Iterable<T> {
 
     /**
      * Gets the underlying value or throws if no value is present.
+     * <p>
+     * <strong>IMPORTANT! This method will throw an undeclared {@link Throwable} if {@code isEmpty() == true} is true.</strong>
+     * <p>
+     * Because the 'empty' state indicates that there is no value present that can be returned,
+     * {@code get()} has to throw in such a case. Generally, implementing classes should throw a
+     * {@link java.util.NoSuchElementException} if {@code isEmpty()} returns true.
+     * <p>
+     * However, there exist use-cases, where implementations may throw other exceptions. See {@link Try#get()}.
+     * <p>
+     * <strong>Additional note:</strong> Dynamic proxies will wrap an undeclared exception in a {@link java.lang.reflect.UndeclaredThrowableException}.
+     * <p>
+     * <strong>Hint:</strong> A safe variant of {@code get()} is {@link #getOption()}.
      *
-     * @return the underlying value
-     * @throws java.util.NoSuchElementException if no value is defined
+     * @return the underlying value if this is not empty, otherwise {@code get()} throws a {@code Throwable}
      */
     T get();
 
@@ -379,8 +390,7 @@ public interface Value<T> extends Iterable<T> {
      *
      * @param supplier An alternative value supplier.
      * @return A value of type {@code T}.
-     * @throws NullPointerException  if supplier is null
-     * @throws Try.NonFatalException containing the original exception if this Value was empty and the Try failed.
+     * @throws NullPointerException if supplier is null
      */
     default T getOrElseTry(CheckedFunction0<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
@@ -555,15 +565,9 @@ public interface Value<T> extends Iterable<T> {
     @GwtIncompatible
     default CompletableFuture<T> toCompletableFuture() {
         final CompletableFuture<T> completableFuture = new CompletableFuture<>();
-        try {
-            completableFuture.complete(get());
-        } catch (Try.FatalException x) {
-            throw x;
-        } catch (Try.NonFatalException x) {
-            completableFuture.completeExceptionally(x.getCause());
-        } catch (Throwable x) {
-            completableFuture.completeExceptionally(x);
-        }
+        Try.of(this::get)
+                .onSuccess(completableFuture::complete)
+                .onFailure(completableFuture::completeExceptionally);
         return completableFuture;
     }
 

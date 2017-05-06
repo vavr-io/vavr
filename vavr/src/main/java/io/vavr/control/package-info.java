@@ -22,10 +22,5 @@
  * Exceptions are handled with the {@linkplain io.vavr.control.Try} control which is either a
  * {@linkplain io.vavr.control.Try.Success}, containing a result, or a {@linkplain io.vavr.control.Try.Failure},
  * containing an Exception.
- * <p>
- * Try internally handles exceptions by wrapping exceptions in a Cause.
- * A Cause is unchecked, i.e. a RuntimeException, and is Fatal or NonFatal.
- * Fatal exceptions cannot be handled and are thrown without further processing.
- * NonFatal exceptions are wrapped in a Failure.
  */
 package io.vavr.control;
