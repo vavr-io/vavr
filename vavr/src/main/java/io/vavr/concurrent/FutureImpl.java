@@ -102,15 +102,17 @@ final class FutureImpl<T> implements Future<T> {
 
     @Override
     public Future<T> await() {
-        final Object monitor = new Object();
-        onComplete(ignored -> {
+        if (!isCompleted()) {
+            final Object monitor = new Object();
+            onComplete(ignored -> {
+                synchronized (monitor) {
+                    monitor.notify();
+                }
+            });
             synchronized (monitor) {
-                monitor.notify();
-            }
-        });
-        synchronized (monitor) {
-            if (!isCompleted()) {
-                Try.run(monitor::wait);
+                if (!isCompleted()) {
+                    Try.run(monitor::wait);
+                }
             }
         }
         return this;
