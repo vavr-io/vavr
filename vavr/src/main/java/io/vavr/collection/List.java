@@ -1492,12 +1492,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return f.apply(this);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    default <U> List<U> unit(Iterable<? extends U> iterable) {
-        return ofAll(iterable);
-    }
-
     @Override
     default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {

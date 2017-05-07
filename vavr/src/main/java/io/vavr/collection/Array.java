@@ -1349,12 +1349,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return f.apply(this);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public <U> Array<U> unit(Iterable<? extends U> iterable) {
-        return ofAll(iterable);
-    }
-
     @Override
     public <T1, T2> Tuple2<Array<T1>, Array<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {

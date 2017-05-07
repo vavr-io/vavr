@@ -1176,10 +1176,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return f.apply(this);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public <U> Vector<U> unit(Iterable<? extends U> iterable) { return ofAll(iterable); }
-
     @Override
     public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

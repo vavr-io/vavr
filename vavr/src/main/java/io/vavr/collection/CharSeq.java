@@ -1057,12 +1057,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return f.apply(this);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public <U> IndexedSeq<U> unit(Iterable<? extends U> iterable) {
-        return Vector.ofAll(iterable);
-    }
-
     @Override
     public <T1, T2> Tuple2<IndexedSeq<T1>, IndexedSeq<T2>> unzip(Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

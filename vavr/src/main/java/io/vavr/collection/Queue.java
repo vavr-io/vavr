@@ -1245,12 +1245,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         return f.apply(this);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    public <U> Queue<U> unit(Iterable<? extends U> iterable) {
-        return ofAll(iterable);
-    }
-
     @Override
     public <T1, T2> Tuple2<Queue<T1>, Queue<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {

@@ -139,6 +139,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     Iterator<? extends IndexedSeq<T>> grouped(int size);
 
     @Override
+    default int indexOfSlice(Iterable<? extends T> that, int from) {
+        Objects.requireNonNull(that, "that is null");
+        return IndexedSeqModule.Slice.indexOfSlice(this, that, from);
+    }
+
+    @Override
     IndexedSeq<T> init();
 
     @Override
@@ -164,7 +170,8 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
-        return IndexedSeqModule.LastIndexOfSlice.lastIndexOfSlice(this, unit(that), end);
+        Objects.requireNonNull(that, "that is null");
+        return IndexedSeqModule.Slice.lastIndexOfSlice(this, that, end);
     }
 
     @Override
@@ -360,10 +367,6 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     IndexedSeq<T> takeWhile(Predicate<? super T> predicate);
 
-    @SuppressWarnings("deprecation")
-    @Override
-    <U> IndexedSeq<U> unit(Iterable<? extends U> iterable);
-
     @Override
     <T1, T2> Tuple2<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
@@ -438,29 +441,39 @@ public interface IndexedSeq<T> extends Seq<T> {
 }
 
 interface IndexedSeqModule {
-    interface LastIndexOfSlice {
-        static <T> int lastIndexOfSlice(IndexedSeq<T> t, IndexedSeq<T> slice, int end) {
+
+    class Slice {
+
+        static <T> int indexOfSlice(IndexedSeq<T> source, Iterable<? extends T> slice, int from) {
+            if (source.isEmpty()) {
+                return from == 0 && Collections.isEmpty(slice) ? 0 : -1;
+            }
+            final IndexedSeq<T> _slice = toIndexedSeq(slice);
+            final int maxIndex = source.length() - _slice.length();
+            return findSlice(source, _slice, Math.max(from, 0), maxIndex);
+        }
+
+        static <T> int lastIndexOfSlice(IndexedSeq<T> source, Iterable<? extends T> slice, int end) {
             if (end < 0) {
                 return -1;
-            }
-            if (t.isEmpty()) {
-                return slice.isEmpty() ? 0 : -1;
-            }
-            if (slice.isEmpty()) {
-                int len = t.length();
+            } else if (source.isEmpty()) {
+                return Collections.isEmpty(slice) ? 0 : -1;
+            } else if (Collections.isEmpty(slice)) {
+                final int len = source.length();
                 return len < end ? len : end;
             }
-            int p = 0;
+            int index = 0;
             int result = -1;
-            final int maxPtr = t.length() - slice.length();
-            while (p <= maxPtr) {
-                int r = findSlice(t, p, maxPtr, slice);
-                if (r < 0) {
+            final IndexedSeq<T> _slice = toIndexedSeq(slice);
+            final int maxIndex = source.length() - _slice.length();
+            while (index <= maxIndex) {
+                int indexOfSlice = findSlice(source, _slice, index, maxIndex);
+                if (indexOfSlice < 0) {
                     return result;
                 }
-                if (r <= end) {
-                    result = r;
-                    p = r + 1;
+                if (indexOfSlice <= end) {
+                    result = indexOfSlice;
+                    index = indexOfSlice + 1;
                 } else {
                     return result;
                 }
@@ -468,25 +481,30 @@ interface IndexedSeqModule {
             return result;
         }
 
-        static <T> int findSlice(IndexedSeq<T> t, int p, int maxPtr, IndexedSeq<T> slice) {
-            while (p <= maxPtr) {
-                if (t.startsWith(slice, p)) {
-                    return p;
+        private static <T> int findSlice(IndexedSeq<T> source, IndexedSeq<T> slice, int index, int maxIndex) {
+            while (index <= maxIndex) {
+                if (source.startsWith(slice, index)) {
+                    return index;
                 }
-                p++;
+                index++;
             }
             return -1;
+        }
+
+        @SuppressWarnings("unchecked")
+        private static <T> IndexedSeq<T> toIndexedSeq(Iterable<? extends T> iterable) {
+            return (iterable instanceof IndexedSeq) ? (IndexedSeq<T>) iterable : Vector.ofAll(iterable);
         }
     }
 
     interface Search {
+        
         static <T> int binarySearch(IndexedSeq<T> seq, IntUnaryOperator comparison) {
             int low = 0;
             int high = seq.size() - 1;
             while (low <= high) {
-                int mid = (low + high) >>> 1;
-                int cmp = comparison.applyAsInt(mid);
-
+                final int mid = (low + high) >>> 1;
+                final int cmp = comparison.applyAsInt(mid);
                 if (cmp < 0) {
                     low = mid + 1;
                 } else if (cmp > 0) {

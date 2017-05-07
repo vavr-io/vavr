@@ -107,6 +107,12 @@ public interface LinearSeq<T> extends Seq<T> {
     Iterator<? extends LinearSeq<T>> grouped(int size);
 
     @Override
+    default int indexOfSlice(Iterable<? extends T> that, int from) {
+        Objects.requireNonNull(that, "that is null");
+        return LinearSeqModule.Slice.indexOfSlice(this, that, from);
+    }
+
+    @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
         Objects.requireNonNull(predicate, "predicate is null");
         int i = from;
@@ -138,7 +144,8 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
-        return LinearSeqModule.LastIndexOfSlice.lastIndexOfSlice(this, unit(that), end);
+        Objects.requireNonNull(that, "that is null");
+        return LinearSeqModule.Slice.lastIndexOfSlice(this, that, end);
     }
 
     @Override
@@ -300,10 +307,6 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     LinearSeq<T> takeWhile(Predicate<? super T> predicate);
 
-    @SuppressWarnings("deprecation")
-    @Override
-    <U> LinearSeq<U> unit(Iterable<? extends U> iterable);
-
     @Override
     <T1, T2> Tuple2<? extends LinearSeq<T1>, ? extends LinearSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
@@ -369,29 +372,38 @@ public interface LinearSeq<T> extends Seq<T> {
 }
 
 interface LinearSeqModule {
-    interface LastIndexOfSlice {
-        static <T> int lastIndexOfSlice(LinearSeq<T> t, LinearSeq<T> slice, int end) {
+
+    class Slice {
+        
+        static <T> int indexOfSlice(LinearSeq<T> source, Iterable<? extends T> slice, int from) {
+            if (source.isEmpty()) {
+                return from == 0 && Collections.isEmpty(slice) ? 0 : -1;
+            }
+            final LinearSeq<T> _slice = toLinearSeq(slice);
+            return findFirstSlice(source, _slice, Math.max(from, 0));
+        }
+
+        static <T> int lastIndexOfSlice(LinearSeq<T> source, Iterable<? extends T> slice, int end) {
             if (end < 0) {
                 return -1;
-            }
-            if (t.isEmpty()) {
-                return slice.isEmpty() ? 0 : -1;
-            }
-            if (slice.isEmpty()) {
-                final int len = t.length();
+            } else if (source.isEmpty()) {
+                return Collections.isEmpty(slice) ? 0 : -1;
+            } else if (Collections.isEmpty(slice)) {
+                final int len = source.length();
                 return len < end ? len : end;
             }
-            int p = 0;
+            int index = 0;
             int result = -1;
-            while (t.length() >= slice.length()) {
-                final Tuple2<LinearSeq<T>, Integer> r = findSlice(t, slice);
+            final LinearSeq<T> _slice = toLinearSeq(slice);
+            while (source.length() >= _slice.length()) {
+                final Tuple2<LinearSeq<T>, Integer> r = findNextSlice(source, _slice);
                 if (r == null) {
                     return result;
                 }
-                if (p + r._2 <= end) {
-                    result = p + r._2;
-                    p += r._2 + 1;
-                    t = r._1.tail();
+                if (index + r._2 <= end) {
+                    result = index + r._2;
+                    index += r._2 + 1;
+                    source = r._1.tail();
                 } else {
                     return result;
                 }
@@ -399,20 +411,41 @@ interface LinearSeqModule {
             return result;
         }
 
-        static <T> Tuple2<LinearSeq<T>, Integer> findSlice(LinearSeq<T> t, LinearSeq<T> slice) {
-            int p = 0;
-            while (t.length() >= slice.length()) {
-                if (t.startsWith(slice)) {
-                    return Tuple.of(t, p);
+        private static <T> int findFirstSlice(LinearSeq<T> source, LinearSeq<T> slice, int from) {
+            int index = 0;
+            final int sliceLength = slice.length();
+            // DEV-NOTE: we can't compute the length of an infinite Stream but it may contain a slice
+            final Predicate<LinearSeq<?>> hasMore = source.isLazy() ? LinearSeq::nonEmpty : seq -> seq.length() >= sliceLength;
+            while (hasMore.test(source)) {
+                if (index >= from && source.startsWith(slice)) {
+                    return index;
                 }
-                p++;
-                t = t.tail();
+                index++;
+                source = source.tail();
+            }
+            return -1;
+        }
+
+        private static <T> Tuple2<LinearSeq<T>, Integer> findNextSlice(LinearSeq<T> source, LinearSeq<T> slice) {
+            int index = 0;
+            while (source.length() >= slice.length()) {
+                if (source.startsWith(slice)) {
+                    return Tuple.of(source, index);
+                }
+                index++;
+                source = source.tail();
             }
             return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        private static <T> LinearSeq<T> toLinearSeq(Iterable<? extends T> iterable) {
+            return (iterable instanceof LinearSeq) ? (LinearSeq<T>) iterable : List.ofAll(iterable);
         }
     }
 
     interface Search {
+        
         static <T> int linearSearch(LinearSeq<T> seq, ToIntFunction<T> comparison) {
             int idx = 0;
             for (T current : seq) {

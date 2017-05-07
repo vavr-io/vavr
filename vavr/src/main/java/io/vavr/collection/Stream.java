@@ -1570,12 +1570,6 @@ public interface Stream<T> extends LinearSeq<T> {
         return f.apply(this);
     }
 
-    @SuppressWarnings("deprecation")
-    @Override
-    default <U> Stream<U> unit(Iterable<? extends U> iterable) {
-        return Stream.ofAll(iterable);
-    }
-
     @Override
     default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
