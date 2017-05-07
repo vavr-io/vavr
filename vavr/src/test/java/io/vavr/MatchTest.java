@@ -247,8 +247,8 @@ public class MatchTest {
     public void shouldDecomposeEmptyList() {
         final List<Integer> list = List.empty();
         final boolean isEmpty = Match(list).of(
-                Case(List($(), $()), (x, xs) -> false),
-                Case(List(), true)
+                Case(Cons($(), $()), (x, xs) -> false),
+                Case(Nil(), true)
         );
         assertThat(isEmpty).isTrue();
     }
@@ -257,8 +257,8 @@ public class MatchTest {
     public void shouldDecomposeNonEmptyList() {
         final List<Integer> list = List.of(1);
         final boolean isNotEmpty = Match(list).of(
-                Case(List($(), $()), (x, xs) -> true),
-                Case(List(), false)
+                Case(Cons($(), $()), (x, xs) -> true),
+                Case(Nil(), false)
         );
         assertThat(isNotEmpty).isTrue();
     }
@@ -271,7 +271,7 @@ public class MatchTest {
                 Tuple.of("middle", 11, 0.0),
                 Tuple.of("end", 12, 1.2));
         final String actual = Match(tuple3List).of(
-                Case(List($(), $()), (x, xs) -> {
+                Case(Cons($(), $()), (x, xs) -> {
                     // types are inferred correctly!
                     final Tuple3<String, Integer, Double> head = x;
                     final List<Tuple3<String, Integer, Double>> tail = xs;
@@ -286,7 +286,7 @@ public class MatchTest {
     public void shouldDecomposeListWithNonEmptyTail() {
         final List<Option<Number>> intOptionList = List.of(Option.some(1), Option.some(2.0));
         final String actual = Match(intOptionList).of(
-                Case(List(Some($(1)), List(Some($(2.0)), $())), (x, xs) -> {
+                Case(Cons(Some($(1)), Cons(Some($(2.0)), $())), (x, xs) -> {
                     // types are inferred correctly!
                     final Some<Number> head = x;
                     final List<Option<Number>> tail = xs;

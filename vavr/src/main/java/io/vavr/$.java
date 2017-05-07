@@ -18,9 +18,7 @@ import io.vavr.control.Option;
 
 /**
  * <strong>INTERNAL TYPE - turned to io.vavr.Patterns by vavr-match annotation processor.</strong>
- * @deprecated Will be removed in 0.9.0
  */
-@Deprecated
 @Patterns
 class $ {
 
@@ -50,15 +48,9 @@ class $ {
 
     // List
     @Unapply
-    static <T> Tuple2<T, List<T>> List(List.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
+    static <T> Tuple2<T, List<T>> Cons(List.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
     @Unapply
-    static <T> Tuple0 List(List.Nil<T> nil) { return Tuple.empty(); }
-
-    // Stream
-    @Unapply
-    static <T> Tuple2<T, Stream<T>> Stream(Stream.Cons<T> cons) { return Tuple.of(cons.head(), cons.tail()); }
-    @Unapply
-    static <T> Tuple0 Stream(Stream.Empty<T> empty) { return Tuple.empty(); }
+    static <T> Tuple0 Nil(List.Nil<T> nil) { return Tuple.empty(); }
 
     // -- io.vavr.concurrent
 
