@@ -28,7 +28,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @param <T> Component type of the Vector.
  * @author Ruslan Sennov, Pap Lőrinc
  */
-@SuppressWarnings("deprecation")
 public final class Vector<T> implements IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;
 

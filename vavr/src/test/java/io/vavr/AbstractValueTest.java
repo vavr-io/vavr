@@ -28,7 +28,6 @@ import static io.vavr.API.*;
 import static io.vavr.Predicates.anyOf;
 import static io.vavr.Predicates.instanceOf;
 
-@SuppressWarnings("deprecation")
 public abstract class AbstractValueTest {
 
     protected Random getRandom(int seed) {

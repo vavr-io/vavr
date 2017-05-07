@@ -26,7 +26,6 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  */
 // DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
-@SuppressWarnings("deprecation")
 public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;

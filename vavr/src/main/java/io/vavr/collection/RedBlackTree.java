@@ -33,7 +33,6 @@ import static io.vavr.collection.RedBlackTree.Color.RED;
  * @param <T> Component type
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 interface RedBlackTree<T> extends Iterable<T> {
 
     static <T extends Comparable<? super T>> RedBlackTree<T> empty() {

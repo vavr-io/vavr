@@ -109,7 +109,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @param <T> Component type of the List
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 public interface List<T> extends LinearSeq<T> {
 
     long serialVersionUID = 1L;

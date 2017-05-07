@@ -30,7 +30,6 @@ import static io.vavr.API.Some;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
 
-@SuppressWarnings("deprecation")
 public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Override

@@ -22,7 +22,6 @@ import java.util.stream.Collector;
  *
  * @author Ruslan Sennov
  */
-@SuppressWarnings("deprecation")
 public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;

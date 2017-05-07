@@ -42,7 +42,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @param <T> Component type of the Queue
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements LinearSeq<T> {
 
     private static final long serialVersionUID = 1L;

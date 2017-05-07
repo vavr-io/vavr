@@ -24,7 +24,6 @@ import java.util.stream.Collector;
  *
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;

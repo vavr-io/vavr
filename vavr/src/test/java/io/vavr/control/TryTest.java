@@ -27,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@SuppressWarnings("deprecation")
 public class TryTest extends AbstractValueTest {
 
     private static final String OK = "ok";

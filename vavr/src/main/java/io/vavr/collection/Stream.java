@@ -99,7 +99,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @param <T> component type of this Stream
  * @author Daniel Dietrich, Jörgen Andersson, Ruslan Sennov
  */
-@SuppressWarnings("deprecation")
 public interface Stream<T> extends LinearSeq<T> {
 
     long serialVersionUID = 1L;

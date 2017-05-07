@@ -32,7 +32,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  *
  * @author Ruslan Sennov, Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -24,7 +24,6 @@ import java.util.stream.Collector;
 
 import static java.util.Arrays.asList;
 
-@SuppressWarnings("deprecation")
 @RunWith(Parameterized.class)
 public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
