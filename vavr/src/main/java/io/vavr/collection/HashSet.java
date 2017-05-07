@@ -23,7 +23,6 @@ import java.util.stream.Collector;
  * @param <T> Component type
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 public final class HashSet<T> implements Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;

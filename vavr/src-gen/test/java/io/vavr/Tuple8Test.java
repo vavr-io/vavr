@@ -343,14 +343,6 @@ public class Tuple8Test {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void shouldTransformTuple() {
-        final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
-        final Tuple0 actual = tuple.transform((o1, o2, o3, o4, o5, o6, o7, o8) -> Tuple0.instance());
-        assertThat(actual).isEqualTo(Tuple0.instance());
-    }
-
-    @Test
     public void shouldRecognizeEquality() {
         final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple1 = createTuple();
         final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple2 = createTuple();

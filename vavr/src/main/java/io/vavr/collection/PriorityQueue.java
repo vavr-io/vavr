@@ -21,7 +21,6 @@ import static io.vavr.collection.PriorityQueueBase.*;
  *
  * @author Pap Lőrinc
  */
-@SuppressWarnings("deprecation")
 public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T> {
 
     private static final long serialVersionUID = 1L;

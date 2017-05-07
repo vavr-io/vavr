@@ -24,7 +24,6 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  */
 // DEV-NOTE: it is not possible to create an EMPTY TreeSet without a Comparator type in scope
-@SuppressWarnings("deprecation")
 public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     private static final long serialVersionUID = 1L;

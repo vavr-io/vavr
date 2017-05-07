@@ -26,7 +26,6 @@ import static java.util.Arrays.sort;
  * @param <T> Component type
  * @author Ruslan Sennov, Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 public final class Array<T> implements IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -1347,12 +1346,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     public <U> U transform(Function<? super Array<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public <U> Array<U> unit(Iterable<? extends U> iterable) {
-        return ofAll(iterable);
     }
 
     @Override

@@ -2013,28 +2013,6 @@ def generateMainClasses(): Unit = {
               }
             """}
 
-            /**
-             * Transforms this tuple to an object of type U.
-             *
-             * @deprecated Use {@link #apply($functionType)} instead, will be removed in 0.9.0
-             * @param f Transformation which creates a new object of type U based on this tuple's contents.
-             * @param <U> type of the transformation result
-             * @return An object of type U
-             * @throws NullPointerException if {@code f} is null
-             */
-            @Deprecated(/* Use apply instead, will be removed in 0.9.0 */)
-            ${if (i == 0) xs"""
-              public <U> U transform($functionType<? extends U> f) {
-                  $Objects.requireNonNull(f, "f is null");
-                  return f.get();
-              }
-            """ else xs"""
-              public <U> U transform($functionType<$paramTypes, ? extends U> f) {
-                  $Objects.requireNonNull(f, "f is null");
-                  return f.apply($params);
-              }
-            """}
-
             @Override
             public $Seq<?> toSeq() {
                 ${if (i == 0) xs"""
@@ -3353,14 +3331,6 @@ def generateTestClasses(): Unit = {
               public void shouldApplyTuple() {
                   final Tuple$i$generics tuple = createTuple();
                   final Tuple0 actual = tuple.apply($functionArgs -> Tuple0.instance());
-                  assertThat(actual).isEqualTo(Tuple0.instance());
-              }
-
-              @$test
-              @SuppressWarnings("deprecation")
-              public void shouldTransformTuple() {
-                  final Tuple$i$generics tuple = createTuple();
-                  final Tuple0 actual = tuple.transform($functionArgs -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
 

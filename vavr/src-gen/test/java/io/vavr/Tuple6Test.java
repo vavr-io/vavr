@@ -267,14 +267,6 @@ public class Tuple6Test {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void shouldTransformTuple() {
-        final Tuple6<Object, Object, Object, Object, Object, Object> tuple = createTuple();
-        final Tuple0 actual = tuple.transform((o1, o2, o3, o4, o5, o6) -> Tuple0.instance());
-        assertThat(actual).isEqualTo(Tuple0.instance());
-    }
-
-    @Test
     public void shouldRecognizeEquality() {
         final Tuple6<Object, Object, Object, Object, Object, Object> tuple1 = createTuple();
         final Tuple6<Object, Object, Object, Object, Object, Object> tuple2 = createTuple();

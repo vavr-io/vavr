@@ -528,21 +528,6 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param f   a function that maps the error in this Invalid
      * @return an instance of Validation&lt;U,T&gt;
      * @throws NullPointerException if mapping operation f is null
-     * @deprecated replaced by {@link #mapError(Function)}, will be removed in 0.9.0
-     */
-    @Deprecated(/* Use mapError instead. Will be removed in 0.9.0 */)
-    default <U> Validation<U, T> leftMap(Function<? super E, ? extends U> f) {
-        return mapError(f);
-    }
-
-    /**
-     * Applies a function f to the error of this Validation if this is an Invalid. Otherwise does nothing
-     * if this is a Valid.
-     *
-     * @param <U> type of the error resulting from the mapping
-     * @param f   a function that maps the error in this Invalid
-     * @return an instance of Validation&lt;U,T&gt;
-     * @throws NullPointerException if mapping operation f is null
      */
     default <U> Validation<U, T> mapError(Function<? super E, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");

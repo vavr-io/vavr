@@ -47,7 +47,6 @@ def generateMainClasses(): Unit = {
        *
        * @author Daniel Dietrich
        */
-      @SuppressWarnings("deprecation")
       public class $className {
 
           private final String name;

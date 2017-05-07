@@ -24,7 +24,6 @@ import java.util.stream.Collector;
 
 import static java.util.Arrays.asList;
 
-@SuppressWarnings("deprecation")
 @RunWith(Parameterized.class)
 public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
@@ -541,7 +540,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldReturnListWithMappedValues() {
-        assertThat(emptyIntInt().put(1, 1).put(2, 2).traverse((a, b) -> a + b)).isEqualTo(io.vavr.collection.List.of(2, 4));
+        assertThat(emptyIntInt().put(1, 1).put(2, 2).iterator((a, b) -> a + b)).isEqualTo(io.vavr.collection.List.of(2, 4));
     }
 
     // -- merge

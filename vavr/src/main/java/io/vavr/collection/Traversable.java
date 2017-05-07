@@ -147,23 +147,6 @@ import java.util.function.Supplier;
 public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     /**
-     * DEPRECATED. SHOULD NOT BE USED ANY MORE.
-     *
-     * @param objects An Iterable instance containing zero or more objects.
-     * @param <T>     Component type
-     * @return The hashcode
-     * @deprecated Will be removed in 0.9.0.
-     */
-    @Deprecated(/* Will be removed in 0.9.0 */)
-    static <T> int hash(Iterable<? extends T> objects) {
-        int hashCode = 1;
-        for (Object o : objects) {
-            hashCode = 31 * hashCode + Objects.hashCode(o);
-        }
-        return hashCode;
-    }
-
-    /**
      * Narrows a widened {@code Traversable<? extends T>} to {@code Traversable<T>}
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
@@ -502,7 +485,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @Override
     default T get() {
-        return iterator().next();
+        return head();
     }
 
     /**

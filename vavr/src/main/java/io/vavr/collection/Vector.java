@@ -28,7 +28,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @param <T> Component type of the Vector.
  * @author Ruslan Sennov, Pap Lőrinc
  */
-@SuppressWarnings("deprecation")
 public final class Vector<T> implements IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -1175,10 +1174,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public <U> Vector<U> unit(Iterable<? extends U> iterable) { return ofAll(iterable); }
 
     @Override
     public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {

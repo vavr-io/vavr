@@ -26,7 +26,6 @@ import java.util.stream.Collector;
  * @author Daniel Dietrich
  */
 // DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
-@SuppressWarnings("deprecation")
 public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -447,37 +446,6 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
      */
     public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
         return createFromPairs(EntryComparator.natural(), k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
-    }
-
-    /**
-     * Creates a TreeMap of the given list of key-value pairs.
-     *
-     * @deprecated Should not be used any more because unsafe
-     *
-     * @param pairs A list of key-value pairs
-     * @param <K>   The key type
-     * @param <V>   The value type
-     * @return A new Map containing the given entries
-     */
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public static <K extends Comparable<? super K>, V> TreeMap<K, V> of(Object... pairs) {
-        return of((Comparator<? super K> & Serializable) K::compareTo, pairs);
-    }
-
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public static <K, V> TreeMap<K, V> of(Comparator<? super K> keyComparator, Object... pairs) {
-        Objects.requireNonNull(keyComparator, "keyComparator is null");
-        Objects.requireNonNull(pairs, "pairs is null");
-        if ((pairs.length & 1) != 0) {
-            throw new IllegalArgumentException("Odd length of key-value pairs list");
-        }
-        RedBlackTree<Tuple2<K, V>> result = RedBlackTree.empty(EntryComparator.of(keyComparator));
-        for (int i = 0; i < pairs.length; i += 2) {
-            result = result.insert(Tuple.of((K) pairs[i], (V) pairs[i + 1]));
-        }
-        return new TreeMap<>(result);
     }
 
     /**
@@ -1030,15 +998,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
         return entries.iterator();
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public Comparator<K> keyComparator() {
-        return ((EntryComparator<K, V>) entries.comparator()).keyComparator();
-    }
-
     @Override
     public SortedSet<K> keySet() {
-        return TreeSet.ofAll(keyComparator(), iterator().map(Tuple2::_1));
+        return TreeSet.ofAll(comparator(), iterator().map(Tuple2::_1));
     }
 
     @Override
@@ -1068,7 +1030,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     @Override
     public <W> TreeMap<K, W> mapValues(Function<? super V, ? extends W> valueMapper) {
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        return map(keyComparator(), (k, v) -> Tuple.of(k, valueMapper.apply(v)));
+        return map(comparator(), (k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
     @Override
@@ -1288,7 +1250,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     @Override
     public java.util.TreeMap<K, V> toJavaMap() {
-        return toJavaMap(() -> new java.util.TreeMap<>(keyComparator()), t -> t);
+        return toJavaMap(() -> new java.util.TreeMap<>(comparator()), t -> t);
     }
 
     @Override

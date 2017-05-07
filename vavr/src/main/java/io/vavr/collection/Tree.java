@@ -202,9 +202,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return The value of this tree.
      * @throws java.lang.UnsupportedOperationException if this tree is empty
-     * @deprecated Will be removed in 0.9.0. Use get() instead.
      */
-    @Deprecated
     T getValue();
 
     /**

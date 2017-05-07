@@ -42,7 +42,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @param <T> Component type of the Queue
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements LinearSeq<T> {
 
     private static final long serialVersionUID = 1L;
@@ -1243,12 +1242,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     public <U> U transform(Function<? super Queue<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public <U> Queue<U> unit(Iterable<? extends U> iterable) {
-        return ofAll(iterable);
     }
 
     @Override

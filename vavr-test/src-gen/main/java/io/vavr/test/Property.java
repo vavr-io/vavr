@@ -21,7 +21,6 @@ import java.util.Random;
  *
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 public class Property {
 
     private final String name;

@@ -32,7 +32,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  *
  * @author Ruslan Sennov, Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -1055,12 +1054,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     public <U> U transform(Function<? super CharSeq, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    public <U> IndexedSeq<U> unit(Iterable<? extends U> iterable) {
-        return Vector.ofAll(iterable);
     }
 
     @Override
@@ -2300,124 +2293,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * This method works as if by invoking the two-argument {@link #split(String, int)}
      * method with the given expression and a limit argument of zero.
-     * Trailing empty strings are therefore not included in the resulting array.
-     * <p>
-     * The string {@code "boo:and:foo"}, for example, yields the following results with these expressions:
-     * <blockquote>
-     * <table cellpadding=1 cellspacing=0 summary="Split examples showing regex and result">
-     * <tr>
-     * <th>Regex</th>
-     * <th>Result</th>
-     * </tr>
-     * <tr>
-     * <td align=center>:</td>
-     * <td>{@code { "boo", "and", "foo" }}</td>
-     * </tr>
-     * <tr>
-     * <td align=center>o</td>
-     * <td>{@code { "b", "", ":and:f" }}</td>
-     * </tr>
-     * </table>
-     * </blockquote>
-     *
-     * @param regex the delimiting regular expression
-     * @return the Seq of strings computed by splitting this string
-     * around matches of the given regular expression
-     * @throws PatternSyntaxException if the regular expression's syntax is invalid
-     * @see Pattern
-     * @deprecated Use {@link #splitSeq(String)} instead, will return Seq&lt;CharSeq&gt; starting with 0.9.0
-     */
-    @Deprecated
-    @GwtIncompatible
-    public CharSeq[] split(String regex) {
-        return splitSeq(regex, 0).toJavaArray(CharSeq.class);
-    }
-
-    /**
-     * Splits this string around matches of the given
-     * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html#sum">regular expression</a>.
-     * <p>
-     * The array returned by this method contains each substring of this
-     * string that is terminated by another substring that matches the given
-     * expression or is terminated by the end of the string.  The substrings in
-     * the array are in the order in which they occur in this string.  If the
-     * expression does not match any part of the input then the resulting array
-     * has just one element, namely this string.
-     * <p>
-     * When there is a positive-width match at the beginning of this
-     * string then an empty leading substring is included at the beginning
-     * of the resulting array. A zero-width match at the beginning however
-     * never produces such empty leading substring.
-     * <p>
-     * The {@code limit} parameter controls the number of times the
-     * pattern is applied and therefore affects the length of the resulting
-     * array.  If the limit <i>n</i> is greater than zero then the pattern
-     * will be applied at most <i>n</i>&nbsp;-&nbsp;1 times, the array's
-     * length will be no greater than <i>n</i>, and the array's last entry
-     * will contain all input beyond the last matched delimiter.  If <i>n</i>
-     * is non-positive then the pattern will be applied as many times as
-     * possible and the array can have any length.  If <i>n</i> is zero then
-     * the pattern will be applied as many times as possible, the array can
-     * have any length, and trailing empty strings will be discarded.
-     * <p>
-     * The string {@code "boo:and:foo"}, for example, yields the
-     * following results with these parameters:
-     * <blockquote><table cellpadding=1 cellspacing=0 summary="Split example showing regex, limit, and result">
-     * <tr>
-     * <th>Regex</th>
-     * <th>Limit</th>
-     * <th>Result</th>
-     * </tr>
-     * <tr><td align=center>:</td>
-     * <td align=center>2</td>
-     * <td>{@code { "boo", "and:foo" }}</td></tr>
-     * <tr><td align=center>:</td>
-     * <td align=center>5</td>
-     * <td>{@code { "boo", "and", "foo" }}</td></tr>
-     * <tr><td align=center>:</td>
-     * <td align=center>-2</td>
-     * <td>{@code { "boo", "and", "foo" }}</td></tr>
-     * <tr><td align=center>o</td>
-     * <td align=center>5</td>
-     * <td>{@code { "b", "", ":and:f", "", "" }}</td></tr>
-     * <tr><td align=center>o</td>
-     * <td align=center>-2</td>
-     * <td>{@code { "b", "", ":and:f", "", "" }}</td></tr>
-     * <tr><td align=center>o</td>
-     * <td align=center>0</td>
-     * <td>{@code { "b", "", ":and:f" }}</td></tr>
-     * </table></blockquote>
-     * An invocation of this method of the form
-     * <i>str.</i>{@code split(}<i>regex</i>{@code ,}&nbsp;<i>n</i>{@code )}
-     * yields the same result as the expression
-     * <blockquote>
-     * <code>
-     * {@link Pattern}.{@link
-     * Pattern#compile compile}(<i>regex</i>).{@link
-     * Pattern#split(CharSequence, int) split}(<i>str</i>,&nbsp;<i>n</i>)
-     * </code>
-     * </blockquote>
-     *
-     * @param regex the delimiting regular expression
-     * @param limit the result threshold, as described above
-     * @return the Seq of strings computed by splitting this string
-     * around matches of the given regular expression
-     * @throws PatternSyntaxException if the regular expression's syntax is invalid
-     * @see Pattern
-     * @deprecated Use {@link #splitSeq(String, int)} instead, will return Seq&lt;CharSeq&gt; starting with 0.9.0
-     */
-    @Deprecated
-    @GwtIncompatible
-    public CharSeq[] split(String regex, int limit) {
-        return splitSeq(regex, limit).toJavaArray(CharSeq.class);
-    }
-
-    /**
-     * Splits this string around matches of the given
-     * <a href="https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html#sum">regular expression</a>.
-     * <p>
-     * This method works as if by invoking the two-argument {@link #splitSeq(String, int)}
-     * method with the given expression and a limit argument of zero.
      * Trailing empty strings are therefore not included in the resulting {@link Seq}.
      * <p>
      * The string {@code "boo:and:foo"}, for example, yields the following results with these expressions:
@@ -2442,11 +2317,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return the Seq of strings computed by splitting this string around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
-     * @deprecated Will be renamed to split(String) starting with 0.9.0
      */
-    @Deprecated
-    public Seq<CharSeq> splitSeq(String regex) {
-        return splitSeq(regex, 0);
+    public Seq<CharSeq> split(String regex) {
+        return split(regex, 0);
     }
 
     /**
@@ -2519,10 +2392,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return the Seq of strings computed by splitting this string around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
      * @see Pattern
-     * @deprecated Will be renamed to split(String, int) starting with 0.9.0
      */
-    @Deprecated
-    public Seq<CharSeq> splitSeq(String regex, int limit) {
+    public Seq<CharSeq> split(String regex, int limit) {
         final Seq<String> split = Array.wrap(back.split(regex, limit));
         return split.map(CharSeq::of);
     }

@@ -77,21 +77,6 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
         return f.get();
     }
 
-    /**
-     * Transforms this tuple to an object of type U.
-     *
-     * @deprecated Use {@link #apply(Supplier)} instead, will be removed in 0.9.0
-     * @param f Transformation which creates a new object of type U based on this tuple's contents.
-     * @param <U> type of the transformation result
-     * @return An object of type U
-     * @throws NullPointerException if {@code f} is null
-     */
-    @Deprecated(/* Use apply instead, will be removed in 0.9.0 */)
-    public <U> U transform(Supplier<? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return f.get();
-    }
-
     @Override
     public Seq<?> toSeq() {
         return List.empty();

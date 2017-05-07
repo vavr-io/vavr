@@ -28,7 +28,6 @@ import static io.vavr.API.*;
 import static io.vavr.Predicates.anyOf;
 import static io.vavr.Predicates.instanceOf;
 
-@SuppressWarnings("deprecation")
 public abstract class AbstractValueTest {
 
     protected Random getRandom(int seed) {
@@ -496,17 +495,6 @@ public abstract class AbstractValueTest {
         final io.vavr.collection.SortedSet<Integer> set = value.toSortedSet();
         final io.vavr.collection.SortedSet<Integer> actual = Serializables.deserialize(Serializables.serialize(set));
         assertThat(actual).isEqualTo(set);
-    }
-
-    @Test
-    public void shouldConvertToStack() {
-        final Value<Integer> value = of(1, 2, 3);
-        final io.vavr.collection.Stack<Integer> stack = value.toStack();
-        if (value.isSingleValued()) {
-            assertThat(stack).isEqualTo(io.vavr.collection.List.of(1));
-        } else {
-            assertThat(stack).isEqualTo(io.vavr.collection.List.of(1, 2, 3));
-        }
     }
 
     @Test

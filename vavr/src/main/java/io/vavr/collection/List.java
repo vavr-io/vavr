@@ -32,6 +32,22 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * <li>{@link Cons}, which represents a {@code List} containing one or more elements.</li>
  * </ul>
  *
+ * A {@code List} is a {@code Stack} in the sense that it stores elements allowing a last-in-first-out (LIFO) retrieval.
+ * <p>
+ * Stack API:
+ *
+ * <ul>
+ * <li>{@link #peek()}</li>
+ * <li>{@link #peekOption()}</li>
+ * <li>{@link #pop()}</li>
+ * <li>{@link #popOption()}</li>
+ * <li>{@link #pop2()}</li>
+ * <li>{@link #pop2Option()}</li>
+ * <li>{@link #push(Object)}</li>
+ * <li>{@link #push(Object[])}</li>
+ * <li>{@link #pushAll(Iterable)}</li>
+ * </ul>
+ *
  * Methods to obtain a {@code List}:
  *
  * <pre>
@@ -93,8 +109,7 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @param <T> Component type of the List
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
-public interface List<T> extends LinearSeq<T>, Stack<T> {
+public interface List<T> extends LinearSeq<T> {
 
     long serialVersionUID = 1L;
 
@@ -1030,7 +1045,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return Tuple.of(left.reverse(), right.reverse());
     }
 
-    @Override
+    /**
+     * Returns the head element without modifying the List.
+     *
+     * @return the first element
+     * @throws java.util.NoSuchElementException if this List is empty
+     */
     default T peek() {
         if (isEmpty()) {
             throw new NoSuchElementException("peek of empty list");
@@ -1038,7 +1058,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return head();
     }
 
-    @Override
+    /**
+     * Returns the head element without modifying the List.
+     *
+     * @return {@code None} if this List is empty, otherwise a {@code Some} containing the head element
+     */
     default Option<T> peekOption() {
         return isEmpty() ? Option.none() : Option.some(head());
     }
@@ -1076,7 +1100,12 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         }
     }
 
-    @Override
+    /**
+     * Removes the head element from this List.
+     *
+     * @return the elements of this List without the head element
+     * @throws java.util.NoSuchElementException if this List is empty
+     */
     default List<T> pop() {
         if (isEmpty()) {
             throw new NoSuchElementException("pop of empty list");
@@ -1084,12 +1113,21 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return tail();
     }
 
-    @Override
+    /**
+     * Removes the head element from this List.
+     *
+     * @return {@code None} if this List is empty, otherwise a {@code Some} containing the elements of this List without the head element
+     */
     default Option<List<T>> popOption() {
         return isEmpty() ? Option.none() : Option.some(pop());
     }
 
-    @Override
+    /**
+     * Removes the head element from this List.
+     *
+     * @return a tuple containing the head element and the remaining elements of this List
+     * @throws java.util.NoSuchElementException if this List is empty
+     */
     default Tuple2<T, List<T>> pop2() {
         if (isEmpty()) {
             throw new NoSuchElementException("pop2 of empty list");
@@ -1097,7 +1135,11 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return Tuple.of(head(), tail());
     }
 
-    @Override
+    /**
+     * Removes the head element from this List.
+     *
+     * @return {@code None} if this List is empty, otherwise {@code Some} {@code Tuple} containing the head element and the remaining elements of this List
+     */
     default Option<Tuple2<T, List<T>>> pop2Option() {
         return isEmpty() ? Option.none() : Option.some(Tuple.of(head(), pop()));
     }
@@ -1113,13 +1155,25 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return isEmpty() ? ofAll(elements) : ofAll(elements).reverse().foldLeft(this, List::prepend);
     }
 
-    @Override
+    /**
+     * Pushes a new element on top of this List.
+     *
+     * @param element The new element
+     * @return a new {@code List} instance, containing the new element on top of this List
+     */
     default List<T> push(T element) {
         return new Cons<>(element, this);
     }
 
+    /**
+     * Pushes the given elements on top of this List. A List has LIFO order, i.e. the last of the given elements is
+     * the first which will be retrieved.
+     *
+     * @param elements Elements, may be empty
+     * @return a new {@code List} instance, containing the new elements on top of this List
+     * @throws NullPointerException if elements is null
+     */
     @SuppressWarnings("unchecked")
-    @Override
     default List<T> push(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = this;
@@ -1129,7 +1183,14 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
         return result;
     }
 
-    @Override
+    /**
+     * Pushes the given elements on top of this List. A List has LIFO order, i.e. the last of the given elements is
+     * the first which will be retrieved.
+     *
+     * @param elements An Iterable of elements, may be empty
+     * @return a new {@code List} instance, containing the new elements on top of this List
+     * @throws NullPointerException if elements is null
+     */
     default List<T> pushAll(Iterable<T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = this;
@@ -1490,12 +1551,6 @@ public interface List<T> extends LinearSeq<T>, Stack<T> {
     default <U> U transform(Function<? super List<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    default <U> List<U> unit(Iterable<? extends U> iterable) {
-        return ofAll(iterable);
     }
 
     @Override

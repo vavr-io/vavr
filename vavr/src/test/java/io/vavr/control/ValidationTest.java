@@ -274,20 +274,6 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(invalidMapping.getError()).isEqualTo(3);
     }
 
-    // -- leftMap (deprecated)
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void shouldNotLeftMapSuccess() {
-        assertThat(valid().leftMap(x -> 2).get()).isEqualTo(OK);
-    }
-
-    @Test
-    @SuppressWarnings("deprecation")
-    public void shouldLeftMapFailure() {
-        assertThat(invalid().leftMap(x -> 5).getError()).isEqualTo(5);
-    }
-
     // -- mapError
 
     @Test

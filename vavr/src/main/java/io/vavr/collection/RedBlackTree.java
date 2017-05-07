@@ -33,7 +33,6 @@ import static io.vavr.collection.RedBlackTree.Color.RED;
  * @param <T> Component type
  * @author Daniel Dietrich
  */
-@SuppressWarnings("deprecation")
 interface RedBlackTree<T> extends Iterable<T> {
 
     static <T extends Comparable<? super T>> RedBlackTree<T> empty() {
@@ -290,7 +289,7 @@ interface RedBlackTree<T> extends Iterable<T> {
             final Node<T> that = (Node<T>) this;
             return new AbstractIterator<T>() {
 
-                Stack<Node<T>> stack = pushLeftChildren(List.empty(), that);
+                List<Node<T>> stack = pushLeftChildren(List.empty(), that);
 
                 @Override
                 public boolean hasNext() {
@@ -299,14 +298,14 @@ interface RedBlackTree<T> extends Iterable<T> {
 
                 @Override
                 public T getNext() {
-                    final Tuple2<Node<T>, ? extends Stack<Node<T>>> result = stack.pop2();
+                    final Tuple2<Node<T>, ? extends List<Node<T>>> result = stack.pop2();
                     final Node<T> node = result._1;
                     stack = node.right.isEmpty() ? result._2 : pushLeftChildren(result._2, (Node<T>) node.right);
                     return result._1.value;
                 }
 
-                private Stack<Node<T>> pushLeftChildren(Stack<Node<T>> initialStack, Node<T> that) {
-                    Stack<Node<T>> stack = initialStack;
+                private List<Node<T>> pushLeftChildren(List<Node<T>> initialStack, Node<T> that) {
+                    List<Node<T>> stack = initialStack;
                     RedBlackTree<T> tree = that;
                     while (!tree.isEmpty()) {
                         final Node<T> node = (Node<T>) tree;

@@ -26,7 +26,6 @@ import java.util.function.*;
  * <li>{@link #insertAll(int, Iterable)}</li>
  * <li>{@link #prepend(Object)}</li>
  * <li>{@link #prependAll(Iterable)}</li>
- * <li>{@link #unit(Iterable)}</li>
  * <li>{@link #update(int, Object)}</li>
  * </ul>
  *
@@ -408,28 +407,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    default int indexOfSlice(Iterable<? extends T> that, int from) {
-        Objects.requireNonNull(that, "that is null");
-        class Util {
-            int indexOfSlice(Seq<T> t, Seq<T> slice, int from) {
-                if (t.isEmpty()) {
-                    return from == 0 && slice.isEmpty() ? 0 : -1;
-                }
-                if (from <= 0 && checkPrefix(t, slice)) {
-                    return 0;
-                }
-                final int idx = indexOfSlice(t.tail(), slice, from - 1);
-                return idx >= 0 ? idx + 1 : -1;
-            }
-
-            private boolean checkPrefix(Seq<T> t, Seq<T> prefix) {
-                return prefix.isEmpty() ||
-                        (!t.isEmpty() && Objects.equals(t.head(), prefix.head()) && checkPrefix(t.tail(), prefix.tail()));
-            }
-        }
-
-        return new Util().indexOfSlice(this, unit(that), from);
-    }
+    int indexOfSlice(Iterable<? extends T> that, int from);
 
     /**
      * Finds first index after or at a start index where this sequence contains a given sequence as an {@code Option} of a slice.
@@ -1019,17 +997,6 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      * @throws IllegalArgumentException  if {@code beginIndex} is greater than {@code endIndex}
      */
     Seq<T> subSequence(int beginIndex, int endIndex);
-
-    /**
-     * Constructs a Seq containing the given elements.
-     *
-     * @param elements The elements to be wrapped in an instance of this Seq type
-     * @param <U> element type
-     * @return An instance of this Seq type
-     * @deprecated This method is meant to be used internally only. It will be removed from the public API with 0.9.0.
-     */
-    @Deprecated
-    <U> Seq<U> unit(Iterable<? extends U> elements);
 
     /**
      * Updates the given element at the specified index.

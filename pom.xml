@@ -236,8 +236,6 @@ Note: The maven build currently needs to be started from the vavr root dir
                         <compilerArgs>
                             <arg>-Werror</arg>
                             <arg>-Xlint:all</arg>
-                            <!-- Deprecation warnings need to be disabled because we might want to deprecate our own API -->
-                            <arg>-Xlint:-deprecation</arg>
                             <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
                             <arg>-Xlint:-processing</arg>
                         </compilerArgs>

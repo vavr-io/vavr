@@ -22,7 +22,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-@SuppressWarnings("deprecation")
 public class OptionTest extends AbstractValueTest {
 
     // -- AbstractValueTest
@@ -82,11 +81,6 @@ public class OptionTest extends AbstractValueTest {
     public void shouldWrapNullInSome() {
         final Option<?> some = Option.some(null);
         assertThat(some.get()).isEqualTo(null);
-    }
-
-    @Test
-    public void shouldCreateNothing() {
-        assertThat(Option.nothing()).isEqualTo(Option.some(null));
     }
 
     @Test

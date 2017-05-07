@@ -99,7 +99,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @param <T> component type of this Stream
  * @author Daniel Dietrich, Jörgen Andersson, Ruslan Sennov
  */
-@SuppressWarnings("deprecation")
 public interface Stream<T> extends LinearSeq<T> {
 
     long serialVersionUID = 1L;
@@ -1568,12 +1567,6 @@ public interface Stream<T> extends LinearSeq<T> {
     default <U> U transform(Function<? super Stream<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Override
-    default <U> Stream<U> unit(Iterable<? extends U> iterable) {
-        return Stream.ofAll(iterable);
     }
 
     @Override

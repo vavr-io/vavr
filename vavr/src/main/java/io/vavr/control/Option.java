@@ -104,17 +104,6 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Return the singleton instance of {@code Some<Void>}.
-     *
-     * @return {@code Some<Void>}
-     * @deprecated Will be removed in 0.9.0
-     */
-    @Deprecated
-    static Option<Void> nothing() {
-        return Some.NOTHING;
-    }
-
-    /**
      * Narrows a widened {@code Option<? extends T>} to {@code Option<T>}
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
@@ -429,13 +418,6 @@ public interface Option<T> extends Value<T>, Serializable {
     final class Some<T> implements Option<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
-
-        /**
-         * The singleton instance of {@code Some<Void>}.
-         * @deprecated Will be removed in 0.9.0
-         */
-        @Deprecated
-        private static final Some<Void> NOTHING = new Some<>(null);
 
         private final T value;
 

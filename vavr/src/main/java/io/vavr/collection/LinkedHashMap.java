@@ -22,7 +22,6 @@ import java.util.stream.Collector;
  *
  * @author Ruslan Sennov
  */
-@SuppressWarnings("deprecation")
 public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -138,34 +137,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valueMapper) {
         return Maps.ofStream(empty(), stream, keyMapper, valueMapper);
-    }
-
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @deprecated Should not be used any more because unsafe
-     *
-     * @param pairs A list of key-value pairs
-     * @param <K>   The key type
-     * @param <V>   The value type
-     * @return A new Map containing the given entries
-     */
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> of(Object... pairs) {
-        Objects.requireNonNull(pairs, "pairs is null");
-        if ((pairs.length & 1) != 0) {
-            throw new IllegalArgumentException("Odd length of key-value pairs list");
-        }
-        HashMap<K, V> map = HashMap.empty();
-        Queue<Tuple2<K, V>> list = Queue.empty();
-        for (int i = 0; i < pairs.length; i += 2) {
-            final K k = (K) pairs[i];
-            final V v = (V) pairs[i + 1];
-            map = map.put(k, v);
-            list = list.append(Tuple.of(k, v));
-        }
-        return wrap(list, map);
     }
 
     /**
