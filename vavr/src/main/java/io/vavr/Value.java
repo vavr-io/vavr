@@ -131,7 +131,6 @@ import static io.vavr.API.*;
  * <li>{@link #toSortedMap(Function, Function)}</li>
  * <li>{@link #toSortedSet()}</li>
  * <li>{@link #toSortedSet(Comparator)}</li>
- * <li>{@link #toStack()}</li>
  * <li>{@link #toStream()}</li>
  * <li>{@link #toString()}</li>
  * <li>{@link #toTree()}</li>
@@ -1124,15 +1123,6 @@ public interface Value<T> extends Iterable<T> {
     default SortedSet<T> toSortedSet(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return ValueModule.toTraversable(this, TreeSet.empty(comparator), value -> TreeSet.of(comparator, value), values -> TreeSet.ofAll(comparator, values));
-    }
-
-    /**
-     * Converts this to a {@link Stack}.
-     *
-     * @return A new {@link List}, which is a {@link Stack}.
-     */
-    default Stack<T> toStack() {
-        return toList();
     }
 
     /**

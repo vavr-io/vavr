@@ -6,7 +6,6 @@
  */
 package io.vavr;
 
-import io.vavr.collection.Stream;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;

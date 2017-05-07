@@ -55,7 +55,7 @@ import java.util.function.*;
  *
  * <ul>
  * <li>{@link #forEach(BiConsumer)}</li>
- * <li>{@link #traverse(BiFunction)}</li>
+ * <li>{@link #iterator(BiFunction)}</li>
  * </ul>
  *
  * Transformation:
@@ -274,6 +274,18 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     Iterator<Tuple2<K, V>> iterator();
 
     /**
+     * Iterates this Multimap sequentially, mapping the (key, value) pairs to elements.
+     *
+     * @param mapper A function that maps (key, value) pairs to elements of type U
+     * @param <U> The type of the resulting elements
+     * @return An iterator through the mapped elements.
+     */
+    default <U> Iterator<U> iterator(BiFunction<K, V, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return iterator().map(t -> mapper.apply(t._1, t._2));
+    }
+
+    /**
      * Returns the keys contained in this multimap.
      *
      * @return {@code Set} of the keys contained in this multimap.
@@ -456,19 +468,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, 
     default <U> U transform(Function<? super Multimap<K, V>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
-    }
-
-    /**
-     * Traverses this Multimap sequentially, mapping the (key, value) pairs to elements.
-     *
-     * @param mapper A function that maps (key, value) pairs to elements of type U
-     * @param <U> The type of the resulting elements
-     * @return A new sequence containing the mapped elements.
-     * @deprecated will be replaced by iterator(BiFunction) in 0.9.0     */
-    @Deprecated
-    default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(Vector.empty(), (acc, entry) -> acc.append(mapper.apply(entry._1, entry._2)));
     }
 
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {

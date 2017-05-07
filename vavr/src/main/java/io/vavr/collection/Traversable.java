@@ -485,7 +485,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @Override
     default T get() {
-        return iterator().next();
+        return head();
     }
 
     /**

@@ -218,17 +218,13 @@ public class StringTest {
     @SuppressWarnings("deprecation")
     @Test
     public void split() {
-        assertThat(CharSeq.of("123").split("2")).isEqualTo(new CharSeq[] { CharSeq.of("1"), CharSeq.of("3") }); // TODO deprecated
-
-        assertThat(CharSeq.of("123").splitSeq("2")).isEqualTo(Array.of(CharSeq.of("1"), CharSeq.of("3")));
+        assertThat(CharSeq.of("123").split("2")).isEqualTo(Array.of(CharSeq.of("1"), CharSeq.of("3")));
     }
 
     @SuppressWarnings("deprecation")
     @Test
     public void splitLim() {
-        assertThat(CharSeq.of("123").split("2", 2)).isEqualTo(new CharSeq[] { CharSeq.of("1"), CharSeq.of("3") }); // TODO deprecated
-
-        assertThat(CharSeq.of("123").splitSeq("2", 2)).isEqualTo(Array.of(CharSeq.of("1"), CharSeq.of("3")));
+        assertThat(CharSeq.of("123").split("2", 2)).isEqualTo(Array.of(CharSeq.of("1"), CharSeq.of("3")));
     }
 
     @Test

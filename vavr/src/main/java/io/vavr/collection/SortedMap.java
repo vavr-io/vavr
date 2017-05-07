@@ -69,15 +69,6 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     <K2, V2> SortedMap<K2, V2> flatMap(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
 
     /**
-     * Returns the underlying key-comparator which defines the order of the elements contained in this map.
-     *
-     * @deprecated Use {@link SortedMap#comparator()} instead
-     * @return This map's key-comparator.
-     */
-    @Deprecated
-    Comparator<K> keyComparator();
-
-    /**
      * Same as {@link #map(BiFunction)}, using a specific comparator for keys of the codomain of the given
      * {@code mapper}.
      *

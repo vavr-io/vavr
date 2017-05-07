@@ -85,11 +85,6 @@ public class OptionTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldCreateNothing() {
-        assertThat(Option.nothing()).isEqualTo(Option.some(null));
-    }
-
-    @Test
     public void shouldWrapIfTrue() {
         assertThat(Option.when(true, () -> null)).isEqualTo(Option.some(null));
         assertThat(Option.when(true, (Object) null)).isEqualTo(Option.some(null));

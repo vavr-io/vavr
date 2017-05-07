@@ -163,8 +163,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10);
 
-    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10, K k11, V v11);
-
     protected abstract <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
             Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valueMapper);
@@ -372,13 +370,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldConstructFrom10Entries() {
         final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7", 8, "8", 9, "9", 10, "10");
         final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"), asJavaEntry(8, "8"), asJavaEntry(9, "9"), asJavaEntry(10, "10"));
-        assertThat(actual.toJavaMap()).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldConstructFromMoreThan10Entries() {
-        final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3", 4, "4", 5, "5", 6, "6", 7, "7", 8, "8", 9, "9", 10, "10", 11, "11");
-        final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"), asJavaEntry(4, "4"), asJavaEntry(5, "5"), asJavaEntry(6, "6"), asJavaEntry(7, "7"), asJavaEntry(8, "8"), asJavaEntry(9, "9"), asJavaEntry(10, "10"), asJavaEntry(11, "11"));
         assertThat(actual.toJavaMap()).isEqualTo(expected);
     }
 

@@ -53,14 +53,6 @@ public class Tuple0Test {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
-    public void shouldTransformTuple() {
-        final Tuple0 tuple = createTuple();
-        final Tuple0 actual = tuple.transform(() -> Tuple0.instance());
-        assertThat(actual).isEqualTo(Tuple0.instance());
-    }
-
-    @Test
     public void shouldRecognizeEquality() {
         final Tuple0 tuple1 = createTuple();
         final Tuple0 tuple2 = createTuple();

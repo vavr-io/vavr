@@ -499,17 +499,6 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToStack() {
-        final Value<Integer> value = of(1, 2, 3);
-        final io.vavr.collection.Stack<Integer> stack = value.toStack();
-        if (value.isSingleValued()) {
-            assertThat(stack).isEqualTo(io.vavr.collection.List.of(1));
-        } else {
-            assertThat(stack).isEqualTo(io.vavr.collection.List.of(1, 2, 3));
-        }
-    }
-
-    @Test
     public void shouldConvertToStream() {
         final Value<Integer> value = of(1, 2, 3);
         final Stream<Integer> stream = value.toStream();

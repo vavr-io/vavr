@@ -549,19 +549,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V>, S
         return f.apply(this);
     }
 
-    /**
-     * Traverses this Map sequentially, mapping the (key, value) pairs to elements.
-     *
-     * @param mapper A function that maps (key, value) pairs to elements of type U
-     * @param <U> The type of the resulting elements
-     * @return A new sequence containing the mapped elements.
-     * @deprecated will be replaced by iterator(BiFunction) in 0.9.0
-     */
-    @Deprecated
-    default <U> Seq<U> traverse(BiFunction<K, V, ? extends U> mapper) {
-        return Vector.ofAll(iterator(mapper));
-    }
-
     default Tuple2<Seq<K>, Seq<V>> unzip() {
         return unzip(Function.identity());
     }
