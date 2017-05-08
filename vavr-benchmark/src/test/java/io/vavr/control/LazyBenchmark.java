@@ -16,7 +16,7 @@ import org.openjdk.jmh.infra.Blackhole;
 
 import static io.vavr.API.Array;
 import static io.vavr.JmhRunner.Includes.JAVA;
-import static io.vavr.JmhRunner.Includes.JAVASLANG;
+import static io.vavr.JmhRunner.Includes.VAVR;
 
 public class LazyBenchmark {
     static final Array<Class<?>> CLASSES = Array(
@@ -27,8 +27,8 @@ public class LazyBenchmark {
     public void testAsserts() { JmhRunner.runDebugWithAsserts(CLASSES); }
 
     public static void main(String... args) {
-        JmhRunner.runDebugWithAsserts(CLASSES, JAVA, JAVASLANG);
-        JmhRunner.runSlowNoAsserts(CLASSES, JAVA, JAVASLANG);
+        JmhRunner.runDebugWithAsserts(CLASSES, JAVA, VAVR);
+        JmhRunner.runSlowNoAsserts(CLASSES, JAVA, VAVR);
     }
 
     @State(Scope.Benchmark)

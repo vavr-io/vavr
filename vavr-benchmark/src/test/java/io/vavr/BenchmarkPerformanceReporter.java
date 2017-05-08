@@ -36,7 +36,7 @@ public class BenchmarkPerformanceReporter {
     private final double outlierHighPct;
 
     public static BenchmarkPerformanceReporter of(Array<String> includeNames, Array<String> benchmarkClasses, Array<RunResult> runResults) {
-        return of(includeNames, benchmarkClasses, runResults, "slang", 0.3, 0.05);
+        return of(includeNames, benchmarkClasses, runResults, "vavr", 0.3, 0.05);
     }
 
     public static BenchmarkPerformanceReporter of(Array<String> includeNames, Array<String> benchmarkClasses, Array<RunResult> runResults, String targetImplementation, double outlierLowPct, double outlierHighPct) {
@@ -50,7 +50,7 @@ public class BenchmarkPerformanceReporter {
      * @param benchmarkClasses     The benchmarked source class names
      * @param runResults           The results
      * @param targetImplementation The target implementation we want to focus on in the Ratio report.
-     *                             It is case insensitive. If we enter "slang", it will match "JavaSlang" and "java_slang".
+     *                             It is case insensitive. If we enter "vavr", it will match "VaVr" and "va_vr".
      * @param outlierLowPct        The percentage of samples on the lower end that will be ignored from the statistics
      * @param outlierHighPct       The percentage of samples on the higher end that will be ignored from the statistics
      */
@@ -78,7 +78,7 @@ public class BenchmarkPerformanceReporter {
      * <ul>
      * <li>Group</li>
      * <li>Test Name</li>
-     * <li>Implementation - tests can have different implementations, e.g. Scala, Java, JavaSlang</li>
+     * <li>Implementation - tests can have different implementations, e.g. Scala, Java, Vavr</li>
      * <li>Parameters</li>
      * <li>Score</li>
      * <li>Error - 99% confidence interval expressed in % of the Score</li>
