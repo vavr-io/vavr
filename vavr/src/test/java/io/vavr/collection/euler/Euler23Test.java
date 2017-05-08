@@ -6,15 +6,13 @@
  */
 package io.vavr.collection.euler;
 
-import io.vavr.API;
 import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
+import static io.vavr.API.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -65,10 +63,10 @@ public class Euler23Test {
     }
 
     private static boolean canBeWrittenAsTheSumOfTwoAbundantNumbers(long l) {
-        return API.Match(l).of(
-                API.Case(API.$(n -> n < SMALLEST_NUMBER_WRITTEN_AS_THE_SUM_OF_TO_ABUNDANT_NUMBERS), false),
-                API.Case(API.$(SMALLEST_NUMBER_WRITTEN_AS_THE_SUM_OF_TO_ABUNDANT_NUMBERS), true),
-                API.Case(API.$(), () -> Stream.rangeClosed(SMALLEST_ABUNDANT_NUMBER, l / 2).exists(a -> isAbundant.apply(a) && isAbundant.apply(l - a)))
+        return Match(l).of(
+                Case($(n -> n < SMALLEST_NUMBER_WRITTEN_AS_THE_SUM_OF_TO_ABUNDANT_NUMBERS), false),
+                Case($(SMALLEST_NUMBER_WRITTEN_AS_THE_SUM_OF_TO_ABUNDANT_NUMBERS), true),
+                Case($(), () -> Stream.rangeClosed(SMALLEST_ABUNDANT_NUMBER, l / 2).exists(a -> isAbundant.apply(a) && isAbundant.apply(l - a)))
         );
     }
 

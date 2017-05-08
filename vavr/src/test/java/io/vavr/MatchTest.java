@@ -18,12 +18,9 @@ import java.math.BigDecimal;
 import java.time.Year;
 import java.util.function.Predicate;
 
-import static io.vavr.API.$;
-import static io.vavr.API.Case;
-import static io.vavr.API.Match;
-import static io.vavr.API.run;
+import static io.vavr.API.*;
 import static io.vavr.Patterns.*;
-import static io.vavr.MatchTest_DeveloperPatterns.Developer;
+import static io.vavr.MatchTest_DeveloperPatterns.$Developer;
 import static io.vavr.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,7 +31,7 @@ public class MatchTest {
     @Test(expected = MatchError.class)
     public void shouldThrowIfNotMatching() {
         Match(new Object()).of(
-                Case(ignored -> false, o -> null)
+                Case($(ignored -> false), o -> null)
         );
     }
 
@@ -142,8 +139,8 @@ public class MatchTest {
     @Test
     public void shouldMatchIntUsingPredicates() {
         final String actual = Match(3).of(
-                Case(is(1), "one"),
-                Case(is(2), "two"),
+                Case($(is(1)), "one"),
+                Case($(is(2)), "two"),
                 Case($(), "many")
         );
         assertThat(actual).isEqualTo("many");
@@ -152,8 +149,8 @@ public class MatchTest {
     @Test
     public void shouldComputeUpperBoundOfReturnValue() {
         final Number num = Match(3).of(
-                Case(is(1), 1),
-                Case(is(2), 2.0),
+                Case($(is(1)), 1),
+                Case($(is(2)), 2.0),
                 Case($(), i -> new BigDecimal("" + i))
         );
         assertThat(num).isEqualTo(new BigDecimal("3"));
@@ -162,11 +159,11 @@ public class MatchTest {
     // -- instanceOf
 
     @Test
-    public void shouldMatchX() {
+    public void shouldMatchUsingInstanceOf() {
         final Object obj = 1;
         final int actual = Match(obj).of(
-                Case(instanceOf(Year.class), y -> 0),
-                Case(instanceOf(Integer.class), i -> 1)
+                Case($(instanceOf(Year.class)), y -> 0),
+                Case($(instanceOf(Integer.class)), i -> 1)
         );
         assertThat(actual).isEqualTo(1);
     }
@@ -177,8 +174,8 @@ public class MatchTest {
     public void shouldMatchLeft() {
         final Either<Integer, String> either = Either.left(1);
         final String actual = Match(either).of(
-                Case(Left($()), l -> "left: " + l),
-                Case(Right($()), r -> "right: " + r)
+                Case($Left($()), l -> "left: " + l),
+                Case($Right($()), r -> "right: " + r)
         );
         assertThat(actual).isEqualTo("left: 1");
     }
@@ -187,8 +184,8 @@ public class MatchTest {
     public void shouldMatchRight() {
         final Either<Integer, String> either = Either.right("a");
         final String actual = Match(either).of(
-                Case(Left($()), l -> "left: " + l),
-                Case(Right($()), r -> "right: " + r)
+                Case($Left($()), l -> "left: " + l),
+                Case($Right($()), r -> "right: " + r)
         );
         assertThat(actual).isEqualTo("right: a");
     }
@@ -199,8 +196,8 @@ public class MatchTest {
     public void shouldMatchSome() {
         final Option<Integer> opt = Option.some(1);
         final String actual = Match(opt).of(
-                Case(Some($()), String::valueOf),
-                Case(None(), "no value")
+                Case($None(), "no value"),
+                Case($Some($()), String::valueOf)
         );
         assertThat(actual).isEqualTo("1");
     }
@@ -209,8 +206,8 @@ public class MatchTest {
     public void shouldMatchNone() {
         final Option<Integer> opt = Option.none();
         final String actual = Match(opt).of(
-                Case(Some($()), String::valueOf),
-                Case(None(), "no value")
+                Case($Some($()), String::valueOf),
+                Case($None(), "no value")
         );
         assertThat(actual).isEqualTo("no value");
     }
@@ -219,7 +216,7 @@ public class MatchTest {
     public void shouldDecomposeSomeTuple() {
         final Option<Tuple2<String, Integer>> tuple2Option = Option.of(Tuple.of("Test", 123));
         final Tuple2<String, Integer> actual = Match(tuple2Option).of(
-                Case(Some($()), value -> {
+                Case($Some($()), value -> {
                     @SuppressWarnings("UnnecessaryLocalVariable")
                     final Tuple2<String, Integer> tuple2 = value; // types are inferred correctly!
                     return tuple2;
@@ -232,7 +229,7 @@ public class MatchTest {
     public void shouldDecomposeSomeSomeTuple() {
         final Option<Option<Tuple2<String, Integer>>> tuple2OptionOption = Option.of(Option.of(Tuple.of("Test", 123)));
         final Some<Tuple2<String, Integer>> actual = Match(tuple2OptionOption).of(
-                Case(Some(Some($(Tuple.of("Test", 123)))), value -> {
+                Case($Some($Some($(Tuple.of("Test", 123)))), value -> {
                     @SuppressWarnings("UnnecessaryLocalVariable")
                     final Some<Tuple2<String, Integer>> some = value; // types are inferred correctly!
                     return some;
@@ -247,8 +244,8 @@ public class MatchTest {
     public void shouldDecomposeEmptyList() {
         final List<Integer> list = List.empty();
         final boolean isEmpty = Match(list).of(
-                Case(Cons($(), $()), (x, xs) -> false),
-                Case(Nil(), true)
+                Case($Cons($(), $()), (x, xs) -> false),
+                Case($Nil(), true)
         );
         assertThat(isEmpty).isTrue();
     }
@@ -257,8 +254,8 @@ public class MatchTest {
     public void shouldDecomposeNonEmptyList() {
         final List<Integer> list = List.of(1);
         final boolean isNotEmpty = Match(list).of(
-                Case(Cons($(), $()), (x, xs) -> true),
-                Case(Nil(), false)
+                Case($Nil(), false),
+                Case($Cons($(), $()), (x, xs) -> true)
         );
         assertThat(isNotEmpty).isTrue();
     }
@@ -271,7 +268,7 @@ public class MatchTest {
                 Tuple.of("middle", 11, 0.0),
                 Tuple.of("end", 12, 1.2));
         final String actual = Match(tuple3List).of(
-                Case(Cons($(), $()), (x, xs) -> {
+                Case($Cons($(), $()), (x, xs) -> {
                     // types are inferred correctly!
                     final Tuple3<String, Integer, Double> head = x;
                     final List<Tuple3<String, Integer, Double>> tail = xs;
@@ -286,7 +283,7 @@ public class MatchTest {
     public void shouldDecomposeListWithNonEmptyTail() {
         final List<Option<Number>> intOptionList = List.of(Option.some(1), Option.some(2.0));
         final String actual = Match(intOptionList).of(
-                Case(Cons(Some($(1)), Cons(Some($(2.0)), $())), (x, xs) -> {
+                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())), (x, xs) -> {
                     // types are inferred correctly!
                     final Some<Number> head = x;
                     final List<Option<Number>> tail = xs;
@@ -317,8 +314,8 @@ public class MatchTest {
         final OuterWorld outerWorld = new OuterWorld();
 
         Match("-v").of(
-                Case(isIn("-h", "--help"), o -> run(outerWorld::displayHelp)),
-                Case(isIn("-v", "--version"), o -> run(outerWorld::displayVersion)),
+                Case($(isIn("-h", "--help")), o -> run(outerWorld::displayHelp)),
+                Case($(isIn("-v", "--version")), o -> run(outerWorld::displayVersion)),
                 Case($(), o -> { throw new IllegalArgumentException(); })
         );
 
@@ -345,8 +342,8 @@ public class MatchTest {
         final Object obj = .1d;
 
         Match(obj).of(
-                Case(instanceOf(Integer.class), i -> run(() -> outerWorld.writeInt(i))),
-                Case(instanceOf(Double.class), d -> run(() -> outerWorld.writeDouble(d))),
+                Case($(instanceOf(Integer.class)), i -> run(() -> outerWorld.writeInt(i))),
+                Case($(instanceOf(Double.class)), d -> run(() -> outerWorld.writeDouble(d))),
                 Case($(), o -> { throw new NumberFormatException(); })
         );
 
@@ -359,7 +356,7 @@ public class MatchTest {
     public void shouldMatchCustomTypeWithUnapplyMethod() {
         final Person person = new Developer("Daniel", true, Option.some(13));
         final String actual = Match(person).of(
-                Case(Developer($("Daniel"), $(true), $()), Person.Util::devInfo),
+                Case($Developer($("Daniel"), $(true), $()), Person.Util::devInfo),
                 Case($(), p -> "Unknown person: " + p.getName())
         );
         assertThat(actual).isEqualTo("Daniel is caffeinated.");
@@ -410,21 +407,15 @@ public class MatchTest {
 
         { // value
             // Case("1", o -> "ok"); // Not possible, would lead to ambiguities (see below)
-            assertThat(Case("1", () -> "ok").apply("1")).isEqualTo(ok);
-            assertThat(Case("1", "ok").apply("1")).isEqualTo(ok);
+            assertThat(Case($("1"), () -> "ok").apply("1")).isEqualTo(ok);
+            assertThat(Case($("1"), "ok").apply("1")).isEqualTo(ok);
         }
 
         { // predicate as variable
             Predicate<String> p = s -> true;
-            assertThat(Case(p, o -> "ok").apply("1")).isEqualTo(ok); // ambiguous, if Case(T, Function<T, R>) present
-            assertThat(Case(p, () -> "ok").apply("1")).isEqualTo(ok);
-            assertThat(Case(p, "ok").apply("1")).isEqualTo(ok);
-        }
-
-        { // predicate as lambda
-            assertThat(Case(o -> true, o -> "ok").apply("1")).isEqualTo(ok); // ambiguous, if Case(T, Function<T, R>) present
-            assertThat(Case(o -> true, () -> "ok").apply("1")).isEqualTo(ok);
-            assertThat(Case(o -> true, "ok").apply("1")).isEqualTo(ok);
+            assertThat(Case($(p), o -> "ok").apply("1")).isEqualTo(ok); // ambiguous, if Case(T, Function<T, R>) present
+            assertThat(Case($(p), () -> "ok").apply("1")).isEqualTo(ok);
+            assertThat(Case($(p), "ok").apply("1")).isEqualTo(ok);
         }
 
         { // $(predicate)

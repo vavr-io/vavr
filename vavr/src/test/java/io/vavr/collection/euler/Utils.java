@@ -50,9 +50,9 @@ final class Utils {
 
     static boolean isPrime(long val) {
         return API.Match(val).of(
-                API.Case(API.$(n -> n < 2L), false),
-                API.Case(API.$(2L), true),
-                API.Case(API.$(), n -> {
+                API.Case($(n -> n < 2L), false),
+                API.Case($(2L), true),
+                API.Case($(), n -> {
                     final double upperLimitToCheck = Math.sqrt(n);
                     return !PrimeNumbers.primes().takeWhile(d -> d <= upperLimitToCheck).exists(d -> n % d == 0);
                 })

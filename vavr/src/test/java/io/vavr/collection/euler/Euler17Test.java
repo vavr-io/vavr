@@ -112,13 +112,13 @@ public class Euler17Test {
         @Override
         public int letterCount(int num) {
             return Match(num).of( /*@formatter:off*/
-                    Case(n -> n >= 1000,           n -> length(n / 1000) + length(1000) + letterCount(n % 1000)),
-                    Case(n -> n >= 100,            n -> Match(n).of(
-                        Case(n1 -> (n1 % 100) > 0, n1 -> length(n1 / 100) + length(100) + CONJUNCTION.length() + letterCount(n1 % 100)),
+                    Case($(n -> n >= 1000),           n -> length(n / 1000) + length(1000) + letterCount(n % 1000)),
+                    Case($(n -> n >= 100),            n -> Match(n).of(
+                        Case($(n1 -> (n1 % 100) > 0), n1 -> length(n1 / 100) + length(100) + CONJUNCTION.length() + letterCount(n1 % 100)),
                         Case($(),                  length(n / 100) + length(100)))),
-                    Case(n -> n >= 20,             n -> length(n - (n % 10)) + letterCount(n % 10)),
-                    Case(0,                        0),
-                    Case($(),                      n -> length(n))
+                    Case($(n -> n >= 20),             n -> length(n - (n % 10)) + letterCount(n % 10)),
+                    Case($(0),                        0),
+                    Case($(),                         n -> length(n))
             ); /*@formatter:on*/
         }
 

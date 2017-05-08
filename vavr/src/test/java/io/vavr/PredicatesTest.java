@@ -152,7 +152,7 @@ public class PredicatesTest {
         final List<Integer> list = List(1, 2, 3);
         final Predicate<Number> p = n -> n.intValue() % 2 == 0;
         final boolean actual = Match(list).of(
-                Case(exists(p), true),
+                Case($(exists(p)), true),
                 Case($(), false)
         );
         assertThat(actual).isTrue();
@@ -175,7 +175,7 @@ public class PredicatesTest {
         final List<Integer> list = List(1, 2, 3);
         final Predicate<Number> p = n -> n.intValue() > 0;
         final boolean actual = Match(list).of(
-                Case(forAll(p), true),
+                Case($(forAll(p)), true),
                 Case($(), false)
         );
         assertThat(actual).isTrue();

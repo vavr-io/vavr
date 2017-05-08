@@ -2807,43 +2807,6 @@ public final class API {
 
     // -- static Case API
 
-    // - Value
-
-    // Note: The signature `<T, R> Case<T, R> Case(T value, $FunctionType<? super T, ? extends R> f)` leads to ambiguities!
-
-    @GwtIncompatible
-    public static <T, R> Case<T, R> Case(T value, Supplier<? extends R> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return new Case0<>($(value), ignored -> supplier.get());
-    }
-
-    @GwtIncompatible
-    public static <T, R> Case<T, R> Case(T value, R retVal) {
-        return new Case0<>($(value), ignored -> retVal);
-    }
-
-    // - Predicate
-
-    @GwtIncompatible
-    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Function<? super T, ? extends R> f) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        Objects.requireNonNull(f, "f is null");
-        return new Case0<>($(predicate), f);
-    }
-
-    @GwtIncompatible
-    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, Supplier<? extends R> supplier) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        Objects.requireNonNull(supplier, "supplier is null");
-        return new Case0<>($(predicate), ignored -> supplier.get());
-    }
-
-    @GwtIncompatible
-    public static <T, R> Case<T, R> Case(Predicate<? super T> predicate, R retVal) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return new Case0<>($(predicate), ignored -> retVal);
-    }
-
     // - Pattern0
 
     @GwtIncompatible

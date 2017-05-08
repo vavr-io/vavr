@@ -841,43 +841,6 @@ def generateMainClasses(): Unit = {
 
           // -- static Case API
 
-          // - Value
-
-          // Note: The signature `<T, R> Case<T, R> Case(T value, $$FunctionType<? super T, ? extends R> f)` leads to ambiguities!
-
-          @GwtIncompatible
-          public static <T, R> Case<T, R> Case(T value, $SupplierType<? extends R> supplier) {
-              $Objects.requireNonNull(supplier, "supplier is null");
-              return new Case0<>($$(value), ignored -> supplier.get());
-          }
-
-          @GwtIncompatible
-          public static <T, R> Case<T, R> Case(T value, R retVal) {
-              return new Case0<>($$(value), ignored -> retVal);
-          }
-
-          // - Predicate
-
-          @GwtIncompatible
-          public static <T, R> Case<T, R> Case($PredicateType<? super T> predicate, $FunctionType<? super T, ? extends R> f) {
-              $Objects.requireNonNull(predicate, "predicate is null");
-              $Objects.requireNonNull(f, "f is null");
-              return new Case0<>($$(predicate), f);
-          }
-
-          @GwtIncompatible
-          public static <T, R> Case<T, R> Case($PredicateType<? super T> predicate, $SupplierType<? extends R> supplier) {
-              $Objects.requireNonNull(predicate, "predicate is null");
-              $Objects.requireNonNull(supplier, "supplier is null");
-              return new Case0<>($$(predicate), ignored -> supplier.get());
-          }
-
-          @GwtIncompatible
-          public static <T, R> Case<T, R> Case($PredicateType<? super T> predicate, R retVal) {
-              $Objects.requireNonNull(predicate, "predicate is null");
-              return new Case0<>($$(predicate), ignored -> retVal);
-          }
-
           // - Pattern0
 
           @GwtIncompatible
@@ -2425,7 +2388,6 @@ def generateTestClasses(): Unit = {
       val ExecutorService = s"$ExecutorServiceType.newSingleThreadExecutor()"
       val TryType = im.getType("io.vavr.control.Try")
       val JavaComparatorType = im.getType("java.util.Comparator")
-      val JavaCollectionsType = im.getType("java.util.Collections")
 
       val d = "$"
 
@@ -2732,22 +2694,22 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
-                assertThat(Case(ignored -> true, ignored -> 1).apply(null)).isEqualTo($OptionType.some(1));
+                assertThat(Case($$(ignored -> true), ignored -> 1).apply(null)).isEqualTo($OptionType.some(1));
             }
 
             @$test
             public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
-                assertThat(Case(ignored -> false, ignored -> 1).apply(null)).isEqualTo($OptionType.none());
+                assertThat(Case($$(ignored -> false), ignored -> 1).apply(null)).isEqualTo($OptionType.none());
             }
 
             @$test
             public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
-                assertThat(Case(ignored -> true, 1).apply(null)).isEqualTo($OptionType.some(1));
+                assertThat(Case($$(ignored -> true), 1).apply(null)).isEqualTo($OptionType.some(1));
             }
 
             @$test
             public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
-                assertThat(Case(ignored -> false, 1).apply(null)).isEqualTo($OptionType.none());
+                assertThat(Case($$(ignored -> false), 1).apply(null)).isEqualTo($OptionType.none());
             }
 
             // -- Match patterns
@@ -2756,34 +2718,40 @@ def generateTestClasses(): Unit = {
             static class ClzMatch1 extends ClzMatch {}
             static class ClzMatch2 extends ClzMatch {}
 
-            ${(1 to N).gen(i => xs"""
-              @$test
-              public void shouldMatchPattern$i() {
-                  final Tuple$i<${(1 to i).gen(j => s"Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(", ")});
-                  final String func = Match(tuple).of(
-                          Case(Patterns.Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "fail"),
-                          Case(Patterns.Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "okFunc")
-                  );
-                  assertThat(func).isEqualTo("okFunc");
-                  final String supp = Match(tuple).of(
-                          Case(Patterns.Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), () -> "fail"),
-                          Case(Patterns.Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), () -> "okSupp")
-                  );
-                  assertThat(supp).isEqualTo("okSupp");
-                  final String val = Match(tuple).of(
-                          Case(Patterns.Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), "fail"),
-                          Case(Patterns.Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), "okVal")
-                  );
-                  assertThat(val).isEqualTo("okVal");
+            ${(1 to N).gen(i => {
 
-                  final ClzMatch c = new ClzMatch2();
-                  final String match = Match(c).of(
-                          Case(API.Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "fail"),
-                          Case(API.Match.Pattern$i.of(ClzMatch2.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "okMatch")
-                  );
-                  assertThat(match).isEqualTo("okMatch");
-              }
-            """)("\n\n")}
+              im.getStatic("io.vavr.API.*")
+              im.getStatic("io.vavr.Patterns.*")
+
+              xs"""
+                @$test
+                public void shouldMatchPattern$i() {
+                    final Tuple$i<${(1 to i).gen(j => s"Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(", ")});
+                    final String func = Match(tuple).of(
+                            Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "fail"),
+                            Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "okFunc")
+                    );
+                    assertThat(func).isEqualTo("okFunc");
+                    final String supp = Match(tuple).of(
+                            Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), () -> "fail"),
+                            Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), () -> "okSupp")
+                    );
+                    assertThat(supp).isEqualTo("okSupp");
+                    final String val = Match(tuple).of(
+                            Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), "fail"),
+                            Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), "okVal")
+                    );
+                    assertThat(val).isEqualTo("okVal");
+
+                    final ClzMatch c = new ClzMatch2();
+                    final String match = Match(c).of(
+                            Case(Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "fail"),
+                            Case(Match.Pattern$i.of(ClzMatch2.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "okMatch")
+                    );
+                    assertThat(match).isEqualTo("okMatch");
+                }
+              """
+            })("\n\n")}
         }
       """
     })
