@@ -1067,7 +1067,7 @@ public class TryTest extends AbstractValueTest {
     public void shouldMapFailureWhenSuccess() {
         final Try<Integer> testee = Success(1);
         final Try<Integer> actual = testee.mapFailure(
-                Case(instanceOf(RuntimeException.class), (Function<RuntimeException, Error>) Error::new)
+                Case($(instanceOf(RuntimeException.class)), (Function<RuntimeException, Error>) Error::new)
         );
         assertThat(actual).isSameAs(testee);
     }
@@ -1077,7 +1077,7 @@ public class TryTest extends AbstractValueTest {
     public void shouldMapFailureWhenFailureAndMatches() {
         final Try<Integer> testee = Failure(new IOException());
         final Try<Integer> actual = testee.mapFailure(
-                Case(instanceOf(IOException.class), (Function<IOException, Error>) Error::new)
+                Case($(instanceOf(IOException.class)), (Function<IOException, Error>) Error::new)
         );
         assertThat(actual.getCause()).isInstanceOf(Error.class);
     }
@@ -1087,7 +1087,7 @@ public class TryTest extends AbstractValueTest {
     public void shouldMapFailureWhenFailureButDoesNotMatch() {
         final Try<Integer> testee = Failure(new IOException());
         final Try<Integer> actual = testee.mapFailure(
-                Case(instanceOf(RuntimeException.class), (Function<RuntimeException, Error>) Error::new)
+                Case($(instanceOf(RuntimeException.class)), (Function<RuntimeException, Error>) Error::new)
         );
         assertThat(actual).isSameAs(testee);
     }

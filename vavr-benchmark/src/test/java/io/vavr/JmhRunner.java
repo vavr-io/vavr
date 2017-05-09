@@ -61,7 +61,7 @@ public class JmhRunner {
         CLOJURE("clojure"),
         SCALAZ("scalaz"),
         SCALA("scala"),
-        JAVASLANG("slang");
+        VAVR("vavr");
 
         private final String name;
 

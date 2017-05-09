@@ -28,7 +28,7 @@ public class IteratorBenchmark {
 
     public static void main(String... args) {
         JmhRunner.runDebugWithAsserts(CLASSES);
-        JmhRunner.runNormalNoAsserts(CLASSES, JAVA, SCALA, JAVASLANG);
+        JmhRunner.runNormalNoAsserts(CLASSES, JAVA, SCALA, VAVR);
     }
 
     @State(Scope.Benchmark)

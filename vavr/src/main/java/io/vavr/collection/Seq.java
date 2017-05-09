@@ -149,7 +149,7 @@ public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializa
      *
      * <ul>
      * <li>A view is created in O(1) (constant time) whereas conversion takes O(n) (linear time), with n = collection size.</li>
-     * <li>The operations on a view have the same performance characteristics than the underlying persistent Javaslang collection whereas the performance characteristics of a converted collection are those of the Java standard collections.</li>
+     * <li>The operations on a view have the same performance characteristics than the underlying persistent Vavr collection whereas the performance characteristics of a converted collection are those of the Java standard collections.</li>
      * </ul>
      *
      * Please note that our immutable {@code java.util.List} view throws {@code UnsupportedOperationException} before
