@@ -77,7 +77,7 @@ public interface CheckedFunction0<R> extends Lambda<R> {
      */
     @SuppressWarnings("RedundantTypeArguments")
     static <R> Function0<Option<R>> lift(CheckedFunction0<? extends R> partialFunction) {
-        return () -> Try.<R>of(partialFunction::apply).getOption();
+        return () -> Try.<R>of(partialFunction::apply).toOption();
     }
 
     /**

@@ -82,7 +82,7 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
      */
     @SuppressWarnings("RedundantTypeArguments")
     static <T1, R> Function1<T1, Option<R>> lift(Function<? super T1, ? extends R> partialFunction) {
-        return t1 -> Try.<R>of(() -> partialFunction.apply(t1)).getOption();
+        return t1 -> Try.<R>of(() -> partialFunction.apply(t1)).toOption();
     }
 
     /**

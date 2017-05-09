@@ -98,19 +98,7 @@ public abstract class AbstractValueTest {
     public void shouldGetNonEmpty() {
         assertThat(of(1).get()).isEqualTo(1);
     }
-
-    // -- getOption()
-
-    @Test
-    public void shouldGetOptionEmpty() {
-        assertThat(empty().getOption()).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldGetOptionNonEmpty() {
-        assertThat(of(1).getOption()).isEqualTo(Option.of(1));
-    }
-
+    
     // -- getOrElse(T)
 
     @Test

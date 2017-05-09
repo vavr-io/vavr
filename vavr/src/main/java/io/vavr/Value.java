@@ -40,7 +40,6 @@ import static io.vavr.API.*;
  *
  * <ul>
  * <li>{@link #get()}</li>
- * <li>{@link #getOption()}</li>
  * <li>{@link #getOrElse(Object)}</li>
  * <li>{@link #getOrElse(Supplier)}</li>
  * <li>{@link #getOrElseThrow(Supplier)}</li>
@@ -327,22 +326,11 @@ public interface Value<T> extends Iterable<T> {
      * However, there exist use-cases, where implementations may throw other exceptions. See {@link Try#get()}.
      * <p>
      * <strong>Additional note:</strong> Dynamic proxies will wrap an undeclared exception in a {@link java.lang.reflect.UndeclaredThrowableException}.
-     * <p>
-     * <strong>Hint:</strong> A safe variant of {@code get()} is {@link #getOption()}.
      *
      * @return the underlying value if this is not empty, otherwise {@code get()} throws a {@code Throwable}
      */
     T get();
-
-    /**
-     * Gets the underlying value as Option.
-     *
-     * @return Some(value) if a value is present, None otherwise
-     */
-    default Option<T> getOption() {
-        return isEmpty() ? Option.none() : Option.some(get());
-    }
-
+    
     /**
      * Returns the underlying value if present, otherwise {@code other}.
      *
@@ -944,7 +932,7 @@ public interface Value<T> extends Iterable<T> {
         if (this instanceof Option) {
             return (Option<T>) this;
         } else {
-            return getOption();
+            return isEmpty() ? Option.none() : Option.some(get());
         }
     }
 
