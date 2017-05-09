@@ -1512,7 +1512,7 @@ def generateMainClasses(): Unit = {
                     val supplier = if (!checked && i == 0) s"$func::get" else if (checked && i == 0) s"$func::apply" else s"() -> $func.apply($params)"
                     val lambdaArgs = if (i == 1) params else s"($params)"
                     xs"""
-                      return $lambdaArgs -> ${im.getType("io.vavr.control.Try")}.<R>of($supplier).getOption();
+                      return $lambdaArgs -> ${im.getType("io.vavr.control.Try")}.<R>of($supplier).toOption();
                     """
                   }
               }

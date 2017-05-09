@@ -77,7 +77,7 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
      */
     @SuppressWarnings("RedundantTypeArguments")
     static <R> Function0<Option<R>> lift(Supplier<? extends R> partialFunction) {
-        return () -> Try.<R>of(partialFunction::get).getOption();
+        return () -> Try.<R>of(partialFunction::get).toOption();
     }
 
     /**

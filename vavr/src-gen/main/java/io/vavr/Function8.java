@@ -102,7 +102,7 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lambda<R> 
      */
     @SuppressWarnings("RedundantTypeArguments")
     static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, Option<R>> lift(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> partialFunction) {
-        return (t1, t2, t3, t4, t5, t6, t7, t8) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6, t7, t8)).getOption();
+        return (t1, t2, t3, t4, t5, t6, t7, t8) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6, t7, t8)).toOption();
     }
 
     /**

@@ -90,7 +90,7 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends Lambda<R> {
      */
     @SuppressWarnings("RedundantTypeArguments")
     static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, Option<R>> lift(CheckedFunction4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> partialFunction) {
-        return (t1, t2, t3, t4) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4)).getOption();
+        return (t1, t2, t3, t4) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4)).toOption();
     }
 
     /**

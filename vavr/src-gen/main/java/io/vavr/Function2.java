@@ -85,7 +85,7 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
      */
     @SuppressWarnings("RedundantTypeArguments")
     static <T1, T2, R> Function2<T1, T2, Option<R>> lift(BiFunction<? super T1, ? super T2, ? extends R> partialFunction) {
-        return (t1, t2) -> Try.<R>of(() -> partialFunction.apply(t1, t2)).getOption();
+        return (t1, t2) -> Try.<R>of(() -> partialFunction.apply(t1, t2)).toOption();
     }
 
     /**
