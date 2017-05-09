@@ -1089,22 +1089,26 @@ public class APITest {
 
     @Test
     public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
-        assertThat(Case($(ignored -> true), ignored -> 1).apply(null)).isEqualTo(Option.some(1));
+        final Match.Case<Object, Integer> _case = Case($(ignored -> true), ignored -> 1);
+        assertThat(_case.isDefinedAt(null)).isTrue();
+        assertThat(_case.apply(null)).isEqualTo(1);
     }
 
     @Test
     public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
-        assertThat(Case($(ignored -> false), ignored -> 1).apply(null)).isEqualTo(Option.none());
+        assertThat(Case($(ignored -> false), ignored -> 1).isDefinedAt(null)).isFalse();
     }
 
     @Test
     public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
-        assertThat(Case($(ignored -> true), 1).apply(null)).isEqualTo(Option.some(1));
+        final Match.Case<Object, Integer> _case = Case($(ignored -> true), 1);
+        assertThat(_case.isDefinedAt(null)).isTrue();
+        assertThat(_case.apply(null)).isEqualTo(1);
     }
 
     @Test
     public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
-        assertThat(Case($(ignored -> false), 1).apply(null)).isEqualTo(Option.none());
+        assertThat(Case($(ignored -> false), 1).isDefinedAt(null)).isFalse();
     }
 
     // -- Match patterns

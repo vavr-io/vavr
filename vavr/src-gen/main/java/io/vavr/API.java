@@ -3031,8 +3031,13 @@ public final class API {
     public static <T> Pattern0<T> $(T prototype) {
         return new Pattern0<T>() {
             @Override
-            public Option<T> apply(T obj) {
-                return Objects.equals(obj, prototype) ? Option.some(obj) : Option.none();
+            public T apply(T obj) {
+                return obj;
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return Objects.equals(obj, prototype);
             }
         };
     }
@@ -3098,8 +3103,13 @@ public final class API {
         Objects.requireNonNull(predicate, "predicate is null");
         return new Pattern0<T>() {
             @Override
-            public Option<T> apply(T obj) {
-                return predicate.test(obj) ? Option.some(obj) : Option.none();
+            public T apply(T obj) {
+                return obj;
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return predicate.test(obj);
             }
         };
     }
@@ -3117,22 +3127,27 @@ public final class API {
             this.value = value;
         }
 
-        // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <R> R of(Case<? extends T, ? extends R>... cases) {
-            return option(cases).getOrElseThrow(() -> new MatchError(value));
+            Objects.requireNonNull(cases, "cases is null");
+            for (Case<? extends T, ? extends R> _case : cases) {
+                final Case<T, R> __case = (Case<T, R>) _case;
+                if (__case.isDefinedAt(value)) {
+                    return __case.apply(value);
+                }
+            }
+            throw new MatchError(value);
         }
 
-        // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <R> Option<R> option(Case<? extends T, ? extends R>... cases) {
             Objects.requireNonNull(cases, "cases is null");
             for (Case<? extends T, ? extends R> _case : cases) {
-                final Option<R> result = ((Case<T, R>) _case).apply(value);
-                if (result.isDefined()) {
-                    return result;
+                final Case<T, R> __case = (Case<T, R>) _case;
+                if (__case.isDefinedAt(value)) {
+                    return Option.some(__case.apply(value));
                 }
             }
             return Option.none();
@@ -3141,7 +3156,7 @@ public final class API {
         // -- CASES
 
         // javac needs fqn's here
-        public interface Case<T, R> extends java.util.function.Function<T, io.vavr.control.Option<R>> {
+        public interface Case<T, R> extends PartialFunction<T, R> {
         }
 
         public static final class Case0<T, R> implements Case<T, R> {
@@ -3155,8 +3170,13 @@ public final class API {
             }
 
             @Override
-            public Option<R> apply(T o) {
-                return pattern.apply(o).map(f);
+            public R apply(T obj) {
+                return f.apply(pattern.apply(obj));
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return pattern.isDefinedAt(obj);
             }
         }
 
@@ -3171,8 +3191,13 @@ public final class API {
             }
 
             @Override
-            public Option<R> apply(T obj) {
-                return pattern.apply(obj).map(f);
+            public R apply(T obj) {
+                return f.apply(pattern.apply(obj));
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return pattern.isDefinedAt(obj);
             }
         }
 
@@ -3187,8 +3212,13 @@ public final class API {
             }
 
             @Override
-            public Option<R> apply(T obj) {
-                return pattern.apply(obj).map(t -> f.apply(t._1, t._2));
+            public R apply(T obj) {
+                return pattern.apply(obj).apply(f);
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return pattern.isDefinedAt(obj);
             }
         }
 
@@ -3203,8 +3233,13 @@ public final class API {
             }
 
             @Override
-            public Option<R> apply(T obj) {
-                return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3));
+            public R apply(T obj) {
+                return pattern.apply(obj).apply(f);
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return pattern.isDefinedAt(obj);
             }
         }
 
@@ -3219,8 +3254,13 @@ public final class API {
             }
 
             @Override
-            public Option<R> apply(T obj) {
-                return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4));
+            public R apply(T obj) {
+                return pattern.apply(obj).apply(f);
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return pattern.isDefinedAt(obj);
             }
         }
 
@@ -3235,8 +3275,13 @@ public final class API {
             }
 
             @Override
-            public Option<R> apply(T obj) {
-                return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5));
+            public R apply(T obj) {
+                return pattern.apply(obj).apply(f);
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return pattern.isDefinedAt(obj);
             }
         }
 
@@ -3251,8 +3296,13 @@ public final class API {
             }
 
             @Override
-            public Option<R> apply(T obj) {
-                return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6));
+            public R apply(T obj) {
+                return pattern.apply(obj).apply(f);
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return pattern.isDefinedAt(obj);
             }
         }
 
@@ -3267,8 +3317,13 @@ public final class API {
             }
 
             @Override
-            public Option<R> apply(T obj) {
-                return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7));
+            public R apply(T obj) {
+                return pattern.apply(obj).apply(f);
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return pattern.isDefinedAt(obj);
             }
         }
 
@@ -3283,8 +3338,13 @@ public final class API {
             }
 
             @Override
-            public Option<R> apply(T obj) {
-                return pattern.apply(obj).map(t -> f.apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8));
+            public R apply(T obj) {
+                return pattern.apply(obj).apply(f);
+            }
+
+            @Override
+            public boolean isDefinedAt(T obj) {
+                return pattern.isDefinedAt(obj);
             }
         }
 
@@ -3298,7 +3358,7 @@ public final class API {
          * @param <R> Type of the single or composite part this pattern decomposes
          */
         // javac needs fqn's here
-        public interface Pattern<T, R> extends java.util.function.Function<T, io.vavr.control.Option<R>> {
+        public interface Pattern<T, R> extends PartialFunction<T, R> {
         }
 
         // These can't be @FunctionalInterfaces because of ambiguities.
@@ -3308,8 +3368,13 @@ public final class API {
 
             private static final Pattern0<Object> ANY = new Pattern0<Object>() {
                 @Override
-                public Option<Object> apply(Object o) {
-                    return Option.some(o);
+                public Object apply(Object obj) {
+                    return obj;
+                }
+
+                @Override
+                public boolean isDefinedAt(Object obj) {
+                    return true;
                 }
             };
 
@@ -3324,8 +3389,13 @@ public final class API {
             public static <T> Pattern0<T> of(Class<? super T> type) {
                 return new Pattern0<T>() {
                     @Override
-                    public Option<T> apply(T obj) {
-                        return (obj != null && type.isAssignableFrom(obj.getClass())) ? Option.some(obj) : Option.none();
+                    public T apply(T obj) {
+                        return obj;
+                    }
+
+                    @Override
+                    public boolean isDefinedAt(T obj) {
+                        return obj != null && type.isAssignableFrom(obj.getClass());
                     }
                 };
             }
@@ -3340,17 +3410,22 @@ public final class API {
                 return new Pattern1<T, T1>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<T1> apply(T obj) {
+                    public T1 apply(T obj) {
+                        return (T1) unapply.apply(obj)._1;
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isDefinedAt(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                            return Option.none();
+                            return false;
                         } else {
-                            return unapply.apply(obj).apply(u1 -> ((Pattern<U1, ?>) p1).apply(u1).map(_1 -> (T1) u1));
+                            final Tuple1<U1> u = unapply.apply(obj);
+                            return
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1);
                         }
                     }
                 };
-            }
-
-            private Pattern1() {
             }
         }
 
@@ -3360,21 +3435,23 @@ public final class API {
                 return new Pattern2<T, T1, T2>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple2<T1, T2>> apply(T obj) {
+                    public Tuple2<T1, T2> apply(T obj) {
+                        return (Tuple2<T1, T2>) unapply.apply(obj);
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isDefinedAt(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                            return Option.none();
+                            return false;
                         } else {
-                            final Tuple2<U1, U2> unapplied = unapply.apply(obj);
-                            return unapplied.apply((u1, u2) ->
-                                    ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
-                                    ((Pattern<U2, ?>) p2).apply(u2).map(_2 -> (Tuple2<T1, T2>) unapplied)
-                            ));
+                            final Tuple2<U1, U2> u = unapply.apply(obj);
+                            return
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2);
                         }
                     }
                 };
-            }
-
-            private Pattern2() {
             }
         }
 
@@ -3384,22 +3461,24 @@ public final class API {
                 return new Pattern3<T, T1, T2, T3>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple3<T1, T2, T3>> apply(T obj) {
+                    public Tuple3<T1, T2, T3> apply(T obj) {
+                        return (Tuple3<T1, T2, T3>) unapply.apply(obj);
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isDefinedAt(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                            return Option.none();
+                            return false;
                         } else {
-                            final Tuple3<U1, U2, U3> unapplied = unapply.apply(obj);
-                            return unapplied.apply((u1, u2, u3) ->
-                                    ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
-                                    ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
-                                    ((Pattern<U3, ?>) p3).apply(u3).map(_3 -> (Tuple3<T1, T2, T3>) unapplied)
-                            )));
+                            final Tuple3<U1, U2, U3> u = unapply.apply(obj);
+                            return
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3);
                         }
                     }
                 };
-            }
-
-            private Pattern3() {
             }
         }
 
@@ -3409,23 +3488,25 @@ public final class API {
                 return new Pattern4<T, T1, T2, T3, T4>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple4<T1, T2, T3, T4>> apply(T obj) {
+                    public Tuple4<T1, T2, T3, T4> apply(T obj) {
+                        return (Tuple4<T1, T2, T3, T4>) unapply.apply(obj);
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isDefinedAt(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                            return Option.none();
+                            return false;
                         } else {
-                            final Tuple4<U1, U2, U3, U4> unapplied = unapply.apply(obj);
-                            return unapplied.apply((u1, u2, u3, u4) ->
-                                    ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
-                                    ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
-                                    ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
-                                    ((Pattern<U4, ?>) p4).apply(u4).map(_4 -> (Tuple4<T1, T2, T3, T4>) unapplied)
-                            ))));
+                            final Tuple4<U1, U2, U3, U4> u = unapply.apply(obj);
+                            return
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4);
                         }
                     }
                 };
-            }
-
-            private Pattern4() {
             }
         }
 
@@ -3435,24 +3516,26 @@ public final class API {
                 return new Pattern5<T, T1, T2, T3, T4, T5>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple5<T1, T2, T3, T4, T5>> apply(T obj) {
+                    public Tuple5<T1, T2, T3, T4, T5> apply(T obj) {
+                        return (Tuple5<T1, T2, T3, T4, T5>) unapply.apply(obj);
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isDefinedAt(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                            return Option.none();
+                            return false;
                         } else {
-                            final Tuple5<U1, U2, U3, U4, U5> unapplied = unapply.apply(obj);
-                            return unapplied.apply((u1, u2, u3, u4, u5) ->
-                                    ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
-                                    ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
-                                    ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
-                                    ((Pattern<U4, ?>) p4).apply(u4).flatMap(_4 ->
-                                    ((Pattern<U5, ?>) p5).apply(u5).map(_5 -> (Tuple5<T1, T2, T3, T4, T5>) unapplied)
-                            )))));
+                            final Tuple5<U1, U2, U3, U4, U5> u = unapply.apply(obj);
+                            return
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4) &&
+                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5);
                         }
                     }
                 };
-            }
-
-            private Pattern5() {
             }
         }
 
@@ -3462,25 +3545,27 @@ public final class API {
                 return new Pattern6<T, T1, T2, T3, T4, T5, T6>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple6<T1, T2, T3, T4, T5, T6>> apply(T obj) {
+                    public Tuple6<T1, T2, T3, T4, T5, T6> apply(T obj) {
+                        return (Tuple6<T1, T2, T3, T4, T5, T6>) unapply.apply(obj);
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isDefinedAt(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                            return Option.none();
+                            return false;
                         } else {
-                            final Tuple6<U1, U2, U3, U4, U5, U6> unapplied = unapply.apply(obj);
-                            return unapplied.apply((u1, u2, u3, u4, u5, u6) ->
-                                    ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
-                                    ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
-                                    ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
-                                    ((Pattern<U4, ?>) p4).apply(u4).flatMap(_4 ->
-                                    ((Pattern<U5, ?>) p5).apply(u5).flatMap(_5 ->
-                                    ((Pattern<U6, ?>) p6).apply(u6).map(_6 -> (Tuple6<T1, T2, T3, T4, T5, T6>) unapplied)
-                            ))))));
+                            final Tuple6<U1, U2, U3, U4, U5, U6> u = unapply.apply(obj);
+                            return
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4) &&
+                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5) &&
+                                    ((Pattern<U6, ?>) p6).isDefinedAt(u._6);
                         }
                     }
                 };
-            }
-
-            private Pattern6() {
             }
         }
 
@@ -3490,26 +3575,28 @@ public final class API {
                 return new Pattern7<T, T1, T2, T3, T4, T5, T6, T7>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple7<T1, T2, T3, T4, T5, T6, T7>> apply(T obj) {
+                    public Tuple7<T1, T2, T3, T4, T5, T6, T7> apply(T obj) {
+                        return (Tuple7<T1, T2, T3, T4, T5, T6, T7>) unapply.apply(obj);
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isDefinedAt(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                            return Option.none();
+                            return false;
                         } else {
-                            final Tuple7<U1, U2, U3, U4, U5, U6, U7> unapplied = unapply.apply(obj);
-                            return unapplied.apply((u1, u2, u3, u4, u5, u6, u7) ->
-                                    ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
-                                    ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
-                                    ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
-                                    ((Pattern<U4, ?>) p4).apply(u4).flatMap(_4 ->
-                                    ((Pattern<U5, ?>) p5).apply(u5).flatMap(_5 ->
-                                    ((Pattern<U6, ?>) p6).apply(u6).flatMap(_6 ->
-                                    ((Pattern<U7, ?>) p7).apply(u7).map(_7 -> (Tuple7<T1, T2, T3, T4, T5, T6, T7>) unapplied)
-                            )))))));
+                            final Tuple7<U1, U2, U3, U4, U5, U6, U7> u = unapply.apply(obj);
+                            return
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4) &&
+                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5) &&
+                                    ((Pattern<U6, ?>) p6).isDefinedAt(u._6) &&
+                                    ((Pattern<U7, ?>) p7).isDefinedAt(u._7);
                         }
                     }
                 };
-            }
-
-            private Pattern7() {
             }
         }
 
@@ -3519,27 +3606,29 @@ public final class API {
                 return new Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8>() {
                     @SuppressWarnings("unchecked")
                     @Override
-                    public Option<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> apply(T obj) {
+                    public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> apply(T obj) {
+                        return (Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>) unapply.apply(obj);
+                    }
+
+                    @SuppressWarnings("unchecked")
+                    @Override
+                    public boolean isDefinedAt(T obj) {
                         if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                            return Option.none();
+                            return false;
                         } else {
-                            final Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> unapplied = unapply.apply(obj);
-                            return unapplied.apply((u1, u2, u3, u4, u5, u6, u7, u8) ->
-                                    ((Pattern<U1, ?>) p1).apply(u1).flatMap(_1 ->
-                                    ((Pattern<U2, ?>) p2).apply(u2).flatMap(_2 ->
-                                    ((Pattern<U3, ?>) p3).apply(u3).flatMap(_3 ->
-                                    ((Pattern<U4, ?>) p4).apply(u4).flatMap(_4 ->
-                                    ((Pattern<U5, ?>) p5).apply(u5).flatMap(_5 ->
-                                    ((Pattern<U6, ?>) p6).apply(u6).flatMap(_6 ->
-                                    ((Pattern<U7, ?>) p7).apply(u7).flatMap(_7 ->
-                                    ((Pattern<U8, ?>) p8).apply(u8).map(_8 -> (Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>) unapplied)
-                            ))))))));
+                            final Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> u = unapply.apply(obj);
+                            return
+                                    ((Pattern<U1, ?>) p1).isDefinedAt(u._1) &&
+                                    ((Pattern<U2, ?>) p2).isDefinedAt(u._2) &&
+                                    ((Pattern<U3, ?>) p3).isDefinedAt(u._3) &&
+                                    ((Pattern<U4, ?>) p4).isDefinedAt(u._4) &&
+                                    ((Pattern<U5, ?>) p5).isDefinedAt(u._5) &&
+                                    ((Pattern<U6, ?>) p6).isDefinedAt(u._6) &&
+                                    ((Pattern<U7, ?>) p7).isDefinedAt(u._7) &&
+                                    ((Pattern<U8, ?>) p8).isDefinedAt(u._8);
                         }
                     }
                 };
-            }
-
-            private Pattern8() {
             }
         }
     }

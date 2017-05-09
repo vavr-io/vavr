@@ -53,6 +53,7 @@ def generateMainClasses(): Unit = {
       val EitherType = im.getType("io.vavr.control.Either")
       val FutureType = im.getType("io.vavr.concurrent.Future")
       val CheckedFunction0Type = im.getType("io.vavr.CheckedFunction0")
+      val PartialFunctionType = im.getType("io.vavr.PartialFunction")
       val TryType = im.getType("io.vavr.control.Try")
       val ValidationType = im.getType("io.vavr.control.Validation")
       val CharSeqType = im.getType("io.vavr.collection.CharSeq")
@@ -923,8 +924,13 @@ def generateMainClasses(): Unit = {
           public static <T> Pattern0<T> $$(T prototype) {
               return new Pattern0<T>() {
                   @Override
-                  public $OptionType<T> apply(T obj) {
-                      return $Objects.equals(obj, prototype) ? $OptionType.some(obj) : $OptionType.none();
+                  public T apply(T obj) {
+                      return obj;
+                  }
+
+                  @Override
+                  public boolean isDefinedAt(T obj) {
+                      return $Objects.equals(obj, prototype);
                   }
               };
           }
@@ -990,8 +996,13 @@ def generateMainClasses(): Unit = {
               $Objects.requireNonNull(predicate, "predicate is null");
               return new Pattern0<T>() {
                   @Override
-                  public $OptionType<T> apply(T obj) {
-                      return predicate.test(obj) ? $OptionType.some(obj) : $OptionType.none();
+                  public T apply(T obj) {
+                      return obj;
+                  }
+
+                  @Override
+                  public boolean isDefinedAt(T obj) {
+                      return predicate.test(obj);
                   }
               };
           }
@@ -1009,22 +1020,27 @@ def generateMainClasses(): Unit = {
                   this.value = value;
               }
 
-              // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
               public final <R> R of(Case<? extends T, ? extends R>... cases) {
-                  return option(cases).getOrElseThrow(() -> new MatchError(value));
+                  Objects.requireNonNull(cases, "cases is null");
+                  for (Case<? extends T, ? extends R> _case : cases) {
+                      final Case<T, R> __case = (Case<T, R>) _case;
+                      if (__case.isDefinedAt(value)) {
+                          return __case.apply(value);
+                      }
+                  }
+                  throw new MatchError(value);
               }
 
-              // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
               public final <R> $OptionType<R> option(Case<? extends T, ? extends R>... cases) {
                   Objects.requireNonNull(cases, "cases is null");
                   for (Case<? extends T, ? extends R> _case : cases) {
-                      final $OptionType<R> result = ((Case<T, R>) _case).apply(value);
-                      if (result.isDefined()) {
-                          return result;
+                      final Case<T, R> __case = (Case<T, R>) _case;
+                      if (__case.isDefinedAt(value)) {
+                          return $OptionType.some(__case.apply(value));
                       }
                   }
                   return $OptionType.none();
@@ -1033,7 +1049,7 @@ def generateMainClasses(): Unit = {
               // -- CASES
 
               // javac needs fqn's here
-              public interface Case<T, R> extends java.util.function.Function<T, io.vavr.control.Option<R>> {
+              public interface Case<T, R> extends $PartialFunctionType<T, R> {
               }
 
               public static final class Case0<T, R> implements Case<T, R> {
@@ -1047,8 +1063,13 @@ def generateMainClasses(): Unit = {
                   }
 
                   @Override
-                  public Option<R> apply(T o) {
-                      return pattern.apply(o).map(f);
+                  public R apply(T obj) {
+                      return f.apply(pattern.apply(obj));
+                  }
+
+                  @Override
+                  public boolean isDefinedAt(T obj) {
+                      return pattern.isDefinedAt(obj);
                   }
               }
 
@@ -1072,12 +1093,17 @@ def generateMainClasses(): Unit = {
                       }
 
                       @Override
-                      public $OptionType<R> apply(T obj) {
+                      public R apply(T obj) {
                           ${if (i == 1) xs"""
-                            return pattern.apply(obj).map(f);
+                             return f.apply(pattern.apply(obj));
                           """ else xs"""
-                            return pattern.apply(obj).map(t -> f.apply(${(1 to i).gen(j => s"t._$j")(", ")}));
+                            return pattern.apply(obj).apply(f);
                           """}
+                      }
+
+                      @Override
+                      public boolean isDefinedAt(T obj) {
+                          return pattern.isDefinedAt(obj);
                       }
                   }
                 """
@@ -1093,7 +1119,7 @@ def generateMainClasses(): Unit = {
                * @param <R> Type of the single or composite part this pattern decomposes
                */
               // javac needs fqn's here
-              public interface Pattern<T, R> extends java.util.function.Function<T, io.vavr.control.Option<R>> {
+              public interface Pattern<T, R> extends $PartialFunctionType<T, R> {
               }
 
               // These can't be @FunctionalInterfaces because of ambiguities.
@@ -1103,8 +1129,13 @@ def generateMainClasses(): Unit = {
 
                   private static final Pattern0<Object> ANY = new Pattern0<Object>() {
                       @Override
-                      public $OptionType<Object> apply(Object o) {
-                          return $OptionType.some(o);
+                      public Object apply(Object obj) {
+                          return obj;
+                      }
+
+                      @Override
+                      public boolean isDefinedAt(Object obj) {
+                          return true;
                       }
                   };
 
@@ -1119,8 +1150,13 @@ def generateMainClasses(): Unit = {
                   public static <T> Pattern0<T> of(Class<? super T> type) {
                       return new Pattern0<T>() {
                           @Override
-                          public $OptionType<T> apply(T obj) {
-                              return (obj != null && type.isAssignableFrom(obj.getClass())) ? $OptionType.some(obj) : $OptionType.none();
+                          public T apply(T obj) {
+                              return obj;
+                          }
+
+                          @Override
+                          public boolean isDefinedAt(T obj) {
+                              return obj != null && type.isAssignableFrom(obj.getClass());
                           }
                       };
                   }
@@ -1143,25 +1179,26 @@ def generateMainClasses(): Unit = {
                           return new Pattern$i<T, $resultGenerics>() {
                               @SuppressWarnings("unchecked")
                               @Override
-                              public $OptionType<$resultType> apply(T obj) {
+                              public $resultType apply(T obj) {
+                                  ${if (i == 1) xs"""
+                                    return (T1) unapply.apply(obj)._1;
+                                  """ else xs"""
+                                    return ($resultType) unapply.apply(obj);
+                                  """}
+                              }
+
+                              @SuppressWarnings("unchecked")
+                              @Override
+                              public boolean isDefinedAt(T obj) {
                                   if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                                      return $OptionType.none();
+                                      return false;
                                   } else {
-                                      ${if (i == 1) xs"""
-                                        return unapply.apply(obj).apply(u1 -> ((Pattern<U1, ?>) p1).apply(u1).map(_1 -> (T1) u1));
-                                      """ else xs"""
-                                        final Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}> unapplied = unapply.apply(obj);
-                                        return unapplied.apply((${(1 to i).gen(j => s"u$j")(", ")}) ->
-                                                ${(1 until i).gen(j => s"((Pattern<U$j, ?>) p$j).apply(u$j).flatMap(_$j ->")("\n")}
-                                                ((Pattern<U$i, ?>) p$i).apply(u$i).map(_$i -> ($resultType) unapplied)
-                                        ${")" * i};
-                                      """}
+                                      final $unapplyTupleType u = unapply.apply(obj);
+                                      return
+                                              ${(1 to i).gen(j => s"((Pattern<U$j, ?>) p$j).isDefinedAt(u._$j)")(" &&\n")};
                                   }
                               }
                           };
-                      }
-
-                      private Pattern$i() {
                       }
                   }
                 """
@@ -2694,22 +2731,26 @@ def generateTestClasses(): Unit = {
 
             @$test
             public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
-                assertThat(Case($$(ignored -> true), ignored -> 1).apply(null)).isEqualTo($OptionType.some(1));
+                final Match.Case<Object, Integer> _case = Case($$(ignored -> true), ignored -> 1);
+                assertThat(_case.isDefinedAt(null)).isTrue();
+                assertThat(_case.apply(null)).isEqualTo(1);
             }
 
             @$test
             public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
-                assertThat(Case($$(ignored -> false), ignored -> 1).apply(null)).isEqualTo($OptionType.none());
+                assertThat(Case($$(ignored -> false), ignored -> 1).isDefinedAt(null)).isFalse();
             }
 
             @$test
             public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
-                assertThat(Case($$(ignored -> true), 1).apply(null)).isEqualTo($OptionType.some(1));
+                final Match.Case<Object, Integer> _case = Case($$(ignored -> true), 1);
+                assertThat(_case.isDefinedAt(null)).isTrue();
+                assertThat(_case.apply(null)).isEqualTo(1);
             }
 
             @$test
             public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
-                assertThat(Case($$(ignored -> false), 1).apply(null)).isEqualTo($OptionType.none());
+                assertThat(Case($$(ignored -> false), 1).isDefinedAt(null)).isFalse();
             }
 
             // -- Match patterns
