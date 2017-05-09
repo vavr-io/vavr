@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
  * @param <T> Component type
  * @author Daniel Dietrich
  */
-public abstract class AbstractIterator<T> implements Iterator<T> {
+abstract class AbstractIterator<T> implements Iterator<T> {
 
     @Override
     public String toString() {
