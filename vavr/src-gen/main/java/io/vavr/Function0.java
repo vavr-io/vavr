@@ -10,6 +10,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static io.vavr.Function0Module.sneakyThrow;
+
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.util.Objects;
@@ -178,4 +180,13 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
         return () -> after.apply(apply());
     }
 
+}
+
+interface Function0Module {
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
+    }
 }

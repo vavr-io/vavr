@@ -10,6 +10,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static io.vavr.CheckedFunction1Module.sneakyThrow;
+
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.util.HashMap;
@@ -195,26 +197,18 @@ public interface CheckedFunction1<T1, R> extends Lambda<R> {
     }
 
     /**
-     * Return unchecked function that will return this CheckedFunction1 result in correct case and throw runtime exception
-     * wrapped by {@code exceptionMapper} in case of throwable
+     * Returns an unchecked function that will <em>sneaky throw</em> if an exceptions occurs when applying the function.
      *
-     * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
-     * @return a new Function1 that wraps this CheckedFunction1 by throwing a {@code RuntimeException} issued by the given {@code exceptionMapper} in the case of a failure
-     */
-    default Function1<T1, R> unchecked(Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
-        return recover(throwable -> {
-            throw exceptionMapper.apply(throwable);
-        });
-    }
-
-    /**
-     * Return unchecked function that will return this CheckedFunction1 result in correct case and throw exception
-     * wrapped by {@link IllegalStateException} in case of throwable.
-     *
-     * @return a new Function1 that wraps this CheckedFunction1 by throwing an {@code IllegalStateException} in the case of a failure
+     * @return a new Function1 that throws a {@code Throwable}.
      */
     default Function1<T1, R> unchecked() {
-        return unchecked(IllegalStateException::new);
+        return (t1) -> {
+            try {
+                return apply(t1);
+            } catch(Throwable t) {
+                return sneakyThrow(t);
+            }
+        };
     }
 
     /**
@@ -243,5 +237,14 @@ public interface CheckedFunction1<T1, R> extends Lambda<R> {
     default <V> CheckedFunction1<V, R> compose(CheckedFunction1<? super V, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
+    }
+}
+
+interface CheckedFunction1Module {
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
     }
 }

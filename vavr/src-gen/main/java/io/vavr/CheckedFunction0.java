@@ -10,6 +10,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static io.vavr.CheckedFunction0Module.sneakyThrow;
+
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.util.Objects;
@@ -176,26 +178,18 @@ public interface CheckedFunction0<R> extends Lambda<R> {
     }
 
     /**
-     * Return unchecked function that will return this CheckedFunction0 result in correct case and throw runtime exception
-     * wrapped by {@code exceptionMapper} in case of throwable
+     * Returns an unchecked function that will <em>sneaky throw</em> if an exceptions occurs when applying the function.
      *
-     * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
-     * @return a new Function0 that wraps this CheckedFunction0 by throwing a {@code RuntimeException} issued by the given {@code exceptionMapper} in the case of a failure
-     */
-    default Function0<R> unchecked(Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
-        return recover(throwable -> {
-            throw exceptionMapper.apply(throwable);
-        });
-    }
-
-    /**
-     * Return unchecked function that will return this CheckedFunction0 result in correct case and throw exception
-     * wrapped by {@link IllegalStateException} in case of throwable.
-     *
-     * @return a new Function0 that wraps this CheckedFunction0 by throwing an {@code IllegalStateException} in the case of a failure
+     * @return a new Function0 that throws a {@code Throwable}.
      */
     default Function0<R> unchecked() {
-        return unchecked(IllegalStateException::new);
+        return () -> {
+            try {
+                return apply();
+            } catch(Throwable t) {
+                return sneakyThrow(t);
+            }
+        };
     }
 
     /**
@@ -212,4 +206,13 @@ public interface CheckedFunction0<R> extends Lambda<R> {
         return () -> after.apply(apply());
     }
 
+}
+
+interface CheckedFunction0Module {
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
+    }
 }

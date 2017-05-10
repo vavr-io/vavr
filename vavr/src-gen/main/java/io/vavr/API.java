@@ -461,7 +461,7 @@ public final class API {
      *
      * @param <R>  return type
      * @param f    A method reference
-     * @return A unchecked wrapper of supplied {@link CheckedFunction0}
+     * @return An unchecked wrapper of supplied {@link CheckedFunction0}
      */
     public static <R> Function0<R> unchecked(CheckedFunction0<R> f) {
         return f.unchecked();
@@ -473,7 +473,7 @@ public final class API {
      * @param <R>  return type
      * @param <T1> type of the 1st argument
      * @param f    A method reference
-     * @return A unchecked wrapper of supplied {@link CheckedFunction1}
+     * @return An unchecked wrapper of supplied {@link CheckedFunction1}
      */
     public static <T1, R> Function1<T1, R> unchecked(CheckedFunction1<T1, R> f) {
         return f.unchecked();
@@ -486,7 +486,7 @@ public final class API {
      * @param <T1> type of the 1st argument
      * @param <T2> type of the 2nd argument
      * @param f    A method reference
-     * @return A unchecked wrapper of supplied {@link CheckedFunction2}
+     * @return An unchecked wrapper of supplied {@link CheckedFunction2}
      */
     public static <T1, T2, R> Function2<T1, T2, R> unchecked(CheckedFunction2<T1, T2, R> f) {
         return f.unchecked();
@@ -500,7 +500,7 @@ public final class API {
      * @param <T2> type of the 2nd argument
      * @param <T3> type of the 3rd argument
      * @param f    A method reference
-     * @return A unchecked wrapper of supplied {@link CheckedFunction3}
+     * @return An unchecked wrapper of supplied {@link CheckedFunction3}
      */
     public static <T1, T2, T3, R> Function3<T1, T2, T3, R> unchecked(CheckedFunction3<T1, T2, T3, R> f) {
         return f.unchecked();
@@ -515,7 +515,7 @@ public final class API {
      * @param <T3> type of the 3rd argument
      * @param <T4> type of the 4th argument
      * @param f    A method reference
-     * @return A unchecked wrapper of supplied {@link CheckedFunction4}
+     * @return An unchecked wrapper of supplied {@link CheckedFunction4}
      */
     public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> unchecked(CheckedFunction4<T1, T2, T3, T4, R> f) {
         return f.unchecked();
@@ -531,7 +531,7 @@ public final class API {
      * @param <T4> type of the 4th argument
      * @param <T5> type of the 5th argument
      * @param f    A method reference
-     * @return A unchecked wrapper of supplied {@link CheckedFunction5}
+     * @return An unchecked wrapper of supplied {@link CheckedFunction5}
      */
     public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> unchecked(CheckedFunction5<T1, T2, T3, T4, T5, R> f) {
         return f.unchecked();
@@ -548,7 +548,7 @@ public final class API {
      * @param <T5> type of the 5th argument
      * @param <T6> type of the 6th argument
      * @param f    A method reference
-     * @return A unchecked wrapper of supplied {@link CheckedFunction6}
+     * @return An unchecked wrapper of supplied {@link CheckedFunction6}
      */
     public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> unchecked(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> f) {
         return f.unchecked();
@@ -566,7 +566,7 @@ public final class API {
      * @param <T6> type of the 6th argument
      * @param <T7> type of the 7th argument
      * @param f    A method reference
-     * @return A unchecked wrapper of supplied {@link CheckedFunction7}
+     * @return An unchecked wrapper of supplied {@link CheckedFunction7}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> unchecked(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> f) {
         return f.unchecked();
@@ -585,7 +585,7 @@ public final class API {
      * @param <T7> type of the 7th argument
      * @param <T8> type of the 8th argument
      * @param f    A method reference
-     * @return A unchecked wrapper of supplied {@link CheckedFunction8}
+     * @return An unchecked wrapper of supplied {@link CheckedFunction8}
      */
     public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
         return f.unchecked();
