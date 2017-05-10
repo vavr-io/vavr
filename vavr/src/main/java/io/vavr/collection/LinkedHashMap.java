@@ -701,14 +701,14 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> put(K key, V value) {
-        Queue<Tuple2<K, V>> newList = list;
-        HashMap<K, V> newMap = map;
-        if (containsKey(key)) {
-            newList = newList.filter(t -> !Objects.equals(t._1, key));
-            newMap = newMap.remove(key);
+        final Queue<Tuple2<K, V>> newList;
+        final Option<V> currentEntry = get(key);
+        if (currentEntry.isDefined()) {
+            newList = list.replace(Tuple.of(key, currentEntry.get()), Tuple.of(key, value));
+        } else {
+            newList = list.append(Tuple.of(key, value));
         }
-        newList = newList.append(Tuple.of(key, value));
-        newMap = newMap.put(key, value);
+        final HashMap<K, V> newMap = map.put(key, value);
         return new LinkedHashMap<>(newList, newMap);
     }
 
