@@ -395,7 +395,7 @@ def generateMainClasses(): Unit = {
                *
                ${(0 to i).gen(j => if (j == 0) "* @param <R>  return type" else s"* @param <T$j> type of the ${j.ordinal} argument")("\n")}
                * @param f    A method reference
-               * @return A unchecked wrapper of supplied {@link CheckedFunction$i}
+               * @return An unchecked wrapper of supplied {@link CheckedFunction$i}
                */
               public static $fullGenerics Function$i$fullGenerics unchecked(CheckedFunction$i$fullGenerics f) {
                   return f.unchecked();
@@ -1445,6 +1445,8 @@ def generateMainClasses(): Unit = {
           case _ => s"$i arguments"
         }
 
+        im.getStatic(s"io.vavr.${className}Module.sneakyThrow")
+
         xs"""
           /**
            * Represents a function with ${arguments(i)}.
@@ -1700,26 +1702,18 @@ def generateMainClasses(): Unit = {
                 }
 
                 /$javadoc
-                 * Return unchecked function that will return this $className result in correct case and throw runtime exception
-                 * wrapped by {@code exceptionMapper} in case of throwable
+                 * Returns an unchecked function that will <em>sneaky throw</em> if an exceptions occurs when applying the function.
                  *
-                 * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
-                 * @return a new Function$i that wraps this CheckedFunction$i by throwing a {@code RuntimeException} issued by the given {@code exceptionMapper} in the case of a failure
-                 */
-                default Function$i$fullGenerics unchecked(${im.getType("java.util.function.Function")}<? super Throwable, ? extends RuntimeException> exceptionMapper) {
-                    return recover(throwable -> {
-                        throw exceptionMapper.apply(throwable);
-                    });
-                }
-
-                /$javadoc
-                 * Return unchecked function that will return this $className result in correct case and throw exception
-                 * wrapped by {@link IllegalStateException} in case of throwable.
-                 *
-                 * @return a new Function$i that wraps this CheckedFunction$i by throwing an {@code IllegalStateException} in the case of a failure
+                 * @return a new Function$i that throws a {@code Throwable}.
                  */
                 default Function$i$fullGenerics unchecked() {
-                    return unchecked(IllegalStateException::new);
+                    return ($params) -> {
+                        try {
+                            return apply($params);
+                        } catch(Throwable t) {
+                            return sneakyThrow(t);
+                        }
+                    };
                 }
               """)}
 
@@ -1752,6 +1746,15 @@ def generateMainClasses(): Unit = {
                     return v -> apply(before.apply(v));
                 }
               """)}
+          }
+
+          interface ${className}Module {
+
+              // DEV-NOTE: we do not plan to expose this as public API
+              @SuppressWarnings("unchecked")
+              static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+                  throw (T) t;
+              }
           }
         """
       }
@@ -3039,11 +3042,11 @@ def generateTestClasses(): Unit = {
                       assertThat(md5.getDigestLength()).isEqualTo(16);
                   }
 
-                  @$test(expected = IllegalStateException.class)
-                  public void shouldUncheckedThrowIllegalState() {
+                  @$test(expected = ${im.getType("java.security.NoSuchAlgorithmException")}.class)
+                  public void shouldThrowCheckedExceptionWhenUnchecked() {
                       $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance("Unknown");
                       Function$i<MessageDigest> unchecked = digest.unchecked();
-                      unchecked.apply();
+                      unchecked.apply(); // Look ma, we throw an undeclared checked exception!
                   }
 
                   @$test
@@ -3074,8 +3077,8 @@ def generateTestClasses(): Unit = {
 
                       @$test
                       public void shouldRecover() {
-                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> (${(1 to i).gen(j => s"s$j")(", ")}) -> null);
-                          MessageDigest md5 = recover.apply(${toArgList("MD5")});
+                          final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> (${(1 to i).gen(j => s"s$j")(", ")}) -> null);
+                          final MessageDigest md5 = recover.apply(${toArgList("MD5")});
                           assertThat(md5).isNotNull();
                           assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
                           assertThat(md5.getDigestLength()).isEqualTo(16);
@@ -3084,12 +3087,12 @@ def generateTestClasses(): Unit = {
 
                       @$test
                       public void shouldRecoverNonNull() {
-                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> null);
-                          MessageDigest md5 = recover.apply(${toArgList("MD5")});
+                          final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> null);
+                          final MessageDigest md5 = recover.apply(${toArgList("MD5")});
                           assertThat(md5).isNotNull();
                           assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
                           assertThat(md5.getDigestLength()).isEqualTo(16);
-                          ${im.getType("io.vavr.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply(${toArgList("Unknown")});
+                          final ${im.getType("io.vavr.control.Try")}<MessageDigest> unknown = Function$i.liftTry(recover).apply(${toArgList("Unknown")});
                           assertThat(unknown).isNotNull();
                           assertThat(unknown.isFailure()).isTrue();
                           assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
@@ -3098,28 +3101,28 @@ def generateTestClasses(): Unit = {
 
                       @$test
                       public void shouldUncheckedWork() {
-                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
-                          MessageDigest md5 = unchecked.apply(${toArgList("MD5")});
+                          final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
+                          final MessageDigest md5 = unchecked.apply(${toArgList("MD5")});
                           assertThat(md5).isNotNull();
                           assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
                           assertThat(md5.getDigestLength()).isEqualTo(16);
                       }
 
-                      @$test(expected = IllegalStateException.class)
+                      @$test(expected = ${im.getType("java.security.NoSuchAlgorithmException")}.class)
                       public void shouldUncheckedThrowIllegalState() {
-                          Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
-                          unchecked.apply(${toArgList("Unknown")});
+                          final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
+                          unchecked.apply(${toArgList("Unknown")}); // Look ma, we throw an undeclared checked exception!
                       }
 
                       @$test
                       public void shouldLiftTryPartialFunction() {
-                          Function$i<${(1 to i).gen(j => "String")(", ")}, Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
-                          ${im.getType("io.vavr.control.Try")}<MessageDigest> md5 = liftTry.apply(${toArgList("MD5")});
+                          final Function$i<${(1 to i).gen(j => "String")(", ")}, Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
+                          final ${im.getType("io.vavr.control.Try")}<MessageDigest> md5 = liftTry.apply(${toArgList("MD5")});
                           assertThat(md5.isSuccess()).isTrue();
                           assertThat(md5.get()).isNotNull();
                           assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
                           assertThat(md5.get().getDigestLength()).isEqualTo(16);
-                          ${im.getType("io.vavr.control.Try")}<MessageDigest> unknown = liftTry.apply(${toArgList("Unknown")});
+                          final ${im.getType("io.vavr.control.Try")}<MessageDigest> unknown = liftTry.apply(${toArgList("Unknown")});
                           assertThat(unknown.isFailure()).isTrue();
                           assertThat(unknown.getCause()).isNotNull();
                           assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");

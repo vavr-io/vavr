@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
@@ -115,8 +116,8 @@ public class CheckedFunction2Test {
 
     @Test
     public void shouldRecover() {
-        Function2<String, String, MessageDigest> recover = digest.recover(throwable -> (s1, s2) -> null);
-        MessageDigest md5 = recover.apply("M", "D5");
+        final Function2<String, String, MessageDigest> recover = digest.recover(throwable -> (s1, s2) -> null);
+        final MessageDigest md5 = recover.apply("M", "D5");
         assertThat(md5).isNotNull();
         assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
         assertThat(md5.getDigestLength()).isEqualTo(16);
@@ -125,12 +126,12 @@ public class CheckedFunction2Test {
 
     @Test
     public void shouldRecoverNonNull() {
-        Function2<String, String, MessageDigest> recover = digest.recover(throwable -> null);
-        MessageDigest md5 = recover.apply("M", "D5");
+        final Function2<String, String, MessageDigest> recover = digest.recover(throwable -> null);
+        final MessageDigest md5 = recover.apply("M", "D5");
         assertThat(md5).isNotNull();
         assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
         assertThat(md5.getDigestLength()).isEqualTo(16);
-        Try<MessageDigest> unknown = Function2.liftTry(recover).apply("U", "nknown");
+        final Try<MessageDigest> unknown = Function2.liftTry(recover).apply("U", "nknown");
         assertThat(unknown).isNotNull();
         assertThat(unknown.isFailure()).isTrue();
         assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
@@ -139,28 +140,28 @@ public class CheckedFunction2Test {
 
     @Test
     public void shouldUncheckedWork() {
-        Function2<String, String, MessageDigest> unchecked = digest.unchecked();
-        MessageDigest md5 = unchecked.apply("M", "D5");
+        final Function2<String, String, MessageDigest> unchecked = digest.unchecked();
+        final MessageDigest md5 = unchecked.apply("M", "D5");
         assertThat(md5).isNotNull();
         assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
         assertThat(md5.getDigestLength()).isEqualTo(16);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = NoSuchAlgorithmException.class)
     public void shouldUncheckedThrowIllegalState() {
-        Function2<String, String, MessageDigest> unchecked = digest.unchecked();
-        unchecked.apply("U", "nknown");
+        final Function2<String, String, MessageDigest> unchecked = digest.unchecked();
+        unchecked.apply("U", "nknown"); // Look ma, we throw an undeclared checked exception!
     }
 
     @Test
     public void shouldLiftTryPartialFunction() {
-        Function2<String, String, Try<MessageDigest>> liftTry = CheckedFunction2.liftTry(digest);
-        Try<MessageDigest> md5 = liftTry.apply("M", "D5");
+        final Function2<String, String, Try<MessageDigest>> liftTry = CheckedFunction2.liftTry(digest);
+        final Try<MessageDigest> md5 = liftTry.apply("M", "D5");
         assertThat(md5.isSuccess()).isTrue();
         assertThat(md5.get()).isNotNull();
         assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
         assertThat(md5.get().getDigestLength()).isEqualTo(16);
-        Try<MessageDigest> unknown = liftTry.apply("U", "nknown");
+        final Try<MessageDigest> unknown = liftTry.apply("U", "nknown");
         assertThat(unknown.isFailure()).isTrue();
         assertThat(unknown.getCause()).isNotNull();
         assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");

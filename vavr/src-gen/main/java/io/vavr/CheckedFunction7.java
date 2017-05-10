@@ -10,6 +10,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static io.vavr.CheckedFunction7Module.sneakyThrow;
+
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.util.HashMap;
@@ -302,26 +304,18 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<
     }
 
     /**
-     * Return unchecked function that will return this CheckedFunction7 result in correct case and throw runtime exception
-     * wrapped by {@code exceptionMapper} in case of throwable
+     * Returns an unchecked function that will <em>sneaky throw</em> if an exceptions occurs when applying the function.
      *
-     * @param exceptionMapper the function that convert function {@link Throwable} into subclass of {@link RuntimeException}
-     * @return a new Function7 that wraps this CheckedFunction7 by throwing a {@code RuntimeException} issued by the given {@code exceptionMapper} in the case of a failure
-     */
-    default Function7<T1, T2, T3, T4, T5, T6, T7, R> unchecked(Function<? super Throwable, ? extends RuntimeException> exceptionMapper) {
-        return recover(throwable -> {
-            throw exceptionMapper.apply(throwable);
-        });
-    }
-
-    /**
-     * Return unchecked function that will return this CheckedFunction7 result in correct case and throw exception
-     * wrapped by {@link IllegalStateException} in case of throwable.
-     *
-     * @return a new Function7 that wraps this CheckedFunction7 by throwing an {@code IllegalStateException} in the case of a failure
+     * @return a new Function7 that throws a {@code Throwable}.
      */
     default Function7<T1, T2, T3, T4, T5, T6, T7, R> unchecked() {
-        return unchecked(IllegalStateException::new);
+        return (t1, t2, t3, t4, t5, t6, t7) -> {
+            try {
+                return apply(t1, t2, t3, t4, t5, t6, t7);
+            } catch(Throwable t) {
+                return sneakyThrow(t);
+            }
+        };
     }
 
     /**
@@ -338,4 +332,13 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<
         return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
     }
 
+}
+
+interface CheckedFunction7Module {
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
+    }
 }

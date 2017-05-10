@@ -10,6 +10,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static io.vavr.Function1Module.sneakyThrow;
+
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.util.HashMap;
@@ -222,5 +224,14 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
     default <V> Function1<V, R> compose(Function<? super V, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
+    }
+}
+
+interface Function1Module {
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
     }
 }

@@ -15,6 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
@@ -137,11 +138,11 @@ public class CheckedFunction0Test {
         assertThat(md5.getDigestLength()).isEqualTo(16);
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void shouldUncheckedThrowIllegalState() {
+    @Test(expected = NoSuchAlgorithmException.class)
+    public void shouldThrowCheckedExceptionWhenUnchecked() {
         CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance("Unknown");
         Function0<MessageDigest> unchecked = digest.unchecked();
-        unchecked.apply();
+        unchecked.apply(); // Look ma, we throw an undeclared checked exception!
     }
 
     @Test
