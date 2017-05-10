@@ -116,11 +116,11 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * or an invalid Validation containing an accumulated List of errors.
      * @throws NullPointerException if values is null
      */
-    static <E, T> Validation<List<E>, Seq<T>> sequence(Iterable<? extends Validation<List<E>, T>> values) {
+    static <E, T> Validation<Seq<E>, Seq<T>> sequence(Iterable<? extends Validation<Seq<E>, T>> values) {
         Objects.requireNonNull(values, "values is null");
         List<E> errors = List.empty();
         List<T> list = List.empty();
-        for (Validation<List<E>, T> value : values) {
+        for (Validation<Seq<E>, T> value : values) {
             if (value.isInvalid()) {
                 errors = errors.prependAll(value.getError().reverse());
             } else if (errors.isEmpty()) {
@@ -539,7 +539,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         }
     }
 
-    default <U> Validation<List<E>, U> ap(Validation<List<E>, ? extends Function<? super T, ? extends U>> validation) {
+    default <U> Validation<Seq<E>, U> ap(Validation<Seq<E>, ? extends Function<? super T, ? extends U>> validation) {
         Objects.requireNonNull(validation, "validation is null");
         if (isValid()) {
             if (validation.isValid()) {
@@ -547,7 +547,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
                 final U u = f.apply(this.get());
                 return valid(u);
             } else {
-                final List<E> errors = validation.getError();
+                final Seq<E> errors = validation.getError();
                 return invalid(errors);
             }
         } else {
@@ -555,7 +555,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
                 final E error = this.getError();
                 return invalid(List.of(error));
             } else {
-                final List<E> errors = validation.getError();
+                final Seq<E> errors = validation.getError();
                 final E error = this.getError();
                 return invalid(errors.append(error));
             }
@@ -761,7 +761,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v2 = v2;
         }
 
-        public <R> Validation<List<E>, R> ap(Function2<T1, T2, R> f) {
+        public <R> Validation<Seq<E>, R> ap(Function2<T1, T2, R> f) {
             return v2.ap(v1.ap(Validation.valid(f.curried())));
         }
 
@@ -783,7 +783,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v3 = v3;
         }
 
-        public <R> Validation<List<E>, R> ap(Function3<T1, T2, T3, R> f) {
+        public <R> Validation<Seq<E>, R> ap(Function3<T1, T2, T3, R> f) {
             return v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))));
         }
 
@@ -807,7 +807,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v4 = v4;
         }
 
-        public <R> Validation<List<E>, R> ap(Function4<T1, T2, T3, T4, R> f) {
+        public <R> Validation<Seq<E>, R> ap(Function4<T1, T2, T3, T4, R> f) {
             return v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))));
         }
 
@@ -833,7 +833,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v5 = v5;
         }
 
-        public <R> Validation<List<E>, R> ap(Function5<T1, T2, T3, T4, T5, R> f) {
+        public <R> Validation<Seq<E>, R> ap(Function5<T1, T2, T3, T4, T5, R> f) {
             return v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))));
         }
 
@@ -861,7 +861,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v6 = v6;
         }
 
-        public <R> Validation<List<E>, R> ap(Function6<T1, T2, T3, T4, T5, T6, R> f) {
+        public <R> Validation<Seq<E>, R> ap(Function6<T1, T2, T3, T4, T5, T6, R> f) {
             return v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))));
         }
 
@@ -891,7 +891,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v7 = v7;
         }
 
-        public <R> Validation<List<E>, R> ap(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
+        public <R> Validation<Seq<E>, R> ap(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
             return v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))))));
         }
 
@@ -923,7 +923,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v8 = v8;
         }
 
-        public <R> Validation<List<E>, R> ap(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+        public <R> Validation<Seq<E>, R> ap(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
             return v8.ap(v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))))));
         }
     }

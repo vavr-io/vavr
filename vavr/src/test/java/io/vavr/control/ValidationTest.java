@@ -105,7 +105,7 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateValidWhenSequencingValids() {
-        final Validation<List<String>, Seq<Integer>> actual = Validation.sequence(List.of(
+        final Validation<Seq<String>, Seq<Integer>> actual = Validation.sequence(List.of(
                 Validation.valid(1),
                 Validation.valid(2)
         ));
@@ -114,7 +114,7 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateInvalidWhenSequencingAnInvalid() {
-        final Validation<List<String>, Seq<Integer>> actual = Validation.sequence(List.of(
+        final Validation<Seq<String>, Seq<Integer>> actual = Validation.sequence(List.of(
                 Validation.valid(1),
                 Validation.invalid(List.of("error1", "error2")),
                 Validation.valid(2),
@@ -173,25 +173,25 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnSelfOnOrElseIfValid() {
-        Validation<List<String>, String> validValidation = valid();
+        Validation<Seq<String>, String> validValidation = valid();
         assertThat(validValidation.orElse(invalid())).isSameAs(validValidation);
     }
 
     @Test
     public void shouldReturnSelfOnOrElseSupplierIfValid() {
-        Validation<List<String>, String> validValidation = valid();
+        Validation<Seq<String>, String> validValidation = valid();
         assertThat(validValidation.orElse(() -> invalid())).isSameAs(validValidation);
     }
 
     @Test
     public void shouldReturnAlternativeOnOrElseIfValid() {
-        Validation<List<String>, String> validValidation = valid();
+        Validation<Seq<String>, String> validValidation = valid();
         assertThat(invalid().orElse(validValidation)).isSameAs(validValidation);
     }
 
     @Test
     public void shouldReturnAlternativeOnOrElseSupplierIfValid() {
-        Validation<List<String>, String> validValidation = valid();
+        Validation<Seq<String>, String> validValidation = valid();
         assertThat(invalid().orElse(() -> validValidation)).isSameAs(validValidation);
     }
 
@@ -213,15 +213,15 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertSuccessToU() {
-        Validation<List<String>, String> validValidation = valid();
-        Integer result = validValidation.fold(List::length, String::length);
+        Validation<Seq<String>, String> validValidation = valid();
+        Integer result = validValidation.fold(Seq::length, String::length);
         assertThat(result).isEqualTo(2);
     }
 
     @Test
     public void shouldConvertFailureToU() {
-        Validation<List<String>, String> invalidValidation = invalid();
-        Integer result = invalidValidation.fold(List::length, String::length);
+        Validation<Seq<String>, String> invalidValidation = invalid();
+        Integer result = invalidValidation.fold(Seq::length, String::length);
         assertThat(result).isEqualTo(3);
     }
 
@@ -260,16 +260,16 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldMapOnlySuccessValue() {
-        Validation<List<String>, String> validValidation = valid();
-        Validation<Integer, Integer> validMapping = validValidation.bimap(List::length, String::length);
+        Validation<Seq<String>, String> validValidation = valid();
+        Validation<Integer, Integer> validMapping = validValidation.bimap(Seq::length, String::length);
         assertThat(validMapping instanceof Validation.Valid).isTrue();
         assertThat(validMapping.get()).isEqualTo(2);
     }
 
     @Test
     public void shouldMapOnlyFailureValue() {
-        Validation<List<String>, String> invalidValidation = invalid();
-        Validation<Integer, Integer> invalidMapping = invalidValidation.bimap(List::length, String::length);
+        Validation<Seq<String>, String> invalidValidation = invalid();
+        Validation<Integer, Integer> invalidMapping = invalidValidation.bimap(Seq::length, String::length);
         assertThat(invalidMapping instanceof Validation.Invalid).isTrue();
         assertThat(invalidMapping.getError()).isEqualTo(3);
     }
@@ -321,18 +321,18 @@ public class ValidationTest extends AbstractValueTest {
         Validation<String, String> v8 = Validation.valid("alt3");
         Validation<String, String> v9 = Validation.valid("alt4");
 
-        Validation<List<String>, TestValidation> result = v1.combine(v2).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result = v1.combine(v2).ap(TestValidation::new);
 
-        Validation<List<String>, TestValidation> result2 = v1.combine(v2).combine(v3).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result3 = v1.combine(v2).combine(v4).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result2 = v1.combine(v2).combine(v3).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result3 = v1.combine(v2).combine(v4).ap(TestValidation::new);
 
-        Validation<List<String>, TestValidation> result4 = v1.combine(v2).combine(v3).combine(v5).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result5 = v1.combine(v2).combine(v3).combine(v5).combine(v6).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result6 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result7 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result8 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).combine(v9).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result4 = v1.combine(v2).combine(v3).combine(v5).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result5 = v1.combine(v2).combine(v3).combine(v5).combine(v6).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result6 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result7 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result8 = v1.combine(v2).combine(v3).combine(v5).combine(v6).combine(v7).combine(v8).combine(v9).ap(TestValidation::new);
 
-        Validation<List<String>, String> result9 = v1.combine(v2).combine(v3).ap((p1, p2, p3) -> p1 + ":" + p2 + ":" + p3.getOrElse("none"));
+        Validation<Seq<String>, String> result9 = v1.combine(v2).combine(v3).ap((p1, p2, p3) -> p1 + ":" + p2 + ":" + p3.getOrElse("none"));
 
         assertThat(result.isValid()).isTrue();
         assertThat(result2.isValid()).isTrue();
@@ -361,16 +361,16 @@ public class ValidationTest extends AbstractValueTest {
         Validation<String, String> v9 = Validation.valid("alt4");
 
         // Alternative map(n) functions to the 'combine' function
-        Validation<List<String>, TestValidation> result = Validation.combine(v1, v2).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result2 = Validation.combine(v1, v2, v3).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result3 = Validation.combine(v1, v2, v4).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result4 = Validation.combine(v1, v2, v3, v5).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result5 = Validation.combine(v1, v2, v3, v5, v6).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result6 = Validation.combine(v1, v2, v3, v5, v6, v7).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result7 = Validation.combine(v1, v2, v3, v5, v6, v7, v8).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result8 = Validation.combine(v1, v2, v3, v5, v6, v7, v8, v9).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result = Validation.combine(v1, v2).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result2 = Validation.combine(v1, v2, v3).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result3 = Validation.combine(v1, v2, v4).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result4 = Validation.combine(v1, v2, v3, v5).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result5 = Validation.combine(v1, v2, v3, v5, v6).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result6 = Validation.combine(v1, v2, v3, v5, v6, v7).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result7 = Validation.combine(v1, v2, v3, v5, v6, v7, v8).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result8 = Validation.combine(v1, v2, v3, v5, v6, v7, v8, v9).ap(TestValidation::new);
 
-        Validation<List<String>, String> result9 = Validation.combine(v1, v2, v3).ap((p1, p2, p3) -> p1 + ":" + p2 + ":" + p3.getOrElse("none"));
+        Validation<Seq<String>, String> result9 = Validation.combine(v1, v2, v3).ap((p1, p2, p3) -> p1 + ":" + p2 + ":" + p3.getOrElse("none"));
 
         assertThat(result.isValid()).isTrue();
         assertThat(result2.isValid()).isTrue();
@@ -396,8 +396,8 @@ public class ValidationTest extends AbstractValueTest {
         Validation<String, Integer> e2 = Validation.invalid("error1");
         Validation<String, Option<String>> e3 = Validation.invalid("error3");
 
-        Validation<List<String>, TestValidation> result = v1.combine(e2).combine(v3).ap(TestValidation::new);
-        Validation<List<String>, TestValidation> result2 = e1.combine(v2).combine(e3).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result = v1.combine(e2).combine(v3).ap(TestValidation::new);
+        Validation<Seq<String>, TestValidation> result2 = e1.combine(v2).combine(e3).ap(TestValidation::new);
 
         assertThat(result.isInvalid()).isTrue();
         assertThat(result2.isInvalid()).isTrue();
@@ -454,7 +454,7 @@ public class ValidationTest extends AbstractValueTest {
         return Validation.valid(OK);
     }
 
-    private <T> Validation<List<String>, T> invalid() {
+    private <T> Validation<Seq<String>, T> invalid() {
         return Validation.invalid(ERRORS);
     }
 
@@ -537,8 +537,8 @@ public class ValidationTest extends AbstractValueTest {
     public void shouldValidateValidPerson() {
         final String name = "John Doe";
         final int age = 30;
-        final Validation<List<String>, Person> actual = new PersonValidator().validatePerson(name, age);
-        final Validation<List<String>, Person> expected = Validation.valid(new Person(name, age));
+        final Validation<Seq<String>, Person> actual = new PersonValidator().validatePerson(name, age);
+        final Validation<Seq<String>, Person> expected = Validation.valid(new Person(name, age));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -546,8 +546,8 @@ public class ValidationTest extends AbstractValueTest {
     public void shouldValidateInvalidPerson() {
         final String name = "John? Doe!4";
         final int age = -1;
-        final Validation<List<String>, Person> actual = new PersonValidator().validatePerson(name, age);
-        final Validation<List<String>, Person> expected = Validation.invalid(List.of(
+        final Validation<Seq<String>, Person> actual = new PersonValidator().validatePerson(name, age);
+        final Validation<Seq<String>, Person> expected = Validation.invalid(List.of(
                 "Name contains invalid characters: '!4?'",
                 "Age must be greater than 0"
         ));
@@ -559,7 +559,7 @@ public class ValidationTest extends AbstractValueTest {
         private final String validNameChars = "[a-zA-Z ]";
         private final int minAge = 0;
 
-        public Validation<List<String>, Person> validatePerson(String name, int age) {
+        public Validation<Seq<String>, Person> validatePerson(String name, int age) {
             return Validation.combine(validateName(name), validateAge(age)).ap(Person::new);
         }
 
