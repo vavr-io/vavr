@@ -595,22 +595,26 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             return wrap(arr);
         }
     }
-    
+
+    @GwtIncompatible
     @Override
     public java.util.List<T> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     public Array<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     public java.util.List<T> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     public Array<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
