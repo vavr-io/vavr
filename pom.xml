@@ -66,7 +66,7 @@ Note: The maven build currently needs to be started from the vavr root dir
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <assertj.core.version>3.6.2</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
-        <java.version>1.8</java.version>
+        <java.version>9</java.version>
         <jmh.version>1.18</jmh.version>
         <junit.version>4.12</junit.version>
         <gwt.version>2.8.0</gwt.version>
@@ -87,7 +87,7 @@ Note: The maven build currently needs to be started from the vavr root dir
         <maven.exec.version>1.5.0</maven.exec.version>
         <maven.gwt.plugin>1.0-rc-6</maven.gwt.plugin>
         <scala.maven.version>3.2.2</scala.maven.version>
-        <scala.version>2.11.7</scala.version>
+        <scala.version>2.12.2</scala.version>
     </properties>
     <dependencyManagement>
         <dependencies>

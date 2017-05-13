@@ -302,21 +302,40 @@ public class MatchTest {
         assertThat(actual).isEqualTo("(begin, 10, 4.5)::List((middle, 11, 0.0), (end, 12, 1.2))");
     }
 
-    @SuppressWarnings("UnnecessaryLocalVariable")
-    @Test
-    public void shouldDecomposeListWithNonEmptyTail() {
-        final List<Option<Number>> intOptionList = List.of(Option.some(1), Option.some(2.0));
-        final String actual = Match(intOptionList).of(
-                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())), (x, xs) -> {
-                    // types are inferred correctly!
-                    final Some<Number> head = x;
-                    final List<Option<Number>> tail = xs;
-                    return head + "::" + tail;
-                })
-        );
-        assertThat(actual).isEqualTo("Some(1)::List(Some(2.0))");
-    }
+//    @SuppressWarnings("UnnecessaryLocalVariable")
+//    @Test
+//    public void shouldDecomposeListWithNonEmptyTail() {
+//        final List<Option<Number>> intOptionList = List.of(Option.some(1), Option.some(2.0));
+//        final String actual = Match(intOptionList).of(
+//                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())), (x, xs) -> {
+//                    // types are inferred correctly!
+//                    final Some<Number> head = x;
+//                    final List<Option<Number>> tail = xs;
+//                    return head + "::" + tail;
+//                })
+//        );
+//        assertThat(actual).isEqualTo("Some(1)::List(Some(2.0))");
+//    }
 
+    //
+    // This modified version of the test crashes javac in Java 9
+    //
+//    @SuppressWarnings("UnnecessaryLocalVariable")
+//    @Test
+//    public void shouldDecomposeListWithNonEmptyTail() {
+//        final List<Option<Number>> intOptionList = List.of(Option.some((Number)1), Option.some((Number)2.0));
+//        final String actual = Match(intOptionList).of(
+//                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())), (Some<Number> x, List<Some<Number>> xs) -> {
+//                    // types are inferred correctly!
+//                    final Some<Number> head = x;
+//                    final List<Some<Number>> tail = xs;
+//                    return head + "::" + tail;
+//                })
+//        );
+//        assertThat(actual).isEqualTo("Some(1)::List(Some(2.0))");
+//    }
+
+    
     // -- run
 
     @Test

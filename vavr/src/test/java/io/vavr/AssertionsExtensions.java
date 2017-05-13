@@ -27,6 +27,7 @@ public final class AssertionsExtensions {
             this.clazz = clazz;
         }
 
+        @SuppressWarnings("deprecation")
         public void isNotInstantiable() {
             final Constructor<?> cons;
             try {

@@ -101,7 +101,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     public static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
-        return Lazy.of(() -> Vector.ofAll(values).map(Lazy::get));
+        return Lazy.of(() -> Vector.ofAll(values).map(Lazy<? extends T>::get));
     }
 
     /**
