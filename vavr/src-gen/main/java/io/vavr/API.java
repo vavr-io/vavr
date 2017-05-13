@@ -2269,8 +2269,8 @@ public final class API {
      * e.g. by {@code Match}:
      *
      * <pre><code>Match(i).of(
-     *     Case(is(0), i -&gt; run(() -&gt; System.out.println("zero"))),
-     *     Case(is(1), i -&gt; run(() -&gt; System.out.println("one"))),
+     *     Case($(is(0)), i -&gt; run(() -&gt; System.out.println("zero"))),
+     *     Case($(is(1)), i -&gt; run(() -&gt; System.out.println("one"))),
      *     Case($(), o -&gt; run(() -&gt; System.out.println("many")))
      * )</code></pre>
      *
@@ -3090,7 +3090,7 @@ public final class API {
      * <pre><code>
      * Predicate&lt;Integer&gt; p = i -&gt; true;
      * Match(p).of(
-     *     Case(is(p), 1) // CORRECT! It calls $(T)
+     *     Case($(is(p)), 1) // CORRECT! It calls $(T)
      * );
      * </code></pre>
      *
