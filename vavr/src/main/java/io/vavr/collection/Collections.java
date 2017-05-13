@@ -34,6 +34,7 @@ final class Collections {
         return iter1.hasNext() == iter2.hasNext();
     }
 
+    @GwtIncompatible
     static <T, C extends Seq<T>> C asJava(C source, Consumer<? super java.util.List<T>> action, ChangePolicy changePolicy) {
         Objects.requireNonNull(action, "action is null");
         final ListView<T, C> view = JavaConverters.asJava(source, changePolicy);

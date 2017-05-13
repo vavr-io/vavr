@@ -50,9 +50,11 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     IndexedSeq<T> appendAll(Iterable<? extends T> elements);
 
+    @GwtIncompatible
     @Override
     IndexedSeq<T> asJava(Consumer<? super java.util.List<T>> action);
 
+    @GwtIncompatible
     @Override
     IndexedSeq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
 

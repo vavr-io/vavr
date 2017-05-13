@@ -822,21 +822,25 @@ public interface Stream<T> extends LinearSeq<T> {
         return isEmpty() ? this : new AppendSelf<>((Cons<T>) this, mapper).stream();
     }
 
+    @GwtIncompatible
     @Override
     default java.util.List<T> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     default Stream<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     default java.util.List<T> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     default Stream<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);

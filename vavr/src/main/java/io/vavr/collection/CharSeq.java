@@ -388,21 +388,25 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return of(sb);
     }
 
+    @GwtIncompatible
     @Override
     public java.util.List<Character> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     public CharSeq asJava(Consumer<? super java.util.List<Character>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     public java.util.List<Character> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     public CharSeq asJavaMutable(Consumer<? super java.util.List<Character>> action) {
         return Collections.asJava(this, action, MUTABLE);
