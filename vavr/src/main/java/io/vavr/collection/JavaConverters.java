@@ -24,6 +24,7 @@ class JavaConverters {
     private JavaConverters() {
     }
 
+    @GwtIncompatible
     static <T, C extends Seq<T>> ListView<T, C> asJava(C seq, ChangePolicy changePolicy) {
         return new ListView<>(seq, changePolicy.isMutable());
     }
@@ -87,6 +88,7 @@ class JavaConverters {
         }
     }
 
+    @GwtIncompatible("reflection is not supported")
     static class ListView<T, C extends Seq<T>> extends HasDelegate<C> implements java.util.List<T> {
 
         private static final long serialVersionUID = 1L;
@@ -242,7 +244,6 @@ class JavaConverters {
             return getDelegate().toJavaArray();
         }
 
-        @GwtIncompatible("reflection is not supported")
         @SuppressWarnings("unchecked")
         @Override
         public <U> U[] toArray(U[] array) {

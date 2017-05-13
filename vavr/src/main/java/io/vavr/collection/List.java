@@ -722,21 +722,25 @@ public interface List<T> extends LinearSeq<T> {
         return List.<T> ofAll(elements).prependAll(this);
     }
 
+    @GwtIncompatible
     @Override
     default java.util.List<T> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     default List<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     default java.util.List<T> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     default List<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);

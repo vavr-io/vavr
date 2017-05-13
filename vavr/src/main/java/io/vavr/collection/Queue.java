@@ -649,21 +649,25 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         return enqueueAll(elements);
     }
 
+    @GwtIncompatible
     @Override
     public java.util.List<T> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     public Queue<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     public java.util.List<T> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
+    @GwtIncompatible
     @Override
     public Queue<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
