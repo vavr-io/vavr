@@ -29,3 +29,6 @@ hs_err_pid*
 
 # -- Emacs
 .#*
+
+# -- Vi
+*.swp

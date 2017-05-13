@@ -11,6 +11,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.CLASS)
 @Target({ ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD })
 @Documented
-@interface GwtIncompatible {
+public @interface GwtIncompatible {
     String value() default "";
 }
