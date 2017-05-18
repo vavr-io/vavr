@@ -984,19 +984,61 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<Array<T>> permutations() {
-        if (isEmpty()) {
-            return empty();
-        } else if (delegate.length == 1) {
-            return of(this);
+        final Array<T> src = distinct();
+        if (src.isEmpty()) {
+            return Array.empty();
+        } else if (src.size() == 1) {
+            return Array.of(src);
         } else {
-            Array<Array<T>> results = empty();
-            for (T t : distinct()) {
-                for (Array<T> ts : remove(t).permutations()) {
-                    results = results.append(of(t).appendAll(ts));
+            java.util.List<Array<T>> result = new java.util.ArrayList<>();
+            int[] pi = new int[src.size()];
+
+            // see Narayana algo
+            // https://en.wikipedia.org/wiki/Permutation#Generation_in_lexicographic_order
+
+            for (int i = 0; i < pi.length; i++) {
+                pi[i] = i;
+            }
+
+            int i, j;
+            while (true) {
+                Object[] next = new Object[src.size()];
+                for (int k = 0; k < next.length; k++) {
+                    next[k] = src.delegate[pi[k]];
+                }
+                result.add(wrap(next));
+
+                i = pi.length - 2;
+                while (i >= 0 && pi[i] > pi[i + 1]) {
+                    i--;
+                }
+                if (i < 0) {
+                    break;
+                }
+
+                j = pi.length - 1;
+                while (pi[i] > pi[j]) {
+                    j--;
+                }
+                swapIndices(pi, i, j);
+
+                i++;
+                j = pi.length - 1;
+                while (i < j) {
+                    swapIndices(pi, i, j);
+                    i++;
+                    j--;
                 }
             }
-            return results;
+
+            return Array.ofAll(result);
         }
+    }
+
+    private static void swapIndices(int[] arr, int i, int j) {
+        int t = arr[i];
+        arr[i] = arr[j];
+        arr[j] = t;
     }
 
     @Override
