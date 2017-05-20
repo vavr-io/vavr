@@ -60,14 +60,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-<!--                <configuration>
+                <configuration>
                     <jdkToolchain>
                         <version>9</version>
                     </jdkToolchain>
                     <compilerArgs>
-                        <arg>-module-source-path src/main/java</arg>
+                        <arg>-d</arg>
+                        <arg>mods</arg>
+                        <arg>--module-source-path</arg>
+                        <arg>src/main/java</arg>
                     </compilerArgs>
-                </configuration>-->
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
