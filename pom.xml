@@ -74,7 +74,7 @@ Note: The maven build currently needs to be started from the vavr root dir
         <maven.bundle.version>3.2.0</maven.bundle.version>
         <maven.clean.version>3.0.0</maven.clean.version>
         <maven.install.version>2.5.2</maven.install.version>
-        <maven.compiler.version>3.6.0</maven.compiler.version>
+        <maven.compiler.version>3.6.2-SNAPSHOT</maven.compiler.version>
         <maven.deploy.version>2.8.2</maven.deploy.version>
         <maven.gpg.version>1.6</maven.gpg.version>
         <maven.jacoco.version>0.7.8</maven.jacoco.version>
@@ -88,7 +88,7 @@ Note: The maven build currently needs to be started from the vavr root dir
         <maven.gwt.plugin>1.0-rc-6</maven.gwt.plugin>
         <scala.maven.version>3.2.2</scala.maven.version>
         <scala.version>2.12.2</scala.version>
-    </properties>
+    </properties>    
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -374,7 +374,7 @@ Note: The maven build currently needs to be started from the vavr root dir
                                 <lifecycleMappingMetadata>
                                     <pluginExecutions>
                                         <!-- Elimate the eclipse warning 'maven-enforcer-plugin (goal "enforce")
-                                            is ignored by m2e' -->
+                                        is ignored by m2e' -->
                                         <pluginExecution>
                                             <pluginExecutionFilter>
                                                 <groupId>org.apache.maven.plugins</groupId>
