@@ -64,12 +64,6 @@
                     <jdkToolchain>
                         <version>9</version>
                     </jdkToolchain>
-                    <compilerArgs>
-                        <arg>-d</arg>
-                        <arg>mods</arg>
-                        <arg>--module-source-path</arg>
-                        <arg>src/main/java</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>
