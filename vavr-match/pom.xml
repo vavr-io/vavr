@@ -41,15 +41,9 @@
                 <configuration>
                     <!-- Disable annotation processing for this module. -->
                     <compilerArgument>-proc:none</compilerArgument>
-                    <jdkToolchain>
+<!--                    <jdkToolchain>
                         <version>9</version>
-                    </jdkToolchain>
-                    <compilerArgs>
-                        <arg>-d</arg>
-                        <arg>mods</arg>
-                        <arg>--module-source-path</arg>
-                        <arg>src/main/java</arg>
-                    </compilerArgs>
+                    </jdkToolchain>-->
                 </configuration>
             </plugin>
             <plugin>
