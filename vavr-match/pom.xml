@@ -41,9 +41,9 @@
                 <configuration>
                     <!-- Disable annotation processing for this module. -->
                     <compilerArgument>-proc:none</compilerArgument>
-<!--                    <jdkToolchain>
+                    <jdkToolchain>
                         <version>9</version>
-                    </jdkToolchain>-->
+                    </jdkToolchain>
                 </configuration>
             </plugin>
             <plugin>
