@@ -1002,11 +1002,23 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(empty().permutations()).isEmpty();
     }
 
+    @Test
+    public void shouldComputePermutationsOfSingleton() {
+        assertThat(of(1).permutations()).isEqualTo(of(of(1)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldComputePermutationsOfRepeatedElements() {
+        assertThat(of(1, 1).permutations()).isEqualTo(of(of(1, 1)));
+        assertThat(of(1, 2, 2).permutations()).isEqualTo(of(of(1, 2, 2), of(2, 1, 2), of(2, 2, 1)));
+    }
+
     @SuppressWarnings("unchecked")
     @Test
     public void shouldComputePermutationsOfNonEmptySeq() {
         assertThat(of(1, 2, 3).permutations())
-                .isEqualTo(ofAll(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1))));
+                .isEqualTo(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1)));
     }
 
     // -- map
