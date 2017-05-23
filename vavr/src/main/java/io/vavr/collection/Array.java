@@ -984,61 +984,17 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<Array<T>> permutations() {
-        final Array<T> src = distinct();
-        if (src.isEmpty()) {
-            return Array.empty();
-        } else if (src.size() == 1) {
-            return Array.of(src);
+        if (isEmpty()) {
+            return empty();
+        } else if (delegate.length == 1) {
+            return of(this);
         } else {
-            java.util.List<Array<T>> result = new java.util.ArrayList<>();
-            int[] pi = new int[src.size()];
-
-            // see Narayana algo
-            // https://en.wikipedia.org/wiki/Permutation#Generation_in_lexicographic_order
-
-            for (int i = 0; i < pi.length; i++) {
-                pi[i] = i;
-            }
-
-            int i, j;
-            while (true) {
-                Object[] next = new Object[src.size()];
-                for (int k = 0; k < next.length; k++) {
-                    next[k] = src.delegate[pi[k]];
-                }
-                result.add(wrap(next));
-
-                i = pi.length - 2;
-                while (i >= 0 && pi[i] > pi[i + 1]) {
-                    i--;
-                }
-                if (i < 0) {
-                    break;
-                }
-
-                j = pi.length - 1;
-                while (pi[i] > pi[j]) {
-                    j--;
-                }
-                swapIndices(pi, i, j);
-
-                i++;
-                j = pi.length - 1;
-                while (i < j) {
-                    swapIndices(pi, i, j);
-                    i++;
-                    j--;
-                }
-            }
-
-            return Array.ofAll(result);
+            final Array<Array<T>> zero = empty();
+            return distinct().foldLeft(zero, (xs, x) -> {
+                final Function<Array<T>, Array<T>> prepend = l -> l.prepend(x);
+                return xs.appendAll(remove(x).permutations().map(prepend));
+            });
         }
-    }
-
-    private static void swapIndices(int[] arr, int i, int j) {
-        int t = arr[i];
-        arr[i] = arr[j];
-        arr[j] = t;
     }
 
     @Override
