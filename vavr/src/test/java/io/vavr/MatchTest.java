@@ -19,9 +19,6 @@ import java.time.Year;
 import java.util.function.Predicate;
 
 import static io.vavr.API.*;
-import static io.vavr.Patterns.*;
-import static io.vavr.MatchTest_DeveloperPatterns.$Developer;
-import static io.vavr.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MatchTest {
