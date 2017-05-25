@@ -89,6 +89,24 @@ Note: The maven build currently needs to be started from the vavr root dir
         <scala.maven.version>3.2.2</scala.maven.version>
         <scala.version>2.12.2</scala.version>
     </properties>    
+    <pluginRepositories>
+      <pluginRepository>
+        <releases>
+          <enabled>false</enabled>
+          <updatePolicy>daily</updatePolicy>
+          <checksumPolicy>fail</checksumPolicy>
+        </releases>
+        <snapshots>
+          <enabled>true</enabled>
+          <updatePolicy>interval:30</updatePolicy>
+          <checksumPolicy>fail</checksumPolicy>
+        </snapshots>
+        <id>bndSnapshots</id>
+        <name>Bnd Snapshots</name>
+        <url>https://bndtools.ci.cloudbees.com/job/bnd.master/lastSuccessfulBuild/artifact/dist/bundles</url>
+        <layout>default</layout>
+      </pluginRepository>
+    </pluginRepositories>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -279,6 +297,13 @@ Note: The maven build currently needs to be started from the vavr root dir
                             </goals>
                         </execution>
                     </executions>
+                    <dependencies>
+                      <dependency>
+                        <groupId>biz.aQute.bnd</groupId>
+                        <artifactId>biz.aQute.bndlib</artifactId>
+                        <version>3.4.0-SNAPSHOT</version>
+                      </dependency>
+                    </dependencies>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
