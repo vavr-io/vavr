@@ -802,13 +802,18 @@ public interface List<T> extends LinearSeq<T> {
 
     @Override
     default List<T> dropUntil(Predicate<? super T> predicate) {
-        return Collections.dropUntil(this, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
     }
 
     @Override
     default List<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return dropUntil(predicate.negate());
+        List<T> list = this;
+        while (!list.isEmpty() && predicate.test(list.head())) {
+            list = list.tail();
+        }
+        return list;
     }
 
     @Override
@@ -824,7 +829,8 @@ public interface List<T> extends LinearSeq<T> {
 
     @Override
     default List<T> dropRightUntil(Predicate<? super T> predicate) {
-        return Collections.dropUntil(reverse(), predicate).reverse();
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reverse().dropUntil(predicate).reverse();
     }
 
     @Override
