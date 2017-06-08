@@ -53,6 +53,7 @@ final class Collections {
     }
 
     // DEV-NOTE: Use this method for non-infinite and direct-access collection only
+    // because of O(N) complexity of get() and infinite loop in size()
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
     static <T, S extends IndexedSeq<T>> S dropRightUntil(S seq, Predicate<? super T> predicate) {
@@ -66,6 +67,7 @@ final class Collections {
     }
 
     // DEV-NOTE: Use this method for non-infinite and direct-access collection only
+    // because of O(N) complexity of get() and infinite loop in size()
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
     static <T, S extends Seq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
