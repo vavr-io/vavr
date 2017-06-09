@@ -2022,12 +2022,6 @@ interface IteratorModule {
                 next = cell;
                 return cell;
             }
-
-            Cell<T> prepend(Iterator<T> it) {
-                Cell<T> cell = of(it);
-                cell.next = this;
-                return cell;
-            }
         }
 
         private Iterator<T> curr;
@@ -2038,11 +2032,11 @@ interface IteratorModule {
         private boolean hasNextCalculated;
 
         void append(java.util.Iterator<? extends T> that) {
-            Iterator<T> it = Iterator.ofAll(that);
+            final Iterator<T> it = Iterator.ofAll(that);
             if (tail == null) {
                 tail = last = Cell.of(it);
             } else {
-                last = last.append(Iterator.ofAll(that));
+                last = last.append(it);
             }
         }
 
