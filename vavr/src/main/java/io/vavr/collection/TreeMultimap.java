@@ -56,19 +56,52 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
             this.emptyContainer = emptyContainer;
         }
 
+        /**
+         * Returns the empty TreeMultimap. The underlying key comparator is the natural comparator of K.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new empty TreeMultimap.
+         */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> empty() {
             return empty(Comparators.naturalComparator());
         }
 
+        /**
+         * Returns the empty TreeMultimap using the given key comparator.
+         *
+         * @param <K>           The key type
+         * @param <V2>          The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A new empty TreeMultimap.
+         */
         public <K, V2 extends V> TreeMultimap<K, V2> empty(Comparator<? super K> keyComparator) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             return new TreeMultimap<>(TreeMap.empty(keyComparator), containerType, emptyContainer);
         }
 
+        /**
+         * Creates a {@code TreeMultimap} of the given entries.
+         * The underlying key comparator is the natural comparator of K.
+         *
+         * @param <K>     The key type
+         * @param <V2>    The value type
+         * @param entries Multimap entries
+         * @return A new TreeMultimap containing the given entries.
+         */
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
             return ofEntries(Comparators.naturalComparator(), entries);
         }
 
+        /**
+         * Creates a {@code TreeMultimap} of the given entries.
+         *
+         * @param <K>           The key type
+         * @param <V2>          The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @param entries       Multimap entries
+         * @return A new TreeMultimap containing the given entries.
+         */
         public <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(entries, "entries is null");
@@ -79,12 +112,30 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
             return result;
         }
 
+        /**
+         * Creates a {@code TreeMultimap} of the given entries.
+         * The underlying key comparator is the natural comparator of K.
+         *
+         * @param <K>     The key type
+         * @param <V2>    The value type
+         * @param entries Multimap entries
+         * @return A new TreeMultimap containing the given entries.
+         */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofEntries(Tuple2<? extends K, ? extends V2>... entries) {
             return ofEntries(Comparators.naturalComparator(), entries);
         }
 
+        /**
+         * Creates a {@code TreeMultimap} of the given entries.
+         *
+         * @param <K>           The key type
+         * @param <V2>          The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @param entries       Multimap entries
+         * @return A new TreeMultimap containing the given entries.
+         */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V2>... entries) {
@@ -97,12 +148,30 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
             return result;
         }
 
+        /**
+         * Creates a {@code TreeMultimap} of the given entries.
+         * The underlying key comparator is the natural comparator of K.
+         *
+         * @param <K>     The key type
+         * @param <V2>    The value type
+         * @param entries Multimap entries
+         * @return A new TreeMultimap containing the given entries.
+         */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> ofEntries(java.util.Map.Entry<? extends K, ? extends V2>... entries) {
             return ofEntries(Comparators.naturalComparator(), entries);
         }
 
+        /**
+         * Creates a {@code TreeMultimap} of the given entries.
+         *
+         * @param <K>           The key type
+         * @param <V2>          The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @param entries       Multimap entries
+         * @return A new TreeMultimap containing the given entries.
+         */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <K, V2 extends V> TreeMultimap<K, V2> ofEntries(Comparator<? super K> keyComparator, java.util.Map.Entry<? extends K, ? extends V2>... entries) {
@@ -208,11 +277,35 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
             return Multimaps.ofStream(empty(), stream, entryMapper);
         }
 
+        /**
+         * Returns a TreeMultimap containing {@code n} values of a given Function {@code f}
+         * over a range of integer values from 0 to {@code n - 1}.
+         * The underlying key comparator is the natural comparator of K.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param n   The number of elements in the TreeMultimap
+         * @param f   The Function computing element values
+         * @return A TreeMultimap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+         * @throws NullPointerException if {@code f} is null
+         */
         @SuppressWarnings("unchecked")
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
             return tabulate(Comparators.naturalComparator(), n, f);
         }
 
+        /**
+         * Returns a TreeMultimap containing {@code n} values of a given Function {@code f}
+         * over a range of integer values from 0 to {@code n - 1}.
+         *
+         * @param <K>           The key type
+         * @param <V2>           The value type
+         * @param keyComparator The comparator used to sort the entries by their key
+         * @param n             The number of elements in the TreeMultimap
+         * @param f             The Function computing element values
+         * @return A TreeMultimap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+         * @throws NullPointerException if {@code keyComparator} or {@code f} are null
+         */
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> TreeMultimap<K, V2> tabulate(Comparator<? super K> keyComparator, int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
@@ -220,11 +313,33 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
             return ofEntries(keyComparator, Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
         }
 
+        /**
+         * Returns a TreeMultimap containing {@code n} values supplied by a given Supplier {@code s}.
+         * The underlying key comparator is the natural comparator of K.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param n   The number of elements in the TreeMultimap
+         * @param s   The Supplier computing element values
+         * @return A TreeMultimap of size {@code n}, where each element contains the result supplied by {@code s}.
+         * @throws NullPointerException if {@code s} is null
+         */
         @SuppressWarnings("unchecked")
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
             return fill(Comparators.naturalComparator(), n, s);
         }
 
+        /**
+         * Returns a TreeMultimap containing {@code n} values supplied by a given Supplier {@code s}.
+         *
+         * @param <K>           The key type
+         * @param <V2>           The value type
+         * @param keyComparator The comparator used to sort the entries by their key
+         * @param n             The number of elements in the TreeMultimap
+         * @param s             The Supplier computing element values
+         * @return A TreeMultimap of size {@code n}, where each element contains the result supplied by {@code s}.
+         * @throws NullPointerException if {@code keyComparator} or {@code s} are null
+         */
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> TreeMultimap<K, V2> fill(Comparator<? super K> keyComparator, int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
@@ -695,15 +810,45 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
             return of(keyComparator, k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9).put(k10, v10);
         }
 
+        /**
+         * Returns a singleton {@code TreeMultimap}, i.e. a {@code TreeMultimap} of one entry using a specific key comparator.
+         *
+         * @param <K>           The key type
+         * @param <V2>          The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @param entry         A map entry.
+         * @return A new TreeMultimap containing the given entry.
+         */
         public <K, V2 extends V> TreeMultimap<K, V2> of(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V2> entry) {
             final TreeMultimap<K, V2> e = empty(keyComparator);
             return e.put(entry._1, entry._2);
         }
 
+        /**
+         * Returns a {@link Collector} which may be used in conjunction with
+         * {@link java.util.stream.Stream#collect(Collector)} to obtain a
+         * {@link TreeMultimap}.
+         * <p>
+         * The natural comparator is used to compare TreeMultimap keys.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A {@link TreeMultimap} Collector.
+         */
         public <K extends Comparable<? super K>, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> collector() {
             return collector(Comparators.naturalComparator());
         }
 
+        /**
+         * Returns a {@link Collector} which may be used in conjunction with
+         * {@link java.util.stream.Stream#collect(Collector)} to obtain a
+         * {@link TreeMultimap}.
+         *
+         * @param <K>           The key type
+         * @param <V2>           The value type
+         * @param keyComparator The comparator used to sort the entries by their key.
+         * @return A {@link TreeMultimap} Collector.
+         */
         public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> collector(Comparator<? super K> keyComparator) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             final Supplier<ArrayList<Tuple2<K, V2>>> supplier = ArrayList::new;
