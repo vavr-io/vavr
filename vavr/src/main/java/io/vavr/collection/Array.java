@@ -989,13 +989,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         } else if (delegate.length == 1) {
             return of(this);
         } else {
-            Array<Array<T>> results = empty();
-            for (T t : distinct()) {
-                for (Array<T> ts : remove(t).permutations()) {
-                    results = results.append(of(t).appendAll(ts));
-                }
-            }
-            return results;
+            final Array<Array<T>> zero = empty();
+            return distinct().foldLeft(zero, (xs, x) -> {
+                final Function<Array<T>, Array<T>> prepend = l -> l.prepend(x);
+                return xs.appendAll(remove(x).permutations().map(prepend));
+            });
         }
     }
 
