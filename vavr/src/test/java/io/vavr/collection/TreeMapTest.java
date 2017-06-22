@@ -44,6 +44,16 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Override
+    protected <K extends Comparable<? super K>, V, T extends V> Collector<T, ArrayList<T>, ? extends Map<K, V>> collectorWithMapper(Function<? super T, ? extends K> keyMapper) {
+        return TreeMap.collector(keyMapper);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V, T> Collector<T, ArrayList<T>, ? extends Map<K, V>> collectorWithMappers(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        return TreeMap.collector(keyMapper, valueMapper);
+    }
+
+    @Override
     protected boolean emptyMapShouldBeSingleton() {
         return false;
     }
