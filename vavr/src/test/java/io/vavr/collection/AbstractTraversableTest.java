@@ -21,6 +21,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static io.vavr.API.$;
+import static io.vavr.API.Case;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingInt;
@@ -253,6 +255,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldCollectUsingPartialFunction() {
         final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            private static final long serialVersionUID = 1L;
             @Override
             public String apply(Integer i) {
                 return String.valueOf(i);
@@ -263,6 +266,14 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
             }
         };
         final Traversable<String> actual = of(1, 2, 3).collect(pf);
+        assertThat(actual).isEqualTo(of("1", "3"));
+    }
+
+    @Test
+    public void shouldCollectUsingCase() {
+        final Traversable<String> actual = of(1, 2, 3).collect(
+                Case($(i -> i % 2 == 1), String::valueOf)
+        );
         assertThat(actual).isEqualTo(of("1", "3"));
     }
 

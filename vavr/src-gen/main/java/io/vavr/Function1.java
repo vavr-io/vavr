@@ -187,10 +187,14 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
         Objects.requireNonNull(isDefinedAt, "isDefinedAt is null");
         final Function1<T1, R> self = this;
         return new PartialFunction<T1, R>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public boolean isDefinedAt(T1 t1) {
                 return isDefinedAt.test(t1);
             }
+
             @Override
             public R apply(T1 t1) {
               return self.apply(t1);
