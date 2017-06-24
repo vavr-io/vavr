@@ -6,6 +6,7 @@
  */
 package io.vavr.collection;
 
+import io.vavr.PartialFunction;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
@@ -401,6 +402,16 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public void shouldRecognizeContainedKeyValuePair() {
         final Multimap<String, Integer> testee = mapOf("one", 1);
         assertThat(testee.contains(Tuple.of("one", 1))).isTrue();
+    }
+
+    // -- PartialFunction
+
+    @Test
+    public void shouldImplementPartialFunction() {
+        PartialFunction<Integer, Traversable<String>> f = mapOf(1, "1");
+        assertThat(f.isDefinedAt(1)).isTrue();
+        assertThat(f.apply(1).contains("1")).isTrue();
+        assertThat(f.isDefinedAt(2)).isFalse();
     }
 
     // -- equality
