@@ -7,6 +7,7 @@
 package io.vavr.collection;
 
 import io.vavr.Function1;
+import io.vavr.PartialFunction;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
@@ -407,6 +408,16 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<String, Integer> actual = mapOf("1", 1, "2", 2, "3", 3);
         final Map<String, Integer> expected = this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- PartialFunction
+
+    @Test
+    public void shouldImplementPartialFunction() {
+        PartialFunction<Integer, String> f = mapOf(1, "1");
+        assertThat(f.isDefinedAt(1)).isTrue();
+        assertThat(f.apply(1)).isEqualTo("1");
+        assertThat(f.isDefinedAt(2)).isFalse();
     }
 
     // -- equality
