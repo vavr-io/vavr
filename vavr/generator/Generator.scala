@@ -1485,6 +1485,19 @@ def generateMainClasses(): Unit = {
                * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
                */
               long serialVersionUID = 1L;
+              
+              /$javadoc
+               * Returns a function that always returns the constant
+               * value that you give in parameter.
+               *
+               ${(1 to i).gen(j => s"* @param <T$j> generic parameter type $j of the resulting function")("\n")}
+               * @param <R> the result type
+               * @param value the value to be returned
+               * @return a function always returning the given value
+               */
+              static $fullGenerics $className$fullGenerics constant(R value) {
+                  return ($params) -> value;
+              }
 
               /$javadoc
                * Creates a {@code $className} based on
@@ -1627,19 +1640,6 @@ def generateMainClasses(): Unit = {
               @Override
               default int arity() {
                   return $i;
-              }
-
-              /**
-               * Returns a function that always returns the constant
-               * value that you give in parameter.
-               *
-               ${(1 to i).gen(j => s"* @param <T$j> generic parameter type $j of the resulting function")("\n")}
-               * @param <R> the result type
-               * @param value the value to be returned
-               * @return a function always returning the given value
-               */
-              static $fullGenerics $className$fullGenerics constant(R value) {
-                  return ($params) -> value;
               }
 
               @Override
