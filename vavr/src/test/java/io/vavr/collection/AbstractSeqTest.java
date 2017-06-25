@@ -887,6 +887,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).isDefinedAt(2)).isTrue();
     }
 
+    @Test
+    public void shouldNotBeDefinedAtIndexOutOfBoundsWhenNonEmpty() {
+        assertThat(of(1, 2, 3).isDefinedAt(3)).isFalse();
+    }
+
     // -- isSequential()
 
     @Test
