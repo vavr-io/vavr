@@ -284,6 +284,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(of("one", "three"));
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldCollectUsingMultimap() {
         if (!isOrdered()) {
