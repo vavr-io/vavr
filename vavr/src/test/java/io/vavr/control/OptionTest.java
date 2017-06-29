@@ -616,4 +616,22 @@ public class OptionTest extends AbstractValueTest {
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
     }
+
+    @Test
+    public void foldStringToInt() {
+        assertThat(Option.some("1").fold(() -> -1, Integer::valueOf)).isEqualTo(1);
+        assertThat(Option.<String>none().fold(() -> -1, Integer::valueOf)).isEqualTo(-1);
+    }
+
+    @Test
+    public void foldEither() {
+        Either<String, Integer> right = Option.some(1).fold(() -> {
+            throw new AssertionError("Must not happen");
+        }, Either::right);
+        Either<String, Integer> left = Option.<Integer>none().fold(() -> Either.left("Empty"), ignore -> {
+            throw new AssertionError("Must not happen");
+        });
+        assertThat(right.get()).isEqualTo(1);
+        assertThat(left.getLeft()).isEqualTo("Empty");
+    }
 }

@@ -361,6 +361,18 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Folds either the {@code None} or the {@code Some} side of the Option value.
+     *
+     * @param ifNone  maps the left value if this is a None
+     * @param f maps the value if this is a Some
+     * @param <U>         type of the folded value
+     * @return A value of type U
+     */
+    default <U> U fold(Supplier<? extends U> ifNone, Function<? super T, ? extends U> f) {
+        return this.<U>map(f).getOrElse(ifNone);
+    }
+
+    /**
      * Applies an action to this value, if this option is defined, otherwise does nothing.
      *
      * @param action An action which can be applied to an optional value
