@@ -860,6 +860,45 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of('a', 'b').intersperse(',')).isEqualTo(of('a', ',', 'b'));
     }
 
+    // -- isDefinedAt()
+
+    @Test
+    public void shouldNotBeDefinedAtNegativeIndexWhenEmpty() {
+        assertThat(empty().isDefinedAt(-1)).isFalse();
+    }
+
+    @Test
+    public void shouldNotBeDefinedAtNegativeIndexWhenNonEmpty() {
+        assertThat(of(1).isDefinedAt(-1)).isFalse();
+    }
+
+    @Test
+    public void shouldNotBeDefinedAtIndex0WhenEmpty() {
+        assertThat(empty().isDefinedAt(0)).isFalse();
+    }
+
+    @Test
+    public void shouldBeDefinedAtIndex0WhenNonEmpty() {
+        assertThat(of(1).isDefinedAt(0)).isTrue();
+    }
+
+    @Test
+    public void shouldBeDefinedAtLastIndexWhenNonEmpty() {
+        assertThat(of(1, 2, 3).isDefinedAt(2)).isTrue();
+    }
+
+    @Test
+    public void shouldNotBeDefinedAtIndexOutOfBoundsWhenNonEmpty() {
+        assertThat(of(1, 2, 3).isDefinedAt(3)).isFalse();
+    }
+
+    // -- isSequential()
+
+    @Test
+    public void shouldReturnTrueWhenIsSequentialCalled() {
+        assertThat(of(1, 2, 3).isSequential()).isTrue();
+    }
+
     // -- iterator(int)
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -1719,6 +1758,23 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).splitAtInclusive(e -> e == 5)).isEqualTo(Tuple.of(of(1, 2, 3), empty()));
     }
 
+    // -- spliterator
+
+    @Test
+    public void shouldNotHaveSortedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+    }
+
+    @Test
+    public void shouldHaveOrderedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+    }
+
+    @Test
+    public void shouldNotHaveDistinctSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isFalse();
+    }
+
     // -- startsWith
 
     @Test
@@ -1952,45 +2008,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(10, 20, 30).search(25, Integer::compareTo)).isEqualTo(-3);
     }
 
-    // -- IndexedSeq special cases
-
-    @Test
-    public void shouldTestIndexedSeqStartsWithNonIndexedSeq() {
-        assertThat(of(1, 3, 4).startsWith(Stream.of(1, 3))).isTrue();
-        assertThat(of(1, 2, 3, 4).startsWith(Stream.of(1, 2, 4))).isFalse();
-        assertThat(of(1, 2).startsWith(Stream.of(1, 2, 4))).isFalse();
-    }
-
-    @Test
-    public void shouldTestIndexedSeqEndsWithNonIndexedSeq() {
-        assertThat(of(1, 3, 4).endsWith(Stream.of(3, 4))).isTrue();
-        assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
-    }
-
-    @Test
-    public void lift() {
-        final Function1<Integer, Option<String>> lifted = of("a", "b", "c").lift();
-        assertThat(lifted.apply(1).get()).isEqualTo("b");
-        assertThat(lifted.apply(-1).isEmpty()).isTrue();
-        assertThat(lifted.apply(3).isEmpty()).isTrue();
-    }
-
-    @Test
-    public void withDefaultValue() {
-        final Function1<Integer, String> withDef = of("a", "b", "c").withDefaultValue("z");
-        assertThat(withDef.apply(2)).isEqualTo("c");
-        assertThat(withDef.apply(-1)).isEqualTo("z");
-        assertThat(withDef.apply(3)).isEqualTo("z");
-    }
-
-    @Test
-    public void withDefault() {
-        final Function1<Integer, String> withDef = of("a", "b", "c").withDefault(Object::toString);
-        assertThat(withDef.apply(2)).isEqualTo("c");
-        assertThat(withDef.apply(-1)).isEqualTo("-1");
-        assertThat(withDef.apply(3)).isEqualTo("3");
-    }
-
     // -- transpose()
 
     @Test
@@ -2096,28 +2113,43 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         transpose(actual);
     }
 
-    // -- spliterator
+    // -- IndexedSeq special cases
 
     @Test
-    public void shouldNotHaveSortedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
+    public void shouldTestIndexedSeqStartsWithNonIndexedSeq() {
+        assertThat(of(1, 3, 4).startsWith(Stream.of(1, 3))).isTrue();
+        assertThat(of(1, 2, 3, 4).startsWith(Stream.of(1, 2, 4))).isFalse();
+        assertThat(of(1, 2).startsWith(Stream.of(1, 2, 4))).isFalse();
     }
 
     @Test
-    public void shouldHaveOrderedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isTrue();
+    public void shouldTestIndexedSeqEndsWithNonIndexedSeq() {
+        assertThat(of(1, 3, 4).endsWith(Stream.of(3, 4))).isTrue();
+        assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
     }
 
     @Test
-    public void shouldNotHaveDistinctSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isFalse();
+    public void lift() {
+        final Function1<Integer, Option<String>> lifted = of("a", "b", "c").lift();
+        assertThat(lifted.apply(1).get()).isEqualTo("b");
+        assertThat(lifted.apply(-1).isEmpty()).isTrue();
+        assertThat(lifted.apply(3).isEmpty()).isTrue();
     }
 
-    // -- isSequential()
+    @Test
+    public void withDefaultValue() {
+        final Function1<Integer, String> withDef = of("a", "b", "c").withDefaultValue("z");
+        assertThat(withDef.apply(2)).isEqualTo("c");
+        assertThat(withDef.apply(-1)).isEqualTo("z");
+        assertThat(withDef.apply(3)).isEqualTo("z");
+    }
 
     @Test
-    public void shouldReturnTrueWhenIsSequentialCalled() {
-        assertThat(of(1, 2, 3).isSequential()).isTrue();
+    public void withDefault() {
+        final Function1<Integer, String> withDef = of("a", "b", "c").withDefault(Object::toString);
+        assertThat(withDef.apply(2)).isEqualTo("c");
+        assertThat(withDef.apply(-1)).isEqualTo("-1");
+        assertThat(withDef.apply(3)).isEqualTo("3");
     }
 
 }

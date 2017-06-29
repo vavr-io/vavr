@@ -74,7 +74,7 @@ import java.util.function.*;
  * @param <V> Value type
  * @author Ruslan Sennov
  */
-public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, Traversable<V>>, PartialFunction<K, Traversable<V>>, Serializable {
+public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, Traversable<V>>, Serializable {
 
     long serialVersionUID = 1L;
 

@@ -19,7 +19,12 @@ package io.vavr;
  * @param <R> type of the function output, called <em>codomain</em> of the function
  * @author Daniel Dietrich
  */
-public interface PartialFunction<T, R> {
+public interface PartialFunction<T, R> extends Function1<T, R> {
+
+    /**
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     */
+    long serialVersionUID = 1L;
 
     /**
      * Applies this function to the given argument and returns the result.

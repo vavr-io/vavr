@@ -80,7 +80,7 @@ import java.util.function.*;
  * @param <V> Value type
  * @author Daniel Dietrich, Ruslan Sennov
  */
-public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V>, PartialFunction<K, V>, Serializable {
+public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, V>, Serializable {
 
     long serialVersionUID = 1L;
 

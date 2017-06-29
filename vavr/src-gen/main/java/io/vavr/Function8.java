@@ -42,6 +42,26 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lambda<R> 
     long serialVersionUID = 1L;
 
     /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param <T1> generic parameter type 1 of the resulting function
+     * @param <T2> generic parameter type 2 of the resulting function
+     * @param <T3> generic parameter type 3 of the resulting function
+     * @param <T4> generic parameter type 4 of the resulting function
+     * @param <T5> generic parameter type 5 of the resulting function
+     * @param <T6> generic parameter type 6 of the resulting function
+     * @param <T7> generic parameter type 7 of the resulting function
+     * @param <T8> generic parameter type 8 of the resulting function
+     * @param <R> the result type
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> constant(R value) {
+        return (t1, t2, t3, t4, t5, t6, t7, t8) -> value;
+    }
+
+    /**
      * Creates a {@code Function8} based on
      * <ul>
      * <li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method reference</a></li>
@@ -257,26 +277,6 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lambda<R> 
     @Override
     default int arity() {
         return 8;
-    }
-
-    /**
-     * Returns a function that always returns the constant
-     * value that you give in parameter.
-     *
-     * @param <T1> generic parameter type 1 of the resulting function
-     * @param <T2> generic parameter type 2 of the resulting function
-     * @param <T3> generic parameter type 3 of the resulting function
-     * @param <T4> generic parameter type 4 of the resulting function
-     * @param <T5> generic parameter type 5 of the resulting function
-     * @param <T6> generic parameter type 6 of the resulting function
-     * @param <T7> generic parameter type 7 of the resulting function
-     * @param <T8> generic parameter type 8 of the resulting function
-     * @param <R> the result type
-     * @param value the value to be returned
-     * @return a function always returning the given value
-     */
-    static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> constant(R value) {
-        return (t1, t2, t3, t4, t5, t6, t7, t8) -> value;
     }
 
     @Override
