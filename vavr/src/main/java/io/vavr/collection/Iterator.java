@@ -21,6 +21,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
 import static java.math.RoundingMode.HALF_UP;
 import static io.vavr.collection.IteratorModule.BigDecimalHelper.areEqual;
 import static io.vavr.collection.IteratorModule.BigDecimalHelper.asDecimal;
+import static io.vavr.collection.IteratorModule.CachedIterator;
 import static io.vavr.collection.IteratorModule.EmptyIterator;
 
 /**
@@ -1395,42 +1396,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return empty();
         } else {
-            final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
-
-                private T next;
-                private boolean cached = false;
-                private boolean first = true;
-
-                @Override
-                public boolean hasNext() {
-                    if (cached) {
-                        return true;
-                    } else if (first) {
-                        first = false;
-                        while (that.hasNext()) {
-                            next = that.next();
-                            if (!predicate.test(next)) {
-                                cached = true;
-                                return true;
-                            }
-                        }
-                        return false;
-                    } else if (that.hasNext()) {
-                        next = that.next();
-                        cached = true;
-                        return true;
-                    } else {
-                        return false;
-                    }
-                }
-
-                @Override
-                public T getNext() {
-                    cached = false;
-                    return next;
-                }
-            };
+            final CachedIterator<T> that = new CachedIterator<>(this);
+            while (that.hasNext() && predicate.test(that.touch())) {
+                that.next();
+            }
+            return that;
         }
     }
 
@@ -1823,18 +1793,19 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return empty();
         } else {
-            final Stream<T> source = Stream.ofAll(this);
+            final CachedIterator<T> source = new CachedIterator<>(this);
             return new AbstractIterator<Seq<T>>() {
-                private Stream<T> that = source;
                 private Stream<T> next = null;
 
                 @Override
                 public boolean hasNext() {
-                    while (next == null && !that.isEmpty()) {
-                        final Object key = classifier.apply(that.head());
-                        final Tuple2<Stream<T>, Stream<T>> split = that.splitAt(e -> !key.equals(classifier.apply(e)));
-                        next = split._1;
-                        that = split._2;
+                    if (next == null && source.hasNext()) {
+                        final Object key = classifier.apply(source.touch());
+                        final java.util.List<T> acc = new ArrayList<>();
+                        while (source.hasNext() && key.equals(classifier.apply(source.touch()))) {
+                            acc.add(source.getNext());
+                        }
+                        next = Stream.ofAll(acc);
                     }
                     return next != null;
                 }
@@ -2088,7 +2059,7 @@ interface IteratorModule {
         private final Function<? super T, ? extends U> keyExtractor;
         private T next = null;
 
-        DistinctIterator(Iterator<? extends T> that, io.vavr.collection.Set<U> set, Function<? super T, ? extends U> keyExtractor) {
+        DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {
             this.that = that;
             this.known = set;
             this.keyExtractor = keyExtractor;
@@ -2205,6 +2176,41 @@ interface IteratorModule {
             } else {
                 return target;
             }
+        }
+    }
+
+    final class CachedIterator<T> extends AbstractIterator<T> {
+
+        private final Iterator<T> that;
+
+        private T next;
+        private boolean cached = false;
+
+        CachedIterator(Iterator<T> that) {
+            this.that = that;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return cached || that.hasNext();
+        }
+
+        @Override
+        public T getNext() {
+            if (cached) {
+                T result = next;
+                next = null;
+                cached = false;
+                return result;
+            } else {
+                return that.next();
+            }
+        }
+
+        T touch() {
+            next = next();
+            cached = true;
+            return next;
         }
     }
 
