@@ -55,10 +55,25 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
             this.emptyContainer = emptyContainer;
         }
 
+        /**
+         * Returns the empty {@code LinkedHashMultimap}.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A new empty LinkedHashMultimap.
+         */
         public <K, V2 extends V> LinkedHashMultimap<K, V2> empty() {
             return new LinkedHashMultimap<>(LinkedHashMap.empty(), containerType, emptyContainer);
         }
 
+        /**
+         * Creates a {@code LinkedHashMultimap} of the given entries.
+         *
+         * @param <K>           The key type
+         * @param <V2>          The value type
+         * @param entries       Multimap entries
+         * @return A new LinkedHashMultimap containing the given entries.
+         */
         public <K, V2 extends V> LinkedHashMultimap<K, V2> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
             Objects.requireNonNull(entries, "entries is null");
             LinkedHashMultimap<K, V2> result = empty();
@@ -68,6 +83,14 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
             return result;
         }
 
+        /**
+         * Creates a {@code LinkedHashMultimap} of the given entries.
+         *
+         * @param <K>           The key type
+         * @param <V2>          The value type
+         * @param entries       Multimap entries
+         * @return A new LinkedHashMultimap containing the given entries.
+         */
         @SafeVarargs
         public final <K, V2 extends V> LinkedHashMultimap<K, V2> ofEntries(Tuple2<? extends K, ? extends V2>... entries) {
             Objects.requireNonNull(entries, "entries is null");
@@ -78,6 +101,14 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
             return result;
         }
 
+        /**
+         * Creates a {@code LinkedHashMultimap} of the given entries.
+         *
+         * @param <K>           The key type
+         * @param <V2>          The value type
+         * @param entries       Multimap entries
+         * @return A new LinkedHashMultimap containing the given entries.
+         */
         @SafeVarargs
         public final <K, V2 extends V> LinkedHashMultimap<K, V2> ofEntries(java.util.Map.Entry<? extends K, ? extends V2>... entries) {
             Objects.requireNonNull(entries, "entries is null");
@@ -132,12 +163,33 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
             return Multimaps.ofStream(empty(), stream, entryMapper);
         }
 
+        /**
+         * Returns a LinkedHashMultimap containing {@code n} values of a given Function {@code f}
+         * over a range of integer values from 0 to {@code n - 1}.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param n   The number of elements in the LinkedHashMultimap
+         * @param f   The Function computing element values
+         * @return A LinkedHashMultimap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+         * @throws NullPointerException if {@code f} is null
+         */
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> LinkedHashMultimap<K, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
             Objects.requireNonNull(f, "f is null");
             return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
         }
 
+        /**
+         * Returns a LinkedHashMultimap containing {@code n} values supplied by a given Supplier {@code s}.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @param n   The number of elements in the LinkedHashMultimap
+         * @param s   The Supplier computing element values
+         * @return A LinkedHashMultimap of size {@code n}, where each element contains the result supplied by {@code s}.
+         * @throws NullPointerException if {@code s} is null
+         */
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> LinkedHashMultimap<K, V2> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
             Objects.requireNonNull(s, "s is null");
@@ -365,11 +417,29 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
             return of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9).put(k10, v10);
         }
 
+        /**
+         * Creates a LinkedHashMultimap of the given key-value pair.
+         * Returns a singleton {@code LinkedHashMultimap}, i.e. a {@code LinkedHashMultimap} of one entry.
+         *
+         * @param <K>   The key type
+         * @param <V2>   The value type
+         * @param entry A tuple containing the key-value pair.
+         * @return A new LinkedHashMultimap containing the given entry.
+         */
         public <K, V2 extends V> LinkedHashMultimap<K, V2> of(Tuple2<? extends K, ? extends V2> entry) {
             final LinkedHashMultimap<K, V2> e = empty();
             return e.put(entry._1, entry._2);
         }
 
+        /**
+         * Returns a {@link Collector} which may be used in conjunction with
+         * {@link java.util.stream.Stream#collect(Collector)} to obtain a
+         * {@link LinkedHashMultimap}.
+         *
+         * @param <K> The key type
+         * @param <V2> The value type
+         * @return A {@link LinkedHashMultimap} Collector.
+         */
         public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, Multimap<K, V2>> collector() {
             final Supplier<ArrayList<Tuple2<K, V2>>> supplier = ArrayList::new;
             final BiConsumer<ArrayList<Tuple2<K, V2>>, Tuple2<K, V2>> accumulator = ArrayList::add;
