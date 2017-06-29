@@ -571,11 +571,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldLinkedMapFromTuplesReturnNotNull() {
-        assertThat(LinkedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
-    }
-
-    @Test
     public void shouldLinkedMapFromPairsReturnNotNull() {
         assertThat(LinkedMap(1, '1', 2, '2', 3, '3')).isNotNull();
     }
@@ -693,11 +688,6 @@ public class APITest {
     @Test
     public void shouldMapFromSingleReturnNotNull() {
         assertThat(Map(1, '1')).isNotNull();
-    }
-
-    @Test
-    public void shouldMapFromTuplesReturnNotNull() {
-        assertThat(Map(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
     }
 
     @Test
@@ -821,11 +811,6 @@ public class APITest {
     }
 
     @Test
-    public void shouldSortedMapFromTuplesReturnNotNull() {
-        assertThat(SortedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
-    }
-
-    @Test
     public void shouldSortedMapFromPairsReturnNotNull() {
         assertThat(SortedMap(1, '1', 2, '2', 3, '3')).isNotNull();
     }
@@ -943,11 +928,6 @@ public class APITest {
     @Test
     public void shouldSortedMapFromSingleAndComparatorReturnNotNull() {
         assertThat(SortedMap((Comparator<Integer>)Integer::compareTo, 1, '1')).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedMapFromTuplesAndComparatorReturnNotNull() {
-        assertThat(SortedMap((Comparator<Integer>)Integer::compareTo, Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
     }
 
     // -- run
