@@ -55,6 +55,47 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link LinkedHashMap}.
+     *
+     * @param keyMapper The key mapper
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param <T> Initial {@link java.util.stream.Stream} elements type
+     * @return A {@link LinkedHashMap} Collector.
+     */
+    public static <K, V, T extends V> Collector<T, ArrayList<T>, LinkedHashMap<K, V>> collector(Function<? super T, ? extends K> keyMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return LinkedHashMap.collector(keyMapper, v -> v);
+    }
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link LinkedHashMap}.
+     *
+     * @param keyMapper The key mapper
+     * @param valueMapper The value mapper
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param <T> Initial {@link java.util.stream.Stream} elements type
+     * @return A {@link LinkedHashMap} Collector.
+     */
+    public static <K, V, T> Collector<T, ArrayList<T>, LinkedHashMap<K, V>> collector(
+            Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        final Supplier<ArrayList<T>> supplier = ArrayList::new;
+        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
+        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
+            left.addAll(right);
+            return left;
+        };
+        final Function<ArrayList<T>, LinkedHashMap<K, V>> finisher = arr -> LinkedHashMap.ofEntries(Iterator.ofAll(arr)
+                .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t))));
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> empty() {
         return (LinkedHashMap<K, V>) EMPTY;
