@@ -403,6 +403,15 @@ public interface Either<L, R> extends Value<R>, Serializable {
         return this;
     }
 
+    /**
+     * Returns this as {@code Validation}.
+     *
+     * @return {@code Validation.valid(get())} if this is right, otherwise {@code Validation.invalid(getLeft())}.
+     */
+    default Validation<L, R> toValidation() {
+        return isRight() ? Validation.valid(get()) : Validation.invalid(getLeft());
+    }
+
     // -- Object.*
 
     @Override
