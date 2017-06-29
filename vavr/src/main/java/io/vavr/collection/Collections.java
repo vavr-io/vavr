@@ -51,7 +51,10 @@ final class Collections {
                     .foldLeft(Iterator.of(empty), (product, ignored) -> product.flatMap(el -> seq.map(t -> (S) el.append(t))));
         }
     }
-    
+
+    // DEV-NOTE: Use this method for non-infinite and direct-access collection only
+    // because of O(N) complexity of get() and infinite loop in size()
+    // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
     static <T, S extends IndexedSeq<T>> S dropRightUntil(S seq, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -63,6 +66,9 @@ final class Collections {
         return (S) seq.take(0);
     }
 
+    // DEV-NOTE: Use this method for non-infinite and direct-access collection only
+    // because of O(N) complexity of get() and infinite loop in size()
+    // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
     static <T, S extends Seq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

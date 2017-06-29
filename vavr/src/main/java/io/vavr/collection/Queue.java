@@ -723,13 +723,14 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> dropUntil(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.dropUntil(this, predicate);
+        return dropWhile(predicate.negate());
     }
 
     @Override
     public Queue<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return dropUntil(predicate.negate());
+        final List<T> dropped = toList().dropWhile(predicate);
+        return ofAll(dropped.length() == length() ? this : dropped);
     }
 
     @Override
@@ -745,7 +746,8 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> dropRightUntil(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.dropUntil(reverse(), predicate).reverse();
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reverse().dropUntil(predicate).reverse();
     }
 
     @Override

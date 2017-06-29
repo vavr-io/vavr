@@ -960,13 +960,18 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default Stream<T> dropUntil(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.dropUntil(this, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
     }
 
     @Override
     default Stream<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return dropUntil(predicate.negate());
+        Stream<T> stream = this;
+        while (!stream.isEmpty() && predicate.test(stream.head())) {
+            stream = stream.tail();
+        }
+        return stream;
     }
 
     @Override
@@ -974,13 +979,14 @@ public interface Stream<T> extends LinearSeq<T> {
         if (n <= 0) {
             return this;
         } else {
-            return DropRight.apply(take(n).toList(), io.vavr.collection.List.empty(), drop(n));
+            return DropRight.apply(take(n).toList(), List.empty(), drop(n));
         }
     }
 
     @Override
     default Stream<T> dropRightUntil(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.dropUntil(reverse(), predicate).reverse();
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reverse().dropUntil(predicate).reverse();
     }
 
     @Override

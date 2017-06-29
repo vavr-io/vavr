@@ -459,6 +459,16 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(of(1, 2, 3).cycle(3)).isEqualTo(of(1, 2, 3, 1, 2, 3, 1, 2, 3));
     }
 
+    // -- dropUntil
+
+    @Test
+    public void shouldDropInfiniteStreamUntilPredicate() {
+        final Stream<Integer> naturalNumbers = Stream.iterate(0, i -> i + 1);
+        final Stream<Integer> naturalNumbersBiggerThanTen = naturalNumbers.dropUntil(i -> i > 10);
+        final Integer firstNaturalNumberBiggerThanTen = naturalNumbersBiggerThanTen.head();
+        assertThat(firstNaturalNumberBiggerThanTen).isEqualTo(11);
+    }
+
     // -- dropRight
 
     @Test
