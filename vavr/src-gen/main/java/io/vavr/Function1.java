@@ -36,6 +36,19 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
     long serialVersionUID = 1L;
 
     /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param <T1> generic parameter type 1 of the resulting function
+     * @param <R> the result type
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <T1, R> Function1<T1, R> constant(R value) {
+        return (t1) -> value;
+    }
+
+    /**
      * Creates a {@code Function1} based on
      * <ul>
      * <li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method reference</a></li>
@@ -137,19 +150,6 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
         return 1;
     }
 
-    /**
-     * Returns a function that always returns the constant
-     * value that you give in parameter.
-     *
-     * @param <T1> generic parameter type 1 of the resulting function
-     * @param <R> the result type
-     * @param value the value to be returned
-     * @return a function always returning the given value
-     */
-    static <T1, R> Function1<T1, R> constant(R value) {
-        return (t1) -> value;
-    }
-
     @Override
     default Function1<T1, R> curried() {
         return this;
@@ -187,10 +187,14 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
         Objects.requireNonNull(isDefinedAt, "isDefinedAt is null");
         final Function1<T1, R> self = this;
         return new PartialFunction<T1, R>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public boolean isDefinedAt(T1 t1) {
                 return isDefinedAt.test(t1);
             }
+
             @Override
             public R apply(T1 t1) {
               return self.apply(t1);

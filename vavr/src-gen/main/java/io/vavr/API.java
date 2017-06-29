@@ -3030,6 +3030,9 @@ public final class API {
     @GwtIncompatible
     public static <T> Pattern0<T> $(T prototype) {
         return new Pattern0<T>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public T apply(T obj) {
                 return obj;
@@ -3102,6 +3105,9 @@ public final class API {
     public static <T> Pattern0<T> $(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new Pattern0<T>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public T apply(T obj) {
                 return obj;
@@ -3157,9 +3163,16 @@ public final class API {
 
         // javac needs fqn's here
         public interface Case<T, R> extends PartialFunction<T, R> {
+
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
+            long serialVersionUID = 1L;
         }
 
         public static final class Case0<T, R> implements Case<T, R> {
+
+            private static final long serialVersionUID = 1L;
 
             private final Pattern0<T> pattern;
             private final Function<? super T, ? extends R> f;
@@ -3182,6 +3195,8 @@ public final class API {
 
         public static final class Case1<T, T1, R> implements Case<T, R> {
 
+            private static final long serialVersionUID = 1L;
+
             private final Pattern1<T, T1> pattern;
             private final Function<? super T1, ? extends R> f;
 
@@ -3202,6 +3217,8 @@ public final class API {
         }
 
         public static final class Case2<T, T1, T2, R> implements Case<T, R> {
+
+            private static final long serialVersionUID = 1L;
 
             private final Pattern2<T, T1, T2> pattern;
             private final BiFunction<? super T1, ? super T2, ? extends R> f;
@@ -3224,6 +3241,8 @@ public final class API {
 
         public static final class Case3<T, T1, T2, T3, R> implements Case<T, R> {
 
+            private static final long serialVersionUID = 1L;
+
             private final Pattern3<T, T1, T2, T3> pattern;
             private final Function3<? super T1, ? super T2, ? super T3, ? extends R> f;
 
@@ -3244,6 +3263,8 @@ public final class API {
         }
 
         public static final class Case4<T, T1, T2, T3, T4, R> implements Case<T, R> {
+
+            private static final long serialVersionUID = 1L;
 
             private final Pattern4<T, T1, T2, T3, T4> pattern;
             private final Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f;
@@ -3266,6 +3287,8 @@ public final class API {
 
         public static final class Case5<T, T1, T2, T3, T4, T5, R> implements Case<T, R> {
 
+            private static final long serialVersionUID = 1L;
+
             private final Pattern5<T, T1, T2, T3, T4, T5> pattern;
             private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f;
 
@@ -3286,6 +3309,8 @@ public final class API {
         }
 
         public static final class Case6<T, T1, T2, T3, T4, T5, T6, R> implements Case<T, R> {
+
+            private static final long serialVersionUID = 1L;
 
             private final Pattern6<T, T1, T2, T3, T4, T5, T6> pattern;
             private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f;
@@ -3308,6 +3333,8 @@ public final class API {
 
         public static final class Case7<T, T1, T2, T3, T4, T5, T6, T7, R> implements Case<T, R> {
 
+            private static final long serialVersionUID = 1L;
+
             private final Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern;
             private final Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f;
 
@@ -3328,6 +3355,8 @@ public final class API {
         }
 
         public static final class Case8<T, T1, T2, T3, T4, T5, T6, T7, T8, R> implements Case<T, R> {
+
+            private static final long serialVersionUID = 1L;
 
             private final Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern;
             private final Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f;
@@ -3366,7 +3395,12 @@ public final class API {
 
         public static abstract class Pattern0<T> implements Pattern<T, T> {
 
+            private static final long serialVersionUID = 1L;
+
             private static final Pattern0<Object> ANY = new Pattern0<Object>() {
+
+                private static final long serialVersionUID = 1L;
+
                 @Override
                 public Object apply(Object obj) {
                     return obj;
@@ -3388,6 +3422,9 @@ public final class API {
             //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
             public static <T> Pattern0<T> of(Class<? super T> type) {
                 return new Pattern0<T>() {
+
+                    private static final long serialVersionUID = 1L;
+
                     @Override
                     public T apply(T obj) {
                         return obj;
@@ -3399,15 +3436,17 @@ public final class API {
                     }
                 };
             }
-
-            private Pattern0() {
-            }
         }
 
         public static abstract class Pattern1<T, T1> implements Pattern<T, T1> {
 
+            private static final long serialVersionUID = 1L;
+
             public static <T, T1 extends U1, U1> Pattern1<T, T1> of(Class<? super T> type, Pattern<T1, ?> p1, Function<T, Tuple1<U1>> unapply) {
                 return new Pattern1<T, T1>() {
+
+                    private static final long serialVersionUID = 1L;
+
                     @SuppressWarnings("unchecked")
                     @Override
                     public T1 apply(T obj) {
@@ -3431,8 +3470,13 @@ public final class API {
 
         public static abstract class Pattern2<T, T1, T2> implements Pattern<T, Tuple2<T1, T2>> {
 
+            private static final long serialVersionUID = 1L;
+
             public static <T, T1 extends U1, U1, T2 extends U2, U2> Pattern2<T, T1, T2> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Function<T, Tuple2<U1, U2>> unapply) {
                 return new Pattern2<T, T1, T2>() {
+
+                    private static final long serialVersionUID = 1L;
+
                     @SuppressWarnings("unchecked")
                     @Override
                     public Tuple2<T1, T2> apply(T obj) {
@@ -3457,8 +3501,13 @@ public final class API {
 
         public static abstract class Pattern3<T, T1, T2, T3> implements Pattern<T, Tuple3<T1, T2, T3>> {
 
+            private static final long serialVersionUID = 1L;
+
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3> Pattern3<T, T1, T2, T3> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Function<T, Tuple3<U1, U2, U3>> unapply) {
                 return new Pattern3<T, T1, T2, T3>() {
+
+                    private static final long serialVersionUID = 1L;
+
                     @SuppressWarnings("unchecked")
                     @Override
                     public Tuple3<T1, T2, T3> apply(T obj) {
@@ -3484,8 +3533,13 @@ public final class API {
 
         public static abstract class Pattern4<T, T1, T2, T3, T4> implements Pattern<T, Tuple4<T1, T2, T3, T4>> {
 
+            private static final long serialVersionUID = 1L;
+
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4> Pattern4<T, T1, T2, T3, T4> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Function<T, Tuple4<U1, U2, U3, U4>> unapply) {
                 return new Pattern4<T, T1, T2, T3, T4>() {
+
+                    private static final long serialVersionUID = 1L;
+
                     @SuppressWarnings("unchecked")
                     @Override
                     public Tuple4<T1, T2, T3, T4> apply(T obj) {
@@ -3512,8 +3566,13 @@ public final class API {
 
         public static abstract class Pattern5<T, T1, T2, T3, T4, T5> implements Pattern<T, Tuple5<T1, T2, T3, T4, T5>> {
 
+            private static final long serialVersionUID = 1L;
+
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5> Pattern5<T, T1, T2, T3, T4, T5> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Function<T, Tuple5<U1, U2, U3, U4, U5>> unapply) {
                 return new Pattern5<T, T1, T2, T3, T4, T5>() {
+
+                    private static final long serialVersionUID = 1L;
+
                     @SuppressWarnings("unchecked")
                     @Override
                     public Tuple5<T1, T2, T3, T4, T5> apply(T obj) {
@@ -3541,8 +3600,13 @@ public final class API {
 
         public static abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> implements Pattern<T, Tuple6<T1, T2, T3, T4, T5, T6>> {
 
+            private static final long serialVersionUID = 1L;
+
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6> Pattern6<T, T1, T2, T3, T4, T5, T6> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Function<T, Tuple6<U1, U2, U3, U4, U5, U6>> unapply) {
                 return new Pattern6<T, T1, T2, T3, T4, T5, T6>() {
+
+                    private static final long serialVersionUID = 1L;
+
                     @SuppressWarnings("unchecked")
                     @Override
                     public Tuple6<T1, T2, T3, T4, T5, T6> apply(T obj) {
@@ -3571,8 +3635,13 @@ public final class API {
 
         public static abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> implements Pattern<T, Tuple7<T1, T2, T3, T4, T5, T6, T7>> {
 
+            private static final long serialVersionUID = 1L;
+
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7> Pattern7<T, T1, T2, T3, T4, T5, T6, T7> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Function<T, Tuple7<U1, U2, U3, U4, U5, U6, U7>> unapply) {
                 return new Pattern7<T, T1, T2, T3, T4, T5, T6, T7>() {
+
+                    private static final long serialVersionUID = 1L;
+
                     @SuppressWarnings("unchecked")
                     @Override
                     public Tuple7<T1, T2, T3, T4, T5, T6, T7> apply(T obj) {
@@ -3602,8 +3671,13 @@ public final class API {
 
         public static abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> implements Pattern<T, Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> {
 
+            private static final long serialVersionUID = 1L;
+
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7, T8 extends U8, U8> Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Pattern<T8, ?> p8, Function<T, Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>> unapply) {
                 return new Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8>() {
+
+                    private static final long serialVersionUID = 1L;
+
                     @SuppressWarnings("unchecked")
                     @Override
                     public Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> apply(T obj) {

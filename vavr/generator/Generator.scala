@@ -820,7 +820,7 @@ def generateMainClasses(): Unit = {
         """
       }
 
-      def genMatch(im: ImportManager, packageName: String, className: String): String = {
+      def genMatch(im: ImportManager, packageName: String, className: String): String =
         xs"""
           //
           // Structural Pattern Matching
@@ -923,6 +923,9 @@ def generateMainClasses(): Unit = {
           @GwtIncompatible
           public static <T> Pattern0<T> $$(T prototype) {
               return new Pattern0<T>() {
+
+                  private static final long serialVersionUID = 1L;
+
                   @Override
                   public T apply(T obj) {
                       return obj;
@@ -995,6 +998,9 @@ def generateMainClasses(): Unit = {
           public static <T> Pattern0<T> $$($PredicateType<? super T> predicate) {
               $Objects.requireNonNull(predicate, "predicate is null");
               return new Pattern0<T>() {
+
+                  private static final long serialVersionUID = 1L;
+
                   @Override
                   public T apply(T obj) {
                       return obj;
@@ -1050,9 +1056,16 @@ def generateMainClasses(): Unit = {
 
               // javac needs fqn's here
               public interface Case<T, R> extends $PartialFunctionType<T, R> {
+
+                  /**
+                   * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                   */
+                  long serialVersionUID = 1L;
               }
 
               public static final class Case0<T, R> implements Case<T, R> {
+
+                  private static final long serialVersionUID = 1L;
 
                   private final Pattern0<T> pattern;
                   private final $FunctionType<? super T, ? extends R> f;
@@ -1083,6 +1096,8 @@ def generateMainClasses(): Unit = {
                 }
                 xs"""
                   public static final class Case$i<T, $generics, R> implements Case<T, R> {
+
+                      private static final long serialVersionUID = 1L;
 
                       private final Pattern$i<T, $generics> pattern;
                       private final $functionType<$argTypes, ? extends R> f;
@@ -1127,7 +1142,12 @@ def generateMainClasses(): Unit = {
 
               public static abstract class Pattern0<T> implements Pattern<T, T> {
 
+                  private static final long serialVersionUID = 1L;
+
                   private static final Pattern0<Object> ANY = new Pattern0<Object>() {
+
+                      private static final long serialVersionUID = 1L;
+
                       @Override
                       public Object apply(Object obj) {
                           return obj;
@@ -1149,6 +1169,9 @@ def generateMainClasses(): Unit = {
                   //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
                   public static <T> Pattern0<T> of(Class<? super T> type) {
                       return new Pattern0<T>() {
+
+                          private static final long serialVersionUID = 1L;
+
                           @Override
                           public T apply(T obj) {
                               return obj;
@@ -1159,9 +1182,6 @@ def generateMainClasses(): Unit = {
                               return obj != null && type.isAssignableFrom(obj.getClass());
                           }
                       };
-                  }
-
-                  private Pattern0() {
                   }
               }
 
@@ -1175,8 +1195,13 @@ def generateMainClasses(): Unit = {
                 xs"""
                   public static abstract class Pattern$i<T, $resultGenerics> implements Pattern<T, $resultType> {
 
+                      private static final long serialVersionUID = 1L;
+
                       public static <T, $declaredGenerics> Pattern$i<T, $resultGenerics> of(Class<? super T> type, $args, Function<T, $unapplyTupleType> unapply) {
                           return new Pattern$i<T, $resultGenerics>() {
+
+                              private static final long serialVersionUID = 1L;
+
                               @SuppressWarnings("unchecked")
                               @Override
                               public $resultType apply(T obj) {
@@ -1205,7 +1230,6 @@ def generateMainClasses(): Unit = {
               })("\n\n")}
           }
         """
-      }
 
       def genShortcuts(im: ImportManager, packageName: String, className: String): String = {
 
@@ -1461,6 +1485,19 @@ def generateMainClasses(): Unit = {
                * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
                */
               long serialVersionUID = 1L;
+              
+              /$javadoc
+               * Returns a function that always returns the constant
+               * value that you give in parameter.
+               *
+               ${(1 to i).gen(j => s"* @param <T$j> generic parameter type $j of the resulting function")("\n")}
+               * @param <R> the result type
+               * @param value the value to be returned
+               * @return a function always returning the given value
+               */
+              static $fullGenerics $className$fullGenerics constant(R value) {
+                  return ($params) -> value;
+              }
 
               /$javadoc
                * Creates a {@code $className} based on
@@ -1605,19 +1642,6 @@ def generateMainClasses(): Unit = {
                   return $i;
               }
 
-              /**
-               * Returns a function that always returns the constant
-               * value that you give in parameter.
-               *
-               ${(1 to i).gen(j => s"* @param <T$j> generic parameter type $j of the resulting function")("\n")}
-               * @param <R> the result type
-               * @param value the value to be returned
-               * @return a function always returning the given value
-               */
-              static $fullGenerics $className$fullGenerics constant(R value) {
-                  return ($params) -> value;
-              }
-
               @Override
               default ${curriedType(i, name)} curried() {
                   return ${if (i < 2) "this" else s"$curried -> apply($params)"};
@@ -1667,10 +1691,14 @@ def generateMainClasses(): Unit = {
                     Objects.requireNonNull(isDefinedAt, "isDefinedAt is null");
                     final Function1<T1, R> self = this;
                     return new PartialFunction<T1, R>() {
+
+                        private static final long serialVersionUID = 1L;
+
                         @Override
                         public boolean isDefinedAt(T1 t1) {
                             return isDefinedAt.test(t1);
                         }
+
                         @Override
                         public R apply(T1 t1) {
                           return self.apply(t1);

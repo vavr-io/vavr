@@ -93,7 +93,7 @@ import java.util.function.*;
  * @param <T> Component type
  * @author Daniel Dietrich
  */
-public interface Seq<T> extends Traversable<T>, Function1<Integer, T>, Serializable {
+public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Serializable {
 
     long serialVersionUID = 1L;
 

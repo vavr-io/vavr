@@ -6,10 +6,7 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Tuple;
-import io.vavr.AbstractValueTest;
-import io.vavr.PartialFunction;
-import io.vavr.Tuple2;
+import io.vavr.*;
 import io.vavr.control.Option;
 import org.junit.Test;
 
@@ -21,6 +18,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static io.vavr.API.*;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingInt;
@@ -32,6 +30,10 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     protected final boolean isTraversableAgain() {
         return empty().isTraversableAgain();
+    }
+
+    protected final boolean isOrdered() {
+        return empty().isOrdered();
     }
 
     protected abstract <T> Collector<T, ArrayList<T>, ? extends Traversable<T>> collector();
@@ -253,6 +255,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldCollectUsingPartialFunction() {
         final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            private static final long serialVersionUID = 1L;
             @Override
             public String apply(Integer i) {
                 return String.valueOf(i);
@@ -264,6 +267,38 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         };
         final Traversable<String> actual = of(1, 2, 3).collect(pf);
         assertThat(actual).isEqualTo(of("1", "3"));
+    }
+
+    @Test
+    public void shouldCollectUsingCase() {
+        final Traversable<String> actual = of(1, 2, 3).collect(
+                Case($(i -> i % 2 == 1), String::valueOf)
+        );
+        assertThat(actual).isEqualTo(of("1", "3"));
+    }
+
+    @Test
+    public void shouldCollectUsingMap() {
+        final Map<Integer, String> map = Map(1, "one", 3, "three");
+        final Traversable<String> actual = of(1, 2, 3, 4).collect(map);
+        assertThat(actual).isEqualTo(of("one", "three"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldCollectUsingMultimap() {
+        if (!isOrdered()) {
+            final Multimap<Integer, String> map = HashMultimap.withSeq().of(1, "one", 1, "un", 3, "three", 3, "trois");
+            final Traversable<Traversable<String>> actual = of(1, 2, 3, 4).collect(map);
+            assertThat(actual).isEqualTo(of(List("one", "un"), List("three", "trois")));
+        }
+    }
+
+    @Test
+    public void shouldCollectUsingSeq() {
+        final Seq<String> map = List("one", "two", "three", "four");
+        final Traversable<String> actual = of(0, 2).collect(map);
+        assertThat(actual).isEqualTo(of("one", "three"));
     }
 
     // -- contains
@@ -882,13 +917,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldRecognizeNonNil() {
         assertThat(of(1).isEmpty()).isFalse();
-    }
-
-    // -- isTraversableAgain
-
-    @Test
-    public void shouldReturnSomethingOnIsTraversableAgain() {
-        empty().isTraversableAgain();
     }
 
     // -- iterator

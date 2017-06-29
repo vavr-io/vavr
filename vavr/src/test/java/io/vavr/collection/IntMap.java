@@ -81,6 +81,7 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     public <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
         final PartialFunction<Tuple2<Integer, T>, R> pf = new PartialFunction<Tuple2<Integer, T>, R>() {
+            private static final long serialVersionUID = 1L;
             @Override
             public R apply(Tuple2<Integer, T> entry) {
                 return partialFunction.apply(entry._2);

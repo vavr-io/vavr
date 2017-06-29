@@ -33,6 +33,19 @@ public interface CheckedFunction0<R> extends Lambda<R> {
     long serialVersionUID = 1L;
 
     /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+
+     * @param <R> the result type
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <R> CheckedFunction0<R> constant(R value) {
+        return () -> value;
+    }
+
+    /**
      * Creates a {@code CheckedFunction0} based on
      * <ul>
      * <li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method reference</a></li>
@@ -117,19 +130,6 @@ public interface CheckedFunction0<R> extends Lambda<R> {
     @Override
     default int arity() {
         return 0;
-    }
-
-    /**
-     * Returns a function that always returns the constant
-     * value that you give in parameter.
-     *
-
-     * @param <R> the result type
-     * @param value the value to be returned
-     * @return a function always returning the given value
-     */
-    static <R> CheckedFunction0<R> constant(R value) {
-        return () -> value;
     }
 
     @Override

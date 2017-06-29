@@ -513,6 +513,13 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.continually(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
     }
 
+    // -- isDefinedAt
+
+    @Test
+    public void shouldBeDefinedAtNonNegativeIndexWhenInfinitelyLong() {
+        assertThat(Stream.continually(1).isDefinedAt(1)).isTrue();
+    }
+
     // -- isLazy
 
     @Override

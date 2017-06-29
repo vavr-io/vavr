@@ -155,10 +155,6 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     abstract protected <T1 extends Comparable<T1>, T2> Multimap<T1, T2> emptyMap(Comparator<? super T2> comparator);
 
-    protected boolean emptyMapShouldBeSingleton() {
-        return true;
-    }
-
     abstract protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Multimap<Integer, T>> mapCollector();
 
     @SuppressWarnings("unchecked")
@@ -327,45 +323,6 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 2).put("3", 4));
     }
 
-    // -- toString
-
-    @Test
-    public void shouldMakeString() {
-        assertThat(emptyMap().toString()).isEqualTo(className() + "()");
-        assertThat(emptyIntInt().put(1, 2).toString()).isEqualTo(className() + "(" + Tuple.of(1, 2) + ")");
-    }
-
-    // -- toJavaMap
-
-    @Test
-    public void shouldConvertToJavaMap() {
-        final Multimap<String, Integer> vavr = mapOfPairs("1", 1, "2", 2, "3", 3);
-        final java.util.Map<String, java.util.Collection<Integer>> java = javaEmptyMap();
-        java.put("1", javaListOf(1));
-        java.put("2", javaListOf(2));
-        java.put("3", javaListOf(3));
-        assertThat(vavr.toJavaMap()).isEqualTo(java);
-    }
-
-    private java.util.Collection<Integer> javaListOf(Integer i) {
-        final java.util.Collection<Integer> list;
-        switch (containerType) {
-            case SEQ:
-                list = new ArrayList<>();
-                break;
-            case SET:
-                list = new java.util.HashSet<>();
-                break;
-            case SORTED_SET:
-                list = new java.util.TreeSet<>();
-                break;
-            default:
-                throw new RuntimeException();
-        }
-        list.add(i);
-        return list;
-    }
-
     // -- apply
 
     @Test
@@ -376,6 +333,20 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @Test(expected = NoSuchElementException.class)
     public void shouldApplyNonExistingKey() {
         emptyIntInt().put(1, 2).apply(3);
+    }
+
+    // -- biMap
+
+    @Test
+    public void shouldBiMapEmpty() {
+        assertThat(emptyInt().bimap(i -> i + 1, o -> o)).isEqualTo(io.vavr.collection.Vector.empty());
+    }
+
+    @Test
+    public void shouldBiMapNonEmpty() {
+        final Seq<Tuple2<Integer, String>> expected = Stream.of(Tuple.of(2, "1!"), Tuple.of(3, "2!"));
+        final Seq<Tuple2<Integer, String>> actual = emptyInt().put(1, "1").put(2, "2").bimap(i -> i + 1, s -> s + "!").toStream();
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- contains
@@ -404,14 +375,12 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(testee.contains(Tuple.of("one", 1))).isTrue();
     }
 
-    // -- PartialFunction
+    // -- distinct
 
-    @Test
-    public void shouldImplementPartialFunction() {
-        PartialFunction<Integer, Traversable<String>> f = mapOf(1, "1");
-        assertThat(f.isDefinedAt(1)).isTrue();
-        assertThat(f.apply(1).contains("1")).isTrue();
-        assertThat(f.isDefinedAt(2)).isFalse();
+    @Override
+    public void shouldComputeDistinctOfNonEmptyTraversable() {
+        final Multimap<Integer, Object> testee = this.<Integer, Object> emptyMap().put(1, 1).put(2, 2).put(3, 3);
+        assertThat(testee.distinct()).isEqualTo(testee);
     }
 
     // -- equality
@@ -437,6 +406,50 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(empty().equals(TreeSet.empty())).isFalse();
     }
 
+
+    @Test
+    public void shouldIgnoreOrderOfEntriesWhenComparingForEquality() {
+        final Multimap<?, ?> map1 = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
+        final Multimap<?, ?> map2 = emptyInt().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
+        assertThat(map1).isEqualTo(map2);
+    }
+
+    @Test
+    public void shouldHoldEqualsElements() {
+        Multimap<Integer, String> multimap = emptyMap();
+        multimap = multimap.put(1, "a").put(1, "b").put(1, "b");
+        if (containerType == Multimap.ContainerType.SEQ) {
+            assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b), (1, b))");
+        } else {
+            assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b))");
+        }
+    }
+
+    // -- filter
+
+    @Test
+    public void shouldBiFilterWork() throws Exception {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Multimap<Integer, String> dst = src.filter((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(2, "2").put(4, "4").put(6, "6").put(6, "10").put(8, "8").put(8, "12"));
+    }
+
+    @Test
+    public void shouldKeyFilterWork() throws Exception {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Multimap<Integer, String> dst = src.filterKeys(k -> k % 2 == 0);
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(0, "a").put(2, "2").put(2, "c").put(4, "4").put(4, "e").put(6, "6").put(6, "10").put(8, "8").put(8, "12"));
+    }
+
+    @Test
+    public void shouldValueFilterWork() throws Exception {
+        final Multimap<Integer, String> src = mapTabulate(10, n -> Tuple.of(n % 5, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Multimap<Integer, String> dst = src.filterValues(v -> isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(0, "5").put(1, "1").put(1, "6").put(2, "2").put(2, "7").put(3, "3").put(3, "8").put(4, "4").put(4, "9"));
+    }
+
     // -- flatMap
 
     @SuppressWarnings("unchecked")
@@ -451,6 +464,59 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- foldRight
+
+    @Override
+    public void shouldFoldRightNonNil() {
+        final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
+        final io.vavr.collection.List<String> expected = io.vavr.collection.List.of('a', 'b', 'c').permutations().map(io.vavr.collection.List::mkString);
+        assertThat(actual).isIn(expected);
+    }
+
+    // -- forEach
+
+    @Test
+    public void forEachByKeyValue() {
+        final Multimap<Integer, Integer> map = mapOf(1, 2).put(3, 4);
+        final int[] result = { 0 };
+        map.forEach((k, v) -> result[0] += k + v);
+        assertThat(result[0]).isEqualTo(10);
+    }
+
+    @Test
+    public void forEachByTuple() {
+        final Multimap<Integer, Integer> map = mapOf(1, 2).put(3, 4);
+        final int[] result = { 0 };
+        map.forEach(t -> result[0] += t._1 + t._2);
+        assertThat(result[0]).isEqualTo(10);
+    }
+
+    // -- getOrElse
+
+    @Test
+    public void shouldReturnDefaultValue() {
+        final Multimap<String, String> map = mapOf("1", "a").put("2", "b");
+        assertThat(map.getOrElse("3", io.vavr.collection.List.of("3"))).isEqualTo(io.vavr.collection.List.of("3"));
+    }
+
+    // -- groupBy
+
+    @Override
+    @Test
+    public void shouldNonNilGroupByIdentity() {
+        final Map<?, ?> actual = of('a', 'b', 'c').groupBy(Function.identity());
+        final Map<?, ?> expected = LinkedHashMap.empty().put('a', mapOf(0, 'a')).put('b', mapOf(1,'b'))
+                .put('c', mapOf(2,'c'));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- iterator
+
+    @Test
+    public void shouldReturnListWithMappedValues() {
+        assertThat(emptyIntInt().put(1, 1).put(2, 2).iterator((a, b) -> a + b)).isEqualTo(io.vavr.collection.List.of(2, 4));
+    }
+
     // -- keySet
 
     @SuppressWarnings("unchecked")
@@ -458,20 +524,6 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public void shouldReturnsKeySet() {
         final Set<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).keySet();
         assertThat(actual).isEqualTo(io.vavr.collection.HashSet.of(1, 2, 3));
-    }
-
-    // -- biMap
-
-    @Test
-    public void shouldBiMapEmpty() {
-        assertThat(emptyInt().bimap(i -> i + 1, o -> o)).isEqualTo(io.vavr.collection.Vector.empty());
-    }
-
-    @Test
-    public void shouldBiMapNonEmpty() {
-        final Seq<Tuple2<Integer, String>> expected = Stream.of(Tuple.of(2, "1!"), Tuple.of(3, "2!"));
-        final Seq<Tuple2<Integer, String>> actual = emptyInt().put(1, "1").put(2, "2").bimap(i -> i + 1, s -> s + "!").toStream();
-        assertThat(actual).isEqualTo(expected);
     }
 
     // -- map
@@ -534,24 +586,61 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         }
     }
 
+    // -- mapFill
+
+    @SuppressWarnings("unchecked")
     @Test
-    public void shouldReturnEmptySetWhenAskedForTuple2SetOfAnEmptyMap() {
-        assertThat(emptyMap().toSet()).isEqualTo(io.vavr.collection.HashSet.empty());
+    public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
+        final LinkedList<Integer> ints = new LinkedList<>(asList(0, 0, 1, 1, 2, 2));
+        final Supplier<Tuple2<Long, Float>> s = () -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
+        final Multimap<Long, Float> actual = mapFill(3, s);
+        assertThat(actual).isEqualTo(mapOfTuples(new Tuple2<>(0L, 0f), new Tuple2<>(1L, 1f), new Tuple2<>(2L, 2f)));
     }
 
     @Test
-    public void shouldReturnTuple2SetOfANonEmptyMap() {
-        assertThat(emptyInt().put(1, "1").put(2, "2").toSet()).isEqualTo(io.vavr.collection.HashSet.of(Tuple.of(1, "1"), Tuple.of(2, "2")));
+    public void shouldFillTheSeqWith0Elements() {
+        assertThat(mapFill(0, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
     }
+
+    @Test
+    public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
+        assertThat(mapFill(-1, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
+    }
+
+    // -- mapTabulate
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldTabulateTheSeq() {
+        final Function<Number, Tuple2<Long, Float>> f = i -> new Tuple2<>(i.longValue(), i.floatValue());
+        final Multimap<Long, Float> map = mapTabulate(3, f);
+        assertThat(map).isEqualTo(mapOfTuples(new Tuple2<>(0L, 0f), new Tuple2<>(1L, 1f), new Tuple2<>(2L, 2f)));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
+        final LinkedList<Integer> ints = new LinkedList<>(asList(0, 0, 1, 1, 2, 2));
+        final Function<Integer, Tuple2<Long, Float>> f = i -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
+        final Multimap<Long, Float> map = mapTabulate(3, f);
+        assertThat(map).isEqualTo(mapOfTuples(new Tuple2<>(0L, 0f), new Tuple2<>(1L, 1f), new Tuple2<>(2L, 2f)));
+    }
+
+    @Test
+    public void shouldTabulateTheSeqWith0Elements() {
+        assertThat(mapTabulate(0, i -> new Tuple2<>(i, i))).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTabulateTheSeqWith0ElementsWhenNIsNegative() {
+        assertThat(mapTabulate(-1, i -> new Tuple2<>(i, i))).isEqualTo(empty());
+    }
+
+    // -- mapValues
 
     @Test
     public void shouldReturnModifiedValuesMap() {
         assertThat(emptyIntString().put(1, "1").put(2, "2").mapValues(Integer::parseInt)).isEqualTo(emptyIntInt().put(1, 1).put(2, 2));
-    }
-
-    @Test
-    public void shouldReturnListWithMappedValues() {
-        assertThat(emptyIntInt().put(1, 1).put(2, 2).iterator((a, b) -> a + b)).isEqualTo(io.vavr.collection.List.of(2, 4));
     }
 
     // -- merge
@@ -601,13 +690,15 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(empty().orElse(supplier)).isEqualTo(other);
     }
 
-    // -- equality
+    // -- partition
 
+    @Override
     @Test
-    public void shouldIgnoreOrderOfEntriesWhenComparingForEquality() {
-        final Multimap<?, ?> map1 = emptyInt().put(1, 'a').put(2, 'b').put(3, 'c');
-        final Multimap<?, ?> map2 = emptyInt().put(3, 'c').put(2, 'b').put(1, 'a').remove(2).put(2, 'b');
-        assertThat(map1).isEqualTo(map2);
+    @SuppressWarnings("unchecked")
+    public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
+        assertThat(of(1, 2, 3, 4).partition(i -> i % 2 != 0))
+                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0, 1), Tuple.of(2, 3)),
+                        mapOfTuples(Tuple.of(1, 2), Tuple.of(3, 4))));
     }
 
     // -- put
@@ -645,6 +736,31 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(src.removeAll(io.vavr.collection.List.empty())).isSameAs(src);
     }
 
+    // -- remove by filter
+
+    @Test
+    public void shouldBiRemoveWork() throws Exception {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Multimap<Integer, String> dst = src.removeAll((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "1").put(1, "b").put(2, "c").put(3, "3").put(3, "d").put(4, "e").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
+    }
+
+    @Test
+    public void shouldKeyRemoveWork() throws Exception {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Multimap<Integer, String> dst = src.removeKeys(k -> k % 2 == 0);
+        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(1, "b").put(3, "3").put(3, "d").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
+    }
+
+    @Test
+    public void shouldValueRemoveWork() throws Exception {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Multimap<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "b").put(2, "c").put(3, "d").put(4, "e").put(5, "f"));
+    }
+
     // -- replaceValue
 
     @Test
@@ -670,7 +786,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // - replace
+    // -- replace
 
     @Test
     public void shouldReplaceCurrentValueForExistingKeyAndEqualOldValue() {
@@ -710,6 +826,106 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         final Multimap<Integer, String> actual = map.replaceAll((integer, s) -> s + integer);
         final Multimap<Integer, String> expected = mapOf(1, "a1").put(2, "b2").put(2, "c2");
         assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- span
+
+    @Override
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldSpanNonNil() {
+        assertThat(of(0, 1, 2, 3).span(i -> i < 2))
+                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0, 0), Tuple.of(1, 1)),
+                        mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 3))));
+    }
+
+    @Override
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldSpanAndNotTruncate() {
+        assertThat(of(1, 1, 2, 2, 3, 3).span(x -> x % 2 == 1))
+                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0,1), Tuple.of(1, 1)),
+                        mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 2),
+                                Tuple.of(4, 3), Tuple.of(5, 3))));
+        assertThat(of(1, 1, 2, 2, 4, 4).span(x -> x == 1))
+                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0,1), Tuple.of(1, 1)),
+                        mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 2),
+                                Tuple.of(4, 4), Tuple.of(5, 4))));
+    }
+
+    // -- spliterator
+
+    @Test
+    public void shouldHaveSizedSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    }
+
+    @Test
+    public void shouldHaveDistinctSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isTrue();
+    }
+
+    @Test
+    public void shouldReturnExactSizeIfKnownOfSpliterator() {
+        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    }
+
+    // -- tailOption
+
+    @Override
+    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
+        assertThat(of(1, 2, 3).tailOption().get()).isEqualTo(Option.some(of(2, 3)).get());
+    }
+
+    // -- toJavaMap
+
+    @Test
+    public void shouldConvertToJavaMap() {
+        final Multimap<String, Integer> vavr = mapOfPairs("1", 1, "2", 2, "3", 3);
+        final java.util.Map<String, java.util.Collection<Integer>> java = javaEmptyMap();
+        java.put("1", javaListOf(1));
+        java.put("2", javaListOf(2));
+        java.put("3", javaListOf(3));
+        assertThat(vavr.toJavaMap()).isEqualTo(java);
+    }
+
+    private java.util.Collection<Integer> javaListOf(Integer i) {
+        final java.util.Collection<Integer> list;
+        switch (containerType) {
+            case SEQ:
+                list = new ArrayList<>();
+                break;
+            case SET:
+                list = new java.util.HashSet<>();
+                break;
+            case SORTED_SET:
+                list = new java.util.TreeSet<>();
+                break;
+            default:
+                throw new RuntimeException();
+        }
+        list.add(i);
+        return list;
+    }
+
+    // -- toSet
+
+    @Test
+    public void shouldReturnEmptySetWhenAskedForTuple2SetOfAnEmptyMap() {
+        assertThat(emptyMap().toSet()).isEqualTo(io.vavr.collection.HashSet.empty());
+    }
+
+    @Test
+    public void shouldReturnTuple2SetOfANonEmptyMap() {
+        assertThat(emptyInt().put(1, "1").put(2, "2").toSet()).isEqualTo(io.vavr.collection.HashSet.of(Tuple.of(1, "1"), Tuple.of(2, "2")));
+    }
+
+    // -- toString
+
+    @Test
+    public void shouldMakeString() {
+        assertThat(emptyMap().toString()).isEqualTo(className() + "()");
+        assertThat(emptyIntInt().put(1, 2).toString()).isEqualTo(className() + "(" + Tuple.of(1, 2) + ")");
     }
 
     // -- transform
@@ -909,167 +1125,22 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         emptyMap().zipAll(null, null, null);
     }
 
-    // -- special cases
+    // -- PartialFunction
 
-    @Override
-    public void shouldComputeDistinctOfNonEmptyTraversable() {
-        final Multimap<Integer, Object> testee = this.<Integer, Object> emptyMap().put(1, 1).put(2, 2).put(3, 3);
-        assertThat(testee.distinct()).isEqualTo(testee);
+    @Test
+    public void shouldImplementPartialFunction() {
+        PartialFunction<Integer, Traversable<String>> f = mapOf(1, "1");
+        assertThat(f.isDefinedAt(1)).isTrue();
+        assertThat(f.apply(1).contains("1")).isTrue();
+        assertThat(f.isDefinedAt(2)).isFalse();
     }
 
-    @Override
-    public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
-        assertThat(of(1, 2, 3).tailOption().get()).isEqualTo(Option.some(of(2, 3)).get());
-    }
+    // -- disabled super tests
 
     @Override
     public void shouldPreserveSingletonInstanceOnDeserialization() {
         // The empty Multimap encapsulates a container type and map type and therefore cannot be a singleton
     }
-
-    @Override
-    public void shouldFoldRightNonNil() {
-        final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
-        final io.vavr.collection.List<String> expected = io.vavr.collection.List.of('a', 'b', 'c').permutations().map(io.vavr.collection.List::mkString);
-        assertThat(actual).isIn(expected);
-    }
-
-    // -- forEach
-
-    @Test
-    public void forEachByKeyValue() {
-        final Multimap<Integer, Integer> map = mapOf(1, 2).put(3, 4);
-        final int[] result = { 0 };
-        map.forEach((k, v) -> result[0] += k + v);
-        assertThat(result[0]).isEqualTo(10);
-    }
-
-    @Test
-    public void forEachByTuple() {
-        final Multimap<Integer, Integer> map = mapOf(1, 2).put(3, 4);
-        final int[] result = { 0 };
-        map.forEach(t -> result[0] += t._1 + t._2);
-        assertThat(result[0]).isEqualTo(10);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldTabulateTheSeq() {
-        final Function<Number, Tuple2<Long, Float>> f = i -> new Tuple2<>(i.longValue(), i.floatValue());
-        final Multimap<Long, Float> map = mapTabulate(3, f);
-        assertThat(map).isEqualTo(mapOfTuples(new Tuple2<>(0L, 0f), new Tuple2<>(1L, 1f), new Tuple2<>(2L, 2f)));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldTabulateTheSeqCallingTheFunctionInTheRightOrder() {
-        final LinkedList<Integer> ints = new LinkedList<>(asList(0, 0, 1, 1, 2, 2));
-        final Function<Integer, Tuple2<Long, Float>> f = i -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
-        final Multimap<Long, Float> map = mapTabulate(3, f);
-        assertThat(map).isEqualTo(mapOfTuples(new Tuple2<>(0L, 0f), new Tuple2<>(1L, 1f), new Tuple2<>(2L, 2f)));
-    }
-
-    @Test
-    public void shouldTabulateTheSeqWith0Elements() {
-        assertThat(mapTabulate(0, i -> new Tuple2<>(i, i))).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldTabulateTheSeqWith0ElementsWhenNIsNegative() {
-        assertThat(mapTabulate(-1, i -> new Tuple2<>(i, i))).isEqualTo(empty());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
-        final LinkedList<Integer> ints = new LinkedList<>(asList(0, 0, 1, 1, 2, 2));
-        final Supplier<Tuple2<Long, Float>> s = () -> new Tuple2<>(ints.remove().longValue(), ints.remove().floatValue());
-        final Multimap<Long, Float> actual = mapFill(3, s);
-        assertThat(actual).isEqualTo(mapOfTuples(new Tuple2<>(0L, 0f), new Tuple2<>(1L, 1f), new Tuple2<>(2L, 2f)));
-    }
-
-    @Test
-    public void shouldFillTheSeqWith0Elements() {
-        assertThat(mapFill(0, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
-        assertThat(mapFill(-1, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
-    }
-
-    /////////////////////////////////////////////////////////////////
-
-    @Test
-    public void shouldHoldEqualsElements() {
-        Multimap<Integer, String> multimap = emptyMap();
-        multimap = multimap.put(1, "a").put(1, "b").put(1, "b");
-        if (containerType == Multimap.ContainerType.SEQ) {
-            assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b), (1, b))");
-        } else {
-            assertThat(multimap.toString()).isEqualTo(className() + "((1, a), (1, b))");
-        }
-    }
-
-    // -- filter
-
-    @Test
-    public void shouldBiFilterWork() throws Exception {
-        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Multimap<Integer, String> dst = src.filter((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(2, "2").put(4, "4").put(6, "6").put(6, "10").put(8, "8").put(8, "12"));
-    }
-
-    @Test
-    public void shouldKeyFilterWork() throws Exception {
-        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
-        final Multimap<Integer, String> dst = src.filterKeys(k -> k % 2 == 0);
-        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(0, "a").put(2, "2").put(2, "c").put(4, "4").put(4, "e").put(6, "6").put(6, "10").put(8, "8").put(8, "12"));
-    }
-
-    @Test
-    public void shouldValueFilterWork() throws Exception {
-        final Multimap<Integer, String> src = mapTabulate(10, n -> Tuple.of(n % 5, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Multimap<Integer, String> dst = src.filterValues(v -> isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(0, "5").put(1, "1").put(1, "6").put(2, "2").put(2, "7").put(3, "3").put(3, "8").put(4, "4").put(4, "9"));
-    }
-
-    // -- remove by filter
-
-    @Test
-    public void shouldBiRemoveWork() throws Exception {
-        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Multimap<Integer, String> dst = src.removeAll((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "1").put(1, "b").put(2, "c").put(3, "3").put(3, "d").put(4, "e").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
-    }
-
-    @Test
-    public void shouldKeyRemoveWork() throws Exception {
-        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
-        final Multimap<Integer, String> dst = src.removeKeys(k -> k % 2 == 0);
-        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(1, "b").put(3, "3").put(3, "d").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
-    }
-
-    @Test
-    public void shouldValueRemoveWork() throws Exception {
-        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
-        final Pattern isDigits = Pattern.compile("^\\d+$");
-        final Multimap<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
-        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "b").put(2, "c").put(3, "d").put(4, "e").put(5, "f"));
-    }
-
-    // -- getOrElse
-
-    @Test
-    public void shouldReturnDefaultValue() {
-        final Multimap<String, String> map = mapOf("1", "a").put("2", "b");
-        assertThat(map.getOrElse("3", io.vavr.collection.List.of("3"))).isEqualTo(io.vavr.collection.List.of("3"));
-    }
-
-    // -- disabled super tests
 
     @Override
     @Test
@@ -1085,61 +1156,11 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         //   java.lang.NullPointerException at io.vavr.collection.Comparators.lambda$naturalComparator
     }
 
-    // -- spliterator
-
-    @Test
-    public void shouldHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
-    }
-
-    @Test
-    public void shouldHaveDistinctSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.DISTINCT)).isTrue();
-    }
-
-    @Test
-    public void shouldReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
-    }
-
     @Override
     @Test
-    @SuppressWarnings("unchecked")
-    public void shouldPartitionIntsInOddAndEvenHavingOddAndEvenNumbers() {
-        assertThat(of(1, 2, 3, 4).partition(i -> i % 2 != 0))
-                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0, 1), Tuple.of(2, 3)),
-                        mapOfTuples(Tuple.of(1, 2), Tuple.of(3, 4))));
+    public void shouldCollectUsingMultimap() {
+        // this Traversable test is not suited for Multimaps:
+        //   java.lang.ClassCastException: io.vavr.collection.List$Cons cannot be cast to java.lang.Comparable
     }
 
-    @Override
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldSpanNonNil() {
-        assertThat(of(0, 1, 2, 3).span(i -> i < 2))
-                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0, 0), Tuple.of(1, 1)),
-                        mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 3))));
-    }
-
-    @Override
-    @Test
-    @SuppressWarnings("unchecked")
-    public void shouldSpanAndNotTruncate() {
-        assertThat(of(1, 1, 2, 2, 3, 3).span(x -> x % 2 == 1))
-                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0,1), Tuple.of(1, 1)),
-                        mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 2),
-                                Tuple.of(4, 3), Tuple.of(5, 3))));
-        assertThat(of(1, 1, 2, 2, 4, 4).span(x -> x == 1))
-                .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0,1), Tuple.of(1, 1)),
-                        mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 2),
-                                Tuple.of(4, 4), Tuple.of(5, 4))));
-    }
-
-    @Override
-    @Test
-    public void shouldNonNilGroupByIdentity() {
-        final Map<?, ?> actual = of('a', 'b', 'c').groupBy(Function.identity());
-        final Map<?, ?> expected = LinkedHashMap.empty().put('a', mapOf(0, 'a')).put('b', mapOf(1,'b'))
-                .put('c', mapOf(2,'c'));
-        assertThat(actual).isEqualTo(expected);
-    }
 }

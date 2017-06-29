@@ -37,6 +37,21 @@ public interface CheckedFunction3<T1, T2, T3, R> extends Lambda<R> {
     long serialVersionUID = 1L;
 
     /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param <T1> generic parameter type 1 of the resulting function
+     * @param <T2> generic parameter type 2 of the resulting function
+     * @param <T3> generic parameter type 3 of the resulting function
+     * @param <R> the result type
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <T1, T2, T3, R> CheckedFunction3<T1, T2, T3, R> constant(R value) {
+        return (t1, t2, t3) -> value;
+    }
+
+    /**
      * Creates a {@code CheckedFunction3} based on
      * <ul>
      * <li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method reference</a></li>
@@ -157,21 +172,6 @@ public interface CheckedFunction3<T1, T2, T3, R> extends Lambda<R> {
     @Override
     default int arity() {
         return 3;
-    }
-
-    /**
-     * Returns a function that always returns the constant
-     * value that you give in parameter.
-     *
-     * @param <T1> generic parameter type 1 of the resulting function
-     * @param <T2> generic parameter type 2 of the resulting function
-     * @param <T3> generic parameter type 3 of the resulting function
-     * @param <R> the result type
-     * @param value the value to be returned
-     * @return a function always returning the given value
-     */
-    static <T1, T2, T3, R> CheckedFunction3<T1, T2, T3, R> constant(R value) {
-        return (t1, t2, t3) -> value;
     }
 
     @Override
