@@ -74,7 +74,7 @@ public class IteratorBenchmark {
     @State(Scope.Benchmark)
     public static class Concat {
 
-        @Param({ "10", "20" /*, "100", "1000"*/ })
+        @Param({ "10", "20" , "100", "1000" })
         private int size;
 
         @Benchmark

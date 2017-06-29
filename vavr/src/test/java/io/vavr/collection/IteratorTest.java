@@ -267,6 +267,17 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(concat(List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(1, 2, 3));
     }
 
+    @Test
+    public void shouldConcatNetedConcatIterators() {
+        assertThat(concat(List.of(1, 2), List.of(3), concat(List.of(4, 5)))).isEqualTo(Iterator.of(1, 2, 3, 4, 5));
+        assertThat(concat(concat(List.of(4, 5)), List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(4, 5, 1, 2, 3));
+    }
+
+    @Test
+    public void shouldConcatToConcatIterator() {
+        assertThat(concat(List.of(1, 2)).concat(List.of(3).iterator())).isEqualTo(Iterator.of(1, 2, 3));
+    }
+
     // -- concat
 
     @Test
@@ -451,6 +462,7 @@ public class IteratorTest extends AbstractTraversableTest {
         multipleHasNext(() -> Iterator.ofAll(Iterator.of(1, 2, 3).toJavaList().iterator()));
         multipleHasNext(() -> Iterator.ofAll(Iterator.of(1, 2, 3).toJavaList()));
 
+        multipleHasNext(() -> Iterator.concat(List.of(Iterator.empty(), Iterator.of(1, 2, 3))));
         multipleHasNext(() -> Iterator.concat(List.of(Iterator.of(1, 2, 3), Iterator.of(1, 2, 3))));
         multipleHasNext(() -> Iterator.concat(Iterator.of(1, 2, 3), Iterator.of(1, 2, 3)));
         multipleHasNext(() -> Iterator.continually(() -> 1), 5);
