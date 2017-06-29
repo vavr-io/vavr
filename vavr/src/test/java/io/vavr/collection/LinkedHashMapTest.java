@@ -31,6 +31,16 @@ public class LinkedHashMapTest extends AbstractMapTest {
     }
 
     @Override
+    protected <K extends Comparable<? super K>, V, T extends V> Collector<T, ArrayList<T>, ? extends Map<K, V>> collectorWithMapper(Function<? super T, ? extends K> keyMapper) {
+        return LinkedHashMap.collector(keyMapper);
+    }
+
+    @Override
+    protected <K extends Comparable<? super K>, V, T> Collector<T, ArrayList<T>, ? extends Map<K, V>> collectorWithMappers(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        return LinkedHashMap.collector(keyMapper, valueMapper);
+    }
+
+    @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
         return LinkedHashMap.collector();
     }

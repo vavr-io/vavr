@@ -66,6 +66,87 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link TreeMap}.
+     * <p>
+     * The natural comparator is used to compare TreeMap keys.
+     *
+     * @param keyMapper The key mapper
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param <T> Initial {@link java.util.stream.Stream} elements type
+     * @return A {@link TreeMap} Collector.
+     */
+    public static <K extends Comparable<? super K>, V, T extends V> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
+            Function<? super T, ? extends K> keyMapper) {
+        Objects.requireNonNull(keyMapper, "key comparator is null");
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return createCollector(EntryComparator.natural(), keyMapper, v -> v);
+    }
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link TreeMap}.
+     * <p>
+     * The natural comparator is used to compare TreeMap keys.
+     *
+     * @param keyMapper The key mapper
+     * @param valueMapper The value mapper
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param <T> Initial {@link java.util.stream.Stream} elements type
+     * @return A {@link TreeMap} Collector.
+     */
+    public static <K extends Comparable<? super K>, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(keyMapper, "key comparator is null");
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return createCollector(EntryComparator.natural(), keyMapper, valueMapper);
+    }
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link TreeMap}.
+     *
+     * @param keyMapper The key mapper
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param <T> Initial {@link java.util.stream.Stream} elements type
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A {@link TreeMap} Collector.
+     */
+    public static <K, V, T extends V> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
+            Comparator<? super K> keyComparator,
+            Function<? super T, ? extends K> keyMapper) {
+        Objects.requireNonNull(keyMapper, "key comparator is null");
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return createCollector(EntryComparator.of(keyComparator), keyMapper, v -> v);
+    }
+
+    /**
+     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link TreeMap}.
+     *
+     * @param keyMapper The key mapper
+     * @param valueMapper The value mapper
+     * @param <K> The key type
+     * @param <V> The value type
+     * @param <T> Initial {@link java.util.stream.Stream} elements type
+     * @param keyComparator The comparator used to sort the entries by their key.
+     * @return A {@link TreeMap} Collector.
+     */
+    public static <K, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> collector(
+            Comparator<? super K> keyComparator,
+            Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        Objects.requireNonNull(keyMapper, "key comparator is null");
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return createCollector(EntryComparator.of(keyComparator), keyMapper, valueMapper);
+    }
+
+    /**
      * Returns the empty TreeMap. The underlying key comparator is the natural comparator of K.
      *
      * @param <K> The key type
@@ -1311,6 +1392,20 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
             return left;
         };
         final Function<ArrayList<Tuple2<K, V>>, TreeMap<K, V>> finisher = list -> createTreeMap(entryComparator, list);
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
+    private static <K, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> createCollector(
+            EntryComparator<K, V> entryComparator,
+            Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+        final Supplier<ArrayList<T>> supplier = ArrayList::new;
+        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
+        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
+            left.addAll(right);
+            return left;
+        };
+        final Function<ArrayList<T>, TreeMap<K, V>> finisher = arr -> createTreeMap(entryComparator, Iterator.ofAll(arr)
+                .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t))));
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 

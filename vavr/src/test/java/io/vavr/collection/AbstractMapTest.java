@@ -131,6 +131,12 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     protected abstract <T1 extends Comparable<? super T1>, T2> Map<T1, T2> emptyMap();
 
+    protected abstract <K extends Comparable<? super K>, V, T extends V> Collector<T, ArrayList<T>, ? extends Map<K, V>> collectorWithMapper(
+            Function<? super T,? extends K> keyMapper);
+
+    protected abstract <K extends Comparable<? super K>, V, T> Collector<T, ArrayList<T>, ? extends Map<K, V>> collectorWithMappers(
+            Function<? super T,? extends K> keyMapper, Function<? super T, ? extends V> valueMapper);
+
     protected boolean emptyMapShouldBeSingleton() {
         return true;
     }
@@ -281,6 +287,20 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<Number, Number> number2numberMap = Map.narrow(int2doubleMap);
         final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);
+    }
+
+    // -- mappers collector
+
+    @Test
+    public void shouldCollectWithKeyMapper() {
+        Map<Integer, Integer> map = java.util.stream.Stream.of(1, 2, 3).collect(collectorWithMapper(i -> i * 2));
+        assertThat(map).isEqualTo(mapOf(2, 1, 4, 2, 6, 3));
+    }
+
+    @Test
+    public void shouldCollectWithKeyValueMappers() {
+        Map<Integer, String> map = java.util.stream.Stream.of(1, 2, 3).collect(collectorWithMappers(i -> i * 2, String::valueOf));
+        assertThat(map).isEqualTo(mapOf(2, "1", 4, "2", 6, "3"));
     }
 
     // -- construction
