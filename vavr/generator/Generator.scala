@@ -215,20 +215,6 @@ def generateMainClasses(): Unit = {
             return $mapType.empty();
         }
 
-        /$javadoc
-         * Alias for {@link $mapType#ofEntries(Tuple2...)}
-         *
-         * @param <K>     The key type.
-         * @param <V>     The value type.
-         * @param entries Map entries.
-         * @return A new {@link $mapType} instance containing the given entries
-         */
-        @SuppressWarnings("varargs")
-        @SafeVarargs
-        public static <K, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
-            return $mapType.ofEntries(entries);
-        }
-
         ${(1 to VARARGS).gen(i => {
           xs"""
             /$javadoc
@@ -282,47 +268,6 @@ def generateMainClasses(): Unit = {
          */
         public static <K, V> $returnType<K, V> $name(Comparator<? super K> keyComparator, K key, V value) {
             return $mapType.of(keyComparator, key, value);
-        }
-
-        /$javadoc
-         * Alias for {@link $mapType#ofEntries(Tuple2...)}
-         *
-         * @param <K>     The key type.
-         * @param <V>     The value type.
-         * @param entries Map entries.
-         * @return A new {@link $mapType} instance containing the given entries
-         */
-        @SuppressWarnings("varargs")
-        @SafeVarargs
-        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
-            return $mapType.ofEntries(entries);
-        }
-
-        /$javadoc
-         * Alias for {@link $mapType#ofEntries($JavaComparatorType, Tuple2...)}
-         *
-         * @param <K>           The key type.
-         * @param <V>           The value type.
-         * @param keyComparator The comparator used to sort the entries by their key
-         * @param entries       Map entries.
-         * @return A new {@link $mapType} instance containing the given entry
-         */
-        @SuppressWarnings("varargs")
-        @SafeVarargs
-        public static <K, V> $returnType<K, V> $name($JavaComparatorType<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
-            return $mapType.ofEntries(keyComparator, entries);
-        }
-
-        /$javadoc
-         * Alias for {@link $mapType#ofAll($JavaMapType)}
-         *
-         * @param <K> The key type.
-         * @param <V> The value type.
-         * @param map A map entry.
-         * @return A new {@link $mapType} instance containing the given map
-         */
-        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
-            return $mapType.ofAll(map);
         }
 
         ${(1 to VARARGS).gen(i => xs"""
@@ -2527,8 +2472,6 @@ def generateTestClasses(): Unit = {
 
           ${genMediumAliasTest(s"${func}FromSingle", func, "1, '1'")}
 
-          ${genMediumAliasTest(s"${func}FromTuples", func, "Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3')")}
-
           ${genMediumAliasTest(s"${func}FromPairs", func, "1, '1', 2, '2', 3, '3'")}
 
           ${(1 to VARARGS).gen(i => {
@@ -2647,8 +2590,6 @@ def generateTestClasses(): Unit = {
           ${genMediumAliasTest("EmptySortedMapFromComparator", "SortedMap", "Integer::compareTo")}
 
           ${genMediumAliasTest("SortedMapFromSingleAndComparator", "SortedMap", s"($JavaComparatorType<Integer>)Integer::compareTo, 1, '1'")}
-
-          ${genMediumAliasTest("SortedMapFromTuplesAndComparator", "SortedMap", s"($JavaComparatorType<Integer>)Integer::compareTo, Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3')")}
         """
       }
 

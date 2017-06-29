@@ -1484,20 +1484,6 @@ public final class API {
     }
 
     /**
-     * Alias for {@link HashMap#ofEntries(Tuple2...)}
-     *
-     * @param <K>     The key type.
-     * @param <V>     The value type.
-     * @param entries Map entries.
-     * @return A new {@link HashMap} instance containing the given entries
-     */
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    public static <K, V> Map<K, V> Map(Tuple2<? extends K, ? extends V>... entries) {
-        return HashMap.ofEntries(entries);
-    }
-
-    /**
      * Alias for {@link HashMap#of(Object, Object)}
      *
      * @param <K> The key type.
@@ -1727,20 +1713,6 @@ public final class API {
      */
     public static <K, V> Map<K, V> LinkedMap() {
         return LinkedHashMap.empty();
-    }
-
-    /**
-     * Alias for {@link LinkedHashMap#ofEntries(Tuple2...)}
-     *
-     * @param <K>     The key type.
-     * @param <V>     The value type.
-     * @param entries Map entries.
-     * @return A new {@link LinkedHashMap} instance containing the given entries
-     */
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    public static <K, V> Map<K, V> LinkedMap(Tuple2<? extends K, ? extends V>... entries) {
-        return LinkedHashMap.ofEntries(entries);
     }
 
     /**
@@ -1997,47 +1969,6 @@ public final class API {
      */
     public static <K, V> SortedMap<K, V> SortedMap(Comparator<? super K> keyComparator, K key, V value) {
         return TreeMap.of(keyComparator, key, value);
-    }
-
-    /**
-     * Alias for {@link TreeMap#ofEntries(Tuple2...)}
-     *
-     * @param <K>     The key type.
-     * @param <V>     The value type.
-     * @param entries Map entries.
-     * @return A new {@link TreeMap} instance containing the given entries
-     */
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(Tuple2<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(entries);
-    }
-
-    /**
-     * Alias for {@link TreeMap#ofEntries(Comparator, Tuple2...)}
-     *
-     * @param <K>           The key type.
-     * @param <V>           The value type.
-     * @param keyComparator The comparator used to sort the entries by their key
-     * @param entries       Map entries.
-     * @return A new {@link TreeMap} instance containing the given entry
-     */
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    public static <K, V> SortedMap<K, V> SortedMap(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
-        return TreeMap.ofEntries(keyComparator, entries);
-    }
-
-    /**
-     * Alias for {@link TreeMap#ofAll(java.util.Map)}
-     *
-     * @param <K> The key type.
-     * @param <V> The value type.
-     * @param map A map entry.
-     * @return A new {@link TreeMap} instance containing the given map
-     */
-    public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(java.util.Map<? extends K, ? extends V> map) {
-        return TreeMap.ofAll(map);
     }
 
     /**
