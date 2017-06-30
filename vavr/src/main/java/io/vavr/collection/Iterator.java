@@ -1665,8 +1665,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (isEmpty()) {
             throw new NoSuchElementException("reduceLeft on Nil");
         } else {
-            final Stream<T> stream = Stream.ofAll(this);
-            return stream.tail().foldLeft(stream.head(), op);
+            T xs = next();
+            while (hasNext()) {
+                xs = op.apply(xs, next());
+            }
+            return xs;
         }
     }
 

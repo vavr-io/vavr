@@ -1065,11 +1065,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     @Override
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
-        if (isEmpty()) {
-            throw new NoSuchElementException("reduceLeft on Nil");
-        } else {
-            return tail().foldLeft(head(), op);
-        }
+        return iterator().reduceLeft(op);
     }
 
     /**
