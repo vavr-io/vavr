@@ -126,7 +126,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static <T> Vector<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return io.vavr.collection.Collections.tabulate(n, f, empty(), Vector::of);
+        return ofAll(Iterator.tabulate(n, f));
     }
 
     /**
@@ -140,7 +140,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      */
     public static <T> Vector<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return io.vavr.collection.Collections.fill(n, s, empty(), Vector::of);
+        return ofAll(Iterator.fill(n, s));
     }
 
     /**

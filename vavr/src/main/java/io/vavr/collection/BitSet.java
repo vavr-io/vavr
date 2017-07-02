@@ -82,12 +82,12 @@ public interface BitSet<T> extends SortedSet<T> {
 
         public BitSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
             Objects.requireNonNull(f, "f is null");
-            return empty().addAll(Collections.tabulate(n, f));
+            return empty().addAll(Iterator.tabulate(n, f));
         }
 
         public BitSet<T> fill(int n, Supplier<? extends T> s) {
             Objects.requireNonNull(s, "s is null");
-            return empty().addAll(Collections.fill(n, s));
+            return empty().addAll(Iterator.fill(n, s));
         }
     }
 

@@ -424,7 +424,24 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return io.vavr.collection.Collections.tabulate(n, f);
+        if (n <= 0) {
+            return Iterator.empty();
+        } else {
+            return new AbstractIterator<T>() {
+
+                int i = 0;
+
+                @Override
+                public boolean hasNext() {
+                    return i < n;
+                }
+
+                @Override
+                protected T getNext() {
+                    return f.apply(i++);
+                }
+            };
+        }
     }
 
     /**
@@ -438,7 +455,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static <T> Iterator<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return io.vavr.collection.Collections.fill(n, s);
+        return tabulate(n, ignored -> s.get());
     }
 
     /**

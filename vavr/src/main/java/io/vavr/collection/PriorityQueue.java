@@ -250,7 +250,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     public static <T> PriorityQueue<T> tabulate(int size, Function<? super Integer, ? extends T> function) {
         Objects.requireNonNull(function, "function is null");
         final Comparator<? super T> comparator = Comparators.naturalComparator();
-        return io.vavr.collection.Collections.tabulate(size, function, empty(comparator), values -> ofAll(comparator, io.vavr.collection.List.of(values)));
+        return ofAll(comparator, Iterator.tabulate(size, function));
     }
 
     /**
@@ -267,7 +267,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     public static <T> PriorityQueue<T> fill(int size, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         final Comparator<? super T> comparator = Comparators.naturalComparator();
-        return io.vavr.collection.Collections.fill(size, supplier, empty(comparator), values -> ofAll(comparator, io.vavr.collection.List.of(values)));
+        return ofAll(comparator, Iterator.fill(size, supplier));
     }
 
     @Override

@@ -243,7 +243,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static <T> Array<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return io.vavr.collection.Collections.tabulate(n, f, empty(), Array::of);
+        return ofAll(Iterator.tabulate(n, f));
     }
 
     /**
@@ -257,7 +257,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     public static <T> Array<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return io.vavr.collection.Collections.fill(n, s, empty(), Array::of);
+        return ofAll(Iterator.fill(n, s));
     }
 
     public static Array<Character> range(char from, char toExclusive) {
