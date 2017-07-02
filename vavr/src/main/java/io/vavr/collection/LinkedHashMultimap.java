@@ -177,7 +177,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> LinkedHashMultimap<K, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
             Objects.requireNonNull(f, "f is null");
-            return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
+            return ofEntries(Iterator.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
         }
 
         /**
@@ -193,7 +193,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> LinkedHashMultimap<K, V2> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
             Objects.requireNonNull(s, "s is null");
-            return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
+            return ofEntries(Iterator.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
         }
 
         /**

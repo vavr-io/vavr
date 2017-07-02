@@ -382,7 +382,7 @@ public interface List<T> extends LinearSeq<T> {
      */
     static <T> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, empty(), List::of);
+        return ofAll(Iterator.tabulate(n, f));
     }
 
     /**
@@ -396,7 +396,7 @@ public interface List<T> extends LinearSeq<T> {
      */
     static <T> List<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, empty(), List::of);
+        return ofAll(Iterator.fill(n, s));
     }
 
     static List<Character> range(char from, char toExclusive) {

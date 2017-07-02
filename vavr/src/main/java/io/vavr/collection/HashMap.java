@@ -411,7 +411,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
-        return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
+        return ofEntries(Iterator.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
     }
 
     /**
@@ -427,7 +427,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
         Objects.requireNonNull(s, "s is null");
-        return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
+        return ofEntries(Iterator.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
     }
 
     /**

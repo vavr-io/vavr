@@ -175,7 +175,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     static <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return io.vavr.collection.Collections.tabulate(n, f, empty(), Tree::of);
+        return ofAll(Iterator.tabulate(n, f));
     }
 
     /**
@@ -189,7 +189,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     static <T> Tree<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return io.vavr.collection.Collections.fill(n, s, empty(), Tree::of);
+        return ofAll(Iterator.fill(n, s));
     }
 
     @Override

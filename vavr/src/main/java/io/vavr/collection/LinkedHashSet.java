@@ -119,7 +119,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      */
     public static <T> LinkedHashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, LinkedHashSet.empty(), LinkedHashSet::of);
+        return ofAll(Iterator.tabulate(n, f));
     }
 
     /**
@@ -133,7 +133,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      */
     public static <T> LinkedHashSet<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, LinkedHashSet.empty(), LinkedHashSet::of);
+        return ofAll(Iterator.fill(n, s));
     }
 
     /**

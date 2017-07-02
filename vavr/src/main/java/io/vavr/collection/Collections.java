@@ -152,18 +152,6 @@ final class Collections {
         }
     }
 
-    static <T> Iterator<T> fill(int n, Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return tabulate(n, ignored -> supplier.get());
-    }
-
-    static <C extends Traversable<T>, T> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
-        Objects.requireNonNull(s, "s is null");
-        Objects.requireNonNull(empty, "empty is null");
-        Objects.requireNonNull(of, "of is null");
-        return tabulate(n, anything -> s.get(), empty, of);
-    }
-
     static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
         Objects.requireNonNull(classifier, "classifier is null");
         Objects.requireNonNull(mapper, "mapper is null");
@@ -332,44 +320,6 @@ final class Collections {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + "), length = " + length);
         } else if (beginIndex > endIndex) {
             throw new IllegalArgumentException("subSequence(" + beginIndex + ", " + endIndex + ")");
-        }
-    }
-
-    static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
-        if (n <= 0) {
-            return Iterator.empty();
-        } else {
-            return new AbstractIterator<T>() {
-
-                int i = 0;
-
-                @Override
-                public boolean hasNext() {
-                    return i < n;
-                }
-
-                @Override
-                protected T getNext() {
-                    return f.apply(i++);
-                }
-            };
-        }
-    }
-
-    static <C extends Traversable<T>, T> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {
-        Objects.requireNonNull(f, "f is null");
-        Objects.requireNonNull(empty, "empty is null");
-        Objects.requireNonNull(of, "of is null");
-        if (n <= 0) {
-            return empty;
-        } else {
-            @SuppressWarnings("unchecked")
-            final T[] elements = (T[]) new Object[n];
-            for (int i = 0; i < n; i++) {
-                elements[i] = f.apply(i);
-            }
-            return of.apply(elements);
         }
     }
 

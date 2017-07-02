@@ -310,7 +310,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         public <K, V2 extends V> TreeMultimap<K, V2> tabulate(Comparator<? super K> keyComparator, int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(f, "f is null");
-            return ofEntries(keyComparator, Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
+            return ofEntries(keyComparator, Iterator.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
         }
 
         /**
@@ -344,7 +344,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         public <K, V2 extends V> TreeMultimap<K, V2> fill(Comparator<? super K> keyComparator, int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
             Objects.requireNonNull(s, "s is null");
-            return ofEntries(keyComparator, Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
+            return ofEntries(keyComparator, Iterator.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
         }
 
         /**

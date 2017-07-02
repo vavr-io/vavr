@@ -115,7 +115,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      */
     public static <T> HashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, HashSet.empty(), HashSet::of);
+        return ofAll(Iterator.tabulate(n, f));
     }
 
     /**
@@ -129,7 +129,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      */
     public static <T> HashSet<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, HashSet.empty(), HashSet::of);
+        return ofAll(Iterator.fill(n, s));
     }
 
     /**

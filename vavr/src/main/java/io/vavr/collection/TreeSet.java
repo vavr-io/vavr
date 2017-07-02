@@ -130,7 +130,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     public static <T> TreeSet<T> tabulate(Comparator<? super T> comparator, int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, TreeSet.empty(comparator), values -> of(comparator, values));
+        return ofAll(comparator, Iterator.tabulate(n, f));
     }
 
     /**
@@ -162,7 +162,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     public static <T> TreeSet<T> fill(Comparator<? super T> comparator, int n, Supplier<? extends T> s) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, TreeSet.empty(comparator), values -> of(comparator, values));
+        return ofAll(comparator, Iterator.fill(n, s));
     }
 
     /**

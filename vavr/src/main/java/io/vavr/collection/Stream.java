@@ -314,7 +314,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static <T> Stream<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return Stream.ofAll(io.vavr.collection.Collections.tabulate(n, f));
+        return ofAll(Iterator.tabulate(n, f));
     }
 
     /**
@@ -328,7 +328,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     static <T> Stream<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
-        return Stream.ofAll(io.vavr.collection.Collections.fill(n, s));
+        return ofAll(Iterator.fill(n, s));
     }
 
     /**
