@@ -2442,6 +2442,7 @@ def generateTestClasses(): Unit = {
 
   genAPITests()
   genFunctionTests()
+  genMapOfEntriesTests()
   genTupleTests()
 
   /**
@@ -3223,6 +3224,55 @@ def generateTestClasses(): Unit = {
     })
   }
 
+  def genMapOfEntriesTests(): Unit = {
+
+    def genAllArity(im: ImportManager,
+                mapName: String, mapBuilder: String,
+                builderComparator: Boolean, keyComparator: Boolean): String = {
+      val test = im.getType("org.junit.Test")
+      val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+      val naturalComparator = if (builderComparator || keyComparator) im.getStatic(s"io.vavr.collection.Comparators.naturalComparator") else null
+      val map = im.getType(s"io.vavr.collection.$mapName")
+      (1 to VARARGS).gen(arity => xs"""
+        @$test
+        public void shouldConstructFrom${arity}Entries${if(builderComparator) "WithBuilderComparator" else ""}${if(keyComparator) "WithKeyComparator" else ""}${mapBuilder.capitalize}() {
+          final $map<Integer, String> map =
+            $map${if (mapBuilder.isEmpty) "" else s".<String>$mapBuilder"}${if (builderComparator) s"($naturalComparator())" else if (mapBuilder.isEmpty) "" else "()"}
+            .of(${if(keyComparator) s"$naturalComparator(), " else ""}${(1 to arity).gen(j => s"""$j, "$j"""")(", ")});
+          $assertThat(map.size()).isEqualTo($arity);
+          ${(1 to arity).gen(j =>xs"""$assertThat(map.get($j).get()${if (mapName.contains("Multimap")) ".head()" else ""}).isEqualTo("$j");""")("\n")}
+        }
+      """)("\n\n")
+    }
+
+    def genMapOfEntriesTest(mapName: String): Unit = {
+      val mapBuilders:List[String] = if (mapName.contains("Multimap")) List("withSeq", "withSet", "withSortedSet") else List("")
+      val keyComparators:List[Boolean] = if (mapName.startsWith("Tree")) List(true, false) else List(false)
+      genVavrFile("io.vavr.collection", s"${mapName}OfEntriesTest", baseDir = TARGET_TEST) ((im: ImportManager, packageName, className) => {
+        xs"""
+        public class ${mapName}OfEntriesTest {
+          ${mapBuilders.flatMap(mapBuilder => {
+          val builderComparators:List[Boolean] = if (mapBuilder.contains("Sorted")) List(true, false) else List(false)
+          builderComparators.flatMap(builderComparator => keyComparators.map(keyComparator =>
+            xs"""
+              ${genAllArity(im, mapName, mapBuilder, builderComparator, keyComparator)}
+              """
+          ))
+        }).mkString("\n\n")}
+        }
+        """
+      })
+    }
+
+    genMapOfEntriesTest("HashMap")
+    genMapOfEntriesTest("LinkedHashMap")
+    genMapOfEntriesTest("TreeMap")
+    genMapOfEntriesTest("HashMultimap")
+    genMapOfEntriesTest("LinkedHashMultimap")
+    genMapOfEntriesTest("TreeMultimap")
+
+  }
+
   /**
    * Generator of Tuple tests
    */
@@ -3253,7 +3303,7 @@ def generateTestClasses(): Unit = {
 
 
         xs"""
-          public class Tuple${i}Test {
+          public class $className {
 
               @$test
               public void shouldCreateTuple() {
