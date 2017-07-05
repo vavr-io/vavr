@@ -38,7 +38,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         return new Builder<>(ContainerType.SET, HashSet::empty);
     }
 
-    public static <V extends Comparable<? super V>> Builder<V> withSortedSet() {
+    public static <V extends Comparable<?>> Builder<V> withSortedSet() {
         return new Builder<>(ContainerType.SORTED_SET, TreeSet::empty);
     }
 
