@@ -7,6 +7,8 @@
 package io.vavr.control;
 
 import io.vavr.AbstractValueTest;
+import io.vavr.collection.Seq;
+import io.vavr.collection.List;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -86,6 +88,31 @@ public class EitherTest extends AbstractValueTest {
     public void shouldFoldRight() {
         final String value = Either.right("R").fold(l -> l + "-", r -> r + "+");
         assertThat(value).isEqualTo("R+");
+    }
+
+    // -- sequence
+
+    @Test
+    public void shouldConvertListOfRightToEitherOfList() {
+        List<Either<String, String>> tries = List.of(Either.right("a"), Either.right("b"), Either.right("c"));
+        Either<String, Seq<String>> reducedEither = Either.sequence(tries);
+        assertThat(reducedEither instanceof Either.Right).isTrue();
+        assertThat(reducedEither.get().size()).isEqualTo(3);
+        assertThat(reducedEither.get().mkString()).isEqualTo("abc");
+    }
+
+    @Test
+    public void shouldConvertListOfLeftToEitherOfList() {
+        List<Either<Integer, String>> tries = List.of(Either.left(1), Either.left(2), Either.left(3));
+        Either<Integer, Seq<String>> reducedEither = Either.sequence(tries);
+        assertThat(reducedEither).isEqualTo(Either.left(1));
+    }
+
+    @Test
+    public void shouldConvertListOfMixedEitherToEitherOfList() {
+        List<Either<Integer,String>> tries = List.of(Either.right("a"), Either.left(1), Either.right("c"));
+        Either<Integer, Seq<String>> reducedEither = Either.sequence(tries);
+        assertThat(reducedEither).isEqualTo(Either.left(1));
     }
 
     @Test
