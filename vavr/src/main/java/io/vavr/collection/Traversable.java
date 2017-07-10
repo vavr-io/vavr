@@ -1369,7 +1369,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * In the case of {@code n < 0} the empty instance is returned, in the case of {@code n > length()} this is returned.
      *
      * @param n The number of elements to take.
-     * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
+     * @return A new instance consisting of the first n elements of this or all elements, if this has less than n elements.
      */
     Traversable<T> take(int n);
 
@@ -1382,7 +1382,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * In the case of {@code n < 0} the empty instance is returned, in the case of {@code n > length()} this is returned.
      *
      * @param n The number of elements to take.
-     * @return A new instance consisting the first n elements of this or all elements, if this has less than n elements.
+     * @return A new instance consisting of the last n elements of this or all elements, if this has less than n elements.
      */
     Traversable<T> takeRight(int n);
 
@@ -1393,7 +1393,8 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * method references, which cannot be negated directly.
      *
      * @param predicate A condition tested subsequently for this elements.
-     * @return a new instance consisting of all elements until the first which does satisfy the given predicate.
+     * @return a new instance consisting of all elements before the first one which does satisfy the given
+     * predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> takeUntil(Predicate<? super T> predicate);
@@ -1402,7 +1403,8 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * Takes elements while the predicate holds for the current element.
      *
      * @param predicate A condition tested subsequently for the contained elements.
-     * @return a new instance consisting of all elements until the first which does not satisfy the given predicate.
+     * @return a new instance consisting of all elements before the first one which does not satisfy the
+     * given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> takeWhile(Predicate<? super T> predicate);

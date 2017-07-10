@@ -70,7 +70,7 @@ final class Collections {
     // because of O(N) complexity of get() and infinite loop in size()
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
-    static <T, S extends Seq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
+    static <T, S extends IndexedSeq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < seq.length(); i++) {
             if (predicate.test(seq.get(i))) {
@@ -371,6 +371,34 @@ final class Collections {
             }
             return of.apply(elements);
         }
+    }
+
+    // DEV-NOTE: Use this method for non-infinite and direct-access collection only
+    // because of O(N) complexity of get() and infinite loop in size()
+    // see https://github.com/vavr-io/vavr/issues/2007
+    @SuppressWarnings("unchecked")
+    static <T, S extends IndexedSeq<T>> S takeRightUntil(S seq, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (int i = seq.length() - 1; i >= 0; i--) {
+            if (predicate.test(seq.get(i))) {
+                return (S) seq.drop(i + 1);
+            }
+        }
+        return seq;
+    }
+
+    // DEV-NOTE: Use this method for non-infinite and direct-access collection only
+    // because of O(N) complexity of get() and infinite loop in size()
+    // see https://github.com/vavr-io/vavr/issues/2007
+    @SuppressWarnings("unchecked")
+    static <T, S extends IndexedSeq<T>> S takeUntil(S seq, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (int i = 0; i < seq.length(); i++) {
+            if (predicate.test(seq.get(i))) {
+                return (S) seq.take(i);
+            }
+        }
+        return seq;
     }
 
     static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
