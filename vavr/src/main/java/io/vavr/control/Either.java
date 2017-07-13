@@ -8,6 +8,8 @@ package io.vavr.control;
 
 import io.vavr.Value;
 import io.vavr.collection.Iterator;
+import io.vavr.collection.Seq;
+import io.vavr.collection.Vector;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -160,6 +162,29 @@ public interface Either<L, R> extends Value<R>, Serializable {
         } else {
             return leftMapper.apply(getLeft());
         }
+    }
+
+    /**
+     * Reduces many {@code Either}s into a single {@code Either} by transforming an
+     * {@code Iterable<Either<? extends L, ? extends R>>} into a {@code Either<? extends L, Seq<R>>}. If any of
+     * the {@code Either}s are {@link Either.Left}, then this returns a {@link Either.Left}.
+     *
+     * @param values An {@link Iterable} of {@code Either}s
+     * @param <L>    left type of the Eithers
+     * @param <R>    right type of the Eithers
+     * @return A {@code Either} of a {@link Seq} of results
+     * @throws NullPointerException if {@code values} is null
+     */
+    static <L,R> Either<L, Seq<R>> sequence(Iterable<? extends Either<? extends L, ? extends R>> values) {
+        Objects.requireNonNull(values, "values is null");
+        Vector<R> vector = Vector.empty();
+        for (Either<? extends L, ? extends R> value : values) {
+            if (value.isLeft()) {
+                return Either.left(value.getLeft());
+            }
+            vector = vector.append(value.get());
+        }
+        return Either.right(vector);
     }
 
     /**
