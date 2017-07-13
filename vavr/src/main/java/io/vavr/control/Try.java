@@ -675,6 +675,22 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Folds either the {@code Failure} or the {@code Success} side of the Try value.
+     *
+     * @param ifFail  maps the left value if this is a {@code Failure}
+     * @param f maps the value if this is a {@code Success}
+     * @param <X>         type of the folded value
+     * @return A value of type X
+     */
+    default <X> X fold(Function<? super Throwable, ? extends X> ifFail, Function<? super T, ? extends X> f) {
+        if (isFailure()) {
+            return ifFail.apply(getCause());
+        } else {
+            return f.apply(get());
+        }
+    }
+
+    /**
      * Applies the action to the value of a Success or does nothing in the case of a Failure.
      *
      * @param action A Consumer
@@ -1165,7 +1181,7 @@ public interface Try<T> extends Value<T>, Serializable {
 
     /**
      * A {@code Try}-with-resources builder that operates on one {@link AutoCloseable} resource.
-     * 
+     *
      * @param <T1> Type of the 1st resource.
      */
     final class WithResources1<T1 extends AutoCloseable> {
