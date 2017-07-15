@@ -1307,6 +1307,17 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<T> takeUntil(Predicate<? super T> predicate) {
+        return io.vavr.collection.Collections.takeUntil(this, predicate);
+    }
+
+    @Override
+    public Array<T> takeWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeUntil(predicate.negate());
+    }
+
+    @Override
     public Array<T> takeRight(int n) {
         if (n >= length()) {
             return this;
@@ -1320,21 +1331,14 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
+    public Array<T> takeRightUntil(Predicate<? super T> predicate) {
+        return io.vavr.collection.Collections.takeRightUntil(this, predicate);
     }
 
     @Override
-    public Array<T> takeWhile(Predicate<? super T> predicate) {
+    public Array<T> takeRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = 0; i < delegate.length; i++) {
-            final T value = get(i);
-            if (!predicate.test(value)) {
-                return take(i);
-            }
-        }
-        return this;
+        return takeRightUntil(predicate.negate());
     }
 
     /**

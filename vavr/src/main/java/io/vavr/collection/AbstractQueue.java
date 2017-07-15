@@ -98,6 +98,15 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
         return isEmpty() ? Option.none() : Option.some(peek());
     }
 
+    @Override
+    public Q dropUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return dropWhile(predicate.negate());
+    }
+
+    @Override
+    public abstract Q dropWhile(Predicate<? super T> predicate);
+
     /**
      * Dual of {@linkplain #tail()}, returning all elements except the last.
      *

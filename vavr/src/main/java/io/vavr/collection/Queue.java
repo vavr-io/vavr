@@ -722,11 +722,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
-    public Queue<T> dropUntil(Predicate<? super T> predicate) {
-        return dropWhile(predicate.negate());
-    }
-
-    @Override
     public Queue<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final List<T> dropped = toList().dropWhile(predicate);
@@ -1213,6 +1208,13 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
+    public Queue<T> takeUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        final io.vavr.collection.List<T> taken = toList().takeUntil(predicate);
+        return taken.length() == length() ? this : ofAll(taken);
+    }
+
+    @Override
     public Queue<T> takeRight(int n) {
         if (n <= 0) {
             return empty();
@@ -1231,10 +1233,16 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
-    public Queue<T> takeUntil(Predicate<? super T> predicate) {
+    public Queue<T> takeRightUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final io.vavr.collection.List<T> taken = toList().takeUntil(predicate);
+        final io.vavr.collection.List<T> taken = toList().takeRightUntil(predicate);
         return taken.length() == length() ? this : ofAll(taken);
+    }
+
+    @Override
+    public Queue<T> takeRightWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeRightUntil(predicate.negate());
     }
 
     /**

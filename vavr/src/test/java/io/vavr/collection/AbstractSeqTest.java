@@ -1497,6 +1497,50 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(shuffled.indexOf(4)).isEqualTo(-1);
     }
 
+    // -- takeRightUntil
+
+    @Test
+    public void shouldTakeRightUntilNoneOnNil() {
+        assertThat(empty().takeRightUntil(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightUntilAllOnFalseCondition() {
+        assertThat(of(1, 2, 3).takeRightUntil(x -> false)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldTakeRightUntilAllOnTrueCondition() {
+        assertThat(of(1, 2, 3).takeRightUntil(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightUntilAsExpected() {
+        assertThat(of(2, 3, 4, 6).takeRightUntil(x -> x % 2 != 0)).isEqualTo(of(4, 6));
+    }
+
+    // -- takeRightWhile
+
+    @Test
+    public void shouldTakeRightWhileNoneOnNil() {
+        assertThat(empty().takeRightWhile(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightWhileAllOnFalseCondition() {
+        assertThat(of(1, 2, 3).takeRightWhile(x -> false)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightWhileAllOnTrueCondition() {
+        assertThat(of(1, 2, 3).takeRightWhile(x -> true)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldTakeRightWhileAsExpected() {
+        assertThat(of(2, 3, 4, 6).takeRightWhile(x -> x % 2 == 0)).isEqualTo(of(4, 6));
+    }
+
     // -- update
 
     @Test(expected = IndexOutOfBoundsException.class)

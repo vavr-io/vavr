@@ -1144,26 +1144,30 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> takeRight(int n) {
-        return drop(length() - n);
-    }
-
-    @Override
     public Vector<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
+        return io.vavr.collection.Collections.takeUntil(this, predicate);
     }
 
     @Override
     public Vector<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = 0; i < length(); i++) {
-            final T value = get(i);
-            if (!predicate.test(value)) {
-                return take(i);
-            }
-        }
-        return this;
+        return takeUntil(predicate.negate());
+    }
+
+    @Override
+    public Vector<T> takeRight(int n) {
+        return drop(length() - n);
+    }
+
+    @Override
+    public Vector<T> takeRightUntil(Predicate<? super T> predicate) {
+        return io.vavr.collection.Collections.takeRightUntil(this, predicate);
+    }
+
+    @Override
+    public Vector<T> takeRightWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeRightUntil(predicate.negate());
     }
 
     /**

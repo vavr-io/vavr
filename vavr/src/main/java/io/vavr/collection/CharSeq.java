@@ -1017,6 +1017,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public CharSeq takeUntil(Predicate<? super Character> predicate) {
+        return io.vavr.collection.Collections.takeUntil(this, predicate);
+    }
+
+    @Override
+    public CharSeq takeWhile(Predicate<? super Character> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeUntil(predicate.negate());
+    }
+
+    @Override
     public CharSeq takeRight(int n) {
         if (n <= 0) {
             return EMPTY;
@@ -1028,23 +1039,14 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq takeUntil(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
+    public CharSeq takeRightUntil(Predicate<? super Character> predicate) {
+        return io.vavr.collection.Collections.takeRightUntil(this, predicate);
     }
 
     @Override
-    public CharSeq takeWhile(Predicate<? super Character> predicate) {
+    public CharSeq takeRightWhile(Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < length(); i++) {
-            final char c = get(i);
-            if (!predicate.test(c)) {
-                break;
-            }
-            sb.append(c);
-        }
-        return sb.length() == length() ? this : sb.length() == 0 ? EMPTY : of(sb);
+        return takeRightUntil(predicate.negate());
     }
 
     /**
