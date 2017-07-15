@@ -605,29 +605,6 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').drop('4')).isSameAs(CharSeq.empty());
     }
 
-    // -- dropRight
-
-    @Test
-    public void shouldDropRightNoneOnNil() {
-        assertThat(CharSeq.empty().dropRight(1)).isSameAs(CharSeq.empty());
-    }
-
-    @Test
-    public void shouldDropRightNoneIfCountIsNegative() {
-        final CharSeq t = CharSeq.of('1', '2', '3');
-        assertThat(t.dropRight(-1)).isSameAs(t);
-    }
-
-    @Test
-    public void shouldDropRightAsExpectedIfCountIsLessThanSize() {
-        assertThat(CharSeq.of('1', '2', '3').dropRight(2)).isEqualTo(CharSeq.of('1'));
-    }
-
-    @Test
-    public void shouldDropRightAllIfCountExceedsSize() {
-        assertThat(CharSeq.of('1', '2', '3').dropRight(4)).isSameAs(CharSeq.empty());
-    }
-
     // -- dropUntil
 
     @Test
@@ -671,6 +648,29 @@ public class CharSeqTest {
     @Test
     public void shouldDropWhileCorrect() {
         assertThat(CharSeq.of('1', '2', '3').dropWhile(i -> i == '1')).isEqualTo(CharSeq.of('2', '3'));
+    }
+
+    // -- dropRight
+
+    @Test
+    public void shouldDropRightNoneOnNil() {
+        assertThat(CharSeq.empty().dropRight(1)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldDropRightNoneIfCountIsNegative() {
+        final CharSeq t = CharSeq.of('1', '2', '3');
+        assertThat(t.dropRight(-1)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldDropRightAsExpectedIfCountIsLessThanSize() {
+        assertThat(CharSeq.of('1', '2', '3').dropRight(2)).isEqualTo(CharSeq.of('1'));
+    }
+
+    @Test
+    public void shouldDropRightAllIfCountExceedsSize() {
+        assertThat(CharSeq.of('1', '2', '3').dropRight(4)).isSameAs(CharSeq.empty());
     }
 
     // -- dropRightUntil
@@ -1756,27 +1756,27 @@ public class CharSeqTest {
         assertThat(t.take(4)).isSameAs(t);
     }
 
-    // -- takeRight
+    // -- takeUntil
 
     @Test
-    public void shouldTakeRightNoneOnNil() {
-        assertThat(CharSeq.empty().takeRight(1)).isSameAs(CharSeq.empty());
+    public void shouldTakeUntilNoneOnNil() {
+        assertThat(CharSeq.empty().takeUntil(x -> true)).isSameAs(CharSeq.empty());
     }
 
     @Test
-    public void shouldTakeRightNoneIfCountIsNegative() {
-        assertThat(CharSeq.of('1', '2', '3').takeRight(-1)).isSameAs(CharSeq.empty());
-    }
-
-    @Test
-    public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
-        assertThat(CharSeq.of('1', '2', '3').takeRight(2)).isEqualTo(CharSeq.of('2', '3'));
-    }
-
-    @Test
-    public void shouldTakeRightAllIfCountExceedsSize() {
+    public void shouldTakeUntilAllOnFalseCondition() {
         final CharSeq t = CharSeq.of('1', '2', '3');
-        assertThat(t.takeRight(4)).isSameAs(t);
+        assertThat(t.takeUntil(x -> false)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldTakeUntilAllOnTrueCondition() {
+        assertThat(CharSeq.of('1', '2', '3').takeUntil(x -> true)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldTakeUntilAsExpected() {
+        assertThat(CharSeq.of('2', '4', '5', '6').takeUntil(x -> x % 2 != 0)).isEqualTo(CharSeq.of('2', '4'));
     }
 
     // -- takeWhile
@@ -1802,27 +1802,73 @@ public class CharSeqTest {
         assertThat(CharSeq.of('2', '4', '5', '6').takeWhile(x -> x % 2 == 0)).isEqualTo(CharSeq.of('2', '4'));
     }
 
-    // -- takeUntil
+    // -- takeRight
 
     @Test
-    public void shouldTakeUntilNoneOnNil() {
-        assertThat(CharSeq.empty().takeUntil(x -> true)).isSameAs(CharSeq.empty());
+    public void shouldTakeRightNoneOnNil() {
+        assertThat(CharSeq.empty().takeRight(1)).isSameAs(CharSeq.empty());
     }
 
     @Test
-    public void shouldTakeUntilAllOnFalseCondition() {
+    public void shouldTakeRightNoneIfCountIsNegative() {
+        assertThat(CharSeq.of('1', '2', '3').takeRight(-1)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
+        assertThat(CharSeq.of('1', '2', '3').takeRight(2)).isEqualTo(CharSeq.of('2', '3'));
+    }
+
+    @Test
+    public void shouldTakeRightAllIfCountExceedsSize() {
         final CharSeq t = CharSeq.of('1', '2', '3');
-        assertThat(t.takeUntil(x -> false)).isSameAs(t);
+        assertThat(t.takeRight(4)).isSameAs(t);
+    }
+
+    // -- takeRightUntil
+
+    @Test
+    public void shouldTakeRightUntilNoneOnNil() {
+        assertThat(CharSeq.empty().takeRightUntil(x -> true)).isSameAs(CharSeq.empty());
     }
 
     @Test
-    public void shouldTakeUntilAllOnTrueCondition() {
-        assertThat(CharSeq.of('1', '2', '3').takeUntil(x -> true)).isSameAs(CharSeq.empty());
+    public void shouldTakeRightUntilAllOnFalseCondition() {
+        final CharSeq t = CharSeq.of('1', '2', '3');
+        assertThat(t.takeRightUntil(x -> false)).isSameAs(t);
     }
 
     @Test
-    public void shouldTakeUntilAsExpected() {
-        assertThat(CharSeq.of('2', '4', '5', '6').takeUntil(x -> x % 2 != 0)).isEqualTo(CharSeq.of('2', '4'));
+    public void shouldTakeRightUntilAllOnTrueCondition() {
+        assertThat(CharSeq.of('1', '2', '3').takeRightUntil(x -> true)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldTakeRightUntilAsExpected() {
+        assertThat(CharSeq.of('2', '3', '4', '6').takeRightUntil(x -> x % 2 != 0)).isEqualTo(CharSeq.of('4', '6'));
+    }
+
+    // -- takeRightWhile
+
+    @Test
+    public void shouldTakeRightWhileNoneOnNil() {
+        assertThat(CharSeq.empty().takeRightWhile(x -> true)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldTakeRightWhileAllOnFalseCondition() {
+        assertThat(CharSeq.of('1', '2', '3').takeRightWhile(x -> false)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldTakeRightWhileAllOnTrueCondition() {
+        final CharSeq t = CharSeq.of('1', '2', '3');
+        assertThat(t.takeRightWhile(x -> true)).isSameAs(t);
+    }
+
+    @Test
+    public void shouldTakeRightWhileAsExpected() {
+        assertThat(CharSeq.of('2', '3', '4', '6').takeRightWhile(x -> x % 2 == 0)).isEqualTo(CharSeq.of('4', '6'));
     }
 
     // -- tail

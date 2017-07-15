@@ -1524,17 +1524,6 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> takeRight(int n) {
-        if (n <= 0) {
-            return empty();
-        }
-        if (n >= length()) {
-            return this;
-        }
-        return reverse().take(n).reverse();
-    }
-
-    @Override
     default List<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
@@ -1548,6 +1537,29 @@ public interface List<T> extends LinearSeq<T> {
             result = result.prepend(list.head());
         }
         return result.length() == length() ? this : result.reverse();
+    }
+
+    @Override
+    default List<T> takeRight(int n) {
+        if (n <= 0) {
+            return empty();
+        }
+        if (n >= length()) {
+            return this;
+        }
+        return reverse().take(n).reverse();
+    }
+
+    @Override
+    default List<T> takeRightUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeRightWhile(predicate.negate());
+    }
+
+    @Override
+    default List<T> takeRightWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reverse().takeWhile(predicate).reverse();
     }
 
     /**

@@ -321,12 +321,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     @Override
-    public PriorityQueue<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
-    }
-
-    @Override
     public PriorityQueue<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         PriorityQueue<T> result = this;

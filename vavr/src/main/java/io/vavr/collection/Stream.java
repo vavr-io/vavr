@@ -1535,17 +1535,6 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> takeRight(int n) {
-        Stream<T> right = this;
-        Stream<T> remaining = drop(n);
-        while (!remaining.isEmpty()) {
-            right = right.tail();
-            remaining = remaining.tail();
-        }
-        return right;
-    }
-
-    @Override
     default Stream<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
@@ -1564,6 +1553,29 @@ public interface Stream<T> extends LinearSeq<T> {
                 return Empty.instance();
             }
         }
+    }
+
+    @Override
+    default Stream<T> takeRight(int n) {
+        Stream<T> right = this;
+        Stream<T> remaining = drop(n);
+        while (!remaining.isEmpty()) {
+            right = right.tail();
+            remaining = remaining.tail();
+        }
+        return right;
+    }
+
+    @Override
+    default Stream<T> takeRightUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reverse().takeUntil(predicate).reverse();
+    }
+
+    @Override
+    default Stream<T> takeRightWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeRightUntil(predicate.negate());
     }
 
     /**

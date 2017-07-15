@@ -307,13 +307,19 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> take(int n);
 
     @Override
-    LinearSeq<T> takeRight(int n);
-
-    @Override
     LinearSeq<T> takeUntil(Predicate<? super T> predicate);
 
     @Override
     LinearSeq<T> takeWhile(Predicate<? super T> predicate);
+
+    @Override
+    LinearSeq<T> takeRight(int n);
+
+    @Override
+    LinearSeq<T> takeRightUntil(Predicate<? super T> predicate);
+
+    @Override
+    LinearSeq<T> takeRightWhile(Predicate<? super T> predicate);
 
     @Override
     <T1, T2> Tuple2<? extends LinearSeq<T1>, ? extends LinearSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
