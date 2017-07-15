@@ -253,6 +253,24 @@ public class TryTest extends AbstractValueTest {
         assertThatThrownBy(() -> Try.of(null)).isInstanceOf(NullPointerException.class).hasMessage("supplier is null");
     }
 
+    // -- Try.fold
+
+    @Test
+    public void shouldReturnValueIfSuccess() {
+        Try<Integer> success = Try.success(42);
+        assertThat(success.fold(t -> {
+            throw new AssertionError("Not expected to be called");
+        }, Function.identity())).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldReturnAlternateValueIfFailure() {
+        Try<Integer> success = Try.failure(new NullPointerException("something was null"));
+        assertThat(success.<Integer>fold(t -> 42, a -> {
+            throw new AssertionError("Not expected to be called");
+        })).isEqualTo(42);
+    }
+
     // -- Try.ofSupplier
 
     @Test
