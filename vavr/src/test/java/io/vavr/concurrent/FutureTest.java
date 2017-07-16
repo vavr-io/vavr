@@ -653,8 +653,8 @@ public class FutureTest extends AbstractValueTest {
                 Try.run(() -> Thread.sleep(100));
             }
         });
-        future.onComplete(r -> fail("future should lock forever"));
         future.cancel();
+        waitUntil(future::isCompleted);
         assertCancelled(future);
     }
 
