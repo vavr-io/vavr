@@ -19,7 +19,7 @@ To stay up to date please follow the [blog](http://blog.vavr.io).
 
 ## Using Vavr
 
-See [User Guide](http://docs.vavr.io)
+See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc/io.vavr/vavr).
 
 ### Useful Maven Goals
 
