@@ -17,13 +17,13 @@ public class PartialFunctionTest {
     @Test
     public void shouldReturnSome() {
         Option<String> oneToOne = HashMap.of(1, "One").lift().apply(1);
-        assertThat(oneToOne instanceof Option.Some);
+        assertThat(oneToOne).isEqualTo(Option.some("One"));
     }
 
     @Test
     public void shouldReturnNone() {
-        Option<String> none = HashMap.<Integer, String>empty().lift().apply(1);
-        assertThat(none instanceof Option.None);
+        Option<String> oneToOne = HashMap.<Integer, String>empty().lift().apply(1);
+        assertThat(oneToOne).isEqualTo(Option.none());
     }
 
 }
