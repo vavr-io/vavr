@@ -6,6 +6,8 @@
  */
 package io.vavr;
 
+import io.vavr.control.Option;
+
 /**
  * Represents a partial function T -&gt; R that is not necessarily defined for all input values of type T.
  * The caller is responsible for calling the method isDefinedAt() before this function is applied to the value.
@@ -42,5 +44,15 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
      * @return true, if the given value is contained in the function's domain, false otherwise
      */
     boolean isDefinedAt(T value);
+
+    /**
+     * Lifts this partial function into a total function that returns an {@code Option} result.
+     *
+     * @return a function that applies arguments to this function and returns {@code Some(result)}
+     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     */
+    default Function1<T, Option<R>> lift() {
+        return t -> Option.when(isDefinedAt(t), apply(t));
+    }
 
 }
