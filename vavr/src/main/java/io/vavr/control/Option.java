@@ -177,7 +177,7 @@ public interface Option<T> extends Value<T>, Serializable {
      */
     default <R> Option<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        return filter(partialFunction::isDefinedAt).map(partialFunction::apply);
+        return flatMap(partialFunction.lift()::apply);
     }
 
     /**
