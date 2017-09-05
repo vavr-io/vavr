@@ -248,7 +248,7 @@ public final class Predicates {
      * @param predicate A {@code Predicate} that tests elements of type {@code T}
      * @param <T>       tested object type
      * @return A new {@code Predicate}
-     * @throws NullPointerException if {@code values} is predicate
+     * @throws NullPointerException if {@code predicate} is null
      */
     @SuppressWarnings("unchecked")
     public static <T> Predicate<T> not(Predicate<? super T> predicate) {
