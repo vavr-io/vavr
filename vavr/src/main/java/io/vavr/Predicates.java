@@ -13,8 +13,7 @@ import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
- * Defines general-purpose predicates which are particularly useful when working with
- * {@link API.Match}.
+ * Defines general-purpose predicates which are particularly useful when working with {@link API.Match}.
  *
  * @author Daniel Dietrich, Grzegorz Piwowarek
  */
@@ -22,6 +21,64 @@ public final class Predicates {
 
     // hidden
     private Predicates() {
+    }
+
+    /**
+     * A combinator that checks if <strong>all</strong> of the given {@code predicates} are satisfied.
+     * <p>
+     * By definition {@code allOf} is satisfied if the given {@code predicates} are empty.
+     *
+     * @param predicates An array of predicates
+     * @param <T>        closure over tested object types
+     * @return A new {@code Predicate}
+     * @throws NullPointerException if {@code predicates} is null
+     */
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    public static <T> Predicate<T> allOf(Predicate<T>... predicates) {
+        Objects.requireNonNull(predicates, "predicates is null");
+        return t -> List.of(predicates).foldLeft(true, (bool, pred) -> bool && pred.test(t));
+    }
+
+    /**
+     * A combinator that checks if <strong>at least one</strong> of the given {@code predicates} is satisfies.
+     *
+     * @param predicates An array of predicates
+     * @param <T>        closure over tested object types
+     * @return A new {@code Predicate}
+     * @throws NullPointerException if {@code predicates} is null
+     */
+    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
+    public static <T> Predicate<T> anyOf(Predicate<T>... predicates) {
+        Objects.requireNonNull(predicates, "predicates is null");
+        return t -> List.of(predicates).find(pred -> pred.test(t)).isDefined();
+    }
+
+    /**
+     * A combinator that checks if <strong>one or more</strong> elements of an {@code Iterable} satisfy the {@code predicate}.
+     *
+     * @param predicate A {@code Predicate} that tests elements of type {@code T}
+     * @param <T>        closure over tested object types
+     * @return A new {@code Predicate}
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    public static <T> Predicate<Iterable<T>> exists(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return iterable -> Iterator.ofAll(iterable).exists(predicate);
+    }
+
+    /**
+     * A combinator that checks if <strong>all</strong> elements of an {@code Iterable} satisfy the {@code predicate}.
+     *
+     * @param predicate A {@code Predicate} that tests elements of type {@code T}
+     * @param <T>        closure over tested object types
+     * @return A new {@code Predicate}
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    public static <T> Predicate<Iterable<T>> forAll(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return iterable -> Iterator.ofAll(iterable).forAll(predicate);
     }
 
     /**
@@ -42,8 +99,6 @@ public final class Predicates {
     /**
      * Creates a {@code Predicate} that tests, if an object is equal to the specified {@code value} using
      * {@link Objects#equals(Object, Object)} for comparison.
-     * <p>
-     * Hint: Use {@code is(null)} instead of introducing a new predicate {@code isNull()}
      *
      * @param value A value, may be null
      * @param <T>   value type
@@ -62,12 +117,21 @@ public final class Predicates {
      * @return A new {@code Predicate}
      * @throws NullPointerException if {@code values} is null
      */
-    // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <T> Predicate<T> isIn(T... values) {
         Objects.requireNonNull(values, "values is null");
         return obj -> List.of(values).find(value -> Objects.equals(value, obj)).isDefined();
+    }
+
+    /**
+     * Creates a {@code Predicate} that tests, if an object is not null
+     *
+     * @param <T> value type
+     * @return A new {@code Predicate}
+     */
+    public static <T> Predicate<T> isNotNull() {
+        return Objects::nonNull;
     }
 
     /**
@@ -81,50 +145,6 @@ public final class Predicates {
     }
 
     /**
-     * Creates a {@code Predicate} that tests, if an object is not null
-     *
-     * @param <T> value type
-     * @return A new {@code Predicate}
-     */
-    public static <T> Predicate<T> isNotNull() {
-        return Objects::nonNull;
-    }
-
-    // -- Predicate combinators
-
-    /**
-     * A combinator that checks if <strong>all</strong> of the given {@code predicates} are satisfied.
-     * <p>
-     * By definition {@code allOf} is satisfied if the given {@code predicates} are empty.
-     *
-     * @param predicates An array of predicates
-     * @param <T>        closure over tested object types
-     * @return A new {@code Predicate}
-     */
-    // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
-    @SuppressWarnings({ "unchecked", "varargs" })
-    @SafeVarargs
-    public static <T> Predicate<T> allOf(Predicate<T>... predicates) {
-        Objects.requireNonNull(predicates, "predicates is null");
-        return t -> List.of(predicates).foldLeft(true, (bool, pred) -> bool && pred.test(t));
-    }
-
-    /**
-     * A combinator that checks if <strong>at least one</strong> of the given {@code predicates} is satisfies.
-     *
-     * @param predicates An array of predicates
-     * @param <T>        closure over tested object types
-     * @return A new {@code Predicate}
-     */
-    // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
-    @SuppressWarnings({ "unchecked", "varargs" })
-    @SafeVarargs
-    public static <T> Predicate<T> anyOf(Predicate<T>... predicates) {
-        Objects.requireNonNull(predicates, "predicates is null");
-        return t -> List.of(predicates).find(pred -> pred.test(t)).isDefined();
-    }
-
-    /**
      * A combinator that checks if <strong>none</strong> of the given {@code predicates} is satisfied.
      * <p>
      * Naturally {@code noneOf} is satisfied if the given {@code predicates} are empty.
@@ -132,8 +152,8 @@ public final class Predicates {
      * @param predicates An array of predicates
      * @param <T>        closure over tested object types
      * @return A new {@code Predicate}
+     * @throws NullPointerException if {@code predicates} is null
      */
-    // JDK fails here without "unchecked", Eclipse complains that it is unnecessary
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <T> Predicate<T> noneOf(Predicate<T>... predicates) {
@@ -142,26 +162,17 @@ public final class Predicates {
     }
 
     /**
-     * A combinator that checks if <strong>one or more</strong> elements of an {@code Iterable} satisfy the {@code predicate}.
+     * Negates a given {@code Predicate}.
      *
      * @param predicate A {@code Predicate} that tests elements of type {@code T}
-     * @param <T>        closure over tested object types
+     * @param <T>       closure over tested object types
      * @return A new {@code Predicate}
+     * @throws NullPointerException if {@code values} is predicate
      */
-    public static <T> Predicate<Iterable<T>> exists(Predicate<? super T> predicate) {
+    @SuppressWarnings("unchecked")
+    public static <T> Predicate<T> not(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return iterable -> Iterator.ofAll(iterable).exists(predicate);
+        return (Predicate<T>) predicate.negate();
     }
 
-    /**
-     * A combinator that checks if <strong>all</strong> elements of an {@code Iterable} satisfy the {@code predicate}.
-     *
-     * @param predicate A {@code Predicate} that tests elements of type {@code T}
-     * @param <T>        closure over tested object types
-     * @return A new {@code Predicate}
-     */
-    public static <T> Predicate<Iterable<T>> forAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return iterable -> Iterator.ofAll(iterable).forAll(predicate);
-    }
 }

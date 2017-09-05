@@ -16,10 +16,86 @@ import static io.vavr.API.$;
 import static io.vavr.API.*;
 import static io.vavr.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class PredicatesTest {
 
     private static final Predicate<? super Throwable> IS_RUNTIME_EXCEPTION = instanceOf(RuntimeException.class);
+    private static final Predicate<Integer> IS_GT_ONE = i -> i > 1;
+    private static final Predicate<Integer> IS_GT_TWO = i -> i > 2;
+    
+    // -- allOf
+
+    @Test
+    public void shouldTestAllOf_PositiveCase() {
+        assertThat(allOf().test(1)).isTrue();
+        assertThat(allOf(IS_GT_ONE, IS_GT_TWO).test(3)).isTrue();
+    }
+
+    @Test
+    public void shouldTestAllOf_NegativeCase() {
+        assertThat(allOf(IS_GT_ONE, IS_GT_TWO).test(2)).isFalse();
+    }
+
+    // -- anyOf
+
+    @Test
+    public void shouldTestAnyOf_PositiveCase() {
+        assertThat(anyOf(IS_GT_ONE, IS_GT_TWO).test(3)).isTrue();
+        assertThat(anyOf(IS_GT_ONE, IS_GT_TWO).test(2)).isTrue();
+    }
+
+    @Test
+    public void shouldTestAnyOf_NegativeCase() {
+        assertThat(anyOf().test(1)).isFalse();
+        assertThat(anyOf(IS_GT_ONE, IS_GT_TWO).test(1)).isFalse();
+    }
+
+    // -- exits
+
+    @Test
+    public void shouldTestExists_PositiveCase() {
+        assertThat(exists(IS_GT_ONE).test(List.of(1, 3))).isTrue();
+    }
+
+    @Test
+    public void shouldTestExists_NegativeCase() {
+        assertThat(exists(IS_GT_ONE).test(List.of(1, 0))).isFalse();
+    }
+
+    @Test
+    public void shouldCheckExistsByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
+        final List<Integer> list = List(1, 2, 3);
+        final Predicate<Number> p = n -> n.intValue() % 2 == 0;
+        final boolean actual = Match(list).of(
+                Case($(exists(p)), true),
+                Case($(), false)
+        );
+        assertThat(actual).isTrue();
+    }
+
+    // -- forAll
+
+    @Test
+    public void shouldTestForAll_PositiveCase() {
+        assertThat(forAll(IS_GT_ONE).test(List.of(2, 3))).isTrue();
+    }
+
+    @Test
+    public void shouldTestForAll_NegativeCase() {
+        assertThat(forAll(IS_GT_ONE).test(List.of(3, 0))).isFalse();
+    }
+
+    @Test
+    public void shouldCheckForAllByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
+        final List<Integer> list = List(1, 2, 3);
+        final Predicate<Number> p = n -> n.intValue() > 0;
+        final boolean actual = Match(list).of(
+                Case($(forAll(p)), true),
+                Case($(), false)
+        );
+        assertThat(actual).isTrue();
+    }
 
     // -- instanceOf
 
@@ -65,52 +141,6 @@ public class PredicatesTest {
         assertThat(isIn((CharSequence) "1", "2", "3").test("4")).isFalse();
     }
 
-    // Predicate Combinators
-
-    // -- allOf
-
-    private static final Predicate<Integer> P1 = i -> i > 1;
-    private static final Predicate<Integer> P2 = i -> i > 2;
-
-    @Test
-    public void shouldTestAllOf_PositiveCase() {
-        assertThat(allOf().test(1)).isTrue();
-        assertThat(allOf(P1, P2).test(3)).isTrue();
-    }
-
-    @Test
-    public void shouldTestAllOf_NegativeCase() {
-        assertThat(allOf(P1, P2).test(2)).isFalse();
-    }
-
-    // -- anyOf
-
-    @Test
-    public void shouldTestAnyOf_PositiveCase() {
-        assertThat(anyOf(P1, P2).test(3)).isTrue();
-        assertThat(anyOf(P1, P2).test(2)).isTrue();
-    }
-
-    @Test
-    public void shouldTestAnyOf_NegativeCase() {
-        assertThat(anyOf().test(1)).isFalse();
-        assertThat(anyOf(P1, P2).test(1)).isFalse();
-    }
-
-    // -- noneOf
-
-    @Test
-    public void shouldTestNoneOf_PositiveCase() {
-        assertThat(noneOf().test(1)).isTrue();
-        assertThat(noneOf(P1, P2).test(1)).isTrue();
-    }
-
-    @Test
-    public void shouldTestNoneOf_NegativeCase() {
-        assertThat(noneOf(P1).test(2)).isFalse();
-        assertThat(noneOf(P1, P2).test(2)).isFalse();
-    }
-
     // -- isNull
 
     @Test
@@ -135,49 +165,35 @@ public class PredicatesTest {
         assertThat(isNotNull().test(null)).isFalse();
     }
 
-    // -- exits
+    // -- noneOf
 
     @Test
-    public void shouldTestExists_PositiveCase() {
-        assertThat(exists(P1).test(List.of(1, 3))).isTrue();
+    public void shouldTestNoneOf_PositiveCase() {
+        assertThat(noneOf().test(1)).isTrue();
+        assertThat(noneOf(IS_GT_ONE, IS_GT_TWO).test(1)).isTrue();
     }
 
     @Test
-    public void shouldTestExists_NegativeCase() {
-        assertThat(exists(P1).test(List.of(1, 0))).isFalse();
+    public void shouldTestNoneOf_NegativeCase() {
+        assertThat(noneOf(IS_GT_ONE).test(2)).isFalse();
+        assertThat(noneOf(IS_GT_ONE, IS_GT_TWO).test(2)).isFalse();
+    }
+
+    // -- not
+
+    @Test
+    public void shouldThrowWhenNegatingNull() {
+        assertThatThrownBy(() -> not(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
-    public void shouldCheckExistsByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
-        final List<Integer> list = List(1, 2, 3);
-        final Predicate<Number> p = n -> n.intValue() % 2 == 0;
-        final boolean actual = Match(list).of(
-                Case($(exists(p)), true),
-                Case($(), false)
-        );
-        assertThat(actual).isTrue();
-    }
-
-    // -- forAll
-
-    @Test
-    public void shouldTestForAll_PositiveCase() {
-        assertThat(forAll(P1).test(List.of(2, 3))).isTrue();
+    public void shouldNegate_PositiveCase() {
+        assertThat(not(IS_GT_ONE).test(0)).isTrue();
     }
 
     @Test
-    public void shouldTestForAll_NegativeCase() {
-        assertThat(forAll(P1).test(List.of(3, 0))).isFalse();
+    public void shouldNegate_NegativeCase() {
+        assertThat(not(IS_GT_ONE).test(2)).isFalse();
     }
 
-    @Test
-    public void shouldCheckForAllByLiftingPredicateInContravariantPositionToPredicateInCovariantPosition() {
-        final List<Integer> list = List(1, 2, 3);
-        final Predicate<Number> p = n -> n.intValue() > 0;
-        final boolean actual = Match(list).of(
-                Case($(forAll(p)), true),
-                Case($(), false)
-        );
-        assertThat(actual).isTrue();
-    }
 }
