@@ -28,6 +28,14 @@ public final class Predicates {
      * <p>
      * By definition {@code allOf} is satisfied if the given {@code predicates} are empty.
      *
+     * <pre>{@code
+     * Predicate<Integer> isGreaterThanOne = i -> i > 1;
+     * Predicate<Integer> isGreaterThanTwo = i -> i > 2;
+     * allOf().test(0);                                   // true
+     * allOf(isGreaterThanOne, isGreaterThanTwo).test(3); // true
+     * allOf(isGreaterThanOne, isGreaterThanTwo).test(2); // false
+     * }</pre>
+     *
      * @param predicates An array of predicates
      * @param <T>        closure over tested object types
      * @return A new {@code Predicate}
@@ -43,6 +51,15 @@ public final class Predicates {
     /**
      * A combinator that checks if <strong>at least one</strong> of the given {@code predicates} is satisfies.
      *
+     * <pre>{@code
+     * Predicate<Integer> isGreaterThanOne = i -> i > 1;
+     * Predicate<Integer> isGreaterThanTwo = i -> i > 2;
+     * anyOf().test(0);                                   // false
+     * anyOf(isGreaterThanOne, isGreaterThanTwo).test(3); // true
+     * anyOf(isGreaterThanOne, isGreaterThanTwo).test(2); // true
+     * anyOf(isGreaterThanOne, isGreaterThanTwo).test(1); // false
+     * }</pre>
+     * 
      * @param predicates An array of predicates
      * @param <T>        closure over tested object types
      * @return A new {@code Predicate}
@@ -58,8 +75,15 @@ public final class Predicates {
     /**
      * A combinator that checks if <strong>one or more</strong> elements of an {@code Iterable} satisfy the {@code predicate}.
      *
+     * <pre>{@code
+     * Predicate<Integer> isGreaterThanOne = i -> i > 1;
+     * Predicate<Iterable<Integer>> existsGreaterThanOne = exists(isGreaterThanOne);
+     * existsGreaterThanOne.test(List.of(0, 1, 2)); // true
+     * existsGreaterThanOne.test(List.of(0, 1));    // false
+     * }</pre>
+     * 
      * @param predicate A {@code Predicate} that tests elements of type {@code T}
-     * @param <T>        closure over tested object types
+     * @param <T>        tested object type
      * @return A new {@code Predicate}
      * @throws NullPointerException if {@code predicate} is null
      */
@@ -71,8 +95,15 @@ public final class Predicates {
     /**
      * A combinator that checks if <strong>all</strong> elements of an {@code Iterable} satisfy the {@code predicate}.
      *
+     * <pre>{@code
+     * Predicate<Integer> isGreaterThanOne = i -> i > 1;
+     * Predicate<Iterable<Integer>> forAllGreaterThanOne = forAll(isGreaterThanOne);
+     * forAllGreaterThanOne.test(List.of(0, 1, 2)); // false
+     * forAllGreaterThanOne.test(List.of(2, 3, 4)); // true
+     * }</pre>
+     *
      * @param predicate A {@code Predicate} that tests elements of type {@code T}
-     * @param <T>        closure over tested object types
+     * @param <T>        tested object type
      * @return A new {@code Predicate}
      * @throws NullPointerException if {@code predicate} is null
      */
@@ -84,8 +115,14 @@ public final class Predicates {
     /**
      * Creates a {@code Predicate} that tests, if an object is instance of the specified {@code type}.
      *
+     * <pre>{@code
+     * Predicate<Object> instanceOfNumber = instanceOf(Number.class);
+     * instanceOfNumber.test(1);    // true
+     * instanceOfNumber.test("1");  // false
+     * }</pre>
+     *
      * @param type A type
-     * @param <T>  Type of the given {@code type}
+     * @param <T>  tested object type
      * @return A new {@code Predicate}
      * @throws NullPointerException if {@code type} is null
      */
@@ -100,8 +137,14 @@ public final class Predicates {
      * Creates a {@code Predicate} that tests, if an object is equal to the specified {@code value} using
      * {@link Objects#equals(Object, Object)} for comparison.
      *
+     * <pre>{@code
+     * Predicate<Integer> isOne = is(1);
+     * isOne.test(1); // true
+     * isOne.test(2); // false
+     * }</pre>
+     *
      * @param value A value, may be null
-     * @param <T>   value type
+     * @param <T>   tested object type
      * @return A new {@code Predicate}
      */
     public static <T> Predicate<T> is(T value) {
@@ -112,8 +155,14 @@ public final class Predicates {
      * Creates a {@code Predicate} that tests, if an object is equal to at least one of the specified {@code values}
      * using {@link Objects#equals(Object, Object)} for comparison.
      *
+     * <pre>{@code
+     * Predicate<Integer> isIn = isIn(1, 2, 3);
+     * isIn.test(1); // true
+     * isIn.test(0); // false
+     * }</pre>
+     *
      * @param values an array of values of type T
-     * @param <T>    value type
+     * @param <T>    closure over tested object types
      * @return A new {@code Predicate}
      * @throws NullPointerException if {@code values} is null
      */
@@ -127,7 +176,13 @@ public final class Predicates {
     /**
      * Creates a {@code Predicate} that tests, if an object is not null
      *
-     * @param <T> value type
+     * <pre>{@code
+     * Predicate<Integer> isNotNull = isNotNull();
+     * isNotNull.test(0);    // true
+     * isNotNull.test(null); // false
+     * }</pre>
+     *
+     * @param <T> tested object type
      * @return A new {@code Predicate}
      */
     public static <T> Predicate<T> isNotNull() {
@@ -137,7 +192,13 @@ public final class Predicates {
     /**
      * Creates a {@code Predicate} that tests, if an object is null
      *
-     * @param <T> value type
+     * <pre>{@code
+     * Predicate<Integer> isNull = isNull();
+     * isNull.test(null); // true
+     * isNull.test(0);    // false
+     * }</pre>
+     *
+     * @param <T> tested object type
      * @return A new {@code Predicate}
      */
     public static <T> Predicate<T> isNull() {
@@ -148,6 +209,14 @@ public final class Predicates {
      * A combinator that checks if <strong>none</strong> of the given {@code predicates} is satisfied.
      * <p>
      * Naturally {@code noneOf} is satisfied if the given {@code predicates} are empty.
+     *
+     * <pre>{@code
+     * Predicate<Integer> isGreaterThanOne = i -> i > 1;
+     * Predicate<Integer> isGreaterThanTwo = i -> i > 2;
+     * noneOf().test(0);                                   // true
+     * noneOf(isGreaterThanOne, isGreaterThanTwo).test(1); // true
+     * noneOf(isGreaterThanOne, isGreaterThanTwo).test(2); // false
+     * }</pre>
      *
      * @param predicates An array of predicates
      * @param <T>        closure over tested object types
@@ -164,8 +233,20 @@ public final class Predicates {
     /**
      * Negates a given {@code Predicate}.
      *
+     * <pre>{@code
+     * // negates a method reference
+     * Predicate<String> isNotNull1 = not(Objects::isNull);
+     * isNotNull1.test("");   // true
+     * isNotNull1.test(null); // false
+     *
+     * // negates a predicate instance
+     * Predicate<String> isNotNull2 = not(Predicates.isNull());
+     * isNotNull2.test("");   // true
+     * isNotNull2.test(null); // false
+     * }</pre>
+     *
      * @param predicate A {@code Predicate} that tests elements of type {@code T}
-     * @param <T>       closure over tested object types
+     * @param <T>       tested object type
      * @return A new {@code Predicate}
      * @throws NullPointerException if {@code values} is predicate
      */
