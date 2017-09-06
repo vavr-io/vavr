@@ -9,6 +9,7 @@ package io.vavr.control;
 import io.vavr.AbstractValueTest;
 import io.vavr.collection.Seq;
 import io.vavr.collection.List;
+import io.vavr.collection.Vector;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -17,6 +18,7 @@ import java.util.Spliterator;
 
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class EitherTest extends AbstractValueTest {
 
@@ -93,26 +95,42 @@ public class EitherTest extends AbstractValueTest {
     // -- sequence
 
     @Test
-    public void shouldConvertListOfRightToEitherOfList() {
-        List<Either<String, String>> tries = List.of(Either.right("a"), Either.right("b"), Either.right("c"));
-        Either<String, Seq<String>> reducedEither = Either.sequence(tries);
-        assertThat(reducedEither instanceof Either.Right).isTrue();
-        assertThat(reducedEither.get().size()).isEqualTo(3);
-        assertThat(reducedEither.get().mkString()).isEqualTo("abc");
+    public void shouldThrowWhenSequencingNull() {
+        assertThatThrownBy(() -> Either.sequence(null))
+                .isInstanceOf(NullPointerException.class)
+                .withFailMessage("eithers is null");
     }
 
     @Test
-    public void shouldConvertListOfLeftToEitherOfList() {
-        List<Either<Integer, String>> tries = List.of(Either.left(1), Either.left(2), Either.left(3));
-        Either<Integer, Seq<String>> reducedEither = Either.sequence(tries);
-        assertThat(reducedEither).isEqualTo(Either.left(1));
+    public void shouldSequenceEmptyIterableOfEither() {
+        final Iterable<Either<Integer, String>> eithers = List.empty();
+        final Either<Seq<Integer>, Seq<String>> actual = Either.sequence(eithers);
+        final Either<Seq<Integer>, Seq<String>> expected = Either.right(Vector.empty());
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
-    public void shouldConvertListOfMixedEitherToEitherOfList() {
-        List<Either<Integer,String>> tries = List.of(Either.right("a"), Either.left(1), Either.right("c"));
-        Either<Integer, Seq<String>> reducedEither = Either.sequence(tries);
-        assertThat(reducedEither).isEqualTo(Either.left(1));
+    public void shouldSequenceNonEmptyIterableOfRight() {
+        final Iterable<Either<Integer, String>> eithers = List.of(Either.right("a"), Either.right("b"), Either.right("c"));
+        final Either<Seq<Integer>, Seq<String>> actual = Either.sequence(eithers);
+        final Either<Seq<Integer>, Seq<String>> expected = Either.right(Vector.of("a", "b", "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSequenceNonEmptyIterableOfLeft() {
+        final Iterable<Either<Integer, String>> eithers = List.of(Either.left(1), Either.left(2), Either.left(3));
+        final Either<Seq<Integer>, Seq<String>> actual = Either.sequence(eithers);
+        final Either<Seq<Integer>, Seq<String>> expected = Either.left(Vector.of(1, 2, 3));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSequenceNonEmptyIterableOfMixedEither() {
+        final Iterable<Either<Integer,String>> eithers = List.of(Either.right("a"), Either.left(1), Either.right("c"), Either.left(3));
+        final Either<Seq<Integer>, Seq<String>> actual = Either.sequence(eithers);
+        final Either<Seq<Integer>, Seq<String>> expected = Either.left(Vector.of(1, 3));
+        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
