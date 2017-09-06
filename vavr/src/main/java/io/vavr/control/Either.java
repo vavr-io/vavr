@@ -9,7 +9,6 @@ package io.vavr.control;
 import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
-import io.vavr.collection.Vector;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -166,25 +165,40 @@ public interface Either<L, R> extends Value<R>, Serializable {
 
     /**
      * Reduces many {@code Either}s into a single {@code Either} by transforming an
-     * {@code Iterable<Either<? extends L, ? extends R>>} into a {@code Either<? extends L, Seq<R>>}. If any of
-     * the {@code Either}s are {@link Either.Left}, then this returns a {@link Either.Left}.
+     * {@code Iterable<Either<L, R>>} into a {@code Either<Seq<L>, Seq<R>>}.
+     * <p>
+     * If any of the given {@code Either}s is a {@link Either.Left} then sequence returns a {@link Either.Left}
+     * containing a non-empty {@link Seq} of all left values.
+     * <p>
+     * If none of the given {@code Either}s is a {@link Either.Left} then sequence returns a {@link Either.Right}
+     * containing a (possibly empty) {@link Seq} of all right values.
      *
-     * @param values An {@link Iterable} of {@code Either}s
-     * @param <L>    left type of the Eithers
-     * @param <R>    right type of the Eithers
-     * @return A {@code Either} of a {@link Seq} of results
-     * @throws NullPointerException if {@code values} is null
+     * <pre>{@code
+     * // = Right(Seq())
+     * Either.sequence(List.empty())
+     *
+     * // = Right(Seq(1, 2))
+     * Either.sequence(List.of(Either.right(1), Either.right(2)))
+     *
+     * // = Left(Seq("x"))
+     * Either.sequence(List.of(Either.right(1), Either.left("x")))
+     * }</pre>
+     *
+     * @param eithers An {@link Iterable} of {@code Either}s
+     * @param <L>     closure of all left types of the given {@code Either}s
+     * @param <R>     closure of all right types of the given {@code Either}s
+     * @return An {@code Either} of a {@link Seq} of left or right values
+     * @throws NullPointerException if {@code eithers} is null
      */
-    static <L,R> Either<L, Seq<R>> sequence(Iterable<? extends Either<? extends L, ? extends R>> values) {
-        Objects.requireNonNull(values, "values is null");
-        Vector<R> vector = Vector.empty();
-        for (Either<? extends L, ? extends R> value : values) {
-            if (value.isLeft()) {
-                return Either.left(value.getLeft());
-            }
-            vector = vector.append(value.get());
-        }
-        return Either.right(vector);
+    @SuppressWarnings("unchecked")
+    static <L,R> Either<Seq<L>, Seq<R>> sequence(Iterable<? extends Either<? extends L, ? extends R>> eithers) {
+        Objects.requireNonNull(eithers, "eithers is null");
+        return Iterator.ofAll((Iterable<Either<L, R>>) eithers)
+                .partition(Either::isLeft)
+                .apply((leftPartition, rightPartition) -> leftPartition.hasNext()
+                    ? Either.left(leftPartition.map(Either::getLeft).toVector())
+                    : Either.right(rightPartition.map(Either::get).toVector())
+                );
     }
 
     /**
