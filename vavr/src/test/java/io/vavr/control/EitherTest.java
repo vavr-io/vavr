@@ -9,6 +9,7 @@ package io.vavr.control;
 import io.vavr.AbstractValueTest;
 import io.vavr.collection.Seq;
 import io.vavr.collection.List;
+import io.vavr.control.fluent.Validation;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -308,17 +309,32 @@ public class EitherTest extends AbstractValueTest {
     // -- toValidation
 
     @Test
+    public void shouldConvertToValidDeprecatedValidation() {
+        final io.vavr.control.Validation<?, Integer> validation = Either.right(42).toValidation();
+        assertThat(validation.isValid()).isTrue();
+        assertThat(validation.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldConvertToInvalidDeprecateValidation() {
+        final io.vavr.control.Validation<String, ?> validation = Either.left("vavr").toValidation();
+        assertThat(validation.isInvalid()).isTrue();
+        assertThat(validation.getError()).isEqualTo("vavr");
+    }
+
+
+    @Test
     public void shouldConvertToValidValidation() {
-        final Validation<?, Integer> validation = Either.right(42).toValidation();
+        final Validation<?, Integer> validation = Either.right(42).toFluentValidation();
         assertThat(validation.isValid()).isTrue();
         assertThat(validation.get()).isEqualTo(42);
     }
 
     @Test
     public void shouldConvertToInvalidValidation() {
-        final Validation<String, ?> validation = Either.left("vavr").toValidation();
+        final Validation<String, ?> validation = Either.left("vavr").toFluentValidation();
         assertThat(validation.isInvalid()).isTrue();
-        assertThat(validation.getError()).isEqualTo("vavr");
+        assertThat(validation.getErrors()).isEqualTo(List.of("vavr"));
     }
 
     // hashCode
