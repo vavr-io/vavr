@@ -10,6 +10,7 @@ import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
+import io.vavr.control.fluent.Validation;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -431,9 +432,19 @@ public interface Either<L, R> extends Value<R>, Serializable {
     /**
      * Returns this as {@code Validation}.
      *
+     * @return {@code io.vavr.control.Validation.valid(get())} if this is right, otherwise
+     * {@code io.vavr.control.Validation.invalid(getLeft())}.
+     */
+    default io.vavr.control.Validation<L, R> toValidation() {
+        return isRight() ? io.vavr.control.Validation.valid(get()) : io.vavr.control.Validation.invalid(getLeft());
+    }
+
+    /**
+     * Returns this as {@code Validation}.
+     *
      * @return {@code Validation.valid(get())} if this is right, otherwise {@code Validation.invalid(getLeft())}.
      */
-    default Validation<L, R> toValidation() {
+    default Validation<L, R> toFluentValidation() {
         return isRight() ? Validation.valid(get()) : Validation.invalid(getLeft());
     }
 

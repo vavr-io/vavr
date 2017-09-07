@@ -11,7 +11,7 @@ import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import io.vavr.control.Validation;
+import io.vavr.control.fluent.Validation;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -566,7 +566,20 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Validation.Valid} containing the given {@code value} if this is empty, otherwise
      * a new {@link Validation.Invalid} containing this value.
      */
-    default <U> Validation<T, U> toInvalid(U value) {
+    @Deprecated
+    default <U> io.vavr.control.Validation<T, U> toInvalid(U value) {
+        return isEmpty() ? io.vavr.control.Validation.valid(value) : io.vavr.control.Validation.invalid(get());
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <U>   value type of a {@code Valid}
+     * @param value An instance of a {@code Valid} value
+     * @return A new {@link Validation.Valid} containing the given {@code value} if this is empty, otherwise
+     * a new {@link Validation.Invalid} containing this value.
+     */
+    default <U> Validation<T, U> toInvalidated(U value) {
         return isEmpty() ? Validation.valid(value) : Validation.invalid(get());
     }
 
@@ -579,7 +592,22 @@ public interface Value<T> extends Iterable<T> {
      * otherwise a new {@link Validation.Invalid} containing this value.
      * @throws NullPointerException if {@code valueSupplier} is null
      */
-    default <U> Validation<T, U> toInvalid(Supplier<? extends U> valueSupplier) {
+    @Deprecated
+    default <U> io.vavr.control.Validation<T, U> toInvalid(Supplier<? extends U> valueSupplier) {
+        Objects.requireNonNull(valueSupplier, "valueSupplier is null");
+        return isEmpty() ? io.vavr.control.Validation.valid(valueSupplier.get()) : io.vavr.control.Validation.invalid(get());
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <U>           value type of a {@code Valid}
+     * @param valueSupplier A supplier of a {@code Valid} value
+     * @return A new {@link Validation.Valid} containing the result of {@code valueSupplier} if this is empty,
+     * otherwise a new {@link Validation.Invalid} containing this value.
+     * @throws NullPointerException if {@code valueSupplier} is null
+     */
+    default <U> Validation<T, U> toInvalidated(Supplier<? extends U> valueSupplier) {
         Objects.requireNonNull(valueSupplier, "valueSupplier is null");
         return isEmpty() ? Validation.valid(valueSupplier.get()) : Validation.invalid(get());
     }
@@ -975,11 +1003,27 @@ public interface Value<T> extends Iterable<T> {
      * @param <L>     Validation error component type
      * @return A new {@link Validation}.
      */
-    default <L> Validation<L, T> toValidation(L invalid) {
+    @Deprecated
+    default <L> io.vavr.control.Validation<L, T> toValidation(L invalid) {
+        if (this instanceof io.vavr.control.Validation) {
+            return ((io.vavr.control.Validation<?, T>) this).mapError(ignored -> invalid);
+        } else {
+            return isEmpty() ? Invalid(invalid) : Valid(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Validation}.
+     *
+     * @param invalid An invalid value for the {@link Validation}
+     * @param <L>     Validation error component type
+     * @return A new {@link Validation}.
+     */
+    default <L> Validation<L, T> toFluentValidation(L invalid) {
         if (this instanceof Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalid);
         } else {
-            return isEmpty() ? Invalid(invalid) : Valid(get());
+            return isEmpty() ? Validation.invalid(invalid) : Validation.valid(get());
         }
     }
 
@@ -990,12 +1034,29 @@ public interface Value<T> extends Iterable<T> {
      * @param <L>             Validation error component type
      * @return A new {@link Validation}.
      */
-    default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
+    @Deprecated
+    default <L> io.vavr.control.Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
         Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
-        if (this instanceof Validation) {
-            return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
+        if (this instanceof io.vavr.control.Validation) {
+            return ((io.vavr.control.Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
         } else {
             return isEmpty() ? Invalid(invalidSupplier.get()) : Valid(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Validation}.
+     *
+     * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
+     * @param <L>             Validation error component type
+     * @return A new {@link Validation}.
+     */
+    default <L> Validation<L, T> toFluentValidation(Supplier<? extends L> invalidSupplier) {
+        Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
+        if (this instanceof io.vavr.control.Validation) {
+            return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
+        } else {
+            return isEmpty() ? Validation.invalid(invalidSupplier.get()) : Validation.valid(get());
         }
     }
 
@@ -1171,7 +1232,21 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Validation.Invalid} containing the given {@code error} if this is empty, otherwise
      * a new {@link Validation.Valid} containing this value.
      */
-    default <E> Validation<E, T> toValid(E error) {
+    @Deprecated
+    default <E> io.vavr.control.Validation<E, T> toValid(E error) {
+        return isEmpty() ? io.vavr.control.Validation.invalid(error) : io.vavr.control.Validation.valid(get());
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <E>   error type of an {@code Invalid}
+     * @param error An error
+     * @return A new {@link Validation.Invalid} containing the given {@code error} if this is empty, otherwise
+     * a new {@link Validation.Valid} containing this value.
+     */
+    @Deprecated
+    default <E> Validation<E, T> toValidated(E error) {
         return isEmpty() ? Validation.invalid(error) : Validation.valid(get());
     }
 
@@ -1184,7 +1259,22 @@ public interface Value<T> extends Iterable<T> {
      * otherwise a new {@link Validation.Valid} containing this value.
      * @throws NullPointerException if {@code valueSupplier} is null
      */
-    default <E> Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
+    @Deprecated
+    default <E> io.vavr.control.Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
+        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
+        return isEmpty() ? io.vavr.control.Validation.invalid(errorSupplier.get()) : io.vavr.control.Validation.valid(get());
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <E>           error type of an {@code Invalid}
+     * @param errorSupplier A supplier of an error
+     * @return A new {@link Validation.Invalid} containing the result of {@code errorSupplier} if this is empty,
+     * otherwise a new {@link Validation.Valid} containing this value.
+     * @throws NullPointerException if {@code valueSupplier} is null
+     */
+    default <E> Validation<E, T> toValidated(Supplier<? extends E> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
         return isEmpty() ? Validation.invalid(errorSupplier.get()) : Validation.valid(get());
     }

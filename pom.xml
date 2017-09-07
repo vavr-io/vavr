@@ -248,11 +248,11 @@ Note: The maven build currently needs to be started from the vavr root dir
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
-                        <showDeprecation>true</showDeprecation>
+                        <showDeprecation>false</showDeprecation>
                         <showWarnings>true</showWarnings>
                         <compilerArgs>
                             <arg>-Werror</arg>
-                            <arg>-Xlint:all</arg>
+                            <arg>-Xlint:all,-deprecation</arg>
                             <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
                             <arg>-Xlint:-processing</arg>
                         </compilerArgs>

@@ -966,7 +966,8 @@ public abstract class AbstractValueTest {
                         instanceOf(Option.class),
                         instanceOf(Try.class),
                         instanceOf(Traversable.class),
-                        instanceOf(Validation.class)
+                        instanceOf(Validation.class),
+                        instanceOf(io.vavr.control.fluent.Validation.class)
                 )), true)
         );
         assertThat(actual).isEqualTo(expected);
