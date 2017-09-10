@@ -212,19 +212,18 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         if (isEmpty()) {
             return Option.none();
         } else {
-            final Traversable<?> objects = isTraversableAgain() ? this : toStream();
-            final Object o = objects.head();
-            if (o instanceof Number) {
-                final Traversable<Number> numbers = (Traversable<Number>) objects;
+            final Object head = head();
+            if (head instanceof Number) {
+                final java.util.stream.Stream<Number> numbers = (java.util.stream.Stream<Number>) (
+                        isTraversableAgain() ? this : Iterator.of(head).concat(Iterator.ofAll(this))
+                ).toJavaStream();
                 final double d;
-                if (o instanceof Integer || o instanceof Long || o instanceof Byte || o instanceof BigInteger || o instanceof Short) {
-                    d = numbers.toJavaStream()
-                            .mapToLong(Number::longValue)
+                if (head instanceof Integer || head instanceof Long || head instanceof Byte || head instanceof BigInteger || head instanceof Short) {
+                    d = numbers.mapToLong(Number::longValue)
                             .average()
                             .getAsDouble();
                 } else {
-                    d = numbers.toJavaStream()
-                            .mapToDouble(Number::doubleValue)
+                    d = numbers.mapToDouble(Number::doubleValue)
                             .average()
                             .getAsDouble();
                 }
@@ -798,12 +797,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> max() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
-            return ts.maxBy(Comparators.naturalComparator());
-        }
+        return maxBy(Comparators.naturalComparator());
     }
 
     /**
@@ -860,12 +854,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
-            return ts.minBy(Comparators.naturalComparator());
-        }
+        return minBy(Comparators.naturalComparator());
     }
 
     /**

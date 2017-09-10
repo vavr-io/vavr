@@ -182,7 +182,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public Traversable<V> values() {
-        return Iterator.concat(back.values()).toStream();
+        return Iterator.concat(back.values()).toVector();
     }
 
     @SuppressWarnings("unchecked")

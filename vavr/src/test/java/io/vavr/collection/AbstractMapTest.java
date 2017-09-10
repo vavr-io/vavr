@@ -500,8 +500,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     public void shouldBiMapNonEmpty() {
-        final Seq<Tuple2<Integer, String>> expected = Stream.of(Tuple.of(2, "1!"), Tuple.of(3, "2!"));
-        final Seq<Tuple2<Integer, String>> actual = emptyInt().put(1, "1").put(2, "2").bimap(i -> i + 1, s -> s + "!").toStream();
+        final Seq<Tuple2<Integer, String>> expected = List.of(Tuple.of(2, "1!"), Tuple.of(3, "2!"));
+        final Seq<Tuple2<Integer, String>> actual = emptyInt().put(1, "1").put(2, "2").bimap(i -> i + 1, s -> s + "!").toList();
         assertThat(actual).isEqualTo(expected);
     }
 
