@@ -22,6 +22,7 @@ package io.vavr.control;
 import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Vector;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -180,11 +181,11 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * Reduces many {@code Either}s into a single {@code Either} by transforming an
      * {@code Iterable<Either<L, R>>} into a {@code Either<Seq<L>, Seq<R>>}.
      * <p>
-     * If any of the given {@code Either}s is a {@link Either.Left} then sequence returns a {@link Either.Left}
-     * containing a non-empty {@link Seq} of all left values.
+     * If any of the given {@code Either}s is a {@link Either.Left} then {@code sequence} returns a
+     * {@link Either.Left} containing a non-empty {@link Seq} of all left values.
      * <p>
-     * If none of the given {@code Either}s is a {@link Either.Left} then sequence returns a {@link Either.Right}
-     * containing a (possibly empty) {@link Seq} of all right values.
+     * If none of the given {@code Either}s is a {@link Either.Left} then {@code sequence} returns a
+     * {@link Either.Right} containing a (possibly empty) {@link Seq} of all right values.
      *
      * <pre>{@code
      * // = Right(Seq())
@@ -212,6 +213,46 @@ public interface Either<L, R> extends Value<R>, Serializable {
                     ? Either.left(leftPartition.map(Either::getLeft).toVector())
                     : Either.right(rightPartition.map(Either::get).toVector())
                 );
+    }
+
+    /**
+     * Reduces many {@code Either}s into a single {@code Either} by transforming an
+     * {@code Iterable<Either<L, R>>} into a {@code Either<L, Seq<R>>}.
+     * <p>
+     * If any of the given {@code Either}s is a {@link Either.Left} then {@code sequenceRight} returns a
+     * {@link Either.Left} containing the first left value (in iteration order).
+     * <p>
+     * If none of the given {@code Either}s is a {@link Either.Left} then {@code sequenceRight} returns a
+     * {@link Either.Right} containing a (possibly empty) {@link Seq} of all right values.
+     *
+     * <pre>{@code
+     * // = Right(Seq())
+     * Either.sequenceRight(List.empty())
+     *
+     * // = Right(Seq(1, 2))
+     * Either.sequenceRight(List.of(Either.right(1), Either.right(2)))
+     *
+     * // = Left("x1")
+     * Either.sequenceRight(List.of(Either.right(1), Either.left("x1"), Either.left("x2")))
+     * }</pre>
+     *
+     * @param eithers An {@link Iterable} of {@code Either}s
+     * @param <L>     closure of all left types of the given {@code Either}s
+     * @param <R>     closure of all right types of the given {@code Either}s
+     * @return An {@code Either} of either a {@link Seq} of right values or the first left value, if present.
+     * @throws NullPointerException if {@code eithers} is null
+     */
+    static <L,R> Either<L, Seq<R>> sequenceRight(Iterable<? extends Either<? extends L, ? extends R>> eithers) {
+        Objects.requireNonNull(eithers, "eithers is null");
+        Vector<R> rightValues = Vector.empty();
+        for (Either<? extends L, ? extends R> either : eithers) {
+            if (either.isRight()) {
+                rightValues = rightValues.append(either.get());
+            } else {
+                return Either.left(either.getLeft());
+            }
+        }
+        return Either.right(rightValues);
     }
 
     /**

@@ -146,6 +146,49 @@ public class EitherTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- sequenceRight
+
+    @Test
+    public void shouldThrowWhenSequencingRightNull() {
+        assertThatThrownBy(() -> Either.sequenceRight(null))
+                .isInstanceOf(NullPointerException.class)
+                .withFailMessage("eithers is null");
+    }
+
+    @Test
+    public void shouldSequenceRightEmptyIterableOfEither() {
+        final Iterable<Either<Integer, String>> eithers = List.empty();
+        final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
+        final Either<Integer, Seq<String>> expected = Either.right(Vector.empty());
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSequenceRightNonEmptyIterableOfRight() {
+        final Iterable<Either<Integer, String>> eithers = List.of(Either.right("a"), Either.right("b"), Either.right("c"));
+        final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
+        final Either<Integer, Seq<String>> expected = Either.right(Vector.of("a", "b", "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSequenceRightNonEmptyIterableOfLeft() {
+        final Iterable<Either<Integer, String>> eithers = List.of(Either.left(1), Either.left(2), Either.left(3));
+        final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
+        final Either<Integer, Seq<String>> expected = Either.left(1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSequenceRightNonEmptyIterableOfMixedEither() {
+        final Iterable<Either<Integer,String>> eithers = List.of(Either.right("a"), Either.left(1), Either.right("c"), Either.left(3));
+        final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
+        final Either<Integer, Seq<String>> expected = Either.left(1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // --
+
     @Test
     public void shouldReturnSameWhenCallingMapOnLeft() {
         final Either<Integer, Object> actual = Left(1);
