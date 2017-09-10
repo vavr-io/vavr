@@ -339,7 +339,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     default <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) iterator().map(mapper).toStream();
+        return (Seq<U>) iterator().map(mapper).toVector();
     }
 
     /**
@@ -581,7 +581,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) iterator().flatMap(mapper).toStream();
+        return (Seq<U>) iterator().flatMap(mapper).toVector();
     }
 
     @Override
