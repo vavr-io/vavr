@@ -374,6 +374,15 @@ public class TreeSetTest extends AbstractSortedSetTest {
         return (i1, i2) -> Integer.compare(i2, i1);
     }
 
+    // -- ignored tests
+
+    @Override
+    @Test
+    @Ignore
+    public void shouldCalculateAverageOfDoubleAndFloat() {
+        // it is not possible to create a TreeSet containing unrelated types
+    }
+
     @Override
     @Test
     @Ignore
