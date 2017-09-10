@@ -348,6 +348,14 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         emptyIntInt().put(1, 2).apply(3);
     }
 
+    // -- asMap
+
+    @Test
+    public void shouldConvertToMap() {
+        Multimap<Integer, Integer> mm = emptyIntInt().put(1, 2).put(1, 3);
+        assertThat(mm.asMap().get(1).get().mkString(",")).isEqualTo("2,3");
+    }
+
     // -- biMap
 
     @Test
