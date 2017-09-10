@@ -148,6 +148,13 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     }
 
     /**
+     * Converts this {@code Multimap} to a {@code Map}
+     *
+     * @return {@code Map<K, Traversable<V>>}
+     */
+    Map<K, Traversable<V>> asMap();
+
+    /**
      * Maps this {@code Multimap} to a new {@code Multimap} with different component type by applying a function to its elements.
      *
      * @param <K2>        key's component type of the multimap result
