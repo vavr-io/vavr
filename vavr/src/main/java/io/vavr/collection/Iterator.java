@@ -41,8 +41,6 @@ import static io.vavr.collection.IteratorModule.EmptyIterator;
  * {@code io.vavr.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
  * whose purpose is to iterate <em>once</em> over a sequence of elements.
  * <p>
- * It is recommended to create instances using {@link AbstractIterator} in favor of {@code Iterator}.
- * <p>
  * <strong>Note:</strong> Iterators encapsulate mutable state.
  * They are not meant to be used concurrently by different threads. Do not reuse Iterators, e.g. after passing to
  * {@linkplain io.vavr.collection.List#ofAll(Iterable)}.
