@@ -27,8 +27,8 @@ import scala.language.implicitConversions
 
 val N = 8
 val VARARGS = 10
-val TARGET_MAIN = "vavr/src-gen/main/java"
-val TARGET_TEST = "vavr/src-gen/test/java"
+val TARGET_MAIN = s"${project.getBasedir()}/src-gen/main/java"
+val TARGET_TEST = s"${project.getBasedir()}/src-gen/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
 
 /**
