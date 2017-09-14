@@ -1268,7 +1268,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     @Override
     public Seq<V> values() {
-        return iterator().map(Tuple2::_2).toStream();
+        return map(Tuple2::_2);
     }
 
     // -- Object
