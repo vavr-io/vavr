@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.control;
 
@@ -675,6 +688,22 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Folds either the {@code Failure} or the {@code Success} side of the Try value.
+     *
+     * @param ifFail  maps the left value if this is a {@code Failure}
+     * @param f maps the value if this is a {@code Success}
+     * @param <X>         type of the folded value
+     * @return A value of type X
+     */
+    default <X> X fold(Function<? super Throwable, ? extends X> ifFail, Function<? super T, ? extends X> f) {
+        if (isFailure()) {
+            return ifFail.apply(getCause());
+        } else {
+            return f.apply(get());
+        }
+    }
+
+    /**
      * Applies the action to the value of a Success or does nothing in the case of a Failure.
      *
      * @param action A Consumer
@@ -1165,7 +1194,7 @@ public interface Try<T> extends Value<T>, Serializable {
 
     /**
      * A {@code Try}-with-resources builder that operates on one {@link AutoCloseable} resource.
-     * 
+     *
      * @param <T1> Type of the 1st resource.
      */
     final class WithResources1<T1 extends AutoCloseable> {

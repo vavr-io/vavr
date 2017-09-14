@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -70,7 +83,7 @@ final class Collections {
     // because of O(N) complexity of get() and infinite loop in size()
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
-    static <T, S extends Seq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
+    static <T, S extends IndexedSeq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < seq.length(); i++) {
             if (predicate.test(seq.get(i))) {
@@ -371,6 +384,34 @@ final class Collections {
             }
             return of.apply(elements);
         }
+    }
+
+    // DEV-NOTE: Use this method for non-infinite and direct-access collection only
+    // because of O(N) complexity of get() and infinite loop in size()
+    // see https://github.com/vavr-io/vavr/issues/2007
+    @SuppressWarnings("unchecked")
+    static <T, S extends IndexedSeq<T>> S takeRightUntil(S seq, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (int i = seq.length() - 1; i >= 0; i--) {
+            if (predicate.test(seq.get(i))) {
+                return (S) seq.drop(i + 1);
+            }
+        }
+        return seq;
+    }
+
+    // DEV-NOTE: Use this method for non-infinite and direct-access collection only
+    // because of O(N) complexity of get() and infinite loop in size()
+    // see https://github.com/vavr-io/vavr/issues/2007
+    @SuppressWarnings("unchecked")
+    static <T, S extends IndexedSeq<T>> S takeUntil(S seq, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (int i = 0; i < seq.length(); i++) {
+            if (predicate.test(seq.get(i))) {
+                return (S) seq.take(i);
+            }
+        }
+        return seq;
     }
 
     static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {

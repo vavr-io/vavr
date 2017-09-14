@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -1307,6 +1320,17 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<T> takeUntil(Predicate<? super T> predicate) {
+        return io.vavr.collection.Collections.takeUntil(this, predicate);
+    }
+
+    @Override
+    public Array<T> takeWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeUntil(predicate.negate());
+    }
+
+    @Override
     public Array<T> takeRight(int n) {
         if (n >= length()) {
             return this;
@@ -1320,21 +1344,14 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
+    public Array<T> takeRightUntil(Predicate<? super T> predicate) {
+        return io.vavr.collection.Collections.takeRightUntil(this, predicate);
     }
 
     @Override
-    public Array<T> takeWhile(Predicate<? super T> predicate) {
+    public Array<T> takeRightWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        for (int i = 0; i < delegate.length; i++) {
-            final T value = get(i);
-            if (!predicate.test(value)) {
-                return take(i);
-            }
-        }
-        return this;
+        return takeRightUntil(predicate.negate());
     }
 
     /**

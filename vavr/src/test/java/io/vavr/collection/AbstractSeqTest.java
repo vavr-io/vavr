@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -1495,6 +1508,50 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(shuffled.indexOf(2)).isNotEqualTo(-1);
         assertThat(shuffled.indexOf(3)).isNotEqualTo(-1);
         assertThat(shuffled.indexOf(4)).isEqualTo(-1);
+    }
+
+    // -- takeRightUntil
+
+    @Test
+    public void shouldTakeRightUntilNoneOnNil() {
+        assertThat(empty().takeRightUntil(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightUntilAllOnFalseCondition() {
+        assertThat(of(1, 2, 3).takeRightUntil(x -> false)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldTakeRightUntilAllOnTrueCondition() {
+        assertThat(of(1, 2, 3).takeRightUntil(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightUntilAsExpected() {
+        assertThat(of(2, 3, 4, 6).takeRightUntil(x -> x % 2 != 0)).isEqualTo(of(4, 6));
+    }
+
+    // -- takeRightWhile
+
+    @Test
+    public void shouldTakeRightWhileNoneOnNil() {
+        assertThat(empty().takeRightWhile(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightWhileAllOnFalseCondition() {
+        assertThat(of(1, 2, 3).takeRightWhile(x -> false)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldTakeRightWhileAllOnTrueCondition() {
+        assertThat(of(1, 2, 3).takeRightWhile(x -> true)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldTakeRightWhileAsExpected() {
+        assertThat(of(2, 3, 4, 6).takeRightWhile(x -> x % 2 == 0)).isEqualTo(of(4, 6));
     }
 
     // -- update

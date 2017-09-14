@@ -1,8 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <prerequisites>
-        <maven>3.0.5</maven>
-    </prerequisites>
     <parent>
         <groupId>io.vavr</groupId>
         <artifactId>vavr-parent</artifactId>
@@ -22,6 +19,12 @@
         </license>
     </licenses>
     <dependencies>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.16</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vavr-match</artifactId>
@@ -75,4 +78,4 @@
             </plugin>
         </plugins>
     </build>
-</project>
+</project>[pm

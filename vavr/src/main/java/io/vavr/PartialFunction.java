@@ -1,10 +1,25 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr;
+
+import io.vavr.control.Option;
 
 /**
  * Represents a partial function T -&gt; R that is not necessarily defined for all input values of type T.
@@ -42,5 +57,15 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
      * @return true, if the given value is contained in the function's domain, false otherwise
      */
     boolean isDefinedAt(T value);
+
+    /**
+     * Lifts this partial function into a total function that returns an {@code Option} result.
+     *
+     * @return a function that applies arguments to this function and returns {@code Some(result)}
+     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     */
+    default Function1<T, Option<R>> lift() {
+        return t -> Option.when(isDefinedAt(t), apply(t));
+    }
 
 }

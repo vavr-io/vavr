@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -1524,17 +1537,6 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> takeRight(int n) {
-        if (n <= 0) {
-            return empty();
-        }
-        if (n >= length()) {
-            return this;
-        }
-        return reverse().take(n).reverse();
-    }
-
-    @Override
     default List<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
@@ -1548,6 +1550,29 @@ public interface List<T> extends LinearSeq<T> {
             result = result.prepend(list.head());
         }
         return result.length() == length() ? this : result.reverse();
+    }
+
+    @Override
+    default List<T> takeRight(int n) {
+        if (n <= 0) {
+            return empty();
+        }
+        if (n >= length()) {
+            return this;
+        }
+        return reverse().take(n).reverse();
+    }
+
+    @Override
+    default List<T> takeRightUntil(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return takeRightWhile(predicate.negate());
+    }
+
+    @Override
+    default List<T> takeRightWhile(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reverse().takeWhile(predicate).reverse();
     }
 
     /**

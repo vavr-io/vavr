@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -1081,7 +1094,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * Drops elements until the predicate holds for the current element, starting from the end.
      *
      * @param predicate A condition tested subsequently for this elements, starting from the end.
-     * @return a new instance consisting of all elements starting from the last one which does satisfy the given
+     * @return a new instance consisting of all elements until and including the last one which does satisfy the given
      * predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
@@ -1094,7 +1107,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * It is intended to be used with method references, which cannot be negated directly.
      *
      * @param predicate A condition tested subsequently for this elements, starting from the end.
-     * @return a new instance consisting of all elements starting from the last one which does not satisfy the
+     * @return a new instance consisting of all elements until and including the last one which does not satisfy the
      * given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
@@ -1179,13 +1192,34 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Seq<T> take(int n);
 
     @Override
-    Seq<T> takeRight(int n);
-
-    @Override
     Seq<T> takeUntil(Predicate<? super T> predicate);
 
     @Override
     Seq<T> takeWhile(Predicate<? super T> predicate);
+
+    @Override
+    Seq<T> takeRight(int n);
+
+    /**
+     * Takes elements until the predicate holds for the current element, starting from the end.
+     *
+     * @param predicate A condition tested subsequently for this elements, starting from the end.
+     * @return a new instance consisting of all elements after the last one which does satisfy the given predicate.
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Seq<T> takeRightUntil(Predicate<? super T> predicate);
+
+    /**
+     * Takes elements while the predicate holds for the current element, starting from the end.
+     * <p>
+     * Note: This is essentially the same as {@code takeRightUntil(predicate.negate())}.
+     * It is intended to be used with method references, which cannot be negated directly.
+     *
+     * @param predicate A condition tested subsequently for this elements, starting from the end.
+     * @return a new instance consisting of all elements after the last one which does not satisfy the given predicate.
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Seq<T> takeRightWhile(Predicate<? super T> predicate);
 
     @Override
     <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
