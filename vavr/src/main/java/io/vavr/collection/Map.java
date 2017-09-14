@@ -589,6 +589,16 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
         return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
     }
 
+    /**
+     * Returns a new {@link Seq} that contains the values of this {@code Map}.
+     *
+     * <pre>{@code
+     * // = Seq("a", "b", "c")
+     * HashMap.of(1, "a", 2, "b", 3, "c").values()
+     * }</pre>
+     *
+     * @return a new {@link Seq}
+     */
     Seq<V> values();
 
     /**

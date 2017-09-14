@@ -598,7 +598,21 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to an untyped Java array.
+     * Converts this to a Java array with component type {@code Object}
+     *
+     * <pre>{@code
+     * // = [] of type Object[]
+     * Future.<String> of(() -> { throw new Error(); })
+     *       .toJavaArray()
+     *
+     * // = [ok] of type Object[]
+     * Try.of(() -> "ok")
+     *    .toJavaArray()
+     *
+     * // = [1, 2, 3] of type Object[]
+     * List.of(1, 2, 3)
+     *     .toJavaArray()
+     * }</pre>
      *
      * @return A new Java array.
      */
@@ -617,8 +631,22 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a typed Java array.
+     * Converts this to a Java array having an accurate component type.
      *
+     * <pre>{@code
+     * // = [] of type String[]
+     * Future.<String> of(() -> { throw new Error(); })
+     *       .toJavaArray(String.class)
+     *
+     * // = [ok] of type String[]
+     * Try.of(() -> "ok")
+     *    .toJavaArray(String.class)
+     *
+     * // = [1, 2, 3] of type Integer[]
+     * List.of(1, 2, 3)
+     *     .toJavaArray(Integer.class)
+     * }</pre>
+     * 
      * @param componentType Component type of the array
      * @return A new Java array.
      * @throws NullPointerException if componentType is null
@@ -645,10 +673,24 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a specific {@link java.util.Collection}.
+     * Converts this to a specific mutable {@link java.util.Collection} of type {@code C}.
+     * Elements are added by calling {@link java.util.Collection#add(Object)}.
      *
-     * @param factory A {@code java.util.Collection} factory
-     *                that returns empty collection with the specified initial capacity
+     * <pre>{@code
+     * // = []
+     * Future.<String> of(() -> { throw new Error(); })
+     *       .toJavaCollection(java.util.HashSet::new)
+     *
+     * // = [ok]
+     * Try.of(() -> "ok")
+     *    .toJavaCollection(java.util.HashSet::new)
+     * 
+     * // = [1, 2, 3]
+     * List.of(1, 2, 3)
+     *     .toJavaCollection(java.util.LinkedHashSet::new)
+     * }</pre>
+     *
+     * @param factory A factory that returns an empty mutable {@code java.util.Collection} with the specified initial capacity
      * @param <C>     a sub-type of {@code java.util.Collection}
      * @return a new {@code java.util.Collection} of type {@code C}
      */
@@ -657,19 +699,53 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to an {@link java.util.List}.
+     * Converts this to a mutable {@link java.util.List}.
+     * Elements are added by calling {@link java.util.List#add(Object)}.
+     *
+     * <pre>{@code
+     * // = []
+     * Future.<String> of(() -> { throw new Error(); })
+     *       .toJavaList()
+     * 
+     * // = [ok]
+     * Try.of(() -> "ok")
+     *    .toJavaList()
+     *
+     * // = [1, 2, 3]
+     * List.of(1, 2, 3)
+     *     .toJavaList()
+     * }</pre>
      *
      * @return A new {@link java.util.ArrayList}.
      */
     default java.util.List<T> toJavaList() {
-        return ValueModule.toJavaCollection(this, ArrayList::new);
+        return ValueModule.toJavaCollection(this, ArrayList::new, 10);
     }
 
     /**
-     * Converts this to a specific {@link java.util.List}.
+     * Converts this to a specific mutable {@link java.util.List}.
+     * Elements are added by calling {@link java.util.List#add(Object)}.
      *
-     * @param factory A {@code java.util.List} factory
-     * @param <LIST>  a sub-type of {@code java.util.List}
+     * <pre>{@code
+     * // = []
+     * Future.<String> of(() -> { throw new Error(); })
+     *       .toJavaList(java.util.ArrayList::new)
+     * 
+     * // = [ok]
+     * Try.of(() -> "ok")
+     *    .toJavaList(java.util.ArrayList::new)
+     *
+     * // = [1, 2, 3]
+     * List.of(1, 2, 3)
+     *     .toJavaList(java.util.ArrayList::new)
+     *
+     * // = [1, 2, 3]
+     * List.of(1, 2, 3)
+     *     .toJavaList(capacity -> new java.util.LinkedList<>())
+     * }</pre>
+     *
+     * @param factory A factory that returns an empty mutable {@code java.util.List} with the specified initial capacity
+     * @param <LIST>  A sub-type of {@code java.util.List}
      * @return a new {@code java.util.List} of type {@code LIST}
      */
     default <LIST extends java.util.List<T>> LIST toJavaList(Function<Integer, LIST> factory) {
@@ -677,7 +753,22 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a {@link java.util.Map}.
+     * Converts this to a mutable {@link java.util.Map}.
+     * Elements are added by calling {@link java.util.Map#put(Object, Object)}.
+     *
+     * <pre>{@code
+     * // = {}
+     * Future.<String> of(() -> { throw new Error(); })
+     *       .toJavaMap(s -> Tuple.of(s, s.length()))
+     * 
+     * // = {ok=2}
+     * Try.of(() -> "ok")
+     *    .toJavaMap(s -> Tuple.of(s, s.length()))
+     *
+     * // = {1=A, 2=B, 3=C}
+     * List.of(1, 2, 3)
+     *     .toJavaMap(i -> Tuple.of(i, (char) (i + 64)))
+     * }</pre>
      *
      * @param f   A function that maps an element to a key/value pair represented by Tuple2
      * @param <K> The key type
@@ -689,9 +780,24 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a specific {@link java.util.Map}.
+     * Converts this to a specific mutable {@link java.util.Map}.
+     * Elements are added by calling {@link java.util.Map#put(Object, Object)}.
      *
-     * @param factory     A {@code java.util.Map} factory
+     * <pre>{@code
+     * // = {}
+     * Future.<String> of(() -> { throw new Error(); })
+     *       .toJavaMap(java.util.HashMap::new, s -> s, String::length)
+     * 
+     * // = {ok=2}
+     * Try.of(() -> "ok")
+     *    .toJavaMap(java.util.TreeMap::new, s -> s, String::length)
+     *
+     * // = {1=A, 2=B, 3=C}
+     * List.of(1, 2, 3)
+     *     .toJavaMap(java.util.TreeMap::new, i -> i, i -> (char) (i + 64))
+     * }</pre>
+     *
+     * @param factory     A factory that creates an empty mutable {@code java.util.Map}
      * @param keyMapper   A function that maps an element to a key
      * @param valueMapper A function that maps an element to a value
      * @param <K>         The key type
@@ -706,9 +812,24 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a specific {@link java.util.Map}.
+     * Converts this to a specific mutable {@link java.util.Map}.
+     * Elements are added by calling {@link java.util.Map#put(Object, Object)}.
      *
-     * @param factory A {@code java.util.Map} factory
+     * <pre>{@code
+     * // = {}
+     * Future.<String> of(() -> { throw new Error(); })
+     *       .toJavaMap(java.util.HashMap::new, s -> Tuple.of(s, s.length()))
+     * 
+     * // = {ok=2}
+     * Try.of(() -> "ok")
+     *     .toJavaMap(java.util.TreeMap::new, s -> Tuple.of(s, s.length()))
+     * 
+     * // = {1=A, 2=B, 3=C}
+     * List.of(1, 2, 3)
+     *     .toJavaMap(java.util.TreeMap::new, i -> Tuple.of(i, (char) (i + 64)))
+     * }</pre>
+     *
+     * @param factory A factory that creates an empty mutable {@code java.util.Map}
      * @param f       A function that maps an element to a key/value pair represented by Tuple2
      * @param <K>     The key type
      * @param <V>     The value type
@@ -735,6 +856,20 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to an {@link java.util.Optional}.
      *
+     * <pre>{@code
+     * // = Optional.empty
+     * Future.of(() -> { throw new Error(); })
+     *       .toJavaOptional()
+     *
+     * // = Optional[ok]
+     * Try.of(() -> "ok")
+     *     .toJavaOptional()
+     *
+     * // = Optional[1]
+     * List.of(1, 2, 3)
+     *     .toJavaOptional()
+     * }</pre>
+     *
      * @return A new {@link java.util.Optional}.
      */
     default Optional<T> toJavaOptional() {
@@ -742,19 +877,48 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a {@link java.util.Set}.
+     * Converts this to a mutable {@link java.util.Set}.
+     * Elements are added by calling {@link java.util.Set#add(Object}.
+     *
+     * <pre>{@code
+     * // = []
+     * Future.of(() -> { throw new Error(); })
+     *       .toJavaSet()
+     * 
+     * // = [ok]
+     * Try.of(() -> "ok")
+     *     .toJavaSet()
+     *
+     * // = [1, 2, 3]
+     * List.of(1, 2, 3)
+     *     .toJavaSet()
+     * }</pre>
      *
      * @return A new {@link java.util.HashSet}.
      */
     default java.util.Set<T> toJavaSet() {
-        return ValueModule.toJavaCollection(this, java.util.HashSet::new);
+        return ValueModule.toJavaCollection(this, java.util.HashSet::new, 16);
     }
 
     /**
      * Converts this to a specific {@link java.util.Set}.
+     * Elements are added by calling {@link java.util.Set#add(Object}.
      *
-     * @param factory A {@code java.util.Set} factory
-     *                that returns empty set with the specified initial capacity
+     * <pre>{@code
+     * // = []
+     * Future.of(() -> { throw new Error(); })
+     *       .toJavaSet(java.util.HashSet::new)
+     * 
+     * // = [ok]
+     * Try.of(() -> "ok")
+     *     .toJavaSet(java.util.HashSet::new)
+     *
+     * // = [3, 2, 1]
+     * List.of(1, 2, 3)
+     *     .toJavaSet(capacity -> new java.util.TreeSet<>(Comparator.reverseOrder()))
+     * }</pre>
+     * 
+     * @param factory A factory that returns an empty mutable {@code java.util.Set} with the specified initial capacity
      * @param <SET>   a sub-type of {@code java.util.Set}
      * @return a new {@code java.util.Set} of type {@code SET}
      */
@@ -763,18 +927,50 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a sequential {@link java.util.stream.Stream}.
+     * Converts this to a sequential {@link java.util.stream.Stream} by calling
+     * {@code StreamSupport.stream(this.spliterator(), false)}.
+     *
+     * <pre>{@code
+     * // empty Stream
+     * Future.of(() -> { throw new Error(); })
+     *       .toJavaStream()
+     *
+     * // Stream containing "ok"
+     * Try.of(() -> "ok")
+     *    .toJavaStream()
+     *
+     * // Stream containing 1, 2, 3
+     * List.of(1, 2, 3)
+     *     .toJavaStream()
+     * }</pre>
      *
      * @return A new sequential {@link java.util.stream.Stream}.
+     * @see Value#spliterator()
      */
     default java.util.stream.Stream<T> toJavaStream() {
         return StreamSupport.stream(spliterator(), false);
     }
 
     /**
-     * Converts this to a parallel {@link java.util.stream.Stream}.
+     * Converts this to a parallel {@link java.util.stream.Stream} by calling
+     * {@code StreamSupport.stream(this.spliterator(), true)}.
+     *
+     * <pre>{@code
+     * // empty Stream
+     * Future.of(() -> { throw new Error(); })
+     *       .toJavaParallelStream()
+     *
+     * // Stream containing "ok"
+     * Try.of(() -> "ok")
+     *    .toJavaParallelStream()
+     *
+     * // Stream containing 1, 2, 3
+     * List.of(1, 2, 3)
+     *     .toJavaParallelStream()
+     * }</pre>
      *
      * @return A new parallel {@link java.util.stream.Stream}.
+     * @see Value#spliterator()
      */
     default java.util.stream.Stream<T> toJavaParallelStream() {
         return StreamSupport.stream(spliterator(), true);
@@ -1253,8 +1449,9 @@ public interface Value<T> extends Iterable<T> {
 }
 
 interface ValueModule {
-    static <T extends Traversable<V>, V> T toTraversable(
-            Value<V> value, T empty, Function<V, T> ofElement, Function<Iterable<V>, T> ofAll) {
+    
+    static <T, R extends Traversable<T>> R toTraversable(
+            Value<T> value, R empty, Function<T, R> ofElement, Function<Iterable<T>, R> ofAll) {
         if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
@@ -1264,8 +1461,8 @@ interface ValueModule {
         }
     }
 
-    static <T, K, V, M extends Map<K, V>, TT extends Tuple2<? extends K, ? extends V>> M toMap(
-            Value<T> value, M empty, Function<TT, M> ofElement, Function<Iterable<TT>, M> ofAll, Function<? super T, ? extends TT> f) {
+    static <T, K, V, E extends Tuple2<? extends K, ? extends V>, R extends Map<K, V>> R toMap(
+            Value<T> value, R empty, Function<E, R> ofElement, Function<Iterable<E>, R> ofAll, Function<? super T, ? extends E> f) {
         if (value.isEmpty()) {
             return empty;
         } else if (value.isSingleValued()) {
@@ -1275,12 +1472,20 @@ interface ValueModule {
         }
     }
 
-    static <T extends java.util.Collection<V>, V> T toJavaCollection(
-            Value<V> value, Function<Integer, T> containerSupplier) {
-        final int size = (value instanceof Traversable) && ((Traversable) value).isTraversableAgain()
-                ? ((Traversable<V>) value).size()
-                : 16;
-        final T container = containerSupplier.apply(size);
+    static <T, R extends java.util.Collection<T>> R toJavaCollection(
+            Value<T> value, Function<Integer, R> containerSupplier) {
+        return toJavaCollection(value, containerSupplier, 16);
+    }
+
+    static <T, R extends java.util.Collection<T>> R toJavaCollection(
+            Value<T> value, Function<Integer, R> containerSupplier, int defaultInitialCapacity) {
+        final int size;
+        if (value instanceof Traversable && ((Traversable) value).isTraversableAgain() && !value.isLazy()) {
+            size = ((Traversable) value).size();
+        } else {
+            size = defaultInitialCapacity;
+        }
+        final R container = containerSupplier.apply(size);
         value.forEach(container::add);
         return container;
     }
