@@ -16,9 +16,6 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
 * Update version properties: `mvn versions:update-properties`
 * Check for new plugin version: `mvn versions:display-plugin-updates`
 
-Note: The maven build currently needs to be started from the vavr root dir
-      because the code generators write to hard-coded relative directories.
-
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -84,7 +81,7 @@ Note: The maven build currently needs to be started from the vavr root dir
         <maven.source.version>3.0.1</maven.source.version>
         <maven.exec.version>1.5.0</maven.exec.version>
         <maven.gwt.plugin>1.0-rc-6</maven.gwt.plugin>
-        <scala.maven.version>3.2.2</scala.maven.version>
+        <scala.maven.version>3.3.1</scala.maven.version>
         <scala.version>2.11.7</scala.version>
     </properties>
     <dependencyManagement>
@@ -191,6 +188,7 @@ Note: The maven build currently needs to be started from the vavr root dir
                                 <goal>script</goal>
                             </goals>
                             <configuration>
+                                <includeScopes>plugin</includeScopes>
                                 <scriptFile>${project.basedir}/generator/Generator.scala</scriptFile>
                             </configuration>
                         </execution>
