@@ -20,6 +20,7 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -328,4 +329,14 @@ public class PriorityQueueTest extends AbstractTraversableTest {
             assertThat(oldQueue.peek()).isEqualTo(newQueue.head());
         }
     }
+
+    // -- ignored tests
+
+    @Override
+    @Test
+    @Ignore
+    public void shouldCalculateAverageOfDoubleAndFloat() {
+        // it is not possible to create a PriorityQueue containing unrelated types
+    }
+
 }

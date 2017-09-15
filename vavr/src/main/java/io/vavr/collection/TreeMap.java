@@ -1573,6 +1573,16 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
                 return Comparators.naturalComparator();
             }
 
+            @Override
+            public boolean equals(Object obj) {
+                return obj instanceof Natural;
+            }
+
+            @Override
+            public int hashCode() {
+                return 1;
+            }
+
             /**
              * Instance control for object serialization.
              *

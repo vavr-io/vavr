@@ -256,6 +256,38 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).average().get()).isEqualTo(.5);
     }
 
+    @Test
+    public void shouldComputeAvergageAndCompensateErrors() {
+        // Kahan's summation algorithm (used by DoubleStream.average()) returns 0.0 (false)
+        // Neumaier's modification of Kahan's algorithm returns 0.75 (correct)
+        assertThat(of(1.0, +10e100, 2.0, -10e100).average().get()).isEqualTo(0.75);
+    }
+
+    @Test
+    public void shouldCalculateAverageOfDoublesContainingNaN() {
+        assertThat(of(1.0, Double.NaN, 2.0).average().get()).isEqualTo(Double.NaN);
+    }
+
+    @Test
+    public void shouldCalculateAverageOfFloatsContainingNaN() {
+        assertThat(of(1.0f, Float.NaN, 2.0f).average().get()).isEqualTo(Float.NaN);
+    }
+
+    @Test
+    public void shouldCalculateAverageOfDoubleAndFloat() {
+        assertThat(this.<Number> of(1.0, 1.0f).average().get()).isEqualTo(1.0);
+    }
+
+    @Test
+    public void shouldCalculateAverageOfDoublePositiveAndNegativeInfinity() {
+        assertThat(of(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).average().get()).isEqualTo(Double.NaN);
+    }
+
+    @Test
+    public void shouldCalculateAverageOfFloatPositiveAndNegativeInfinity() {
+        assertThat(of(Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY).average().get()).isEqualTo(Float.NaN);
+    }
+
     // -- collect
 
     @Test
@@ -1157,6 +1189,31 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         of(1, null).max();
     }
 
+    @Test
+    public void shouldCalculateMaxOfDoublesContainingNaN() {
+        assertThat(of(1.0, Double.NaN, 2.0).max().get()).isEqualTo(Double.NaN);
+    }
+
+    @Test
+    public void shouldCalculateMaxOfFloatsContainingNaN() {
+        assertThat(of(1.0f, Float.NaN, 2.0f).max().get()).isEqualTo(Float.NaN);
+    }
+
+    @Test
+    public void shouldThrowClassCastExceptionWhenTryingToCalculateMaxOfDoubleAndFloat() {
+        assertThatThrownBy(() -> this.<Number> of(1.0, 1.0f).max()).isInstanceOf(ClassCastException.class);
+    }
+
+    @Test
+    public void shouldCalculateMaxOfDoublePositiveAndNegativeInfinity() {
+        assertThat(of(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).max().get()).isEqualTo(Double.POSITIVE_INFINITY);
+    }
+
+    @Test
+    public void shouldCalculateMaxOfFloatPositiveAndNegativeInfinity() {
+        assertThat(of(Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY).max().get()).isEqualTo(Float.POSITIVE_INFINITY);
+    }
+
     // -- maxBy(Comparator)
 
     @Test(expected = NullPointerException.class)
@@ -1284,6 +1341,34 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowNPEWhenMinOfIntAndNull() {
         of(1, null).min();
+    }
+
+    @Test
+    public void shouldCalculateMinOfDoublesContainingNaN() {
+        assertThat(of(1.0, Double.NaN, 2.0).min().get()).isEqualTo(Double.NaN);
+    }
+
+    @Test
+    public void shouldCalculateMinOfFloatsContainingNaN() {
+
+        System.out.println(TreeSet.of(1.0f, Float.NaN, 2.0f));
+
+        assertThat(of(1.0f, Float.NaN, 2.0f).min().get()).isEqualTo(Float.NaN);
+    }
+
+    @Test
+    public void shouldThrowClassCastExceptionWhenTryingToCalculateMinOfDoubleAndFloat() {
+        assertThatThrownBy(() -> this.<Number> of(1.0, 1.0f).min()).isInstanceOf(ClassCastException.class);
+    }
+
+    @Test
+    public void shouldCalculateMinOfDoublePositiveAndNegativeInfinity() {
+        assertThat(of(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).min().get()).isEqualTo(Double.NEGATIVE_INFINITY);
+    }
+
+    @Test
+    public void shouldCalculateMinOfFloatPositiveAndNegativeInfinity() {
+        assertThat(of(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).min().get()).isEqualTo(Double.NEGATIVE_INFINITY);
     }
 
     // -- minBy(Comparator)
@@ -1456,12 +1541,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeProductOfBigInteger() {
-        assertThat(of(BigInteger.ZERO, BigInteger.ONE).product()).isEqualTo(0L);
+        assertThat(of(BigInteger.ZERO, BigInteger.ONE).product()).isEqualTo(BigInteger.ZERO);
     }
 
     @Test
     public void shouldComputeProductOfBigDecimal() {
-        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).product()).isEqualTo(0.0);
+        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).product()).isEqualTo(BigDecimal.ZERO);
     }
 
     // -- reduceOption
@@ -2050,12 +2135,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeSumOfBigInteger() {
-        assertThat(of(BigInteger.ZERO, BigInteger.ONE).sum()).isEqualTo(1L);
+        assertThat(of(BigInteger.ZERO, BigInteger.ONE).sum()).isEqualTo(BigInteger.ONE);
     }
 
     @Test
     public void shouldComputeSumOfBigDecimal() {
-        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).sum()).isEqualTo(1.0);
+        assertThat(of(BigDecimal.ZERO, BigDecimal.ONE).sum()).isEqualTo(BigDecimal.ONE);
     }
 
     // -- take

@@ -25,17 +25,11 @@ import io.vavr.Tuple3;
 import io.vavr.Value;
 import io.vavr.control.Option;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
+import java.util.stream.DoubleStream;
 
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
@@ -190,51 +184,48 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * Calculates the average of this elements. Returns {@code None} if this is empty, otherwise {@code Some(average)}.
-     * Supported component types are {@code Byte}, {@code Double}, {@code Float}, {@code Integer}, {@code Long},
-     * {@code Short}, {@code BigInteger} and {@code BigDecimal}.
+     * Calculates the average of this elements, assuming that the element type is {@link Number}.
+     *
+     * Since we do not know if the component type {@code T} is of type {@code Number}, the
+     * {@code average()} call might throw at runtime (see examples below).
      * <p>
      * Examples:
-     * <pre>
-     * <code>
-     * List.empty().average()              // = None
-     * List.of(1, 2, 3).average()          // = Some(2.0)
-     * List.of(0.1, 0.2, 0.3).average()    // = Some(0.2)
-     * List.of("apple", "pear").average()  // throws
-     * </code>
-     * </pre>
+     *
+     * <pre>{@code
+     * List.empty().average()                       // = None
+     * List.of(1, 2, 3).average()                   // = Some(2.0)
+     * List.of(1.0, 10e100, 2.0, -10e100).average() // = Some(0.75)
+     * List.of(1.0, Double.NaN).average()           // = NaN
+     * List.of("apple", "pear").average()           // throws
+     * }</pre>
+     *
+     * Please note that Java's {@link DoubleStream#average()} uses the
+     * <a href="https://en.wikipedia.org/wiki/Kahan_summation_algorithm">Kahan summation algorithm</a>
+     * (also known as compensated summation), which has known limitations.
+     * <p>
+     * Vavr uses Neumaier's modification of the Kahan algorithm, which yields better results.
+     *
+     * <pre>{@code
+     * // = OptionalDouble(0.0) (wrong)
+     * j.u.s.DoubleStream.of(1.0, 10e100, 2.0, -10e100).average()
+     *
+     * // = Some(0.75) (correct)
+     * List.of(1.0, 10e100, 2.0, -10e100).average()
+     * }</pre>
      *
      * @return {@code Some(average)} or {@code None}, if there are no elements
      * @throws UnsupportedOperationException if this elements are not numeric
      */
-    @SuppressWarnings({ "unchecked", "OptionalGetWithoutIsPresent" })
     default Option<Double> average() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            final Traversable<?> objects = isTraversableAgain() ? this : toStream();
-            final Object o = objects.head();
-            if (o instanceof Number) {
-                final Traversable<Number> numbers = (Traversable<Number>) objects;
-                final double d;
-                if (o instanceof Integer || o instanceof Long || o instanceof Byte || o instanceof BigInteger || o instanceof Short) {
-                    d = numbers.toJavaStream()
-                            .mapToLong(Number::longValue)
-                            .average()
-                            .getAsDouble();
-                } else {
-                    d = numbers.toJavaStream()
-                            .mapToDouble(Number::doubleValue)
-                            .average()
-                            .getAsDouble();
-                }
-                return Option.some(d);
-            } else {
-                throw new UnsupportedOperationException("not numeric");
-            }
+        try {
+            final double[] sum = TraversableModule.neumaierSum(this, t -> ((Number) t).doubleValue());
+            final double count = sum[1];
+            return (count == 0) ? Option.none() : Option.some(sum[0] / count);
+        } catch(ClassCastException x) {
+            throw new UnsupportedOperationException("not numeric", x);
         }
     }
-
+    
     /**
      * Collects all elements that are in the domain of the given {@code partialFunction} by mapping the elements to type {@code R}.
      * <p>
@@ -790,20 +781,26 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
     /**
-     * Calculates the maximum of this elements according to their natural order.
+     * Calculates the maximum of this elements according to their natural order. Especially the underlying
+     * order of sorted collections is not taken into account.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.empty().max()             // = None
+     * List.of(1, 2, 3).max()         // = Some(3)
+     * List.of("a", "b", "c").max()   // = Some("c")
+     * List.of(1.0, Double.NaN).max() // = NaN
+     * List.of(1, "a").max()          // throws
+     * </code>
+     * </pre>
      *
      * @return {@code Some(maximum)} of this elements or {@code None} if this is empty
      * @throws NullPointerException if an element is null
      * @throws ClassCastException   if the elements do not have a natural order, i.e. they do not implement Comparable
      */
-    @SuppressWarnings("unchecked")
     default Option<T> max() {
-        if (isEmpty()) {
-            return Option.none();
-        } else {
-            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
-            return ts.maxBy(Comparators.naturalComparator());
-        }
+        return maxBy(Comparators.naturalComparator());
     }
 
     /**
@@ -852,7 +849,23 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
-     * Calculates the minimum of this elements according to their natural order.
+     * Calculates the minimum of this elements according to their natural order in O(n). Especially the underlying
+     * order of sorted collections is not taken into account.
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.empty().min()             // = None
+     * List.of(1, 2, 3).min()         // = Some(1)
+     * List.of("a", "b", "c").min()   // = Some("a")
+     * List.of(1.0, Double.NaN).min() // = NaN
+     * List.of(1, "a").min()          // throws
+     * </code>
+     * </pre>
+     *
+     * There is an exception for {@link Double} and {@link Float}: The minimum is defined to be {@code NaN} if
+     * this contains {@code NaN}. According to the natural order {@code NaN} would be the maximum element
+     * instead.
      *
      * @return {@code Some(minimum)} of this elements or {@code None} if this is empty
      * @throws NullPointerException if an element is null
@@ -860,11 +873,21 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     @SuppressWarnings("unchecked")
     default Option<T> min() {
+        // DEV-NOTE: minBy(Comparators.naturalComparator()) does not handle (Double/Float) NaN correctly
         if (isEmpty()) {
             return Option.none();
         } else {
-            final Traversable<T> ts = isTraversableAgain() ? this : toStream();
-            return ts.minBy(Comparators.naturalComparator());
+            final T head = head();
+            final T min;
+            if (head instanceof Double) {
+                min = (T) ((Traversable<Double>) this).foldLeft((Double) head, Math::min);
+            } else if (head instanceof Float) {
+                min = (T) ((Traversable<Float>) this).foldLeft((Float) head, Math::min);
+            } else {
+                final Comparator<T> comparator = Comparators.naturalComparator();
+                min = this.foldLeft(head, (t1, t2) -> comparator.compare(t1, t2) <= 0 ? t1 : t2);
+            }
+            return Option.some(min);
         }
     }
 
@@ -1043,6 +1066,8 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * </code>
      * </pre>
      *
+     * Please also see {@link #fold(Object, BiFunction)}, a way to do a type-safe multiplication of elements.
+     *
      * @return a {@code Number} representing the sum of this elements
      * @throws UnsupportedOperationException if this elements are not numeric
      */
@@ -1051,18 +1076,20 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         if (isEmpty()) {
             return 1;
         } else {
-            final Iterator<?> iter = iterator();
-            final Object o = iter.next();
-            if (o instanceof Number) {
-                final Number head = (Number) o;
-                final Iterator<Number> numbers = (Iterator<Number>) iter;
-                if (head instanceof Integer || head instanceof Long || head instanceof Byte || head instanceof BigInteger || head instanceof Short) {
-                    return numbers.toJavaStream().mapToLong(Number::longValue).reduce(head.longValue(), (l1, l2) -> l1 * l2);
+            try {
+                final Iterator<?> iter = iterator();
+                final Object o = iter.next();
+                if (o instanceof Integer || o instanceof Long || o instanceof Byte || o instanceof Short) {
+                    return ((Iterator<Number>) iter).foldLeft(((Number) o).longValue(), (product, number) -> product * number.longValue());
+                } else if (o instanceof BigInteger) {
+                    return ((Iterator<BigInteger>) iter).foldLeft(((BigInteger) o), BigInteger::multiply);
+                } else if (o instanceof BigDecimal) {
+                    return ((Iterator<BigDecimal>) iter).foldLeft(((BigDecimal) o), BigDecimal::multiply);
                 } else {
-                    return numbers.toJavaStream().mapToDouble(Number::doubleValue).reduce(head.doubleValue(), (d1, d2) -> d1 * d2);
+                    return ((Iterator<Number>) iter).toJavaStream().mapToDouble(Number::doubleValue).reduce(((Number) o).doubleValue(), (d1, d2) -> d1 * d2);
                 }
-            } else {
-                throw new UnsupportedOperationException("not numeric");
+            } catch(ClassCastException x) {
+                throw new UnsupportedOperationException("not numeric", x);
             }
         }
     }
@@ -1319,7 +1346,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             return Spliterators.spliteratorUnknownSize(iterator(), characteristics);
         }
     }
-    
+
     /**
      * Calculates the sum of this elements. Supported component types are {@code Byte}, {@code Double}, {@code Float},
      * {@code Integer}, {@code Long}, {@code Short}, {@code BigInteger} and {@code BigDecimal}.
@@ -1334,6 +1361,8 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * </code>
      * </pre>
      *
+     * Please also see {@link #fold(Object, BiFunction)}, a way to do a type-safe summation of elements.
+     *
      * @return a {@code Number} representing the sum of this elements
      * @throws UnsupportedOperationException if this elements are not numeric
      */
@@ -1342,22 +1371,24 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
         if (isEmpty()) {
             return 0;
         } else {
-            final Iterator<?> iter = iterator();
-            final Object o = iter.next();
-            if (o instanceof Number) {
-                final Number head = (Number) o;
-                final Iterator<Number> numbers = (Iterator<Number>) iter;
-                if (head instanceof Integer || head instanceof Long || head instanceof Byte || head instanceof BigInteger || head instanceof Short) {
-                    return numbers.foldLeft(head.longValue(), (n1, n2) -> n1 + n2.longValue());
+            try {
+                final Iterator<?> iter = iterator();
+                final Object o = iter.next();
+                if (o instanceof Integer || o instanceof Long || o instanceof Byte || o instanceof Short) {
+                    return ((Iterator<Number>) iter).foldLeft(((Number) o).longValue(), (sum, number) -> sum + number.longValue());
+                } else if (o instanceof BigInteger) {
+                    return ((Iterator<BigInteger>) iter).foldLeft(((BigInteger) o), BigInteger::add);
+                } else if (o instanceof BigDecimal) {
+                    return ((Iterator<BigDecimal>) iter).foldLeft(((BigDecimal) o), BigDecimal::add);
                 } else {
-                    return numbers.foldLeft(head.doubleValue(), (n1, n2) -> n1 + n2.doubleValue());
+                    return TraversableModule.neumaierSum(Iterator.of(o).concat(iter), t -> ((Number) t).doubleValue())[0];
                 }
-            } else {
-                throw new UnsupportedOperationException("not numeric");
+            } catch(ClassCastException x) {
+                throw new UnsupportedOperationException("not numeric", x);
             }
         }
     }
-
+    
     /**
      * Drops the first element of a non-empty Traversable.
      *
@@ -1525,4 +1556,37 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     <U> Traversable<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
+}
+
+interface TraversableModule {
+
+    /**
+     * Uses Neumaier's variant of the Kahan summation algorithm in order to sum double values.
+     * <p>
+     * See <a href="https://en.wikipedia.org/wiki/Kahan_summation_algorithm">Kahan summation algorithm</a>.
+     *
+     * @param <T> element type
+     * @param ts the elements
+     * @param toDouble function which maps elements to {@code double} values
+     * @return A pair {@code [sum, size]}, where {@code sum} is the compensated sum and {@code size} is the number of elements which were summed.
+     */
+    static <T> double[] neumaierSum(Iterable<T> ts, ToDoubleFunction<T> toDouble) {
+        double simpleSum = 0.0;
+        double sum = 0.0;
+        double compensation = 0.0;
+        int size = 0;
+        for (T t : ts) {
+            final double d = toDouble.applyAsDouble(t);
+            final double tmp = sum + d;
+            compensation += (Math.abs(sum) >= Math.abs(d)) ? (sum - tmp) + d : (d - tmp) + sum;
+            sum = tmp;
+            simpleSum += d;
+            size++;
+        }
+        sum += compensation;
+        if (size > 0 && Double.isNaN(sum) && Double.isInfinite(simpleSum)) {
+            sum = simpleSum;
+        }
+        return new double[] { sum, size };
+    }
 }
