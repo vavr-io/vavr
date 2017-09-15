@@ -892,6 +892,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param mapper A mapper
      * @param <U>    The domain where elements are compared
      * @return a sorted version of this
+     * @throws NullPointerException if {@code mapper} is null
      */
     <U extends Comparable<? super U>> Seq<T> sortBy(Function<? super T, ? extends U> mapper);
 
@@ -902,6 +903,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param mapper     A mapper
      * @param <U>        The domain where elements are compared
      * @return a sorted version of this
+     * @throws NullPointerException if {@code comparator} or {@code mapper} is null
      */
     <U> Seq<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
 

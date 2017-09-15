@@ -1718,6 +1718,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSortByFunctionWhenElementsAreInfiniteStreams() {
+        final Stream<Integer> stream1 = Stream.continually(1);
+        final Stream<Integer> stream2 = Stream.continually(2);
+        final Seq<Stream<Integer>> testee = of(stream2, stream1);
+        final Seq<Stream<Integer>> actual = testee.sortBy(Stream::head);
+        final Seq<Stream<Integer>> expected = of(stream1, stream2);
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- sortBy(Comparator, Function)
 
     @Test

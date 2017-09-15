@@ -1422,10 +1422,7 @@ public interface List<T> extends LinearSeq<T> {
 
     @Override
     default <U> List<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
-        final Function<? super T, ? extends U> domain = Function1.of(mapper::apply).memoized();
-        return toJavaStream()
-                .sorted((e1, e2) -> comparator.compare(domain.apply(e1), domain.apply(e2)))
-                .collect(collector());
+        return Collections.sortBy(this, comparator, mapper, collector());
     }
 
     @Override
