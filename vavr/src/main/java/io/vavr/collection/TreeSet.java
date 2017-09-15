@@ -81,7 +81,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> empty() {
-        return new TreeSet<>(RedBlackTree.<T> empty());
+        return empty(Comparators.naturalComparator());
     }
 
     public static <T> TreeSet<T> empty(Comparator<? super T> comparator) {
@@ -106,7 +106,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> of(T value) {
-        return new TreeSet<>(RedBlackTree.of(value));
+        return of(Comparators.naturalComparator(), value);
     }
 
     public static <T> TreeSet<T> of(Comparator<? super T> comparator, T value) {
@@ -117,8 +117,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T extends Comparable<? super T>> TreeSet<T> of(T... values) {
-        Objects.requireNonNull(values, "values is null");
-        return new TreeSet<>(RedBlackTree.of(values));
+        return TreeSet.<T> of(Comparators.naturalComparator(), values);
     }
 
     @SuppressWarnings("varargs")
@@ -195,12 +194,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(Iterable<? extends T> values) {
-        Objects.requireNonNull(values, "values is null");
-        if (values instanceof TreeSet) {
-            return (TreeSet<T>) values;
-        } else {
-            return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();
-        }
+        return ofAll(Comparators.naturalComparator(), values);
     }
 
     @SuppressWarnings("unchecked")
@@ -210,9 +204,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         if (values instanceof TreeSet && ((TreeSet) values).comparator() == comparator) {
             return (TreeSet<T>) values;
         } else {
-            return values.iterator().hasNext()
-                   ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
-                   : (TreeSet<T>) empty();
+            return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(comparator, values)) : (TreeSet<T>) empty();
         }
     }
 
@@ -765,16 +757,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
         return map(Comparators.naturalComparator(), mapper);
-    }
-
-    @Override
-    public Option<T> max() {
-        return tree.max();
-    }
-
-    @Override
-    public Option<T> min() {
-        return tree.min();
     }
 
     /**

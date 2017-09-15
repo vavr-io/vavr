@@ -45,7 +45,6 @@ final class Comparators {
     static <U> Comparator<U> naturalComparator() {
         return NaturalComparator.instance();
     }
-
 }
 
 final class NaturalComparator<T> implements Comparator<T>, Serializable {
@@ -66,6 +65,17 @@ final class NaturalComparator<T> implements Comparator<T>, Serializable {
     @Override
     public int compare(T o1, T o2) {
         return ((Comparable<T>) o1).compareTo(o2);
+    }
+
+    /** @see Comparator#equals(Object) */
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof NaturalComparator;
+    }
+
+    @Override
+    public int hashCode() {
+        return 1;
     }
 
     /**
