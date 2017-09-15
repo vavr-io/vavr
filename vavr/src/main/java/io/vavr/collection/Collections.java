@@ -25,8 +25,10 @@ import io.vavr.control.Option;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * Internal class, containing helpers.
@@ -328,6 +330,14 @@ final class Collections {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<? extends T> reversedElements = reverseIterator(source);
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
+    }
+
+    static <T, U, R extends Seq<T>> R sortBy(Seq<? extends T> source, Comparator<? super U> comparator, Function<? super T, ? extends U> mapper, Collector<T, ?, R> collector) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return source.toJavaStream()
+                .sorted((e1, e2) -> comparator.compare(mapper.apply(e1), mapper.apply(e2)))
+                .collect(collector);
     }
 
     static <T, S extends Seq<T>> S shuffle(S source, Function<? super Iterable<T>, S> ofAll) {
