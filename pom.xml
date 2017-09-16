@@ -32,7 +32,7 @@ Note: The maven build currently needs to be started from the vavr root dir
     </parent>
     <groupId>io.vavr</groupId>
     <artifactId>vavr-parent</artifactId>
-    <version>0.9.0</version>
+    <version>0.9.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Vavr Parent</name>
     <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
