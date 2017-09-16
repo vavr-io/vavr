@@ -132,7 +132,7 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
     }
 
     /**
-     * Narrows the given {@code BiFunction<? super T1, ? super T2, ? extends R>} to {@code Function2<T1, T2, R>}
+     * Narrows the given {@code Function2<? super T1, ? super T2, ? extends R>} to {@code Function2<T1, T2, R>}
      *
      * @param f A {@code Function2}
      * @param <R> return type
@@ -141,7 +141,7 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
      * @return the given {@code f} instance as narrowed type {@code Function2<T1, T2, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, T2, R> Function2<T1, T2, R> narrow(BiFunction<? super T1, ? super T2, ? extends R> f) {
+    static <T1, T2, R> Function2<T1, T2, R> narrow(Function2<? super T1, ? super T2, ? extends R> f) {
         return (Function2<T1, T2, R>) f;
     }
 

@@ -1596,14 +1596,14 @@ def generateMainClasses(): Unit = {
               }
 
               /$javadoc
-               * Narrows the given {@code $fullGenericsType} to {@code $className$fullGenerics}
+               * Narrows the given {@code $className$fullWideGenerics} to {@code $className$fullGenerics}
                *
                * @param f A {@code $className}
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
                * @return the given {@code f} instance as narrowed type {@code $className$fullGenerics}
                */
               @SuppressWarnings("unchecked")
-              static $fullGenerics $className$fullGenerics narrow($fullGenericsType f) {
+              static $fullGenerics $className$fullGenerics narrow($className$fullWideGenerics f) {
                   return ($className$fullGenerics) f;
               }
 
