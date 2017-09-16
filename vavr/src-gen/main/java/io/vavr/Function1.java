@@ -127,7 +127,7 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
     }
 
     /**
-     * Narrows the given {@code Function<? super T1, ? extends R>} to {@code Function1<T1, R>}
+     * Narrows the given {@code Function1<? super T1, ? extends R>} to {@code Function1<T1, R>}
      *
      * @param f A {@code Function1}
      * @param <R> return type
@@ -135,7 +135,7 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
      * @return the given {@code f} instance as narrowed type {@code Function1<T1, R>}
      */
     @SuppressWarnings("unchecked")
-    static <T1, R> Function1<T1, R> narrow(Function<? super T1, ? extends R> f) {
+    static <T1, R> Function1<T1, R> narrow(Function1<? super T1, ? extends R> f) {
         return (Function1<T1, R>) f;
     }
 
