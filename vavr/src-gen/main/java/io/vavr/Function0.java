@@ -121,14 +121,14 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
     }
 
     /**
-     * Narrows the given {@code Supplier<? extends R>} to {@code Function0<R>}
+     * Narrows the given {@code Function0<? extends R>} to {@code Function0<R>}
      *
      * @param f A {@code Function0}
      * @param <R> return type
      * @return the given {@code f} instance as narrowed type {@code Function0<R>}
      */
     @SuppressWarnings("unchecked")
-    static <R> Function0<R> narrow(Supplier<? extends R> f) {
+    static <R> Function0<R> narrow(Function0<? extends R> f) {
         return (Function0<R>) f;
     }
 
