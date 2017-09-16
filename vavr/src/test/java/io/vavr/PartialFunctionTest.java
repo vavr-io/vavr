@@ -17,19 +17,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vavr.match.annotation;
+package io.vavr;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import io.vavr.collection.HashMap;
+import io.vavr.control.Option;
+import org.junit.Test;
 
-/**
- * Structural pattern matching annotation for pattern declarations.
- *
- * @author Daniel Dietrich
- */
-@Target(ElementType.TYPE)
-@Retention(RetentionPolicy.CLASS)
-public @interface Patterns {
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class PartialFunctionTest {
+
+    @Test
+    public void shouldReturnSome() {
+        Option<String> oneToOne = HashMap.of(1, "One").lift().apply(1);
+        assertThat(oneToOne).isEqualTo(Option.some("One"));
+    }
+
+    @Test
+    public void shouldReturnNone() {
+        Option<String> oneToOne = HashMap.<Integer, String>empty().lift().apply(1);
+        assertThat(oneToOne).isEqualTo(Option.none());
+    }
+
 }
