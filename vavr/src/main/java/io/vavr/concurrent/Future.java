@@ -58,14 +58,10 @@ import java.util.function.*;
 public interface Future<T> extends Value<T> {
 
     /**
-     * The default executor service is {@link Executors#newCachedThreadPool()}. The service will create daemon threads,
-     * in order to avoid preventing the VM from shutdown.
+     * The default executor service is {@link Executors#newCachedThreadPool()}.
+     * Please note that it may prevent the VM from shutdown.
      */
-    ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newCachedThreadPool(runnable -> {
-        Thread thread = Executors.defaultThreadFactory().newThread(runnable);
-        thread.setDaemon(true);
-        return thread;
-    });
+    ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
 
     /**
      * Creates a failed {@code Future} with the given {@code exception}, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
