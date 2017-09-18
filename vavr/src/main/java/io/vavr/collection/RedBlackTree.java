@@ -48,30 +48,15 @@ import static io.vavr.collection.RedBlackTree.Color.RED;
  */
 interface RedBlackTree<T> extends Iterable<T> {
 
-    static <T extends Comparable<? super T>> RedBlackTree<T> empty() {
-        return new Empty<>(Comparators.naturalComparator());
-    }
-
     static <T> RedBlackTree<T> empty(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new Empty<>(comparator);
-    }
-
-    static <T extends Comparable<? super T>> RedBlackTree<T> of(T value) {
-        return of(Comparators.naturalComparator(), value);
     }
 
     static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
         final Empty<T> empty = new Empty<>(comparator);
         return new Node<>(BLACK, 1, empty, value, empty, empty);
-    }
-
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    static <T extends Comparable<? super T>> RedBlackTree<T> of(T... values) {
-        Objects.requireNonNull(values, "values is null");
-        return of(Comparators.<T> naturalComparator(), values);
     }
 
     @SafeVarargs
@@ -83,11 +68,6 @@ interface RedBlackTree<T> extends Iterable<T> {
             tree = tree.insert(value);
         }
         return tree;
-    }
-
-    static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(Iterable<? extends T> values) {
-        Objects.requireNonNull(values, "values is null");
-        return ofAll(Comparators.naturalComparator(), values);
     }
 
     @SuppressWarnings("unchecked")
