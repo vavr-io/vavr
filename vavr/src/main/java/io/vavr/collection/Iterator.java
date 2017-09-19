@@ -1591,6 +1591,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
+    default T last() {
+        return Collections.last(this);
+    }
+
+    @Override
     default int length() {
         return foldLeft(0, (n, ignored) -> n + 1);
     }

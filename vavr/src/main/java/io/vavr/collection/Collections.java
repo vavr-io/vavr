@@ -23,10 +23,7 @@ import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -235,6 +232,19 @@ final class Collections {
     static <T> boolean isTraversableAgain(Iterable<? extends T> iterable) {
         return (iterable instanceof Collection) ||
                 (iterable instanceof Traversable && ((Traversable<?>) iterable).isTraversableAgain());
+    }
+
+    static <T> T last(Traversable<T> source){
+        if (source.isEmpty()) {
+            throw new NoSuchElementException("last of empty " + source.stringPrefix());
+        } else {
+            final Iterator<T> it = source.iterator();
+            T result = null;
+            while (it.hasNext()) {
+                result = it.next();
+            }
+            return result;
+        }
     }
 
     @SuppressWarnings("unchecked")

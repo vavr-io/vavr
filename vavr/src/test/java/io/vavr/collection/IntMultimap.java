@@ -207,6 +207,11 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public T last() {
+        return original.last()._2;
+    }
+
+    @Override
     public int length() {
         return original.length();
     }
