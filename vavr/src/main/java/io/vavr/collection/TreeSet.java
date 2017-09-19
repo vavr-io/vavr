@@ -744,6 +744,15 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
+    public T last() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("last of empty TreeSet");
+        } else {
+            return tree.max().get();
+        }
+    }
+
+    @Override
     public int length() {
         return tree.size();
     }

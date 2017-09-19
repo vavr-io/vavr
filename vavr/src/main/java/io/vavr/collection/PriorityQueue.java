@@ -427,6 +427,11 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         return true;
     }
 
+    @Override
+    public T last() {
+        return Collections.last(this);
+    }
+
     /**
      * Computes the number of elements of this {@link PriorityQueue}.
      * <p>

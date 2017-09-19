@@ -822,6 +822,11 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         }
 
         @Override
+        public T last() {
+            return children.isEmpty() ? value : children.last().last();
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
@@ -1018,6 +1023,11 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         @Override
         public boolean isLeaf() {
             return false;
+        }
+
+        @Override
+        public T last() {
+            throw new NoSuchElementException("last of empty tree");
         }
 
         @Override

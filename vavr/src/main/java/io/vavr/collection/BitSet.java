@@ -455,6 +455,11 @@ public interface BitSet<T> extends SortedSet<T> {
     BitSet<T> intersect(Set<? extends T> elements);
 
     @Override
+    default T last() {
+        return Collections.last(this);
+    }
+
+    @Override
     Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate);
 
     @Override

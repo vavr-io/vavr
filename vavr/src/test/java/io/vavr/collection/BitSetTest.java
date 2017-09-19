@@ -18,6 +18,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
@@ -541,6 +543,28 @@ public class BitSetTest extends AbstractSortedSetTest {
         } else {
             assertThat(queue).isEqualTo(PriorityQueue.of(comparator, 1, 2, 3));
         }
+    }
+
+    // -- head, init, last, tail
+
+    @Test
+    public void shouldReturnHeadOfNonEmptyHavingReversedOrder() {
+        // BitSet can't have reverse order
+    }
+
+    @Test
+    public void shouldReturnInitOfNonEmptyHavingReversedOrder() {
+        // BitSet can't have reverse order
+    }
+
+    @Test
+    public void shouldReturnLastOfNonEmptyHavingReversedOrder() {
+        // BitSet can't have reverse order
+    }
+
+    @Test
+    public void shouldReturnTailOfNonEmptyHavingReversedOrder() {
+        // BitSet can't have reverse order
     }
 
     // -- classes
