@@ -687,6 +687,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public T last() {
+        return Collections.last(this);
+    }
+
+    @Override
     public int length() {
         return tree.size();
     }

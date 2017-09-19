@@ -19,16 +19,19 @@
  */
 package io.vavr.collection;
 
+import org.assertj.core.api.Assertions;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
 
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.reverseOrder;
 import static io.vavr.TestComparators.toStringComparator;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public abstract class AbstractSortedSetTest extends AbstractSetTest {
 
@@ -83,6 +86,56 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     @Test
     public void shouldNarrowTraversable() {
         // makes no sense because disjoint types share not the same ordering
+    }
+
+    // -- head
+
+    @Test
+    public void shouldReturnHeadOfNonEmptyHavingNaturalOrder() {
+        assertThat(of(naturalOrder(), 1, 2, 3, 4).head()).isEqualTo(1);
+    }
+
+
+    @Test
+    public void shouldReturnHeadOfNonEmptyHavingReversedOrder() {
+        assertThat(of(reverseOrder(), 1, 2, 3, 4).head()).isEqualTo(4);
+    }
+
+    // -- init
+
+    @Test
+    public void shouldReturnInitOfNonEmptyHavingNaturalOrder() {
+        assertThat(of(naturalOrder(), 1, 2, 3, 4).init()).isEqualTo(of(naturalOrder(), 1, 2, 3));
+    }
+    
+    @Test
+    public void shouldReturnInitOfNonEmptyHavingReversedOrder() {
+        assertThat(of(reverseOrder(), 1, 2, 3, 4).init()).isEqualTo(of(naturalOrder(), 2, 3, 4));
+    }
+
+    // -- last
+
+    @Test
+    public void shouldReturnLastOfNonEmptyHavingNaturalOrder() {
+        assertThat(of(naturalOrder(), 1, 2, 3, 4).last()).isEqualTo(4);
+    }
+    
+    @Test
+    public void shouldReturnLastOfNonEmptyHavingReversedOrder() {
+        assertThat(of(reverseOrder(), 1, 2, 3, 4).last()).isEqualTo(1);
+    }
+
+    // -- tail
+
+    @Test
+    public void shouldReturnTailOfNonEmptyHavingNaturalOrder() {
+        assertThat(of(naturalOrder(), 1, 2, 3, 4).tail()).isEqualTo(of(naturalOrder(), 2, 3, 4));
+    }
+
+
+    @Test
+    public void shouldReturnTailOfNonEmptyHavingReversedOrder() {
+        assertThat(of(reverseOrder(), 1, 2, 3, 4).tail()).isEqualTo(of(naturalOrder(), 1, 2, 3));
     }
 
     // -- equals
