@@ -334,6 +334,23 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.<Integer> none().map(String::valueOf)).isEqualTo(Option.none());
     }
 
+    // -- mapTry
+
+    @Test
+    public void shouldMapTrySomeWhenNotThrowing() {
+        assertThat(Option.some(2).mapTry(i -> 1 / i)).isEqualTo(Option.some(0));
+    }
+
+    @Test
+    public void shouldMapTrySomeWhenThrowing() {
+        assertThat(Option.some(0).mapTry(i -> 1 / i)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldMapTryNone() {
+        assertThat(Option.<Integer> none().mapTry(i -> i + 1)).isEqualTo(Option.none());
+    }
+
     // -- flatMap
 
     @Test
@@ -356,6 +373,28 @@ public class OptionTest extends AbstractValueTest {
     public void shouldFlatMapEmptyIterable() {
         final Option<Integer> option = Option.none();
         assertThat(Option.of(1).flatMap(i -> option)).isEqualTo(Option.none());
+    }
+
+    // -- flatMapTry
+
+    @Test
+    public void shouldFlatMapTrySomeWhenNotThrowingAndMappedResultIsSome() {
+        assertThat(Option.some(2).flatMapTry(i -> Option.some(1 / i))).isEqualTo(Option.some(0));
+    }
+
+    @Test
+    public void shouldFlatMapTrySomeWhenNotThrowingAndMappedResultIsNone() {
+        assertThat(Option.some(2).flatMapTry(i -> Option.none())).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldFlatMapTrySomeWhenThrowing() {
+        assertThat(Option.some(0).flatMapTry(i -> Option.of(1 / i))).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldFlatMapTryNone() {
+        assertThat(Option.<Integer> none().flatMapTry(i -> Option.of(i + 1))).isEqualTo(Option.none());
     }
 
     // -- exists
