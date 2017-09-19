@@ -347,8 +347,9 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
-    public Option<M> tailOption() {
-        return isEmpty() ? Option.none() : Option.some(tail());
+    public Tuple2<K, V> last() {
+        final Tuple2<K, Traversable<V>> last = back.last();
+        return Tuple.of(last._1, last._2.last());
     }
 
     @SuppressWarnings("unchecked")
@@ -507,6 +508,11 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
             final Tuple2<K, V> head = head();
             return remove(head._1, head._2);
         }
+    }
+
+    @Override
+    public Option<M> tailOption() {
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override

@@ -994,6 +994,11 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
+    default T last() {
+        return Collections.last(this);
+    }
+
+    @Override
     default int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
         for (List<T> list = this; index <= end && !list.isEmpty(); list = list.tail(), index++) {

@@ -692,6 +692,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public T last() {
+        return map.last()._1;
+    }
+
+    @Override
     public int length() {
         return map.size();
     }

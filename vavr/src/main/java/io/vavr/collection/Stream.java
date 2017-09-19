@@ -1176,6 +1176,11 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default T last() {
+        return Collections.last(this);
+    }
+
+    @Override
     default int lastIndexOf(T element, int end) {
         int result = -1, index = 0;
         for (Stream<T> stream = this; index <= end && !stream.isEmpty(); stream = stream.tail(), index++) {

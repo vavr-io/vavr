@@ -147,11 +147,6 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     }
 
     @Override
-    default T last() {
-        return max().getOrElseThrow(() -> new NoSuchElementException("last on empty SortedSet"));
-    }
-
-    @Override
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
 
     @Override

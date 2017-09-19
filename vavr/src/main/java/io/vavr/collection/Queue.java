@@ -948,6 +948,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
+    public T last() {
+        return rear.isEmpty() ? front.last() : rear.head();
+    }
+
+    @Override
     public int lastIndexOf(T element, int end) {
         return toList().lastIndexOf(element, end);
     }

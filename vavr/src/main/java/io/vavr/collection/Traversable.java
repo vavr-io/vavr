@@ -738,18 +738,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return the last element.
      * @throws NoSuchElementException is this is empty
      */
-    default T last() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("last of empty Traversable");
-        } else {
-            final Iterator<T> it = iterator();
-            T result = null;
-            while (it.hasNext()) {
-                result = it.next();
-            }
-            return result;
-        }
-    }
+    T last();
 
     /**
      * Dual of {@linkplain #headOption()}, returning the last element as {@code Option}.

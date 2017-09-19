@@ -669,6 +669,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public Tuple2<K, V> last() {
+        return Collections.last(this);
+    }
+
+    @Override
     public <K2, V2> HashMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
