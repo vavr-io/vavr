@@ -64,7 +64,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Automatic-Module-Name>io.vavr.core</Automatic-Module-Name>
+                            <Automatic-Module-Name>io.vavr</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>
