@@ -1106,6 +1106,22 @@ public class APITest {
 
     // -- Match patterns
 
+    @Test
+    public void shouldPartialMatchAsSome() {
+        final Option<String> actual = Match(1).option(
+                Case($(1), "ok")
+        );
+        assertThat(actual).isEqualTo(Option.some("ok"));
+    }
+
+    @Test
+    public void shouldPartialMatchAsNone() {
+        final Option<String> actual = Match(2).option(
+                Case($(1), "ok")
+        );
+        assertThat(actual).isEqualTo(Option.none());
+    }
+
     static class ClzMatch {}
     static class ClzMatch1 extends ClzMatch {}
     static class ClzMatch2 extends ClzMatch {}
