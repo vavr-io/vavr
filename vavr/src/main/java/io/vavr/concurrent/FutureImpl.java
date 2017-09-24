@@ -144,9 +144,12 @@ final class FutureImpl<T> implements Future<T> {
     /**
      * Blocks the current thread.
      * <p>
-     * If timeout = -1 then {@code LockSupport.park()} is called (start, timeout and unit are not used).
+     * If timeout = 0 then {@code LockSupport.park()} is called (start, timeout and unit are not used),
+     * otherwise {@code LockSupport.park(timeout, unit}} is called.
      * <p>
-     * If the
+     * If a timeout > 0 is specified and the deadline is not met, this Future fails with a {@link TimeoutException}.
+     * <p>
+     * If this Thread was interrupted, this Future fails with a {@link InterruptedException}.
      *
      * @param start the start time in nanos, based on {@linkplain System#nanoTime()}
      * @param timeout a timeout in the given {@code unit} of time
@@ -155,36 +158,48 @@ final class FutureImpl<T> implements Future<T> {
     private void _await(long start, long timeout, TimeUnit unit) {
         try {
             ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker() {
+
+                final long duration = (unit == null) ? -1 : unit.toNanos(timeout);
+                final Thread thread = Thread.currentThread();
+
+                boolean threadEnqueued = false;
+
+                /**
+                 * Parks the Future's thread.
+                 * <p>
+                 * LockSupport.park() / parkNanos() may return when the Thread is permitted to be scheduled again.
+                 * If so, the Future's tryComplete() method wasn't called yet. In that case the block() method is
+                 * called again. The remaining timeout is recalculated accordingly.
+                 *
+                 * @return true, if this Future is completed, false otherwise
+                 * @throws InterruptedException not thrown by us, we complete the Future directly in that case
+                 */
                 @Override
                 public boolean block() throws InterruptedException {
                     try {
-                        final Thread thread = Thread.currentThread();
-                        final boolean park;
-                        synchronized (lock) {
-                            if (park = !isCompleted()) {
+                        if (!threadEnqueued) {
+                            synchronized (lock) {
                                 waiters = waiters.enqueue(thread);
                             }
+                            threadEnqueued = true;
                         }
-                        // No need to synchronize, park() will not block if this Future is already completed.
-                        if (park) {
-                            if (timeout == -1L) {
-                                LockSupport.park();
-                            } else {
-                                final long duration = unit.toNanos(timeout);
-                                final long remainder = duration - (System.nanoTime() - start);
-                                LockSupport.parkNanos(remainder); // returns immediately if remainder <= 0
-                                if (System.nanoTime() - start > duration) {
-                                    tryComplete(Try.failure(new TimeoutException("timeout after " + timeout + " " + unit)));
-                                }
+                        if (timeout > -1) {
+                            final long delta = System.nanoTime() - start;
+                            final long remainder = duration - delta;
+                            LockSupport.parkNanos(remainder); // returns immediately if remainder <= 0
+                            if (System.nanoTime() - start > duration) {
+                                tryComplete(Try.failure(new TimeoutException("timeout after " + timeout + " " + unit)));
                             }
-                            if (thread.isInterrupted()) {
-                                tryComplete(Try.failure(new InterruptedException()));
-                            }
+                        } else {
+                            LockSupport.park();
+                        }
+                        if (thread.isInterrupted()) {
+                            tryComplete(Try.failure(new InterruptedException()));
                         }
                     } catch(Throwable x) {
                         tryComplete(Try.failure(x));
                     }
-                    return true;
+                    return isCompleted();
                 }
                 @Override
                 public boolean isReleasable() {

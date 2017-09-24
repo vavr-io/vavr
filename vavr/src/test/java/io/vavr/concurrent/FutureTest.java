@@ -27,7 +27,6 @@ import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.assertj.core.api.IterableAssert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -293,8 +292,6 @@ public class FutureTest extends AbstractValueTest {
         assertFailed(future, RejectedExecutionException.class);
     }
 
-    // TODO: Re-enable this test when solving #1530
-    @Ignore
     @Test
     public void shouldCompleteOneFuturesUsingAThreadPoolExecutorLimitedToOneThread() {
         final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new SynchronousQueue<>());
@@ -303,11 +300,9 @@ public class FutureTest extends AbstractValueTest {
         service.shutdown();
     }
 
-    // TODO: Re-enable this test when solving #1530
-    @Ignore
     @Test
-    public void shouldCompleteThreeFuturesUsingAThreadPoolExecutorLimitedToOneThread() {
-        final ExecutorService service = new ThreadPoolExecutor(1, 1, 0L, MILLISECONDS, new SynchronousQueue<>());
+    public void shouldCompleteThreeFuturesUsingAThreadPoolExecutorLimitedToTwoThreads() {
+        final ExecutorService service = new ThreadPoolExecutor(1, 2, 0L, MILLISECONDS, new SynchronousQueue<>());
         final Stream<Future<Integer>> futures = Stream
                 .rangeClosed(1, 3)
                 .map(value -> Future.of(service, () -> expensiveOperation(value)));
@@ -576,7 +571,6 @@ public class FutureTest extends AbstractValueTest {
 
     // -- await(timeout, timeunit)
 
-    @Ignore/*There seems to be a bug in Future completion. Should be fixed with #2093*/
     @Test
     public void shouldAwaitAndTimeout() {
         final long timeout = 100;
