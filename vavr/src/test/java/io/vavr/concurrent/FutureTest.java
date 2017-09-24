@@ -27,9 +27,14 @@ import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.assertj.core.api.IterableAssert;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.concurrent.*;
@@ -43,6 +48,21 @@ import static io.vavr.concurrent.ExecutorServices.trivialExecutorService;
 import static org.assertj.core.api.Assertions.fail;
 
 public class FutureTest extends AbstractValueTest {
+
+    @Rule
+    public TestRule watcher = new TestWatcher() {
+        @Override
+        protected void starting(Description desc) {
+            printInfo("[STARTING]", desc);
+        }
+        @Override
+        protected void finished(Description desc) {
+            printInfo("[FINISHED]", desc);
+        }
+        private void printInfo(String prefix, Description desc) {
+            System.out.println(String.format("%s %s %s", prefix, LocalDateTime.now(), desc.getDisplayName()));
+        }
+    };
 
     @Override
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
