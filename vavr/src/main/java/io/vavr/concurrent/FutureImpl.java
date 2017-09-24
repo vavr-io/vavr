@@ -141,7 +141,17 @@ final class FutureImpl<T> implements Future<T> {
         return this;
     }
 
-    // time unit: nanos
+    /**
+     * Blocks the current thread.
+     * <p>
+     * If timeout = -1 then {@code LockSupport.park()} is called (start, timeout and unit are not used).
+     * <p>
+     * If the
+     *
+     * @param start the start time in nanos, based on {@linkplain System#nanoTime()}
+     * @param timeout a timeout in the given {@code unit} of time
+     * @param unit a time unit
+     */
     private void _await(long start, long timeout, TimeUnit unit) {
         try {
             ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker() {
@@ -155,21 +165,20 @@ final class FutureImpl<T> implements Future<T> {
                                 waiters = waiters.enqueue(thread);
                             }
                         }
-                        // If this Future is complete (and the Thread unparked), the next park() call will not block.
+                        // No need to synchronize, park() will not block if this Future is already completed.
                         if (park) {
-                            if (timeout != -1L) {
-                                final long duration = unit.toNanos(timeout);
-                                final long delta = System.nanoTime() - start;
-                                final long remaining = duration - delta;
-                                LockSupport.parkNanos(Math.max(remaining, 0L));
-                                if (System.nanoTime() - start > duration) {
-                                    throw new TimeoutException("timeout after " + timeout + " " + unit);
-                                }
-                            } else {
+                            if (timeout == -1L) {
                                 LockSupport.park();
+                            } else {
+                                final long duration = unit.toNanos(timeout);
+                                final long remainder = duration - (System.nanoTime() - start);
+                                LockSupport.parkNanos(remainder); // returns immediately if remainder <= 0
+                                if (System.nanoTime() - start > duration) {
+                                    tryComplete(Try.failure(new TimeoutException("timeout after " + timeout + " " + unit)));
+                                }
                             }
                             if (thread.isInterrupted()) {
-                                throw new InterruptedException();
+                                tryComplete(Try.failure(new InterruptedException()));
                             }
                         }
                     } catch(Throwable x) {

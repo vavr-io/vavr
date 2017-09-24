@@ -302,9 +302,10 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.version}</version>
                     <configuration>
-                        <parallel>all</parallel>
-                        <threadCount>4</threadCount>
-                        <reuseForks>true</reuseForks>
+                        <!-- ForkJoinPool configuration for io.vavr.concurrent.Future -->
+                        <argLine>-Djava.util.concurrent.ForkJoinPool.common.parallelism=4</argLine>
+                        <!-- parallel tests could lead to deadlocks because of limited common thread pool parallelism -->
+                        <parallel>none</parallel>
                     </configuration>
                 </plugin>
             </plugins>
