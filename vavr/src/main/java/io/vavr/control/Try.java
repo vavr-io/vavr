@@ -569,20 +569,15 @@ public interface Try<T> extends Value<T>, Serializable {
 
     /**
      * Maps the cause to a new exception if this is a {@code Failure} or returns this instance if this is a {@code Success}.
-     * <p>
-     * If none of the given cases matches the cause, the same {@code Failure} is returned.
      *
-     * @param cases A not necessarily exhaustive sequence of cases that will be matched against a cause.
+     * @param mapper A function that maps the cause of a failure to another exception.
      * @return A new {@code Try} if this is a {@code Failure}, otherwise this.
      */
-    @GwtIncompatible
-    @SuppressWarnings({ "unchecked", "varargs" })
-    default Try<T> mapFailure(Match.Case<? extends Throwable, ? extends Throwable>... cases) {
+    default Try<T> mapFailure(Function<? super Throwable, ? extends Throwable> mapper) {
         if (isSuccess()) {
             return this;
         } else {
-            final Option<Throwable> x = Match(getCause()).option(cases);
-            return x.isEmpty() ? this : failure(x.get());
+            return failure(mapper.apply(getCause()));
         }
     }
 
