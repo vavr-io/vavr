@@ -19,10 +19,12 @@
  */
 package io.vavr;
 
+import java.util.Objects;
+
 /**
- * A {@linkplain java.util.function.Consumer} which may throw.
+ * A consumer that may throw, equivalent to {@linkplain java.util.function.Consumer}.
  *
- * @param <T> the type of value supplied to this consumer.
+ * @param <T> the value type supplied to this consumer.
  */
 @FunctionalInterface
 public interface CheckedConsumer<T> {
@@ -30,8 +32,21 @@ public interface CheckedConsumer<T> {
     /**
      * Performs side-effects.
      *
-     * @param value a value
+     * @param t a value of type {@code T}
      * @throws Throwable if an error occurs
      */
-    void accept(T value) throws Throwable;
+    void accept(T t) throws Throwable;
+
+    /**
+     * Returns a chained {@code CheckedConsumer} that first executes {@code this.accept(t)}
+     * and then {@code after.accept(t)}, for a given {@code t} of type {@code T}.
+     *
+     * @param after the action that will be executed after this action
+     * @return a new {@code CheckedConsumer} that chains {@code this} and {@code after}
+     * @throws NullPointerException if {@code after} is null
+     */
+    default CheckedConsumer<T> andThen(CheckedConsumer<? super T> after) {
+        Objects.requireNonNull(after, "after is null");
+        return (T t) -> { accept(t); after.accept(t); };
+    }
 }
