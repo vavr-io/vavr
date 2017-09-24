@@ -1093,34 +1093,18 @@ public class TryTest extends AbstractValueTest {
 
     // -- mapFailure
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldMapFailureWhenSuccess() {
         final Try<Integer> testee = Success(1);
-        final Try<Integer> actual = testee.mapFailure(
-                Case($(instanceOf(RuntimeException.class)), (Function<RuntimeException, Error>) Error::new)
-        );
+        final Try<Integer> actual = testee.mapFailure(Error::new);
         assertThat(actual).isSameAs(testee);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
-    public void shouldMapFailureWhenFailureAndMatches() {
+    public void shouldMapFailureWhenFailure() {
         final Try<Integer> testee = Failure(new IOException());
-        final Try<Integer> actual = testee.mapFailure(
-                Case($(instanceOf(IOException.class)), (Function<IOException, Error>) Error::new)
-        );
+        final Try<Integer> actual = testee.mapFailure(Error::new);
         assertThat(actual.getCause()).isInstanceOf(Error.class);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Test
-    public void shouldMapFailureWhenFailureButDoesNotMatch() {
-        final Try<Integer> testee = Failure(new IOException());
-        final Try<Integer> actual = testee.mapFailure(
-                Case($(instanceOf(RuntimeException.class)), (Function<RuntimeException, Error>) Error::new)
-        );
-        assertThat(actual).isSameAs(testee);
     }
 
     // -- andThen
