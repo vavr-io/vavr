@@ -282,7 +282,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldNotCancelCompletedFutureUsingTrivialExecutorService() {
         final Future<Integer> future = Future.of(trivialExecutorService(), () -> 1);
-        assertThat(future.cancel()).isFalse();
+        assertThat(future.cancel().isCancelled()).isFalse();
         assertCompleted(future, 1);
     }
 
@@ -575,8 +575,7 @@ public class FutureTest extends AbstractValueTest {
     @Test(expected = CancellationException.class)
     public void shouldThrowOnGetAfterCancellation() {
         final Future<?> future = Future.of(Concurrent::waitForever);
-        final boolean isCancelled = future.cancel();
-        assertThat(isCancelled).isTrue();
+        assertThat(future.cancel().isCancelled()).isTrue();
         future.get();
         fail("Future was expected to throw on get() after cancellation!");
     }
