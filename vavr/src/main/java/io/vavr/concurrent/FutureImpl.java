@@ -25,8 +25,8 @@ import io.vavr.control.Try;
 import io.vavr.control.Option;
 
 import java.util.Objects;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
 
 /**
@@ -95,6 +95,13 @@ final class FutureImpl<T> implements Future<T> {
     private Queue<Consumer<? super Try<T>>> actions = Queue.empty();
 
     /**
+     * The queue of waiters is filled when calling await() before the Future is completed or cancelled.
+     * Otherwise waiters = null.
+     */
+    @GuardedBy("lock")
+    private Queue<Thread> waiters = Queue.empty();
+
+    /**
      * Once a computation is started via run(), job is defined and used to control the lifecycle of the computation.
      * <p>
      * The {@code java.util.concurrent.Future} is not intended to store the result of the computation, it is stored in
@@ -116,19 +123,68 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public Future<T> await() {
         if (!isCompleted()) {
-            final Object monitor = new Object();
-            onComplete(ignored -> {
-                synchronized (monitor) {
-                    monitor.notify();
-                }
-            });
-            synchronized (monitor) {
-                if (!isCompleted()) {
-                    Try.run(monitor::wait);
-                }
-            }
+            _await(-1L, -1L, null);
         }
         return this;
+    }
+
+    @Override
+    public Future<T> await(long timeout, TimeUnit unit) {
+        final long now = System.nanoTime();
+        Objects.requireNonNull(unit, "unit is null");
+        if (timeout < 0) {
+            throw new IllegalArgumentException("negative timeout");
+        }
+        if (!isCompleted()) {
+            _await(now, timeout, unit);
+        }
+        return this;
+    }
+
+    // time unit: nanos
+    private void _await(long start, long timeout, TimeUnit unit) {
+        try {
+            ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker() {
+                @Override
+                public boolean block() throws InterruptedException {
+                    try {
+                        final Thread thread = Thread.currentThread();
+                        final boolean park;
+                        synchronized (lock) {
+                            if (park = !isCompleted()) {
+                                waiters = waiters.enqueue(thread);
+                            }
+                        }
+                        // If this Future is complete (and the Thread unparked), the next park() call will not block.
+                        if (park) {
+                            if (timeout != -1L) {
+                                final long duration = unit.toNanos(timeout);
+                                final long delta = System.nanoTime() - start;
+                                final long remaining = duration - delta;
+                                LockSupport.parkNanos(Math.max(remaining, 0L));
+                                if (System.nanoTime() - start > duration) {
+                                    throw new TimeoutException("timeout after " + timeout + " " + unit);
+                                }
+                            } else {
+                                LockSupport.park();
+                            }
+                            if (thread.isInterrupted()) {
+                                throw new InterruptedException();
+                            }
+                        }
+                    } catch(Throwable x) {
+                        tryComplete(Try.failure(x));
+                    }
+                    return true;
+                }
+                @Override
+                public boolean isReleasable() {
+                    return isCompleted();
+                }
+            });
+        } catch (Throwable x) {
+            tryComplete(Try.failure(x));
+        }
     }
 
     @Override
@@ -248,16 +304,27 @@ final class FutureImpl<T> implements Future<T> {
     private void complete(Try<? extends T> value) {
         Objects.requireNonNull(value, "value is null");
         final Queue<Consumer<? super Try<T>>> actions;
+        final Queue<Thread> waiters;
         // it is essential to make the completed state public *before* performing the actions
         synchronized (lock) {
             if (isCompleted()) {
-                throw new IllegalStateException("The Future is completed.");
+                actions = null;
+                waiters = null;
+            } else {
+                // the job isn't set to null, see isCancelled()
+                actions = this.actions;
+                waiters = this.waiters;
+                this.value = Option.some(Try.narrow(value));
+                this.actions = null;
+                this.waiters = null;
             }
-            actions = this.actions;
-            this.value = Option.some(Try.narrow(value));
-            this.actions = null;
         }
-        actions.forEach(this::perform);
+        if (waiters != null) {
+            waiters.forEach(LockSupport::unpark);
+        }
+        if (actions != null) {
+            actions.forEach(this::perform);
+        }
     }
 
     private void perform(Consumer<? super Try<T>> action) {

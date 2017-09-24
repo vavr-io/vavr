@@ -463,7 +463,7 @@ public class FutureTest extends AbstractValueTest {
         assertThat(f2.get()).isEqualTo("f2");
     }
 
-    // -- await
+    // -- await()
 
     @Test
     public void shouldAwaitOnGet() {
@@ -472,6 +472,34 @@ public class FutureTest extends AbstractValueTest {
             return 1;
         });
         assertThat(future.get()).isEqualTo(1);
+    }
+
+    // -- await(timeout, timeunit)
+
+    @Test
+    public void shouldAwaitAndTimeout() {
+        final Future<Void> future = Future.run(() -> {
+            long millis = 1;
+            while ((millis = millis << 1) < 1024) {
+                Thread.sleep(millis);
+            }
+        });
+        final long start = System.nanoTime();
+        future.await(100, TimeUnit.MILLISECONDS);
+        final long stop = System.nanoTime();
+        assertThat(future.isFailure()).isTrue();
+        assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
+        assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 MILLISECONDS");
+        assertThat(stop - start).isGreaterThan(100_000_000L);
+    }
+
+    @Test
+    public void shouldHandleInterruptedExceptionCorrectlyInAwait() {
+        final Future<Void> future = Future.run(() -> { throw new InterruptedException(); });
+        future.await(100, TimeUnit.MILLISECONDS);
+        assertThat(future.isFailure()).isTrue();
+        assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
+        assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 MILLISECONDS");
     }
 
     // -- failed
