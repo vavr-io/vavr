@@ -29,10 +29,7 @@ import io.vavr.collection.List;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 
@@ -678,10 +675,27 @@ public interface Future<T> extends Value<T> {
 
     /**
      * Blocks the current Thread until this Future completed or returns immediately if this Future is already completed.
+     * <p>
+     * In the case the current thread was interrupted while waiting, a failed {@code Future} is returned containing
+     * the corresponding {@link InterruptedException}.
      *
      * @return this {@code Future} instance
      */
     Future<T> await();
+
+    /**
+     * Blocks the current Thread until this Future completed or returns immediately if this Future is already completed.
+     * <p>
+     * In the case the current thread was interrupted while waiting, a failed {@code Future} is returned containing
+     * the corresponding {@link InterruptedException}.
+     * <p>
+     * If the deadline wasn't met, a failed {@code Future} is returned containing a {@link TimeoutException}.
+     *
+     * @return this {@code Future} instance
+     * @throws IllegalArgumentException if {@code timeout} is negative
+     * @throws NullPointerException if {@code unit} is null
+     */
+    Future<T> await(long timeout, TimeUnit unit);
 
     /**
      * Cancels the Future. A running thread is interrupted.
