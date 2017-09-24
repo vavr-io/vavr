@@ -597,9 +597,10 @@ public interface Future<T> extends Value<T> {
      * <p>
      * If the Future was successfully cancelled, the result is a {@code Failure(CancellationException)}.
      *
-     * @return {@code false}, if this {@code Future} is already completed or could not be cancelled, otherwise {@code true}.
+     * @return this {@code Future}
+     * @see Future#isCancelled()
      */
-    default boolean cancel() {
+    default Future<T> cancel() {
         return cancel(true);
     }
 
@@ -610,10 +611,11 @@ public interface Future<T> extends Value<T> {
      *
      * @param mayInterruptIfRunning {@code true} if a running thread should be interrupted, otherwise a running thread
      *                              is allowed to complete its computation.
-     * @return {@code false}, if this {@code Future} is already completed or could not be cancelled, otherwise {@code true}.
+     * @return this {@code Future}
+     * @see Future#isCancelled()
      * @see java.util.concurrent.Future#cancel(boolean)
      */
-    boolean cancel(boolean mayInterruptIfRunning);
+    Future<T> cancel(boolean mayInterruptIfRunning);
 
     /**
      * Collects value that is in the domain of the given {@code partialFunction} by mapping the value to type {@code R}.
@@ -749,6 +751,13 @@ public interface Future<T> extends Value<T> {
      * @return {@code None}, if the Future is not yet completed or was cancelled, otherwise {@code Some(Try)}.
      */
     Option<Try<T>> getValue();
+
+    /**
+     * Checks if this Future is cancelled, i.e. the thread was forced to stop before completion.
+     *
+     * @return true, if the computation was cancelled, false otherwise
+     */
+    boolean isCancelled();
 
     /**
      * Checks if this Future is completed, i.e. has a value.

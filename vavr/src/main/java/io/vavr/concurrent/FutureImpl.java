@@ -132,18 +132,17 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
-    public boolean cancel(boolean mayInterruptIfRunning) {
+    public Future<T> cancel(boolean mayInterruptIfRunning) {
         synchronized (lock) {
-            if (isCompleted()) {
-                return false;
-            } else {
-                return Try.of(() -> job == null || job.cancel(mayInterruptIfRunning)).onSuccess(cancelled -> {
+            if (!isCompleted()) {
+                Try.of(() -> job == null || job.cancel(mayInterruptIfRunning)).onSuccess(cancelled -> {
                     if (cancelled) {
                         complete(Try.failure(new CancellationException()));
                     }
-                }).getOrElse(false);
+                });
             }
         }
+        return this;
     }
 
     @Override
@@ -154,6 +153,11 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public Option<Try<T>> getValue() {
         return value;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return job != null && job.isCancelled();
     }
 
     @Override
@@ -252,7 +256,6 @@ final class FutureImpl<T> implements Future<T> {
             actions = this.actions;
             this.value = Option.some(Try.narrow(value));
             this.actions = null;
-            this.job = null;
         }
         actions.forEach(this::perform);
     }
