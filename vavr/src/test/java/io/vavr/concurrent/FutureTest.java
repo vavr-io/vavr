@@ -674,7 +674,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldGetCauseOfUncompletedFuture() {
         final AtomicBoolean running = new AtomicBoolean(false);
-        final Future<?> future = Future.run(() -> {
+        final Future<?> future = blocking(() -> {
             synchronized (running) {
                 running.set(true);
                 running.wait();
@@ -703,7 +703,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldGetValueOfUncompletedFuture() {
         final AtomicBoolean running = new AtomicBoolean(false);
-        final Future<?> future = Future.run(() -> {
+        final Future<?> future = blocking(() -> {
             synchronized (running) {
                 running.set(true);
                 running.wait();
@@ -780,7 +780,7 @@ public class FutureTest extends AbstractValueTest {
         final int expected = 1;
 
         // create a future and put it to sleep
-        final Future<Integer> future = Future.of(() -> {
+        final Future<Integer> future = blocking(() -> {
             synchronized(lock1) {
                 lock1.wait();
             }
