@@ -112,9 +112,10 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * @return A lazy sequence of values.
      * @throws NullPointerException if values is null
      */
+    @SuppressWarnings("Convert2MethodRef") // TODO should be fixed in JDK 9 and Idea
     public static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
-        return Lazy.of(() -> Vector.ofAll(values).map(Lazy::get));
+        return Lazy.of(() -> Vector.ofAll(values).map(lazy -> lazy.get()));
     }
 
     /**

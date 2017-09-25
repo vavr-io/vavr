@@ -19,21 +19,23 @@
  */
 package io.vavr;
 
-import io.vavr.control.Either;
-import io.vavr.match.annotation.Patterns;
 import io.vavr.collection.List;
+import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Option.Some;
+import io.vavr.match.annotation.Patterns;
 import io.vavr.match.annotation.Unapply;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.Year;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
+import static io.vavr.API.$;
 import static io.vavr.API.*;
-import static io.vavr.Patterns.*;
 import static io.vavr.MatchTest_DeveloperPatterns.$Developer;
+import static io.vavr.Patterns.*;
 import static io.vavr.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -318,9 +320,9 @@ public class MatchTest {
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Test
     public void shouldDecomposeListWithNonEmptyTail() {
-        final List<Option<Number>> intOptionList = List.of(Option.some(1), Option.some(2.0));
-        final String actual = Match(intOptionList).of(
-                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())), (x, xs) -> {
+        final List<Option<Number>> numberOptionList = List.of(Option.some(1), Option.some(2.0));
+        final String actual = Match(numberOptionList).of(
+                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())), (Some<Number> x, List<Option<Number>> xs) -> {
                     // types are inferred correctly!
                     final Some<Number> head = x;
                     final List<Option<Number>> tail = xs;
