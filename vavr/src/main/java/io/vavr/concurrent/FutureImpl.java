@@ -37,6 +37,7 @@ import java.util.function.Predicate;
  * @param <T> Result of the computation.
  * @author Daniel Dietrich
  */
+// TODO: where to use UncaughtExceptionHandler?
 final class FutureImpl<T> implements Future<T> {
 
     /**
@@ -48,6 +49,12 @@ final class FutureImpl<T> implements Future<T> {
      * Used to synchronize state changes.
      */
     private final Object lock = new Object();
+
+    /**
+     * Indicates if this Future is cancelled
+     */
+    @GuardedBy("lock")
+    private volatile boolean cancelled;
 
     /**
      * Once the Future is completed, the value is defined.
@@ -71,7 +78,6 @@ final class FutureImpl<T> implements Future<T> {
 
     /**
      * Once a computation is started via run(), job is defined and used to control the lifecycle of the computation.
-     * The job variable must not be set to null after it was defined.
      * <p>
      * The {@code java.util.concurrent.Future} is not intended to store the result of the computation, it is stored in
      * {@code value} instead.
@@ -79,9 +85,11 @@ final class FutureImpl<T> implements Future<T> {
     @GuardedBy("lock")
     private java.util.concurrent.Future<?> job;
 
+    // single constructor
     private FutureImpl(ExecutorService executorService, Option<Try<T>> value, Queue<Consumer<Try<T>>> actions, Queue<Thread> waiters, CheckedFunction1<FutureImpl<T>, java.util.concurrent.Future<?>> jobFactory) {
         this.executorService = executorService;
         synchronized (lock) {
+            this.cancelled = false;
             this.value = value;
             this.actions = actions;
             this.waiters = waiters;
@@ -114,7 +122,6 @@ final class FutureImpl<T> implements Future<T> {
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> sync(ExecutorService executorService, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
-        // TODO: currently can't be cancelled because job is null
         return new FutureImpl<>(executorService, Option.none(), Queue.empty(), Queue.empty(), future -> {
             computation.accept(future::tryComplete);
             return null;
@@ -235,11 +242,15 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public Future<T> cancel(boolean mayInterruptIfRunning) {
         if (!isCompleted()) {
-            Try.of(() -> job.cancel(mayInterruptIfRunning)).onSuccess(cancelled -> {
-                if (cancelled) {
-                    tryComplete(Try.failure(new CancellationException()));
-                }
-            });
+            synchronized (lock) {
+                Try.of(() -> job == null || job.cancel(mayInterruptIfRunning))
+                        .recover(ignored -> job != null && job.isCancelled())
+                        .onSuccess(cancelled -> {
+                            if (cancelled) {
+                                this.cancelled = tryComplete(Try.failure(new CancellationException()));
+                            }
+                        });
+            }
         }
         return this;
     }
@@ -256,7 +267,7 @@ final class FutureImpl<T> implements Future<T> {
 
     @Override
     public boolean isCancelled() {
-        return job != null && job.isCancelled();
+        return cancelled;
     }
 
     @Override
@@ -287,8 +298,9 @@ final class FutureImpl<T> implements Future<T> {
 
     @Override
     public String toString() {
-        final String value = (this.value == null || this.value.isEmpty()) ? "?" : this.value.get().toString();
-        return stringPrefix() + "(" + value + ")";
+        final Option<Try<T>> value = this.value;
+        final String s = (value == null || value.isEmpty()) ? "?" : value.get().toString();
+        return stringPrefix() + "(" + s + ")";
     }
 
     /**
@@ -321,6 +333,7 @@ final class FutureImpl<T> implements Future<T> {
                     this.value = Option.some(Try.narrow(value));
                     this.actions = null;
                     this.waiters = null;
+                    this.job = null;
                 }
             }
             if (waiters != null) {
@@ -339,7 +352,7 @@ final class FutureImpl<T> implements Future<T> {
         try {
             executorService.execute(() -> action.accept(value.get()));
         } catch(Throwable x) {
-            // ignored
+            // ignored // TODO: tell UncaughtExceptionHandler?
         }
     }
 
@@ -347,7 +360,7 @@ final class FutureImpl<T> implements Future<T> {
         try {
             LockSupport.unpark(waiter);
         } catch(Throwable x) {
-            // ignored
+            // ignored // TODO: tell UncaughtExceptionHandler?
         }
     }
 }

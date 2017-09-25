@@ -336,7 +336,6 @@ public class FutureTest extends AbstractValueTest {
                 .rangeClosed(1, 3)
                 .map(value -> Future.of(service, () -> expensiveOperation(value)));
         futures.forEach(future -> Try.run(future::await));
-        futures.forEach(System.out::println);
         assertThat(futures.flatMap(Function.identity()).toList().sorted()).isEqualTo(List.of(1, 2, 3));
         service.shutdown();
     }
@@ -627,6 +626,19 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.isCancelled()).isTrue();
         future.get();
         fail("Future was expected to throw on get() after cancellation!");
+    }
+
+    @Test
+    public void shouldCancelJoinedFutureThatNeverCompletes() {
+        final Future<?> future = Future.join(tryComplete -> {
+            // we break our promise, the Future is never completed
+        });
+
+        assertThat(future.isCompleted()).isFalse();
+        assertThat(future.isCancelled()).isFalse();
+
+        assertThat(future.cancel().isCancelled()).isTrue();
+        assertThat(future.isCompleted()).isTrue();
     }
 
     // -- collect()
