@@ -38,7 +38,6 @@ import io.vavr.collection.Stream;
 import io.vavr.collection.TreeMap;
 import io.vavr.collection.TreeSet;
 import io.vavr.collection.Vector;
-import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -1353,8 +1352,6 @@ public interface Value<T> extends Iterable<T> {
     default Try<T> toTry() {
         if (this instanceof Try) {
             return (Try<T>) this;
-        } else if (this instanceof Future) {
-            return ((Future<T>) this).await().getValue().get();
         } else {
             return Try.of(this::get);
         }
