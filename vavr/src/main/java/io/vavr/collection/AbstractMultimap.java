@@ -579,25 +579,12 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     protected <JM extends java.util.Map<K, Collection<V>>> JM toJavaMap(JM javaMap) {
-        final Supplier<Collection<V>> javaContainerSupplier = getJavaContainerSupplier();
         for (Tuple2<K, V> t : this) {
-            javaMap.computeIfAbsent(t._1, k -> javaContainerSupplier.get()).add(t._2);
+            javaMap.computeIfAbsent(t._1, k -> containerType.instantiate()).add(t._2);
         }
         return javaMap;
     }
 
-    private Supplier<Collection<V>> getJavaContainerSupplier() {
-        switch (containerType) {
-            case SEQ:
-                return java.util.ArrayList::new;
-            case SET:
-                return java.util.HashSet::new;
-            case SORTED_SET:
-                return java.util.TreeSet::new;
-            default:
-                throw new IllegalStateException("Unknown ContainerType: " + containerType);
-        }
-    }
 
     interface SerializableSupplier<T> extends Supplier<T>, Serializable {
     }
