@@ -106,7 +106,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> failed(ExecutorService executorService, Throwable exception) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(exception, "exception is null");
-        return new FutureImpl<>(executorService, Try.failure(exception));
+        return FutureImpl.of(executorService, Try.failure(exception));
     }
 
     /**
@@ -146,7 +146,7 @@ public interface Future<T> extends Value<T> {
         if (list.isEmpty()) {
             return successful(executorService, Option.none());
         } else {
-            return promise(executorService, tryComplete -> {
+            return join(executorService, tryComplete -> {
                 final AtomicBoolean completed = new AtomicBoolean(false);
                 final AtomicInteger count = new AtomicInteger(list.length());
                 list.forEach(future -> future.onComplete(result -> {
@@ -196,7 +196,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> firstCompletedOf(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(futures, "futures is null");
-        return promise(executorService, tryComplete -> futures.forEach(future -> future.onComplete(tryComplete::test)));
+        return join(executorService, tryComplete -> futures.forEach(future -> future.onComplete(tryComplete::test)));
     }
 
     /**
@@ -300,7 +300,7 @@ public interface Future<T> extends Value<T> {
         if (future.isDone() || future.isCompletedExceptionally() || future.isCancelled()) {
             return fromTry(Try.of(future::get).mapFailure(Throwable::getCause));
         } else {
-            return promise(executorService, tryComplete ->
+            return join(executorService, tryComplete ->
                     future.handle((t, err) -> tryComplete.test((err == null) ? Try.success(t) : Try.failure(err)))
             );
         }
@@ -330,7 +330,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> fromTry(ExecutorService executorService, Try<? extends T> result) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(result, "result is null");
-        return new FutureImpl<>(executorService, result);
+        return FutureImpl.of(executorService, result);
     }
 
     /**
@@ -371,15 +371,32 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> of(ExecutorService executorService, CheckedFunction0<? extends T> computation) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(computation, "computation is null");
-        return promise(executorService, tryComplete -> tryComplete.test(Try.of(computation)));
+        return FutureImpl.async(executorService, tryComplete -> tryComplete.test(Try.of(computation)));
     }
 
     /**
-     * Creates a Future based on a promise in the way, that the given computation requires
-     * to complete the Future.
-     * <p>
+     * Creates a (possibly blocking) Future that joins the results of the given {@code computation}
+     * using a completion handler:
+     *
+     * <pre>{@code
+     * CheckedConsumer<Predicate<Try<T>>> computation = tryComplete -> {
+     *     // computation
+     * };
+     * }</pre>
+     *
+     * The {@code computation} is executed synchronously. It requires to complete the returned Future.
+     * A common use-case is to hand over the {@code tryComplete} predicate to another {@code Future}
+     * in order to prevent blocking:
+     *
+     * <pre>{@code
+     * Future<String> greeting(Future<String> nameFuture) {
+     *     return Future.join(tryComplete -> {
+     *         nameFuture.onComplete(name -> tryComplete.test("Hi " + name));
+     *     });
+     * }}</pre>
+     *
      * The computation receives a {@link Predicate}, named {@code tryComplete} by convention,
-     * that takes a result of {@code Try<T>} and return a boolean that states whether the
+     * that takes a result of type {@code Try<T>} and returns a boolean that states whether the
      * Future was completed.
      * <p>
      * Future completion is an idempotent operation in the way that the first call of {@code tryComplete}
@@ -389,16 +406,33 @@ public interface Future<T> extends Value<T> {
      * @param <T> Type of the result
      * @return a new {@code Future} instance
      */
-    static <T> Future<T> promise(CheckedConsumer<Predicate<Try<? extends T>>> computation) {
-        return promise(DEFAULT_EXECUTOR_SERVICE, computation);
+    static <T> Future<T> join(CheckedConsumer<Predicate<Try<? extends T>>> computation) {
+        return join(DEFAULT_EXECUTOR_SERVICE, computation);
     }
 
     /**
-     * Creates a Future based on a promise in the way, that the given computation requires
-     * to complete the Future.
-     * <p>
+     * Creates a (possibly blocking) Future that joins the results of the given {@code computation}
+     * using a completion handler:
+     *
+     * <pre>{@code
+     * CheckedConsumer<Predicate<Try<T>>> computation = tryComplete -> {
+     *     // computation
+     * };
+     * }</pre>
+     *
+     * The {@code computation} is executed synchronously. It requires to complete the returned Future.
+     * A common use-case is to hand over the {@code tryComplete} predicate to another {@code Future}
+     * in order to prevent blocking:
+     *
+     * <pre>{@code
+     * Future<String> greeting(Future<String> nameFuture) {
+     *     return Future.join(tryComplete -> {
+     *         nameFuture.onComplete(name -> tryComplete.test("Hi " + name));
+     *     });
+     * }}</pre>
+     *
      * The computation receives a {@link Predicate}, named {@code tryComplete} by convention,
-     * that takes a result of {@code Try<T>} and return a boolean that states whether the
+     * that takes a result of type {@code Try<T>} and returns a boolean that states whether the
      * Future was completed.
      * <p>
      * Future completion is an idempotent operation in the way that the first call of {@code tryComplete}
@@ -409,8 +443,8 @@ public interface Future<T> extends Value<T> {
      * @param <T> Type of the result
      * @return a new {@code Future} instance
      */
-    static <T> Future<T> promise(ExecutorService executorService, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
-        return new FutureImpl<>(executorService, computation);
+    static <T> Future<T> join(ExecutorService executorService, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
+        return FutureImpl.sync(executorService, computation);
     }
 
     /**
@@ -562,7 +596,7 @@ public interface Future<T> extends Value<T> {
      */
     static <T> Future<T> successful(ExecutorService executorService, T result) {
         Objects.requireNonNull(executorService, "executorService is null");
-        return new FutureImpl<>(executorService, Try.success(result));
+        return FutureImpl.of(executorService, Try.success(result));
     }
 
     @Override
@@ -634,7 +668,7 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> andThen(Consumer<? super Try<T>> action) {
         Objects.requireNonNull(action, "action is null");
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
                 onComplete(t -> {
                     Try.run(() -> action.accept(t));
                     tryComplete.test(t);
@@ -712,7 +746,7 @@ public interface Future<T> extends Value<T> {
      */
     default <R> Future<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
             onComplete(result -> tryComplete.test(result.collect(partialFunction)))
         );
     }
@@ -734,7 +768,7 @@ public interface Future<T> extends Value<T> {
      * @return A new Future which contains an exception at a point of time.
      */
     default Future<Throwable> failed() {
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
             onComplete(result -> {
                 if (result.isFailure()) {
                     tryComplete.test(Try.success(result.getCause()));
@@ -766,7 +800,7 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> fallbackTo(Future<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
             onComplete(t -> {
                 if (t.isSuccess()) {
                     tryComplete.test(t);
@@ -798,7 +832,7 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> filterTry(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return promise(executorService(), tryComplete -> onComplete(result -> tryComplete.test(result.filterTry(predicate))));
+        return join(executorService(), tryComplete -> onComplete(result -> tryComplete.test(result.filterTry(predicate))));
     }
 
     /**
@@ -917,7 +951,7 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> recoverWith(Function<? super Throwable, ? extends Future<? extends T>> f) {
         Objects.requireNonNull(f, "f is null");
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
             onComplete(t -> {
                 if (t.isFailure()) {
                     Try.run(() -> f.apply(t.getCause()).onComplete(tryComplete::test))
@@ -952,7 +986,7 @@ public interface Future<T> extends Value<T> {
      */
     default <U> Future<U> transformValue(Function<? super Try<T>, ? extends Try<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
             onComplete(t -> Try.run(() -> tryComplete.test(f.apply(t)))
                     .onFailure(x -> tryComplete.test(Try.failure(x)))
             )
@@ -992,7 +1026,7 @@ public interface Future<T> extends Value<T> {
     default <U, R> Future<R> zipWith(Future<? extends U> that, BiFunction<? super T, ? super U, ? extends R> combinator) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(combinator, "combinator is null");
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
             onComplete(res1 -> {
                 if (res1.isFailure()) {
                     tryComplete.test((Try.Failure<R>) res1);
@@ -1015,7 +1049,7 @@ public interface Future<T> extends Value<T> {
 
     default <U> Future<U> flatMapTry(CheckedFunction1<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
             onComplete(result -> result.mapTry(mapper)
                     .onSuccess(future -> future.onComplete(tryComplete::test))
                     .onFailure(x -> tryComplete.test(Try.failure(x)))
@@ -1042,7 +1076,6 @@ public interface Future<T> extends Value<T> {
      * <strong>IMPORTANT! If the computation result is a {@link Try.Failure}, the underlying {@code cause} of type {@link Throwable} is thrown.</strong>
      * 
      * @return The value of this {@code Future}.
-     * @throws InterruptedException if the current thread was interrupted while waiting for the value
      */
     @Override
     default T get() {
@@ -1063,7 +1096,6 @@ public interface Future<T> extends Value<T> {
      * Checks, if this future has a value.
      *
      * @return true, if this future succeeded with a value, false otherwise.
-     * @throws InterruptedException if the current thread was interrupted while waiting for the value
      */
     @Override
     default boolean isEmpty() {
@@ -1108,7 +1140,7 @@ public interface Future<T> extends Value<T> {
     
     default Future<T> orElse(Future<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
             onComplete(result -> {
                 if (result.isSuccess()) {
                     tryComplete.test(result);
@@ -1121,7 +1153,7 @@ public interface Future<T> extends Value<T> {
 
     default Future<T> orElse(Supplier<? extends Future<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return promise(executorService(), tryComplete ->
+        return join(executorService(), tryComplete ->
             onComplete(result -> {
                 if (result.isSuccess()) {
                     tryComplete.test(result);

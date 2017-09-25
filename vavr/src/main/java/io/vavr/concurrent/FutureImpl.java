@@ -20,6 +20,7 @@
 package io.vavr.concurrent;
 
 import io.vavr.CheckedConsumer;
+import io.vavr.CheckedFunction1;
 import io.vavr.collection.Queue;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -59,7 +60,7 @@ final class FutureImpl<T> implements Future<T> {
      * Otherwise actions = null.
      */
     @GuardedBy("lock")
-    private Queue<Consumer<? super Try<T>>> actions;
+    private Queue<Consumer<Try<T>>> actions;
 
     /**
      * The queue of waiters is filled when calling await() before the Future is completed or cancelled.
@@ -78,50 +79,66 @@ final class FutureImpl<T> implements Future<T> {
     @GuardedBy("lock")
     private java.util.concurrent.Future<?> job;
 
+    private FutureImpl(ExecutorService executorService, Option<Try<T>> value, Queue<Consumer<Try<T>>> actions, Queue<Thread> waiters, CheckedFunction1<FutureImpl<T>, java.util.concurrent.Future<?>> jobFactory) {
+        this.executorService = executorService;
+        synchronized (lock) {
+            this.value = value;
+            this.actions = actions;
+            this.waiters = waiters;
+            try {
+                this.job = jobFactory.apply(this);
+            } catch(Throwable x) {
+                tryComplete(Try.failure(x));
+            }
+        }
+    }
+
     /**
-     * Creates a Future that is immediately completed with the given value. No task will be started.
+     * Creates a {@code FutureImpl} that is immediately completed with the given value. No task will be started.
      *
      * @param executorService An {@link ExecutorService} to run and control the computation and to perform the actions.
      * @param value the result of this Future
      */
     @SuppressWarnings("unchecked")
-    FutureImpl(ExecutorService executorService, Try<? extends T> value) {
-        Objects.requireNonNull(executorService, "executorService is null");
-        this.executorService = executorService;
-        this.value = Option.some((Try<T>) value);
-        this.actions = null;
-        this.waiters = null;
-        this.job = null;
+    static <T> FutureImpl<T> of(ExecutorService executorService, Try<? extends T> value) {
+        return new FutureImpl<>(executorService, Option.some(Try.narrow(value)), null, null, ignored -> null);
     }
 
     /**
-     * Creates a Future and starts a task.
+     * Creates a {@code FutureImpl} that is eventually completed.
+     * The given {@code computation} is <em>synchronously</em> executed, no thread is started.
      *
-     * @param executorService An {@link ExecutorService} to run and control the computation and to perform the actions.
-     * @param computation A computation that receives a complete function
+     * @param executorService  An {@link ExecutorService} to run and control the computation and to perform the actions.
+     * @param computation A non-blocking computation
+     * @param <T> value type of the Future
+     * @return a new {@code FutureImpl} instance
      */
-    FutureImpl(ExecutorService executorService, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
-        Objects.requireNonNull(executorService, "executorService is null");
-        this.executorService = executorService;
-        // the lock ensures that the task does not complete this Future before the constructor is finished
-        synchronized (lock) {
-            this.value = Option.none();
-            this.actions = Queue.empty();
-            this.waiters = Queue.empty();
+    static <T> FutureImpl<T> sync(ExecutorService executorService, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
+        // TODO: currently can't be cancelled because job is null
+        return new FutureImpl<>(executorService, Option.none(), Queue.empty(), Queue.empty(), future -> {
+            computation.accept(future::tryComplete);
+            return null;
+        });
+    }
+
+    /**
+     * Creates a {@code FutureImpl} that is eventually completed.
+     * The given {@code computation} is <em>asynchronously</em> executed, a new thread is started.
+     *
+     * @param executorService  An {@link ExecutorService} to run and control the computation and to perform the actions.
+     * @param computation A (possibly blocking) computation
+     * @param <T> value type of the Future
+     * @return a new {@code FutureImpl} instance
+     */
+    static <T> FutureImpl<T> async(ExecutorService executorService, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
+        // In a single-threaded context this Future may already have been completed during initialization.
+        return new FutureImpl<>(executorService, Option.none(), Queue.empty(), Queue.empty(), future -> executorService.submit(() -> {
             try {
-                // In a single-threaded context this Future may already have been completed during initialization.
-                // The worker thread completes this Future before it is done.
-                this.job = executorService.submit(() -> {
-                    try {
-                        computation.accept(this::tryComplete);
-                    } catch (Throwable x) {
-                        tryComplete(Try.failure(x));
-                    }
-                });
+                computation.accept(future::tryComplete);
             } catch (Throwable x) {
-                tryComplete(Try.failure(x));
+                future.tryComplete(Try.failure(x));
             }
-        }
+        }));
     }
 
     @Override
@@ -247,6 +264,7 @@ final class FutureImpl<T> implements Future<T> {
         return value.isDefined();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Future<T> onComplete(Consumer<? super Try<T>> action) {
         Objects.requireNonNull(action, "action is null");
@@ -257,7 +275,7 @@ final class FutureImpl<T> implements Future<T> {
                 if (isCompleted()) {
                     perform(action);
                 } else {
-                    actions = actions.enqueue(action);
+                    actions = actions.enqueue((Consumer<Try<T>>) action);
                 }
             }
         }
@@ -283,14 +301,13 @@ final class FutureImpl<T> implements Future<T> {
      * @param value A Success containing a result or a Failure containing an Exception.
      * @throws IllegalStateException if the Future is already completed or cancelled.
      * @throws NullPointerException  if the given {@code value} is null.
-     * @see FutureImpl#FutureImpl(ExecutorService, CheckedConsumer)
      */
     private boolean tryComplete(Try<? extends T> value) {
         Objects.requireNonNull(value, "value is null");
         if (isCompleted()) {
             return false;
         } else {
-            final Queue<Consumer<? super Try<T>>> actions;
+            final Queue<Consumer<Try<T>>> actions;
             final Queue<Thread> waiters;
             // it is essential to make the completed state public *before* performing the actions
             synchronized (lock) {
@@ -307,7 +324,7 @@ final class FutureImpl<T> implements Future<T> {
                 }
             }
             if (waiters != null) {
-                waiters.forEach(LockSupport::unpark);
+                waiters.forEach(this::unlock);
             }
             if (actions != null) {
                 actions.forEach(this::perform);
@@ -319,6 +336,18 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     private void perform(Consumer<? super Try<T>> action) {
-        Try.run(() -> executorService.execute(() -> action.accept(value.get())));
+        try {
+            executorService.execute(() -> action.accept(value.get()));
+        } catch(Throwable x) {
+            // ignored
+        }
+    }
+
+    private void unlock(Thread waiter) {
+        try {
+            LockSupport.unpark(waiter);
+        } catch(Throwable x) {
+            // ignored
+        }
     }
 }
