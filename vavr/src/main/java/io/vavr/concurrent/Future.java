@@ -789,6 +789,8 @@ public interface Future<T> extends Value<T> {
      * <p>
      * If the deadline wasn't met, a failed {@code Future} is returned containing a {@link TimeoutException}.
      *
+     * @param timeout the maximum time to wait
+     * @param unit the time unit of the timeout argument
      * @return this {@code Future} instance
      * @throws IllegalArgumentException if {@code timeout} is negative
      * @throws NullPointerException if {@code unit} is null
