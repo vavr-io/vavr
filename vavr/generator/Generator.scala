@@ -2603,7 +2603,7 @@ def generateTestClasses(): Unit = {
           ${genMapTests("SortedMap")}
           ${genMediumAliasTest("EmptySortedMapFromComparator", "SortedMap", "Integer::compareTo")}
 
-          ${genMediumAliasTest("SortedMapFromSingleAndComparator", "SortedMap", s"($JavaComparatorType<Integer>)Integer::compareTo, 1, '1'")}
+          ${genMediumAliasTest("SortedMapFromSingleAndComparator", "SortedMap", "Integer::compareTo, 1, '1'")}
         """
       }
 
@@ -2679,8 +2679,8 @@ def generateTestClasses(): Unit = {
             @$test
             public void shouldRunUnitAndReturnVoid() {
                 int[] i = { 0 };
-                @SuppressWarnings("unused")
                 Void nothing = run(() -> i[0]++);
+                $assertThat(nothing).isNull();
                 $assertThat(i[0]).isEqualTo(1);
             }
 

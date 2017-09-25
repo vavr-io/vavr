@@ -93,28 +93,36 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
 
     @SuppressWarnings("unchecked")
     enum ContainerType {
-
         SET(
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem),
+                java.util.HashSet::new
+
         ),
         SORTED_SET(
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem)
+                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem),
+                java.util.TreeSet::new
         ),
         SEQ(
                 (Traversable<?> seq, Object elem) -> ((io.vavr.collection.List<Object>) seq).append(elem),
-                (Traversable<?> seq, Object elem) -> ((io.vavr.collection.List<Object>) seq).remove(elem)
+                (Traversable<?> seq, Object elem) -> ((io.vavr.collection.List<Object>) seq).remove(elem),
+                java.util.ArrayList::new
         );
 
         private final BiFunction<Traversable<?>, Object, Traversable<?>> add;
         private final BiFunction<Traversable<?>, Object, Traversable<?>> remove;
+        private final Supplier<Collection<?>> instantiate;
 
-        ContainerType(BiFunction<Traversable<?>, Object, Traversable<?>> add,
-                BiFunction<Traversable<?>, Object, Traversable<?>> remove) {
+        ContainerType(
+                BiFunction<Traversable<?>, Object, Traversable<?>> add,
+                BiFunction<Traversable<?>, Object, Traversable<?>> remove,
+                Supplier<Collection<?>> instantiate) {
             this.add = add;
             this.remove = remove;
+            this.instantiate = instantiate;
         }
+
 
         <T> Traversable<T> add(Traversable<?> container, T elem) {
             return (Traversable<T>) add.apply(container, elem);
@@ -122,6 +130,10 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
 
         <T> Traversable<T> remove(Traversable<?> container, T elem) {
             return (Traversable<T>) remove.apply(container, elem);
+        }
+
+        <T> Collection<T> instantiate() {
+            return (Collection<T>) instantiate.get();
         }
     }
 
