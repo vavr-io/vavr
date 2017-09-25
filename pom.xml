@@ -32,6 +32,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
     <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
     <modules>
         <module>vavr</module>
+        <module>vavr-benchmark</module>
         <module>vavr-match</module>
         <module>vavr-test</module>
     </modules>
@@ -61,28 +62,28 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <assertj.core.version>3.8.0</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <java.version>1.8</java.version>
-        <jmh.version>1.18</jmh.version>
+        <jmh.version>1.19</jmh.version>
         <junit.version>4.12</junit.version>
         <gwt.version>2.8.0</gwt.version>
         <maven.enforcer.version>1.4.1</maven.enforcer.version>
-        <maven.build-helper.version>1.12</maven.build-helper.version>
-        <maven.bundle.version>3.2.0</maven.bundle.version>
+        <maven.build-helper.version>3.0.0</maven.build-helper.version>
+        <maven.bundle.version>3.3.0</maven.bundle.version>
         <maven.clean.version>3.0.0</maven.clean.version>
         <maven.install.version>2.5.2</maven.install.version>
-        <maven.compiler.version>3.6.0</maven.compiler.version>
+        <maven.compiler.version>3.7.0</maven.compiler.version>
         <maven.deploy.version>2.8.2</maven.deploy.version>
         <maven.gpg.version>1.6</maven.gpg.version>
-        <maven.jacoco.version>0.7.8</maven.jacoco.version>
+        <maven.jacoco.version>0.7.9</maven.jacoco.version>
         <maven.jar.version>3.0.2</maven.jar.version>
         <maven.javadoc.version>2.10.4</maven.javadoc.version>
         <maven.release.version>2.5.3</maven.release.version>
-        <maven.versions.version>2.3</maven.versions.version>
+        <maven.versions.version>2.4</maven.versions.version>
         <maven.surefire.version>2.19.1</maven.surefire.version>
         <maven.source.version>3.0.1</maven.source.version>
         <maven.exec.version>1.5.0</maven.exec.version>
         <maven.gwt.plugin>1.0-rc-6</maven.gwt.plugin>
         <scala.maven.version>3.3.1</scala.maven.version>
-        <scala.version>2.11.7</scala.version>
+        <scala.version>2.12.2</scala.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -253,6 +254,8 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                             <arg>-Xlint:all</arg>
                             <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
                             <arg>-Xlint:-processing</arg>
+                            <!-- Enable Java 9 compilation with 1.8 compatibility -->
+                            <arg>-Xlint:-options</arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>
@@ -459,12 +462,6 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <!-- A profile for running the benchmarks -->
         <profile>
             <id>benchmark</id>
-            <modules>
-                <module>vavr</module>
-                <module>vavr-benchmark</module>
-                <module>vavr-match</module>
-                <module>vavr-test</module>
-            </modules>
             <build>
                 <plugins>
                     <plugin>

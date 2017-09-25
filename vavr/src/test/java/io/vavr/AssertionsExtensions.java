@@ -40,10 +40,10 @@ public final class AssertionsExtensions {
             this.clazz = clazz;
         }
 
+        @SuppressWarnings("deprecation")
         public void isNotInstantiable() {
-            final Constructor<?> cons;
             try {
-                cons = clazz.getDeclaredConstructor();
+                final Constructor<?> cons = clazz.getDeclaredConstructor();
                 Assertions.assertThat(cons.isAccessible()).isFalse();
             } catch (NoSuchMethodException e) {
                 throw new AssertionError("no default constructor found");
