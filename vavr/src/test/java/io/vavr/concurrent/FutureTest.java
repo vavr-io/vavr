@@ -41,6 +41,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static io.vavr.concurrent.Concurrent.waitUntil;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -497,10 +498,11 @@ public class FutureTest extends AbstractValueTest {
             }
         });
         final long start = System.currentTimeMillis();
-        future.await(timeout, unit);
+        final Future<Void> returnedFuture = future.await(timeout, unit);
         final long stop = System.currentTimeMillis();
         final long millis = unit.toMillis(timeout);
         assertThat(stop - start).isBetween(millis, millis + millis / 10);
+        assertThat(returnedFuture).isSameAs(future);
         assertThat(future.isFailure()).isTrue();
         assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
         assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 MILLISECONDS");
@@ -785,42 +787,21 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldRegisterCallbackBeforeFutureCompletes() throws InterruptedException {
 
-        // instead of delaying we wait/notify
-        final Object lock1 = new Object();
-        final Object lock2 = new Object();
-        final int[] actual = new int[] { -1 };
-        final int expected = 1;
+        final AtomicBoolean ok = new AtomicBoolean(false);
+        final AtomicReference<Predicate<Try<? extends Boolean>>> computation = new AtomicReference<>(null);
 
-        // create a future and put it to sleep
-        final Future<Integer> future = blocking(() -> {
-            synchronized(lock1) {
-                lock1.wait();
-            }
-            return expected;
-        });
+        // this computation never ends
+        final Future<Boolean> future = Future.join(computation::set);
 
-        // the future now is on hold and we have time to register a callback
-        future.onComplete(result -> {
-            actual[0] = result.get();
-            synchronized(lock2) {
-                lock2.notify();
-            }
-        });
+        // now we have time to register an onComplete handler
+        future.onComplete(result -> result.forEach(ok::set));
 
-        // this hinders the onComplete action to notify lock2 before we wait on lock2
-        synchronized(lock2) {
-            synchronized (lock1) {
-                // now wake the future up
-                lock1.notify();
-            }
-            lock2.wait();
-        }
+        // now we complete the future...
+        assertThat(future.isCompleted()).isFalse();
+        assertThat(computation.get().test(Try.success(true))).isTrue();
 
-        // give the future thread some time to complete
-        future.await();
-
-        // the callback is also executed on its own thread - we have to wait for it to complete.
-        assertThat(actual[0]).isEqualTo(expected);
+        // ...and wait for the result
+        waitUntil(ok::get);
     }
 
     @Test

@@ -38,15 +38,15 @@ final class Concurrent {
     }
 
     static void waitUntil(Supplier<Boolean> condition) {
-        long nanos = 1L;
+        long millis = 1;
         boolean interrupted = false;
         while (!interrupted && !condition.get()) {
-            if (nanos > 1_000_000) {
+            if (millis > 4096) {
                 fail("Condition not met.");
             } else {
                 try {
-                    Thread.sleep(nanos);
-                    nanos = nanos << 1;
+                    Thread.sleep(millis);
+                    millis = millis << 1;
                 } catch(InterruptedException x) {
                     interrupted = true;
                 }
