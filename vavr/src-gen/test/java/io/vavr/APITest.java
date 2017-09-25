@@ -956,7 +956,7 @@ public class APITest {
 
     @Test
     public void shouldSortedMapFromSingleAndComparatorReturnNotNull() {
-        assertThat(SortedMap((Comparator<Integer>)Integer::compareTo, 1, '1')).isNotNull();
+        assertThat(SortedMap(Integer::compareTo, 1, '1')).isNotNull();
     }
 
     @Test
@@ -969,8 +969,8 @@ public class APITest {
     @Test
     public void shouldRunUnitAndReturnVoid() {
         int[] i = { 0 };
-        @SuppressWarnings("unused")
         Void nothing = run(() -> i[0]++);
+        assertThat(nothing).isNull();
         assertThat(i[0]).isEqualTo(1);
     }
 

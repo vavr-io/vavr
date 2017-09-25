@@ -19,7 +19,25 @@
  */
 package io.vavr;
 
+import io.vavr.collection.Array;
+import io.vavr.collection.CharSeq;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.HashSet;
+import io.vavr.collection.Iterator;
+import io.vavr.collection.LinkedHashMap;
+import io.vavr.collection.LinkedHashSet;
+import io.vavr.collection.List;
+import io.vavr.collection.Map;
 import io.vavr.collection.*;
+import io.vavr.collection.PriorityQueue;
+import io.vavr.collection.Queue;
+import io.vavr.collection.Set;
+import io.vavr.collection.SortedMap;
+import io.vavr.collection.SortedSet;
+import io.vavr.collection.Stream;
+import io.vavr.collection.TreeMap;
+import io.vavr.collection.TreeSet;
+import io.vavr.collection.Vector;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
@@ -28,12 +46,7 @@ import io.vavr.control.Validation;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Spliterator;
-import java.util.Spliterators;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.*;
 import java.util.function.Function;
@@ -620,9 +633,7 @@ public interface Value<T> extends Iterable<T> {
         if ((this instanceof Traversable<?>) && ((Traversable<?>) this).isTraversableAgain()) {
             final Object[] results = new Object[((Traversable<T>) this).size()];
             final Iterator<T> iter = iterator();
-            for (int i = 0; i < results.length; i++) {
-                results[i] = iter.next();
-            }
+            Arrays.setAll(results, i -> iter.next());
             return results;
 
         } else {

@@ -2668,7 +2668,7 @@ def generateTestClasses(): Unit = {
           ${genMapTests("SortedMap")}
           ${genMediumAliasTest("EmptySortedMapFromComparator", "SortedMap", "Integer::compareTo")}
 
-          ${genMediumAliasTest("SortedMapFromSingleAndComparator", "SortedMap", s"($JavaComparatorType<Integer>)Integer::compareTo, 1, '1'")}
+          ${genMediumAliasTest("SortedMapFromSingleAndComparator", "SortedMap", "Integer::compareTo, 1, '1'")}
 
           ${genMediumAliasTest("SortedMapFromTuplesAndComparator", "SortedMap", s"($JavaComparatorType<Integer>)Integer::compareTo, Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3')")}
         """
@@ -2747,8 +2747,8 @@ def generateTestClasses(): Unit = {
             @$test
             public void shouldRunUnitAndReturnVoid() {
                 int[] i = { 0 };
-                @SuppressWarnings("unused")
                 Void nothing = run(() -> i[0]++);
+                $assertThat(nothing).isNull();
                 $assertThat(i[0]).isEqualTo(1);
             }
 

@@ -830,12 +830,13 @@ public class CharSeqTest {
     @Test
     public void shouldFlatMapTraversableByExpandingElements() {
         assertThat(CharSeq.of('1', '2', '3').flatMap(i -> {
-            if (i == '1') {
-                return CharSeq.of('1', '2', '3');
-            } else if (i == '2') {
-                return CharSeq.of('4', '5');
-            } else {
-                return CharSeq.of('6');
+            switch (i) {
+                case '1':
+                    return CharSeq.of('1', '2', '3');
+                case '2':
+                    return CharSeq.of('4', '5');
+                default:
+                    return CharSeq.of('6');
             }
         })).isEqualTo(Vector.of('1', '2', '3', '4', '5', '6'));
     }

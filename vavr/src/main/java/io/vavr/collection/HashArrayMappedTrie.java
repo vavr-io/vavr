@@ -250,9 +250,7 @@ interface HashArrayMappedTrieModule {
             } else if (o instanceof HashArrayMappedTrie) {
                 final HashArrayMappedTrie<Object, ?> that = (HashArrayMappedTrie<Object, ?>) o;
                 if (this.size() == that.size()) {
-                    final java.util.Iterator<Tuple2<K, V>> it = iterator();
-                    while (it.hasNext()) {
-                        Tuple2<K, V> thisEntry = it.next();
+                    for (Tuple2<K, V> thisEntry : this) {
                         Option<?> thatValue = that.get(thisEntry._1);
                         if (!thatValue.isDefined() || !thatValue.get().equals(thisEntry._2)) {
                             return false;

@@ -666,15 +666,15 @@ interface BitSetModule {
         }
 
         BitSet<T> fromBitMaskNoCopy(long[] elements) {
-            final int len = elements.length;
-            if (len == 0) {
-                return createEmpty();
-            } else if (len == 1) {
-                return new BitSet1<>(fromInt, toInt, elements[0]);
-            } else if (len == 2) {
-                return new BitSet2<>(fromInt, toInt, elements[0], elements[1]);
-            } else {
-                return new BitSetN<>(fromInt, toInt, elements);
+            switch (elements.length) {
+                case 0:
+                    return createEmpty();
+                case 1:
+                    return new BitSet1<>(fromInt, toInt, elements[0]);
+                case 2:
+                    return new BitSet2<>(fromInt, toInt, elements[0], elements[1]);
+                default:
+                    return new BitSetN<>(fromInt, toInt, elements);
             }
         }
 

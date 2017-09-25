@@ -407,12 +407,13 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     public void shouldFlatMapNonEmptyByExpandingElements() {
         assertThat(of(1, 2, 3).flatMap(i -> {
-            if (i == 1) {
-                return of(1, 2, 3);
-            } else if (i == 2) {
-                return of(4, 5);
-            } else {
-                return of(6);
+            switch (i) {
+                case 1:
+                    return of(1, 2, 3);
+                case 2:
+                    return of(4, 5);
+                default:
+                    return of(6);
             }
         })).isEqualTo($(1, $(2), $(3), $(4, $(5)), $(6)));
     }
