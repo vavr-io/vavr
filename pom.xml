@@ -65,7 +65,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <jmh.version>1.19</jmh.version>
         <junit.version>4.12</junit.version>
         <gwt.version>2.8.0</gwt.version>
-        <maven.enforcer.version>1.4.1</maven.enforcer.version>
+        <maven.enforcer.version>3.0.0-M1</maven.enforcer.version>
         <maven.build-helper.version>3.0.0</maven.build-helper.version>
         <maven.bundle.version>3.3.0</maven.bundle.version>
         <maven.clean.version>3.0.0</maven.clean.version>
@@ -75,7 +75,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <maven.gpg.version>1.6</maven.gpg.version>
         <maven.jacoco.version>0.7.9</maven.jacoco.version>
         <maven.jar.version>3.0.2</maven.jar.version>
-        <maven.javadoc.version>2.10.4</maven.javadoc.version>
+        <maven.javadoc.version>3.0.0-M1</maven.javadoc.version>
         <maven.release.version>2.5.3</maven.release.version>
         <maven.versions.version>2.4</maven.versions.version>
         <maven.surefire.version>2.19.1</maven.surefire.version>
