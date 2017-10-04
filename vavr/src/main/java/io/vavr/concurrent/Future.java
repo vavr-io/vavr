@@ -738,7 +738,7 @@ public interface Future<T> extends Value<T> {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
-        return sequence(Iterator.ofAll(values).map(mapper));
+        return sequence(executorService, Iterator.ofAll(values).map(mapper));
     }
 
     // -- non-static Future API
