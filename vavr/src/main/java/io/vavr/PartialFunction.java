@@ -53,6 +53,9 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
      */
     static <T, R> PartialFunction<T, R> unlift(Function1<T, Option<R>> totalFunction) {
         return new PartialFunction<T, R>() {
+
+            private static final long serialVersionUID = 1L;
+
             @Override
             public R apply(T t) {
                 return totalFunction.apply(t).get();
