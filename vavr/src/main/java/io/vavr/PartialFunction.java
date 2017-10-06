@@ -37,6 +37,11 @@ import io.vavr.control.Option;
 public interface PartialFunction<T, R> extends Function1<T, R> {
 
     /**
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     */
+    long serialVersionUID = 1L;
+
+    /**
      * Unlifts a {@code totalFunction} that returns an {@code Option} result into a partial function.
      * The total function should be side effect free because it might be invoked twice: when checking if the
      * unlifted partial function is defined at a value and when applying the partial function to a value.
@@ -59,11 +64,6 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
             }
         };
     }
-
-    /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
-     */
-    long serialVersionUID = 1L;
 
     /**
      * Applies this function to the given argument and returns the result.
