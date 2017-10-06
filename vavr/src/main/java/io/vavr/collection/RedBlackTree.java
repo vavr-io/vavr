@@ -618,31 +618,31 @@ interface RedBlackTreeModule {
         }
 
         private static <T> Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(Node<T> node) {
-            if (node.left.isEmpty()) {
-                if (node.color == BLACK) {
-                    if (node.right.isEmpty()) {
-                        return Tuple.of(node.empty, true, node.value);
-                    } else {
-                        final Node<T> rightNode = (Node<T>) node.right;
-                        return Tuple.of(rightNode.color(BLACK), false, node.value);
-                    }
-                } else {
-                    return Tuple.of(node.right, false, node.value);
-                }
+
+            if (node.left().isEmpty() && node.right.isEmpty()){
+                return Tuple.of(node.empty, false, node.value());
+            }
+
+            if (node.color() == BLACK && node.left().isEmpty() && node.right().color() == RED){
+                return Tuple.of(((Node<T>)node.right()).color(BLACK), false, node.value());
+            }
+
+            if (node.color() == RED && node.left().isEmpty()){
+                return Tuple.of(node.right(), false, node.value());
+            }
+
+            final Node<T> nodeLeft = (Node<T>) node.left;
+            final Tuple3<? extends RedBlackTree<T>, Boolean, T> newNode = deleteMin(nodeLeft);
+            final RedBlackTree<T> l = newNode._1;
+            final boolean deleted = newNode._2;
+            final T m = newNode._3;
+            if (deleted) {
+                final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l,
+                        node.value, node.right, node.empty);
+                return Tuple.of(tD._1, tD._2, m);
             } else {
-                final Node<T> nodeLeft = (Node<T>) node.left;
-                final Tuple3<? extends RedBlackTree<T>, Boolean, T> newNode = deleteMin(nodeLeft);
-                final RedBlackTree<T> l = newNode._1;
-                final boolean d = newNode._2;
-                final T m = newNode._3;
-                if (d) {
-                    final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l,
-                            node.value, node.right, node.empty);
-                    return Tuple.of(tD._1, tD._2, m);
-                } else {
-                    final Node<T> tD = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
-                    return Tuple.of(tD, false, m);
-                }
+                final Node<T> tD = new Node<>(node.color, node.blackHeight, l, node.value, node.right, node.empty);
+                return Tuple.of(tD, false, m);
             }
         }
 
