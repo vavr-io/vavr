@@ -150,6 +150,18 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> intersect(Set<? extends T> that);
 
     /**
+     * Returns true if this set is a subset of the set you give
+     * (including if both sets are equal)
+     *
+     * @param other a set to compare this set with
+     * @return true if this set is a subset to the parameter, false otherwise.
+     */
+    default boolean isSubsetOf(Set<? extends T> other) {
+        final Set<T> other_ = Set.narrow(other);
+        return forAll(other_::contains);
+    }
+
+    /**
      * Removes a specific element from this set, if present.
      *
      * @param element The element to be removed from this set.

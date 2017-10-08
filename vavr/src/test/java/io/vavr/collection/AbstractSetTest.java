@@ -165,6 +165,23 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
         }
     }
 
+    // -- isSubsetOf
+
+    @Test
+    public void shouldConfirmSubsetIfValid() {
+        assertThat(of(1,2).isSubsetOf(of(0,1,2,3)));
+    }
+
+    @Test
+    public void shouldConfirmSubsetIfEqual() {
+        assertThat(of(1,2).isSubsetOf(of(1,2)));
+    }
+
+    @Test
+    public void shouldRejectSubsetIfInvalid() {
+        assertThat(of(1,2).isSubsetOf(of(0,1,3)));
+    }
+
     // -- map
 
     @Test
