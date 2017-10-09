@@ -216,6 +216,25 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(actual).isFalse();
     }
 
+    // -- static recurse(T, Function)
+
+    @Test
+    public void shouldRecurseBuildTree() {
+        Tree<Integer> generatedTree = Tree.recurse(1, p -> p == 0 ? List.empty()
+                : p == 1 ? List.of(2, 3)
+                : p == 2 ? List.of(4, 5)
+                : p == 3 ? List.of(6)
+                : p == 4 ? List.of(7)
+                : p == 6 ? List.of(8, 9)
+                : List.empty()
+        );
+        assertThat(generatedTree).isEqualTo(tree).hasToString(tree.toString());
+        final List<? extends Tree<Integer>> children = generatedTree.getChildren();
+        assertThat(children.length()).isEqualTo(2);
+        assertThat(children.get(0).toLispString()).isEqualTo("(2 (4 7) 5)");
+        assertThat(children.get(1).toLispString()).isEqualTo("(3 (6 8 9))");
+    }
+
     // -- Tree test
 
     @Test
