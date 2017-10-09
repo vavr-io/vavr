@@ -24,6 +24,8 @@ import io.vavr.collection.List;
 import io.vavr.control.Option;
 import org.junit.Test;
 
+import java.util.function.Predicate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PartialFunctionTest {
@@ -42,9 +44,10 @@ public class PartialFunctionTest {
 
     @Test
     public void shouldUnliftTotalFunctionReturningAnOption() {
-        final Function1<Integer, Option<String>> totalFunction = n -> n % 2 == 0 ? Option.some("even") : Option.none();
+        final Predicate<Number> isEven = n -> n.intValue() % 2 == 0;
+        final Function1<Number, Option<String>> totalFunction = n -> isEven.test(n) ? Option.some("even") : Option.none();
 
-        final PartialFunction<Integer, String> partialFunction = PartialFunction.unlift(totalFunction);
+        final PartialFunction<Integer, CharSequence> partialFunction = PartialFunction.unlift(totalFunction);
 
         assertThat(partialFunction.isDefinedAt(1)).isFalse();
         assertThat(partialFunction.isDefinedAt(2)).isTrue();

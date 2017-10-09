@@ -51,7 +51,7 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
      * @param <R> type of the function output, called <em>codomain</em> of the function
      * @return a partial function that is not necessarily defined for all input values of type T.
      */
-    static <T, R> PartialFunction<T, R> unlift(Function1<T, Option<R>> totalFunction) {
+    static <T, R> PartialFunction<T, R> unlift(Function1<? super T, ? extends Option<? extends R>> totalFunction) {
         return new PartialFunction<T, R>() {
 
             private static final long serialVersionUID = 1L;
