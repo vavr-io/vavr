@@ -235,6 +235,93 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(children.get(1).toLispString()).isEqualTo("(3 (6 8 9))");
     }
 
+    // -- static build(Iterable, Function, Function)
+
+    /**
+     * Example tree:
+     * <pre>
+     * <code>
+     *  1
+     *        / \
+     *       /   \
+     *      /     \
+     *     2       3
+     *    / \     /
+     *   4   5   6
+     *  /       / \
+     * 7       8   9
+     * </code>
+     * </pre>
+     */
+    @Test
+    public void shouldBuildTreeFromFlatSource() {
+        //List[(id, parent)]
+        Iterable<Tuple2<Integer, Integer>> flatSourceOfTreeStructure = List.of(
+                Tuple.of(1, null)
+                , Tuple.of(2, 1), Tuple.of(3, 1)
+                , Tuple.of(4, 2), Tuple.of(5, 2), Tuple.of(6, 3)
+                , Tuple.of(7, 4), Tuple.of(8, 6), Tuple.of(9, 6)
+        );
+        List<Tree.Node<Tuple2<Integer, Integer>>> roots = Tree.build(flatSourceOfTreeStructure, Tuple2::_1, Tuple2::_2);
+        assertThat(roots).isNotEmpty().hasSize(1);
+        //Tree[id]
+        Tree<Integer> root = roots.head().map(Tuple2::_1);
+        assertThat(root).isEqualTo(tree).hasToString(tree.toString());
+        final List<? extends Tree<Integer>> children = root.getChildren();
+        assertThat(children.length()).isEqualTo(2);
+        assertThat(children.get(0).toLispString()).isEqualTo("(2 (4 7) 5)");
+        assertThat(children.get(1).toLispString()).isEqualTo("(3 (6 8 9))");
+    }
+
+    @Test
+    public void shouldBuildEmptyRootListFromFlatSourceWithoutRoot() {
+        //List[(id, parent)]
+        Iterable<Tuple2<Integer, Integer>> flatSourceOfTreeStructure = List.of(
+                Tuple.of(1, 1)
+                , Tuple.of(2, 1), Tuple.of(3, 1)
+        );
+        List<Tree.Node<Tuple2<Integer, Integer>>> roots = Tree.build(flatSourceOfTreeStructure, Tuple2::_1, Tuple2::_2);
+        assertThat(roots).isEmpty();
+    }
+
+    @Test
+    public void shouldIgnoreCyclesWhileBuildFromFlatSource() {
+        //List[(id, parent)]
+        Iterable<Tuple2<Integer, Integer>> flatSourceOfTreeStructure = List.of(
+                Tuple.of(1, null)
+                //Cycle: (2 -> 3), (3 -> 4), (4 -> 2)
+                , Tuple.of(2, 3), Tuple.of(3, 4), Tuple.of(4, 2)
+        );
+        List<Tree.Node<Tuple2<Integer, Integer>>> roots = Tree.build(flatSourceOfTreeStructure, Tuple2::_1, Tuple2::_2);
+        assertThat(roots).isNotEmpty().hasSize(1);
+        //Tree[id]
+        Tree<Integer> root = roots.head().map(Tuple2::_1);
+        assertThat(root).isEqualTo($(1));
+    }
+
+    @Test
+    public void shouldBuildListWithManyRootsIfAny() {
+        //List[(id, parent)]
+        Iterable<Tuple2<Integer, Integer>> flatSourceOfTreeStructure = List.of(
+                //Subtree 1
+                Tuple.of(1, null)
+                , Tuple.of(2, 1), Tuple.of(3, 1)
+                , Tuple.of(4, 2)
+                //Subtree 2
+                , Tuple.of(10, null)
+                , Tuple.of(20, 10), Tuple.of(30, 10)
+                , Tuple.of(40, 20)
+        );
+        List<Tree.Node<Tuple2<Integer, Integer>>> roots = Tree.build(flatSourceOfTreeStructure, Tuple2::_1, Tuple2::_2);
+        assertThat(roots).isNotEmpty().hasSize(2);
+        //Tree[id]
+        Tree<Integer> root1 = roots.head().map(Tuple2::_1);
+        assertThat(root1).isNotEmpty().isEqualTo($(1, $(2, $(4)), $(3)));
+        //Tree[id]
+        Tree<Integer> root2 = roots.tail().head().map(Tuple2::_1);
+        assertThat(root2).isNotEmpty().isEqualTo($(10, $(20, $(40)), $(30)));
+    }
+
     // -- Tree test
 
     @Test
