@@ -205,6 +205,34 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         return io.vavr.collection.Collections.fill(n, s, empty(), Tree::of);
     }
 
+    /**
+     * Recursively builds a non-empty {@code Tree}, starting with the given {@code seed} value and proceeding in depth-first order.
+     * <p>
+     * The children of a node are created by
+     * <ol>
+     * <li>applying the {@code descend} function to the node value</li>
+     * <li>calling this method recursively by using each derived child value as new seed (in iteration order).</li>
+     * </ol>
+     * <p>
+     * Example:
+     * <pre>{@code
+     * // = (1 (2 4 5) 3)
+     * Tree.recurse(1, i ->
+     *   (i == 1) ? List.of(2, 3) :
+     *   (i == 2) ? List.(4, 5) :
+     *   List.empty()
+     * ).toLispString();
+     * }</pre>
+     *
+     * @param seed    The start value for the Tree
+     * @param descend A function to calculate the child values
+     * @param <T>     Value type
+     * @return a new, non-empty {@code Tree} instance
+     */
+    static <T> Node<T> recurse(T seed, Function<? super T, ? extends Iterable<? extends T>> descend) {
+        return Tree.of(seed, Stream.of(seed).flatMap(descend).map(children -> recurse(children, descend)));
+    }
+
     @Override
     default <R> Tree<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
