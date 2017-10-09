@@ -42,6 +42,33 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
     long serialVersionUID = 1L;
 
     /**
+     * Unlifts a {@code totalFunction} that returns an {@code Option} result into a partial function.
+     * The total function should be side effect free because it might be invoked twice: when checking if the
+     * unlifted partial function is defined at a value and when applying the partial function to a value.
+     *
+     * @param totalFunction the function returning an {@code Option} result.
+     * @param <T> type of the function input, called <em>domain</em> of the function
+     * @param <R> type of the function output, called <em>codomain</em> of the function
+     * @return a partial function that is not necessarily defined for all input values of type T.
+     */
+    static <T, R> PartialFunction<T, R> unlift(Function1<? super T, ? extends Option<? extends R>> totalFunction) {
+        return new PartialFunction<T, R>() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public R apply(T t) {
+                return totalFunction.apply(t).get();
+            }
+
+            @Override
+            public boolean isDefinedAt(T value) {
+                return totalFunction.apply(value).isDefined();
+            }
+        };
+    }
+
+    /**
      * Applies this function to the given argument and returns the result.
      *
      * @param t the argument
