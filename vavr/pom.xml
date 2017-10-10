@@ -20,6 +20,12 @@
     </licenses>
     <dependencies>
         <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.16</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vavr-match</artifactId>
             <version>${project.version}</version>
@@ -79,4 +85,4 @@
             </plugin>
         </plugins>
     </build>
-</project>
+</project>[pm
