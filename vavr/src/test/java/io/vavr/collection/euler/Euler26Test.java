@@ -70,10 +70,10 @@ public class Euler26Test {
         assertThat(recurringCycleLengthForDivisionOf1(8)._2).isEqualTo(0);
         assertThat(recurringCycleLengthForDivisionOf1(9)._2).isEqualTo(1);
         assertThat(recurringCycleLengthForDivisionOf1(10)._2).isEqualTo(0);
-        assertThat(deonominatorBelow1000WithTheLongetsRecurringCycleOfDecimalFractions()).isEqualTo(983);
+        assertThat(denominatorBelow1000WithTheLongetsRecurringCycleOfDecimalFractions()).isEqualTo(983);
     }
 
-    private static int deonominatorBelow1000WithTheLongetsRecurringCycleOfDecimalFractions() {
+    private static int denominatorBelow1000WithTheLongetsRecurringCycleOfDecimalFractions() {
         return List.range(2, 1000)
                 .map(Euler26Test::recurringCycleLengthForDivisionOf1)
                 .maxBy(Tuple2::_2)
@@ -122,7 +122,7 @@ public class Euler26Test {
         return reversedDecimalFractionPart -> reversedDecimalFractionPart
                 .map(String::valueOf)
                 .scan("", String::concat)
-                .drop(1); // Drop the first emtpy string created by scan
+                .drop(1); // Drop the first empty string created by scan
     }
 
     private static Function1<Stream<String>, Stream<String>> removeCandidatesLongerThanHalfTheFullString(String decimalFractionPart) {

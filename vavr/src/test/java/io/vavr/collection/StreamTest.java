@@ -618,7 +618,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     // -- take
 
     @Test
-    public void shouldNotEvaluateNplusOneWhenTakeN() {
+    public void shouldNotEvaluateNPlusOneWhenTakeN() {
         final Predicate<Integer> hiddenThrow = i -> {
             if (i == 0) {
                 return true;

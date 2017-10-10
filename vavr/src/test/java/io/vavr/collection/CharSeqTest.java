@@ -853,7 +853,7 @@ public class CharSeqTest {
     // -- flatMapChars()
 
     @Test
-    public void sholdFlatMapChars() {
+    public void shouldFlatMapChars() {
         assertThat(CharSeq.empty().flatMapChars(c -> "X")).isEqualTo(CharSeq.empty());
         assertThat(CharSeq.of('1', '2', '3').flatMapChars(c -> c == '1' ? "*" : "-")).isEqualTo(CharSeq.of("*--"));
     }
@@ -2570,7 +2570,7 @@ public class CharSeqTest {
     // -- insertAll
 
     @Test
-    public void shouldInserAlltIntoNil() {
+    public void shouldInsertAllIntoNil() {
         final CharSeq actual = CharSeq.empty().insertAll(0, CharSeq.of('1', '2', '3'));
         final CharSeq expected = CharSeq.of('1', '2', '3');
         assertThat(actual).isEqualTo(expected);
@@ -2875,7 +2875,7 @@ public class CharSeqTest {
     }
 
     @Test
-    public void shouldRemoveAllInterableContainingNull() {
+    public void shouldRemoveAllIterableContainingNull() {
         final CharSeq charSeq = CharSeq.of('a');
         assertThat(charSeq.removeAll(List.of((Character) null))).isSameAs(charSeq);
     }
