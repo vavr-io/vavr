@@ -1,6 +1,7 @@
 language: java
 jdk:
   - oraclejdk8
+  - oraclejdk9
 env:
   global:
     - secure: HU0QOLEDkYHcjX+PkicGGQ5g2L1/19V2fH13OSn82DOFlIiWmCfhSI8EG/QoWwPDp/HYQ4DH5Lo+ZEhVz5tgEultItyJ38LZJl/YYOzSAiRvTezmDdz+Cdg6SXAwCvgFCTagEJ1ChL5NyenDGDlwPB/drN0HlNNU6igPqNkM8l0=
@@ -9,7 +10,7 @@ env:
     - secure: m91QxOLHBRnJzRyphCivL79i90pE/FO4yg8qTOaDuyTqVXBKnHmdARFOxSMZN9Qn3B3e28xxPaazIsJGCuPXiQKSObqzPLeFHUOa3atUJSckEUW623l1313A9iMFOYbqSBAHFHmiuuAJBwN/E2OnG3BcLZV1FRibW6J1qLRLdJw=
 before_install:
   - sudo apt-get update
-  - sudo apt-get install --only-upgrade -y oracle-java8-installer
+  - sudo apt-get install --only-upgrade --assume-yes oracle-java8-installer oracle-java9-installer
   - pip install --user codecov
 install: true
 script: .travis/run-tests.sh

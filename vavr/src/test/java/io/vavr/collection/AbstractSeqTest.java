@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -1702,6 +1715,17 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         final Seq<String> testee = of("aaa", "b", "cc");
         final Seq<String> actual = testee.sortBy(String::length);
         final Seq<String> expected = of("b", "cc", "aaa");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void shouldSortByFunctionWhenElementsAreInfiniteStreams() {
+        final Stream<Integer> stream1 = Stream.continually(1);
+        final Stream<Integer> stream2 = Stream.continually(2);
+        final Seq<Stream<Integer>> testee = of(stream2, stream1);
+        final Seq<Stream<Integer>> actual = testee.sortBy(Stream::head);
+        final Seq<Stream<Integer>> expected = of(stream1, stream2);
         assertThat(actual).isEqualTo(expected);
     }
 

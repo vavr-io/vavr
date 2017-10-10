@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -68,7 +81,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> empty() {
-        return new TreeSet<>(RedBlackTree.<T> empty());
+        return empty(Comparators.naturalComparator());
     }
 
     public static <T> TreeSet<T> empty(Comparator<? super T> comparator) {
@@ -93,7 +106,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> of(T value) {
-        return new TreeSet<>(RedBlackTree.of(value));
+        return of(Comparators.naturalComparator(), value);
     }
 
     public static <T> TreeSet<T> of(Comparator<? super T> comparator, T value) {
@@ -104,8 +117,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T extends Comparable<? super T>> TreeSet<T> of(T... values) {
-        Objects.requireNonNull(values, "values is null");
-        return new TreeSet<>(RedBlackTree.of(values));
+        return TreeSet.<T> of(Comparators.naturalComparator(), values);
     }
 
     @SuppressWarnings("varargs")
@@ -182,12 +194,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(Iterable<? extends T> values) {
-        Objects.requireNonNull(values, "values is null");
-        if (values instanceof TreeSet) {
-            return (TreeSet<T>) values;
-        } else {
-            return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(values)) : empty();
-        }
+        return ofAll(Comparators.naturalComparator(), values);
     }
 
     @SuppressWarnings("unchecked")
@@ -197,9 +204,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         if (values instanceof TreeSet && ((TreeSet) values).comparator() == comparator) {
             return (TreeSet<T>) values;
         } else {
-            return values.iterator().hasNext()
-                   ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
-                   : (TreeSet<T>) empty();
+            return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(comparator, values)) : (TreeSet<T>) empty();
         }
     }
 
@@ -739,6 +744,15 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
+    public T last() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("last of empty TreeSet");
+        } else {
+            return tree.max().get();
+        }
+    }
+
+    @Override
     public int length() {
         return tree.size();
     }
@@ -752,16 +766,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
         return map(Comparators.naturalComparator(), mapper);
-    }
-
-    @Override
-    public Option<T> max() {
-        return tree.max();
-    }
-
-    @Override
-    public Option<T> min() {
-        return tree.min();
     }
 
     /**

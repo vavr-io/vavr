@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -442,6 +455,11 @@ public interface BitSet<T> extends SortedSet<T> {
     BitSet<T> intersect(Set<? extends T> elements);
 
     @Override
+    default T last() {
+        return Collections.last(this);
+    }
+
+    @Override
     Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate);
 
     @Override
@@ -648,15 +666,15 @@ interface BitSetModule {
         }
 
         BitSet<T> fromBitMaskNoCopy(long[] elements) {
-            final int len = elements.length;
-            if (len == 0) {
-                return createEmpty();
-            } else if (len == 1) {
-                return new BitSet1<>(fromInt, toInt, elements[0]);
-            } else if (len == 2) {
-                return new BitSet2<>(fromInt, toInt, elements[0], elements[1]);
-            } else {
-                return new BitSetN<>(fromInt, toInt, elements);
+            switch (elements.length) {
+                case 0:
+                    return createEmpty();
+                case 1:
+                    return new BitSet1<>(fromInt, toInt, elements[0]);
+                case 2:
+                    return new BitSet2<>(fromInt, toInt, elements[0], elements[1]);
+                default:
+                    return new BitSetN<>(fromInt, toInt, elements);
             }
         }
 

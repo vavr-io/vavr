@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -190,6 +203,34 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     static <T> Tree<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Tree::of);
+    }
+
+    /**
+     * Recursively builds a non-empty {@code Tree}, starting with the given {@code seed} value and proceeding in depth-first order.
+     * <p>
+     * The children of a node are created by
+     * <ol>
+     * <li>applying the {@code descend} function to the node value</li>
+     * <li>calling this method recursively by using each derived child value as new seed (in iteration order).</li>
+     * </ol>
+     * <p>
+     * Example:
+     * <pre>{@code
+     * // = (1 (2 4 5) 3)
+     * Tree.recurse(1, i ->
+     *   (i == 1) ? List.of(2, 3) :
+     *   (i == 2) ? List.(4, 5) :
+     *   List.empty()
+     * ).toLispString();
+     * }</pre>
+     *
+     * @param seed    The start value for the Tree
+     * @param descend A function to calculate the child values
+     * @param <T>     Value type
+     * @return a new, non-empty {@code Tree} instance
+     */
+    static <T> Node<T> recurse(T seed, Function<? super T, ? extends Iterable<? extends T>> descend) {
+        return Tree.of(seed, Stream.of(seed).flatMap(descend).map(children -> recurse(children, descend)));
     }
 
     @Override
@@ -809,6 +850,11 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         }
 
         @Override
+        public T last() {
+            return children.isEmpty() ? value : children.last().last();
+        }
+
+        @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
@@ -1005,6 +1051,11 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         @Override
         public boolean isLeaf() {
             return false;
+        }
+
+        @Override
+        public T last() {
+            throw new NoSuchElementException("last of empty tree");
         }
 
         @Override

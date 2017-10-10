@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -10,10 +23,9 @@ import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
+import java.util.stream.Collector;
 
 /**
  * Internal class, containing helpers.
@@ -222,6 +234,19 @@ final class Collections {
                 (iterable instanceof Traversable && ((Traversable<?>) iterable).isTraversableAgain());
     }
 
+    static <T> T last(Traversable<T> source){
+        if (source.isEmpty()) {
+            throw new NoSuchElementException("last of empty " + source.stringPrefix());
+        } else {
+            final Iterator<T> it = source.iterator();
+            T result = null;
+            while (it.hasNext()) {
+                result = it.next();
+            }
+            return result;
+        }
+    }
+
     @SuppressWarnings("unchecked")
     static <K, V, K2, U extends Map<K2, V>> U mapKeys(Map<K, V> source, U zero, Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
         Objects.requireNonNull(zero, "zero is null");
@@ -315,6 +340,14 @@ final class Collections {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<? extends T> reversedElements = reverseIterator(source);
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
+    }
+
+    static <T, U, R extends Seq<T>> R sortBy(Seq<? extends T> source, Comparator<? super U> comparator, Function<? super T, ? extends U> mapper, Collector<T, ?, R> collector) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return source.toJavaStream()
+                .sorted((e1, e2) -> comparator.compare(mapper.apply(e1), mapper.apply(e2)))
+                .collect(collector);
     }
 
     static <T, S extends Seq<T>> S shuffle(S source, Function<? super Iterable<T>, S> ofAll) {
