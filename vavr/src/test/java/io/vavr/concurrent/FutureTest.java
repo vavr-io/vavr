@@ -497,11 +497,7 @@ public class FutureTest extends AbstractValueTest {
                 Thread.sleep(millis);
             }
         });
-        final long start = System.currentTimeMillis();
         final Future<Void> returnedFuture = future.await(timeout, unit);
-        final long stop = System.currentTimeMillis();
-        final long millis = unit.toMillis(timeout);
-        assertThat(stop - start).isBetween(millis, millis + millis / 10);
         assertThat(returnedFuture).isSameAs(future);
         assertThat(future.isFailure()).isTrue();
         assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
