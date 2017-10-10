@@ -270,6 +270,67 @@ public class RedBlackTreeTest {
         assertThat(t1.intersection(t2)).isEqualTo(t1.delete(1));
     }
 
+    /*
+     * > let tree1 = fromList [8, 14, 0, 7, 9, 3]
+     * > let tree2 = fromList [7, 9, 14, 6, 0, 5, 11, 10, 4, 12, 8, 13]
+     * > tree1 `intersection` tree2
+     * Node B 2 (Node B 1 (Node R 1 Leaf 0 Leaf) 7 Leaf) 8 (Node B 1 (Node R 1 Leaf 9 Leaf) 14 Leaf)
+     * > printSet (tree1 `intersection` tree2)
+     * B 8 (2)
+     * + B 7 (1)
+     *   + R 0 (1)
+     *     +
+     *     +
+     *   +
+     * + B 14 (1)
+     *   + R 9 (1)
+     *     +
+     *     +
+     *   +
+     */
+    @Test
+    public void shouldPassIntersectionRegression1_Issue2098() {
+        final RedBlackTree<Integer> tree1 = of(8, 14, 0, 7, 9, 3);
+        final RedBlackTree<Integer> tree2 = of(7, 9, 14, 6, 0, 5, 11, 10, 4, 12, 8, 13);
+        final String actual = tree1.intersection(tree2).toString();
+        final String expected = "(B:8 (B:7 R:0) (B:14 R:9))";
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    /*
+     * > let tree1 = fromList [8, 14, 0, 7, 9, 3]
+     * > let tree2 = fromList [7, 9, 14, 6, 0, 5, 11, 10, 4, 12, 8, 13]
+     * > let tree3 = fromList [1, 2]
+     * > (tree1 `intersection` tree2) `intersection` tree3
+     * Leaf
+     * > tree1 `intersection` (tree2 `intersection` tree3)
+     * Leaf
+     */
+    @Test
+    public void shouldPassIntersectionRegression2_Issue2098() {
+        final RedBlackTree<Integer> tree1 = of(8, 14, 0, 7, 9, 3);
+        final RedBlackTree<Integer> tree2 = of(7, 9, 14, 6, 0, 5, 11, 10, 4, 12, 8, 13);
+        final RedBlackTree<Integer> tree3 = of(1, 2);
+        final RedBlackTree<Integer> actual = tree1.intersection(tree2).intersection(tree3);
+        final RedBlackTree<Integer> expected = tree1.intersection(tree2.intersection(tree3));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    /*
+     * > let tree1 = [1462193440, 0, 2147483647, -2147483648, 0, 637669539, -1612766076, -1, 1795938819, 1, 0, -420800448, -2147483648, 497885405, 0, 1084073832, 1, 1439964148, 1961646330]
+     * > let tree2 = [-1, 1, 2147483647, -1434983536, -2147483648, -1452486079, 1365799971, 231691980, -1780534767, -2147483648, 1448658704, 0, 1526591298]
+     * > tree1 `intersection` tree2
+     * Node B 2 (Node B 1 (Node R 1 Leaf (-2147483648) Leaf) (-1) Leaf) 0 (Node B 1 (Node R 1 Leaf 1 Leaf) 2147483647 Leaf)
+     */
+    @Test
+    public void shouldPassIntersectionRegression3_Issue2098() {
+        final RedBlackTree<Integer> tree1 = of(1462193440, 0, 2147483647, -2147483648, 0, 637669539, -1612766076, -1, 1795938819, 1, 0, -420800448, -2147483648, 497885405, 0, 1084073832, 1, 1439964148, 1961646330);
+        final RedBlackTree<Integer> tree2 = of(-1, 1, 2147483647, -1434983536, -2147483648, -1452486079, 1365799971, 231691980, -1780534767, -2147483648, 1448658704, 0, 1526591298);
+        final String actual = tree1.intersection(tree2).toString();
+        final String expected = "(B:0 (B:-1 R:-2147483648) (B:2147483647 R:1))";
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // union()
 
     @Test

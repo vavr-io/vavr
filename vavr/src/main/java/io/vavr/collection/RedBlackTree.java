@@ -618,24 +618,19 @@ interface RedBlackTreeModule {
         }
 
         private static <T> Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(Node<T> node) {
-            if (node.left.isEmpty()) {
-                if (node.color == BLACK) {
-                    if (node.right.isEmpty()) {
-                        return Tuple.of(node.empty, true, node.value);
-                    } else {
-                        final Node<T> rightNode = (Node<T>) node.right;
-                        return Tuple.of(rightNode.color(BLACK), false, node.value);
-                    }
-                } else {
-                    return Tuple.of(node.right, false, node.value);
-                }
-            } else {
+            if (node.color() == BLACK && node.left().isEmpty() && node.right.isEmpty()){
+                return Tuple.of(node.empty, true, node.value());
+            } else if (node.color() == BLACK && node.left().isEmpty() && node.right().color() == RED){
+                return Tuple.of(((Node<T>)node.right()).color(BLACK), false, node.value());
+            } else if (node.color() == RED && node.left().isEmpty()){
+                return Tuple.of(node.right(), false, node.value());
+            } else{
                 final Node<T> nodeLeft = (Node<T>) node.left;
                 final Tuple3<? extends RedBlackTree<T>, Boolean, T> newNode = deleteMin(nodeLeft);
                 final RedBlackTree<T> l = newNode._1;
-                final boolean d = newNode._2;
+                final boolean deleted = newNode._2;
                 final T m = newNode._3;
-                if (d) {
+                if (deleted) {
                     final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l,
                             node.value, node.right, node.empty);
                     return Tuple.of(tD._1, tD._2, m);
@@ -744,7 +739,7 @@ interface RedBlackTreeModule {
                 return new Node<>(RED, n1.blackHeight + 1, n1, m, t2, n1.empty);
             } else if (isRed(n1.left)) {
                 final Node<T> node = new Node<>(BLACK, n1.blackHeight, n1.right, m, t2, n1.empty);
-                return new Node<>(RED, n1.blackHeight, Node.color(n1.left, BLACK), n1.value, node, n1.empty);
+                return new Node<>(RED, n1.blackHeight + 1, Node.color(n1.left, BLACK), n1.value, node, n1.empty);
             } else if (isRed(n1.right)) {
                 final RedBlackTree<T> rl = ((Node<T>) n1.right).left;
                 final T rx = ((Node<T>) n1.right).value;
