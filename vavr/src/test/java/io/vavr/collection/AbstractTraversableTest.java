@@ -257,7 +257,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldComputeAvergageAndCompensateErrors() {
+    public void shouldComputeAverageAndCompensateErrors() {
         // Kahan's summation algorithm (used by DoubleStream.average()) returns 0.0 (false)
         // Neumaier's modification of Kahan's algorithm returns 0.75 (correct)
         assertThat(of(1.0, +10e100, 2.0, -10e100).average().get()).isEqualTo(0.75);

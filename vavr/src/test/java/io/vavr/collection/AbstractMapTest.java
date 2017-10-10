@@ -595,7 +595,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndMergedValus() {
+    public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndMergedValues() {
         final Map<Integer, String> actual = emptyIntString()
                 .put(1, "1").put(2, "2").put(3, "3")
                 .mapKeys(k -> k * 118).mapKeys(Integer::toHexString).mapKeys(AbstractMapTest::md5)//Unique key mappers
