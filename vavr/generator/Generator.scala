@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 // temporarily needed to circumvent https://issues.scala-lang.org/browse/SI-3772 (see case class Generics)
@@ -14,8 +27,8 @@ import scala.language.implicitConversions
 
 val N = 8
 val VARARGS = 10
-val TARGET_MAIN = "vavr/src-gen/main/java"
-val TARGET_TEST = "vavr/src-gen/test/java"
+val TARGET_MAIN = s"${project.getBasedir()}/src-gen/main/java"
+val TARGET_TEST = s"${project.getBasedir()}/src-gen/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
 
 /**
@@ -1520,14 +1533,14 @@ def generateMainClasses(): Unit = {
               }
 
               /$javadoc
-               * Narrows the given {@code $fullGenericsType} to {@code $className$fullGenerics}
+               * Narrows the given {@code $className$fullWideGenerics} to {@code $className$fullGenerics}
                *
                * @param f A {@code $className}
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
                * @return the given {@code f} instance as narrowed type {@code $className$fullGenerics}
                */
               @SuppressWarnings("unchecked")
-              static $fullGenerics $className$fullGenerics narrow($fullGenericsType f) {
+              static $fullGenerics $className$fullGenerics narrow($className$fullWideGenerics f) {
                   return ($className$fullGenerics) f;
               }
 
@@ -2590,7 +2603,7 @@ def generateTestClasses(): Unit = {
           ${genMapTests("SortedMap")}
           ${genMediumAliasTest("EmptySortedMapFromComparator", "SortedMap", "Integer::compareTo")}
 
-          ${genMediumAliasTest("SortedMapFromSingleAndComparator", "SortedMap", s"($JavaComparatorType<Integer>)Integer::compareTo, 1, '1'")}
+          ${genMediumAliasTest("SortedMapFromSingleAndComparator", "SortedMap", "Integer::compareTo, 1, '1'")}
         """
       }
 
@@ -2666,8 +2679,8 @@ def generateTestClasses(): Unit = {
             @$test
             public void shouldRunUnitAndReturnVoid() {
                 int[] i = { 0 };
-                @SuppressWarnings("unused")
                 Void nothing = run(() -> i[0]++);
+                $assertThat(nothing).isNull();
                 $assertThat(i[0]).isEqualTo(1);
             }
 
@@ -2727,6 +2740,22 @@ def generateTestClasses(): Unit = {
             }
 
             // -- Match patterns
+
+            @Test
+            public void shouldPartialMatchAsSome() {
+                final Option<String> actual = Match(1).option(
+                        Case($$(1), "ok")
+                );
+                assertThat(actual).isEqualTo($OptionType.some("ok"));
+            }
+
+            @Test
+            public void shouldPartialMatchAsNone() {
+                final Option<String> actual = Match(2).option(
+                        Case($$(1), "ok")
+                );
+                assertThat(actual).isEqualTo($OptionType.none());
+            }
 
             static class ClzMatch {}
             static class ClzMatch1 extends ClzMatch {}
@@ -3431,11 +3460,24 @@ def generateTestClasses(): Unit = {
  */
 def genVavrFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
   genJavaFile(baseDir, packageName, className)(xraw"""
-    /*                        __    __  __  __    __  ___
-     *                       \  \  /  /    \  \  /  /  __/
-     *                        \  \/  /  /\  \  \/  /  /
-     *                         \____/__/  \__\____/__/.ɪᴏ
-     * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+    /*  __    __  __  __    __  ___
+     * \  \  /  /    \  \  /  /  __/
+     *  \  \/  /  /\  \  \/  /  /
+     *   \____/__/  \__\____/__/
+     *
+     * Copyright 2014-2017 Vavr, http://vavr.io
+     *
+     * Licensed under the Apache License, Version 2.0 (the "License");
+     * you may not use this file except in compliance with the License.
+     * You may obtain a copy of the License at
+     *
+     *     http://www.apache.org/licenses/LICENSE-2.0
+     *
+     * Unless required by applicable law or agreed to in writing, software
+     * distributed under the License is distributed on an "AS IS" BASIS,
+     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     * See the License for the specific language governing permissions and
+     * limitations under the License.
      */
   """)(gen)(CHARSET)
 

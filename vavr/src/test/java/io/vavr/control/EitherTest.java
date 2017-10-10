@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.control;
 
@@ -133,6 +146,49 @@ public class EitherTest extends AbstractValueTest {
         final Either<Seq<Integer>, Seq<String>> expected = Either.left(Vector.of(1, 3));
         assertThat(actual).isEqualTo(expected);
     }
+
+    // -- sequenceRight
+
+    @Test
+    public void shouldThrowWhenSequencingRightNull() {
+        assertThatThrownBy(() -> Either.sequenceRight(null))
+                .isInstanceOf(NullPointerException.class)
+                .withFailMessage("eithers is null");
+    }
+
+    @Test
+    public void shouldSequenceRightEmptyIterableOfEither() {
+        final Iterable<Either<Integer, String>> eithers = List.empty();
+        final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
+        final Either<Integer, Seq<String>> expected = Either.right(Vector.empty());
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSequenceRightNonEmptyIterableOfRight() {
+        final Iterable<Either<Integer, String>> eithers = List.of(Either.right("a"), Either.right("b"), Either.right("c"));
+        final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
+        final Either<Integer, Seq<String>> expected = Either.right(Vector.of("a", "b", "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSequenceRightNonEmptyIterableOfLeft() {
+        final Iterable<Either<Integer, String>> eithers = List.of(Either.left(1), Either.left(2), Either.left(3));
+        final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
+        final Either<Integer, Seq<String>> expected = Either.left(1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldSequenceRightNonEmptyIterableOfMixedEither() {
+        final Iterable<Either<Integer,String>> eithers = List.of(Either.right("a"), Either.left(1), Either.right("c"), Either.left(3));
+        final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
+        final Either<Integer, Seq<String>> expected = Either.left(1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // --
 
     @Test
     public void shouldReturnSameWhenCallingMapOnLeft() {

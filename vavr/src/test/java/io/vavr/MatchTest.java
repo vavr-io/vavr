@@ -1,26 +1,41 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr;
 
-import io.vavr.control.Either;
-import io.vavr.match.annotation.Patterns;
 import io.vavr.collection.List;
+import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Option.Some;
+import io.vavr.match.annotation.Patterns;
 import io.vavr.match.annotation.Unapply;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.Year;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
+import static io.vavr.API.$;
 import static io.vavr.API.*;
-import static io.vavr.Patterns.*;
 import static io.vavr.MatchTest_DeveloperPatterns.$Developer;
+import static io.vavr.Patterns.*;
 import static io.vavr.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -305,9 +320,9 @@ public class MatchTest {
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Test
     public void shouldDecomposeListWithNonEmptyTail() {
-        final List<Option<Number>> intOptionList = List.of(Option.some(1), Option.some(2.0));
-        final String actual = Match(intOptionList).of(
-                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())), (x, xs) -> {
+        final List<Option<Number>> numberOptionList = List.of(Option.some(1), Option.some(2.0));
+        final String actual = Match(numberOptionList).of(
+                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())), (Some<Number> x, List<Option<Number>> xs) -> {
                     // types are inferred correctly!
                     final Some<Number> head = x;
                     final List<Option<Number>> tail = xs;

@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -35,30 +48,15 @@ import static io.vavr.collection.RedBlackTree.Color.RED;
  */
 interface RedBlackTree<T> extends Iterable<T> {
 
-    static <T extends Comparable<? super T>> RedBlackTree<T> empty() {
-        return new Empty<>(Comparators.naturalComparator());
-    }
-
     static <T> RedBlackTree<T> empty(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new Empty<>(comparator);
-    }
-
-    static <T extends Comparable<? super T>> RedBlackTree<T> of(T value) {
-        return of(Comparators.naturalComparator(), value);
     }
 
     static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T value) {
         Objects.requireNonNull(comparator, "comparator is null");
         final Empty<T> empty = new Empty<>(comparator);
         return new Node<>(BLACK, 1, empty, value, empty, empty);
-    }
-
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    static <T extends Comparable<? super T>> RedBlackTree<T> of(T... values) {
-        Objects.requireNonNull(values, "values is null");
-        return of(Comparators.<T> naturalComparator(), values);
     }
 
     @SafeVarargs
@@ -70,11 +68,6 @@ interface RedBlackTree<T> extends Iterable<T> {
             tree = tree.insert(value);
         }
         return tree;
-    }
-
-    static <T extends Comparable<? super T>> RedBlackTree<T> ofAll(Iterable<? extends T> values) {
-        Objects.requireNonNull(values, "values is null");
-        return ofAll(Comparators.naturalComparator(), values);
     }
 
     @SuppressWarnings("unchecked")
@@ -625,24 +618,19 @@ interface RedBlackTreeModule {
         }
 
         private static <T> Tuple3<? extends RedBlackTree<T>, Boolean, T> deleteMin(Node<T> node) {
-            if (node.left.isEmpty()) {
-                if (node.color == BLACK) {
-                    if (node.right.isEmpty()) {
-                        return Tuple.of(node.empty, true, node.value);
-                    } else {
-                        final Node<T> rightNode = (Node<T>) node.right;
-                        return Tuple.of(rightNode.color(BLACK), false, node.value);
-                    }
-                } else {
-                    return Tuple.of(node.right, false, node.value);
-                }
-            } else {
+            if (node.color() == BLACK && node.left().isEmpty() && node.right.isEmpty()){
+                return Tuple.of(node.empty, true, node.value());
+            } else if (node.color() == BLACK && node.left().isEmpty() && node.right().color() == RED){
+                return Tuple.of(((Node<T>)node.right()).color(BLACK), false, node.value());
+            } else if (node.color() == RED && node.left().isEmpty()){
+                return Tuple.of(node.right(), false, node.value());
+            } else{
                 final Node<T> nodeLeft = (Node<T>) node.left;
                 final Tuple3<? extends RedBlackTree<T>, Boolean, T> newNode = deleteMin(nodeLeft);
                 final RedBlackTree<T> l = newNode._1;
-                final boolean d = newNode._2;
+                final boolean deleted = newNode._2;
                 final T m = newNode._3;
-                if (d) {
+                if (deleted) {
                     final Tuple2<Node<T>, Boolean> tD = Node.unbalancedRight(node.color, node.blackHeight - 1, l,
                             node.value, node.right, node.empty);
                     return Tuple.of(tD._1, tD._2, m);
@@ -751,7 +739,7 @@ interface RedBlackTreeModule {
                 return new Node<>(RED, n1.blackHeight + 1, n1, m, t2, n1.empty);
             } else if (isRed(n1.left)) {
                 final Node<T> node = new Node<>(BLACK, n1.blackHeight, n1.right, m, t2, n1.empty);
-                return new Node<>(RED, n1.blackHeight, Node.color(n1.left, BLACK), n1.value, node, n1.empty);
+                return new Node<>(RED, n1.blackHeight + 1, Node.color(n1.left, BLACK), n1.value, node, n1.empty);
             } else if (isRed(n1.right)) {
                 final RedBlackTree<T> rl = ((Node<T>) n1.right).left;
                 final T rx = ((Node<T>) n1.right).value;

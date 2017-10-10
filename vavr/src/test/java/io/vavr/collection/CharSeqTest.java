@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr.collection;
 
@@ -817,12 +830,13 @@ public class CharSeqTest {
     @Test
     public void shouldFlatMapTraversableByExpandingElements() {
         assertThat(CharSeq.of('1', '2', '3').flatMap(i -> {
-            if (i == '1') {
-                return CharSeq.of('1', '2', '3');
-            } else if (i == '2') {
-                return CharSeq.of('4', '5');
-            } else {
-                return CharSeq.of('6');
+            switch (i) {
+                case '1':
+                    return CharSeq.of('1', '2', '3');
+                case '2':
+                    return CharSeq.of('4', '5');
+                default:
+                    return CharSeq.of('6');
             }
         })).isEqualTo(Vector.of('1', '2', '3', '4', '5', '6'));
     }

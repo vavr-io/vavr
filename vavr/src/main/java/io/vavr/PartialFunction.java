@@ -1,8 +1,21 @@
-/*                        __    __  __  __    __  ___
- *                       \  \  /  /    \  \  /  /  __/
- *                        \  \/  /  /\  \  \/  /  /
- *                         \____/__/  \__\____/__/.ɪᴏ
- * ᶜᵒᵖʸʳᶦᵍʰᵗ ᵇʸ ᵛᵃᵛʳ ⁻ ˡᶦᶜᵉⁿˢᵉᵈ ᵘⁿᵈᵉʳ ᵗʰᵉ ᵃᵖᵃᶜʰᵉ ˡᶦᶜᵉⁿˢᵉ ᵛᵉʳˢᶦᵒⁿ ᵗʷᵒ ᵈᵒᵗ ᶻᵉʳᵒ
+/*  __    __  __  __    __  ___
+ * \  \  /  /    \  \  /  /  __/
+ *  \  \/  /  /\  \  \/  /  /
+ *   \____/__/  \__\____/__/
+ *
+ * Copyright 2014-2017 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package io.vavr;
 
@@ -27,6 +40,33 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
      */
     long serialVersionUID = 1L;
+
+    /**
+     * Unlifts a {@code totalFunction} that returns an {@code Option} result into a partial function.
+     * The total function should be side effect free because it might be invoked twice: when checking if the
+     * unlifted partial function is defined at a value and when applying the partial function to a value.
+     *
+     * @param totalFunction the function returning an {@code Option} result.
+     * @param <T> type of the function input, called <em>domain</em> of the function
+     * @param <R> type of the function output, called <em>codomain</em> of the function
+     * @return a partial function that is not necessarily defined for all input values of type T.
+     */
+    static <T, R> PartialFunction<T, R> unlift(Function1<? super T, ? extends Option<? extends R>> totalFunction) {
+        return new PartialFunction<T, R>() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public R apply(T t) {
+                return totalFunction.apply(t).get();
+            }
+
+            @Override
+            public boolean isDefinedAt(T value) {
+                return totalFunction.apply(value).isDefined();
+            }
+        };
+    }
 
     /**
      * Applies this function to the given argument and returns the result.
