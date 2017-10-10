@@ -19,6 +19,7 @@
  */
 package io.vavr.control;
 
+import io.vavr.CheckedFunction1;
 import io.vavr.PartialFunction;
 import io.vavr.Value;
 import io.vavr.collection.Iterator;
@@ -349,6 +350,15 @@ public interface Option<T> extends Value<T>, Serializable {
 
     /**
      * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
+     * <p>
+     * Examples:
+     * <pre>{@code
+     * // = None
+     * Option.<Integer> none().flatMap(i -> Option.of(i + 1));
+     *
+     * // = Some(2)
+     * Option.some(1).flatMap(i -> Option.of(i + 1));
+     * }</pre>
      *
      * @param mapper A mapper
      * @param <U>    Component type of the resulting Option
@@ -361,8 +371,51 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.
+     * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
+     * In the case the given {@code mapper} throws, {@code None} will be returned.
+     * <p>
+     * Examples:
+     * <pre>{@code
+     * // = None
+     * Option.<Integer> none().flatMapTry(i -> 1 / i);
      *
+     * // = Some(0)
+     * Option.some(2).flatMapTry(i -> Option.of(1 / i));
+     *
+     * // = None
+     * Option.some(0).flatMapTry(i -> Option.of(1 / i)); // division by zero
+     * }</pre>
+     *
+     * @param mapper A value mapper that may throw
+     * @param <U>    Component type of the resulting Option
+     * @return a new {@code Option}
+     */
+    @SuppressWarnings("unchecked")
+    default <U> Option<U> flatMapTry(Function<? super T, ? extends Option<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (isEmpty()) {
+            return none();
+        } else {
+            try {
+                return (Option<U>) mapper.apply(get());
+            } catch(Throwable x) {
+                return none();
+            }
+        }
+    }
+
+    /**
+     * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, else returns {@code None}.
+     * <p>
+     * Examples:
+     * <pre>{@code
+     * // = None
+     * Option.<Integer> none().map(i -> i + 1);
+     *
+     * // = Some(2)
+     * Option.some(1).map(i -> i + 1);
+     * }</pre>
+     * 
      * @param mapper A value mapper
      * @param <U>    The new value type
      * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
@@ -371,6 +424,39 @@ public interface Option<T> extends Value<T>, Serializable {
     default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? none() : some(mapper.apply(get()));
+    }
+
+    /**
+     * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, else returns {@code None}.
+     * In the case the given {@code mapper} throws, {@code None} will be returned.
+     * <p>
+     * Examples:
+     * <pre>{@code
+     * // = None
+     * Option.<Integer> none().mapTry(i -> 1 / i);
+     *
+     * // = Some(0)
+     * Option.some(2).mapTry(i -> 1 / i);
+     *
+     * // = None
+     * Option.some(0).mapTry(i -> 1 / i); // division by zero
+     * }</pre>
+     * 
+     * @param mapper A value mapper that may throw an exception
+     * @param <U>    The new value type
+     * @return a new {@code Some} containing the mapped value or {@code None}
+     */
+    default <U> Option<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        if (isEmpty()) {
+            return none();
+        } else {
+            try {
+                return some(mapper.apply(get()));
+            } catch(Throwable x) {
+                return none();
+            }
+        }
     }
 
     /**
