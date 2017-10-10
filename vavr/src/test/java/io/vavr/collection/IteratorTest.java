@@ -281,7 +281,7 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     @Test
-    public void shouldConcatNetedConcatIterators() {
+    public void shouldConcatNestedConcatIterators() {
         assertThat(concat(List.of(1, 2), List.of(3), concat(List.of(4, 5)))).isEqualTo(Iterator.of(1, 2, 3, 4, 5));
         assertThat(concat(concat(List.of(4, 5)), List.of(1, 2), List.of(3))).isEqualTo(Iterator.of(4, 5, 1, 2, 3));
     }

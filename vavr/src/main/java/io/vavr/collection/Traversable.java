@@ -1029,7 +1029,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     Traversable<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
 
     /**
-     * Creates a partition of this {@code Traversable} by splitting this elements in two in distinct tarversables
+     * Creates a partition of this {@code Traversable} by splitting this elements in two in distinct traversables
      * according to a predicate.
      *
      * @param predicate A predicate which classifies an element if it is in the first or the second traversable.
