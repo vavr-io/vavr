@@ -319,12 +319,13 @@ public class MatchTest {
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Test
     public void shouldDecomposeListWithNonEmptyTail() {
-        final List<Option<Number>> numberOptionList = List.of(Option.some(1), Option.some(2.0));
+        final List<Option<? extends Number>> numberOptionList = List.of(Option.some(1), Option.some(2.0));
         final String actual = Match(numberOptionList).of(
-                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())), (Some<Number> x, List<Option<Number>> xs) -> {
+                Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())),
+                        (Some<? extends Number> x, List<Option<? extends Number>> xs) -> {
                     // types are inferred correctly!
-                    final Some<Number> head = x;
-                    final List<Option<Number>> tail = xs;
+                    final Some<? extends Number> head = x;
+                    final List<Option<? extends Number>> tail = xs;
                     return head + "::" + tail;
                 })
         );
