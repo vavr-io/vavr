@@ -12,7 +12,7 @@ public class ComparatorsTest {
     // -- naturalComparator()
 
     @Test
-    public void shouldCompareTwoIntegersUsingNaturealOrder() {
+    public void shouldCompareTwoIntegersUsingNaturalOrder() {
         final Comparator<Integer> comparator = naturalComparator();
         assertThat(comparator.compare(0, 1)).isEqualTo(-1);
         assertThat(comparator.compare(2, -1)).isEqualTo(1);

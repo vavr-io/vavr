@@ -57,10 +57,10 @@ public class Euler38Test {
         assertThat(isPandigitalMultiple(CharSeq.of("192384576"))).isTrue();
         assertThat(isPandigitalMultiple(CharSeq.of("918273645"))).isTrue();
 
-        assertThat(largets1To9PandigitalMultiple().mkString()).isEqualTo("932718654");
+        assertThat(largest1To9PandigitalMultiple().mkString()).isEqualTo("932718654");
     }
 
-    private static CharSeq largets1To9PandigitalMultiple() {
+    private static CharSeq largest1To9PandigitalMultiple() {
         return CharSeq.of("87654321")
                 .permutations()
                 .map(CharSeq::mkString)

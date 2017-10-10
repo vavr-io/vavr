@@ -159,7 +159,7 @@ public class RedBlackTreeTest {
     }
 
     @Test
-    public void shouldReturnTheSameInstanceWhenInsertingAnAlreadyContainedELement() {
+    public void shouldReturnTheSameInstanceWhenInsertingAnAlreadyContainedElement() {
         final RedBlackTree<Integer> testee = of(1, 2, 3);
         final RedBlackTree<Integer> actual = testee.insert(2);
         assertThat(actual).isEqualTo(testee);
