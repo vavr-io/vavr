@@ -9,7 +9,6 @@ package io.vavr.control;
 import io.vavr.AbstractValueTest;
 import io.vavr.collection.Seq;
 import io.vavr.collection.List;
-import io.vavr.control.fluent.Validation;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
@@ -319,7 +318,7 @@ public class EitherTest extends AbstractValueTest {
     public void shouldConvertToInvalidDeprecateValidation() {
         final io.vavr.control.Validation<String, ?> validation = Either.left("vavr").toValidation();
         assertThat(validation.isInvalid()).isTrue();
-        assertThat(validation.getError()).isEqualTo("vavr");
+        assertThat(validation.getErrors()).isEqualTo("vavr");
     }
 
 

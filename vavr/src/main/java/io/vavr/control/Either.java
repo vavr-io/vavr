@@ -10,7 +10,7 @@ import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
-import io.vavr.control.fluent.Validation;
+import io.vavr.control.Validation;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;

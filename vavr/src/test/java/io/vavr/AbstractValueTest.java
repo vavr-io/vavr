@@ -7,6 +7,7 @@
 package io.vavr;
 
 import io.vavr.collection.*;
+import io.vavr.collection.List;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
@@ -369,9 +370,9 @@ public abstract class AbstractValueTest {
 
     @Test
     public void shouldConvertToValidation() {
-        assertThat(empty().toValidation("test")).isEqualTo(Invalid("test"));
-        assertThat(empty().toValidation(() -> "test")).isEqualTo(Invalid("test"));
-        assertThat(of(1).toValidation("test")).isEqualTo(Valid(1));
+        assertThat(empty().toValid("test")).isEqualTo(Invalid("test"));
+        assertThat(empty().toValid(() -> "test")).isEqualTo(Invalid("test"));
+        assertThat(of(1).toValid("test")).isEqualTo(Valid(1));
     }
 
     @Test
@@ -822,7 +823,7 @@ public abstract class AbstractValueTest {
     public void shouldConvertToValidationInvalidFromValueSupplier() {
         final Validation<Integer, String> validation = of(0).toInvalid(() -> "fallback");
         assertThat(validation.isInvalid()).isTrue();
-        assertThat(validation.getError()).isEqualTo(0);
+        assertThat(validation.getErrors()).isEqualTo(List.of(0));
 
         final Validation<Object, String> validation2 = empty().toInvalid(() -> "fallback");
         assertThat(validation2.isValid()).isTrue();
@@ -833,7 +834,7 @@ public abstract class AbstractValueTest {
     public void shouldConvertToValidationInvalidFromValue() {
         final Validation<Integer, String> validation = of(0).toInvalid("fallback");
         assertThat(validation.isInvalid()).isTrue();
-        assertThat(validation.getError()).isEqualTo(0);
+        assertThat(validation.getErrors()).isEqualTo(List.of(0));
 
         final Validation<Object, String> validation2 = empty().toInvalid("fallback");
         assertThat(validation2.isValid()).isTrue();
@@ -848,7 +849,7 @@ public abstract class AbstractValueTest {
 
         final Validation<String, Object> validation2 = empty().toValid(() -> "fallback");
         assertThat(validation2.isInvalid()).isTrue();
-        assertThat(validation2.getError()).isEqualTo("fallback");
+        assertThat(validation2.getErrors()).isEqualTo(List.of("fallback"));
     }
 
     @Test
@@ -859,7 +860,7 @@ public abstract class AbstractValueTest {
 
         final Validation<String, Object> validation2 = empty().toValid("fallback");
         assertThat(validation2.isInvalid()).isTrue();
-        assertThat(validation2.getError()).isEqualTo("fallback");
+        assertThat(validation2.getErrors()).isEqualTo(List.of("fallback"));
     }
 
     // -- exists
@@ -966,8 +967,7 @@ public abstract class AbstractValueTest {
                         instanceOf(Option.class),
                         instanceOf(Try.class),
                         instanceOf(Traversable.class),
-                        instanceOf(Validation.class),
-                        instanceOf(io.vavr.control.fluent.Validation.class)
+                        instanceOf(Validation.class)
                 )), true)
         );
         assertThat(actual).isEqualTo(expected);
