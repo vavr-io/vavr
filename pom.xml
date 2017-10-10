@@ -181,6 +181,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     <version>${scala.maven.version}</version>
                     <configuration>
                         <scalaVersion>${scala.version}</scalaVersion>
+                        <failOnMultipleScalaVersions>true</failOnMultipleScalaVersions>
                     </configuration>
                     <executions>
                         <execution>
