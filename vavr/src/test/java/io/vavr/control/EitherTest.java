@@ -382,30 +382,15 @@ public class EitherTest extends AbstractValueTest {
     // -- toValidation
 
     @Test
-    public void shouldConvertToValidDeprecatedValidation() {
-        final io.vavr.control.Validation<?, Integer> validation = Either.right(42).toValidation();
-        assertThat(validation.isValid()).isTrue();
-        assertThat(validation.get()).isEqualTo(42);
-    }
-
-    @Test
-    public void shouldConvertToInvalidDeprecateValidation() {
-        final io.vavr.control.Validation<String, ?> validation = Either.left("vavr").toValidation();
-        assertThat(validation.isInvalid()).isTrue();
-        assertThat(validation.getErrors()).isEqualTo("vavr");
-    }
-
-
-    @Test
     public void shouldConvertToValidValidation() {
-        final Validation<?, Integer> validation = Either.right(42).toFluentValidation();
+        final Validation<?, Integer> validation = Either.right(42).toValidation();
         assertThat(validation.isValid()).isTrue();
         assertThat(validation.get()).isEqualTo(42);
     }
 
     @Test
     public void shouldConvertToInvalidValidation() {
-        final Validation<String, ?> validation = Either.left("vavr").toFluentValidation();
+        final Validation<String, ?> validation = Either.left("vavr").toValidation();
         assertThat(validation.isInvalid()).isTrue();
         assertThat(validation.getErrors()).isEqualTo(List.of("vavr"));
     }

@@ -29,7 +29,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.Year;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static io.vavr.API.$;
