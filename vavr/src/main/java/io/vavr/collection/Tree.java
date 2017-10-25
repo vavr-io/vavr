@@ -238,9 +238,18 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     /**
      * Build a {@code List} with roots of {@code Tree} from flat source.
      * <p>
-     * todo Example:
+ *     {@code parentMapper} must return {@code null} for root element.
+     * <p>
      * <pre>{@code
+     *  // = [(1, null, "I"), (2, 1, "II"), (3, 1, "III"), (4, 2, "IV"), (5, 2, "V")]
+     *  List<MenuItem> items = ...; // MenuItem(id, parentId, label)
      *
+     *  //      I
+     *  //     / \
+     *  //   II  III
+     *  //   /\
+     *  //  IV V
+     *  Tree<MenuItem> menu = Tree.build(items, MenuItem::getId, MenuItem::getParentId);
      * }</pre>
      *
      * @param source       Flat source
