@@ -39,6 +39,7 @@ import java.util.function.Function;
  * @param <T3> type of the 3rd element
  * @author Daniel Dietrich
  */
+@javax.annotation.Generated("Generator.scala")
 public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2, T3>>, Serializable {
 
     private static final long serialVersionUID = 1L;
