@@ -2549,6 +2549,28 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 2, 3).toJavaSet()).isEqualTo(expected);
     }
 
+    // toTree
+
+    @Test
+    public void shouldConvertToTree() {
+        //Value["id:parent")]
+        final Traversable<String> value = of(
+                "1:",
+                "2:1", "3:1",
+                "4:2", "5:2", "6:3",
+                "7:4", "8:6", "9:6"
+        );
+        final Seq<Tree<String>> roots = value
+                .toTree(s -> s.split(":")[0], s -> s.split(":").length == 1 ? null : s.split(":")[1])
+                .map(l -> l.map(s -> s.split(":")[0]));
+        assertThat(roots).hasSize(1);
+        final Tree<String> root = roots.head();
+        if (value.hasDefiniteSize()) {
+            assertThat(root).hasSameSizeAs(value);
+        }
+        assertThat(root.toLispString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+    }
+
     // ++++++ OBJECT ++++++
 
     // -- equals

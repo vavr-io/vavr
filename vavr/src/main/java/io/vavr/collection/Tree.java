@@ -228,9 +228,49 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @param descend A function to calculate the child values
      * @param <T>     Value type
      * @return a new, non-empty {@code Tree} instance
+     * @throws NullPointerException if {@code descend} is null
      */
     static <T> Node<T> recurse(T seed, Function<? super T, ? extends Iterable<? extends T>> descend) {
+        Objects.requireNonNull(descend, "descend is null");
         return Tree.of(seed, Stream.of(seed).flatMap(descend).map(children -> recurse(children, descend)));
+    }
+
+    /**
+     * Build a {@code List} with roots of {@code Tree} from flat source.
+     * <p>
+ *     {@code parentMapper} must return {@code null} for root element.
+     * <p>
+     * <pre>{@code
+     *  // = [(1, null, "I"), (2, 1, "II"), (3, 1, "III"), (4, 2, "IV"), (5, 2, "V")]
+     *  List<MenuItem> items = ...; // MenuItem(id, parentId, label)
+     *
+     *  //      I
+     *  //     / \
+     *  //   II  III
+     *  //   /\
+     *  //  IV V
+     *  Tree<MenuItem> menu = Tree.build(items, MenuItem::getId, MenuItem::getParentId);
+     * }</pre>
+     *
+     * @param source       Flat source
+     * @param idMapper     A mapper from source item to unique identificator of that item
+     * @param parentMapper A mapper from source item to unique identificator of parent item. Need return null for root items
+     * @param <T>          Value type
+     * @param <ID>         Id type
+     * @return a new, maybe empty {@code List} instance with non-empty {@code Tree} instances
+     * @throws NullPointerException if {@code source}, {@code idMapper} or {@code parentMapper} is null
+     */
+    static <T, ID> List<Node<T>> build(Iterable<? extends T> source, Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
+        Objects.requireNonNull(source, "source is null");
+        Objects.requireNonNull(source, "idMapper is null");
+        Objects.requireNonNull(source, "parentMapper is null");
+        List<T> list = List.ofAll(source);
+        Map<ID, List<T>> byParent = list.groupBy(parentMapper);
+        Function<? super T, Iterable<? extends T>> descend = idMapper
+                .andThen(byParent::get)
+                .andThen(o -> o.getOrElse(List::empty));
+        List<T> roots = byParent.get(null).getOrElse(List::empty);
+        return roots.map(v -> recurse(v, descend));
     }
 
     @Override
