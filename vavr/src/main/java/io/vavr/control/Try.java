@@ -587,10 +587,10 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Runs the given checked function if this is a {@code Success},
+     * Runs the given checked function if this is a {@link Try.Success},
      * passing the result of the current expression to it.
-     * If this expression is a {@code Failure} then it'll return a new
-     * {@code Failure} of type R with the original exception.
+     * If this expression is a {@link Try.Failure} then it'll return a new
+     * {@link Try.Failure} of type R with the original exception.
      * <p>
      * The main use case is chaining checked functions using method references:
      *
@@ -619,9 +619,17 @@ public interface Try<T> extends Value<T>, Serializable {
             }
         }
     }
-
+    
     /**
-     * Consumes the throwable if this is a Failure.
+     * Consumes the cause if this is a {@link Try.Failure}.
+     *
+     * <pre>{@code
+     * // (does not print anything)
+     * Try.success(1).onFailure(System.out::println);
+     *
+     * // prints "java.lang.Error"
+     * Try.failure(new Error()).onFailure(System.out::println);
+     * }</pre>
      *
      * @param action An exception consumer
      * @return this
@@ -636,7 +644,45 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Consumes the value if this is a Success.
+     * Consumes the cause if this is a {@link Try.Failure} and the cause is instance of {@code X}.
+     *
+     * <pre>{@code
+     * // (does not print anything)
+     * Try.success(1).onFailure(Error.class, System.out::println);
+     *
+     * // prints "Error"
+     * Try.failure(new Error())
+     *    .onFailure(RuntimeException.class, x -> System.out.println("Runtime exception"))
+     *    .onFailure(Error.class, x -> System.out.println("Error"));
+     * }</pre>
+     * 
+     * @param exceptionType the exception type that is handled
+     * @param action an excpetion consumer
+     * @param <X> the exception type that should be handled
+     * @return this
+     * @throws NullPointerException if {@code exceptionType} or {@code action} is null
+     */
+    @GwtIncompatible
+    @SuppressWarnings("unchecked")
+    default <X extends Throwable> Try<T> onFailure(Class<X> exceptionType, Consumer<? super X> action) {
+        Objects.requireNonNull(exceptionType, "exceptionType is null");
+        Objects.requireNonNull(action, "action is null");
+        if (isFailure() && exceptionType.isAssignableFrom(getCause().getClass())) {
+            action.accept((X) getCause());
+        }
+        return this;
+    }
+
+    /**
+     * Consumes the value if this is a {@link Try.Success}.
+     *
+     * <pre>{@code
+     * // prints "1"
+     * Try.success(1).onSuccess(System.out::println);
+     *
+     * // (does not print anything)
+     * Try.failure(new Error()).onSuccess(System.out::println);
+     * }</pre>
      *
      * @param action A value consumer
      * @return this
@@ -724,20 +770,33 @@ public interface Try<T> extends Value<T>, Serializable {
      * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f},
      * i.e. calling {@code Try.of(() -> f.apply((X) getCause())}.
      *
-     * @param <X>       Exception type
-     * @param exception The specific exception type that should be handled
-     * @param f         A recovery function taking an exception of type {@code X}
+     * <pre>{@code
+     * // = Success(13)
+     * Try.of(() -> 27/2).recover(ArithmeticException.class, x -> Integer.MAX_VALUE);
+     *
+     * // = Success(2147483647)
+     * Try.of(() -> 1/0)
+     *    .recover(Error.class, x -> -1)
+     *    .recover(ArithmeticException.class, x -> Integer.MAX_VALUE);
+     *
+     * // = Failure(java.lang.ArithmeticException: / by zero)
+     * Try.of(() -> 1/0).recover(Error.class, x -> Integer.MAX_VALUE);
+     * }</pre>
+     *
+     * @param <X>           Exception type
+     * @param exceptionType The specific exception type that should be handled
+     * @param f             A recovery function taking an exception of type {@code X}
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null or {@code f} is null
      */
     @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> recover(Class<X> exception, Function<? super X, ? extends T> f) {
-        Objects.requireNonNull(exception, "exception is null");
+    default <X extends Throwable> Try<T> recover(Class<X> exceptionType, Function<? super X, ? extends T> f) {
+        Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             final Throwable cause = getCause();
-            if (exception.isAssignableFrom(cause.getClass())) {
+            if (exceptionType.isAssignableFrom(cause.getClass())) {
                 return Try.of(() -> f.apply((X) cause));
             }
         }
@@ -749,20 +808,34 @@ public interface Try<T> extends Value<T>, Serializable {
      * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f} <b>which returns Try</b>.
      * If {@link Try#isFailure()} returned by {@code f} function is <code>true</code> it means that recovery cannot take place due to some circumstances.
      *
-     * @param <X>       Exception type
-     * @param exception The specific exception type that should be handled
-     * @param f         A recovery function taking an exception of type {@code X} and returning Try as a result of recovery.
-     *                  If Try is {@link Try#isSuccess()} then recovery ends up successfully. Otherwise the function was not able to recover.
+     * <pre>{@code
+     * // = Success(13)
+     * Try.of(() -> 27/2).recoverWith(ArithmeticException.class, x -> Try.success(Integer.MAX_VALUE));
+     *
+     * // = Success(2147483647)
+     * Try.of(() -> 1/0)
+     *    .recoverWith(Error.class, x -> Try.success(-1))
+     *    .recoverWith(ArithmeticException.class, x -> Try.success(Integer.MAX_VALUE));
+     *
+     * // = Failure(java.lang.ArithmeticException: / by zero)
+     * Try.of(() -> 1/0).recoverWith(Error.class, x -> Try.success(Integer.MAX_VALUE));
+     * }</pre>
+     * 
+     * @param <X>           Exception type
+     * @param exceptionType The specific exception type that should be handled
+     * @param f             A recovery function taking an exception of type {@code X} and returning Try as a result of recovery.
+     *                      If Try is {@link Try#isSuccess()} then recovery ends up successfully. Otherwise the function was not able to recover.
      * @return a {@code Try}
+     * @throws NullPointerException if {@code exceptionType} or {@code f} is null
      */
     @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> recoverWith(Class<X> exception, Function<? super X, Try<? extends T>> f){
-        Objects.requireNonNull(exception, "exception is null");
+    default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType, Function<? super X, Try<? extends T>> f){
+        Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(f, "f is null");
         if(isFailure()){
             final Throwable cause = getCause();
-            if (exception.isAssignableFrom(cause.getClass())) {
+            if (exceptionType.isAssignableFrom(cause.getClass())) {
                 try {
                     return narrow(f.apply((X) cause));
                 } catch (Throwable t) {
@@ -773,37 +846,80 @@ public interface Try<T> extends Value<T>, Serializable {
         return this;
     }
 
+    /**
+     * Recovers this {@code Try} with the given {@code recovered}, if this is a {@link Try.Failure}
+     * and the given {@code exceptionType} is assignable to the underlying cause type.
+     *
+     * <pre>{@code
+     * // = Success(13)
+     * Try.of(() -> 27/2).recoverWith(ArithmeticException.class, Try.success(Integer.MAX_VALUE));
+     *
+     * // = Success(2147483647)
+     * Try.of(() -> 1/0)
+     *    .recoverWith(Error.class, Try.success(-1))
+     *    .recoverWith(ArithmeticException.class, Try.success(Integer.MAX_VALUE));
+     *
+     * // = Failure(java.lang.ArithmeticException: / by zero)
+     * Try.of(() -> 1/0).recoverWith(Error.class, Try.success(Integer.MAX_VALUE));
+     * }</pre>
+     *
+     * @param exceptionType the exception type that is recovered
+     * @param recovered the substitute for a matching {@code Failure}
+     * @param <X> type of the exception that should be recovered
+     * @return the given {@code recovered} if this is a {@link Try.Failure} and the cause is of type {@code X}, else {@code this}
+     * @throws NullPointerException if {@code exceptionType} or {@code recovered} is null
+     */
     @GwtIncompatible
-    default <X extends Throwable> Try<T> recoverWith(Class<X> exception,  Try<? extends T> recovered){
-        return (isFailure() && exception.isAssignableFrom(getCause().getClass()))
+    default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType,  Try<? extends T> recovered){
+        Objects.requireNonNull(exceptionType, "exeptionType is null");
+        Objects.requireNonNull(recovered, "recovered is null");
+        return (isFailure() && exceptionType.isAssignableFrom(getCause().getClass()))
                 ? narrow(recovered)
                 : this;
     }
 
-
     /**
-     * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
-     * from {@code cause.getClass()}. Otherwise returns a {@code Success} containing the given {@code value}.
+     * Returns {@code this}, if this is a {@link Try.Success} or this is a {@code Failure} and the cause is not assignable
+     * from {@code cause.getClass()}. Otherwise returns a {@link Try.Success} containing the given {@code value}.
      *
-     * @param <X>       Exception type
-     * @param exception The specific exception type that should be handled
-     * @param value     A value that is used in case of a recovery
+     * <pre>{@code
+     * // = Success(13)
+     * Try.of(() -> 27/2).recover(ArithmeticException.class, Integer.MAX_VALUE);
+     *
+     * // = Success(2147483647)
+     * Try.of(() -> 1/0)
+     *    .recover(Error.class, -1);
+     *    .recover(ArithmeticException.class, Integer.MAX_VALUE);
+     *
+     * // = Failure(java.lang.ArithmeticException: / by zero)
+     * Try.of(() -> 1/0).recover(Error.class, Integer.MAX_VALUE);
+     * }</pre>
+     *
+     * @param <X>           Exception type
+     * @param exceptionType The specific exception type that should be handled
+     * @param value         A value that is used in case of a recovery
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null
      */
     @GwtIncompatible
-    default <X extends Throwable> Try<T> recover(Class<X> exception, T value) {
-        Objects.requireNonNull(exception, "exception is null");
-        return (isFailure() && exception.isAssignableFrom(getCause().getClass()))
+    default <X extends Throwable> Try<T> recover(Class<X> exceptionType, T value) {
+        Objects.requireNonNull(exceptionType, "exceptionType is null");
+        return (isFailure() && exceptionType.isAssignableFrom(getCause().getClass()))
                ? Try.success(value)
                : this;
     }
 
-
-
     /**
      * Returns {@code this}, if this is a {@code Success}, otherwise tries to recover the exception of the failure with {@code f},
      * i.e. calling {@code Try.of(() -> f.apply(throwable))}.
+     *
+     * <pre>{@code
+     * // = Success(13)
+     * Try.of(() -> 27/2).recover(x -> Integer.MAX_VALUE);
+     *
+     * // = Success(2147483647)
+     * Try.of(() -> 1/0).recover(x -> Integer.MAX_VALUE);
+     * }</pre>
      *
      * @param f A recovery function taking a Throwable
      * @return a {@code Try}
@@ -822,6 +938,14 @@ public interface Try<T> extends Value<T>, Serializable {
      * Returns {@code this}, if this is a Success, otherwise tries to recover the exception of the failure with {@code f},
      * i.e. calling {@code f.apply(cause.getCause())}. If an error occurs recovering a Failure, then the new Failure is
      * returned.
+     *
+     * <pre>{@code
+     * // = Success(13)
+     * Try.of(() -> 27/2).recoverWith(x -> Try.success(Integer.MAX_VALUE));
+     *
+     * // = Success(2147483647)
+     * Try.of(() -> 1/0).recoverWith(x -> Try.success(Integer.MAX_VALUE));
+     * }</pre>
      *
      * @param f A recovery function taking a Throwable
      * @return a {@code Try}

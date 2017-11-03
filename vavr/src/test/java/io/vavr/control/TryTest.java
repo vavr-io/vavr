@@ -920,6 +920,20 @@ public class TryTest extends AbstractValueTest {
         assertThat(result[0]).isEqualTo(OK);
     }
 
+    @Test
+    public void shouldConsumeThrowableWhenCallingOnFailureWithMatchingExceptionTypeGivenFailure() {
+        final String[] result = new String[] { FAILURE };
+        failure().onFailure(RuntimeException.class, x -> result[0] = OK);
+        assertThat(result[0]).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldNotConsumeThrowableWhenCallingOnFailureWithNonMatchingExceptionTypeGivenFailure() {
+        final String[] result = new String[] { OK };
+        failure().onFailure(Error.class, x -> result[0] = FAILURE);
+        assertThat(result[0]).isEqualTo(OK);
+    }
+
     // -- transform
 
     @Test(expected = NullPointerException.class)
