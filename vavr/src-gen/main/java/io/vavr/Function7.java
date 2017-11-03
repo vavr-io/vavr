@@ -46,6 +46,7 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
+@javax.annotation.Generated("Generator.scala")
 public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<R> {
 
     /**
@@ -311,6 +312,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<R> {
 
 }
 
+@javax.annotation.Generated("Generator.scala")
 interface Function7Module {
 
     // DEV-NOTE: we do not plan to expose this as public API

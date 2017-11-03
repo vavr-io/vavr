@@ -42,6 +42,7 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
+@javax.annotation.Generated("Generator.scala")
 public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
 
     /**
@@ -212,6 +213,7 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
 
 }
 
+@javax.annotation.Generated("Generator.scala")
 interface Function2Module {
 
     // DEV-NOTE: we do not plan to expose this as public API
