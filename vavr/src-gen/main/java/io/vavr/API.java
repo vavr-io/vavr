@@ -99,6 +99,7 @@ import java.util.function.Supplier;
  * to standard Java library and Vavr types.
  * @author Daniel Dietrich
  */
+@javax.annotation.Generated("Generator.scala")
 public final class API {
 
     private API() {
@@ -2514,6 +2515,7 @@ public final class API {
     /**
      * For-comprehension with one Iterable.
      */
+    @javax.annotation.Generated("Generator.scala")
     public static class For1<T1> {
 
         private final Iterable<T1> ts1;
@@ -2547,6 +2549,7 @@ public final class API {
     /**
      * For-comprehension with two Iterables.
      */
+    @javax.annotation.Generated("Generator.scala")
     public static class For2<T1, T2> {
 
         private final Iterable<T1> ts1;
@@ -2576,6 +2579,7 @@ public final class API {
     /**
      * For-comprehension with three Iterables.
      */
+    @javax.annotation.Generated("Generator.scala")
     public static class For3<T1, T2, T3> {
 
         private final Iterable<T1> ts1;
@@ -2608,6 +2612,7 @@ public final class API {
     /**
      * For-comprehension with 4 Iterables.
      */
+    @javax.annotation.Generated("Generator.scala")
     public static class For4<T1, T2, T3, T4> {
 
         private final Iterable<T1> ts1;
@@ -2643,6 +2648,7 @@ public final class API {
     /**
      * For-comprehension with 5 Iterables.
      */
+    @javax.annotation.Generated("Generator.scala")
     public static class For5<T1, T2, T3, T4, T5> {
 
         private final Iterable<T1> ts1;
@@ -2681,6 +2687,7 @@ public final class API {
     /**
      * For-comprehension with 6 Iterables.
      */
+    @javax.annotation.Generated("Generator.scala")
     public static class For6<T1, T2, T3, T4, T5, T6> {
 
         private final Iterable<T1> ts1;
@@ -2722,6 +2729,7 @@ public final class API {
     /**
      * For-comprehension with 7 Iterables.
      */
+    @javax.annotation.Generated("Generator.scala")
     public static class For7<T1, T2, T3, T4, T5, T6, T7> {
 
         private final Iterable<T1> ts1;
@@ -2766,6 +2774,7 @@ public final class API {
     /**
      * For-comprehension with 8 Iterables.
      */
+    @javax.annotation.Generated("Generator.scala")
     public static class For8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private final Iterable<T1> ts1;
@@ -3147,6 +3156,7 @@ public final class API {
      * Scala-like structural pattern matching for Java. Instances are obtained via {@link API#Match(Object)}.
      * @param <T> type of the object that is matched
      */
+    @javax.annotation.Generated("Generator.scala")
     @GwtIncompatible
     public static final class Match<T> {
 
@@ -3185,6 +3195,7 @@ public final class API {
         // -- CASES
 
         // javac needs fqn's here
+        @javax.annotation.Generated("Generator.scala")
         public interface Case<T, R> extends PartialFunction<T, R> {
 
             /**
@@ -3193,6 +3204,7 @@ public final class API {
             long serialVersionUID = 1L;
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static final class Case0<T, R> implements Case<T, R> {
 
             private static final long serialVersionUID = 1L;
@@ -3216,6 +3228,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static final class Case1<T, T1, R> implements Case<T, R> {
 
             private static final long serialVersionUID = 1L;
@@ -3239,6 +3252,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static final class Case2<T, T1, T2, R> implements Case<T, R> {
 
             private static final long serialVersionUID = 1L;
@@ -3262,6 +3276,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static final class Case3<T, T1, T2, T3, R> implements Case<T, R> {
 
             private static final long serialVersionUID = 1L;
@@ -3285,6 +3300,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static final class Case4<T, T1, T2, T3, T4, R> implements Case<T, R> {
 
             private static final long serialVersionUID = 1L;
@@ -3308,6 +3324,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static final class Case5<T, T1, T2, T3, T4, T5, R> implements Case<T, R> {
 
             private static final long serialVersionUID = 1L;
@@ -3331,6 +3348,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static final class Case6<T, T1, T2, T3, T4, T5, T6, R> implements Case<T, R> {
 
             private static final long serialVersionUID = 1L;
@@ -3354,6 +3372,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static final class Case7<T, T1, T2, T3, T4, T5, T6, T7, R> implements Case<T, R> {
 
             private static final long serialVersionUID = 1L;
@@ -3377,6 +3396,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static final class Case8<T, T1, T2, T3, T4, T5, T6, T7, T8, R> implements Case<T, R> {
 
             private static final long serialVersionUID = 1L;
@@ -3410,12 +3430,14 @@ public final class API {
          * @param <R> Type of the single or composite part this pattern decomposes
          */
         // javac needs fqn's here
+        @javax.annotation.Generated("Generator.scala")
         public interface Pattern<T, R> extends PartialFunction<T, R> {
         }
 
         // These can't be @FunctionalInterfaces because of ambiguities.
         // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
+        @javax.annotation.Generated("Generator.scala")
         public static abstract class Pattern0<T> implements Pattern<T, T> {
 
             private static final long serialVersionUID = 1L;
@@ -3461,6 +3483,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static abstract class Pattern1<T, T1> implements Pattern<T, T1> {
 
             private static final long serialVersionUID = 1L;
@@ -3491,6 +3514,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static abstract class Pattern2<T, T1, T2> implements Pattern<T, Tuple2<T1, T2>> {
 
             private static final long serialVersionUID = 1L;
@@ -3522,6 +3546,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static abstract class Pattern3<T, T1, T2, T3> implements Pattern<T, Tuple3<T1, T2, T3>> {
 
             private static final long serialVersionUID = 1L;
@@ -3554,6 +3579,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static abstract class Pattern4<T, T1, T2, T3, T4> implements Pattern<T, Tuple4<T1, T2, T3, T4>> {
 
             private static final long serialVersionUID = 1L;
@@ -3587,6 +3613,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static abstract class Pattern5<T, T1, T2, T3, T4, T5> implements Pattern<T, Tuple5<T1, T2, T3, T4, T5>> {
 
             private static final long serialVersionUID = 1L;
@@ -3621,6 +3648,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> implements Pattern<T, Tuple6<T1, T2, T3, T4, T5, T6>> {
 
             private static final long serialVersionUID = 1L;
@@ -3656,6 +3684,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> implements Pattern<T, Tuple7<T1, T2, T3, T4, T5, T6, T7>> {
 
             private static final long serialVersionUID = 1L;
@@ -3692,6 +3721,7 @@ public final class API {
             }
         }
 
+        @javax.annotation.Generated("Generator.scala")
         public static abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> implements Pattern<T, Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> {
 
             private static final long serialVersionUID = 1L;

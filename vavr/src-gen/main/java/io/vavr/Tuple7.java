@@ -43,6 +43,7 @@ import java.util.function.Function;
  * @param <T7> type of the 7th element
  * @author Daniel Dietrich
  */
+@javax.annotation.Generated("Generator.scala")
 public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparable<Tuple7<T1, T2, T3, T4, T5, T6, T7>>, Serializable {
 
     private static final long serialVersionUID = 1L;

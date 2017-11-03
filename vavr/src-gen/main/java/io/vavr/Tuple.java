@@ -33,6 +33,7 @@ import java.util.Objects;
  *
  * @author Daniel Dietrich
  */
+@javax.annotation.Generated("Generator.scala")
 public interface Tuple {
 
     /**

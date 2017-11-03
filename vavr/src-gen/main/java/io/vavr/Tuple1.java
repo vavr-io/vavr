@@ -37,6 +37,7 @@ import java.util.function.Function;
  * @param <T1> type of the 1st element
  * @author Daniel Dietrich
  */
+@javax.annotation.Generated("Generator.scala")
 public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializable {
 
     private static final long serialVersionUID = 1L;
