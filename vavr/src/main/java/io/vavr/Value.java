@@ -1382,6 +1382,16 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Converts this to a {@link Tree} using a {@code idMapper} and {@code parentMapper}.
+     *
+     * @return A new {@link Tree}.
+     * @see Tree#build(Iterable, Function, Function)
+     */
+    default <ID> List<Tree.Node<T>> toTree(Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
+        return Tree.build(this, idMapper, parentMapper);
+    }
+
+    /**
      * Converts this to a {@link Validation}.
      *
      * @param <E>   error type of an {@code Invalid}
