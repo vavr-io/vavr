@@ -870,6 +870,12 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
+    default List<T> reject(Predicate<? super T> predicate){
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
+    @Override
     default <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         List<U> list = empty();

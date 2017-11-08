@@ -217,6 +217,9 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> filter(Predicate<? super T> predicate);
 
     @Override
+    Set<T> reject(Predicate<? super T> predicate);
+
+    @Override
     <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override

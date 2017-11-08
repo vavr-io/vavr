@@ -791,6 +791,24 @@ public class CharSeqTest {
         assertThat(t.filter(i -> true)).isSameAs(t);
     }
     
+    // -- reject
+
+    @Test
+    public void shouldRejectEmptyTraversable() {
+        assertThat(CharSeq.empty().reject(ignored -> true)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldRejectNonEmptyTraversable() {
+        assertThat(CharSeq.of('1', '2', '3', '4').reject(i -> i == '2' || i == '4')).isEqualTo(CharSeq.of('1', '3'));
+    }
+
+    @Test
+    public void shouldRejectNonEmptyTraversableNoneMatch() {
+        final CharSeq t = CharSeq.of('1', '2', '3', '4');
+        assertThat(t.reject(i -> false)).isSameAs(t);
+    }
+
     // -- find
 
     @Test
