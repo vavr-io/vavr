@@ -51,6 +51,11 @@
             <version>8.0.0</version>
         </dependency>
         <dependency>
+            <groupId>io.usethesource</groupId>
+            <artifactId>capsule</artifactId>
+            <version>0.6.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjdk.jol</groupId>
             <artifactId>jol-core</artifactId>
             <version>0.7.1</version>
@@ -101,4 +106,10 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>useTheSource</id>
+            <url>http://nexus.usethesource.io/content/repositories/public/</url>
+        </repository>
+    </repositories>
 </project>
