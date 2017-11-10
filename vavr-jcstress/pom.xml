@@ -85,4 +85,34 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>jcstress</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${maven.exec.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>java</executable>
+                                    <arguments>
+                                        <argument>-jar</argument>
+                                        <argument>${project.build.directory}/${uberjar.name}.jar</argument>
+                                    </arguments>
+                                    <workingDirectory>${project.build.directory}/jcstress</workingDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

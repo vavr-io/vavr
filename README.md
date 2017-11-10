@@ -30,6 +30,7 @@ See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc
 * Create -source.jar: `mvn source:jar`
 * Update version properties: `mvn versions:update-properties`
 * Check for new plugin version: `mvn versions:display-plugin-updates`
+* Run concurrency stress tests: `mvn clean install -Pjcstress`
 
 ### Benchmarks
 
