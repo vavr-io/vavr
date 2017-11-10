@@ -45,7 +45,12 @@
                     <compilerVersion>${java.version}</compilerVersion>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <!-- todo Disable warnings processing for this module. -->
+                    <!-- Disable warnings processing for this module. -->
+                    <compilerArgs>
+                        <arg>-Xlint:all</arg>
+                        <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
+                        <arg>-Xlint:-processing</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
             <plugin>

@@ -254,7 +254,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                         <showDeprecation>true</showDeprecation>
                         <showWarnings>true</showWarnings>
                         <compilerArgs>
-                            <!--<arg>-Werror</arg>-->
+                            <arg>-Werror</arg>
                             <arg>-Xlint:all</arg>
                             <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
                             <arg>-Xlint:-processing</arg>
