@@ -776,10 +776,12 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     /**
      * Returns a new Seq consisting of all elements which do not satisfy the given predicate.
      *
+     * @deprecated Please use {@link #reject(Predicate)}
      * @param predicate the predicate used to test elements
      * @return a new Seq
      * @throws NullPointerException if {@code predicate} is null
      */
+    @Deprecated
     Seq<T> removeAll(Predicate<? super T> predicate);
 
     /**

@@ -708,7 +708,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Vector<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
+        return Collections.reject(this, predicate);
     }
 
     @Override
@@ -986,8 +986,10 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    @Deprecated
     public Vector<T> removeAll(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.removeAll(this, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reject(predicate);
     }
 
     @Override

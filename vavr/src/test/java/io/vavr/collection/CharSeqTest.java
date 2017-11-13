@@ -2900,17 +2900,20 @@ public class CharSeqTest {
 
     // -- removeAll(Predicate)
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveAllElementsByPredicateFromNil() {
         assertThat(CharSeq.empty().removeAll(Character::isDigit)).isSameAs(CharSeq.empty());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveAllMatchedElementsFromNonNil() {
         assertThat(CharSeq.of('1', '2', '3', 'a', 'b', 'c').removeAll(Character::isDigit))
                 .isEqualTo(CharSeq.of('a', 'b', 'c'));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
         final CharSeq t = CharSeq.of('a', 'b', 'c');

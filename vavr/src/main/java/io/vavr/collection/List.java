@@ -872,7 +872,7 @@ public interface List<T> extends LinearSeq<T> {
     @Override
     default List<T> reject(Predicate<? super T> predicate){
         Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
+        return Collections.reject(this, predicate);
     }
 
     @Override
@@ -1312,8 +1312,10 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
+    @Deprecated
     default List<T> removeAll(Predicate<? super T> predicate) {
-        return Collections.removeAll(this, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reject(predicate);
     }
 
     @Override

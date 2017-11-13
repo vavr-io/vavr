@@ -1027,7 +1027,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default Stream<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
+        return Collections.reject(this, predicate);
     }
 
     @Override
@@ -1360,8 +1360,10 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    @Deprecated
     default Stream<T> removeAll(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.removeAll(this, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reject(predicate);
     }
 
     @Override

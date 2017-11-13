@@ -256,6 +256,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
+    @Deprecated
     IndexedSeq<T> removeAll(Predicate<? super T> predicate);
 
     @Override
