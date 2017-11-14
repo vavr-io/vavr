@@ -193,9 +193,9 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lam
      * @param t7 argument 7
      * @param t8 argument 8
      * @return the result of function application
-     * @throws Throwable if something goes wrong applying this function to the given arguments
+     * @throws Exception if something goes wrong applying this function to the given arguments
      */
-    R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) throws Throwable;
+    R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, T8 t8) throws Exception;
 
     /**
      * Applies this function partially to one argument.

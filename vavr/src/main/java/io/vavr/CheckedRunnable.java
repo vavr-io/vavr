@@ -28,7 +28,7 @@ public interface CheckedRunnable {
     /**
      * Performs side-effects.
      *
-     * @throws Throwable if an error occurs
+     * @throws Exception if an error occurs
      */
-    void run() throws Throwable;
+    void run() throws Exception;
 }

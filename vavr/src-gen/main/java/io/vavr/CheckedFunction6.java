@@ -179,9 +179,9 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends Lambda<R> {
      * @param t5 argument 5
      * @param t6 argument 6
      * @return the result of function application
-     * @throws Throwable if something goes wrong applying this function to the given arguments
+     * @throws Exception if something goes wrong applying this function to the given arguments
      */
-    R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) throws Throwable;
+    R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) throws Exception;
 
     /**
      * Applies this function partially to one argument.
