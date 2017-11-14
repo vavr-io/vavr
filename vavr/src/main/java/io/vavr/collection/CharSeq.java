@@ -905,6 +905,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public CharSeq rotateLeft(int n) {
+        return Collections.rotateLeft(this, n);
+    }
+
+    @Override
+    public CharSeq rotateRight(int n) {
+        return Collections.rotateRight(this, n);
+    }
+
+    @Override
     public CharSeq scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, io.vavr.collection.Iterator::toCharSeq);
     }

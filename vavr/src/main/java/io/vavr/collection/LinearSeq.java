@@ -254,6 +254,12 @@ public interface LinearSeq<T> extends Seq<T> {
     }
 
     @Override
+    LinearSeq<T> rotateLeft(int n);
+
+    @Override
+    LinearSeq<T> rotateRight(int n);
+
+    @Override
     LinearSeq<T> shuffle();
 
     @Override

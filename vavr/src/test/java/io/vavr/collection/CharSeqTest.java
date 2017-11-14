@@ -2935,6 +2935,86 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').reverse()).isEqualTo(CharSeq.of('3', '2', '1'));
     }
 
+    // -- rotateLeft
+
+    @Test
+    public void shouldRotateLeftOnEmpty() {
+        assertThat(CharSeq.empty().rotateLeft(1)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldRotateLeftOnSingle() {
+        CharSeq seq = CharSeq.of('1');
+        assertThat(seq.rotateLeft(1)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldRotateLeftForZero() {
+        CharSeq seq = CharSeq.of('1', '2', '3', '4', '5');
+        assertThat(seq.rotateLeft(0)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldRotateLeftForNegativeLessThatLen() {
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').rotateLeft(-2)).isEqualTo(CharSeq.of('4', '5', '1', '2', '3'));
+    }
+
+    @Test
+    public void shouldRotateLeftForPositiveLessThatLen() {
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').rotateLeft(2)).isEqualTo(CharSeq.of('3', '4', '5', '1', '2'));
+    }
+
+    @Test
+    public void shouldRotateLeftForPositiveGreaterThatLen() {
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').rotateLeft(5 + 2)).isEqualTo(CharSeq.of('3', '4', '5', '1', '2'));
+    }
+
+    @Test
+    public void shouldRotateLeftForPositiveModuloLen() {
+        CharSeq seq = CharSeq.of('1', '2', '3', '4', '5');
+        assertThat(seq.rotateLeft(seq.length() * 3)).isSameAs(seq);
+    }
+
+    // -- rotateRight
+
+    @Test
+    public void shouldRotateRightOnEmpty() {
+        assertThat(CharSeq.empty().rotateRight(1)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldRotateRightOnSingle() {
+        CharSeq seq = CharSeq.of('1');
+        assertThat(seq.rotateRight(1)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldRotateRightForZero() {
+        CharSeq seq = CharSeq.of('1', '2', '3', '4', '5');
+        assertThat(seq.rotateRight(0)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldRotateRightForNegativeLessThatLen() {
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').rotateRight(-2)).isEqualTo(CharSeq.of('3', '4', '5', '1', '2'));
+    }
+
+    @Test
+    public void shouldRotateRightForPositiveLessThatLen() {
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').rotateRight(2)).isEqualTo(CharSeq.of('4', '5', '1', '2', '3'));
+    }
+
+    @Test
+    public void shouldRotateRightForPositiveGreaterThatLen() {
+        assertThat(CharSeq.of('1', '2', '3', '4', '5').rotateRight(5 + 2)).isEqualTo(CharSeq.of('4', '5', '1', '2', '3'));
+    }
+
+    @Test
+    public void shouldRotateRightForPositiveModuloLen() {
+        CharSeq seq = CharSeq.of('1', '2', '3', '4', '5');
+        assertThat(seq.rotateRight(seq.length() * 3)).isSameAs(seq);
+    }
+
     // -- update
 
     @Test(expected = IndexOutOfBoundsException.class)

@@ -1015,6 +1015,16 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Vector<T> rotateLeft(int n) {
+        return Collections.rotateLeft(this, n);
+    }
+
+    @Override
+    public Vector<T> rotateRight(int n) {
+        return Collections.rotateRight(this, n);
+    }
+
+    @Override
     public Vector<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }

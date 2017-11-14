@@ -1088,6 +1088,16 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
+    public Queue<T> rotateLeft(int n) {
+        return Collections.rotateLeft(this, n);
+    }
+
+    @Override
+    public Queue<T> rotateRight(int n) {
+        return Collections.rotateRight(this, n);
+    }
+
+    @Override
     public Queue<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }

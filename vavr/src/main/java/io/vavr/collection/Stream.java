@@ -1394,6 +1394,16 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> rotateLeft(int n) {
+        return Collections.rotateLeft(this, n);
+    }
+
+    @Override
+    default Stream<T> rotateRight(int n) {
+        return Collections.rotateRight(this, n);
+    }
+
+    @Override
     default Stream<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }

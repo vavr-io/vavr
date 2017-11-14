@@ -328,6 +328,40 @@ final class Collections {
         };
     }
 
+    @SuppressWarnings("unchecked")
+    static <T, C extends Seq<T>> C rotateLeft(C source, int n) {
+        if (source.isEmpty() || n == 0) {
+            return source;
+        } else if (n < 0) {
+            return rotateRight(source, -n);
+        } else {
+            int len = source.length();
+            int m = n % len;
+            if (m == 0) {
+                return source;
+            } else {
+                return (C) source.drop(m).appendAll(source.take(m));
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T, C extends Seq<T>> C rotateRight(C source, int n) {
+        if (source.isEmpty() || n == 0) {
+            return source;
+        } else if (n < 0) {
+            return rotateLeft(source, -n);
+        } else {
+            int len = source.length();
+            int m = n % len;
+            if (m == 0) {
+                return source;
+            } else {
+                return (C) source.takeRight(m).appendAll(source.dropRight(m));
+            }
+        }
+    }
+
     static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,
                                                        U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
         Objects.requireNonNull(operation, "operation is null");
