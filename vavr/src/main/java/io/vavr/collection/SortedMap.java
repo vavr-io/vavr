@@ -130,21 +130,36 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     SortedMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
+    SortedMap<K, V> reject(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
     SortedMap<K, V> filter(BiPredicate<? super K, ? super V> predicate);
+
+    @Override
+    SortedMap<K, V> reject(BiPredicate<? super K, ? super V> predicate);
 
     @Override
     SortedMap<K, V> filterKeys(Predicate<? super K> predicate);
 
     @Override
+    SortedMap<K, V> rejectKeys(Predicate<? super K> predicate);
+
+    @Override
     SortedMap<K, V> filterValues(Predicate<? super V> predicate);
 
     @Override
+    SortedMap<K, V> rejectValues(Predicate<? super V> predicate);
+
+    @Override
+    @Deprecated
     SortedMap<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
 
     @Override
+    @Deprecated
     SortedMap<K, V> removeKeys(Predicate<? super K> predicate);
 
     @Override
+    @Deprecated
     SortedMap<K, V> removeValues(Predicate<? super V> predicate);
 
     @Override

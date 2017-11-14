@@ -1025,6 +1025,12 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> reject(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Collections.reject(this, predicate);
+    }
+
+    @Override
     default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : Stream.ofAll(new Iterator<U>() {
@@ -1354,8 +1360,10 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    @Deprecated
     default Stream<T> removeAll(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.removeAll(this, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reject(predicate);
     }
 
     @Override

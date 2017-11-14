@@ -273,7 +273,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <C extends Traversable<T>, T> C removeAll(C source, Predicate<? super T> predicate) {
+    static <C extends Traversable<T>, T> C reject(C source, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (source.isEmpty()) {
             return source;

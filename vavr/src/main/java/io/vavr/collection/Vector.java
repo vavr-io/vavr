@@ -706,6 +706,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Vector<T> reject(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Collections.reject(this, predicate);
+    }
+
+    @Override
     public <U> Vector<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Iterator<? extends U> results = iterator().flatMap(mapper);
@@ -980,8 +986,10 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    @Deprecated
     public Vector<T> removeAll(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.removeAll(this, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reject(predicate);
     }
 
     @Override

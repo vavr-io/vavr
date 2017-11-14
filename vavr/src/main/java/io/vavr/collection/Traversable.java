@@ -105,6 +105,7 @@ import java.util.stream.DoubleStream;
  * <li>{@link #dropUntil(Predicate)}</li>
  * <li>{@link #dropWhile(Predicate)}</li>
  * <li>{@link #filter(Predicate)}</li>
+ * <li>{@link #reject(Predicate)}</li>
  * <li>{@link #find(Predicate)}</li>
  * <li>{@link #findLast(Predicate)}</li>
  * <li>{@link #groupBy(Function)}</li>
@@ -427,6 +428,15 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     Traversable<T> filter(Predicate<? super T> predicate);
+
+    /**
+     * Returns a new traversable consisting of all elements which do not satisfy the given predicate.
+     *
+     * @param predicate A predicate
+     * @return a new traversable
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Traversable<T> reject(Predicate<? super T> predicate);
 
     /**
      * Returns the first element of this which satisfies the given predicate.

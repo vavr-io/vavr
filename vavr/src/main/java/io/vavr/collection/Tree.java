@@ -539,6 +539,16 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
+    default Seq<T> reject(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        if (isEmpty()) {
+            return Stream.empty();
+        } else {
+            return values().reject(predicate);
+        }
+    }
+
+    @Override
     default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : TreeModule.flatMap((Node<T>) this, mapper);
