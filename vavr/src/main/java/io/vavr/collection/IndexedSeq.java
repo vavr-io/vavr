@@ -285,6 +285,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     }
 
     @Override
+    IndexedSeq<T> rotateLeft(int n);
+
+    @Override
+    IndexedSeq<T> rotateRight(int n);
+
+    @Override
     IndexedSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override

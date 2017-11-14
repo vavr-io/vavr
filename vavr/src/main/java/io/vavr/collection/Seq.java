@@ -826,6 +826,28 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Iterator<T> reverseIterator();
 
     /**
+     * Circular rotates the elements by the specified distance to the left direction.
+     *<p>
+     * <pre>{@code
+     * Seq.of(1, 2, 3, 4, 5).rotateLeft(2);//[3, 4, 5, 1, 2]
+     * }</pre>
+     *
+     * @return the rotated elements.
+     */
+    Seq<T> rotateLeft(int n);
+
+    /**
+     * Circular rotates the elements by the specified distance to the right direction.
+     *<p>
+     * <pre>{@code
+     * Seq.of(1, 2, 3, 4, 5).rotateRight(2);//[4, 5, 1, 2, 3]
+     * }</pre>
+     *
+     * @return the rotated elements.
+     */
+    Seq<T> rotateRight(int n);
+
+    /**
      * Computes length of longest segment whose elements all satisfy some predicate.
      * <p>
      * Note: may not terminate for infinite sequences.

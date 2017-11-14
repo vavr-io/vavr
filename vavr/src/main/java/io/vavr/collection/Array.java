@@ -1158,6 +1158,16 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<T> rotateLeft(int n) {
+        return Collections.rotateLeft(this, n);
+    }
+
+    @Override
+    public Array<T> rotateRight(int n) {
+        return Collections.rotateRight(this, n);
+    }
+
+    @Override
     public Array<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
