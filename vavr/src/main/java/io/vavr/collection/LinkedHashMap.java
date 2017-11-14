@@ -589,8 +589,18 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public LinkedHashMap<K, V> reject(BiPredicate<? super K, ? super V> predicate) {
+        return Maps.reject(this, this::createFromEntries, predicate);
+    }
+
+    @Override
     public LinkedHashMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.filter(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public LinkedHashMap<K, V> reject(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.reject(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -599,8 +609,18 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public LinkedHashMap<K, V> rejectKeys(Predicate<? super K> predicate) {
+        return Maps.rejectKeys(this, this::createFromEntries, predicate);
+    }
+
+    @Override
     public LinkedHashMap<K, V> filterValues(Predicate<? super V> predicate) {
         return Maps.filterValues(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public LinkedHashMap<K, V> rejectValues(Predicate<? super V> predicate) {
+        return Maps.rejectValues(this, this::createFromEntries, predicate);
     }
 
     @Override
@@ -794,8 +814,10 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    @Deprecated
     public LinkedHashMap<K, V> removeAll(BiPredicate<? super K, ? super V> predicate) {
-        return Maps.removeAll(this, this::createFromEntries, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reject(predicate);
     }
 
     @Override
@@ -808,13 +830,17 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    @Deprecated
     public LinkedHashMap<K, V> removeKeys(Predicate<? super K> predicate) {
-        return Maps.removeKeys(this, this::createFromEntries, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return rejectKeys(predicate);
     }
 
     @Override
+    @Deprecated
     public LinkedHashMap<K, V> removeValues(Predicate<? super V> predicate) {
-        return Maps.removeValues(this, this::createFromEntries, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return rejectValues(predicate);
     }
 
     @Override
