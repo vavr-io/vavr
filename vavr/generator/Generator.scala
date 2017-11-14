@@ -1633,9 +1633,9 @@ def generateMainClasses(): Unit = {
                * Applies this function to ${arguments(i)} and returns the result.
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j argument $j")("\n")}
                * @return the result of function application
-               * ${checked.gen("@throws Throwable if something goes wrong applying this function to the given arguments")}
+               * ${checked.gen("@throws Exception if something goes wrong applying this function to the given arguments")}
                */
-              R apply($paramsDecl)${checked.gen(" throws Throwable")};
+              R apply($paramsDecl)${checked.gen(" throws Exception")};
 
               ${(1 until i).gen(j => {
                 val partialApplicationArgs = (1 to j).gen(k => s"T$k t$k")(", ")

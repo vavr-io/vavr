@@ -68,10 +68,17 @@ final class Concurrent {
         };
     }
 
-    static <T, X extends Throwable> CheckedFunction0<T> zZz(X exception) {
+    static <T, X extends Exception> CheckedFunction0<T> zZz(X exception) {
         return () -> {
             zZz();
             throw exception;
+        };
+    }
+
+    static <T, X extends Error> CheckedFunction0<T> zZz(X error) {
+        return () -> {
+            zZz();
+            throw error;
         };
     }
 }
