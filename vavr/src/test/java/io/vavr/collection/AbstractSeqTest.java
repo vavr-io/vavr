@@ -21,8 +21,8 @@ package io.vavr.collection;
 
 import io.vavr.Function1;
 import io.vavr.Tuple;
-import io.vavr.control.Option;
 import io.vavr.Tuple2;
+import io.vavr.control.Option;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -140,14 +140,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldAppendElementToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().append(1);
+        final Seq<Integer> actual = this.<Integer>empty().append(1);
         final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendNullElementToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().append(null);
+        final Seq<Integer> actual = this.<Integer>empty().append(null);
         final Seq<Integer> expected = this.of((Integer) null);
         assertThat(actual).isEqualTo(expected);
     }
@@ -180,7 +180,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldAppendAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().appendAll(of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer>empty().appendAll(of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -262,7 +262,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldConvertAsJavaAndRethrowException() {
-        assertThatThrownBy(() -> of(1, 2, 3).asJavaMutable(list -> { throw new RuntimeException("test");}))
+        assertThatThrownBy(() -> of(1, 2, 3).asJavaMutable(list -> {
+            throw new RuntimeException("test");
+        }))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("test");
     }
@@ -285,7 +287,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldConvertAsJavaImmutableAndRethrowException() {
-        assertThatThrownBy(() -> of(1, 2, 3).asJava(list -> { throw new RuntimeException("test");}))
+        assertThatThrownBy(() -> of(1, 2, 3).asJava(list -> {
+            throw new RuntimeException("test");
+        }))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("test");
     }
@@ -747,7 +751,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldInsertIntoNil() {
-        final Seq<Integer> actual = this.<Integer> empty().insert(0, 1);
+        final Seq<Integer> actual = this.<Integer>empty().insert(0, 1);
         final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -792,7 +796,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldInsertAllIntoNil() {
-        final Seq<Integer> actual = this.<Integer> empty().insertAll(0, of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer>empty().insertAll(0, of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -860,7 +864,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldIntersperseNil() {
-        assertThat(this.<Character> empty().intersperse(',')).isEmpty();
+        assertThat(this.<Character>empty().intersperse(',')).isEmpty();
     }
 
     @Test
@@ -1078,7 +1082,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldMapTransformedSeq() {
         final Function<Integer, Integer> mapper = o -> o + 1;
-        assertThat(this.<Integer> empty().map(mapper)).isEmpty();
+        assertThat(this.<Integer>empty().map(mapper)).isEmpty();
         assertThat(of(3, 1, 4, 1, 5).map(mapper)).isEqualTo(of(4, 2, 5, 2, 6));
         assertThat(of(3, 1, 4, 1, 5, 9, 2).sorted().distinct().drop(1).init().remove(5).map(mapper).tail()).isEqualTo(of(4, 5));
     }
@@ -1118,7 +1122,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPrependElementToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().prepend(1);
+        final Seq<Integer> actual = this.<Integer>empty().prepend(1);
         final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -1139,7 +1143,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPrependAllNilToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().prependAll(empty());
+        final Seq<Integer> actual = this.<Integer>empty().prependAll(empty());
         final Seq<Integer> expected = empty();
         assertThat(actual).isEqualTo(expected);
     }
@@ -1153,7 +1157,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPrependAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().prependAll(of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer>empty().prependAll(of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -1217,11 +1221,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldRemoveNonExistingElement() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.remove(4)).isEqualTo(t);
-        } else {
-            assertThat(t.remove(4)).isSameAs(t);
-        }
+        assertThat(t.remove(4)).isSameAs(t);
     }
 
     // -- removeFirst(Predicate)
@@ -1259,11 +1259,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldRemoveFirstElementByPredicateNonExisting() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
-        } else {
-            assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
-        }
+        assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
     }
 
     // -- removeLast(Predicate)
@@ -1301,12 +1297,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldRemoveLastElementByPredicateNonExisting() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeLast(v -> v == 4)).isEqualTo(t);
-        } else {
-            assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
-        }
+        assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
     }
+
 
     // -- removeAll(Iterable)
 
@@ -1323,11 +1316,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeAll(of(4, 5))).isEqualTo(t);
-        } else {
-            assertThat(t.removeAll(of(4, 5))).isSameAs(t);
-        }
+        assertThat(t.removeAll(of(4, 5))).isSameAs(t);
     }
 
     @Test
@@ -1346,27 +1335,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldRemoveExistingElements() {
-        assertThat(of(1, 2, 3).removeAll(i -> i == 1)).isEqualTo(of(2, 3));
-        assertThat(of(1, 2, 3).removeAll(i -> i == 2)).isEqualTo(of(1, 3));
-        assertThat(of(1, 2, 3).removeAll(i -> i == 3)).isEqualTo(of(1, 2));
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).removeAll(ignore -> true)).isEmpty();
-            assertThat(of(1, 2, 3).removeAll(ignore -> false)).isEqualTo(of(1, 2, 3));
-        } else {
-            final Seq<Integer> seq = of(1, 2, 3);
-            assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
-        }
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
     }
 
     @Test
     public void shouldRemoveNonExistingElements() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isEqualTo(empty());
-            assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isEqualTo(empty());
-        } else {
-            assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isSameAs(empty());
-            assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isSameAs(empty());
-        }
+        assertThat(this.<Integer>empty().removeAll(i -> i == 0)).isEqualTo(empty());
+        assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isEqualTo(empty());
     }
 
     @Test
@@ -1388,11 +1364,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
         final Predicate<Integer> isTooBig = i -> i >= 4;
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeAll(isTooBig)).isEqualTo(t);
-        } else {
-            assertThat(t.removeAll(isTooBig)).isSameAs(t);
-        }
+        assertThat(t.removeAll(isTooBig)).isSameAs(t);
     }
 
     // -- removeAll(Object)
@@ -1410,11 +1382,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
         final Seq<Integer> seq = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(seq.removeAll(4)).isEqualTo(seq);
-        } else {
-            assertThat(seq.removeAll(4)).isSameAs(seq);
-        }
+        assertThat(seq.removeAll(4)).isSameAs(seq);
     }
 
     @Test
@@ -1605,7 +1573,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnNilWhenSliceFrom0To0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().slice(0, 0);
+        final Seq<Integer> actual = this.<Integer>empty().slice(0, 0);
         assertThat(actual).isEmpty();
     }
 
@@ -1695,7 +1663,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortNilUsingComparator() {
-        assertThat(this.<Integer> empty().sorted((i, j) -> j - i)).isEmpty();
+        assertThat(this.<Integer>empty().sorted((i, j) -> j - i)).isEmpty();
     }
 
     @Test
@@ -1707,7 +1675,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortByNilUsingFunction() {
-        assertThat(this.<String> empty().sortBy(String::length)).isEmpty();
+        assertThat(this.<String>empty().sortBy(String::length)).isEmpty();
     }
 
     @Test
@@ -1733,7 +1701,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortByNilUsingComparatorAndFunction() {
-        assertThat(this.<String> empty().sortBy(String::length)).isEmpty();
+        assertThat(this.<String>empty().sortBy(String::length)).isEmpty();
     }
 
     @Test
@@ -1922,7 +1890,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnNilWhenSubSequenceFrom0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().subSequence(0);
+        final Seq<Integer> actual = this.<Integer>empty().subSequence(0);
         assertThat(actual).isEmpty();
     }
 
@@ -1975,7 +1943,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnNilWhenSubSequenceFrom0To0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().subSequence(0, 0);
+        final Seq<Integer> actual = this.<Integer>empty().subSequence(0, 0);
         assertThat(actual).isEmpty();
     }
 
@@ -2072,7 +2040,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSearchNegatedInsertionPointMinusOneForAbsentElementsUsingComparator() {
-        assertThat(this.<Integer> empty().search(42, Integer::compareTo)).isEqualTo(-1);
+        assertThat(this.<Integer>empty().search(42, Integer::compareTo)).isEqualTo(-1);
         assertThat(of(10, 20, 30).search(25, Integer::compareTo)).isEqualTo(-3);
     }
 

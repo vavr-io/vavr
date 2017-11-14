@@ -405,6 +405,7 @@ public class ListTest extends AbstractLinearSeqTest {
         }
     }
 
+    //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
