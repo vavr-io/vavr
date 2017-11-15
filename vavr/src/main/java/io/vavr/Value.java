@@ -88,6 +88,7 @@ import static io.vavr.API.*;
  * <li>{@link #contains(Object)}</li>
  * <li>{@link #exists(Predicate)}</li>
  * <li>{@link #forAll(Predicate)}</li>
+ * <li>{@link #none(Predicate)}</li>
  * <li>{@link #forEach(Consumer)}</li>
  * <li>{@link #iterator()}</li>
  * </ul>
@@ -324,6 +325,18 @@ public interface Value<T> extends Iterable<T> {
     default boolean forAll(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return !exists(predicate.negate());
+    }
+
+    /**
+     * Checks, if the given predicate does not holds for all elements.
+     *
+     * @param predicate A Predicate
+     * @return true, if the predicate does not holds for all elements, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default boolean none(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return !exists(predicate);
     }
 
     /**

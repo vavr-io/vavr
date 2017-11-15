@@ -146,6 +146,18 @@ public class CharSeqTest {
         assertThat(CharSeq.of('2', '3').forAll(i -> i % 2 == 0)).isFalse();
     }
 
+    // -- none
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForNone() {
+        assertThat(CharSeq.of('2', '4').none(i -> i % 2 == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForNone() {
+        assertThat(CharSeq.of('2', '3').none(i -> i % 2 == 1)).isFalse();
+    }
+
     // -- padTo
 
     @Test

@@ -392,6 +392,23 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.none().forAll(e -> true)).isTrue();
     }
 
+    // -- none
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForNoneOfSome() {
+        assertThat(Option.some(1).none(i -> i == 2)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForNoneOfSome() {
+        assertThat(Option.some(1).none(i -> i == 1)).isFalse();
+    }
+
+    @Test // a property does not holds for all elements of no elements
+    public void shouldNotHoldPropertyForNoneOfNone() {
+        assertThat(Option.none().none(e -> true)).isTrue();
+    }
+
     // -- forEach
 
     @Test

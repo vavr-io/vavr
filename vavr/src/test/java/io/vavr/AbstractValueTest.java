@@ -905,6 +905,18 @@ public abstract class AbstractValueTest {
         assertThat(of(1, 2).forAll(i -> i % 2 == 0)).isFalse();
     }
 
+    // -- none
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForNone() {
+        assertThat(of(2, 4).none(i -> i % 2 == 1)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForNone() {
+        assertThat(of(1, 2).none(i -> i % 2 == 1)).isFalse();
+    }
+
     // ### ValueModule.Iterable ###
 
     // -- corresponds

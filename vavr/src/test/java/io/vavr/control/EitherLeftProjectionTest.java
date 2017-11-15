@@ -266,6 +266,23 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
         assertThat(Either.left(1).right().forAll(e -> true)).isTrue();
     }
 
+    // -- none
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForNoneOfLeftProjectionOfLeft() {
+        assertThat(Either.left(1).left().none(i -> i == 2)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForNoneOfLeftProjectionOfLeft() {
+        assertThat(Either.left(1).left().none(i -> i == 1)).isFalse();
+    }
+
+    @Test// a property does not holds for all elements of no elements
+    public void shouldNotHoldPropertyForNoneOfLeftProjectionOfRight() {
+        assertThat(Either.left(1).right().none(e -> true)).isTrue();
+    }
+
     // forEach
 
     @Test
