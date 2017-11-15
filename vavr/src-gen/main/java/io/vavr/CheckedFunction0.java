@@ -38,6 +38,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
+@javax.annotation.Generated("Generator.scala")
 public interface CheckedFunction0<R> extends Lambda<R> {
 
     /**
@@ -136,9 +137,9 @@ public interface CheckedFunction0<R> extends Lambda<R> {
      * Applies this function to no arguments and returns the result.
      *
      * @return the result of function application
-     * @throws Throwable if something goes wrong applying this function to the given arguments
+     * @throws Exception if something goes wrong applying this function to the given arguments
      */
-    R apply() throws Throwable;
+    R apply() throws Exception;
 
     @Override
     default int arity() {
@@ -221,6 +222,7 @@ public interface CheckedFunction0<R> extends Lambda<R> {
 
 }
 
+@javax.annotation.Generated("Generator.scala")
 interface CheckedFunction0Module {
 
     // DEV-NOTE: we do not plan to expose this as public API

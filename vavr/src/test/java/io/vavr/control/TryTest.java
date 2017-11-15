@@ -907,7 +907,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldNotRecoverFailureWhenExceptionTypeIsntAssignable(){
-        final Throwable error = new IllegalStateException(FAILURE);
+        final Exception error = new IllegalStateException(FAILURE);
         assertThat(Try.of(() -> { throw error; }).recoverWith(Error.class, success()).getCause()).isSameAs(error);
     }
 
@@ -917,6 +917,20 @@ public class TryTest extends AbstractValueTest {
     public void shouldConsumeThrowableWhenCallingOnFailureGivenFailure() {
         final String[] result = new String[] { FAILURE };
         failure().onFailure(x -> result[0] = OK);
+        assertThat(result[0]).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldConsumeThrowableWhenCallingOnFailureWithMatchingExceptionTypeGivenFailure() {
+        final String[] result = new String[] { FAILURE };
+        failure().onFailure(RuntimeException.class, x -> result[0] = OK);
+        assertThat(result[0]).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldNotConsumeThrowableWhenCallingOnFailureWithNonMatchingExceptionTypeGivenFailure() {
+        final String[] result = new String[] { OK };
+        failure().onFailure(Error.class, x -> result[0] = FAILURE);
         assertThat(result[0]).isEqualTo(OK);
     }
 

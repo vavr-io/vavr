@@ -46,6 +46,7 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
+@javax.annotation.Generated("Generator.scala")
 public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<R> {
 
     /**
@@ -185,9 +186,9 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<
      * @param t6 argument 6
      * @param t7 argument 7
      * @return the result of function application
-     * @throws Throwable if something goes wrong applying this function to the given arguments
+     * @throws Exception if something goes wrong applying this function to the given arguments
      */
-    R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) throws Throwable;
+    R apply(T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) throws Exception;
 
     /**
      * Applies this function partially to one argument.
@@ -347,6 +348,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<
 
 }
 
+@javax.annotation.Generated("Generator.scala")
 interface CheckedFunction7Module {
 
     // DEV-NOTE: we do not plan to expose this as public API

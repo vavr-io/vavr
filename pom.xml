@@ -483,7 +483,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                                     <arguments>
                                         <argument>-classpath</argument>
                                         <classpath />
-                                        <argument>vavr.JmhRunner</argument>
+                                        <argument>io.vavr.JmhRunner</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

@@ -53,6 +53,7 @@ public class HashSetBenchmark {
 
         scala.collection.immutable.Set<Integer> scalaPersistent;
         org.pcollections.PSet<Integer> pcollectionsPersistent;
+        io.usethesource.capsule.Set.Immutable<Integer> capsulePersistent;
         io.vavr.collection.Set<Integer> vavrPersistent;
 
         @Setup
@@ -65,6 +66,7 @@ public class HashSetBenchmark {
 
             scalaPersistent = create(v -> (scala.collection.immutable.Set<Integer>) scala.collection.immutable.HashSet$.MODULE$.apply(asScalaBuffer(v)), SET.toJavaList(), SET.size(), v -> SET.forAll(v::contains));
             pcollectionsPersistent = create(org.pcollections.HashTreePSet::from, SET.toJavaList(), SET.size(), v -> SET.forAll(v::contains));
+            capsulePersistent = create(io.usethesource.capsule.util.collection.AbstractSpecialisedImmutableSet::setOf, SET.toJavaSet(), SET.size(), v -> SET.forAll(v::contains));
             vavrPersistent = create(io.vavr.collection.HashSet::ofAll, SET, SET.size(), v -> SET.forAll(v::contains));
         }
     }
@@ -85,6 +87,16 @@ public class HashSetBenchmark {
             scala.collection.immutable.HashSet<Integer> values = new scala.collection.immutable.HashSet<>();
             for (Integer element : ELEMENTS) {
                 values = values.$plus(element);
+            }
+            assert SET.forAll(values::contains);
+            return values;
+        }
+
+        @Benchmark
+        public Object capsule_persistent() {
+            io.usethesource.capsule.Set.Immutable<Integer> values = io.usethesource.capsule.core.PersistentTrieSet.of();
+            for (Integer element : ELEMENTS) {
+                values = values.__insert(element);
             }
             assert SET.forAll(values::contains);
             return values;
@@ -117,6 +129,16 @@ public class HashSetBenchmark {
         public int pcollections_persistent() {
             int aggregate = 0;
             for (final java.util.Iterator<Integer> iterator = pcollectionsPersistent.iterator(); iterator.hasNext(); ) {
+                aggregate ^= iterator.next();
+            }
+            assert aggregate == EXPECTED_AGGREGATE;
+            return aggregate;
+        }
+
+        @Benchmark
+        public int capsule_persistent() {
+            int aggregate = 0;
+            for (final java.util.Iterator<Integer> iterator = capsulePersistent.iterator(); iterator.hasNext(); ) {
                 aggregate ^= iterator.next();
             }
             assert aggregate == EXPECTED_AGGREGATE;
