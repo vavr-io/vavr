@@ -209,6 +209,30 @@ public class TryTest extends AbstractValueTest {
         });
     }
 
+    // -- none
+
+    @Test
+    public void shouldBeAwareOfPropertyThatHoldsForNoneOfSuccess() {
+        assertThat(Try.success(1).none(i -> i == 2)).isTrue();
+    }
+
+    @Test
+    public void shouldBeAwareOfPropertyThatNotHoldsForNoneOfSuccess() {
+        assertThat(Try.success(1).none(i -> i == 1)).isFalse();
+    }
+
+    @Test // a property does not holds for all elements of no elements
+    public void shouldNotHoldPropertyForNoneOfFailure() {
+        assertThat(failure().none(e -> true)).isTrue();
+    }
+
+    @Test(expected = Error.class)
+    public void shouldNotHoldPropertyForNoneWhenPredicateThrows() {
+        Try.success(1).none(e -> {
+            throw new Error("error");
+        });
+    }
+
     // -- orElse
 
     @Test
