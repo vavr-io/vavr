@@ -19,11 +19,7 @@
  */
 package io.vavr.collection;
 
-import io.vavr.CheckedFunction1;
-import io.vavr.CheckedFunction2;
-import io.vavr.Serializables;
-import io.vavr.Tuple2;
-import io.vavr.Value;
+import io.vavr.*;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.junit.Ignore;
@@ -39,7 +35,6 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static io.vavr.collection.Stream.concat;
-import static org.junit.Assert.assertNotSame;
 
 public class StreamTest extends AbstractLinearSeqTest {
 
@@ -203,71 +198,9 @@ public class StreamTest extends AbstractLinearSeqTest {
         return Stream.transpose((Stream<Stream<T>>) rows);
     }
 
-    //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
-    }
-
-    @Test
-    @Override
-    public void shouldRemoveNonExistingElement() {
-        final Seq<Integer> t = of(1, 2, 3);
-        assertThat(t.remove(4)).isEqualTo(t);
-        assertNotSame(t, t.remove(4));
-    }
-
-    @Test
-    @Override
-    public void shouldRemoveFirstElementByPredicateNonExisting() {
-        final Seq<Integer> t = of(1, 2, 3);
-        assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
-        assertNotSame(t, t.removeFirst(v -> v == 4));
-    }
-
-    @Test
-    @Override
-    public void shouldRemoveLastElementByPredicateNonExisting() {
-        final Seq<Integer> t = of(1, 2, 3);
-        assertThat(t.removeLast(v -> v == 4)).isEqualTo(t);
-        assertNotSame(t, t.removeLast(v -> v == 4));
-    }
-
-    @Test
-    @Override
-    public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
-        final Seq<Integer> t = of(1, 2, 3);
-        assertThat(t.removeAll(of(4, 5))).isEqualTo(t);
-        assertNotSame(t, t.removeAll(of(4, 5)));
-    }
-
-    @Test
-    @Override
-    public void shouldRemoveExistingElements() {
-        final Seq<Integer> seq = of(1, 2, 3);
-        assertThat(seq.removeAll(i -> i == 1)).isEqualTo(of(2, 3));
-        assertThat(seq.removeAll(i -> i == 2)).isEqualTo(of(1, 3));
-        assertThat(seq.removeAll(i -> i == 3)).isEqualTo(of(1, 2));
-        assertThat(seq.removeAll(ignore -> true)).isEmpty();
-        assertThat(seq.removeAll(ignore -> false)).isEqualTo(of(1, 2, 3));
-        assertNotSame(seq, seq.removeAll(ignore -> false));
-    }
-
-    @Test
-    @Override
-    public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
-        final Seq<Integer> t = of(1, 2, 3);
-        final Predicate<Integer> isTooBig = i -> i >= 4;
-        assertThat(t.removeAll(isTooBig)).isEqualTo(t);
-        assertNotSame(t, t.removeAll(isTooBig));
-    }
-
-    @Test
-    @Override
-    public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
-        final Seq<Integer> seq = of(1, 2, 3);
-        assertThat(seq.removeAll(4)).isEqualTo(seq);
-        assertNotSame(seq, seq.removeAll(4));
     }
 
     // -- static concat()
@@ -585,7 +518,7 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldReturnAnEmptyStreamWhenExtendingAnEmptyStreamWithFunction() {
-        assertThat(Stream.<Integer>of().extend(i -> i + 1)).isEqualTo(of());
+        assertThat(Stream.<Integer> of().extend(i -> i + 1)).isEqualTo(of());
     }
 
     @Test
@@ -632,7 +565,7 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldEvaluateTailAtMostOnce() {
-        final int[] counter = {0};
+        final int[] counter = { 0 };
         final Stream<Integer> stream = Stream.continually(() -> counter[0]++);
         // this test ensures that the `tail.append(100)` does not modify the tail elements
         final Stream<Integer> tail = stream.tail().append(100);
@@ -646,14 +579,14 @@ public class StreamTest extends AbstractLinearSeqTest {
     public void shouldNotProduceStackOverflow() {
         Stream.range(0, 1_000_000)
                 .map(String::valueOf)
-                .foldLeft(Stream.<String>empty(), Stream::append)
+                .foldLeft(Stream.<String> empty(), Stream::append)
                 .mkString();
     }
 
     @Test // See #327, #594
     public void shouldNotEvaluateHeadOfTailWhenCallingIteratorHasNext() {
 
-        final Integer[] vals = new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9};
+        final Integer[] vals = new Integer[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
         final CheckedFunction2<StringBuilder, Integer, Void> doStuff = (builder, i) -> {
             builder.append(i);
@@ -756,8 +689,8 @@ public class StreamTest extends AbstractLinearSeqTest {
     public void shouldUnfoldRightSimpleStream() {
         assertThat(
                 Stream.unfoldRight(10, x -> x == 0
-                        ? Option.none()
-                        : Option.of(new Tuple2<>(x, x - 1))))
+                                            ? Option.none()
+                                            : Option.of(new Tuple2<>(x, x - 1))))
                 .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
     }
 
@@ -770,8 +703,8 @@ public class StreamTest extends AbstractLinearSeqTest {
     public void shouldUnfoldLeftSimpleStream() {
         assertThat(
                 Stream.unfoldLeft(10, x -> x == 0
-                        ? Option.none()
-                        : Option.of(new Tuple2<>(x - 1, x))))
+                                           ? Option.none()
+                                           : Option.of(new Tuple2<>(x - 1, x))))
                 .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
@@ -784,8 +717,8 @@ public class StreamTest extends AbstractLinearSeqTest {
     public void shouldUnfoldSimpleStream() {
         assertThat(
                 Stream.unfold(10, x -> x == 0
-                        ? Option.none()
-                        : Option.of(new Tuple2<>(x - 1, x))))
+                                       ? Option.none()
+                                       : Option.of(new Tuple2<>(x - 1, x))))
                 .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
