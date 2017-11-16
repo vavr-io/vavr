@@ -236,11 +236,11 @@ public class StreamTest extends AbstractLinearSeqTest {
     @Override
     public void shouldRemoveExistingElements() {
         final Seq<Integer> seq = of(1, 2, 3);
-        assertThat(seq.removeAll(i -> i == 1)).isEqualTo(of(2, 3));
-        assertThat(seq.removeAll(i -> i == 2)).isEqualTo(of(1, 3));
-        assertThat(seq.removeAll(i -> i == 3)).isEqualTo(of(1, 2));
-        assertThat(seq.removeAll(ignore -> true)).isEmpty();
-        assertThat(seq.removeAll(ignore -> false)).isEqualTo(of(1, 2, 3)).isNotSameAs(of(1, 2, 3));
+        assertThat(seq.reject(i -> i == 1)).isEqualTo(of(2, 3));
+        assertThat(seq.reject(i -> i == 2)).isEqualTo(of(1, 3));
+        assertThat(seq.reject(i -> i == 3)).isEqualTo(of(1, 2));
+        assertThat(seq.reject(ignore -> true)).isEmpty();
+        assertThat(seq.reject(ignore -> false)).isEqualTo(of(1, 2, 3)).isNotSameAs(of(1, 2, 3));
     }
 
     @Test
