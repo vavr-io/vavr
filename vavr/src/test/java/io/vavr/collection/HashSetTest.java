@@ -396,6 +396,7 @@ public class HashSetTest extends AbstractSetTest {
         assertTrue(HashSet.of(1).equals(HashSet.of(1)));
     }
 
+    //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
