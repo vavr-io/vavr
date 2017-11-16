@@ -248,7 +248,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
         final Predicate<Integer> isTooBig = i -> i >= 4;
-        assertThat(t.removeAll(isTooBig)).isEqualTo(t).isNotSameAs(t);
+        assertThat(t.reject(isTooBig)).isEqualTo(t).isNotSameAs(t);
     }
 
     @Test

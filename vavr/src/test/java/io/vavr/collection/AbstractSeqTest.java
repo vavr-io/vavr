@@ -1362,12 +1362,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3, 4, 5, 6).removeAll(i -> i % 2 == 0)).isEqualTo(of(1, 3, 5));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
         final Predicate<Integer> isTooBig = i -> i >= 4;
-        assertThat(t.removeAll(isTooBig)).isSameAs(t);
+        assertThat(t.reject(isTooBig)).isSameAs(t);
     }
 
     // -- removeAll(Object)
