@@ -1328,6 +1328,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     // -- removeAll(Predicate)
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveExistingElements() {
         final Seq<Integer> seq = of(1, 2, 3);
@@ -1338,27 +1339,32 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveNonExistingElements() {
         assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isSameAs(empty());
         assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isSameAs(empty());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveAllElementsByPredicateFromNil() {
         assertThat(empty().removeAll(o -> true)).isEmpty();
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveAllExistingElements() {
         assertThat(of(1, 2, 3, 4, 5, 6).removeAll(ignored -> true)).isEmpty();
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveAllMatchedElementsFromNonNil() {
         assertThat(of(1, 2, 3, 4, 5, 6).removeAll(i -> i % 2 == 0)).isEqualTo(of(1, 3, 5));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
