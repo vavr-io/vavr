@@ -83,8 +83,8 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <maven.exec.version>1.5.0</maven.exec.version>
         <maven.gwt.plugin>1.0-rc-6</maven.gwt.plugin>
         <scala.maven.version>3.3.1</scala.maven.version>
-        <scala.version>2.10.6</scala.version>
-        <scala.compat.version>2.10</scala.compat.version>
+        <scala.version>2.12.3</scala.version>
+        <scala.compat.version>2.12</scala.compat.version>
     </properties>
     <dependencyManagement>
         <dependencies>
