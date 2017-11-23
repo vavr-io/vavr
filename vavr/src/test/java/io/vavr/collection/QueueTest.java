@@ -200,6 +200,7 @@ public class QueueTest extends AbstractLinearSeqTest {
         return 1;
     }
 
+    //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;

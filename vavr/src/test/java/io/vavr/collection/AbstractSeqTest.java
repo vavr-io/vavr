@@ -1217,11 +1217,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldRemoveNonExistingElement() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.remove(4)).isEqualTo(t);
-        } else {
-            assertThat(t.remove(4)).isSameAs(t);
-        }
+        assertThat(t.remove(4)).isSameAs(t);
     }
 
     // -- removeFirst(Predicate)
@@ -1259,11 +1255,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldRemoveFirstElementByPredicateNonExisting() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
-        } else {
-            assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
-        }
+        assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
     }
 
     // -- removeLast(Predicate)
@@ -1301,11 +1293,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldRemoveLastElementByPredicateNonExisting() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeLast(v -> v == 4)).isEqualTo(t);
-        } else {
-            assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
-        }
+        assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
     }
 
     // -- removeAll(Iterable)
@@ -1323,11 +1311,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeAll(of(4, 5))).isEqualTo(t);
-        } else {
-            assertThat(t.removeAll(of(4, 5))).isSameAs(t);
-        }
+        assertThat(t.removeAll(of(4, 5))).isSameAs(t);
     }
 
     @Test
@@ -1347,28 +1331,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveExistingElements() {
-        assertThat(of(1, 2, 3).removeAll(i -> i == 1)).isEqualTo(of(2, 3));
-        assertThat(of(1, 2, 3).removeAll(i -> i == 2)).isEqualTo(of(1, 3));
-        assertThat(of(1, 2, 3).removeAll(i -> i == 3)).isEqualTo(of(1, 2));
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).removeAll(ignore -> true)).isEmpty();
-            assertThat(of(1, 2, 3).removeAll(ignore -> false)).isEqualTo(of(1, 2, 3));
-        } else {
-            final Seq<Integer> seq = of(1, 2, 3);
-            assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
-        }
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.removeAll(i -> i == 1)).isEqualTo(of(2, 3));
+        assertThat(seq.removeAll(i -> i == 2)).isEqualTo(of(1, 3));
+        assertThat(seq.removeAll(i -> i == 3)).isEqualTo(of(1, 2));
+        assertThat(seq.removeAll(ignore -> true)).isEmpty();
+        assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
     }
 
     @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveNonExistingElements() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isEqualTo(empty());
-            assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isEqualTo(empty());
-        } else {
-            assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isSameAs(empty());
-            assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isSameAs(empty());
-        }
+        assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isSameAs(empty());
+        assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isSameAs(empty());
     }
 
     @SuppressWarnings("deprecation")
@@ -1394,11 +1369,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
         final Predicate<Integer> isTooBig = i -> i >= 4;
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeAll(isTooBig)).isEqualTo(t);
-        } else {
-            assertThat(t.removeAll(isTooBig)).isSameAs(t);
-        }
+        assertThat(t.removeAll(isTooBig)).isSameAs(t);
     }
 
     // -- removeAll(Object)
@@ -1416,11 +1387,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
         final Seq<Integer> seq = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(seq.removeAll(4)).isEqualTo(seq);
-        } else {
-            assertThat(seq.removeAll(4)).isSameAs(seq);
-        }
+        assertThat(seq.removeAll(4)).isSameAs(seq);
     }
 
     @Test

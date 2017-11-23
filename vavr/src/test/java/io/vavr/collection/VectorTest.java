@@ -136,6 +136,7 @@ public class VectorTest extends AbstractIndexedSeqTest {
         return 1;
     }
 
+    //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
