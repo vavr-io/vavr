@@ -3,9 +3,6 @@ sudo: false # faster builds
 jdk:
   - oraclejdk8
   - oraclejdk9
-matrix:
-  allow_failures:
-    - jdk: oraclejdk9
 env:
   global:
     - secure: HU0QOLEDkYHcjX+PkicGGQ5g2L1/19V2fH13OSn82DOFlIiWmCfhSI8EG/QoWwPDp/HYQ4DH5Lo+ZEhVz5tgEultItyJ38LZJl/YYOzSAiRvTezmDdz+Cdg6SXAwCvgFCTagEJ1ChL5NyenDGDlwPB/drN0HlNNU6igPqNkM8l0=
