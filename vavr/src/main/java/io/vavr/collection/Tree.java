@@ -238,8 +238,8 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     /**
      * Build a {@code List} with roots of {@code Tree} from flat source.
      * <p>
- *     {@code parentMapper} must return {@code null} for root element.
-     * <p>
+     * {@code parentMapper} must return {@code null} for root element.
+     *
      * <pre>{@code
      *  // = [(1, null, "I"), (2, 1, "II"), (3, 1, "III"), (4, 2, "IV"), (5, 2, "V")]
      *  List<MenuItem> items = ...; // MenuItem(id, parentId, label)
@@ -253,8 +253,8 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * }</pre>
      *
      * @param source       Flat source
-     * @param idMapper     A mapper from source item to unique identificator of that item
-     * @param parentMapper A mapper from source item to unique identificator of parent item. Need return null for root items
+     * @param idMapper     A mapper from source item to unique identifier of that item
+     * @param parentMapper A mapper from source item to unique identifier of parent item. Need return null for root items
      * @param <T>          Value type
      * @param <ID>         Id type
      * @return a new, maybe empty {@code List} instance with non-empty {@code Tree} instances
@@ -264,12 +264,12 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         Objects.requireNonNull(source, "source is null");
         Objects.requireNonNull(source, "idMapper is null");
         Objects.requireNonNull(source, "parentMapper is null");
-        List<T> list = List.ofAll(source);
-        Map<ID, List<T>> byParent = list.groupBy(parentMapper);
-        Function<? super T, Iterable<? extends T>> descend = idMapper
+        final List<T> list = List.ofAll(source);
+        final Map<ID, List<T>> byParent = list.groupBy(parentMapper);
+        final Function<? super T, Iterable<? extends T>> descend = idMapper
                 .andThen(byParent::get)
                 .andThen(o -> o.getOrElse(List::empty));
-        List<T> roots = byParent.get(null).getOrElse(List::empty);
+        final List<T> roots = byParent.get(null).getOrElse(List::empty);
         return roots.map(v -> recurse(v, descend));
     }
 
