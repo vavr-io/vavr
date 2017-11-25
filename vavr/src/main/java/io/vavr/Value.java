@@ -1384,6 +1384,9 @@ public interface Value<T> extends Iterable<T> {
     /**
      * Converts this to a {@link Tree} using a {@code idMapper} and {@code parentMapper}.
      *
+     * @param <ID> Id type
+     * @param idMapper     A mapper from source item to unique identifier of that item
+     * @param parentMapper A mapper from source item to unique identifier of parent item. Need return null for root items
      * @return A new {@link Tree}.
      * @see Tree#build(Iterable, Function, Function)
      */
