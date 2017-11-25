@@ -140,9 +140,36 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type }, handler);
     }
 
-    public Option<T> filter(Predicate<? super T> predicate) {
-        final T v = get();
-        return predicate.test(v) ? Option.some(v) : Option.none();
+    /**
+     * Filters this lazily evaluated value. A filter call is equivalent to
+     *
+     * <pre>{@code map(t -> Option.some(t).filter(predicate))}</pre>
+     *
+     * Examples:
+     *
+     * <pre>{@code
+     * // = Lazy(?)
+     * Lazy<Option<Integer>> val1 = Lazy.of(() -> 1).filter(i -> false);
+     *
+     * // = None
+     * val1.get();
+     * // after that, val1 = Lazy(None)
+     *
+     * // = Lazy(?)
+     * Lazy<Option<Integer>> val2 = Lazy.of(() -> 1).filter(i -> true);
+     *
+     * // = Some(1)
+     * val2.get();
+     * // after that, val2 = Lazy(Some(1))
+     * }</pre>
+     *
+     * @param predicate a predicate that states whether the element passes the filter (true) or not (false)
+     * @return a new, unevaluated {@code Lazy<Option<T>>} instance
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    public Lazy<Option<T>> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return map(t -> Option.some(t).filter(predicate));
     }
 
     /**

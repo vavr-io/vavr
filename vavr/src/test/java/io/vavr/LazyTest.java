@@ -160,8 +160,8 @@ public class LazyTest extends AbstractValueTest {
     @Test
     public void shouldFilterOverLazyValue() {
         final Lazy<Integer> testee = Lazy.of(() -> 42);
-        final Option<Integer> expectedPositive = Option.some(42);
-        final Option<Integer> expectedNegative = Option.none();
+        final Lazy<Option<Integer>> expectedPositive = Lazy.of(() -> Option.some(42));
+        final Lazy<Option<Integer>> expectedNegative = Lazy.of(Option::none);
 
         assertThat(testee.filter(i -> i % 2 == 0)).isEqualTo(expectedPositive);
         assertThat(testee.filter(i -> i % 2 != 0)).isEqualTo(expectedNegative);
