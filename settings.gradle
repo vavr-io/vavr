@@ -1,0 +1,15 @@
+rootProject.name = 'vavr-parent'
+include ':vavr'
+include ':vavr-benchmark'
+include ':vavr-match'
+include ':vavr-test'
+
+// TODO is this needed?
+project(':vavr').projectDir = "$rootDir/vavr" as File
+project(':vavr-benchmark').projectDir = "$rootDir/vavr-benchmark" as File
+project(':vavr-match').projectDir = "$rootDir/vavr-match" as File
+project(':vavr-test').projectDir = "$rootDir/vavr-test" as File
+
+// Dependency Versions
+ext['assertJ.version'] = '3.8.0'
+

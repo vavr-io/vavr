@@ -1,0 +1,21 @@
+
+description = 'Vavr'
+
+sourceSets {
+  main {
+    java {
+      srcDirs += 'src/generated/java'
+    }
+  }
+
+  generatedTest {
+    
+  }
+}
+
+dependencies {
+  compile project(':vavr-match')
+
+  testCompile group: 'junit', name: 'junit', version:'4.12'
+  testCompile group: 'org.assertj', name: 'assertj-core', version:'3.8.0'
+}
