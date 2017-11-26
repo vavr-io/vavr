@@ -41,7 +41,6 @@ import java.util.function.Function;
  * @param <T2> type of the 2nd element
  * @author Daniel Dietrich
  */
-@javax.annotation.Generated("Generator.scala")
 public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, Serializable {
 
     private static final long serialVersionUID = 1L;

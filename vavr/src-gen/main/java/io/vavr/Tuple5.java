@@ -41,7 +41,6 @@ import java.util.function.Function;
  * @param <T5> type of the 5th element
  * @author Daniel Dietrich
  */
-@javax.annotation.Generated("Generator.scala")
 public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple5<T1, T2, T3, T4, T5>>, Serializable {
 
     private static final long serialVersionUID = 1L;

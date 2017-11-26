@@ -32,7 +32,6 @@ import java.util.Collection;
  *
  * @author Pap Lőrinc
  */
-@javax.annotation.Generated("Generator.scala")
 interface ArrayType<T> {
     @SuppressWarnings("unchecked")
     static <T> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
@@ -145,7 +144,6 @@ interface ArrayType<T> {
         return (T) results;
     }
 
-    @javax.annotation.Generated("Generator.scala")
     final class BooleanArrayType implements ArrayType<Boolean>, Serializable {
         private static final long serialVersionUID = 1L;
         static final BooleanArrayType INSTANCE = new BooleanArrayType();
@@ -187,7 +185,6 @@ interface ArrayType<T> {
         }
     }
 
-    @javax.annotation.Generated("Generator.scala")
     final class ByteArrayType implements ArrayType<Byte>, Serializable {
         private static final long serialVersionUID = 1L;
         static final ByteArrayType INSTANCE = new ByteArrayType();
@@ -229,7 +226,6 @@ interface ArrayType<T> {
         }
     }
 
-    @javax.annotation.Generated("Generator.scala")
     final class CharArrayType implements ArrayType<Character>, Serializable {
         private static final long serialVersionUID = 1L;
         static final CharArrayType INSTANCE = new CharArrayType();
@@ -271,7 +267,6 @@ interface ArrayType<T> {
         }
     }
 
-    @javax.annotation.Generated("Generator.scala")
     final class DoubleArrayType implements ArrayType<Double>, Serializable {
         private static final long serialVersionUID = 1L;
         static final DoubleArrayType INSTANCE = new DoubleArrayType();
@@ -313,7 +308,6 @@ interface ArrayType<T> {
         }
     }
 
-    @javax.annotation.Generated("Generator.scala")
     final class FloatArrayType implements ArrayType<Float>, Serializable {
         private static final long serialVersionUID = 1L;
         static final FloatArrayType INSTANCE = new FloatArrayType();
@@ -355,7 +349,6 @@ interface ArrayType<T> {
         }
     }
 
-    @javax.annotation.Generated("Generator.scala")
     final class IntArrayType implements ArrayType<Integer>, Serializable {
         private static final long serialVersionUID = 1L;
         static final IntArrayType INSTANCE = new IntArrayType();
@@ -397,7 +390,6 @@ interface ArrayType<T> {
         }
     }
 
-    @javax.annotation.Generated("Generator.scala")
     final class LongArrayType implements ArrayType<Long>, Serializable {
         private static final long serialVersionUID = 1L;
         static final LongArrayType INSTANCE = new LongArrayType();
@@ -439,7 +431,6 @@ interface ArrayType<T> {
         }
     }
 
-    @javax.annotation.Generated("Generator.scala")
     final class ShortArrayType implements ArrayType<Short>, Serializable {
         private static final long serialVersionUID = 1L;
         static final ShortArrayType INSTANCE = new ShortArrayType();
@@ -481,7 +472,6 @@ interface ArrayType<T> {
         }
     }
 
-    @javax.annotation.Generated("Generator.scala")
     final class ObjectArrayType implements ArrayType<Object>, Serializable {
         private static final long serialVersionUID = 1L;
         static final ObjectArrayType INSTANCE = new ObjectArrayType();
