@@ -38,7 +38,6 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-@javax.annotation.Generated("Generator.scala")
 public interface Function0<R> extends Lambda<R>, Supplier<R> {
 
     /**
@@ -196,7 +195,6 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
 
 }
 
-@javax.annotation.Generated("Generator.scala")
 interface Function0Module {
 
     // DEV-NOTE: we do not plan to expose this as public API
