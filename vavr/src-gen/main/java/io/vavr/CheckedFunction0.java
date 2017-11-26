@@ -38,7 +38,6 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-@javax.annotation.Generated("Generator.scala")
 public interface CheckedFunction0<R> extends Lambda<R> {
 
     /**
@@ -222,7 +221,6 @@ public interface CheckedFunction0<R> extends Lambda<R> {
 
 }
 
-@javax.annotation.Generated("Generator.scala")
 interface CheckedFunction0Module {
 
     // DEV-NOTE: we do not plan to expose this as public API

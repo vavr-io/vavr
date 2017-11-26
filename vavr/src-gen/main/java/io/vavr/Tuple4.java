@@ -40,7 +40,6 @@ import java.util.function.Function;
  * @param <T4> type of the 4th element
  * @author Daniel Dietrich
  */
-@javax.annotation.Generated("Generator.scala")
 public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1, T2, T3, T4>>, Serializable {
 
     private static final long serialVersionUID = 1L;

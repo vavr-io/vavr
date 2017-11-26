@@ -42,7 +42,6 @@ import java.util.function.Function;
  * @param <T6> type of the 6th element
  * @author Daniel Dietrich
  */
-@javax.annotation.Generated("Generator.scala")
 public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<Tuple6<T1, T2, T3, T4, T5, T6>>, Serializable {
 
     private static final long serialVersionUID = 1L;

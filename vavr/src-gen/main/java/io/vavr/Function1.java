@@ -41,7 +41,6 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-@javax.annotation.Generated("Generator.scala")
 public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
 
     /**
@@ -245,7 +244,6 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
     }
 }
 
-@javax.annotation.Generated("Generator.scala")
 interface Function1Module {
 
     // DEV-NOTE: we do not plan to expose this as public API
