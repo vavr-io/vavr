@@ -2,7 +2,7 @@ allprojects  {
   apply plugin: 'maven'
 
   group = 'io.vavr'
-version = '1.0.0-SNAPSHOT'
+  version = '1.0.0-SNAPSHOT'
 }
 
 subprojects {
@@ -22,4 +22,8 @@ subprojects {
     maven { url "http://nexus.usethesource.io/content/repositories/public/" }
   }
 
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.3.1'
 }
