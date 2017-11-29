@@ -24,37 +24,43 @@ import JavaGenerator._
 
 import scala.language.implicitConversions
 
-val N = 8
-val TARGET_MAIN = s"${project.getBasedir()}/src-gen/main/java"
-val TARGET_TEST = s"${project.getBasedir()}/src-gen/test/java"
-val CHARSET = java.nio.charset.StandardCharsets.UTF_8
+object Runner {
 
-/**
- * ENTRY POINT
- */
-def run(): Unit = {
-  generateMainClasses()
-  generateTestClasses()
-}
-
-/**
- * Generate Vavr src-gen/main/java classes
- */
-def generateMainClasses(): Unit = {
-
-  // Workaround: Use /$** instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
-  val javadoc = "**"
-
-  genPropertyChecks()
+  val N = 8
+  var TARGET_MAIN = ""
+  var TARGET_TEST = ""
+  val CHARSET = java.nio.charset.StandardCharsets.UTF_8
 
   /**
-   * Generator of io.vavr.test.Property
-   */
-  def genPropertyChecks(): Unit = {
+    * ENTRY POINT
+    */
+  def main(args: Array[String]) {
+    TARGET_MAIN = args(0)
+    TARGET_TEST = args(1)
 
-    genVavrFile("io.vavr.test", "Property")(genProperty)
+    generateMainClasses()
+    generateTestClasses()
+  }
 
-    def genProperty(im: ImportManager, packageName: String, className: String): String = xs"""
+  /**
+    * Generate Vavr src-gen/main/java classes
+    */
+  def generateMainClasses(): Unit = {
+
+    // Workaround: Use /$** instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
+    val javadoc = "**"
+
+    genPropertyChecks()
+
+    /**
+      * Generator of io.vavr.test.Property
+      */
+    def genPropertyChecks(): Unit = {
+
+      genVavrFile("io.vavr.test", "Property")(genProperty)
+
+      def genProperty(im: ImportManager, packageName: String, className: String): String =
+        xs"""
       /**
        * A property builder which provides a fluent API to build checkable properties.
        *
@@ -138,11 +144,12 @@ def generateMainClasses(): Unit = {
               return new CheckError("Applying predicate: " + cause.getMessage(), cause);
           }
 
-          ${(1 to N).gen(i => {
-              val generics = (1 to i).gen(j => s"T$j")(", ")
-              val parameters = (1 to i).gen(j => s"a$j")(", ")
-              val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
-              xs"""
+          ${
+          (1 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val parameters = (1 to i).gen(j => s"a$j")(", ")
+            val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+            xs"""
                   /$javadoc
                    * Returns a logical for all quantor of $i given variables.
                    *
@@ -154,13 +161,15 @@ def generateMainClasses(): Unit = {
                       return new ForAll$i<>(name, $parameters);
                   }
               """
-          })("\n\n")}
+          })("\n\n")
+        }
 
-          ${(1 to N).gen(i => {
-              val generics = (1 to i).gen(j => s"T$j")(", ")
-              val params = (name: String) => (1 to i).gen(j => s"$name$j")(", ")
-              val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
-              xs"""
+          ${
+          (1 to N).gen(i => {
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val params = (name: String) => (1 to i).gen(j => s"$name$j")(", ")
+            val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+            xs"""
                   /$javadoc
                    * Represents a logical for all quantor.
                    *
@@ -170,15 +179,21 @@ def generateMainClasses(): Unit = {
                   public static class ForAll$i<$generics> {
 
                       private final String name;
-                      ${(1 to i).gen(j => xs"""
+                      ${
+              (1 to i).gen(j =>
+                xs"""
                           private final Arbitrary<T$j> a$j;
-                      """)("\n")}
+                      """)("\n")
+            }
 
                       ForAll$i(String name, $parametersDecl) {
                           this.name = name;
-                          ${(1 to i).gen(j => xs"""
+                          ${
+              (1 to i).gen(j =>
+                xs"""
                               this.a$j = a$j;
-                          """)("\n")}
+                          """)("\n")
+            }
                       }
 
                       /$javadoc
@@ -193,22 +208,24 @@ def generateMainClasses(): Unit = {
                       }
                   }
               """
-          })("\n\n")}
+          })("\n\n")
+        }
 
-          ${(1 to N).gen(i => {
+          ${
+          (1 to N).gen(i => {
 
-              val checkedFunctionType = im.getType(s"io.vavr.CheckedFunction$i")
-              val optionType = im.getType("io.vavr.control.Option")
-              val randomType = im.getType("java.util.Random")
-              val tryType = im.getType("io.vavr.control.Try")
-              val checkException = "CheckException"
-              val tupleType = im.getType(s"io.vavr.Tuple")
+            val checkedFunctionType = im.getType(s"io.vavr.CheckedFunction$i")
+            val optionType = im.getType("io.vavr.control.Option")
+            val randomType = im.getType("java.util.Random")
+            val tryType = im.getType("io.vavr.control.Try")
+            val checkException = "CheckException"
+            val tupleType = im.getType(s"io.vavr.Tuple")
 
-              val generics = (1 to i).gen(j => s"T$j")(", ")
-              val params = (paramName: String) => (1 to i).gen(j => s"$paramName$j")(", ")
-              val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
+            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val params = (paramName: String) => (1 to i).gen(j => s"$paramName$j")(", ")
+            val parametersDecl = (1 to i).gen(j => s"Arbitrary<T$j> a$j")(", ")
 
-              xs"""
+            xs"""
                   /$javadoc
                    * Represents a $i-ary checkable property.
                    *
@@ -217,16 +234,22 @@ def generateMainClasses(): Unit = {
                   public static class Property$i<$generics> implements Checkable {
 
                       private final String name;
-                      ${(1 to i).gen(j => xs"""
+                      ${
+              (1 to i).gen(j =>
+                xs"""
                           private final Arbitrary<T$j> a$j;
-                      """)("\n")}
+                      """)("\n")
+            }
                       private final $checkedFunctionType<$generics, Condition> predicate;
 
                       Property$i(String name, $parametersDecl, $checkedFunctionType<$generics, Condition> predicate) {
                           this.name = name;
-                          ${(1 to i).gen(j => xs"""
+                          ${
+              (1 to i).gen(j =>
+                xs"""
                               this.a$j = a$j;
-                          """)("\n")}
+                          """)("\n")
+            }
                           this.predicate = predicate;
                       }
 
@@ -256,15 +279,19 @@ def generateMainClasses(): Unit = {
                           }
                           final long startTime = System.currentTimeMillis();
                           try {
-                              ${(1 to i).gen(j => {
-                                  s"""final Gen<T$j> gen$j = $tryType.of(() -> a$j.apply(size)).recover(x -> { throw arbitraryError($j, size, x); }).get();"""
-                              })("\n")}
+                              ${
+              (1 to i).gen(j => {
+                s"""final Gen<T$j> gen$j = $tryType.of(() -> a$j.apply(size)).recover(x -> { throw arbitraryError($j, size, x); }).get();"""
+              })("\n")
+            }
                               boolean exhausted = true;
                               for (int i = 1; i <= tries; i++) {
                                   try {
-                                      ${(1 to i).gen(j => {
-                                        s"""final T$j val$j = $tryType.of(() -> gen$j.apply(random)).recover(x -> { throw genError($j, size, x); }).get();"""
-                                      })("\n")}
+                                      ${
+              (1 to i).gen(j => {
+                s"""final T$j val$j = $tryType.of(() -> gen$j.apply(random)).recover(x -> { throw genError($j, size, x); }).get();"""
+              })("\n")
+            }
                                       try {
                                           final Condition condition = $tryType.of(() -> predicate.apply(${(1 to i).gen(j => s"val$j")(", ")})).recover(x -> { throw predicateError(x); }).get();
                                           if (condition.precondition) {
@@ -292,7 +319,8 @@ def generateMainClasses(): Unit = {
                       }
                   }
               """
-          })("\n\n")}
+          })("\n\n")
+        }
 
           /**
            * Internally used to model conditions composed of pre- and post-condition.
@@ -328,34 +356,34 @@ def generateMainClasses(): Unit = {
           }
       }
     """
+    }
   }
-}
-
-/**
- * Generate Vavr src-gen/test/java classes
- */
-def generateTestClasses(): Unit = {
-
-  genPropertyCheckTests()
 
   /**
-   * Generator of Property-check tests
-   */
-  def genPropertyCheckTests(): Unit = {
-    genVavrFile("io.vavr.test", "PropertyTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+    * Generate Vavr src-gen/test/java classes
+    */
+  def generateTestClasses(): Unit = {
 
-      // main classes
-      val list = im.getType("io.vavr.collection.List")
-      val predicate = im.getType("io.vavr.CheckedFunction1")
-      val random = im.getType("java.util.Random")
-      val tuple = im.getType("io.vavr.Tuple")
+    genPropertyCheckTests()
 
-      // test classes
-      val test = im.getType("org.junit.Test")
-      val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-      val woops  = "yay! (this is a negative test)"
+    /**
+      * Generator of Property-check tests
+      */
+    def genPropertyCheckTests(): Unit = {
+      genVavrFile("io.vavr.test", "PropertyTest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
-      xs"""
+        // main classes
+        val list = im.getType("io.vavr.collection.List")
+        val predicate = im.getType("io.vavr.CheckedFunction1")
+        val random = im.getType("java.util.Random")
+        val tuple = im.getType("io.vavr.Tuple")
+
+        // test classes
+        val test = im.getType("org.junit.Test")
+        val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+        val woops = "yay! (this is a negative test)"
+
+        xs"""
         public class $className {
 
             static <T> $predicate<T, Boolean> tautology() {
@@ -566,22 +594,22 @@ def generateTestClasses(): Unit = {
             }
         }
       """
-    })
+      })
 
-    for (i <- 1 to N) {
-      genVavrFile("io.vavr.test", s"PropertyCheck${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
+      for (i <- 1 to N) {
+        genVavrFile("io.vavr.test", s"PropertyCheck${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
-        val generics = (1 to i).gen(j => "Object")(", ")
-        val arbitraries = (1 to i).gen(j => "OBJECTS")(", ")
-        val arbitrariesMinus1 = (1 until i).gen(j => "OBJECTS")(", ")
-        val args = (1 to i).gen(j => s"o$j")(", ")
+          val generics = (1 to i).gen(j => "Object")(", ")
+          val arbitraries = (1 to i).gen(j => "OBJECTS")(", ")
+          val arbitrariesMinus1 = (1 until i).gen(j => "OBJECTS")(", ")
+          val args = (1 to i).gen(j => s"o$j")(", ")
 
-        // test classes
-        val test = im.getType("org.junit.Test")
-        val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-        val woops = "yay! (this is a negative test)"
+          // test classes
+          val test = im.getType("org.junit.Test")
+          val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+          val woops = "yay! (this is a negative test)"
 
-        xs"""
+          xs"""
           public class $className {
 
               static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
@@ -674,19 +702,21 @@ def generateTestClasses(): Unit = {
               }
           }
          """
-      })
+        })
+      }
     }
   }
-}
 
-/**
- * Adds the Vavr header to generated classes.
- * @param packageName Java package name
- * @param className Simple java class name
- * @param gen A generator which produces a String.
- */
-def genVavrFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
-  genJavaFile(baseDir, packageName, className)(xraw"""
+  /**
+    * Adds the Vavr header to generated classes.
+    *
+    * @param packageName Java package name
+    * @param className   Simple java class name
+    * @param gen         A generator which produces a String.
+    */
+  def genVavrFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
+    genJavaFile(baseDir, packageName, className)(
+      xraw"""
     /*  __    __  __  __    __  ___
      * \  \  /  /    \  \  /  /  __/
      *  \  \/  /  /\  \  \/  /  /
@@ -707,6 +737,7 @@ def genVavrFile(packageName: String, className: String, baseDir: String = TARGET
      * limitations under the License.
      */
   """)(gen)(CHARSET)
+}
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
      J A V A   G E N E R A T O R   F R A M E W O R K
@@ -719,12 +750,13 @@ object JavaGenerator {
   import Generator._
 
   /**
-   * Generates a Java file.
-   * @param packageName Java package name
-   * @param className Simple java class name
-   * @param classHeader A class file header
-   * @param gen A generator which produces a String.
-   */
+    * Generates a Java file.
+    *
+    * @param packageName Java package name
+    * @param className   Simple java class name
+    * @param classHeader A class file header
+    * @param gen         A generator which produces a String.
+    */
   def genJavaFile(baseDir: String, packageName: String, className: String)(classHeader: String)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List())(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
     // DEV-NOTE: using File.separator instead of "/" does *not* work on windows!
@@ -733,7 +765,8 @@ object JavaGenerator {
     val importManager = new ImportManager(packageName, knownSimpleClassNames)
     val classBody = gen.apply(importManager, packageName, className)
 
-    genFile(baseDir, dirName, fileName)(xraw"""
+    genFile(baseDir, dirName, fileName)(
+      xraw"""
       $classHeader
       package $packageName;
 
@@ -748,10 +781,11 @@ object JavaGenerator {
   }
 
   /**
-   * A <em>stateful</em> ImportManager which generates an import section of a Java class file.
-   * @param packageNameOfClass package name of the generated class
-   * @param knownSimpleClassNames a list of class names which may not be imported from other packages
-   */
+    * A <em>stateful</em> ImportManager which generates an import section of a Java class file.
+    *
+    * @param packageNameOfClass    package name of the generated class
+    * @param knownSimpleClassNames a list of class names which may not be imported from other packages
+    */
   class ImportManager(packageNameOfClass: String, knownSimpleClassNames: List[String], wildcardThreshold: Int = 5) {
 
     import scala.collection.mutable
@@ -795,8 +829,10 @@ object JavaGenerator {
     }
 
     private def getPackageName(fqn: String): String = fqn.substring(0, Math.max(fqn.lastIndexOf("."), 0))
+
     private def getSimpleName(fqn: String): String = fqn.substring(fqn.lastIndexOf(".") + 1)
   }
+
 }
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
@@ -804,23 +840,23 @@ object JavaGenerator {
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 /**
- * Core generator API
- */
+  * Core generator API
+  */
 object Generator {
 
   import java.nio.charset.{Charset, StandardCharsets}
   import java.nio.file.{Files, Paths, StandardOpenOption}
 
   /**
-   * Generates a file by writing string contents to the file system.
-   *
-   * @param baseDir The base directory, e.g. src-gen
-   * @param dirName The directory relative to baseDir, e.g. main/java
-   * @param fileName The file name within baseDir/dirName
-   * @param createOption One of java.nio.file.{StandardOpenOption.CREATE_NEW, StandardOpenOption.CREATE}, default: CREATE_NEW
-   * @param contents The string contents of the file
-   * @param charset The charset, by default UTF-8
-   */
+    * Generates a file by writing string contents to the file system.
+    *
+    * @param baseDir      The base directory, e.g. src-gen
+    * @param dirName      The directory relative to baseDir, e.g. main/java
+    * @param fileName     The file name within baseDir/dirName
+    * @param createOption One of java.nio.file.{StandardOpenOption.CREATE_NEW, StandardOpenOption.CREATE}, default: CREATE_NEW
+    * @param contents     The string contents of the file
+    * @param charset      The charset, by default UTF-8
+    */
   def genFile(baseDir: String, dirName: String, fileName: String, createOption: StandardOpenOption = StandardOpenOption.CREATE_NEW)(contents: => String)(implicit charset: Charset = StandardCharsets.UTF_8): Unit = {
 
     // println(s"Generating $dirName${File.separator}$fileName")
@@ -870,38 +906,40 @@ object Generator {
   }
 
   implicit class BooleanExtensions(condition: Boolean) {
-    def gen(s: => String): String =  if (condition) s else ""
+    def gen(s: => String): String = if (condition) s else ""
   }
 
   implicit class OptionExtensions(option: Option[Any]) {
-    def gen(f: String => String): String =  option.map(any => f.apply(any.toString)).getOrElse("")
+    def gen(f: String => String): String = option.map(any => f.apply(any.toString)).getOrElse("")
+
     def gen: String = option.map(any => any.toString).getOrElse("")
   }
 
   /**
-   * Generates a String based on ints within a specific range.
-   * {{{
-   * (1 to 3).gen(i => s"x$i")(", ") // x1, x2, x3
-   * (1 to 3).reverse.gen(i -> s"x$i")(", ") // x3, x2, x1
-   * }}}
-   * @param range A Range
-   */
+    * Generates a String based on ints within a specific range.
+    * {{{
+    * (1 to 3).gen(i => s"x$i")(", ") // x1, x2, x3
+    * (1 to 3).reverse.gen(i -> s"x$i")(", ") // x3, x2, x1
+    * }}}
+    *
+    * @param range A Range
+    */
   implicit class RangeExtensions(range: Range) {
     def gen(f: Int => String = String.valueOf)(implicit delimiter: String = ""): String =
       range map f mkString delimiter
   }
 
   /**
-   * Generates a String based on an Iterable of objects. Objects are converted to Strings via toString.
-   * {{{
-   * // val a = "A"
-   * // val b = "B"
-   * // val c = "C"
-   * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
-   * }}}
-   *
-   * @param iterable An Interable
-   */
+    * Generates a String based on an Iterable of objects. Objects are converted to Strings via toString.
+    * {{{
+    * // val a = "A"
+    * // val b = "B"
+    * // val c = "C"
+    * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
+    * }}}
+    *
+    * @param iterable An Interable
+    */
   implicit class IterableExtensions(iterable: Iterable[Any]) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
       iterable.map(x => f.apply(x.toString)) mkString delimiter
@@ -918,13 +956,14 @@ object Generator {
   }
 
   /**
-   * Generates a String based on a tuple of objects. Objects are converted to Strings via toString.
-   * {{{
-   * // val seq = Seq("a", "1", "true")
-   * s"val seq = Seq(${("a", 1, true).gen(s => s""""$s"""")(", ")})"
-   * }}}
-   * @param tuple A Tuple
-   */
+    * Generates a String based on a tuple of objects. Objects are converted to Strings via toString.
+    * {{{
+    * // val seq = Seq("a", "1", "true")
+    * s"val seq = Seq(${("a", 1, true).gen(s => s""""$s"""")(", ")})"
+    * }}}
+    *
+    * @param tuple A Tuple
+    */
   implicit class Tuple3Extensions(tuple: (Any, Any, Any)) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
       tuple.productIterator.toList.map(x => f.apply(x.toString)) mkString delimiter
@@ -1026,32 +1065,35 @@ object Generator {
   }
 
   /**
-   * Provides StringContext extensions, e.g. indentation of cascaded rich strings.
-   * @param sc Current StringContext
-   * @see <a href="https://gist.github.com/danieldietrich/5174348">this gist</a>
-   */
+    * Provides StringContext extensions, e.g. indentation of cascaded rich strings.
+    *
+    * @param sc Current StringContext
+    * @see <a href="https://gist.github.com/danieldietrich/5174348">this gist</a>
+    */
   implicit class StringContextExtensions(sc: StringContext) {
 
     import scala.util.Properties.lineSeparator
 
     /**
-     * Formats escaped strings.
-     * @param args StringContext parts
-     * @return An aligned String
-     */
+      * Formats escaped strings.
+      *
+      * @param args StringContext parts
+      * @return An aligned String
+      */
     def xs(args: Any*): String = align(sc.s, args)
 
     /**
-     * Formats raw/unescaped strings.
-     * @param args StringContext parts
-     * @return An aligned String
-     */
+      * Formats raw/unescaped strings.
+      *
+      * @param args StringContext parts
+      * @return An aligned String
+      */
     def xraw(args: Any*): String = align(sc.raw, args)
 
     /**
-     * Indenting a rich string, removing first and last newline.
-     * A rich string consists of arguments surrounded by text parts.
-     */
+      * Indenting a rich string, removing first and last newline.
+      * A rich string consists of arguments surrounded by text parts.
+      */
     private def align(interpolator: Seq[Any] => String, args: Seq[Any]): String = {
 
       // indent embedded strings, invariant: parts.length = args.length + 1
@@ -1059,7 +1101,8 @@ object Generator {
         (part, arg) <- sc.parts zip args.map(s => if (s == null) "" else s.toString)
       } yield {
         // get the leading space of last line of current part
-        val space = """([ \t]*)[^\s]*$""".r.findFirstMatchIn(part).map(_.group(1)).getOrElse("")
+        val space =
+          """([ \t]*)[^\s]*$""".r.findFirstMatchIn(part).map(_.group(1)).getOrElse("")
         // add this leading space to each line (except the first) of current arg
         arg.split("\r?\n") match {
           case lines: Array[String] if lines.nonEmpty => lines reduce (_ + lineSeparator + space + _)
@@ -1090,4 +1133,5 @@ object Generator {
       aligned.replaceAll("""[ \t]*\r?\n ([ \t]*\r?\n)+""", lineSeparator * 2)
     }
   }
+
 }

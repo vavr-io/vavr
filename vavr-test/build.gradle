@@ -1,7 +1,41 @@
+apply plugin: 'scala'
 
 description = 'Vavr Test'
+
+sourceSets {
+  main {
+    java {
+      srcDirs += 'src/generated/java'
+    }
+  }
+
+  test {
+    java{
+      srcDirs += 'src/generatedTest/java'
+    }
+  }
+
+  codegen {
+    scala {
+      srcDirs = ['generator']
+    }
+  }
+}
+
 dependencies {
   compile project(':vavr')
-    testCompile group: 'junit', name: 'junit', version:'4.12'
-    testCompile group: 'org.assertj', name: 'assertj-core', version:'3.8.0'
+  testCompile "junit:junit:$junitVersion"
+  testCompile "org.assertj:assertj-core:$assertJVersion"
+
+  codegenCompile "org.scala-lang:scala-library:$scalaVersion"
+  zinc "com.typesafe.zinc:zinc:$zincVersion"
+}
+
+task runScript(type: JavaExec) {
+  inputs.dir file("generator")
+  outputs.dirs file("src/generated"), file("src/generatedTest")
+
+  main = 'Runner'
+  args 'src/generated/java', 'src/generatedTest/java'
+  classpath = sourceSets.codegen.runtimeClasspath
 }

@@ -23,6 +23,8 @@ package io.vavr.test;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+
+
 import io.vavr.*;
 import io.vavr.control.Option;
 import io.vavr.control.Try;

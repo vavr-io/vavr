@@ -1,4 +1,10 @@
 allprojects  {
+  buildscript {
+    repositories {
+      mavenLocal()
+      mavenCentral()
+    }
+  }
   apply plugin: 'maven'
 
   group = 'io.vavr'
@@ -16,10 +22,7 @@ subprojects {
   
   repositories {
     mavenLocal()
-    
-    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
-    maven { url "http://repo.maven.apache.org/maven2" }
-    maven { url "http://nexus.usethesource.io/content/repositories/public/" }
+    mavenCentral()
   }
 
 }
