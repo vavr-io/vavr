@@ -14,6 +14,6 @@ script: .travis/run-tests.sh
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - python <(curl -s https://raw.githubusercontent.com/TouK/sputnik-ci/master/sputnik-ci.py)
-  - mvn clean deploy -DskipTests --settings .travis/maven-settings.xml
+  - ./gradlew build
   - .travis/trigger-build.sh vavr-gwt
   - .travis/trigger-build.sh vavr-jackson

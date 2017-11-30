@@ -1,4 +1,10 @@
 description = 'Vavr Benchmark'
+
+test {
+  exclude '**' // temporarily  ignore all tests for now
+//  include '**/*Benchmark.class'
+}
+
 dependencies {
   compile project(':vavr')
     compile "org.scalaz:scalaz-core_2.12:$scalazVersion"
