@@ -71,6 +71,7 @@ public class JmhRunner {
         FUNCTIONAL_JAVA("fjava"),
         PCOLLECTIONS("pcollections"),
         ECOLLECTIONS("ecollections"),
+        CAPSULE("capsule"),
         CLOJURE("clojure"),
         SCALAZ("scalaz"),
         SCALA("scala"),

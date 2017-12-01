@@ -23,6 +23,7 @@ import io.vavr.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
+import static io.vavr.JmhRunner.Includes.*;
 import static io.vavr.JmhRunner.create;
 import static io.vavr.JmhRunner.getRandomValues;
 import static scala.collection.JavaConverters.asScalaBuffer;
@@ -39,7 +40,7 @@ public class HashSetBenchmark {
     }
 
     public static void main(String... args) {
-        JmhRunner.runNormalNoAsserts(CLASSES);
+        JmhRunner.runNormalNoAsserts(CLASSES, SCALA, CAPSULE, PCOLLECTIONS, VAVR);
     }
 
     @State(Scope.Benchmark)
