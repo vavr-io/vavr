@@ -1,20 +1,20 @@
 description = 'Vavr Benchmark'
 
 test {
-  exclude '**' // temporarily  ignore all tests for now
+    exclude '**' // temporarily  ignore all tests for now
 //  include '**/*Benchmark.class'
 }
 
 dependencies {
-  compile project(':vavr')
-    compile "org.scalaz:scalaz-core_2.12:$scalazVersion"
-    compile "org.clojure:clojure:$clojureVersion"
-    compile "org.pcollections:pcollections:$pcollectionsVersion"
-    compile "org.functionaljava:functionaljava-java8:$functionaljavaVersion"
-    compile "org.eclipse.collections:eclipse-collections:$eclipseCollectionsVersion"
-    compile "io.usethesource:capsule:$capsuleVersion"
-    compile "org.openjdk.jol:jol-core:$jolVersion"
-    compile "org.jetbrains:annotations:$jetbrainsAnnotationsVersion"
+    testCompile project(':vavr')
+    testCompile "org.scalaz:scalaz-core_2.12:$scalazVersion"
+    testCompile "org.clojure:clojure:$clojureVersion"
+    testCompile "org.pcollections:pcollections:$pcollectionsVersion"
+    testCompile "org.functionaljava:functionaljava-java8:$functionaljavaVersion"
+    testCompile "org.eclipse.collections:eclipse-collections:$eclipseCollectionsVersion"
+    testCompile "io.usethesource:capsule:$capsuleVersion"
+    testCompile "org.openjdk.jol:jol-core:$jolVersion"
+    testCompile "org.jetbrains:annotations:$jetbrainsAnnotationsVersion"
     testCompile "junit:junit:$junitVersion"
     testCompile "org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion"
 }

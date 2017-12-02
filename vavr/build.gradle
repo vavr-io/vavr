@@ -4,13 +4,13 @@ description = 'Vavr'
 sourceSets {
   main {
     java {
-      srcDirs += 'src/generated/java'
+      srcDirs += 'src-gen/main/java'
     }
   }
 
   test {
-    java{
-      srcDirs += 'src/generatedTest/java'
+    java {
+      srcDirs += 'src-gen/test/java'
     }
   }
 }

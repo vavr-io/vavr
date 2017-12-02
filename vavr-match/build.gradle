@@ -1,6 +1,1 @@
-
 description = 'Vavr Match'
-dependencies {
-    testCompile "junit:junit:$junitVersion"
-    testCompile "org.assertj:assertj-core:$assertJVersion"
-}

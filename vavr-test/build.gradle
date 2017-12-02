@@ -5,13 +5,13 @@ description = 'Vavr Test'
 sourceSets {
   main {
     java {
-      srcDirs += 'src/generated/java'
+      srcDirs += 'src-gen/main/java'
     }
   }
 
   test {
     java{
-      srcDirs += 'src/generatedTest/java'
+      srcDirs += 'src-gen/test/java'
     }
   }
 
@@ -36,6 +36,6 @@ task runScript(type: JavaExec) {
   outputs.dirs file("src/generated"), file("src/generatedTest")
 
   main = 'Runner'
-  args 'src/generated/java', 'src/generatedTest/java'
+  args 'src-gen/main/java', 'src-gen/test/java'
   classpath = sourceSets.codegen.runtimeClasspath
 }
