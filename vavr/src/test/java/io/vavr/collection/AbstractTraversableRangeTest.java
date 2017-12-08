@@ -85,6 +85,113 @@ public abstract class AbstractTraversableRangeTest extends AbstractTraversableTe
     //
     // ------------------------------------------------------------------------
 
+    // -- dropUntil
+
+    @Test
+    @Override
+    public void shouldDropUntilNoneIfPredicateIsTrue() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.dropUntil(ignored -> true)).isSameAs(t);
+    }
+
+    // -- dropWhile
+
+    @Test
+    @Override
+    public void shouldDropWhileNoneIfPredicateIsFalse() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
+    }
+
+    // -- filter
+
+    @Test
+    @Override
+    public void shouldFilterExistingElements() {
+        assertThat(of(1, 2, 3).filter(i -> i == 1)).isEqualTo(of(1));
+        assertThat(of(1, 2, 3).filter(i -> i == 2)).isEqualTo(of(2));
+        assertThat(of(1, 2, 3).filter(i -> i == 3)).isEqualTo(of(3));
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.filter(ignore -> true)).isSameAs(t);
+    }
+
+    @Test
+    @Override
+    public void shouldFilterNonExistingElements() {
+        assertThat(this.<Integer> empty().filter(i -> i == 0)).isSameAs(empty());
+        assertThat(of(1, 2, 3).filter(i -> i == 0)).isSameAs(empty());
+    }
+
+    // -- flatMap
+
+    @Test
+    @Override
+    public void shouldFlatMapEmpty() {
+        assertThat(empty().flatMap(v -> of(v, 0))).isSameAs(empty());
+    }
+
+    // -- reject
+
+    @Test
+    @Override
+    public void shouldRejectExistingElements() {
+        assertThat(of(1, 2, 3).reject(i -> i == 1)).isEqualTo(of(2, 3));
+        assertThat(of(1, 2, 3).reject(i -> i == 2)).isEqualTo(of(1, 3));
+        assertThat(of(1, 2, 3).reject(i -> i == 3)).isEqualTo(of(1, 2));
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.reject(ignore -> false)).isSameAs(t);
+    }
+
+    @Test
+    @Override
+    public void shouldRejectNonExistingElements() {
+        assertThat(this.<Integer> empty().reject(i -> i == 0)).isSameAs(empty());
+        assertThat(of(1, 2, 3).reject(i -> i > 0)).isSameAs(empty());
+    }
+
+    // -- retainAll
+
+    @Test
+    @Override
+    public void shouldRetainAllElementsFromNonNil() {
+        final Traversable<Integer> src = of(1, 2, 1, 2, 2);
+        final Traversable<Integer> actual = src.retainAll(of(1, 2));
+        assertThat(actual).isSameAs(src);
+    }
+
+    @Test
+    @Override
+    public void shouldNotRetainAllNonExistingElementsFromNonNil() {
+        final Traversable<Integer> src = of(1, 2, 3);
+        final Traversable<Object> expected = empty();
+        final Traversable<Integer> actual = src.retainAll(of(4, 5));
+        assertThat(actual).isSameAs(expected);
+    }
+
+    // -- takeRight
+
+    @Test
+    @Override
+    public void shouldTakeRightNoneOnNil() {
+        assertThat(empty().takeRight(1)).isSameAs(empty());
+    }
+
+    // -- takeUntil
+
+    @Test
+    @Override
+    public void shouldTakeUntilNoneOnNil() {
+        assertThat(empty().takeUntil(x -> true)).isSameAs(empty());
+    }
+
+    // -- takeWhile
+
+    @Test
+    @Override
+    public void shouldTakeWhileAllOnFalseCondition() {
+        assertThat(of(1, 2, 3).takeWhile(x -> false)).isSameAs(empty());
+    }
+
     // -- static rangeClosed()
 
     @Test

@@ -175,4 +175,113 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
         assertThat(of(1, 2, 3).isSequential()).isFalse();
     }
 
+    // -- filter
+
+    @Test
+    @Override
+    public void shouldFilterNonExistingElements() {
+        assertThat(this.<Integer> empty().filter(i -> i == 0)).isEqualTo(empty());
+        assertThat(of(1, 2, 3).filter(i -> i == 0)).isEqualTo(empty());
+    }
+
+    // -- flatMap
+
+    @Test
+    @Override
+    public void shouldFlatMapEmpty() {
+        assertThat(empty().flatMap(v -> of(v, 0))).isEqualTo(empty());
+    }
+
+    // -- reject
+
+    @Test
+    @Override
+    public void shouldRejectNonExistingElements() {
+        assertThat(this.<Integer> empty().reject(i -> i == 0)).isEqualTo(empty());
+        assertThat(of(1, 2, 3).reject(i -> i > 0)).isEqualTo(empty());
+    }
+
+    // -- replace(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceElementOfNilUsingCurrNew() {
+        assertThat(this.<Integer> empty().replace(1, 2)).isEqualTo(empty());
+    }
+
+    // -- replaceAll(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceAllElementsOfNilUsingCurrNew() {
+        assertThat(this.<Integer> empty().replaceAll(1, 2)).isEqualTo(empty());
+    }
+
+    // -- retainAll
+
+    @Test
+    @Override
+    public void shouldNotRetainAllNonExistingElementsFromNonNil() {
+        final Traversable<Integer> src = of(1, 2, 3);
+        final Traversable<Object> expected = empty();
+        final Traversable<Integer> actual = src.retainAll(of(4, 5));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- take
+
+    @Test
+    @Override
+    public void shouldTakeNoneOnNil() {
+        assertThat(empty().take(1)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldTakeNoneIfCountIsNegative() {
+        assertThat(of(1, 2, 3).take(-1)).isEqualTo(empty());
+    }
+
+    // -- takeRight
+
+    @Test
+    @Override
+    public void shouldTakeRightNoneIfCountIsNegative() {
+        assertThat(of(1, 2, 3).takeRight(-1)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldTakeRightNoneOnNil() {
+        assertThat(empty().takeRight(1)).isEqualTo(empty());
+    }
+
+    // -- takeUntil
+
+    @Test
+    @Override
+    public void shouldTakeUntilAllOnTrueCondition() {
+        assertThat(of(1, 2, 3).takeUntil(x -> true)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldTakeUntilNoneOnNil() {
+        assertThat(empty().takeUntil(x -> true)).isEqualTo(empty());
+    }
+
+    // -- takeWhile
+
+    @Test
+    @Override
+    public void shouldTakeWhileAllOnFalseCondition() {
+        assertThat(of(1, 2, 3).takeWhile(x -> false)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldTakeWhileNoneOnNil() {
+        assertThat(empty().takeWhile(x -> true)).isEqualTo(empty());
+    }
+
 }

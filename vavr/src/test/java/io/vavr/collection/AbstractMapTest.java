@@ -43,6 +43,7 @@ import static java.util.Arrays.asList;
 import static io.vavr.API.Some;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
+import static java.util.Comparator.comparingInt;
 
 public abstract class AbstractMapTest extends AbstractTraversableTest {
 
@@ -186,6 +187,82 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
+    }
+
+    // -- distinct
+
+    @Test
+    @Override
+    public void shouldComputeDistinctOfEmptyTraversable() {
+        assertThat(empty().distinct()).isSameAs(empty());
+    }
+
+    // -- distinctBy(Comparator)
+
+    @Test
+    @Override
+    public void shouldComputeDistinctByOfEmptyTraversableUsingComparator() {
+        final Comparator<Integer> comparator = comparingInt(i -> i);
+        assertThat(this.<Integer> empty().distinctBy(comparator)).isSameAs(empty());
+    }
+
+    // -- distinctBy(Function)
+
+    @Test
+    @Override
+    public void shouldComputeDistinctByOfEmptyTraversableUsingKeyExtractor() {
+        assertThat(empty().distinctBy(Function.identity())).isSameAs(empty());
+    }
+
+    // -- drop
+
+    @Test
+    @Override
+    public void shouldDropNoneOnNil() {
+        assertThat(empty().drop(1)).isSameAs(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldDropAllIfCountExceedsSize() {
+        assertThat(of(1, 2, 3).drop(4)).isSameAs(empty());
+    }
+
+    // -- dropRight
+
+    @Test
+    @Override
+    public void shouldDropRightNoneOnNil() {
+        assertThat(empty().dropRight(1)).isSameAs(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldDropRightAllIfCountExceedsSize() {
+        assertThat(of(1, 2, 3).dropRight(4)).isSameAs(empty());
+    }
+
+    // -- dropUntil
+
+    @Test
+    @Override
+    public void shouldDropUntilAllIfPredicateIsFalse() {
+        assertThat(of(1, 2, 3).dropUntil(ignored -> false)).isSameAs(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldDropUntilNoneOnNil() {
+        assertThat(empty().dropUntil(ignored -> true)).isSameAs(empty());
+    }
+
+    // -- dropWhile
+
+    @Test
+    @Override
+    public void shouldDropWhileAllIfPredicateIsTrue() {
+        final Traversable<Integer> actual = of(1, 2, 3).dropWhile(ignored -> true);
+        assertThat(actual).isSameAs(empty());
     }
 
     @Override
@@ -1139,6 +1216,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Test
+    @Override
+    public void shouldFilterNonExistingElements() {
+        assertThat(this.<Integer> empty().filter(i -> i == 0)).isSameAs(empty());
+        assertThat(of(1, 2, 3).filter(i -> i == 0)).isSameAs(empty());
+    }
+
+    @Test
     public void shouldKeyFilterWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
         final Map<Integer, String> dst = src.filterKeys(k -> k % 2 == 0);
@@ -1168,6 +1252,13 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
         final Map<Integer, String> dst = src.rejectKeys(k -> k % 2 == 0);
         assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
+    }
+
+    @Test
+    @Override
+    public void shouldRejectNonExistingElements() {
+        assertThat(this.<Integer> empty().reject(i -> i == 0)).isSameAs(empty());
+        assertThat(of(1, 2, 3).reject(i -> i > 0)).isSameAs(empty());
     }
 
     @Test
@@ -1204,6 +1295,41 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Pattern isDigits = Pattern.compile("^\\d+$");
         final Map<Integer, String> dst = src.removeValues(v -> isDigits.matcher(v).matches());
         assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f"));
+    }
+
+    // -- retainAll
+
+    @Test
+    @Override
+    public void shouldNotRetainAllNonExistingElementsFromNonNil() {
+        final Traversable<Integer> src = of(1, 2, 3);
+        final Traversable<Object> expected = empty();
+        final Traversable<Integer> actual = src.retainAll(of(4, 5));
+        assertThat(actual).isSameAs(expected);
+    }
+
+    // -- takeRight
+
+    @Test
+    @Override
+    public void shouldTakeRightNoneOnNil() {
+        assertThat(empty().takeRight(1)).isSameAs(empty());
+    }
+
+    // -- takeUntil
+
+    @Test
+    @Override
+    public void shouldTakeUntilNoneOnNil() {
+        assertThat(empty().takeUntil(x -> true)).isSameAs(empty());
+    }
+
+    // -- takeWhile
+
+    @Test
+    @Override
+    public void shouldTakeWhileAllOnFalseCondition() {
+        assertThat(of(1, 2, 3).takeWhile(x -> false)).isSameAs(empty());
     }
 
     // -- computeIfAbsent
