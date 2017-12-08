@@ -736,7 +736,6 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * For-comprehension with ${i.numerus("Iterable")}.
                */
-              @javax.annotation.Generated("Generator.scala")
               public static class For$i<$generics> {
 
                   ${(1 to i).gen(j => xs"""private final Iterable<T$j> ts$j;""")("\n")}
@@ -976,7 +975,6 @@ def generateMainClasses(): Unit = {
            * Scala-like structural pattern matching for Java. Instances are obtained via {@link API#Match(Object)}.
            * @param <T> type of the object that is matched
            */
-          @javax.annotation.Generated("Generator.scala")
           @GwtIncompatible
           public static final class Match<T> {
 
@@ -1015,7 +1013,6 @@ def generateMainClasses(): Unit = {
               // -- CASES
 
               // javac needs fqn's here
-              @javax.annotation.Generated("Generator.scala")
               public interface Case<T, R> extends $PartialFunctionType<T, R> {
 
                   /**
@@ -1023,8 +1020,7 @@ def generateMainClasses(): Unit = {
                    */
                   long serialVersionUID = 1L;
               }
-
-              @javax.annotation.Generated("Generator.scala")
+              
               public static final class Case0<T, R> implements Case<T, R> {
 
                   private static final long serialVersionUID = 1L;
@@ -1057,7 +1053,6 @@ def generateMainClasses(): Unit = {
                   case _ => s"Function$i"
                 }
                 xs"""
-                  @javax.annotation.Generated("Generator.scala")
                   public static final class Case$i<T, $generics, R> implements Case<T, R> {
 
                       private static final long serialVersionUID = 1L;
@@ -1097,14 +1092,12 @@ def generateMainClasses(): Unit = {
                * @param <R> Type of the single or composite part this pattern decomposes
                */
               // javac needs fqn's here
-              @javax.annotation.Generated("Generator.scala")
               public interface Pattern<T, R> extends $PartialFunctionType<T, R> {
               }
 
               // These can't be @FunctionalInterfaces because of ambiguities.
               // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
-
-              @javax.annotation.Generated("Generator.scala")
+              
               public static abstract class Pattern0<T> implements Pattern<T, T> {
 
                   private static final long serialVersionUID = 1L;
@@ -1158,7 +1151,6 @@ def generateMainClasses(): Unit = {
                 val unapplyTupleType = s"Tuple$i<$unapplyGenerics>"
                 val args = (1 to i).gen(j => s"Pattern<T$j, ?> p$j")(", ")
                 xs"""
-                  @javax.annotation.Generated("Generator.scala")
                   public static abstract class Pattern$i<T, $resultGenerics> implements Pattern<T, $resultType> {
 
                       private static final long serialVersionUID = 1L;
@@ -1349,7 +1341,6 @@ def generateMainClasses(): Unit = {
          * to standard Java library and Vavr types.
          * @author Daniel Dietrich
          */
-        @javax.annotation.Generated("Generator.scala")
         public final class API {
 
             private API() {
@@ -1446,7 +1437,6 @@ def generateMainClasses(): Unit = {
            * @author Daniel Dietrich
            */
           @FunctionalInterface
-          @javax.annotation.Generated("Generator.scala")
           public interface $className$fullGenerics extends Lambda<R>$additionalExtends {
 
               /$javadoc
@@ -1743,8 +1733,7 @@ def generateMainClasses(): Unit = {
                 }
               """)}
           }
-
-          @javax.annotation.Generated("Generator.scala")
+          
           interface ${className}Module {
 
               // DEV-NOTE: we do not plan to expose this as public API
@@ -1807,7 +1796,6 @@ def generateMainClasses(): Unit = {
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
          * @author Daniel Dietrich
          */
-        @javax.annotation.Generated("Generator.scala")
         public final class $className$generics implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
 
             private static final long serialVersionUID = 1L;
@@ -2142,7 +2130,6 @@ def generateMainClasses(): Unit = {
          *
          * @author Daniel Dietrich
          */
-        @javax.annotation.Generated("Generator.scala")
         public interface Tuple {
 
             /**
@@ -2228,7 +2215,6 @@ def generateMainClasses(): Unit = {
        *
        * @author Pap Lőrinc
        */
-      @javax.annotation.Generated("Generator.scala")
       interface ArrayType<T> {
           @SuppressWarnings("unchecked")
           static <T> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
@@ -2352,7 +2338,6 @@ def generateMainClasses(): Unit = {
       val isPrimitive = arrayType != "Object"
 
       xs"""
-        @javax.annotation.Generated("Generator.scala")
         final class $className implements ArrayType<$wrapperType>, ${im.getType("java.io.Serializable")} {
             private static final long serialVersionUID = 1L;
             static final $className INSTANCE = new $className();

@@ -44,7 +44,6 @@ import java.util.function.Function;
  * @param <T8> type of the 8th element
  * @author Daniel Dietrich
  */
-@javax.annotation.Generated("Generator.scala")
 public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comparable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>, Serializable {
 
     private static final long serialVersionUID = 1L;
