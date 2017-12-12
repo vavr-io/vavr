@@ -126,7 +126,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return A {@code Valid(t.get())} if t is a Success, otherwise {@code Invalid(t.getCause())}.
      * @throws NullPointerException if {@code t} is null
      */
-    static <T> Validation<Throwable, T> fromTry(Try<T> t) {
+    static <T> Validation<Throwable, T> fromTry(Try<? extends T> t) {
         Objects.requireNonNull(t, "t is null");
         return t.isSuccess() ? valid(t.get()) : invalid(t.getCause());
     }

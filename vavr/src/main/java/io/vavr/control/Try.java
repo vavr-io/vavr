@@ -973,20 +973,16 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Converts this {@code Try} to an {@link Validation}.
+     * Converts this {@code Try} to a {@link Validation}.
      *
      * @return A new {@code Validation}
      */
     default Validation<Throwable, T> toValidation() {
-        if (isFailure()) {
-            return Validation.invalid(getCause());
-        } else {
-            return Validation.valid(get());
-        }
+        return toValidation(Function.identity());
     }
 
     /**
-     * Converts this {@code Try} to an {@link Validation}, converting the Throwable (if present)
+     * Converts this {@code Try} to a {@link Validation}, converting the Throwable (if present)
      * to another object using passed {@link Function}.
      *
      * <pre>
@@ -999,9 +995,13 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return A new {@code Validation}
      * @throws NullPointerException if the given {@code throwableMapper} is null.
      */
-    default <U> Validation<U, T> toValidation(Function<Throwable, ? extends U> throwableMapper) {
+    default <U> Validation<U, T> toValidation(Function<? super Throwable, ? extends U> throwableMapper) {
         Objects.requireNonNull(throwableMapper, "throwableMapper is null");
-        return toValidation().mapError(throwableMapper);
+        if (isFailure()) {
+            return Validation.invalid(throwableMapper.apply(getCause()));
+        } else {
+            return Validation.valid(get());
+        }
     }
 
     /**
