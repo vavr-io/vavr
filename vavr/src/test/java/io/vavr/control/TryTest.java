@@ -1333,7 +1333,7 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertSuccessToValidValidation2() {
+    public void shouldConvertSuccessToValidValidationUsingConversionWithMapper() {
         assertThat(success().toValidation(e -> e.getMessage()).isValid()).isTrue();
     }
 
