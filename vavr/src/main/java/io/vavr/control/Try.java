@@ -973,6 +973,38 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Converts this {@code Try} to an {@link Validation}.
+     *
+     * @return A new {@code Validation}
+     */
+    default Validation<Throwable, T> toValidation() {
+        if (isFailure()) {
+            return Validation.invalid(getCause());
+        } else {
+            return Validation.valid(get());
+        }
+    }
+
+    /**
+     * Converts this {@code Try} to an {@link Validation}, converting the Throwable (if present)
+     * to another object using passed {@link Function}.
+     *
+     * <pre>
+     * <code>
+     * Validation<Failure, Integer> = Try.of(() -> 1/0).toValidation(t -> Failure.from(throwable.getMessage()));
+     * </code>
+     * </pre>
+     *
+     * @param throwableMapper  A transformation from throwable to desired invalid type of new {@code Validation}
+     * @return A new {@code Validation}
+     * @throws NullPointerException if the given {@code throwableMapper} is null.
+     */
+    default <U> Validation<U, T> toValidation(Function<Throwable, ? extends U> throwableMapper) {
+        Objects.requireNonNull(throwableMapper, "throwableMapper is null");
+        return toValidation().mapError(throwableMapper);
+    }
+
+    /**
      * Transforms this {@code Try}.
      *
      * @param f   A transformation
