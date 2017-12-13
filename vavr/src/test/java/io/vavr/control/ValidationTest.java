@@ -93,6 +93,24 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(validation.getError()).isEqualTo("vavr");
     }
 
+    // -- Validation.fromTry
+
+    @Test
+    public void shouldCreateFromSuccessTry() {
+        Validation<Throwable, Integer> validation = Validation.fromTry(Try.success(42));
+        assertThat(validation.isValid()).isTrue();
+        assertThat(validation.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldCreateFromFailureTry() {
+        Throwable throwable = new Throwable("vavr");
+        Validation<Throwable, Integer> validation = Validation.fromTry(Try.failure(throwable));
+        assertThat(validation.isValid()).isFalse();
+        assertThat(validation.getError()).isEqualTo(throwable);
+    }
+
+
     // -- Validation.narrow
 
     @Test
