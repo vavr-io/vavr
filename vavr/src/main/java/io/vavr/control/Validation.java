@@ -119,6 +119,20 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
+     * Creates a {@code Validation} of an {@code Either}.
+     *
+     * @param t      A {@code Try}
+     * @param <T>    type of the valid value
+     * @return A {@code Valid(t.get())} if t is a Success, otherwise {@code Invalid(t.getCause())}.
+     * @throws NullPointerException if {@code t} is null
+     */
+    static <T> Validation<Throwable, T> fromTry(Try<? extends T> t) {
+        Objects.requireNonNull(t, "t is null");
+        return t.isSuccess() ? valid(t.get()) : invalid(t.getCause());
+    }
+
+
+    /**
      * Reduces many {@code Validation} instances into a single {@code Validation} by transforming an
      * {@code Iterable<Validation<? extends T>>} into a {@code Validation<Seq<T>>}.
      *

@@ -978,6 +978,25 @@ public class TryTest extends AbstractValueTest {
         assertThat(failure().toEither(() -> "test").isLeft()).isTrue();
     }
 
+
+    // -- toValidation
+
+    @Test
+    public void shouldConvertFailureToValidation() {
+        Try<Object> failure = failure();
+        final Validation<Throwable, Object> invalid = failure.toValidation();
+        assertThat(invalid.getError()).isEqualTo(failure.getCause());
+        assertThat(invalid.isInvalid()).isTrue();
+    }
+
+    @Test
+    public void shouldConvertFailureToInvalidValidation() {
+        Try<Object> failure = failure();
+        final Validation<String, Object> validation = failure.toValidation(e -> e.toString());
+        assertThat(validation.getError()).isEqualTo(failure.getCause().toString());
+        assertThat(validation.isInvalid()).isTrue();
+    }
+
     // -- toCompletableFuture
 
     @Test
@@ -1322,6 +1341,16 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldConvertSuccessToEither() {
         assertThat(success().toEither().isRight()).isTrue();
+    }
+
+    @Test
+    public void shouldConvertSuccessToValidValidation() {
+        assertThat(success().toValidation().isValid()).isTrue();
+    }
+
+    @Test
+    public void shouldConvertSuccessToValidValidationUsingConversionWithMapper() {
+        assertThat(success().toValidation(e -> e.getMessage()).isValid()).isTrue();
     }
 
     @Test
