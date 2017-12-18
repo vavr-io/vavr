@@ -21,7 +21,6 @@ package io.vavr.collection;
 
 import io.vavr.Function1;
 import io.vavr.JmhRunner;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -98,7 +97,6 @@ public class MapBenchmark {
             vavrLinkedHash = doCreateMap(LinkedHashMap::ofAll, sampleTreeMap);
         }
 
-        @NotNull
         private TreeMap<Integer, Integer> index(Integer[] array) {
             java.util.Map<Integer, Integer> javaMap = new java.util.HashMap<>();
             for (int i = 0; i < array.length; i++) {
