@@ -60,7 +60,15 @@ interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
     @Override
     Iterator<Tuple2<K, V>> iterator();
 
+    /**
+     * Provide unboxed access to the keys in the trie.
+     */
     Iterator<K> keysIterator();
+
+    /**
+     * Provide unboxed access to the values in the trie.
+     */
+    Iterator<V> valuesIterator();
 }
 
 interface HashArrayMappedTrieModule {
@@ -215,6 +223,11 @@ interface HashArrayMappedTrieModule {
         @Override
         public Iterator<K> keysIterator() {
             return nodes().map(LeafNode::key);
+        }
+
+        @Override
+        public Iterator<V> valuesIterator() {
+            return nodes().map(LeafNode::value);
         }
 
         @Override
