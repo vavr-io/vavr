@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static io.vavr.API.*;
+import static io.vavr.OutputTester.*;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingInt;
@@ -1382,9 +1383,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCalculateMinOfFloatsContainingNaN() {
-
-        System.out.println(TreeSet.of(1.0f, Float.NaN, 2.0f));
-
         assertThat(of(1.0f, Float.NaN, 2.0f).min().get()).isEqualTo(Float.NaN);
     }
 
@@ -2043,50 +2041,30 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     // -- stderr
 
-    private final static Object STD_ERR_LOCK = new Object();
-
     @Test
     public void shouldWriteToStderr() {
-        synchronized (STD_ERR_LOCK) {
-            of(1, 2, 3).stderr();
-        }
+        assertThat(captureErrOut(()->of(1, 2, 3).stderr())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStderrIOException() {
-        synchronized (STD_ERR_LOCK) {
-            final PrintStream originalErr = System.err;
-            try (PrintStream failingPrintStream = failingPrintStream()) {
-                System.setErr(failingPrintStream);
-                of(0).stderr();
-            } finally {
-                System.setErr(originalErr);
-            }
-        }
+        withFailingErrOut(()->of(0).stderr());
     }
 
     // -- stdout
 
-    private final static Object STD_OUT_LOCK = new Object();
-
     @Test
     public void shouldWriteToStdout() {
-        synchronized (STD_OUT_LOCK) {
-            of(1, 2, 3).stdout();
-        }
+        assertThat(captureStdOut(()->of(1, 2, 3).stdout())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStdoutIOException() {
-        synchronized (STD_OUT_LOCK) {
-            final PrintStream originalOut = System.out;
-            try (PrintStream failingPrintStream = failingPrintStream()) {
-                System.setOut(failingPrintStream);
-                of(0).stdout();
-            } finally {
-                System.setOut(originalOut);
-            }
-        }
+        withFailingStdOut(()->of(0).stdout());
     }
 
     // -- PrintStream
@@ -2851,24 +2829,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     // helpers
-
-    private static PrintStream failingPrintStream() {
-        return new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                throw new IOException();
-            }
-        });
-    }
-
-    private static PrintWriter failingPrintWriter() {
-        return new PrintWriter(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                throw new IOException();
-            }
-        });
-    }
 
     /**
      * Wraps a String in order to ensure that it is not Comparable.

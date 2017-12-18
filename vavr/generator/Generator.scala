@@ -2610,6 +2610,7 @@ def generateTestClasses(): Unit = {
       def genShortcutsTests(im: ImportManager, packageName: String, className: String): String = {
 
         val fail = im.getStatic("org.junit.Assert.fail")
+        val captureStdOut = im.getStatic("io.vavr.OutputTester.captureStdOut")
 
         xs"""
           @$test
@@ -2635,22 +2636,22 @@ def generateTestClasses(): Unit = {
 
           @$test
           public void shouldCallprint_Object() {
-              print("ok");
+              assertThat($captureStdOut(()->print("ok"))).isEqualTo("ok");
           }
 
           @$test
           public void shouldCallprintf() {
-              printf("%s", "ok");
+              assertThat($captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
           }
 
           @$test
           public void shouldCallprintln_Object() {
-              println("ok");
+              assertThat($captureStdOut(()->println("ok"))).isEqualTo("ok\\n");
           }
 
           @$test
           public void shouldCallprintln() {
-              println();
+              assertThat($captureStdOut(()->println())).isEqualTo("\\n");
           }
         """
       }
