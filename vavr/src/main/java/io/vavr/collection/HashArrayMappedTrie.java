@@ -257,32 +257,6 @@ interface HashArrayMappedTrieModule {
             return modify(0, HashCodes.hash(key), key, null, REMOVE);
         }
 
-        @SuppressWarnings("unchecked")
-        @Override
-        public final boolean equals(Object o) {
-            if (o == this) {
-                return true;
-            } else if (o instanceof HashArrayMappedTrie) {
-                final HashArrayMappedTrie<Object, ?> that = (HashArrayMappedTrie<Object, ?>) o;
-                if (this.size() == that.size()) {
-                    for (Tuple2<K, V> thisEntry : this) {
-                        Option<?> thatValue = that.get(thisEntry._1);
-                        if (!thatValue.isDefined() || !thatValue.get().equals(thisEntry._2)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public abstract int hashCode();
-
         @Override
         public final String toString() {
             return iterator().map(t -> t._1 + " -> " + t._2).mkString("HashArrayMappedTrie(", ", ", ")");
@@ -337,11 +311,6 @@ interface HashArrayMappedTrieModule {
         @Override
         public Iterator<LeafNode<K, V>> nodes() {
             return Iterator.empty();
-        }
-
-        @Override
-        public int hashCode() {
-            return 1;
         }
 
         /**
@@ -444,11 +413,6 @@ interface HashArrayMappedTrieModule {
         @Override
         public Iterator<LeafNode<K, V>> nodes() {
             return Iterator.of(this);
-        }
-
-        @Override
-        public int hashCode() {
-            return HashCodes.hash(hash, value);
         }
 
         @Override
@@ -597,17 +561,6 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
-        public int hashCode() {
-            Iterator<LeafNode<K, V>> it = nodes();
-            int hashCode = 0;
-            while (it.hasNext()) {
-                final LeafNode<K, V> node = it.next();
-                hashCode += HashCodes.hash(node.key(), node.value());
-            }
-            return hashCode;
-        }
-
-        @Override
         int hash() {
             return hash;
         }
@@ -736,11 +689,6 @@ interface HashArrayMappedTrieModule {
         public int size() {
             return size;
         }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(subNodes);
-        }
     }
 
     /**
@@ -823,11 +771,6 @@ interface HashArrayMappedTrieModule {
         @Override
         public int size() {
             return size;
-        }
-
-        @Override
-        public int hashCode() {
-            return Arrays.hashCode(subNodes);
         }
     }
 }
