@@ -2029,10 +2029,9 @@ def generateMainClasses(): Unit = {
                 }
             }
 
-            ${(i == 1).gen("// if _1 == null, hashCode() returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)")}
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else s"""${im.getType("java.util.Objects")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else s"""${im.getType("io.vavr.control.HashCodes")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override
@@ -3425,7 +3424,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldComputeCorrectHashCode() {
                   final int actual = createTuple().hashCode();
-                  final int expected = ${im.getType("java.util.Objects")}.hash(${if (i == 1) "new Object[] { null }" else nullArgs});
+                  final int expected = ${im.getType("java.util.Objects")}.${if (i == 1) "hashCode" else "hash"}($nullArgs);
                   $assertThat(actual).isEqualTo(expected);
               }
 

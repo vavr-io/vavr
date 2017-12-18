@@ -22,9 +22,11 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashArrayMappedTrieModule.EmptyNode;
+import io.vavr.control.HashCodes;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static java.lang.Integer.bitCount;
@@ -232,12 +234,12 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Option<V> get(K key) {
-            return lookup(0, Objects.hashCode(key), key);
+            return lookup(0, HashCodes.hash(key), key);
         }
 
         @Override
         public V getOrElse(K key, V defaultValue) {
-            return lookup(0, Objects.hashCode(key), key, defaultValue);
+            return lookup(0, HashCodes.hash(key), key, defaultValue);
         }
 
         @Override
@@ -247,12 +249,12 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public HashArrayMappedTrie<K, V> put(K key, V value) {
-            return modify(0, Objects.hashCode(key), key, value, PUT);
+            return modify(0, HashCodes.hash(key), key, value, PUT);
         }
 
         @Override
         public HashArrayMappedTrie<K, V> remove(K key) {
-            return modify(0, Objects.hashCode(key), key, null, REMOVE);
+            return modify(0, HashCodes.hash(key), key, null, REMOVE);
         }
 
         @SuppressWarnings("unchecked")
@@ -446,7 +448,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public int hashCode() {
-            return Objects.hash(hash, value);
+            return HashCodes.hash(hash, value);
         }
 
         @Override
@@ -600,7 +602,7 @@ interface HashArrayMappedTrieModule {
             int hashCode = 0;
             while (it.hasNext()) {
                 final LeafNode<K, V> node = it.next();
-                hashCode += Objects.hash(node.key(), node.value());
+                hashCode += HashCodes.hash(node.key(), node.value());
             }
             return hashCode;
         }
@@ -737,7 +739,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public int hashCode() {
-            return Objects.hash(subNodes);
+            return Arrays.hashCode(subNodes);
         }
     }
 
@@ -825,7 +827,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public int hashCode() {
-            return Objects.hash(subNodes);
+            return Arrays.hashCode(subNodes);
         }
     }
 }
