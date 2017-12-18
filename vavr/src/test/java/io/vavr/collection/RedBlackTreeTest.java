@@ -143,7 +143,7 @@ public class RedBlackTreeTest {
     public void shouldInsertNullIntoEmptyTreeBecauseComparatorNotCalled() {
         final RedBlackTree<Integer> actual = RedBlackTreeTest.<Integer> empty().insert(null);
         final RedBlackTree<Integer> expected = of((Integer) null);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test(expected = NullPointerException.class)
@@ -155,14 +155,14 @@ public class RedBlackTreeTest {
     public void shouldInsertNonNullIntoEmptyTree() {
         final RedBlackTree<Integer> actual = RedBlackTreeTest.<Integer> empty().insert(2);
         final RedBlackTree<Integer> expected = of(2);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test
     public void shouldReturnTheSameInstanceWhenInsertingAnAlreadyContainedElement() {
         final RedBlackTree<Integer> testee = of(1, 2, 3);
         final RedBlackTree<Integer> actual = testee.insert(2);
-        assertThat(actual).isEqualTo(testee);
+        assertThat(Collections.areEqual(actual, testee)).isTrue();
     }
 
     // delete
@@ -199,7 +199,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = of(5, 7);
         final RedBlackTree<Integer> actual = t1.difference(t2);
         final RedBlackTree<Integer> expected = of(3);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     // intersection()
@@ -210,7 +210,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = empty();
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = empty();
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test
@@ -219,7 +219,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = of(5, 7);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = empty();
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test
@@ -228,7 +228,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = of(5, 7);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = of(5);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test
@@ -243,7 +243,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = of(1, 2, 3, 10, 11, 12, 13, 14, 60, 76, 77);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = of(1, 2, 3, 60);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test
@@ -258,7 +258,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = of(2, 7, 8, 9, 50, 61, 62, 63, 64, 65);
         final RedBlackTree<Integer> actual = t1.intersection(t2);
         final RedBlackTree<Integer> expected = of(2, 61, 62, 63, 64, 65);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test
@@ -267,7 +267,7 @@ public class RedBlackTreeTest {
         //
         final RedBlackTree<Integer> t1 = of(-10, -20, -30, -40, -50, 1, 10, 20, 30);
         final RedBlackTree<Integer> t2 = of(-10, -20, -30, -40, -50, 2, 10, 20, 30);
-        assertThat(t1.intersection(t2)).isEqualTo(t1.delete(1));
+        assertThat(Collections.areEqual(t1.intersection(t2), t1.delete(1))).isTrue();
     }
 
     /*
@@ -313,7 +313,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> tree3 = of(1, 2);
         final RedBlackTree<Integer> actual = tree1.intersection(tree2).intersection(tree3);
         final RedBlackTree<Integer> expected = tree1.intersection(tree2.intersection(tree3));
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     /*
@@ -339,7 +339,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = empty();
         final RedBlackTree<Integer> actual = t1.union(t2);
         final RedBlackTree<Integer> expected = of(3, 5);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test
@@ -348,7 +348,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = of(5, 7);
         final RedBlackTree<Integer> actual = t1.union(t2);
         final RedBlackTree<Integer> expected = of(5, 7);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test
@@ -357,7 +357,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = of(5, 7);
         final RedBlackTree<Integer> actual = t1.union(t2);
         final RedBlackTree<Integer> expected = of(3, 5, 7);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     @Test
@@ -366,7 +366,7 @@ public class RedBlackTreeTest {
         final RedBlackTree<Integer> t2 = of(-2, -1, 0, 1);
         final RedBlackTree<Integer> actual = t1.union(t2);
         final RedBlackTree<Integer> expected = of(-2, -1, 0, 1);
-        assertThat(actual).isEqualTo(expected);
+        assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
     // iterator()
