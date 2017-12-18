@@ -2,6 +2,10 @@ package io.vavr.control;
 
 import java.util.Objects;
 
+/**
+ * Utility that allows to compute hashcodes without var-arg conversion into arrays for common
+ * types of vavr.
+ */
 public interface HashCodes {
 
     static int hash(int value) {

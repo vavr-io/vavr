@@ -67,7 +67,6 @@ public class MemoryUsage {
             Tuple.of("^java\\.", "Java mutable @ "),
             Tuple.of("^fj\\.", "Functional Java persistent @ "),
             Tuple.of("^org\\.pcollections", "PCollections persistent @ "),
-            Tuple.of("^io\\.usethesource", "Steindorfer persistent @ "),
             Tuple.of("^org\\.eclipse\\.collections", "Eclipse Collections persistent @ "),
             Tuple.of("^clojure\\.", "Clojure persistent @ "),
             Tuple.of("^scalaz\\.Heap", "Scalaz persistent @ "),
