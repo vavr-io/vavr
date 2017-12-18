@@ -273,7 +273,7 @@ public class LazyTest extends AbstractValueTest {
 
     @Test
     @SuppressWarnings({ "StatementWithEmptyBody", "rawtypes" })
-    public void shouldBeConsistentFromMultipleThreads() {
+    public void shouldBeConsistentFromMultipleThreads() throws Exception {
         for (int i = 0; i < 100; i++) {
             final AtomicBoolean canProceed = new AtomicBoolean(false);
             final Vector<CompletableFuture<Void>> futures = Vector.range(0, 10).map(j -> {
