@@ -22,6 +22,7 @@ package io.vavr;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
+import io.vavr.control.HashCodes;
 import io.vavr.control.Option;
 
 import java.io.IOException;
@@ -248,7 +249,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(get());
+        return HashCodes.hash(get());
     }
 
     @Override

@@ -689,6 +689,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public Iterator<K> keysIterator() {
+        return trie.keysIterator();
+    }
+
+    @Override
     public Tuple2<K, V> last() {
         return Collections.last(this);
     }
@@ -921,8 +926,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Seq<V> values() {
-        return map(Tuple2::_2);
+    public Stream<V> values() {
+        return trie.valuesIterator().toStream();
+    }
+
+    @Override
+    public Iterator<V> valuesIterator() {
+        return trie.valuesIterator();
     }
 
     @Override

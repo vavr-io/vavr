@@ -26,6 +26,7 @@ package io.vavr;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.control.HashCodes;
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.Comparator;
@@ -261,7 +262,7 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
 
     @Override
     public int hashCode() {
-        return Objects.hash(_1, _2);
+        return HashCodes.hash(_1, _2);
     }
 
     @Override
