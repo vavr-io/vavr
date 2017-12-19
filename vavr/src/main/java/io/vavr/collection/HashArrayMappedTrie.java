@@ -22,9 +22,11 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashArrayMappedTrieModule.EmptyNode;
+import io.vavr.control.HashCodes;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static java.lang.Integer.bitCount;
@@ -60,7 +62,15 @@ interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
     @Override
     Iterator<Tuple2<K, V>> iterator();
 
+    /**
+     * Provide unboxed access to the keys in the trie.
+     */
     Iterator<K> keysIterator();
+
+    /**
+     * Provide unboxed access to the values in the trie.
+     */
+    Iterator<V> valuesIterator();
 }
 
 interface HashArrayMappedTrieModule {
@@ -218,13 +228,18 @@ interface HashArrayMappedTrieModule {
         }
 
         @Override
+        public Iterator<V> valuesIterator() {
+            return nodes().map(LeafNode::value);
+        }
+
+        @Override
         public Option<V> get(K key) {
-            return lookup(0, Objects.hashCode(key), key);
+            return lookup(0, HashCodes.hash(key), key);
         }
 
         @Override
         public V getOrElse(K key, V defaultValue) {
-            return lookup(0, Objects.hashCode(key), key, defaultValue);
+            return lookup(0, HashCodes.hash(key), key, defaultValue);
         }
 
         @Override
@@ -234,12 +249,12 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public HashArrayMappedTrie<K, V> put(K key, V value) {
-            return modify(0, Objects.hashCode(key), key, value, PUT);
+            return modify(0, HashCodes.hash(key), key, value, PUT);
         }
 
         @Override
         public HashArrayMappedTrie<K, V> remove(K key) {
-            return modify(0, Objects.hashCode(key), key, null, REMOVE);
+            return modify(0, HashCodes.hash(key), key, null, REMOVE);
         }
 
         @Override

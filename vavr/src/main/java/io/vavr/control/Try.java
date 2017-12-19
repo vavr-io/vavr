@@ -1108,7 +1108,7 @@ public interface Try<T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(value);
+            return HashCodes.hash(value);
         }
 
         @Override

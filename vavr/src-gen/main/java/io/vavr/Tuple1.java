@@ -26,6 +26,7 @@ package io.vavr;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.control.HashCodes;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -155,10 +156,9 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
         }
     }
 
-    // if _1 == null, hashCode() returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)
     @Override
     public int hashCode() {
-        return Objects.hash(_1);
+        return HashCodes.hash(_1);
     }
 
     @Override

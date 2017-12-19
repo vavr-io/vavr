@@ -23,7 +23,6 @@ import io.vavr.JmhRunner;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
-import static io.vavr.JmhRunner.Includes.*;
 import static io.vavr.JmhRunner.create;
 import static io.vavr.JmhRunner.getRandomValues;
 import static scala.collection.JavaConverters.asScalaBuffer;
@@ -31,7 +30,8 @@ import static scala.collection.JavaConverters.asScalaBuffer;
 public class HashSetBenchmark {
     static final Array<Class<?>> CLASSES = Array.of(
             Add.class,
-            Iterate.class
+            Iterate.class,
+            Remove.class
     );
 
     @Test
@@ -40,12 +40,12 @@ public class HashSetBenchmark {
     }
 
     public static void main(String... args) {
-        JmhRunner.runNormalNoAsserts(CLASSES, SCALA, CAPSULE, PCOLLECTIONS, VAVR);
+        JmhRunner.runNormalNoAsserts(CLASSES);
     }
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "100", "1000" })
+        @Param({ "10", "100", "1000", "2500" })
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;
@@ -110,6 +110,38 @@ public class HashSetBenchmark {
                 values = values.add(element);
             }
             assert SET.forAll(values::contains);
+            return values;
+        }
+    }
+
+    public static class Remove extends Base {
+        @Benchmark
+        public Object pcollections_persistent() {
+            org.pcollections.PSet<Integer> values = pcollectionsPersistent;
+            for (Integer element : ELEMENTS) {
+                values = values.minus(element);
+            }
+            assert values.isEmpty();
+            return values;
+        }
+
+        @Benchmark
+        public Object capsule_persistent() {
+            io.usethesource.capsule.Set.Immutable<Integer> values = capsulePersistent;
+            for (Integer element : ELEMENTS) {
+                values = values.__remove(element);
+            }
+            assert values.isEmpty();
+            return values;
+        }
+
+        @Benchmark
+        public Object vavr_persistent() {
+            io.vavr.collection.Set<Integer> values = vavrPersistent;
+            for (Integer element : ELEMENTS) {
+                values = values.remove(element);
+            }
+            assert values.isEmpty();
             return values;
         }
     }
