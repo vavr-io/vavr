@@ -289,7 +289,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) iterator().flatMap(mapper).toStream();
+        return iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -364,9 +364,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     io.vavr.collection.Set<K> keySet();
 
     /**
-     * Returns the keys contained in this map as an iterable.
+     * Returns the keys contained in this map as an iterator.
      *
-     * @return {@code Set} of the keys contained in this map.
+     * @return {@code Iterator} of the keys contained in this map.
      */
     default Iterator<K> keysIterator() {
         return iterator().map(Tuple2::_1);
@@ -653,7 +653,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * HashMap.of(1, "a", 2, "b", 3, "c").values()
      * }</pre>
      *
-     * @return a new {@link Seq}
+     * @return a new {@link Iterator}
      */
     default Iterator<V> valuesIterator() {
         return iterator().map(Tuple2::_2);
