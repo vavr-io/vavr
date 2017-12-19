@@ -30,9 +30,6 @@ import org.openjdk.jmh.annotations.State;
 
 import java.util.Objects;
 
-/**
- * Benchmark hashcode utilities
- */
 public class ObjectsBenchmark {
     static final Array<Class<?>> CLASSES = API.Array(
             HashCode.class

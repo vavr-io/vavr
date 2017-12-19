@@ -29,6 +29,8 @@ import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Small utility that allows to test code which write to standard error or standard out.
+ *
+ * @author Sebastian Zarnekow
  */
 public class OutputTester {
 
@@ -64,8 +66,14 @@ public class OutputTester {
             }
         };
 
+        /**
+         * Modifier for the output slot.
+         */
         abstract void set(PrintStream stream);
 
+        /**
+         * Accessor for the output slot.
+         */
         abstract PrintStream get();
 
         /**
@@ -107,37 +115,73 @@ public class OutputTester {
 
     }
 
+    private static OutputStream failingOutputStream() {
+        return new OutputStream() {
+            @Override
+            public void write(int b) throws IOException {
+                throw new IOException();
+            }
+        };
+    }
+
+    /**
+     * Obtain a stream that fails on every attempt to write a byte.
+     *
+     * @return a new stram that will fail immediately.
+     */
     public static PrintStream failingPrintStream() {
-        return new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                throw new IOException();
-            }
-        });
+        return new PrintStream(failingOutputStream());
     }
 
+    /**
+     * Obtain a writer that fails on every attempt to write a byte.
+     *
+     * @return a new stram that will fail immediately.
+     */
     public static PrintWriter failingPrintWriter() {
-        return new PrintWriter(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                throw new IOException();
-            }
-        });
+        return new PrintWriter(failingOutputStream());
     }
 
+    /**
+     * Execute the given runnable in a context, where each attempt to
+     * write to stderr will fail with an {@link IOException}
+     *
+     * @param runnable the runnable to be executed.
+     */
     public static void withFailingErrOut(Runnable runnable) {
         Output.ERR.failOnWrite(runnable);
     }
+
+    /**
+     * Execute the given runnable in a context, where each attempt to
+     * write to stdout will fail with an {@link IOException}
+     *
+     * @param runnable the runnable to be executed.
+     */
 
     public static void withFailingStdOut(Runnable runnable) {
         Output.OUT.failOnWrite(runnable);
     }
 
-    public static String captureStdOut(Runnable action) {
-        return Output.OUT.capture(action);
+    /**
+     * Execute the given runnable and capture everything that written
+     * to stdout. The written text is normalized to unix line feeds before its returned.
+     *
+     * @param runnable the runnable to be executed.
+     * @return the content written to stdout, normalized to unix line endings.
+     */
+    public static String captureStdOut(Runnable runnable) {
+        return Output.OUT.capture(runnable);
     }
 
-    public static String captureErrOut(Runnable action) {
-        return Output.ERR.capture(action);
+    /**
+     * Execute the given runnable and capture everything that written
+     * to stderr. The written text is normalized to unix line feeds before its returned.
+     *
+     * @param runnable the runnable to be executed.
+     * @return the content written to stderr, normalized to unix line endings.
+     */
+    public static String captureErrOut(Runnable runnable) {
+        return Output.ERR.capture(runnable);
     }
 }
