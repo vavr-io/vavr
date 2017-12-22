@@ -979,6 +979,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @param supplier A Supplier of iterator values
      * @param <T> value type
+     * @param <A> supplier option type
      * @return A new {@code Iterator}
      * @throws NullPointerException if supplier produces null value
      */
