@@ -235,6 +235,23 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
+     * Generates a (theoretically) infinitely long Stream using a repeatedly invoked supplier
+     * that provides a {@code Some} for each next value and a {@code None} for the end.
+     * The {@code Supplier} will be invoked only that many times until it returns {@code None},
+     * and repeated iteration over the stream will produce the same values in the same order,
+     * without any further invocations to the {@code Supplier}.
+     *
+     * @param supplier A Supplier of iterator values
+     * @param <T> value type
+     * @param <A> supplier option type
+     * @return A new Stream
+     */
+    static <T, A extends T> Stream<T> iterate(Supplier<Option<A>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return Stream.ofAll(Iterator.iterate(supplier));
+    }
+
+    /**
      * Constructs a Stream of a head element and a tail supplier.
      *
      * @param head         The head element of the Stream

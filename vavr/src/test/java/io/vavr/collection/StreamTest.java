@@ -353,6 +353,13 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
     }
 
+    // -- static iterate(Supplier<Option>)
+
+    @Test
+    public void shouldGenerateInfiniteStreamBasedOnOptionSupplier() {
+        assertThat(Stream.iterate(() -> Option.of(1)).take(5).reduce((i, j) -> i + j)).isEqualTo(5);
+    }
+
     // -- static continually (T)
 
     @Test

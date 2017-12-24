@@ -974,6 +974,38 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
+     * Creates an iterator that repeatedly invokes the supplier
+     * while it's a {@code Some} and end on the first {@code None}
+     *
+     * @param supplier A Supplier of iterator values
+     * @param <T> value type
+     * @param <A> supplier option type
+     * @return A new {@code Iterator}
+     * @throws NullPointerException if supplier produces null value
+     */
+    static <T, A extends T> Iterator<T> iterate(Supplier<Option<A>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return new AbstractIterator<T>() {
+            Option<A> nextOption;
+
+            @Override
+            public boolean hasNext() {
+                if (nextOption == null) {
+                    nextOption = supplier.get();
+                }
+                return nextOption.isDefined();
+            }
+
+            @Override
+            public T getNext() {
+                T next =  nextOption.get();
+                nextOption = null;
+                return next;
+            }
+        };
+    }
+
+    /**
      * Generates an infinite iterator using a function to calculate the next value
      * based on the previous.
      *
