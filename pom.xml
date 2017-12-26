@@ -248,11 +248,11 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
-                        <showDeprecation>false</showDeprecation>
+                        <showDeprecation>true</showDeprecation>
                         <showWarnings>true</showWarnings>
                         <compilerArgs>
                             <arg>-Werror</arg>
-                            <arg>-Xlint:all,-deprecation</arg>
+                            <arg>-Xlint:all</arg>
                             <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
                             <arg>-Xlint:-processing</arg>
                             <!-- Enable Java 9 compilation with 1.8 compatibility -->

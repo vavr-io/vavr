@@ -147,7 +147,7 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertToLeftEither() {
-        Either<Seq<? extends String>, ?> either = Validation.invalid("vavr").toEither();
+        Either<Seq<String>, ?> either = Validation.invalid("vavr").toEither();
         assertThat(either.isLeft()).isTrue();
         assertThat(either.getLeft()).isEqualTo(List.of("vavr"));
     }

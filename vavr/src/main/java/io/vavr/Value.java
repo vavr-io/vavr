@@ -1206,7 +1206,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <L>             Validation error component type
      * @return A new {@link Validation}.
      */
-    default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
+    default <L> Validation<L, T> toValid(Supplier<? extends L> invalidSupplier) {
         Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
         if (this instanceof io.vavr.control.Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
@@ -1375,20 +1375,6 @@ public interface Value<T> extends Iterable<T> {
      */
     default Tree<T> toTree() {
         return ValueModule.toTraversable(this, Tree.empty(), Tree::of, Tree::ofAll);
-    }
-
-    /**
-     * Converts this to a {@link Validation}.
-     *
-     * @param <E>           error type of an {@code Invalid}
-     * @param errorSupplier A supplier of an error
-     * @return A new {@link Validation.Invalid} containing the result of {@code errorSupplier} if this is empty,
-     * otherwise a new {@link Validation.Valid} containing this value.
-     * @throws NullPointerException if {@code valueSupplier} is null
-     */
-    default <E> Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
-        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return isEmpty() ? Validation.invalid(errorSupplier.get()) : Validation.valid(get());
     }
 
     /**

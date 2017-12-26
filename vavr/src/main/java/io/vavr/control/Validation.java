@@ -37,7 +37,7 @@ import java.util.function.Supplier;
  *
  * <p>
  * The Validation type is different from a Monad type, it is an applicative
- * functor. Whereas a Monad will shoValidationrt circuit after the first errors, the
+ * functor. Whereas a Monad will short circuit after the first errors, the
  * applicative functor will continue on, accumulating ALL errors. This is
  * especially helpful in cases such as validation, where you want to know
  * all the validation errors that have occurred, not just the first one.
@@ -91,16 +91,16 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Creates an {@link Invalid} that contains the given {@code errors}.
+     * Creates an {@link Invalid} that contains the given {@code error}.
      *
-     * @param <E>   type of the given {@code errors}
+     * @param <E>   type of the given {@code error}
      * @param <T>   type of the value
-     * @param error An errors
-     * @return {@code Invalid(errors)}
-     * @throws NullPointerException if errors is null
+     * @param error An error
+     * @return {@code Invalid(error)}
+     * @throws NullPointerException if error is null
      */
     static <E, T> Validation<E, T> invalid(E error) {
-        Objects.requireNonNull(error, "errors is null");
+        Objects.requireNonNull(error, "error is null");
         return new Invalid<>(error);
     }
 
@@ -109,15 +109,15 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         if (errors.size() == 0) {
             throw new IllegalArgumentException("Errors are empty");
         }
-        return new Invalid<E, T>(errors);
+        return new Invalid<>(errors);
     }
 
     /**
      * Creates a {@code Validation} of an {@code Either}.
      *
      * @param either An {@code Either}
-     * @param <E>    type of the given {@code errors}
-     * @param <T>    type of the value
+     * @param <E>    error type
+     * @param <T>    value type
      * @return A {@code Valid(either.get())} if either is a Right, otherwise {@code Invalid(either.getLeft())}.
      * @throws NullPointerException if either is null
      */
@@ -143,8 +143,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         List<T> list = List.empty();
         for (Validation<E, T> value : values) {
             if (value.isInvalid()) {
-                Seq<? extends E> otherErrors = value.getErrors().reverse();
-                errors = errors.prependAll(otherErrors);
+                errors = errors.prependAll(value.getErrors().reverse());
             } else if (errors.isEmpty()) {
                 list = list.prepend(value.get());
             }
@@ -430,7 +429,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      *
      * @return {@code Either.right(get())} if this is valid, otherwise {@code Either.left(getErrors())}.
      */
-    default Either<Seq<? extends E>, T> toEither() {
+    default Either<Seq<E>, T> toEither() {
         return isValid() ? Either.right(get()) : Either.left(getErrors());
     }
 
@@ -481,8 +480,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         Objects.requireNonNull(fInvalid, "fInvalid is null");
         Objects.requireNonNull(fValid, "fValid is null");
         if (isInvalid()) {
-            final Seq<? extends E> error = this.getErrors();
-            return fInvalid.apply(error);
+            return fInvalid.apply(this.getErrors());
         } else {
             final T value = this.get();
             return fValid.apply(value);
@@ -495,10 +493,9 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      *
      * @return a flipped instance of Validation
      */
-    default Validation<T, Seq<? extends E>> swap() {
+    default Validation<T, Seq<E>> swap() {
         if (isInvalid()) {
-            final Seq<? extends E> error = this.getErrors();
-            return Validation.valid(error);
+            return Validation.valid(this.getErrors());
         } else {
             final T value = this.get();
             return Validation.invalid(value);
@@ -530,12 +527,13 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Validation&lt;U,R&gt;
      * @throws NullPointerException if invalidMapper or validMapper is null
      */
-    default <E2, T2> Validation<E2, T2> bimap(Function<Seq<? extends E>, ? extends E2> errorMapper, Function<? super T, ? extends T2> valueMapper) {
+    default <E2, T2> Validation<E2, T2> bimap(
+            Function<? super Seq<? super E>, ? extends E2> errorMapper,
+            Function<? super T, ? extends T2> valueMapper) {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         if (isInvalid()) {
-            final Seq<? extends E> error = this.getErrors();
-            return Validation.invalid(errorMapper.apply(error));
+            return Validation.invalid(errorMapper.apply(this.getErrors()));
         } else {
             final T value = this.get();
             return Validation.valid(valueMapper.apply(value));
@@ -554,8 +552,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     default <U> Validation<U, T> mapError(Function<Seq<? extends E>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
-            final Seq<? extends E> errors = this.getErrors();
-            return Validation.invalid(f.apply(errors));
+            return Validation.invalid(f.apply(this.getErrors()));
         } else {
             return Validation.valid(this.get());
         }
@@ -577,10 +574,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
                 final Seq<E> errors = this.getErrors();
                 return invalid(errors);
             } else {
-                final Seq<? extends E> errors1 = validation.getErrors();
-                final Seq<? extends E> errors2 = this.getErrors();
-                Seq<E> specificErrors = List.ofAll(errors1);
-                Seq<E> finalErrors = specificErrors.appendAll(errors2);
+                Seq<E> specificErrors = List.ofAll(validation.getErrors());
+                Seq<E> finalErrors = specificErrors.appendAll(this.getErrors());
                 return invalid(finalErrors);
             }
         }
