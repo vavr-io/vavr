@@ -104,6 +104,14 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         return new Invalid<>(error);
     }
 
+    static <E, T> Validation<E, T> invalid(Seq<E> errors) {
+        Objects.requireNonNull(errors, "errors is null");
+        if (errors.size() == 0) {
+            throw new IllegalArgumentException("Errors are empty");
+        }
+        return new Invalid<>(errors);
+    }
+
     /**
      * Creates a {@code Validation} of an {@code Either}.
      *

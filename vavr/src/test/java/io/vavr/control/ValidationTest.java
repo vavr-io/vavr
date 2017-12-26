@@ -107,7 +107,7 @@ public class ValidationTest extends AbstractValueTest {
         Throwable throwable = new Throwable("vavr");
         Validation<Throwable, Integer> validation = Validation.fromTry(Try.failure(throwable));
         assertThat(validation.isValid()).isFalse();
-        assertThat(validation.getError()).isEqualTo(throwable);
+        assertThat(validation.getErrors()).isEqualTo(List.of(throwable));
     }
 
 
