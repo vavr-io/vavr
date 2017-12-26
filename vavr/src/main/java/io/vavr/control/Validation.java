@@ -104,7 +104,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         return new Invalid<>(error);
     }
 
-    static <E, T> Validation<E, T> invalid(Seq<? extends E> errors) {
+    static <E, T> Validation<E, T> invalid(Seq<E> errors) {
         Objects.requireNonNull(errors, "errors is null");
         if (errors.size() == 0) {
             throw new IllegalArgumentException("Errors are empty");
@@ -408,7 +408,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return the value, if the underlying Validation is a Valid, or else the alternative value
      * provided by {@code other} by applying the errors.
      */
-    default T getOrElseGet(Function<Seq<? extends E>, ? extends T> other) {
+    default T getOrElseGet(Function<? super Seq<? super E>, ? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         if (isValid()) {
             return get();
@@ -423,7 +423,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return The errors of this Invalid
      * @throws RuntimeException if this is a Valid
      */
-    Seq<? extends E> getErrors();
+    Seq<E> getErrors();
 
     /**
      * Returns this as {@code Either}.
@@ -569,12 +569,12 @@ public interface Validation<E, T> extends Value<T>, Serializable {
                 final U u = f.apply(this.get());
                 return valid(u);
             } else {
-                final Seq<? extends E> errors = validation.getErrors();
+                final Seq<E> errors = validation.getErrors();
                 return invalid(errors);
             }
         } else {
             if (validation.isValid()) {
-                final Seq<? extends E> errors = this.getErrors();
+                final Seq<E> errors = this.getErrors();
                 return invalid(errors);
             } else {
                 final Seq<? extends E> errors1 = validation.getErrors();
@@ -686,7 +686,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         }
 
         @Override
-        public Seq<? extends E> getErrors() throws RuntimeException {
+        public Seq<E> getErrors() throws RuntimeException {
             throw new NoSuchElementException("errors of 'valid' Validation");
         }
 
@@ -722,7 +722,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private final Seq<? extends E> errors;
+        private final Seq<E> errors;
 
         /**
          * Construct an {@code Invalid}
@@ -733,7 +733,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.errors = List.of(error);
         }
 
-        private Invalid(Seq<? extends E> errors) {
+        private Invalid(Seq<E> errors) {
             this.errors = errors;
         }
 
@@ -753,7 +753,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         }
 
         @Override
-        public Seq<? extends E> getErrors() {
+        public Seq<E> getErrors() {
             return errors;
         }
 
