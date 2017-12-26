@@ -58,11 +58,11 @@ import java.util.function.*;
  * <li>{@link #filter(BiPredicate)}</li>
  * <li>{@link #filterKeys(Predicate)}</li>
  * <li>{@link #filterValues(Predicate)}</li>
+ * <li>{@link #reject(BiPredicate)}</li>
+ * <li>{@link #rejectKeys(Predicate)}</li>
+ * <li>{@link #rejectValues(Predicate)}</li>
  * <li>{@link #remove(Object)}</li>
- * <li>{@link #removeAll(BiPredicate)}</li>
  * <li>{@link #removeAll(Iterable)}</li>
- * <li>{@link #removeKeys(Predicate)}</li>
- * <li>{@link #removeValues(Predicate)}</li>
  * </ul>
  *
  * Iteration:
@@ -70,6 +70,8 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #forEach(BiConsumer)}</li>
  * <li>{@link #iterator(BiFunction)}</li>
+ * <li>{@link #keysIterator()}</li>
+ * <li>{@link #valuesIterator()}</li>
  * </ul>
  *
  * Transformation:
@@ -218,6 +220,15 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     Map<K, V> filter(BiPredicate<? super K, ? super V> predicate);
 
     /**
+     * Returns a new Map consisting of all elements which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> reject(BiPredicate<? super K, ? super V> predicate);
+
+    /**
      * Returns a new Map consisting of all elements with keys which satisfy the given predicate.
      *
      * @param predicate the predicate used to test keys of elements
@@ -227,6 +238,15 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     Map<K, V> filterKeys(Predicate<? super K> predicate);
 
     /**
+     * Returns a new Map consisting of all elements with keys which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test keys of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> rejectKeys(Predicate<? super K> predicate);
+
+    /**
      * Returns a new Map consisting of all elements with values which satisfy the given predicate.
      *
      * @param predicate the predicate used to test values of elements
@@ -234,6 +254,15 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @throws NullPointerException if {@code predicate} is null
      */
     Map<K, V> filterValues(Predicate<? super V> predicate);
+
+    /**
+     * Returns a new Map consisting of all elements with values which do not satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test values of elements
+     * @return a new Map
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    Map<K, V> rejectValues(Predicate<? super V> predicate);
 
     /**
      * FlatMaps this {@code Map} to a new {@code Map} with different component type.
@@ -333,6 +362,15 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @return {@code Set} of the keys contained in this map.
      */
     io.vavr.collection.Set<K> keySet();
+
+    /**
+     * Returns the keys contained in this map as an iterator.
+     *
+     * @return {@code Iterator} of the keys contained in this map.
+     */
+    default Iterator<K> keysIterator() {
+        return iterator().map(Tuple2::_1);
+    }
 
     @Override
     default int length() {
@@ -495,10 +533,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     /**
      * Returns a new Map consisting of all elements which do not satisfy the given predicate.
      *
+     * @deprecated Please use {@link #reject(BiPredicate)}
      * @param predicate the predicate used to test elements
      * @return a new Map
      * @throws NullPointerException if {@code predicate} is null
      */
+    @Deprecated
     Map<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
 
     /**
@@ -513,19 +553,23 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     /**
      * Returns a new Map consisting of all elements with keys which do not satisfy the given predicate.
      *
+     * @deprecated Please use {@link #rejectKeys(Predicate)}
      * @param predicate the predicate used to test keys of elements
      * @return a new Map
      * @throws NullPointerException if {@code predicate} is null
      */
+    @Deprecated
     Map<K, V> removeKeys(Predicate<? super K> predicate);
 
     /**
      * Returns a new Map consisting of all elements with values which do not satisfy the given predicate.
      *
+     * @deprecated Please use {@link #rejectValues(Predicate)}
      * @param predicate the predicate used to test values of elements
      * @return a new Map
      * @throws NullPointerException if {@code predicate} is null
      */
+    @Deprecated
     Map<K, V> removeValues(Predicate<? super V> predicate);
 
     @Override
@@ -600,6 +644,20 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @return a new {@link Seq}
      */
     Seq<V> values();
+
+    /**
+     * Returns the values in this map.
+     *
+     * <pre>{@code
+     * // = Iterator.of("a", "b", "c")
+     * HashMap.of(1, "a", 2, "b", 3, "c").values()
+     * }</pre>
+     *
+     * @return a new {@link Iterator}
+     */
+    default Iterator<V> valuesIterator() {
+        return iterator().map(Tuple2::_2);
+    }
 
     /**
      * Turns this map from a partial function into a total function that
@@ -678,6 +736,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
 
     @Override
     Map<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
+    Map<K, V> reject(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
     <C> Map<C, ? extends Map<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);

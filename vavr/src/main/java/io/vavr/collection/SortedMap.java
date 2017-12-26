@@ -130,21 +130,36 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     SortedMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
+    SortedMap<K, V> reject(Predicate<? super Tuple2<K, V>> predicate);
+
+    @Override
     SortedMap<K, V> filter(BiPredicate<? super K, ? super V> predicate);
+
+    @Override
+    SortedMap<K, V> reject(BiPredicate<? super K, ? super V> predicate);
 
     @Override
     SortedMap<K, V> filterKeys(Predicate<? super K> predicate);
 
     @Override
+    SortedMap<K, V> rejectKeys(Predicate<? super K> predicate);
+
+    @Override
     SortedMap<K, V> filterValues(Predicate<? super V> predicate);
 
     @Override
+    SortedMap<K, V> rejectValues(Predicate<? super V> predicate);
+
+    @Override
+    @Deprecated
     SortedMap<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
 
     @Override
+    @Deprecated
     SortedMap<K, V> removeKeys(Predicate<? super K> predicate);
 
     @Override
+    @Deprecated
     SortedMap<K, V> removeValues(Predicate<? super V> predicate);
 
     @Override
@@ -212,13 +227,28 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     SortedMap<K, V> put(Tuple2<? extends K, ? extends V> entry);
 
     @Override
+    <U extends V> SortedMap<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge);
+
+    @Override
+    <U extends V> SortedMap<K, V> put(Tuple2<? extends K, U> entry, BiFunction<? super V, ? super U, ? extends V> merge);
+
+    @Override
     SortedMap<K, V> remove(K key);
 
     @Override
     SortedMap<K, V> removeAll(Iterable<? extends K> keys);
 
     @Override
+    SortedMap<K, V> replace(K key, V oldValue, V newValue);
+
+    @Override
     SortedMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+
+    @Override
+    SortedMap<K, V> replaceValue(K key, V value);
+
+    @Override
+    SortedMap<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function);
 
     @Override
     SortedMap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);

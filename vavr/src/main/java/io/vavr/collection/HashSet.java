@@ -581,6 +581,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public HashSet<T> reject(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
+    @Override
     public <U> HashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {

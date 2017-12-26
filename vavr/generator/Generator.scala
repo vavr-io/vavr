@@ -1020,7 +1020,7 @@ def generateMainClasses(): Unit = {
                    */
                   long serialVersionUID = 1L;
               }
-
+              
               public static final class Case0<T, R> implements Case<T, R> {
 
                   private static final long serialVersionUID = 1L;
@@ -1097,7 +1097,7 @@ def generateMainClasses(): Unit = {
 
               // These can't be @FunctionalInterfaces because of ambiguities.
               // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
-
+              
               public static abstract class Pattern0<T> implements Pattern<T, T> {
 
                   private static final long serialVersionUID = 1L;
@@ -1560,9 +1560,9 @@ def generateMainClasses(): Unit = {
                * Applies this function to ${arguments(i)} and returns the result.
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j argument $j")("\n")}
                * @return the result of function application
-               * ${checked.gen("@throws Throwable if something goes wrong applying this function to the given arguments")}
+               * ${checked.gen("@throws Exception if something goes wrong applying this function to the given arguments")}
                */
-              R apply($paramsDecl)${checked.gen(" throws Throwable")};
+              R apply($paramsDecl)${checked.gen(" throws Exception")};
 
               ${(1 until i).gen(j => {
                 val partialApplicationArgs = (1 to j).gen(k => s"T$k t$k")(", ")
@@ -1733,7 +1733,7 @@ def generateMainClasses(): Unit = {
                 }
               """)}
           }
-
+          
           interface ${className}Module {
 
               // DEV-NOTE: we do not plan to expose this as public API
@@ -2029,10 +2029,9 @@ def generateMainClasses(): Unit = {
                 }
             }
 
-            ${(i == 1).gen("// if _1 == null, hashCode() returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)")}
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else s"""${im.getType("java.util.Objects")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else s"""${im.getType("io.vavr.control.HashCodes")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override
@@ -2610,6 +2609,7 @@ def generateTestClasses(): Unit = {
       def genShortcutsTests(im: ImportManager, packageName: String, className: String): String = {
 
         val fail = im.getStatic("org.junit.Assert.fail")
+        val captureStdOut = im.getStatic("io.vavr.OutputTester.captureStdOut")
 
         xs"""
           @$test
@@ -2635,22 +2635,22 @@ def generateTestClasses(): Unit = {
 
           @$test
           public void shouldCallprint_Object() {
-              print("ok");
+              assertThat($captureStdOut(()->print("ok"))).isEqualTo("ok");
           }
 
           @$test
           public void shouldCallprintf() {
-              printf("%s", "ok");
+              assertThat($captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
           }
 
           @$test
           public void shouldCallprintln_Object() {
-              println("ok");
+              assertThat($captureStdOut(()->println("ok"))).isEqualTo("ok\\n");
           }
 
           @$test
           public void shouldCallprintln() {
-              println();
+              assertThat($captureStdOut(()->println())).isEqualTo("\\n");
           }
         """
       }
@@ -3424,7 +3424,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldComputeCorrectHashCode() {
                   final int actual = createTuple().hashCode();
-                  final int expected = ${im.getType("java.util.Objects")}.hash(${if (i == 1) "new Object[] { null }" else nullArgs});
+                  final int expected = ${im.getType("java.util.Objects")}.${if (i == 1) "hashCode" else "hash"}($nullArgs);
                   $assertThat(actual).isEqualTo(expected);
               }
 

@@ -21,6 +21,7 @@ package io.vavr;
 
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
+import io.vavr.control.Either;
 import io.vavr.control.Option;
 import org.junit.Test;
 
@@ -55,10 +56,27 @@ public class PartialFunctionTest {
     }
 
     @Test
+    public void shouldNotBeDefinedAtLeft() {
+        final Either<RuntimeException, Object> left = Either.left(new RuntimeException());
+
+        assertThat(PartialFunction.getIfDefined().isDefinedAt(left)).isFalse();
+    }
+
+    @Test
+    public void shouldBeDefinedAtRight() {
+        Either<Object, Number> right = Either.right(42);
+
+        PartialFunction<Either<Object, Number>, Number> ifDefined = PartialFunction.getIfDefined();
+
+        assertThat(ifDefined.isDefinedAt(right)).isTrue();
+        assertThat(ifDefined.apply(right)).isEqualTo(42);
+    }
+
+    @Test
     public void shouldCollectSomeValuesAndIgnoreNone() {
         final List<Integer> evenNumbers = List.range(0, 10)
           .map(n -> n % 2 == 0 ? Option.some(n) : Option.<Integer>none())
-          .collect(PartialFunction.unlift(Function1.identity()));
+          .collect(PartialFunction.getIfDefined());
 
         assertThat(evenNumbers).containsExactly(0, 2, 4, 6, 8);
     }

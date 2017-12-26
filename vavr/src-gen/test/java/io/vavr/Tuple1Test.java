@@ -133,7 +133,7 @@ public class Tuple1Test {
     @Test
     public void shouldComputeCorrectHashCode() {
         final int actual = createTuple().hashCode();
-        final int expected = Objects.hash(new Object[] { null });
+        final int expected = Objects.hashCode(null);
         assertThat(actual).isEqualTo(expected);
     }
 

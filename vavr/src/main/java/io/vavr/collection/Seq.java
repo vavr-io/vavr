@@ -776,10 +776,12 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     /**
      * Returns a new Seq consisting of all elements which do not satisfy the given predicate.
      *
+     * @deprecated Please use {@link #reject(Predicate)}
      * @param predicate the predicate used to test elements
      * @return a new Seq
      * @throws NullPointerException if {@code predicate} is null
      */
+    @Deprecated
     Seq<T> removeAll(Predicate<? super T> predicate);
 
     /**
@@ -824,6 +826,32 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return an iterator yielding the elements of this Seq in reversed order
      */
     Iterator<T> reverseIterator();
+
+    /**
+     * Circular rotates the elements by the specified distance to the left direction.
+     * 
+     * <pre>{@code
+     * // = List(3, 4, 5, 1, 2)
+     * List.of(1, 2, 3, 4, 5).rotateLeft(2);
+     * }</pre>
+     *
+     * @param n distance of left rotation
+     * @return the rotated elements.
+     */
+    Seq<T> rotateLeft(int n);
+
+    /**
+     * Circular rotates the elements by the specified distance to the right direction.
+     *
+     * <pre>{@code
+     * // = List(4, 5, 1, 2, 3)
+     * List.of(1, 2, 3, 4, 5).rotateRight(2);
+     * }</pre>
+     *
+     * @param n distance of right rotation
+     * @return the rotated elements.
+     */
+    Seq<T> rotateRight(int n);
 
     /**
      * Computes length of longest segment whose elements all satisfy some predicate.
@@ -1117,6 +1145,9 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
 
     @Override
     Seq<T> filter(Predicate<? super T> predicate);
+
+    @Override
+    Seq<T> reject(Predicate<? super T> predicate);
 
     @Override
     <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);

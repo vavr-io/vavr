@@ -51,6 +51,11 @@
             <version>8.0.0</version>
         </dependency>
         <dependency>
+            <groupId>io.usethesource</groupId>
+            <artifactId>capsule</artifactId>
+            <version>0.6.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.openjdk.jol</groupId>
             <artifactId>jol-core</artifactId>
             <version>0.7.1</version>
@@ -94,6 +99,13 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-install-plugin</artifactId>
                 <configuration>
                     <skip>true</skip>
@@ -101,4 +113,10 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>useTheSource</id>
+            <url>http://nexus.usethesource.io/content/repositories/public/</url>
+        </repository>
+    </repositories>
 </project>

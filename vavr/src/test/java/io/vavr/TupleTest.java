@@ -20,6 +20,7 @@
 package io.vavr;
 
 import io.vavr.collection.List;
+import io.vavr.control.HashCodes;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -108,7 +109,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple1() {
         final Tuple1<?> t = tuple1();
-        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1));
+        assertThat(t.hashCode()).isEqualTo(HashCodes.hash(t._1));
     }
 
     @Test

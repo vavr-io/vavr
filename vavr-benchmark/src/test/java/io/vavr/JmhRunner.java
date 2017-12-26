@@ -52,6 +52,7 @@ public class JmhRunner {
                 CharSeqBenchmark.class,
                 HashSetBenchmark.class,
                 ListBenchmark.class,
+                MapBenchmark.class,
                 PriorityQueueBenchmark.class,
                 VectorBenchmark.class,
 
@@ -71,6 +72,7 @@ public class JmhRunner {
         FUNCTIONAL_JAVA("fjava"),
         PCOLLECTIONS("pcollections"),
         ECOLLECTIONS("ecollections"),
+        CAPSULE("capsule"),
         CLOJURE("clojure"),
         SCALAZ("scalaz"),
         SCALA("scala"),
@@ -167,7 +169,7 @@ public class JmhRunner {
 
     private enum PrintInlining {
         ENABLE,
-        DISABLE;
+        DISABLE
     }
 
     /* Helper methods */

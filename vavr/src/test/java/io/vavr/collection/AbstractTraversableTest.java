@@ -32,6 +32,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static io.vavr.API.*;
+import static io.vavr.OutputTester.*;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingInt;
@@ -257,7 +258,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldComputeAvergageAndCompensateErrors() {
+    public void shouldComputeAverageAndCompensateErrors() {
         // Kahan's summation algorithm (used by DoubleStream.average()) returns 0.0 (false)
         // Neumaier's modification of Kahan's algorithm returns 0.75 (correct)
         assertThat(of(1.0, +10e100, 2.0, -10e100).average().get()).isEqualTo(0.75);
@@ -719,6 +720,38 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldReturnSameInstanceWhenFilteringEmptyTraversable() {
         final Traversable<?> empty = empty();
         assertThat(empty.filter(v -> true)).isSameAs(empty);
+    }
+
+    // -- reject
+
+    @Test
+    public void shouldRejectExistingElements() {
+        assertThat(of(1, 2, 3).reject(i -> i == 1)).isEqualTo(of(2, 3));
+        assertThat(of(1, 2, 3).reject(i -> i == 2)).isEqualTo(of(1, 3));
+        assertThat(of(1, 2, 3).reject(i -> i == 3)).isEqualTo(of(1, 2));
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).reject(ignore -> false)).isEqualTo(of(1, 2, 3));
+        } else {
+            final Traversable<Integer> t = of(1, 2, 3);
+            assertThat(t.reject(ignore -> false)).isSameAs(t);
+        }
+    }
+
+    @Test
+    public void shouldRejectNonExistingElements() {
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(this.<Integer> empty().reject(i -> i == 0)).isEqualTo(empty());
+            assertThat(of(1, 2, 3).reject(i -> i > 0)).isEqualTo(empty());
+        } else {
+            assertThat(this.<Integer> empty().reject(i -> i == 0)).isSameAs(empty());
+            assertThat(of(1, 2, 3).reject(i -> i > 0)).isSameAs(empty());
+        }
+    }
+
+    @Test
+    public void shouldReturnSameInstanceWhenRejectingEmptyTraversable() {
+        final Traversable<?> empty = empty();
+        assertThat(empty.reject(v -> true)).isSameAs(empty);
     }
 
     // -- find
@@ -1350,9 +1383,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldCalculateMinOfFloatsContainingNaN() {
-
-        System.out.println(TreeSet.of(1.0f, Float.NaN, 2.0f));
-
         assertThat(of(1.0f, Float.NaN, 2.0f).min().get()).isEqualTo(Float.NaN);
     }
 
@@ -2011,50 +2041,30 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     // -- stderr
 
-    private final static Object STD_ERR_LOCK = new Object();
-
     @Test
     public void shouldWriteToStderr() {
-        synchronized (STD_ERR_LOCK) {
-            of(1, 2, 3).stderr();
-        }
+        assertThat(captureErrOut(()->of(1, 2, 3).stderr())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStderrIOException() {
-        synchronized (STD_ERR_LOCK) {
-            final PrintStream originalErr = System.err;
-            try (PrintStream failingPrintStream = failingPrintStream()) {
-                System.setErr(failingPrintStream);
-                of(0).stderr();
-            } finally {
-                System.setErr(originalErr);
-            }
-        }
+        withFailingErrOut(()->of(0).stderr());
     }
 
     // -- stdout
 
-    private final static Object STD_OUT_LOCK = new Object();
-
     @Test
     public void shouldWriteToStdout() {
-        synchronized (STD_OUT_LOCK) {
-            of(1, 2, 3).stdout();
-        }
+        assertThat(captureStdOut(()->of(1, 2, 3).stdout())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStdoutIOException() {
-        synchronized (STD_OUT_LOCK) {
-            final PrintStream originalOut = System.out;
-            try (PrintStream failingPrintStream = failingPrintStream()) {
-                System.setOut(failingPrintStream);
-                of(0).stdout();
-            } finally {
-                System.setOut(originalOut);
-            }
-        }
+        withFailingStdOut(()->of(0).stdout());
     }
 
     // -- PrintStream
@@ -2549,6 +2559,28 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 2, 3).toJavaSet()).isEqualTo(expected);
     }
 
+    // toTree
+
+    @Test
+    public void shouldConvertToTree() {
+        //Value["id:parent")]
+        final Traversable<String> value = of(
+                "1:",
+                "2:1", "3:1",
+                "4:2", "5:2", "6:3",
+                "7:4", "8:6", "9:6"
+        );
+        final Seq<Tree<String>> roots = value
+                .toTree(s -> s.split(":")[0], s -> s.split(":").length == 1 ? null : s.split(":")[1])
+                .map(l -> l.map(s -> s.split(":")[0]));
+        assertThat(roots).hasSize(1);
+        final Tree<String> root = roots.head();
+        if (value.hasDefiniteSize()) {
+            assertThat(root).hasSameSizeAs(value);
+        }
+        assertThat(root.toLispString()).isEqualTo("(1 (2 (4 7) 5) (3 (6 8 9)))");
+    }
+
     // ++++++ OBJECT ++++++
 
     // -- equals
@@ -2797,24 +2829,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     // helpers
-
-    private static PrintStream failingPrintStream() {
-        return new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                throw new IOException();
-            }
-        });
-    }
-
-    private static PrintWriter failingPrintWriter() {
-        return new PrintWriter(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                throw new IOException();
-            }
-        });
-    }
 
     /**
      * Wraps a String in order to ensure that it is not Comparable.

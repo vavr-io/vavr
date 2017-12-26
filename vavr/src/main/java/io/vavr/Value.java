@@ -1378,6 +1378,45 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Converts this to a {@link Tree} using a {@code idMapper} and {@code parentMapper}.
+     *
+     * @param <ID> Id type
+     * @param idMapper     A mapper from source item to unique identifier of that item
+     * @param parentMapper A mapper from source item to unique identifier of parent item. Need return null for root items
+     * @return A new {@link Tree}.
+     * @see Tree#build(Iterable, Function, Function)
+     */
+    default <ID> List<Tree.Node<T>> toTree(Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
+        return Tree.build(this, idMapper, parentMapper);
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <E>   error type of an {@code Invalid}
+     * @param error An error
+     * @return A new {@link Validation.Invalid} containing the given {@code error} if this is empty, otherwise
+     * a new {@link Validation.Valid} containing this value.
+     */
+    default <E> Validation<E, T> toValid(E error) {
+        return isEmpty() ? Validation.invalid(error) : Validation.valid(get());
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <E>           error type of an {@code Invalid}
+     * @param errorSupplier A supplier of an error
+     * @return A new {@link Validation.Invalid} containing the result of {@code errorSupplier} if this is empty,
+     * otherwise a new {@link Validation.Valid} containing this value.
+     * @throws NullPointerException if {@code valueSupplier} is null
+     */
+    default <E> Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
+        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
+        return isEmpty() ? Validation.invalid(errorSupplier.get()) : Validation.valid(get());
+    }
+
+    /**
      * Converts this to a {@link Vector}.
      *
      * @return A new {@link Vector}.

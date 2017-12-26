@@ -137,6 +137,9 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
+    IndexedSeq<T> reject(Predicate<? super T> predicate);
+
+    @Override
     <U> IndexedSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
@@ -253,6 +256,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
+    @Deprecated
     IndexedSeq<T> removeAll(Predicate<? super T> predicate);
 
     @Override
@@ -283,6 +287,12 @@ public interface IndexedSeq<T> extends Seq<T> {
             }
         };
     }
+
+    @Override
+    IndexedSeq<T> rotateLeft(int n);
+
+    @Override
+    IndexedSeq<T> rotateRight(int n);
 
     @Override
     IndexedSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);

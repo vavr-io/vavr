@@ -235,6 +235,23 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
+     * Generates a (theoretically) infinitely long Stream using a repeatedly invoked supplier
+     * that provides a {@code Some} for each next value and a {@code None} for the end.
+     * The {@code Supplier} will be invoked only that many times until it returns {@code None},
+     * and repeated iteration over the stream will produce the same values in the same order,
+     * without any further invocations to the {@code Supplier}.
+     *
+     * @param supplier A Supplier of iterator values
+     * @param <T> value type
+     * @param <A> supplier option type
+     * @return A new Stream
+     */
+    static <T, A extends T> Stream<T> iterate(Supplier<Option<A>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return Stream.ofAll(Iterator.iterate(supplier));
+    }
+
+    /**
      * Constructs a Stream of a head element and a tail supplier.
      *
      * @param head         The head element of the Stream
@@ -1025,6 +1042,12 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> reject(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Collections.reject(this, predicate);
+    }
+
+    @Override
     default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : Stream.ofAll(new Iterator<U>() {
@@ -1354,8 +1377,10 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    @Deprecated
     default Stream<T> removeAll(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.removeAll(this, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reject(predicate);
     }
 
     @Override
@@ -1391,6 +1416,16 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default Stream<T> reverse() {
         return isEmpty() ? this : foldLeft(Stream.empty(), Stream::prepend);
+    }
+
+    @Override
+    default Stream<T> rotateLeft(int n) {
+        return Collections.rotateLeft(this, n);
+    }
+
+    @Override
+    default Stream<T> rotateRight(int n) {
+        return Collections.rotateRight(this, n);
     }
 
     @Override

@@ -1217,11 +1217,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldRemoveNonExistingElement() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.remove(4)).isEqualTo(t);
-        } else {
-            assertThat(t.remove(4)).isSameAs(t);
-        }
+        assertThat(t.remove(4)).isSameAs(t);
     }
 
     // -- removeFirst(Predicate)
@@ -1259,11 +1255,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldRemoveFirstElementByPredicateNonExisting() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t);
-        } else {
-            assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
-        }
+        assertThat(t.removeFirst(v -> v == 4)).isSameAs(t);
     }
 
     // -- removeLast(Predicate)
@@ -1301,11 +1293,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldRemoveLastElementByPredicateNonExisting() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeLast(v -> v == 4)).isEqualTo(t);
-        } else {
-            assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
-        }
+        assertThat(t.removeLast(v -> v == 4)).isSameAs(t);
     }
 
     // -- removeAll(Iterable)
@@ -1323,11 +1311,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeAll(of(4, 5))).isEqualTo(t);
-        } else {
-            assertThat(t.removeAll(of(4, 5))).isSameAs(t);
-        }
+        assertThat(t.removeAll(of(4, 5))).isSameAs(t);
     }
 
     @Test
@@ -1344,55 +1328,48 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     // -- removeAll(Predicate)
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveExistingElements() {
-        assertThat(of(1, 2, 3).removeAll(i -> i == 1)).isEqualTo(of(2, 3));
-        assertThat(of(1, 2, 3).removeAll(i -> i == 2)).isEqualTo(of(1, 3));
-        assertThat(of(1, 2, 3).removeAll(i -> i == 3)).isEqualTo(of(1, 2));
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).removeAll(ignore -> true)).isEmpty();
-            assertThat(of(1, 2, 3).removeAll(ignore -> false)).isEqualTo(of(1, 2, 3));
-        } else {
-            final Seq<Integer> seq = of(1, 2, 3);
-            assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
-        }
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.removeAll(i -> i == 1)).isEqualTo(of(2, 3));
+        assertThat(seq.removeAll(i -> i == 2)).isEqualTo(of(1, 3));
+        assertThat(seq.removeAll(i -> i == 3)).isEqualTo(of(1, 2));
+        assertThat(seq.removeAll(ignore -> true)).isEmpty();
+        assertThat(seq.removeAll(ignore -> false)).isSameAs(seq);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveNonExistingElements() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isEqualTo(empty());
-            assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isEqualTo(empty());
-        } else {
-            assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isSameAs(empty());
-            assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isSameAs(empty());
-        }
+        assertThat(this.<Integer> empty().removeAll(i -> i == 0)).isSameAs(empty());
+        assertThat(of(1, 2, 3).removeAll(i -> i != 0)).isSameAs(empty());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveAllElementsByPredicateFromNil() {
         assertThat(empty().removeAll(o -> true)).isEmpty();
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveAllExistingElements() {
         assertThat(of(1, 2, 3, 4, 5, 6).removeAll(ignored -> true)).isEmpty();
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRemoveAllMatchedElementsFromNonNil() {
         assertThat(of(1, 2, 3, 4, 5, 6).removeAll(i -> i % 2 == 0)).isEqualTo(of(1, 3, 5));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
         final Seq<Integer> t = of(1, 2, 3);
         final Predicate<Integer> isTooBig = i -> i >= 4;
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(t.removeAll(isTooBig)).isEqualTo(t);
-        } else {
-            assertThat(t.removeAll(isTooBig)).isSameAs(t);
-        }
+        assertThat(t.removeAll(isTooBig)).isSameAs(t);
     }
 
     // -- removeAll(Object)
@@ -1410,11 +1387,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
         final Seq<Integer> seq = of(1, 2, 3);
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(seq.removeAll(4)).isEqualTo(seq);
-        } else {
-            assertThat(seq.removeAll(4)).isSameAs(seq);
-        }
+        assertThat(seq.removeAll(4)).isSameAs(seq);
     }
 
     @Test
@@ -1487,6 +1460,86 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldCreateReverseIteratorOfNonEmpty() {
         assertThat(ofAll(of("a", "b", "c")).reverseIterator().toList()).isEqualTo(Iterator.of("c", "b", "a").toList());
+    }
+
+    // -- todo rotateLeft
+
+    @Test
+    public void shouldRotateLeftOnEmpty() {
+        assertThat(empty().rotateLeft(1)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldRotateLeftOnSingle() {
+        Seq<Integer> seq = of(1);
+        assertThat(seq.rotateLeft(1)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldRotateLeftForZero() {
+        Seq<Integer> seq = of(1, 2, 3, 4, 5);
+        assertThat(seq.rotateLeft(0)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldRotateLeftForNegativeLessThatLen() {
+        assertThat(of(1, 2, 3, 4, 5).rotateLeft(-2)).isEqualTo(of(4, 5, 1, 2, 3));
+    }
+
+    @Test
+    public void shouldRotateLeftForPositiveLessThatLen() {
+        assertThat(of(1, 2, 3, 4, 5).rotateLeft(2)).isEqualTo(of(3, 4, 5, 1, 2));
+    }
+
+    @Test
+    public void shouldRotateLeftForPositiveGreaterThatLen() {
+        assertThat(of(1, 2, 3, 4, 5).rotateLeft(5 + 2)).isEqualTo(of(3, 4, 5, 1, 2));
+    }
+
+    @Test
+    public void shouldRotateLeftForPositiveModuloLen() {
+        Seq<Integer> seq = of(1, 2, 3, 4, 5);
+        assertThat(seq.rotateLeft(seq.length() * 3)).isSameAs(seq);
+    }
+
+    // -- rotateRight
+
+    @Test
+    public void shouldRotateRightOnEmpty() {
+        assertThat(empty().rotateRight(1)).isSameAs(empty());
+    }
+
+    @Test
+    public void shouldRotateRightOnSingle() {
+        Seq<Integer> seq = of(1);
+        assertThat(seq.rotateRight(1)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldRotateRightForZero() {
+        Seq<Integer> seq = of(1, 2, 3, 4, 5);
+        assertThat(seq.rotateRight(0)).isSameAs(seq);
+    }
+
+    @Test
+    public void shouldRotateRightForNegativeLessThatLen() {
+        assertThat(of(1, 2, 3, 4, 5).rotateRight(-2)).isEqualTo(of(3, 4, 5, 1, 2));
+    }
+
+    @Test
+    public void shouldRotateRightForPositiveLessThatLen() {
+        assertThat(of(1, 2, 3, 4, 5).rotateRight(2)).isEqualTo(of(4, 5, 1, 2, 3));
+    }
+
+    @Test
+    public void shouldRotateRightForPositiveGreaterThatLen() {
+        assertThat(of(1, 2, 3, 4, 5).rotateRight(5 + 2)).isEqualTo(of(4, 5, 1, 2, 3));
+    }
+
+    @Test
+    public void shouldRotateRightForPositiveModuloLen() {
+        Seq<Integer> seq = of(1, 2, 3, 4, 5);
+        assertThat(seq.rotateRight(seq.length() * 3)).isSameAs(seq);
     }
 
     // -- shuffle

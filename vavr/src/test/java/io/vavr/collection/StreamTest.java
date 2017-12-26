@@ -198,9 +198,66 @@ public class StreamTest extends AbstractLinearSeqTest {
         return Stream.transpose((Stream<Stream<T>>) rows);
     }
 
+    //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
+    }
+
+    @Test
+    @Override
+    public void shouldRemoveNonExistingElement() {
+        final Seq<Integer> t = of(1, 2, 3);
+        assertThat(t.remove(4)).isEqualTo(t).isNotSameAs(t);
+    }
+
+    @Test
+    @Override
+    public void shouldRemoveFirstElementByPredicateNonExisting() {
+        final Seq<Integer> t = of(1, 2, 3);
+        assertThat(t.removeFirst(v -> v == 4)).isEqualTo(t).isNotSameAs(t);
+    }
+
+    @Test
+    @Override
+    public void shouldRemoveLastElementByPredicateNonExisting() {
+        final Seq<Integer> t = of(1, 2, 3);
+        assertThat(t.removeLast(v -> v == 4)).isEqualTo(t).isNotSameAs(t);
+    }
+
+    @Test
+    @Override
+    public void shouldNotRemoveAllNonExistingElementsFromNonNil() {
+        final Seq<Integer> t = of(1, 2, 3);
+        assertThat(t.removeAll(of(4, 5))).isEqualTo(t).isNotSameAs(t);
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    @Override
+    public void shouldRemoveExistingElements() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.removeAll(i -> i == 1)).isEqualTo(of(2, 3));
+        assertThat(seq.removeAll(i -> i == 2)).isEqualTo(of(1, 3));
+        assertThat(seq.removeAll(i -> i == 3)).isEqualTo(of(1, 2));
+        assertThat(seq.removeAll(ignore -> true)).isEmpty();
+        assertThat(seq.removeAll(ignore -> false)).isEqualTo(of(1, 2, 3)).isNotSameAs(of(1, 2, 3));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    @Override
+    public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
+        final Seq<Integer> t = of(1, 2, 3);
+        final Predicate<Integer> isTooBig = i -> i >= 4;
+        assertThat(t.removeAll(isTooBig)).isEqualTo(t).isNotSameAs(t);
+    }
+
+    @Test
+    @Override
+    public void shouldNotRemoveAllNonObjectsElementsFromNonNil() {
+        final Seq<Integer> seq = of(1, 2, 3);
+        assertThat(seq.removeAll(4)).isEqualTo(seq).isNotSameAs(seq);
     }
 
     // -- static concat()
@@ -294,6 +351,13 @@ public class StreamTest extends AbstractLinearSeqTest {
     @Test
     public void shouldGenerateInfiniteStreamBasedOnSupplierWithAccessToPreviousValue() {
         assertThat(Stream.iterate(2, (i) -> i + 2).take(3).reduce((i, j) -> i + j)).isEqualTo(12);
+    }
+
+    // -- static iterate(Supplier<Option>)
+
+    @Test
+    public void shouldGenerateInfiniteStreamBasedOnOptionSupplier() {
+        assertThat(Stream.iterate(() -> Option.of(1)).take(5).reduce((i, j) -> i + j)).isEqualTo(5);
     }
 
     // -- static continually (T)
@@ -618,7 +682,7 @@ public class StreamTest extends AbstractLinearSeqTest {
     // -- take
 
     @Test
-    public void shouldNotEvaluateNplusOneWhenTakeN() {
+    public void shouldNotEvaluateNPlusOneWhenTakeN() {
         final Predicate<Integer> hiddenThrow = i -> {
             if (i == 0) {
                 return true;

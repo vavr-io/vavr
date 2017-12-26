@@ -81,7 +81,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Creates a {@link Valid} that contains the given {@code value}.
      *
-     * @param <E>   type of the errors
+     * @param <E>   type of the error
      * @param <T>   type of the given {@code value}
      * @param value A value
      * @return {@code Valid(value)}
@@ -104,14 +104,6 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         return new Invalid<>(error);
     }
 
-    static <E, T> Validation<E, T> invalid(Seq<E> errors) {
-        Objects.requireNonNull(errors, "errors is null");
-        if (errors.size() == 0) {
-            throw new IllegalArgumentException("Errors are empty");
-        }
-        return new Invalid<>(errors);
-    }
-
     /**
      * Creates a {@code Validation} of an {@code Either}.
      *
@@ -125,6 +117,20 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         Objects.requireNonNull(either, "either is null");
         return either.isRight() ? valid(either.get()) : invalid(either.getLeft());
     }
+
+    /**
+     * Creates a {@code Validation} of an {@code Either}.
+     *
+     * @param t      A {@code Try}
+     * @param <T>    type of the valid value
+     * @return A {@code Valid(t.get())} if t is a Success, otherwise {@code Invalid(t.getCause())}.
+     * @throws NullPointerException if {@code t} is null
+     */
+    static <T> Validation<Throwable, T> fromTry(Try<? extends T> t) {
+        Objects.requireNonNull(t, "t is null");
+        return t.isSuccess() ? valid(t.get()) : invalid(t.getCause());
+    }
+
 
     /**
      * Reduces many {@code Validation} instances into a single {@code Validation} by transforming an
@@ -157,7 +163,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * collections are covariant.
      *
      * @param validation A {@code Validation}.
-     * @param <E>        type of errors
+     * @param <E>        type of error
      * @param <T>        type of valid value
      * @return the given {@code validation} instance as narrowed type {@code Validation<E, T>}.
      */
@@ -169,7 +175,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Combines two {@code Validation}s into a {@link Builder}.
      *
-     * @param <E>         type of errors
+     * @param <E>         type of error
      * @param <T1>        type of first valid value
      * @param <T2>        type of second valid value
      * @param validation1 first validation
@@ -186,7 +192,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Combines three {@code Validation}s into a {@link Builder3}.
      *
-     * @param <E>         type of errors
+     * @param <E>         type of error
      * @param <T1>        type of first valid value
      * @param <T2>        type of second valid value
      * @param <T3>        type of third valid value
@@ -206,7 +212,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Combines four {@code Validation}s into a {@link Builder4}.
      *
-     * @param <E>         type of errors
+     * @param <E>         type of error
      * @param <T1>        type of first valid value
      * @param <T2>        type of second valid value
      * @param <T3>        type of third valid value
@@ -229,7 +235,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Combines five {@code Validation}s into a {@link Builder5}.
      *
-     * @param <E>         type of errors
+     * @param <E>         type of error
      * @param <T1>        type of first valid value
      * @param <T2>        type of second valid value
      * @param <T3>        type of third valid value
@@ -255,7 +261,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Combines six {@code Validation}s into a {@link Builder6}.
      *
-     * @param <E>         type of errors
+     * @param <E>         type of error
      * @param <T1>        type of first valid value
      * @param <T2>        type of second valid value
      * @param <T3>        type of third valid value
@@ -284,7 +290,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Combines seven {@code Validation}s into a {@link Builder7}.
      *
-     * @param <E>         type of errors
+     * @param <E>         type of error
      * @param <T1>        type of first valid value
      * @param <T2>        type of second valid value
      * @param <T3>        type of third valid value
@@ -316,7 +322,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Combines eight {@code Validation}s into a {@link Builder8}.
      *
-     * @param <E>         type of errors
+     * @param <E>         type of error
      * @param <T1>        type of first valid value
      * @param <T2>        type of second valid value
      * @param <T3>        type of third valid value
@@ -403,7 +409,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Gets the value if it is a Valid or an value calculated from the errors
      *
-     * @param other a function which converts an errors to an alternative value
+     * @param other a function which converts an error to an alternative value
      * @return the value, if the underlying Validation is a Valid, or else the alternative value
      * provided by {@code other} by applying the errors.
      */
@@ -692,7 +698,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(value);
+            return HashCodes.hash(value);
         }
 
         @Override
@@ -759,7 +765,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(errors);
+            return HashCodes.hash(errors);
         }
 
         @Override

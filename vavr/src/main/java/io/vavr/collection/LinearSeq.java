@@ -113,6 +113,9 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
+    LinearSeq<T> reject(Predicate<? super T> predicate);
+
+    @Override
     <U> LinearSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
@@ -234,6 +237,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> removeAll(Iterable<? extends T> elements);
 
     @Override
+    @Deprecated
     LinearSeq<T> removeAll(Predicate<? super T> predicate);
 
     @Override
@@ -252,6 +256,12 @@ public interface LinearSeq<T> extends Seq<T> {
     default Iterator<T> reverseIterator() {
         return reverse().iterator();
     }
+
+    @Override
+    LinearSeq<T> rotateLeft(int n);
+
+    @Override
+    LinearSeq<T> rotateRight(int n);
 
     @Override
     LinearSeq<T> shuffle();

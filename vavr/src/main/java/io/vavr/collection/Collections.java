@@ -21,6 +21,7 @@ package io.vavr.collection;
 
 import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
+import io.vavr.control.HashCodes;
 import io.vavr.control.Option;
 
 import java.util.*;
@@ -212,7 +213,7 @@ final class Collections {
         } else {
             int hashCode = 1;
             for (Object o : iterable) {
-                hashCode = accumulator.applyAsInt(hashCode, Objects.hashCode(o));
+                hashCode = accumulator.applyAsInt(hashCode, HashCodes.hash(o));
             }
             return hashCode;
         }
@@ -273,7 +274,7 @@ final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    static <C extends Traversable<T>, T> C removeAll(C source, Predicate<? super T> predicate) {
+    static <C extends Traversable<T>, T> C reject(C source, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (source.isEmpty()) {
             return source;
@@ -326,6 +327,40 @@ final class Collections {
                 return delegate.previous();
             }
         };
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T, C extends Seq<T>> C rotateLeft(C source, int n) {
+        if (source.isEmpty() || n == 0) {
+            return source;
+        } else if (n < 0) {
+            return rotateRight(source, -n);
+        } else {
+            int len = source.length();
+            int m = n % len;
+            if (m == 0) {
+                return source;
+            } else {
+                return (C) source.drop(m).appendAll(source.take(m));
+            }
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    static <T, C extends Seq<T>> C rotateRight(C source, int n) {
+        if (source.isEmpty() || n == 0) {
+            return source;
+        } else if (n < 0) {
+            return rotateLeft(source, -n);
+        } else {
+            int len = source.length();
+            int m = n % len;
+            if (m == 0) {
+                return source;
+            } else {
+                return (C) source.takeRight(m).appendAll(source.dropRight(m));
+            }
+        }
     }
 
     static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,

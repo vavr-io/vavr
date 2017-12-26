@@ -26,6 +26,7 @@ package io.vavr;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.control.HashCodes;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -568,7 +569,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
 
     @Override
     public int hashCode() {
-        return Objects.hash(_1, _2, _3, _4, _5, _6, _7, _8);
+        return HashCodes.hash(_1, _2, _3, _4, _5, _6, _7, _8);
     }
 
     @Override

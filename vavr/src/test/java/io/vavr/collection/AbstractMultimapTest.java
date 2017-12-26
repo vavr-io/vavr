@@ -471,6 +471,34 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(0, "5").put(1, "1").put(1, "6").put(2, "2").put(2, "7").put(3, "3").put(3, "8").put(4, "4").put(4, "9"));
     }
 
+    // -- reject
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void shouldBiRejectWork() throws Exception {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Multimap<Integer, String> dst = src.reject((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "1").put(1, "b").put(2, "c").put(3, "3").put(3, "d").put(4, "e").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void shouldKeyRejectWork() throws Exception {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Multimap<Integer, String> dst = src.rejectKeys(k -> k % 2 == 0);
+        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(1, "b").put(3, "3").put(3, "d").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    public void shouldValueRejectWork() throws Exception {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Multimap<Integer, String> dst = src.rejectValues(v -> isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "b").put(2, "c").put(3, "d").put(4, "e").put(5, "f"));
+    }
+
     // -- flatMap
 
     @SuppressWarnings("unchecked")
@@ -759,6 +787,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     // -- remove by filter
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldBiRemoveWork() throws Exception {
         final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
@@ -767,6 +796,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "1").put(1, "b").put(2, "c").put(3, "3").put(3, "d").put(4, "e").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldKeyRemoveWork() throws Exception {
         final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
@@ -774,6 +804,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(1, "b").put(3, "3").put(3, "d").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldValueRemoveWork() throws Exception {
         final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));

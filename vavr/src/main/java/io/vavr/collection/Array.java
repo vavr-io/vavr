@@ -794,6 +794,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<T> reject(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Collections.reject(this, predicate);
+    }
+
+    @Override
     public <U> Array<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
@@ -1098,8 +1104,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    @Deprecated
     public Array<T> removeAll(Predicate<? super T> predicate) {
-        return io.vavr.collection.Collections.removeAll(this, predicate);
+        Objects.requireNonNull(predicate, "predicate is null");
+        return reject(predicate);
     }
 
     @Override
@@ -1155,6 +1163,16 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             }
             return wrap(arr);
         }
+    }
+
+    @Override
+    public Array<T> rotateLeft(int n) {
+        return Collections.rotateLeft(this, n);
+    }
+
+    @Override
+    public Array<T> rotateRight(int n) {
+        return Collections.rotateRight(this, n);
     }
 
     @Override

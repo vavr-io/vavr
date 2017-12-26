@@ -46,7 +46,7 @@ public class BitSetBenchmark {
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "100", "1000" })
+        @Param({"10", "100", "1000", "2500"})
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;
@@ -80,7 +80,7 @@ public class BitSetBenchmark {
             for (int element : ELEMENTS) {
                 values = values.$plus(element);
             }
-            assert ((scala.collection.immutable.SortedSet) values).equals(scalaPersistent);
+            assert values.equals(scalaPersistent);
             return values;
         }
 

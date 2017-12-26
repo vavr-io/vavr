@@ -160,8 +160,8 @@ public class LazyTest extends AbstractValueTest {
     @Test
     public void shouldFilterOverLazyValue() {
         final Lazy<Integer> testee = Lazy.of(() -> 42);
-        final Option<Integer> expectedPositive = Option.some(42);
-        final Option<Integer> expectedNegative = Option.none();
+        final Lazy<Option<Integer>> expectedPositive = Lazy.of(() -> Option.some(42));
+        final Lazy<Option<Integer>> expectedNegative = Lazy.of(Option::none);
 
         assertThat(testee.filter(i -> i % 2 == 0)).isEqualTo(expectedPositive);
         assertThat(testee.filter(i -> i % 2 != 0)).isEqualTo(expectedNegative);
@@ -308,6 +308,15 @@ public class LazyTest extends AbstractValueTest {
         assertThat(same.equals(same)).isTrue();
     }
 
+    @SuppressWarnings({ "EqualsBetweenInconvertibleTypes", "EqualsWithItself" })
+    @Test
+    public void shouldUseDefaultEqualsSemanticsForArrays() {
+        assertThat(Lazy.of(() -> new Integer[] {1}).equals("")).isFalse();
+        assertThat(Lazy.of(() -> new Integer[] {1}).equals(Lazy.of(() -> new Integer[] {1}))).isFalse();
+        final Lazy<Integer[]> same = Lazy.of(() -> new Integer[] {1});
+        assertThat(same.equals(same)).isTrue();
+    }
+
     @Test
     public void shouldDetectUnequalObject() {
         assertThat(Lazy.of(() -> 1).equals(Lazy.of(() -> 2))).isFalse();
@@ -317,7 +326,14 @@ public class LazyTest extends AbstractValueTest {
 
     @Test
     public void shouldComputeHashCode() {
-        assertThat(Lazy.of(() -> 1).hashCode()).isEqualTo(Objects.hash(1));
+        assertThat(Lazy.of(() -> 1).hashCode()).isEqualTo(Objects.hashCode(1));
+    }
+
+    @Test
+    public void shouldComputeHashCodeForArrays() {
+        Integer[] value = new Integer[] {1};
+        //noinspection ArrayHashCode
+        assertThat(Lazy.of(() -> value).hashCode()).isEqualTo(value.hashCode());
     }
 
     // -- toString

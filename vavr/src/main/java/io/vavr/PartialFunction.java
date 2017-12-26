@@ -65,6 +65,35 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
             public boolean isDefinedAt(T value) {
                 return totalFunction.apply(value).isDefined();
             }
+
+        };
+    }
+
+    /**
+     * Factory method for creating a partial function that maps a given {@code Value} to its underlying value.
+     * The partial function is defined for an input {@code Value} if and only if the input {@code Value} is not
+     * empty. If the input {@code Value} is not empty, the partial function will return the underlying value of
+     * the input {@code Value}.
+     *
+     * @param <T> type of the underlying value of the input {@code Value}.
+     * @param <V> type of the function input, called <em>domain</em> of the function
+     * @return a partial function that maps a {@code Value} to its underlying value.
+     */
+    static <T, V extends Value<T>> PartialFunction<V, T> getIfDefined() {
+        return new PartialFunction<V, T>() {
+
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            public T apply(V v) {
+                return v.get();
+            }
+
+            @Override
+            public boolean isDefinedAt(V v) {
+                return !v.isEmpty();
+            }
+
         };
     }
 
