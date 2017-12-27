@@ -21,7 +21,6 @@ package io.vavr;
 
 import io.vavr.control.Either;
 import io.vavr.control.Try;
-import io.vavr.control.Validation;
 import io.vavr.match.annotation.Patterns;
 import io.vavr.match.annotation.Unapply;
 import io.vavr.collection.List;
@@ -88,11 +87,4 @@ class $ {
     static <T> Tuple1<T> Success(Try.Success<T> success) { return Tuple.of(success.get()); }
     @Unapply
     static <T> Tuple1<Throwable> Failure(Try.Failure<T> failure) { return Tuple.of(failure.getCause()); }
-
-    // Validation
-    @Unapply
-    static <E, T> Tuple1<T> Valid(Validation.Valid<E, T> valid) { return Tuple.of(valid.get()); }
-    @Unapply
-    static <E, T> Tuple1<E> Invalid(Validation.Invalid<E, T> invalid) { return Tuple.of(invalid.getError()); }
-
 }

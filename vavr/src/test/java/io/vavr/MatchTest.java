@@ -29,7 +29,6 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.Year;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static io.vavr.API.$;
@@ -325,7 +324,7 @@ public class MatchTest {
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Test
     public void shouldDecomposeListWithNonEmptyTail() {
-        final List<Option<Number>> numberOptionList = List.of(Option.some(1), Option.some(2.0));
+        final List<Option<? extends Number>> numberOptionList = List.of(Option.some(1), Option.some(2.0));
         final String actual = Match(numberOptionList).of(
                 Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())),  (x, xs) -> {
                     final Some<Number> head = x;

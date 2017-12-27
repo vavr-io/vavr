@@ -985,7 +985,7 @@ public class TryTest extends AbstractValueTest {
     public void shouldConvertFailureToValidation() {
         Try<Object> failure = failure();
         final Validation<Throwable, Object> invalid = failure.toValidation();
-        assertThat(invalid.getError()).isEqualTo(failure.getCause());
+        assertThat(invalid.getErrors().get(0)).isEqualTo(failure.getCause());
         assertThat(invalid.isInvalid()).isTrue();
     }
 
@@ -993,7 +993,7 @@ public class TryTest extends AbstractValueTest {
     public void shouldConvertFailureToInvalidValidation() {
         Try<Object> failure = failure();
         final Validation<String, Object> validation = failure.toValidation(e -> e.toString());
-        assertThat(validation.getError()).isEqualTo(failure.getCause().toString());
+        assertThat(validation.getErrors().get(0)).isEqualTo(failure.getCause().toString());
         assertThat(validation.isInvalid()).isTrue();
     }
 
@@ -1021,12 +1021,12 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertFailureToValidationLeft() {
-        assertThat(failure().toValidation("test").isInvalid()).isTrue();
+        assertThat(failure().toValid("test").isInvalid()).isTrue();
     }
 
     @Test
     public void shouldConvertFailureToValidationLeftSupplier() {
-        assertThat(failure().toValidation(() -> "test").isInvalid()).isTrue();
+        assertThat(failure().toValid(() -> "test").isInvalid()).isTrue();
     }
 
     // -- toJavaOptional

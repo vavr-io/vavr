@@ -121,7 +121,6 @@ import static io.vavr.API.*;
  * <li>{@link #toEither(Object)}</li>
  * <li>{@link #toEither(Supplier)}</li>
  * <li>{@link #toInvalid(Object)}</li>
- * <li>{@link #toInvalid(Supplier)}</li>
  * <li>{@link #toJavaArray()}</li>
  * <li>{@link #toJavaArray(Class)}</li>
  * <li>{@link #toJavaCollection(Function)}</li>
@@ -163,8 +162,6 @@ import static io.vavr.API.*;
  * <li>{@link #toTry(Supplier)}</li>
  * <li>{@link #toValid(Object)}</li>
  * <li>{@link #toValid(Supplier)}</li>
- * <li>{@link #toValidation(Object)}</li>
- * <li>{@link #toValidation(Supplier)}</li>
  * <li>{@link #toVector()}</li>
  * </ul>
  *
@@ -1194,11 +1191,11 @@ public interface Value<T> extends Iterable<T> {
      * @param <L>     Validation error component type
      * @return A new {@link Validation}.
      */
-    default <L> Validation<L, T> toValidation(L invalid) {
+    default <L> Validation<L, T> toValid(L invalid) {
         if (this instanceof Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalid);
         } else {
-            return isEmpty() ? Invalid(invalid) : Valid(get());
+            return isEmpty() ? Validation.invalid(invalid) : Validation.valid(get());
         }
     }
 
@@ -1209,12 +1206,12 @@ public interface Value<T> extends Iterable<T> {
      * @param <L>             Validation error component type
      * @return A new {@link Validation}.
      */
-    default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
+    default <L> Validation<L, T> toValid(Supplier<? extends L> invalidSupplier) {
         Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
-        if (this instanceof Validation) {
+        if (this instanceof io.vavr.control.Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
         } else {
-            return isEmpty() ? Invalid(invalidSupplier.get()) : Valid(get());
+            return isEmpty() ? Validation.invalid(invalidSupplier.get()) : Validation.valid(get());
         }
     }
 
@@ -1391,32 +1388,6 @@ public interface Value<T> extends Iterable<T> {
      */
     default <ID> List<Tree.Node<T>> toTree(Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
         return Tree.build(this, idMapper, parentMapper);
-    }
-
-    /**
-     * Converts this to a {@link Validation}.
-     *
-     * @param <E>   error type of an {@code Invalid}
-     * @param error An error
-     * @return A new {@link Validation.Invalid} containing the given {@code error} if this is empty, otherwise
-     * a new {@link Validation.Valid} containing this value.
-     */
-    default <E> Validation<E, T> toValid(E error) {
-        return isEmpty() ? Validation.invalid(error) : Validation.valid(get());
-    }
-
-    /**
-     * Converts this to a {@link Validation}.
-     *
-     * @param <E>           error type of an {@code Invalid}
-     * @param errorSupplier A supplier of an error
-     * @return A new {@link Validation.Invalid} containing the result of {@code errorSupplier} if this is empty,
-     * otherwise a new {@link Validation.Valid} containing this value.
-     * @throws NullPointerException if {@code valueSupplier} is null
-     */
-    default <E> Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
-        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
-        return isEmpty() ? Validation.invalid(errorSupplier.get()) : Validation.valid(get());
     }
 
     /**
