@@ -600,6 +600,17 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.continually(1).extend(i -> i + 1).take(6)).isEqualTo(of(1, 1, 1, 1, 1, 1));
     }
 
+    // -- filter
+
+    @Test
+    @Override
+    public void shouldFilterExistingElements() {
+        assertThat(of(1, 2, 3).filter(i -> i == 1)).isEqualTo(of(1));
+        assertThat(of(1, 2, 3).filter(i -> i == 2)).isEqualTo(of(2));
+        assertThat(of(1, 2, 3).filter(i -> i == 3)).isEqualTo(of(3));
+        assertThat(of(1, 2, 3).filter(ignore -> true)).isEqualTo(of(1, 2, 3));
+    }
+
     // -- isDefinedAt
 
     @Test
@@ -614,6 +625,44 @@ public class StreamTest extends AbstractLinearSeqTest {
     public void shouldVerifyLazyProperty() {
         assertThat(empty().isLazy()).isTrue();
         assertThat(of(1).isLazy()).isTrue();
+    }
+
+    // -- reject
+
+    @Test
+    @Override
+    public void shouldRejectExistingElements() {
+        assertThat(of(1, 2, 3).reject(i -> i == 1)).isEqualTo(of(2, 3));
+        assertThat(of(1, 2, 3).reject(i -> i == 2)).isEqualTo(of(1, 3));
+        assertThat(of(1, 2, 3).reject(i -> i == 3)).isEqualTo(of(1, 2));
+        assertThat(of(1, 2, 3).reject(ignore -> false)).isEqualTo(of(1, 2, 3));
+    }
+
+    // -- replace(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceElementOfNonNilUsingCurrNewWhenNoOccurrenceExists() {
+        assertThat(of(0, 1, 2).replace(33, 3)).isEqualTo(of(0, 1, 2));
+    }
+
+    // -- replaceAll(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceAllElementsOfNonNilUsingCurrNonExistingNew() {
+        assertThat(of(0, 1, 2, 1).replaceAll(33, 3)).isEqualTo(of(0, 1, 2, 1));
+    }
+
+    // -- retainAll
+
+    @Test
+    @Override
+    public void shouldRetainAllElementsFromNonNil() {
+        final Traversable<Integer> src = of(1, 2, 1, 2, 2);
+        final Traversable<Integer> expected = of(1, 2, 1, 2, 2);
+        final Traversable<Integer> actual = src.retainAll(of(1, 2));
+        assertThat(actual).isEqualTo(expected);
     }
 
     // -- subSequence(int, int)
@@ -693,11 +742,35 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.from(0).filter(hiddenThrow).take(1).sum().intValue()).isEqualTo(0);
     }
 
+    @Test
+    @Override
+    public void shouldTakeAllIfCountExceedsSize() {
+        assertThat(of(1, 2, 3).take(4)).isEqualTo(of(1, 2, 3));
+    }
+
     @Ignore
     @Override
     @Test
     public void shouldReturnSameInstanceIfTakeAll() {
         // the size of a possibly infinite stream is unknown
+    }
+
+    // -- takeUntil
+
+    @Test
+    @Override
+    public void shouldTakeUntilAllOnFalseCondition() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(of(1, 2, 3).takeUntil(x -> false)).isEqualTo(of(1, 2, 3));
+    }
+
+    // -- takeWhile
+
+    @Test
+    @Override
+    public void shouldTakeWhileAllOnTrueCondition() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(of(1, 2, 3).takeWhile(x -> true)).isEqualTo(of(1, 2, 3));
     }
 
     // -- toStream

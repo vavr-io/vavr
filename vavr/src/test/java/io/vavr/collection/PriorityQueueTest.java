@@ -122,6 +122,24 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         return true;
     }
 
+    // -- dropUntil
+
+    @Test
+    @Override
+    public void shouldDropUntilNoneIfPredicateIsTrue() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.dropUntil(ignored -> true)).isSameAs(t);
+    }
+
+    // -- dropWhile
+
+    @Test
+    @Override
+    public void shouldDropWhileNoneIfPredicateIsFalse() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(t.dropWhile(ignored -> false)).isSameAs(t);
+    }
+
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
@@ -215,6 +233,34 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         assertThat(of(3, 1, 4, 1, 5, 9, 2, 6).removeAll(of(1, 9, 1, 2))).isEqualTo(of(3, 4, 5, 6));
     }
 
+    // -- replace(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceElementOfNilUsingCurrNew() {
+        assertThat(this.<Integer> empty().replace(1, 2)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldReplaceElementOfNonNilUsingCurrNewWhenNoOccurrenceExists() {
+        assertThat(of(0, 1, 2).replace(33, 3)).isEqualTo(of(0, 1, 2));
+    }
+
+    // -- replaceAll(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceAllElementsOfNilUsingCurrNew() {
+        assertThat(this.<Integer> empty().replaceAll(1, 2)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldReplaceAllElementsOfNonNilUsingCurrNonExistingNew() {
+        assertThat(of(0, 1, 2, 1).replaceAll(33, 3)).isEqualTo(of(0, 1, 2, 1));
+    }
+
     // -- enqueueAll
 
     @Test
@@ -239,6 +285,58 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     @Test(expected = NoSuchElementException.class)
     public void shouldFailDequeueOfEmpty() {
         empty().dequeue();
+    }
+
+    // -- take
+
+    @Test
+    @Override
+    public void shouldTakeNoneOnNil() {
+        assertThat(empty().take(1)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldTakeNoneIfCountIsNegative() {
+        assertThat(of(1, 2, 3).take(-1)).isEqualTo(empty());
+    }
+
+    // -- takeRight
+
+    @Test
+    @Override
+    public void shouldTakeRightNoneIfCountIsNegative() {
+        assertThat(of(1, 2, 3).takeRight(-1)).isEqualTo(empty());
+    }
+
+    // -- takeUntil
+
+    @Test
+    @Override
+    public void shouldTakeUntilAllOnFalseCondition() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(of(1, 2, 3).takeUntil(x -> false)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    @Override
+    public void shouldTakeUntilAllOnTrueCondition() {
+        assertThat(of(1, 2, 3).takeUntil(x -> true)).isEqualTo(empty());
+    }
+
+    // -- takeWhile
+
+    @Test
+    @Override
+    public void shouldTakeWhileAllOnTrueCondition() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(of(1, 2, 3).takeWhile(x -> true)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    @Override
+    public void shouldTakeWhileNoneOnNil() {
+        assertThat(empty().takeWhile(x -> true)).isEqualTo(empty());
     }
 
     // -- toPriorityQueue

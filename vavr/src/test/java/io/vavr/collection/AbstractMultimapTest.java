@@ -775,6 +775,22 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- replace(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceElementOfNilUsingCurrNew() {
+        assertThat(this.<Integer> empty().replace(1, 2)).isEqualTo(empty());
+    }
+
+    // -- replaceAll(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceAllElementsOfNilUsingCurrNew() {
+        assertThat(this.<Integer> empty().replaceAll(1, 2)).isEqualTo(empty());
+    }
+
     // -- removeAll
 
     @Test
@@ -880,6 +896,16 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- retainAll
+
+    @Test
+    @Override
+    public void shouldRetainAllElementsFromNil() {
+        final Traversable<Object> empty = empty();
+        final Traversable<Object> actual = empty.retainAll(of(1, 2, 3));
+        assertThat(actual).isEqualTo(empty);
+    }
+
     // -- span
 
     @Override
@@ -927,6 +953,44 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @Override
     public void shouldReturnSomeTailWhenCallingTailOptionOnNonNil() {
         assertThat(of(1, 2, 3).tailOption().get()).isEqualTo(Option.some(of(2, 3)).get());
+    }
+
+    // -- take
+
+    @Test
+    @Override
+    public void shouldTakeNoneOnNil() {
+        assertThat(empty().take(1)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldTakeNoneIfCountIsNegative() {
+        assertThat(of(1, 2, 3).take(-1)).isEqualTo(empty());
+    }
+
+    // -- takeRight
+
+    @Test
+    @Override
+    public void shouldTakeRightNoneIfCountIsNegative() {
+        assertThat(of(1, 2, 3).takeRight(-1)).isEqualTo(empty());
+    }
+
+    // -- takeUntil
+
+    @Test
+    @Override
+    public void shouldTakeUntilAllOnTrueCondition() {
+        assertThat(of(1, 2, 3).takeUntil(x -> true)).isEqualTo(empty());
+    }
+
+    // -- takeWhile
+
+    @Test
+    @Override
+    public void shouldTakeWhileNoneOnNil() {
+        assertThat(empty().takeWhile(x -> true)).isEqualTo(empty());
     }
 
     // -- toJavaMap

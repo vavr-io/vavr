@@ -41,6 +41,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static io.vavr.collection.Iterator.*;
+import static java.util.Comparator.comparingInt;
 
 public class IteratorTest extends AbstractTraversableTest {
 
@@ -187,6 +188,63 @@ public class IteratorTest extends AbstractTraversableTest {
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
+    }
+
+    // -- distinct
+
+    @Test
+    @Override
+    public void shouldComputeDistinctOfEmptyTraversable() {
+        assertThat(empty().distinct()).isSameAs(empty());
+    }
+
+    // -- distinctBy(Comparator)
+
+    @Test
+    @Override
+    public void shouldComputeDistinctByOfEmptyTraversableUsingComparator() {
+        final Comparator<Integer> comparator = comparingInt(i -> i);
+        assertThat(this.<Integer> empty().distinctBy(comparator)).isSameAs(empty());
+    }
+
+    // -- distinctBy(Function)
+
+    @Test
+    @Override
+    public void shouldComputeDistinctByOfEmptyTraversableUsingKeyExtractor() {
+        assertThat(empty().distinctBy(Function.identity())).isSameAs(empty());
+    }
+
+    // -- drop
+
+    @Test
+    @Override
+    public void shouldDropNoneOnNil() {
+        assertThat(empty().drop(1)).isSameAs(empty());
+    }
+
+    // -- dropRight
+
+    @Test
+    @Override
+    public void shouldDropRightNoneOnNil() {
+        assertThat(empty().dropRight(1)).isSameAs(empty());
+    }
+
+    // -- dropUntil
+
+    @Test
+    @Override
+    public void shouldDropUntilNoneOnNil() {
+        assertThat(empty().dropUntil(ignored -> true)).isSameAs(empty());
+    }
+
+    // -- flatMap
+
+    @Test
+    @Override
+    public void shouldFlatMapEmpty() {
+        assertThat(empty().flatMap(v -> of(v, 0))).isSameAs(empty());
     }
 
     @Override
@@ -731,6 +789,22 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(of(1).isLazy()).isTrue();
     }
 
+    // -- replace(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceElementOfNonNilUsingCurrNewWhenNoOccurrenceExists() {
+        assertThat(of(0, 1, 2).replace(33, 3)).isEqualTo(of(0, 1, 2));
+    }
+
+    // -- replaceAll(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceAllElementsOfNonNilUsingCurrNonExistingNew() {
+        assertThat(of(0, 1, 2, 1).replaceAll(33, 3)).isEqualTo(of(0, 1, 2, 1));
+    }
+
     // -- take
 
     @Ignore
@@ -740,13 +814,42 @@ public class IteratorTest extends AbstractTraversableTest {
         // take consumes the Iterator
     }
 
+    @Test
+    @Override
+    public void shouldTakeAllIfCountExceedsSize() {
+        assertThat(of(1, 2, 3).take(4)).isEqualTo(of(1, 2, 3));
+    }
+
     // -- takeRight
+
+    @Test
+    @Override
+    public void shouldTakeRightAllIfCountExceedsSize() {
+        assertThat(of(1, 2, 3).takeRight(4)).isEqualTo(of(1, 2, 3));
+    }
 
     @Ignore
     @Override
     @Test
     public void shouldReturnSameInstanceIfTakeRightAll() {
         // takeRight consumes the Iterator
+    }
+
+    // -- takeUntil
+
+    @Test
+    @Override
+    public void shouldTakeUntilNoneOnNil() {
+        assertThat(empty().takeUntil(x -> true)).isSameAs(empty());
+    }
+
+    // -- takeWhile
+
+    @Test
+    @Override
+    public void shouldTakeWhileAllOnTrueCondition() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(of(1, 2, 3).takeWhile(x -> true)).isEqualTo(of(1, 2, 3));
     }
 
     // -- toString

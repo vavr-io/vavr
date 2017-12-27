@@ -6,10 +6,13 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import static java.util.Comparator.comparingInt;
 
 public class LinkedHashSetTest extends AbstractSetTest {
 
@@ -43,6 +46,82 @@ public class LinkedHashSetTest extends AbstractSetTest {
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
+    }
+
+    // -- distinct
+
+    @Test
+    @Override
+    public void shouldComputeDistinctOfEmptyTraversable() {
+        assertThat(empty().distinct()).isSameAs(empty());
+    }
+
+    // -- distinctBy(Comparator)
+
+    @Test
+    @Override
+    public void shouldComputeDistinctByOfEmptyTraversableUsingComparator() {
+        final Comparator<Integer> comparator = comparingInt(i -> i);
+        assertThat(this.<Integer> empty().distinctBy(comparator)).isSameAs(empty());
+    }
+
+    // -- distinctBy(Function)
+
+    @Test
+    @Override
+    public void shouldComputeDistinctByOfEmptyTraversableUsingKeyExtractor() {
+        assertThat(empty().distinctBy(Function.identity())).isSameAs(empty());
+    }
+
+    // -- drop
+
+    @Test
+    @Override
+    public void shouldDropNoneOnNil() {
+        assertThat(empty().drop(1)).isSameAs(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldDropAllIfCountExceedsSize() {
+        assertThat(of(1, 2, 3).drop(4)).isSameAs(empty());
+    }
+
+    // -- dropRight
+
+    @Test
+    @Override
+    public void shouldDropRightNoneOnNil() {
+        assertThat(empty().dropRight(1)).isSameAs(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldDropRightAllIfCountExceedsSize() {
+        assertThat(of(1, 2, 3).dropRight(4)).isSameAs(empty());
+    }
+
+    // -- dropUntil
+
+    @Test
+    @Override
+    public void shouldDropUntilAllIfPredicateIsFalse() {
+        assertThat(of(1, 2, 3).dropUntil(ignored -> false)).isSameAs(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldDropUntilNoneOnNil() {
+        assertThat(empty().dropUntil(ignored -> true)).isSameAs(empty());
+    }
+
+    // -- dropWhile
+
+    @Test
+    @Override
+    public void shouldDropWhileAllIfPredicateIsTrue() {
+        final Traversable<Integer> actual = of(1, 2, 3).dropWhile(ignored -> true);
+        assertThat(actual).isSameAs(empty());
     }
 
     @Override

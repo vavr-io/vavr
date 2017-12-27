@@ -498,6 +498,12 @@ public class TreeTest extends AbstractTraversableTest {
     // -- flatMap
 
     @Test
+    @Override
+    public void shouldFlatMapEmpty() {
+        assertThat(empty().flatMap(v -> of(v, 0))).isSameAs(empty());
+    }
+
+    @Test
     public void shouldFlatMapEmptyTree() {
         assertThat(Tree.empty().flatMap(t -> Tree.of(1))).isEqualTo(Tree.empty());
     }
@@ -599,6 +605,58 @@ public class TreeTest extends AbstractTraversableTest {
         final Tree<Integer> testee = Tree.of(1, Tree.of(2), Tree.of(3));
         final Tree<Integer> actual = testee.replace(4, 99);
         assertThat(actual).isEqualTo(testee);
+    }
+
+    // -- replaceAll(curr, new)
+
+    @Test
+    @Override
+    public void shouldReplaceAllElementsOfNonNilUsingCurrNonExistingNew() {
+        assertThat(of(0, 1, 2, 1).replaceAll(33, 3)).isEqualTo(of(0, 1, 2, 1));
+    }
+
+    // -- retainAll
+
+    @Test
+    @Override
+    public void shouldRetainAllElementsFromNil() {
+        final Traversable<Object> empty = empty();
+        final Traversable<Object> actual = empty.retainAll(of(1, 2, 3));
+        assertThat(actual).isEqualTo(empty);
+    }
+
+    // -- take
+
+    @Test
+    @Override
+    public void shouldTakeNoneOnNil() {
+        assertThat(empty().take(1)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldTakeNoneIfCountIsNegative() {
+        assertThat(of(1, 2, 3).take(-1)).isEqualTo(empty());
+    }
+
+    @Test
+    @Override
+    public void shouldTakeAllIfCountExceedsSize() {
+        assertThat(of(1, 2, 3).take(4)).isEqualTo(of(1, 2, 3));
+    }
+
+    // -- takeRight
+
+    @Test
+    @Override
+    public void shouldTakeRightAllIfCountExceedsSize() {
+        assertThat(of(1, 2, 3).takeRight(4)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    @Override
+    public void shouldTakeRightNoneIfCountIsNegative() {
+        assertThat(of(1, 2, 3).takeRight(-1)).isEqualTo(empty());
     }
 
     // -- values()
@@ -841,6 +899,13 @@ public class TreeTest extends AbstractTraversableTest {
         // Tree.dropWhile returns a Seq
     }
 
+    @Test
+    public void shouldDropWhileNoneOnNil() {
+        final Traversable<?> empty = empty();
+        final Traversable<?> actual = empty.dropWhile(ignored -> true);
+        assertThat(actual).isEqualTo(empty);
+    }
+
     // -- filter
 
     @Ignore
@@ -886,6 +951,19 @@ public class TreeTest extends AbstractTraversableTest {
         // Tree.takeUntil() returns a Seq
     }
 
+    @Test
+    @Override
+    public void shouldTakeUntilAllOnFalseCondition() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(of(1, 2, 3).takeUntil(x -> false)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    @Override
+    public void shouldTakeUntilAllOnTrueCondition() {
+        assertThat(of(1, 2, 3).takeUntil(x -> true)).isEqualTo(empty());
+    }
+
     // -- takeWhile
 
     @Ignore
@@ -893,6 +971,19 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     public void shouldReturnSameInstanceWhenEmptyTakeWhile() {
         // Tree.takeWhile() returns a Seq
+    }
+
+    @Test
+    @Override
+    public void shouldTakeWhileAllOnTrueCondition() {
+        final Traversable<Integer> t = of(1, 2, 3);
+        assertThat(of(1, 2, 3).takeWhile(x -> true)).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    @Override
+    public void shouldTakeWhileNoneOnNil() {
+        assertThat(empty().takeWhile(x -> true)).isEqualTo(empty());
     }
 
     // -- spliterator
