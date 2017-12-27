@@ -1188,10 +1188,10 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Validation}.
      *
      * @param invalid An invalid value for the {@link Validation}
-     * @param <L>     Validation error component type
+     * @param <E>     Validation error component type
      * @return A new {@link Validation}.
      */
-    default <L> Validation<L, T> toValid(L invalid) {
+    default <E> Validation<E, T> toValid(E invalid) {
         if (this instanceof Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalid);
         } else {
@@ -1203,12 +1203,12 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Validation}.
      *
      * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
-     * @param <L>             Validation error component type
+     * @param <E>             Validation error component type
      * @return A new {@link Validation}.
      */
-    default <L> Validation<L, T> toValid(Supplier<? extends L> invalidSupplier) {
+    default <E> Validation<E, T> toValid(Supplier<? extends E> invalidSupplier) {
         Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
-        if (this instanceof io.vavr.control.Validation) {
+        if (this instanceof Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
         } else {
             return isEmpty() ? Validation.invalid(invalidSupplier.get()) : Validation.valid(get());
