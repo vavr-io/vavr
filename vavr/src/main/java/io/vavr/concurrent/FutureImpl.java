@@ -20,14 +20,12 @@
 package io.vavr.concurrent;
 
 import io.vavr.CheckedConsumer;
-import io.vavr.CheckedFunction1;
 import io.vavr.collection.Queue;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 
 import java.util.Objects;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -85,7 +83,7 @@ final class FutureImpl<T> implements Future<T> {
 
 
     // single constructor
-    private FutureImpl(Executor executor, Option<Try<T>> value, Queue<Consumer<Try<T>>> actions, Queue<Thread> waiters, CheckedFunction1<Predicate<Try<? extends T>>, Thread> threadFactory) {
+    private FutureImpl(Executor executor, Option<Try<T>> value, Queue<Consumer<Try<T>>> actions, Queue<Thread> waiters, Computation<T> computation) {
         this.executor = executor;
         synchronized (lock) {
             this.cancelled = false;
@@ -93,7 +91,7 @@ final class FutureImpl<T> implements Future<T> {
             this.actions = actions;
             this.waiters = waiters;
             try {
-                this.thread = threadFactory.apply(this::tryComplete);
+                computation.execute(this::tryComplete, this::updateThread);
             } catch(Throwable x) {
                 tryComplete(Try.failure(x));
             }
@@ -108,7 +106,7 @@ final class FutureImpl<T> implements Future<T> {
      */
     @SuppressWarnings("unchecked")
     static <T> FutureImpl<T> of(Executor executor, Try<? extends T> value) {
-        return new FutureImpl<>(executor, Option.some(Try.narrow(value)), null, null, ignored -> null);
+        return new FutureImpl<>(executor, Option.some(Try.narrow(value)), null, null, (tryComplete, updateThread) -> {});
     }
 
     /**
@@ -121,10 +119,9 @@ final class FutureImpl<T> implements Future<T> {
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> sync(Executor executor, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), tryComplete -> {
-            computation.accept(tryComplete);
-            return null; // no thread is created in the synchronous case
-        });
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (tryComplete, updateThread) ->
+            computation.accept(tryComplete)
+        );
     }
 
     /**
@@ -138,30 +135,16 @@ final class FutureImpl<T> implements Future<T> {
      */
     static <T> FutureImpl<T> async(Executor executor, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
         // In a single-threaded context this Future may already have been completed during initialization.
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), tryComplete -> createThread(executor, () -> {
-            try {
-                computation.accept(tryComplete);
-            } catch (Throwable x) {
-                tryComplete.test(Try.failure(x));
-            }
-        }));
-    }
-
-    private static Thread createThread(Executor executor, Runnable runnable) throws InterruptedException {
-        final AtomicReference<Thread> thread = new AtomicReference<>(null);
-        executor.execute(() -> {
-            synchronized (thread) {
-                thread.set(Thread.currentThread());
-                thread.notify();
-            }
-            runnable.run();
-        });
-        synchronized (thread) {
-            if (thread.get() == null) {
-                thread.wait();
-            }
-        }
-        return thread.get();
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (tryComplete, updateThread) ->
+                executor.execute(() -> {
+                    updateThread.run();
+                    try {
+                        computation.accept(tryComplete);
+                    } catch (Throwable x) {
+                        tryComplete.test(Try.failure(x));
+                    }
+                })
+        );
     }
 
     @Override
@@ -204,7 +187,7 @@ final class FutureImpl<T> implements Future<T> {
             ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker() {
 
                 final long duration = (unit == null) ? -1 : unit.toNanos(timeout);
-                final Thread thread = Thread.currentThread();
+                final Thread waitingThread = Thread.currentThread();
 
                 boolean threadEnqueued = false;
 
@@ -222,7 +205,7 @@ final class FutureImpl<T> implements Future<T> {
                     try {
                         if (!threadEnqueued) {
                             synchronized (lock) {
-                                waiters = waiters.enqueue(thread);
+                                waiters = waiters.enqueue(waitingThread);
                             }
                             threadEnqueued = true;
                         }
@@ -236,8 +219,8 @@ final class FutureImpl<T> implements Future<T> {
                         } else {
                             LockSupport.park();
                         }
-                        if (thread.isInterrupted()) {
-                            tryComplete(Try.failure(new InterruptedException()));
+                        if (waitingThread.isInterrupted()) {
+                            tryComplete(Try.failure(new ExecutionException(new InterruptedException())));
                         }
                     } catch(Throwable x) {
                         tryComplete(Try.failure(x));
@@ -259,14 +242,25 @@ final class FutureImpl<T> implements Future<T> {
         if (!isCompleted()) {
             synchronized (lock) {
                 if (!isCompleted()) {
-                    if (mayInterruptIfRunning && thread != null) {
-                        thread.interrupt();
+                    if (mayInterruptIfRunning && this.thread != null) {
+                        this.thread.interrupt();
                     }
-                    cancelled = tryComplete(Try.failure(new CancellationException()));
+                    this.cancelled = tryComplete(Try.failure(new CancellationException()));
                 }
             }
         }
         return this;
+    }
+
+    private void updateThread() {
+        // cancellation may have been initiated by a different thread before this.thread is set by the worker thread
+        if (!isCompleted()) {
+            synchronized (lock) {
+                if (!isCompleted()) {
+                    this.thread = Thread.currentThread();
+                }
+            }
+        }
     }
 
     @Override
@@ -376,5 +370,9 @@ final class FutureImpl<T> implements Future<T> {
         } catch(Throwable x) {
             // ignored // TODO: tell UncaughtExceptionHandler?
         }
+    }
+
+    private interface Computation<T> {
+        void execute(Predicate<Try<? extends T>> tryComplete, Runnable updateThread) throws Throwable;
     }
 }
