@@ -26,9 +26,8 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Spliterator;
+import java.util.*;
+import java.util.function.Function;
 
 public class ValidationTest extends AbstractValueTest {
 
@@ -63,6 +62,13 @@ public class ValidationTest extends AbstractValueTest {
         return 1;
     }
 
+    // -- Validation.lift
+
+    @Test
+    public void shouldLiftLambdaToValid() {
+        assertThat(Validation.lift(Function.identity())).isNotNull();
+    }
+
     // -- Validation.valid
 
     @Test
@@ -92,7 +98,7 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateFailureWhenCreatingInvalidOfIterableErrors() {
-        final Validation<String, ?> invalid = Validation.invalidAll(List.of("error"));
+        final Validation<String, ?> invalid = Validation.invalidAll(Arrays.asList("err1", "err2"));
         assertThat(invalid instanceof Validation.Invalid).isTrue();
     }
 
@@ -171,6 +177,18 @@ public class ValidationTest extends AbstractValueTest {
                 Validation.invalid("error3", "error4")
         ));
         assertThat(actual).isEqualTo(Validation.invalid("error1", "error2", "error3", "error4"));
+    }
+
+    // -- ap
+
+    @Test
+    public void shouldApLiftedFunctionToValid() {
+        assertThat(Validation.valid(1).ap(Validation.lift(i -> i)).get()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldApLiftedFunctionToInvalid() {
+        assertThat(Validation.invalid("err1", "err2").ap(Validation.lift(i -> i)).getErrors()).isEqualTo(List.of("err1", "err2"));
     }
 
     // -- toEither
@@ -275,6 +293,14 @@ public class ValidationTest extends AbstractValueTest {
     public void shouldReturnAlternativeOnOrElseSupplierIfValid() {
         final Validation<String, String> validValidation = valid();
         assertThat(invalid().orElse(() -> validValidation)).isSameAs(validValidation);
+    }
+
+    // -- getErrors
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldThrowErrorOnGetErrorValid() {
+        final Validation<String, String> v1 = valid();
+        v1.getErrors();
     }
 
     // -- getOrElseGet
@@ -499,13 +525,7 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(result2.isInvalid()).isTrue();
     }
 
-    // -- miscellaneous
-
-    @Test(expected = RuntimeException.class)
-    public void shouldThrowErrorOnGetErrorValid() {
-        final Validation<String, String> v1 = valid();
-        v1.getErrors();
-    }
+    // -- equals
 
     @Test
     public void shouldMatchLikeObjects() {
@@ -526,14 +546,7 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(e1.equals(e3)).isFalse();
     }
 
-    @Test
-    public void shouldReturnCorrectStringForToString() {
-        final Validation<String, String> v1 = Validation.valid("test");
-        final Validation<String, String> v2 = Validation.invalid("error");
-
-        assertThat(v1.toString()).isEqualTo("Valid(test)");
-        assertThat(v2.toString()).isEqualTo("Invalid(List(error))");
-    }
+    // -- hashCode
 
     @Test
     public void shouldReturnHashCode() {
@@ -542,6 +555,17 @@ public class ValidationTest extends AbstractValueTest {
 
         assertThat(v1.hashCode()).isEqualTo(Objects.hashCode(v1));
         assertThat(e1.hashCode()).isEqualTo(Objects.hashCode(e1));
+    }
+
+    // -- toString
+
+    @Test
+    public void shouldReturnCorrectStringForToString() {
+        final Validation<String, String> v1 = Validation.valid("test");
+        final Validation<String, String> v2 = Validation.invalid("error");
+
+        assertThat(v1.toString()).isEqualTo("Valid(test)");
+        assertThat(v2.toString()).isEqualTo("Invalid(List(error))");
     }
 
     // ------------------------------------------------------------------------------------------ //
