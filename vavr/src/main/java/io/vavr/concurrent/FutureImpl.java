@@ -20,12 +20,14 @@
 package io.vavr.concurrent;
 
 import io.vavr.CheckedConsumer;
+import io.vavr.CheckedFunction1;
 import io.vavr.collection.Queue;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 
 import java.util.Objects;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -83,7 +85,7 @@ final class FutureImpl<T> implements Future<T> {
 
 
     // single constructor
-    private FutureImpl(Executor executor, Option<Try<T>> value, Queue<Consumer<Try<T>>> actions, Queue<Thread> waiters, CheckedConsumer<FutureImpl<T>> threadFactory) {
+    private FutureImpl(Executor executor, Option<Try<T>> value, Queue<Consumer<Try<T>>> actions, Queue<Thread> waiters, CheckedFunction1<Predicate<Try<? extends T>>, Thread> threadFactory) {
         this.executor = executor;
         synchronized (lock) {
             this.cancelled = false;
@@ -91,7 +93,7 @@ final class FutureImpl<T> implements Future<T> {
             this.actions = actions;
             this.waiters = waiters;
             try {
-                threadFactory.accept(this);
+                this.thread = threadFactory.apply(this::tryComplete);
             } catch(Throwable x) {
                 tryComplete(Try.failure(x));
             }
@@ -106,7 +108,7 @@ final class FutureImpl<T> implements Future<T> {
      */
     @SuppressWarnings("unchecked")
     static <T> FutureImpl<T> of(Executor executor, Try<? extends T> value) {
-        return new FutureImpl<>(executor, Option.some(Try.narrow(value)), null, null, ignored -> {});
+        return new FutureImpl<>(executor, Option.some(Try.narrow(value)), null, null, ignored -> null);
     }
 
     /**
@@ -119,7 +121,10 @@ final class FutureImpl<T> implements Future<T> {
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> sync(Executor executor, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), future -> computation.accept(future::tryComplete));
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), tryComplete -> {
+            computation.accept(tryComplete);
+            return null; // no thread is created in the synchronous case
+        });
     }
 
     /**
@@ -133,22 +138,30 @@ final class FutureImpl<T> implements Future<T> {
      */
     static <T> FutureImpl<T> async(Executor executor, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
         // In a single-threaded context this Future may already have been completed during initialization.
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), future -> executor.execute(() -> {
-            synchronized (future.lock) {
-                if (!future.isCompleted()) {
-                    future.thread = Thread.currentThread();
-                }
-            }
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), tryComplete -> createThread(executor, () -> {
             try {
-                if (!future.isCompleted()) {
-                    // Cancellation may be already in progress because we can't synchronize(lock) here.
-                    // However, in that case the Thread may be interrupted.
-                    computation.accept(future::tryComplete);
-                }
+                computation.accept(tryComplete);
             } catch (Throwable x) {
-                future.tryComplete(Try.failure(x));
+                tryComplete.test(Try.failure(x));
             }
         }));
+    }
+
+    private static Thread createThread(Executor executor, Runnable runnable) throws InterruptedException {
+        final AtomicReference<Thread> thread = new AtomicReference<>(null);
+        executor.execute(() -> {
+            synchronized (thread) {
+                thread.set(Thread.currentThread());
+                thread.notify();
+            }
+            runnable.run();
+        });
+        synchronized (thread) {
+            if (thread.get() == null) {
+                thread.wait();
+            }
+        }
+        return thread.get();
     }
 
     @Override
