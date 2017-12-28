@@ -607,7 +607,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * Maps the errors if this {@code Validation} is an {@code Invalid}, otherwise does nothing.
      * <p>
      * <strong>Hint</strong>: if a transformation of errors is needed use {@code getErrors().map(f)} instead.
-     * The can be wrapped in an {@code Invalid} again using {@link #invalidAll(Iterable)}.
+     * They can be wrapped in an {@code Invalid} again using {@link #invalidAll(Iterable)}.
      *
      * @param <U> type of the errors resulting from the mapping
      * @param f   a function that maps errors
