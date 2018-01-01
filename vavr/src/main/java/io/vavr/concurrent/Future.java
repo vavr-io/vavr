@@ -903,7 +903,7 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> recover(Function<? super Throwable, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return transformValue(t -> t.recover(f::apply));
+        return transformValue(t -> t.recover(f));
     }
 
     /**
@@ -1097,12 +1097,12 @@ public interface Future<T> extends Value<T> {
     @Override
     default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return transformValue(t -> t.map(mapper::apply));
+        return transformValue(t -> t.map(mapper));
     }
 
     default <U> Future<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return transformValue(t -> t.mapTry(mapper::apply));
+        return transformValue(t -> t.mapTry(mapper));
     }
 
     default Future<T> orElse(Future<? extends T> other) {
@@ -1134,7 +1134,7 @@ public interface Future<T> extends Value<T> {
     @Override
     default Future<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
-        onSuccess(action::accept);
+        onSuccess(action);
         return this;
     }
 
