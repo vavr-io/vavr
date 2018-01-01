@@ -132,6 +132,7 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
         return (Function0<R>) f;
     }
 
+
     /**
      * Applies this function to no arguments and returns the result.
      *
@@ -139,6 +140,7 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
      * 
      */
     R apply();
+
 
     /**
      * Implementation of {@linkplain java.util.function.Supplier#get()}, just calls {@linkplain #apply()}.
@@ -179,6 +181,7 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
         }
     }
 
+
     /**
      * Returns a composed function that first applies this Function0 to the given argument and then applies
      * {@linkplain Function} {@code after} to the result.
@@ -192,6 +195,7 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
         Objects.requireNonNull(after, "after is null");
         return () -> after.apply(apply());
     }
+
 
 }
 

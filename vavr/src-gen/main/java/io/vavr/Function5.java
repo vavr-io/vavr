@@ -162,6 +162,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Lambda<R> {
         return (Function5<T1, T2, T3, T4, T5, R>) f;
     }
 
+
     /**
      * Applies this function to 5 arguments and returns the result.
      *
@@ -221,6 +222,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Lambda<R> {
         return (T5 t5) -> apply(t1, t2, t3, t4, t5);
     }
 
+
     @Override
     default int arity() {
         return 5;
@@ -252,6 +254,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Lambda<R> {
         }
     }
 
+
     /**
      * Returns a composed function that first applies this Function5 to the given argument and then applies
      * {@linkplain Function} {@code after} to the result.
@@ -265,6 +268,7 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Lambda<R> {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
     }
+
 
 }
 

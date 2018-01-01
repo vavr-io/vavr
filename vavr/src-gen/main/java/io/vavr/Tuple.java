@@ -23,6 +23,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+
+
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import java.util.Map;
@@ -480,5 +482,6 @@ public interface Tuple {
     static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> narrow(Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8> t) {
         return (Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>) t;
     }
+
 
 }

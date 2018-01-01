@@ -23,6 +23,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+
+
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
@@ -39,6 +41,7 @@ import java.util.function.Supplier;
 public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
 
     private static final long serialVersionUID = 1L;
+
 
     /**
      * The singleton instance of Tuple0.
@@ -67,6 +70,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
         return COMPARATOR;
     }
 
+
     @Override
     public int arity() {
         return 0;
@@ -76,6 +80,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     public int compareTo(Tuple0 that) {
         return 0;
     }
+
 
     /**
      * Transforms this tuple to an object of type U.
@@ -101,6 +106,7 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
     public boolean equals(Object o) {
         return o == this;
     }
+
 
     @Override
     public int hashCode() {

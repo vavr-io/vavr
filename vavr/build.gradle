@@ -1,3 +1,4 @@
+apply plugin: 'scala'
 
 description = 'Vavr'
 
@@ -13,6 +14,12 @@ sourceSets {
       srcDirs += 'src-gen/test/java'
     }
   }
+
+  codegen {
+    scala {
+      srcDirs = ['generator']
+    }
+  }
 }
 
 dependencies {
@@ -20,4 +27,24 @@ dependencies {
 
   testCompile "junit:junit:$junitVersion"
   testCompile "org.assertj:assertj-core:$assertJVersion"
+
+  codegenCompile "org.scala-lang:scala-library:$scalaVersion"
+  zinc "com.typesafe.zinc:zinc:$zincVersion"
 }
+
+task deleteGeneratedCode(type: Delete) {
+  delete "src-gen"
+}
+
+clean.dependsOn deleteGeneratedCode
+
+task generateCode(type: JavaExec) {
+  inputs.dir file("generator")
+  outputs.dirs file("src-gen/main"), file("src-gen/test")
+
+  main = 'Runner'
+  args 'src-gen/main/java', 'src-gen/test/java'
+  classpath = sourceSets.codegen.runtimeClasspath
+}
+
+compileJava.dependsOn generateCode

@@ -23,6 +23,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+
+
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
@@ -332,6 +334,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         return new Tuple7<>(_1, _2, _3, _4, _5, _6, value);
     }
 
+
     /**
      * Maps the components of this tuple using a mapper function.
      *
@@ -511,6 +514,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
         }
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(_1, _2, _3, _4, _5, _6, _7);
@@ -520,5 +524,6 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     public String toString() {
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ", " + _6 + ", " + _7 + ")";
     }
+
 
 }

@@ -156,6 +156,7 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends Lambda<R> {
         return (CheckedFunction4<T1, T2, T3, T4, R>) f;
     }
 
+
     /**
      * Applies this function to 4 arguments and returns the result.
      *
@@ -201,6 +202,7 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends Lambda<R> {
         return (T4 t4) -> apply(t1, t2, t3, t4);
     }
 
+
     @Override
     default int arity() {
         return 4;
@@ -231,6 +233,7 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends Lambda<R> {
                     -> Memoized.of(cache, Tuple.of(t1, t2, t3, t4), t -> Try.of(() -> apply(t1, t2, t3, t4)).get());
         }
     }
+
 
     /**
      * Return a composed function that first applies this CheckedFunction4 to the given arguments and in case of throwable
@@ -281,6 +284,7 @@ public interface CheckedFunction4<T1, T2, T3, T4, R> extends Lambda<R> {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4) -> after.apply(apply(t1, t2, t3, t4));
     }
+
 
 }
 

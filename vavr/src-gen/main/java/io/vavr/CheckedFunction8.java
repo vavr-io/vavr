@@ -180,6 +180,7 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lam
         return (CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R>) f;
     }
 
+
     /**
      * Applies this function to 8 arguments and returns the result.
      *
@@ -287,6 +288,7 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lam
         return (T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
     }
 
+
     @Override
     default int arity() {
         return 8;
@@ -317,6 +319,7 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lam
                     -> Memoized.of(cache, Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), t -> Try.of(() -> apply(t1, t2, t3, t4, t5, t6, t7, t8)).get());
         }
     }
+
 
     /**
      * Return a composed function that first applies this CheckedFunction8 to the given arguments and in case of throwable
@@ -367,6 +370,7 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lam
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
     }
+
 
 }
 
