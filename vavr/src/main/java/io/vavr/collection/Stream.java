@@ -243,10 +243,9 @@ public interface Stream<T> extends LinearSeq<T> {
      *
      * @param supplier A Supplier of iterator values
      * @param <T> value type
-     * @param <A> supplier option type
      * @return A new Stream
      */
-    static <T, A extends T> Stream<T> iterate(Supplier<Option<A>> supplier) {
+    static <T> Stream<T> iterate(Supplier<? extends Option<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return Stream.ofAll(Iterator.iterate(supplier));
     }

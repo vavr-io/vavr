@@ -979,14 +979,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      *
      * @param supplier A Supplier of iterator values
      * @param <T> value type
-     * @param <A> supplier option type
      * @return A new {@code Iterator}
      * @throws NullPointerException if supplier produces null value
      */
-    static <T, A extends T> Iterator<T> iterate(Supplier<Option<A>> supplier) {
+    static <T> Iterator<T> iterate(Supplier<? extends Option<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return new AbstractIterator<T>() {
-            Option<A> nextOption;
+            Option<? extends T> nextOption;
 
             @Override
             public boolean hasNext() {
@@ -998,7 +997,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
             @Override
             public T getNext() {
-                T next =  nextOption.get();
+                final T next =  nextOption.get();
                 nextOption = null;
                 return next;
             }
