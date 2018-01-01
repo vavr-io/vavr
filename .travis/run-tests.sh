@@ -7,6 +7,6 @@ if [ -n "$(git status -su vavr/src-gen)" ]; then
   exit 1
 fi
 
-if [ -n "$(git status -su vavr-test/src-test)" ]; then
+if [ -n "$(git status -su vavr-test/src-gen)" ]; then
   exit 1
 fi
