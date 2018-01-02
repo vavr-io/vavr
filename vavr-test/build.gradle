@@ -47,3 +47,4 @@ task generateCode(type: JavaExec) {
 }
 
 compileJava.dependsOn generateCode
+generateCode.dependsOn deleteGeneratedCode

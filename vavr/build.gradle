@@ -47,4 +47,5 @@ task generateCode(type: JavaExec) {
   classpath = sourceSets.codegen.runtimeClasspath
 }
 
+generateCode.dependsOn deleteGeneratedCode
 compileJava.dependsOn generateCode
