@@ -157,6 +157,7 @@ public interface CheckedFunction1<T1, R> extends Lambda<R> {
      */
     R apply(T1 t1) throws Exception;
 
+
     @Override
     default int arity() {
         return 1;
@@ -187,6 +188,7 @@ public interface CheckedFunction1<T1, R> extends Lambda<R> {
                     -> Memoized.of(cache, Tuple.of(t1), t -> Try.of(() -> apply(t1)).get());
         }
     }
+
 
     /**
      * Return a composed function that first applies this CheckedFunction1 to the given arguments and in case of throwable

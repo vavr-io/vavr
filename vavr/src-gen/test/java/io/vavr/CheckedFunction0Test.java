@@ -50,6 +50,7 @@ public class CheckedFunction0Test {
         assertThat(CheckedFunction0.lift(() -> { while(true); })).isNotNull();
     }
 
+
     @Test
     public void shouldGetArity() {
         final CheckedFunction0<Object> f = () -> null;
@@ -101,6 +102,7 @@ public class CheckedFunction0Test {
         assertThat(memo.memoized() == memo).isTrue();
     }
 
+
     @Test
     public void shouldRecognizeMemoizedFunctions() {
         final CheckedFunction0<Integer> f = () -> null;
@@ -108,6 +110,7 @@ public class CheckedFunction0Test {
         assertThat(f.isMemoized()).isFalse();
         assertThat(memo.isMemoized()).isTrue();
     }
+
 
     @Test
     public void shouldRecover() {
@@ -192,6 +195,7 @@ public class CheckedFunction0Test {
         assertThat(composed).isNotNull();
     }
 
+
     @Test
     public void shouldNarrow() throws Throwable{
         final CheckedFunction0<String> wideFunction = () -> "Zero args";
@@ -199,5 +203,6 @@ public class CheckedFunction0Test {
 
         assertThat(narrowFunction.apply()).isEqualTo("Zero args");
     }
+
 
 }

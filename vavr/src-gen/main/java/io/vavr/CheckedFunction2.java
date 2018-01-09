@@ -145,6 +145,7 @@ public interface CheckedFunction2<T1, T2, R> extends Lambda<R> {
         return (CheckedFunction2<T1, T2, R>) f;
     }
 
+
     /**
      * Applies this function to two arguments and returns the result.
      *
@@ -164,6 +165,7 @@ public interface CheckedFunction2<T1, T2, R> extends Lambda<R> {
     default CheckedFunction1<T2, R> apply(T1 t1) {
         return (T2 t2) -> apply(t1, t2);
     }
+
 
     @Override
     default int arity() {
@@ -195,6 +197,7 @@ public interface CheckedFunction2<T1, T2, R> extends Lambda<R> {
                     -> Memoized.of(cache, Tuple.of(t1, t2), t -> Try.of(() -> apply(t1, t2)).get());
         }
     }
+
 
     /**
      * Return a composed function that first applies this CheckedFunction2 to the given arguments and in case of throwable
@@ -245,6 +248,7 @@ public interface CheckedFunction2<T1, T2, R> extends Lambda<R> {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2) -> after.apply(apply(t1, t2));
     }
+
 
 }
 

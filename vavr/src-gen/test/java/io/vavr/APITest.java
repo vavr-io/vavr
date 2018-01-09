@@ -393,7 +393,6 @@ public class APITest {
     public void shouldArrayWithVarArgReturnNotNull() {
         assertThat(Array('1', '2', '3')).isNotNull();
     }
-
     @Test
     public void shouldEmptyVectorReturnNotNull() {
         assertThat(Vector()).isNotNull();
@@ -408,7 +407,6 @@ public class APITest {
     public void shouldVectorWithVarArgReturnNotNull() {
         assertThat(Vector('1', '2', '3')).isNotNull();
     }
-
     @Test
     public void shouldEmptyListReturnNotNull() {
         assertThat(List()).isNotNull();
@@ -423,7 +421,6 @@ public class APITest {
     public void shouldListWithVarArgReturnNotNull() {
         assertThat(List('1', '2', '3')).isNotNull();
     }
-
     @Test
     public void shouldEmptyStreamReturnNotNull() {
         assertThat(Stream()).isNotNull();
@@ -438,7 +435,6 @@ public class APITest {
     public void shouldStreamWithVarArgReturnNotNull() {
         assertThat(Stream('1', '2', '3')).isNotNull();
     }
-
     @Test
     public void shouldEmptyQueueReturnNotNull() {
         assertThat(Queue()).isNotNull();
@@ -453,7 +449,6 @@ public class APITest {
     public void shouldQueueWithVarArgReturnNotNull() {
         assertThat(Queue('1', '2', '3')).isNotNull();
     }
-
     @Test
     public void shouldEmptyLinkedSetReturnNotNull() {
         assertThat(LinkedSet()).isNotNull();
@@ -468,7 +463,6 @@ public class APITest {
     public void shouldLinkedSetWithVarArgReturnNotNull() {
         assertThat(LinkedSet('1', '2', '3')).isNotNull();
     }
-
     @Test
     public void shouldEmptySetReturnNotNull() {
         assertThat(Set()).isNotNull();
@@ -483,7 +477,6 @@ public class APITest {
     public void shouldSetWithVarArgReturnNotNull() {
         assertThat(Set('1', '2', '3')).isNotNull();
     }
-
     @Test
     public void shouldEmptySeqReturnNotNull() {
         assertThat(Seq()).isNotNull();
@@ -498,7 +491,6 @@ public class APITest {
     public void shouldSeqWithVarArgReturnNotNull() {
         assertThat(Seq('1', '2', '3')).isNotNull();
     }
-
     @Test
     public void shouldEmptyIndexedSeqReturnNotNull() {
         assertThat(IndexedSeq()).isNotNull();
@@ -543,7 +535,6 @@ public class APITest {
     public void shouldSortedSetWithVarArgAndComparatorReturnNotNull() {
         assertThat(SortedSet((Comparator<Character>) Character::compareTo, '1', '2', '3')).isNotNull();
     }
-
     @Test
     public void shouldEmptyPriorityQueueReturnNotNull() {
         assertThat(PriorityQueue()).isNotNull();
@@ -693,7 +684,6 @@ public class APITest {
       assertThat(map.apply(9)).isEqualTo(18);
       assertThat(map.apply(10)).isEqualTo(20);
     }
-
     @Test
     public void shouldEmptyMapReturnNotNull() {
         assertThat(Map()).isNotNull();
@@ -813,7 +803,6 @@ public class APITest {
       assertThat(map.apply(9)).isEqualTo(18);
       assertThat(map.apply(10)).isEqualTo(20);
     }
-
     @Test
     public void shouldEmptySortedMapReturnNotNull() {
         assertThat(SortedMap()).isNotNull();
@@ -933,7 +922,6 @@ public class APITest {
       assertThat(map.apply(9)).isEqualTo(18);
       assertThat(map.apply(10)).isEqualTo(20);
     }
-
     @Test
     public void shouldEmptySortedMapFromComparatorReturnNotNull() {
         assertThat(SortedMap(Integer::compareTo)).isNotNull();

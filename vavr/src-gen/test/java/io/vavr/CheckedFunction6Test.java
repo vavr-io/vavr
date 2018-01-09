@@ -50,6 +50,7 @@ public class CheckedFunction6Test {
         assertThat(CheckedFunction6.lift((o1, o2, o3, o4, o5, o6) -> { while(true); })).isNotNull();
     }
 
+
     @Test
     public void shouldPartiallyApply() throws Throwable {
         final CheckedFunction6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
@@ -129,6 +130,7 @@ public class CheckedFunction6Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
+
     private static final CheckedFunction6<String, String, String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4, s5, s6) -> MessageDigest.getInstance(s1 + s2 + s3 + s4 + s5 + s6);
 
     @Test
@@ -200,6 +202,7 @@ public class CheckedFunction6Test {
         final CheckedFunction6<Object, Object, Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
+
 
     @Test
     public void shouldNarrow() throws Throwable{

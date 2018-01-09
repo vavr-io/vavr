@@ -50,6 +50,7 @@ public class CheckedFunction4Test {
         assertThat(CheckedFunction4.lift((o1, o2, o3, o4) -> { while(true); })).isNotNull();
     }
 
+
     @Test
     public void shouldPartiallyApply() throws Throwable {
         final CheckedFunction4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
@@ -127,6 +128,7 @@ public class CheckedFunction4Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
+
     private static final CheckedFunction4<String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4) -> MessageDigest.getInstance(s1 + s2 + s3 + s4);
 
     @Test
@@ -198,6 +200,7 @@ public class CheckedFunction4Test {
         final CheckedFunction4<Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
+
 
     @Test
     public void shouldNarrow() throws Throwable{

@@ -174,6 +174,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<R> {
         return (Function7<T1, T2, T3, T4, T5, T6, T7, R>) f;
     }
 
+
     /**
      * Applies this function to 7 arguments and returns the result.
      *
@@ -264,6 +265,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<R> {
         return (T7 t7) -> apply(t1, t2, t3, t4, t5, t6, t7);
     }
 
+
     @Override
     default int arity() {
         return 7;
@@ -295,6 +297,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<R> {
         }
     }
 
+
     /**
      * Returns a composed function that first applies this Function7 to the given argument and then applies
      * {@linkplain Function} {@code after} to the result.
@@ -308,6 +311,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<R> {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
     }
+
 
 }
 

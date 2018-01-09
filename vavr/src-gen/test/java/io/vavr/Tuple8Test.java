@@ -256,6 +256,7 @@ public class Tuple8Test {
         assertThat(intTupleComparator.compare(t8, t0)).isPositive();
     }
 
+
     @Test
     public void shouldMap() {
         final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();

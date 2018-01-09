@@ -158,6 +158,7 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
      */
     R apply(T1 t1);
 
+
     @Override
     default int arity() {
         return 1;
@@ -214,6 +215,7 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
             }
         };
     }
+
 
     /**
      * Returns a composed function that first applies this Function1 to the given argument and then applies

@@ -81,6 +81,7 @@ public class Tuple1Test {
         assertThat(intTupleComparator.compare(t1, t0)).isPositive();
     }
 
+
     @Test
     public void shouldMap() {
         final Tuple1<Object> tuple = createTuple();
@@ -102,6 +103,7 @@ public class Tuple1Test {
       final Tuple1<Seq<Integer>> expected = Tuple.of(Stream.of(2));
       assertThat(Tuple.sequence1(iterable)).isEqualTo(expected);
     }
+
 
     @Test
     public void shouldApplyTuple() {

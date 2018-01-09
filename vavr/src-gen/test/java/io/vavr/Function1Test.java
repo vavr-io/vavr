@@ -56,6 +56,7 @@ public class Function1Test {
         assertThat(identity.apply(s)).isEqualTo(s);
     }
 
+
     @Test
     public void shouldGetArity() {
         final Function1<Object, Object> f = (o1) -> null;
@@ -160,6 +161,7 @@ public class Function1Test {
         assertThat(res.get()).isEqualTo(10);
     }
 
+
     private static final Function1<Integer, Integer> recurrent1 = (i1) -> i1 <= 0 ? i1 : Function1Test.recurrent2.apply(i1 - 1) + 1;
     private static final Function1<Integer, Integer> recurrent2 = Function1Test.recurrent1.memoized();
 
@@ -184,6 +186,7 @@ public class Function1Test {
         final Function1<Object, Object> composed = f.compose(before);
         assertThat(composed).isNotNull();
     }
+
 
     @Test
     public void shouldNarrow(){

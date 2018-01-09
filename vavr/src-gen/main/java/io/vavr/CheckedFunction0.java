@@ -132,6 +132,7 @@ public interface CheckedFunction0<R> extends Lambda<R> {
         return (CheckedFunction0<R>) f;
     }
 
+
     /**
      * Applies this function to no arguments and returns the result.
      *
@@ -139,6 +140,7 @@ public interface CheckedFunction0<R> extends Lambda<R> {
      * @throws Exception if something goes wrong applying this function to the given arguments
      */
     R apply() throws Exception;
+
 
     @Override
     default int arity() {
@@ -168,6 +170,7 @@ public interface CheckedFunction0<R> extends Lambda<R> {
             return (CheckedFunction0<R> & Memoized) Lazy.of(() -> Try.of(this::apply).get())::get;
         }
     }
+
 
     /**
      * Return a composed function that first applies this CheckedFunction0 to the given arguments and in case of throwable
@@ -218,6 +221,7 @@ public interface CheckedFunction0<R> extends Lambda<R> {
         Objects.requireNonNull(after, "after is null");
         return () -> after.apply(apply());
     }
+
 
 }
 

@@ -121,6 +121,7 @@ public class Tuple3Test {
         assertThat(intTupleComparator.compare(t3, t0)).isPositive();
     }
 
+
     @Test
     public void shouldMap() {
         final Tuple3<Object, Object, Object> tuple = createTuple();

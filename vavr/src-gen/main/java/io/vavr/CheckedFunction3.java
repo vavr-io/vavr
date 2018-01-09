@@ -150,6 +150,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends Lambda<R> {
         return (CheckedFunction3<T1, T2, T3, R>) f;
     }
 
+
     /**
      * Applies this function to three arguments and returns the result.
      *
@@ -182,6 +183,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends Lambda<R> {
         return (T3 t3) -> apply(t1, t2, t3);
     }
 
+
     @Override
     default int arity() {
         return 3;
@@ -212,6 +214,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends Lambda<R> {
                     -> Memoized.of(cache, Tuple.of(t1, t2, t3), t -> Try.of(() -> apply(t1, t2, t3)).get());
         }
     }
+
 
     /**
      * Return a composed function that first applies this CheckedFunction3 to the given arguments and in case of throwable
@@ -262,6 +265,7 @@ public interface CheckedFunction3<T1, T2, T3, R> extends Lambda<R> {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3) -> after.apply(apply(t1, t2, t3));
     }
+
 
 }
 

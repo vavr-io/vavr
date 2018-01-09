@@ -45,6 +45,7 @@ public class Tuple0Test {
         assertThat(tuple.arity()).isEqualTo(0);
     }
 
+
     @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple().toSeq();
@@ -57,6 +58,7 @@ public class Tuple0Test {
         assertThat(t0.compareTo(t0)).isZero();
         assertThat(intTupleComparator.compare(t0, t0)).isZero();
     }
+
 
     @Test
     public void shouldApplyTuple() {
@@ -78,6 +80,7 @@ public class Tuple0Test {
         final Object other = new Object();
         assertThat(tuple).isNotEqualTo(other);
     }
+
 
     @Test
     public void shouldComputeCorrectHashCode() {

@@ -145,6 +145,7 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
         return (Function2<T1, T2, R>) f;
     }
 
+
     /**
      * Applies this function to two arguments and returns the result.
      *
@@ -164,6 +165,7 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
     default Function1<T2, R> apply(T1 t1) {
         return (T2 t2) -> apply(t1, t2);
     }
+
 
     @Override
     default int arity() {
@@ -196,6 +198,7 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
         }
     }
 
+
     /**
      * Returns a composed function that first applies this Function2 to the given argument and then applies
      * {@linkplain Function} {@code after} to the result.
@@ -209,6 +212,7 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2) -> after.apply(apply(t1, t2));
     }
+
 
 }
 

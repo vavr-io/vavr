@@ -174,6 +174,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<
         return (CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R>) f;
     }
 
+
     /**
      * Applies this function to 7 arguments and returns the result.
      *
@@ -264,6 +265,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<
         return (T7 t7) -> apply(t1, t2, t3, t4, t5, t6, t7);
     }
 
+
     @Override
     default int arity() {
         return 7;
@@ -294,6 +296,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<
                     -> Memoized.of(cache, Tuple.of(t1, t2, t3, t4, t5, t6, t7), t -> Try.of(() -> apply(t1, t2, t3, t4, t5, t6, t7)).get());
         }
     }
+
 
     /**
      * Return a composed function that first applies this CheckedFunction7 to the given arguments and in case of throwable
@@ -344,6 +347,7 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Lambda<
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
     }
+
 
 }
 

@@ -1,0 +1,32 @@
+allprojects  {
+  buildscript {
+    repositories {
+      mavenLocal()
+      mavenCentral()
+    }
+  }
+  apply plugin: 'maven'
+
+  group = 'io.vavr'
+  version = '1.0.0-SNAPSHOT'
+}
+
+subprojects {
+  apply plugin: 'java'
+  sourceCompatibility = 1.8
+  targetCompatibility = 1.8
+  tasks.withType(JavaCompile) {
+  	options.encoding = 'UTF-8'
+  }
+
+  
+  repositories {
+    mavenLocal()
+    mavenCentral()
+  }
+
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.4.1'
+}

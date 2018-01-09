@@ -150,6 +150,7 @@ public interface Function3<T1, T2, T3, R> extends Lambda<R> {
         return (Function3<T1, T2, T3, R>) f;
     }
 
+
     /**
      * Applies this function to three arguments and returns the result.
      *
@@ -182,6 +183,7 @@ public interface Function3<T1, T2, T3, R> extends Lambda<R> {
         return (T3 t3) -> apply(t1, t2, t3);
     }
 
+
     @Override
     default int arity() {
         return 3;
@@ -213,6 +215,7 @@ public interface Function3<T1, T2, T3, R> extends Lambda<R> {
         }
     }
 
+
     /**
      * Returns a composed function that first applies this Function3 to the given argument and then applies
      * {@linkplain Function} {@code after} to the result.
@@ -226,6 +229,7 @@ public interface Function3<T1, T2, T3, R> extends Lambda<R> {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3) -> after.apply(apply(t1, t2, t3));
     }
+
 
 }
 

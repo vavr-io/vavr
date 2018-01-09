@@ -1,0 +1,5 @@
+rootProject.name = 'vavr-parent'
+include ':vavr'
+include ':vavr-benchmark'
+include ':vavr-match'
+include ':vavr-test'
