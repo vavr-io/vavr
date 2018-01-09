@@ -467,7 +467,7 @@ public interface Option<T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(value);
+            return HashCodes.hash(value);
         }
 
         @Override

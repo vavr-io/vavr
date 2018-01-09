@@ -20,7 +20,6 @@
 package io.vavr.collection;
 
 import io.vavr.JmhRunner;
-import org.eclipse.collections.api.list.MutableList;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
@@ -73,7 +72,7 @@ public class VectorBenchmark {
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "100", "1026" })
+        @Param({"10", "100", "1000", "1026", "2500"})
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;
@@ -462,7 +461,7 @@ public class VectorBenchmark {
         public Object ecollections_persistent() {
             org.eclipse.collections.api.list.ImmutableList<Integer> values = eCollectionsPersistent;
             for (int i : RANDOMIZED_INDICES) {
-                final MutableList<Integer> copy = values.toList();
+                final org.eclipse.collections.api.list.MutableList<Integer> copy = values.toList();
                 copy.set(i, 0);
                 values = copy.toImmutable();
             }

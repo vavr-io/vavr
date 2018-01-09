@@ -392,7 +392,7 @@ public class EitherTest extends AbstractValueTest {
     public void shouldConvertToInvalidValidation() {
         final Validation<String, ?> validation = Either.left("vavr").toValidation();
         assertThat(validation.isInvalid()).isTrue();
-        assertThat(validation.getError()).isEqualTo("vavr");
+        assertThat(validation.getErrors()).isEqualTo(List.of("vavr"));
     }
 
     // hashCode

@@ -2034,10 +2034,9 @@ object Runner {
                   }
               }
 
-              ${(i == 1).gen("// if _1 == null, hashCode() returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)")}
               @Override
               public int hashCode() {
-                  return ${if (i == 0) "1" else s"""${im.getType("java.util.Objects")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                  return ${if (i == 0) "1" else s"""${im.getType("io.vavr.control.HashCodes")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
               }
 
               @Override
@@ -2615,6 +2614,7 @@ object Runner {
         def genShortcutsTests(im: ImportManager, packageName: String, className: String): String = {
 
           val fail = im.getStatic("org.junit.Assert.fail")
+          val captureStdOut = im.getStatic("io.vavr.OutputTester.captureStdOut")
 
           xs"""
             @$test
@@ -2638,27 +2638,27 @@ object Runner {
                 }
             }
 
-            @$test
-            public void shouldCallprint_Object() {
-                print("ok");
-            }
+          @$test
+          public void shouldCallprint_Object() {
+              assertThat($captureStdOut(()->print("ok"))).isEqualTo("ok");
+          }
 
-            @$test
-            public void shouldCallprintf() {
-                printf("%s", "ok");
-            }
+          @$test
+          public void shouldCallprintf() {
+              assertThat($captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
+          }
 
-            @$test
-            public void shouldCallprintln_Object() {
-                println("ok");
-            }
+          @$test
+          public void shouldCallprintln_Object() {
+              assertThat($captureStdOut(()->println("ok"))).isEqualTo("ok\\n");
+          }
 
-            @$test
-            public void shouldCallprintln() {
-                println();
-            }
-          """
-        }
+          @$test
+          public void shouldCallprintln() {
+              assertThat($captureStdOut(()->println())).isEqualTo("\\n");
+          }
+        """
+      }
 
         xs"""
           public class $className {
@@ -3429,7 +3429,7 @@ object Runner {
                 @$test
                 public void shouldComputeCorrectHashCode() {
                     final int actual = createTuple().hashCode();
-                    final int expected = ${im.getType("java.util.Objects")}.hash(${if (i == 1) "new Object[] { null }" else nullArgs});
+                    final int expected = ${im.getType("java.util.Objects")}.${if (i == 1) "hashCode" else "hash"}($nullArgs);
                     $assertThat(actual).isEqualTo(expected);
                 }
 
