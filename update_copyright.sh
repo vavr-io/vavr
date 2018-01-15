@@ -13,4 +13,4 @@ echo "Updating copyright notice to $newYear"
 # Exclude specific directories: -type d \( -path ./.git -o -path ./.ide \) -prune -o
 # Make sed work on Mac: sed -e
 # Prevent making backups: -i ''
-find . -type d \( -path ./.git -o -path ./.ide \) -prune -o -type f -print0 | xargs -0 sed -i '' -e "s/Copyright 2014-2017 Vavr/Copyright 2014-$newYear Vavr/"
+find . -type d \( -path ./.git -o -path ./.ide \) -prune -o -type f -print0 | xargs -0 sed -i '' -e "s/Copyright 2014-2018 Vavr/Copyright 2014-$newYear Vavr/"
