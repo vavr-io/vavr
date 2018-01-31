@@ -494,11 +494,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
             final HashSet<T> set = (HashSet<T>) elements;
             return set;
         }
-        final HashArrayMappedTrie<T, T> that = addAll(tree, elements);
-        if (that.size() == tree.size()) {
+        if (Collections.isEmpty(elements) || this.equals(elements)){
             return this;
         } else {
-            return new HashSet<>(that);
+            return new HashSet<>(addAll(tree, elements));
         }
     }
 
