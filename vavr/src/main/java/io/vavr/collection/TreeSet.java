@@ -532,16 +532,17 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public TreeSet<T> addAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (Collections.isEmpty(elements) || this.equals(elements)){
-            return this;
-        }
         RedBlackTree<T> that = tree;
         for (T element : elements) {
             if (!that.contains(element)) {
                 that = that.insert(element);
             }
         }
-        return new TreeSet<>(that);
+        if (tree == that) {
+            return this;
+        } else {
+            return new TreeSet<>(that);
+        }
     }
 
     @Override
