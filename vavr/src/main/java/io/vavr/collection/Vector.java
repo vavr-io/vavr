@@ -171,7 +171,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @SuppressWarnings("unchecked")
     public static <T> Vector<T> ofAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        if (io.vavr.collection.Collections.isEmpty(iterable)){
+        if (iterable instanceof Traversable && io.vavr.collection.Collections.isEmpty(iterable)){
             return empty();
         }
         if (iterable instanceof Vector) {
