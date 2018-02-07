@@ -147,7 +147,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     <executions>
                         <execution>
                             <id>attach-sources</id>
-                            <phase>generate-resources</phase>
+                            <phase>prepare-package</phase>
                             <goals>
                                 <goal>jar-no-fork</goal>
                                 <goal>test-jar-no-fork</goal>
@@ -226,6 +226,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                             <configuration>
                                 <sources>
                                     <source>${project.basedir}/src-gen/main/java</source>
+                                    <source>${project.build.directory}/generated-sources/annotations</source>
                                 </sources>
                             </configuration>
                         </execution>
