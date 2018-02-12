@@ -220,6 +220,27 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
+     * Appends {@code Validation} instances into a single {@code Validation} by joining two {@code Seq} into
+     * one.
+     *
+     * @param <E>    value type in the case of invalid
+     * @param <T>    value type in the case of valid
+     * @param first first validation to be joined
+     * @param second second validation to be joined
+     * @return Merged validation: if both validations are valid then valid object is returned. If one of them is invalid
+     * then invalid object returned containing an accumulated List of errors.
+     * @throws NullPointerException if values is null
+     */
+    static <E, T> Validation<E, Seq<T>> append(Validation<E, Seq<T>> first, Validation<E, Seq<T>> second) {
+
+        Objects.requireNonNull(first, "first value is null");
+        Objects.requireNonNull(second, "second value is null");
+
+        return first.combine(second)
+                .ap(Seq::appendAll);
+    }
+
+    /**
      * Narrows a widened {@code Validation<? extends E, ? extends T>} to {@code Validation<E, T>}
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.

@@ -179,6 +179,51 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(Validation.invalid("error1", "error2", "error3", "error4"));
     }
 
+    // -- Validation.append
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenAppendingNullRight() {
+        Validation.append(Validation.invalid(42), null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenAppendingNullLeft() {
+        Validation.append(null, Validation.valid(List.of("Hello")));
+    }
+
+    @Test
+    public void shouldAppendValidInstances() {
+
+        Validation<String, Seq<Integer>> val1 = Validation.valid(List.of(1, 2));
+        Validation<String, Seq<Integer>> val2 = Validation.valid(List.of(3, 4));
+
+        Validation<String, Seq<Integer>> actual = Validation.append(val1, val2);
+
+        assertThat(actual).isEqualTo(Validation.valid(List.of(1, 2, 3, 4)));
+    }
+
+    @Test
+    public void shouldAppendMixedValidations() {
+
+        Validation<String, Seq<Integer>> val1 = Validation.valid(List.of(1, 2));
+        Validation<String, Seq<Integer>> val2 = Validation.invalid("invalid-A", "invalid-B");
+
+        Validation<String, Seq<Integer>> actual = Validation.append(val1, val2);
+
+        assertThat(actual).isEqualTo(Validation.invalid("invalid-A", "invalid-B"));
+    }
+
+    @Test
+    public void testInvalidAppending() {
+
+        Validation<String, Seq<Integer>> val1 = Validation.invalid("invalid-A", "invalid-B");
+        Validation<String, Seq<Integer>> val2 = Validation.invalid("invalid-C", "invalid-D");
+
+        Validation<String, Seq<Integer>> actual = Validation.append(val1, val2);
+
+        assertThat(actual).isEqualTo(Validation.invalid("invalid-A", "invalid-B", "invalid-C", "invalid-D"));
+    }
+
     // -- ap
 
     @Test
