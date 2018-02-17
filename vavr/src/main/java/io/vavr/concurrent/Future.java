@@ -651,7 +651,7 @@ public interface Future<T> extends Value<T> {
     /**
      * Support for chaining of callbacks that are guaranteed to be executed in a specific order.
      * <p>
-     * An exception, which occurs when performing the given {@code action}, is not propagated to the outside.
+     * An exception, which occurs when performing the given {@code function}, is not propagated to the outside.
      * In other words, subsequent actions are performed based on the value of the original Future.
      * <p>
      * Example:
@@ -662,15 +662,16 @@ public interface Future<T> extends Value<T> {
      *       .andThen(System.out::println);
      * </code></pre>
      *
-     * @param action A side-effecting action.
-     * @return A new Future that contains this result and which is completed after the given action was performed.
-     * @throws NullPointerException if action is null
+     * @param function A side-effecting function.
+     * @param <U>      only used to accept any return type of function
+     * @return A new Future that contains this result and which is completed after the given function was performed.
+     * @throws NullPointerException if function is null
      */
-    default Future<T> andThen(Consumer<? super Try<T>> action) {
-        Objects.requireNonNull(action, "action is null");
+    default <U> Future<T> andThen(Function<? super Try<T>, ? extends U> function) {
+        Objects.requireNonNull(function, "function is null");
         return join(executor(), tryComplete ->
                 onComplete(t -> {
-                    Try.run(() -> action.accept(t));
+                    Try.run(() -> function.apply(t));
                     tryComplete.test(t);
                 })
         );
