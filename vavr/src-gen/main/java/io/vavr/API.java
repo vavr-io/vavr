@@ -35,7 +35,7 @@ import java.io.PrintStream;
 import java.util.Comparator;
 import java.util.Formatter;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -818,7 +818,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link Future#of(ExecutorService, CheckedFunction0)}
+     * Alias for {@link Future#of(Executor, CheckedFunction0)}
      *
      * @param <T>             Type of the computation result.
      * @param executorService An executor service.
@@ -826,7 +826,7 @@ public final class API {
      * @return A new {@link Future} instance.
      * @throws NullPointerException if one of executorService or computation is null.
      */
-    public static <T> Future<T> Future(ExecutorService executorService, CheckedFunction0<? extends T> computation) {
+    public static <T> Future<T> Future(Executor executorService, CheckedFunction0<? extends T> computation) {
         return Future.of(executorService, computation);
     }
 
@@ -842,7 +842,7 @@ public final class API {
     }
 
     /**
-     * Alias for {@link Future#successful(ExecutorService, Object)}
+     * Alias for {@link Future#successful(Executor, Object)}
      *
      * @param <T>             The value type of a successful result.
      * @param executorService An {@code ExecutorService}.
@@ -850,7 +850,7 @@ public final class API {
      * @return A succeeded {@link Future}.
      * @throws NullPointerException if executorService is null
      */
-    public static <T> Future<T> Future(ExecutorService executorService, T result) {
+    public static <T> Future<T> Future(Executor executorService, T result) {
         return Future.successful(executorService, result);
     }
 

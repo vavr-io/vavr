@@ -997,6 +997,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * </code>
      * </pre>
      *
+     * @param <U> result type of the throwable mapper
      * @param throwableMapper  A transformation from throwable to desired invalid type of new {@code Validation}
      * @return A new {@code Validation}
      * @throws NullPointerException if the given {@code throwableMapper} is null.
