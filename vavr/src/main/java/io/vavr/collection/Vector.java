@@ -28,6 +28,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.Collections.removeAll;
 import static io.vavr.collection.Collections.withSize;
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
@@ -170,12 +171,14 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @SuppressWarnings("unchecked")
     public static <T> Vector<T> ofAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
+        if (iterable instanceof Traversable && io.vavr.collection.Collections.isEmpty(iterable)){
+            return empty();
+        }
         if (iterable instanceof Vector) {
             return (Vector<T>) iterable;
-        } else {
-            final Object[] values = withSize(iterable).toArray();
-            return ofAll(BitMappedTrie.ofAll(values));
         }
+        final Object[] values = withSize(iterable).toArray();
+        return ofAll(BitMappedTrie.ofAll(values));
     }
 
     /**
@@ -606,10 +609,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         Objects.requireNonNull(iterable, "iterable is null");
         if (isEmpty()) {
             return ofAll(iterable);
-        } else {
-            final BitMappedTrie<T> that = trie.appendAll(iterable);
-            return (that == trie) ? this : new Vector<>(that);
         }
+        if (io.vavr.collection.Collections.isEmpty(iterable)){
+            return this;
+        }
+        return new Vector<>(trie.appendAll(iterable));
     }
 
     @GwtIncompatible
@@ -924,10 +928,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         Objects.requireNonNull(iterable, "iterable is null");
         if (isEmpty()) {
             return ofAll(iterable);
-        } else {
-            final BitMappedTrie<T> that = trie.prependAll(iterable);
-            return (that == trie) ? this : new Vector<>(that);
         }
+        if (io.vavr.collection.Collections.isEmpty(iterable)){
+            return this;
+        }
+        return new Vector<>(trie.prependAll(iterable));
     }
 
     @Override

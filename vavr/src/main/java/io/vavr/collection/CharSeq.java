@@ -134,6 +134,9 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      */
     public static CharSeq ofAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
+        if (Collections.isEmpty(elements)){
+            return EMPTY;
+        }
         if (elements instanceof CharSeq) {
             return (CharSeq) elements;
         }
@@ -141,7 +144,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         for (char character : elements) {
             sb.append(character);
         }
-        return sb.length() == 0 ? EMPTY : of(sb);
+        return of(sb);
     }
 
     /**
@@ -778,12 +781,18 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public CharSeq prependAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        final StringBuilder sb = new StringBuilder();
-        for (char element : elements) {
-            sb.append(element);
+        if (Collections.isEmpty(elements)) {
+            return this;
+        } else if (isEmpty()) {
+            return ofAll(elements);
+        } else {
+            final StringBuilder sb = new StringBuilder();
+            for (char element : elements) {
+                sb.append(element);
+            }
+            sb.append(back);
+            return CharSeq.of(sb);
         }
-        sb.append(back);
-        return sb.length() == 0 ? EMPTY : of(sb);
     }
 
     @Override
