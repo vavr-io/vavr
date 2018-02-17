@@ -19,6 +19,10 @@
  */
 package io.vavr;
 
+import java.util.function.Predicate;
+
+import static io.vavr.CheckedPredicateModule.sneakyThrow;
+
 /**
  * A {@linkplain java.util.function.Predicate} which may throw.
  *
@@ -26,6 +30,29 @@ package io.vavr;
  */
 @FunctionalInterface
 public interface CheckedPredicate<T> {
+
+    /**
+     * Creates a {@code CheckedPredicate}.
+     *
+     * <pre>{@code
+     * final CheckedPredicate<Boolean> checkedPredicate = CheckedPredicate.of(Boolean::booleanValue);
+     * final Predicate<Boolean> predicate = checkedPredicate.unchecked();
+     *
+     * // = true
+     * predicate.test(Boolean.TRUE);
+     *
+     * // throws
+     * predicate.test(null);
+     * }</pre>
+     *
+     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
+     * @param <T> type of values that are tested by the predicate
+     * @return a new {@code CheckedPredicate}
+     * @see CheckedFunction1#of(CheckedFunction1)
+     */
+    static <T> CheckedPredicate<T> of(CheckedPredicate<T> methodReference) {
+        return methodReference;
+    }
 
     /**
      * Evaluates this predicate on the given argument.
@@ -44,4 +71,29 @@ public interface CheckedPredicate<T> {
     default CheckedPredicate<T> negate() {
         return t -> !test(t);
     }
+
+    /**
+     * Returns an unchecked {@link Predicate} that will <em>sneaky throw</em> if an exceptions occurs when testing a value.
+     *
+     * @return a new {@link Predicate} that throws a {@code Throwable}.
+     */
+    default Predicate<T> unchecked() {
+        return t -> {
+            try {
+                return test(t);
+            } catch(Throwable x) {
+                return sneakyThrow(x);
+            }
+        };
+    }
+}
+
+interface CheckedPredicateModule {
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
+    }
+
 }

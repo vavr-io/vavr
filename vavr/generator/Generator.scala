@@ -94,7 +94,7 @@ def generateMainClasses(): Unit = {
       val Objects = im.getType("java.util.Objects")
       val JavaComparatorType = im.getType("java.util.Comparator")
       val JavaMapType = im.getType("java.util.Map")
-      val ExecutorServiceType = im.getType("java.util.concurrent.ExecutorService")
+      val ExecutorType = im.getType("java.util.concurrent.Executor")
       val FunctionType = im.getType("java.util.function.Function")
       val BiFunctionType = im.getType("java.util.function.BiFunction")
       val PredicateType = im.getType("java.util.function.Predicate")
@@ -436,7 +436,7 @@ def generateMainClasses(): Unit = {
           }
 
           /$javadoc
-           * Alias for {@link $FutureType#of($ExecutorServiceType, $CheckedFunction0Type)}
+           * Alias for {@link $FutureType#of($ExecutorType, $CheckedFunction0Type)}
            *
            * @param <T>             Type of the computation result.
            * @param executorService An executor service.
@@ -444,7 +444,7 @@ def generateMainClasses(): Unit = {
            * @return A new {@link $FutureType} instance.
            * @throws NullPointerException if one of executorService or computation is null.
            */
-          public static <T> $FutureType<T> Future($ExecutorServiceType executorService, $CheckedFunction0Type<? extends T> computation) {
+          public static <T> $FutureType<T> Future($ExecutorType executorService, $CheckedFunction0Type<? extends T> computation) {
               return $FutureType.of(executorService, computation);
           }
 
@@ -460,7 +460,7 @@ def generateMainClasses(): Unit = {
           }
 
           /$javadoc
-           * Alias for {@link $FutureType#successful($ExecutorServiceType, Object)}
+           * Alias for {@link $FutureType#successful($ExecutorType, Object)}
            *
            * @param <T>             The value type of a successful result.
            * @param executorService An {@code ExecutorService}.
@@ -468,7 +468,7 @@ def generateMainClasses(): Unit = {
            * @return A succeeded {@link $FutureType}.
            * @throws NullPointerException if executorService is null
            */
-          public static <T> $FutureType<T> Future($ExecutorServiceType executorService, T result) {
+          public static <T> $FutureType<T> Future($ExecutorType executorService, T result) {
               return $FutureType.successful(executorService, result);
           }
 
@@ -2410,8 +2410,8 @@ def generateTestClasses(): Unit = {
       val MapType = im.getType("io.vavr.collection.Map")
       val OptionType = im.getType("io.vavr.control.Option")
       val FutureType = im.getType("io.vavr.concurrent.Future")
-      val ExecutorServiceType = im.getType("java.util.concurrent.Executors")
-      val ExecutorService = s"$ExecutorServiceType.newSingleThreadExecutor()"
+      val ExecutorsType = im.getType("java.util.concurrent.Executors")
+      val ExecutorService = s"$ExecutorsType.newSingleThreadExecutor()"
       val TryType = im.getType("io.vavr.control.Try")
       val JavaComparatorType = im.getType("java.util.Comparator")
 

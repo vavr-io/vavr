@@ -19,15 +19,36 @@
  */
 package io.vavr;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
 public class CheckedConsumerTest {
+
+    // -- of
+
+    @Test
+    public void shouldCreateCheckedConsumerUsingLambda() {
+        final CheckedConsumer<Object> consumer = CheckedConsumer.of(obj -> {});
+        assertThat(consumer).isNotNull();
+    }
+
+    @Test
+    public void shouldCreateCheckedConsumerUsingMethodReference() {
+        final CheckedConsumer<Object> consumer = CheckedConsumer.of(CheckedConsumerTest::accept);
+        assertThat(consumer).isNotNull();
+    }
+
+    private static void accept(Object obj) {
+    }
+
+    // -- accept
 
     @Test
     public void shouldApplyNonThrowingCheckedConsumer() {
@@ -49,6 +70,8 @@ public class CheckedConsumerTest {
             // ok
         }
     }
+
+    // -- andThen
 
     @Test
     public void shouldThrowWhenComposingCheckedConsumerUsingAndThenWithNullParameter() {
@@ -77,6 +100,29 @@ public class CheckedConsumerTest {
             fail("should have thrown");
         } catch(Throwable x) {
             assertThat(result.get()).isFalse();
+        }
+    }
+
+    // -- unchecked
+
+    @Test
+    public void shouldApplyAnUncheckedFunctionThatDoesNotThrow() {
+        final Consumer<Object> consumer = CheckedConsumer.of(obj -> {}).unchecked();
+        try {
+            consumer.accept(null);
+        } catch(Throwable x) {
+            Assert.fail("Did not excepect an exception but received: " + x.getMessage());
+        }
+    }
+
+    @Test
+    public void shouldApplyAnUncheckedFunctionThatThrows() {
+        final Consumer<Object> consumer = CheckedConsumer.of(obj -> { throw new Error(); }).unchecked();
+        try {
+            consumer.accept(null);
+            Assert.fail("Did excepect an exception.");
+        } catch(Error x) {
+            // ok!
         }
     }
 }
