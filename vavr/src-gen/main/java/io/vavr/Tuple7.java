@@ -500,6 +500,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
      * j=1
      */
     public <T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple1<T8> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, _2, _3, _4, _5, _6, _7, tuple._1);
     }
 

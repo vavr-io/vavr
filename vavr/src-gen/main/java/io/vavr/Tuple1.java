@@ -150,6 +150,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
      * j=1
      */
     public <T2> Tuple2<T1, T2> concat(Tuple1<T2> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, tuple._1);
     }
 
@@ -158,6 +159,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
      * j=2
      */
     public <T2, T3> Tuple3<T1, T2, T3> concat(Tuple2<T2, T3> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, tuple._1, tuple._2);
     }
 
@@ -166,6 +168,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
      * j=3
      */
     public <T2, T3, T4> Tuple4<T1, T2, T3, T4> concat(Tuple3<T2, T3, T4> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, tuple._1, tuple._2, tuple._3);
     }
 
@@ -174,6 +177,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
      * j=4
      */
     public <T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> concat(Tuple4<T2, T3, T4, T5> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, tuple._1, tuple._2, tuple._3, tuple._4);
     }
 
@@ -182,6 +186,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
      * j=5
      */
     public <T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> concat(Tuple5<T2, T3, T4, T5, T6> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, tuple._1, tuple._2, tuple._3, tuple._4, tuple._5);
     }
 
@@ -190,6 +195,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
      * j=6
      */
     public <T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(Tuple6<T2, T3, T4, T5, T6, T7> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, tuple._1, tuple._2, tuple._3, tuple._4, tuple._5, tuple._6);
     }
 
@@ -198,6 +204,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
      * j=7
      */
     public <T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple7<T2, T3, T4, T5, T6, T7, T8> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, tuple._1, tuple._2, tuple._3, tuple._4, tuple._5, tuple._6, tuple._7);
     }
 

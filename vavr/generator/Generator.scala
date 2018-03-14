@@ -2028,6 +2028,7 @@ def generateMainClasses(): Unit = {
                * j=$j
                */
               public <${(i+1 to i+j).gen(k => s"T$k")(", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(", ")}> concat(Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(", ")}> tuple) {
+                  Objects.requireNonNull(tuple, "tuple is null");
                   return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}, ${(1 to j).gen(k => s"tuple._$k")(", ")});
               }
             """)("\n\n")}
