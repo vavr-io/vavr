@@ -1784,7 +1784,6 @@ def generateMainClasses(): Unit = {
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("io.vavr.collection.Seq")
       val List = im.getType("io.vavr.collection.List")
-      val Iterator = im.getType("io.vavr.collection.Iterator")
       if(i==2){
         im.getType("java.util.Map")
         im.getType("java.util.AbstractMap")
