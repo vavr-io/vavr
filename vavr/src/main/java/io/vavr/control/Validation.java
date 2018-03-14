@@ -119,7 +119,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Creates a {@code Validation} of an {@code Either}.
+     * Creates a {@code Validation} of an {@code Try}.
      *
      * @param t      A {@code Try}
      * @param <T>    type of the valid value

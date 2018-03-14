@@ -125,9 +125,9 @@ public interface Future<T> extends Value<T> {
     /**
      * Creates a failed {@code Future} with the given {@code exception}, backed by the given {@link Executor}.
      *
-     * @param executor An executor service.
-     * @param exception       The reason why it failed.
-     * @param <T>             The value type of a successful result.
+     * @param executor  An {@link Executor}.
+     * @param exception The reason why it failed.
+     * @param <T>       The value type of a successful result.
      * @return A failed {@code Future}.
      * @throws NullPointerException if executor or exception is null
      */
@@ -159,10 +159,10 @@ public interface Future<T> extends Value<T> {
      * <p>
      * The returned {@code Future} is backed by the given {@link Executor}.
      *
-     * @param executor An executor service.
-     * @param futures         An iterable of futures.
-     * @param predicate       A predicate that tests successful future results.
-     * @param <T>             Result type of the futures.
+     * @param executor  An {@link Executor}.
+     * @param futures   An iterable of futures.
+     * @param predicate A predicate that tests successful future results.
+     * @param <T>       Result type of the futures.
      * @return A Future of an {@link Option} of the first result of the given {@code futures} that satisfies the given {@code predicate}.
      * @throws NullPointerException if one of the arguments is null
      */
@@ -215,9 +215,9 @@ public interface Future<T> extends Value<T> {
      * Returns a new {@code Future} that will contain the result of the first of the given futures that is completed,
      * backed by the given {@link Executor}.
      *
-     * @param executor An executor service.
-     * @param futures         An iterable of futures.
-     * @param <T>             The result type.
+     * @param executor An {@link Executor}.
+     * @param futures  An iterable of futures.
+     * @param <T>      The result type.
      * @return A new {@code Future}.
      * @throws NullPointerException if executor or futures is null
      */
@@ -251,12 +251,12 @@ public interface Future<T> extends Value<T> {
      * <p>
      * The resulting {@code Future} is backed by the given {@link Executor}.
      *
-     * @param executor An {@code Executor}.
-     * @param futures         An iterable of futures.
-     * @param zero            The zero element of the fold.
-     * @param f               The fold operation.
-     * @param <T>             The result type of the given {@code Futures}.
-     * @param <U>             The fold result type.
+     * @param executor An {@link Executor}.
+     * @param futures  An iterable of futures.
+     * @param zero     The zero element of the fold.
+     * @param f        The fold operation.
+     * @param <T>      The result type of the given {@code Futures}.
+     * @param <U>      The fold result type.
      * @return A new {@code Future} that will contain the fold result.
      * @throws NullPointerException if executor, futures or f is null.
      */
@@ -287,9 +287,9 @@ public interface Future<T> extends Value<T> {
     /**
      * Creates a {@code Future} with the given java.util.concurrent.Future, backed by given {@link Executor}
      *
-     * @param executor An {@link Executor}
-     * @param future          A {@link java.util.concurrent.Future}
-     * @param <T>             Result type of the Future
+     * @param executor An {@link Executor}.
+     * @param future   A {@link java.util.concurrent.Future}.
+     * @param <T>      Result type of the Future
      * @return A new {@code Future} wrapping the result of the Java future
      * @throws NullPointerException if executor or future is null
      */
@@ -315,9 +315,9 @@ public interface Future<T> extends Value<T> {
     /**
      * Creates a {@code Future} with the given {@link java.util.concurrent.CompletableFuture}, backed by given {@link Executor}
      *
-     * @param executor An {@link Executor}
-     * @param future          A {@link java.util.concurrent.CompletableFuture}
-     * @param <T>             Result type of the Future
+     * @param executor An {@link Executor}.
+     * @param future   A {@link java.util.concurrent.CompletableFuture}.
+     * @param <T>      Result type of the Future
      * @return A new {@code Future} wrapping the result of the {@link java.util.concurrent.CompletableFuture}
      * @throws NullPointerException if executor or future is null
      */
@@ -349,9 +349,9 @@ public interface Future<T> extends Value<T> {
     /**
      * Creates a {@code Future} from a {@link Try}, backed by the given {@link Executor}.
      *
-     * @param executor An {@code Executor}.
-     * @param result          The result.
-     * @param <T>             The value type of a successful result.
+     * @param executor An {@link Executor}.
+     * @param result   The result.
+     * @param <T>      The value type of a successful result.
      * @return A completed {@code Future} which contains either a {@code Success} or a {@code Failure}.
      * @throws NullPointerException if executor or result is null
      */
@@ -484,9 +484,9 @@ public interface Future<T> extends Value<T> {
     /**
      * Starts an asynchronous computation, backed by the given {@link Executor}.
      *
-     * @param executor An executor service.
-     * @param computation     A computation.
-     * @param <T>             Type of the computation result.
+     * @param executor    An {@link Executor}.
+     * @param computation A computation.
+     * @param <T>         Type of the computation result.
      * @return A new Future instance.
      * @throws NullPointerException if one of executor or computation is null.
      */
@@ -525,7 +525,7 @@ public interface Future<T> extends Value<T> {
      * will return true, successive calls will return false.
      *
      * @param computation A computational task
-     * @param <T> Type of the result
+     * @param <T>         Type of the result
      * @return a new {@code Future} instance
      * @deprecated Experimental API
      */
@@ -562,9 +562,9 @@ public interface Future<T> extends Value<T> {
      * Future completion is an idempotent operation in the way that the first call of {@code tryComplete}
      * will return true, successive calls will return false.
      *
-     * @param executor an executor service that runs the given {@code computation}
+     * @param executor    An {@link Executor} that runs the given {@code computation}
      * @param computation A computational task
-     * @param <T> Type of the result
+     * @param <T>         Type of the result
      * @return a new {@code Future} instance
      * @deprecated Experimental API
      */
@@ -595,10 +595,10 @@ public interface Future<T> extends Value<T> {
      * <p>
      * The resulting {@code Future} is backed by the given {@link Executor}.
      *
-     * @param executor An {@code Executor}.
-     * @param futures         An iterable of futures.
-     * @param f               The reduce operation.
-     * @param <T>             The result type of the given {@code Futures}.
+     * @param executor An {@link Executor}.
+     * @param futures  An iterable of futures.
+     * @param f        The reduce operation.
+     * @param <T>      The result type of the given {@code Futures}.
      * @return A new {@code Future} that will contain the reduce result.
      * @throws NullPointerException if executor, futures or f is null.
      */
@@ -609,7 +609,7 @@ public interface Future<T> extends Value<T> {
         if (!futures.iterator().hasNext()) {
             throw new NoSuchElementException("Future.reduce on empty futures");
         } else {
-            return Future.<T> sequence(futures).map(seq -> seq.reduceLeft(f));
+            return Future.sequence(futures).map(seq -> seq.reduceLeft(f));
         }
     }
 
@@ -627,8 +627,8 @@ public interface Future<T> extends Value<T> {
     /**
      * Starts an asynchronous computation, backed by the given {@link Executor}.
      *
-     * @param executor An executor service.
-     * @param unit            A unit of work.
+     * @param executor An {@link Executor}.
+     * @param unit     A unit of work.
      * @return A new Future instance which results in nothing.
      * @throws NullPointerException if one of executor or unit is null.
      */
@@ -685,9 +685,9 @@ public interface Future<T> extends Value<T> {
      * <p>
      * The resulting {@code Future} is backed by the given {@link Executor}.
      *
-     * @param executor An {@code Executor}.
-     * @param futures         An {@code Iterable} of {@code Future}s.
-     * @param <T>             Result type of the futures.
+     * @param executor An {@link Executor}.
+     * @param futures  An {@code Iterable} of {@code Future}s.
+     * @param <T>      Result type of the futures.
      * @return A {@code Future} of a {@link Seq} of results.
      * @throws NullPointerException if executor or futures is null.
      */
@@ -714,9 +714,9 @@ public interface Future<T> extends Value<T> {
     /**
      * Creates a succeeded {@code Future}, backed by the given {@link Executor}.
      *
-     * @param executor An {@code Executor}.
-     * @param result          The result.
-     * @param <T>             The value type of a successful result.
+     * @param executor An {@link Executor}.
+     * @param result   The result.
+     * @param <T>      The value type of a successful result.
      * @return A succeeded {@code Future}.
      * @throws NullPointerException if executor is null
      */
@@ -757,11 +757,11 @@ public interface Future<T> extends Value<T> {
      * <p>
      * The resulting {@code Future} is backed by the given {@link Executor}.
      *
-     * @param executor An {@code Executor}.
-     * @param values          An {@code Iterable} of values.
-     * @param mapper          A mapper of values to Futures
-     * @param <T>             The type of the given values.
-     * @param <U>             The mapped value type.
+     * @param executor An {@link Executor}.
+     * @param values   An {@code Iterable} of values.
+     * @param mapper   A mapper of values to Futures
+     * @param <T>      The type of the given values.
+     * @param <U>      The mapped value type.
      * @return A {@code Future} of a {@link Seq} of results.
      * @throws NullPointerException if executor, values or f is null.
      */
@@ -821,10 +821,10 @@ public interface Future<T> extends Value<T> {
      * If the deadline wasn't met, a failed {@code Future} is returned containing a {@link TimeoutException}.
      *
      * @param timeout the maximum time to wait
-     * @param unit the time unit of the timeout argument
+     * @param unit    the time unit of the timeout argument
      * @return this {@code Future} instance
      * @throws IllegalArgumentException if {@code timeout} is negative
-     * @throws NullPointerException if {@code unit} is null
+     * @throws NullPointerException     if {@code unit} is null
      */
     Future<T> await(long timeout, TimeUnit unit);
 
@@ -868,9 +868,8 @@ public interface Future<T> extends Value<T> {
      * R newValue = partialFunction.apply(value)
      * }</pre>
      *
-     *
      * @param partialFunction A function that is not necessarily defined on value of this future.
-     * @param <R> The new value type
+     * @param <R>             The new value type
      * @return A new {@code Future} instance containing value of type {@code R}
      * @throws NullPointerException if {@code partialFunction} is null
      */
@@ -1220,7 +1219,7 @@ public interface Future<T> extends Value<T> {
      * Waits for the result if necessary by blocking the current thread.
      * <p>
      * <strong>IMPORTANT! If the computation result is a {@link Try.Failure}, the underlying {@code cause} of type {@link Throwable} is thrown.</strong>
-     * 
+     *
      * @return The value of this {@code Future}.
      */
     @Override

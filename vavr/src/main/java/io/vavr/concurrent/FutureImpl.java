@@ -92,7 +92,7 @@ final class FutureImpl<T> implements Future<T> {
             this.waiters = waiters;
             try {
                 computation.execute(this::tryComplete, this::updateThread);
-            } catch(Throwable x) {
+            } catch (Throwable x) {
                 tryComplete(Try.failure(x));
             }
         }
@@ -125,9 +125,9 @@ final class FutureImpl<T> implements Future<T> {
      * Creates a {@code FutureImpl} that is eventually completed.
      * The given {@code computation} is <em>synchronously</em> executed, no thread is started.
      *
-     * @param executor  An {@link Executor} to run and control the computation and to perform the actions.
+     * @param executor    An {@link Executor} to run and control the computation and to perform the actions.
      * @param computation A non-blocking computation
-     * @param <T> value type of the Future
+     * @param <T>         value type of the Future
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> sync(Executor executor, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
@@ -140,9 +140,9 @@ final class FutureImpl<T> implements Future<T> {
      * Creates a {@code FutureImpl} that is eventually completed.
      * The given {@code computation} is <em>asynchronously</em> executed, a new thread is started.
      *
-     * @param executor  An {@link Executor} to run and control the computation and to perform the actions.
+     * @param executor    An {@link Executor} to run and control the computation and to perform the actions.
      * @param computation A (possibly blocking) computation
-     * @param <T> value type of the Future
+     * @param <T>         value type of the Future
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> async(Executor executor, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
@@ -190,9 +190,9 @@ final class FutureImpl<T> implements Future<T> {
      * <p>
      * If this Thread was interrupted, this Future fails with a {@link InterruptedException}.
      *
-     * @param start the start time in nanos, based on {@linkplain System#nanoTime()}
+     * @param start   the start time in nanos, based on {@linkplain System#nanoTime()}
      * @param timeout a timeout in the given {@code unit} of time
-     * @param unit a time unit
+     * @param unit    a time unit
      */
     private void _await(long start, long timeout, TimeUnit unit) {
         try {
@@ -234,11 +234,12 @@ final class FutureImpl<T> implements Future<T> {
                         if (waitingThread.isInterrupted()) {
                             tryComplete(Try.failure(new ExecutionException(new InterruptedException())));
                         }
-                    } catch(Throwable x) {
+                    } catch (Throwable x) {
                         tryComplete(Try.failure(x));
                     }
                     return isCompleted();
                 }
+
                 @Override
                 public boolean isReleasable() {
                     return isCompleted();
@@ -382,7 +383,7 @@ final class FutureImpl<T> implements Future<T> {
     private void perform(Consumer<? super Try<T>> action) {
         try {
             executor.execute(() -> action.accept(value.get()));
-        } catch(Throwable x) {
+        } catch (Throwable x) {
             // ignored // TODO: tell UncaughtExceptionHandler?
         }
     }
@@ -390,7 +391,7 @@ final class FutureImpl<T> implements Future<T> {
     private void unlock(Thread waiter) {
         try {
             LockSupport.unpark(waiter);
-        } catch(Throwable x) {
+        } catch (Throwable x) {
             // ignored // TODO: tell UncaughtExceptionHandler?
         }
     }
