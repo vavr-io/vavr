@@ -276,6 +276,56 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2
         return List.of(_1, _2, _3);
     }
 
+    public <T4> Tuple4<T1, T2, T3, T4> concat(T4 t4) {
+        Objects.requireNonNull(t4, "t4 is null");
+        return Tuple.of(_1, _2, _3, t4);
+    }
+
+    /**
+     * i=3
+     * j=1
+     */
+    public <T4> Tuple4<T1, T2, T3, T4> concat(Tuple1<T4> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, tuple._1);
+    }
+
+    /**
+     * i=3
+     * j=2
+     */
+    public <T4, T5> Tuple5<T1, T2, T3, T4, T5> concat(Tuple2<T4, T5> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, tuple._1, tuple._2);
+    }
+
+    /**
+     * i=3
+     * j=3
+     */
+    public <T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> concat(Tuple3<T4, T5, T6> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, tuple._1, tuple._2, tuple._3);
+    }
+
+    /**
+     * i=3
+     * j=4
+     */
+    public <T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(Tuple4<T4, T5, T6, T7> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, tuple._1, tuple._2, tuple._3, tuple._4);
+    }
+
+    /**
+     * i=3
+     * j=5
+     */
+    public <T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple5<T4, T5, T6, T7, T8> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, tuple._1, tuple._2, tuple._3, tuple._4, tuple._5);
+    }
+
     // -- Object
 
     @Override

@@ -1020,7 +1020,7 @@ def generateMainClasses(): Unit = {
                    */
                   long serialVersionUID = 1L;
               }
-              
+
               public static final class Case0<T, R> implements Case<T, R> {
 
                   private static final long serialVersionUID = 1L;
@@ -1097,7 +1097,7 @@ def generateMainClasses(): Unit = {
 
               // These can't be @FunctionalInterfaces because of ambiguities.
               // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
-              
+
               public static abstract class Pattern0<T> implements Pattern<T, T> {
 
                   private static final long serialVersionUID = 1L;
@@ -1443,7 +1443,7 @@ def generateMainClasses(): Unit = {
                * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
                */
               long serialVersionUID = 1L;
-              
+
               /$javadoc
                * Returns a function that always returns the constant
                * value that you give in parameter.
@@ -1733,7 +1733,7 @@ def generateMainClasses(): Unit = {
                 }
               """)}
           }
-          
+
           interface ${className}Module {
 
               // DEV-NOTE: we do not plan to expose this as public API
@@ -2010,6 +2010,31 @@ def generateMainClasses(): Unit = {
                   return $List.of($params);
                 """}
             }
+
+            ${(i == 0).gen(xs"""
+              public <T1> Tuple1<T1> concat(T1 t1) {
+                  Objects.requireNonNull(t1, "t1 is null");
+                  return ${im.getType("io.vavr.Tuple")}.of(t1);
+              }
+            """)}
+
+            ${(i > 0 && i < N).gen(xs"""
+              public <T${i+1}> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(", ")}> concat(T${i+1} t${i+1}) {
+                  Objects.requireNonNull(t${i+1}, "t${i+1} is null");
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}, t${i+1});
+              }
+            """)}
+
+            ${(i > 0 && i < N) gen (1 to N-i).gen(j => xs"""
+              /$javadoc
+               * i=$i
+               * j=$j
+               */
+              public <${(i+1 to i+j).gen(k => s"T$k")(", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(", ")}> concat(Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(", ")}> tuple) {
+                  Objects.requireNonNull(tuple, "tuple is null");
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}, ${(1 to j).gen(k => s"tuple._$k")(", ")});
+              }
+            """)("\n\n")}
 
             // -- Object
 

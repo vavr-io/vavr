@@ -384,6 +384,38 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
         return List.of(_1, _2, _3, _4, _5);
     }
 
+    public <T6> Tuple6<T1, T2, T3, T4, T5, T6> concat(T6 t6) {
+        Objects.requireNonNull(t6, "t6 is null");
+        return Tuple.of(_1, _2, _3, _4, _5, t6);
+    }
+
+    /**
+     * i=5
+     * j=1
+     */
+    public <T6> Tuple6<T1, T2, T3, T4, T5, T6> concat(Tuple1<T6> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, _4, _5, tuple._1);
+    }
+
+    /**
+     * i=5
+     * j=2
+     */
+    public <T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(Tuple2<T6, T7> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, _4, _5, tuple._1, tuple._2);
+    }
+
+    /**
+     * i=5
+     * j=3
+     */
+    public <T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple3<T6, T7, T8> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, _4, _5, tuple._1, tuple._2, tuple._3);
+    }
+
     // -- Object
 
     @Override
