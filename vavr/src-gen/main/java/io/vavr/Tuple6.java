@@ -439,7 +439,6 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     }
 
     public <T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(T7 t7) {
-        Objects.requireNonNull(t7, "t7 is null");
         return Tuple.of(_1, _2, _3, _4, _5, _6, t7);
     }
 
@@ -448,7 +447,6 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * j=1
      */
     public <T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(Tuple1<T7> tuple) {
-        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, _2, _3, _4, _5, _6, tuple._1);
     }
 
@@ -457,7 +455,6 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
      * j=2
      */
     public <T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple2<T7, T8> tuple) {
-        Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, _2, _3, _4, _5, _6, tuple._1, tuple._2);
     }
 
