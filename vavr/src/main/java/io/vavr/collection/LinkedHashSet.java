@@ -31,7 +31,7 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * An immutable {@code HashSet} implementation.
+ * An immutable {@code HashSet} implementation that has predictable (insertion-order) iteration.
  *
  * @param <T> Component type
  * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich

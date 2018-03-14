@@ -31,7 +31,7 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * An immutable {@code LinkedHashMap} implementation.
+ * An immutable {@code LinkedHashMap} implementation that has predictable (insertion-order) iteration.
  *
  * @author Ruslan Sennov
  */
