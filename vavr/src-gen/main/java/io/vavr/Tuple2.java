@@ -244,7 +244,7 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
         return List.of(_1, _2);
     }
 
-    public <T3> Tuple3<T1, T2, T3> concat(T3 t3) {
+    public <T3> Tuple3<T1, T2, T3> append(T3 t3) {
         return Tuple.of(_1, _2, t3);
     }
 

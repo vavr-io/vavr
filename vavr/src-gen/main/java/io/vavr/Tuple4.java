@@ -329,7 +329,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
         return List.of(_1, _2, _3, _4);
     }
 
-    public <T5> Tuple5<T1, T2, T3, T4, T5> concat(T5 t5) {
+    public <T5> Tuple5<T1, T2, T3, T4, T5> append(T5 t5) {
         return Tuple.of(_1, _2, _3, _4, t5);
     }
 

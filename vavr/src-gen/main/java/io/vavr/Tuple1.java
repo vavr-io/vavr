@@ -141,7 +141,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
         return List.of(_1);
     }
 
-    public <T2> Tuple2<T1, T2> concat(T2 t2) {
+    public <T2> Tuple2<T1, T2> append(T2 t2) {
         return Tuple.of(_1, t2);
     }
 

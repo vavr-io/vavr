@@ -2010,26 +2010,20 @@ def generateMainClasses(): Unit = {
                 """}
             }
 
-            ${(i == 0).gen(xs"""
-              public <T1> Tuple1<T1> concat(T1 t1) {
-                  return ${im.getType("io.vavr.Tuple")}.of(t1);
+            ${(i < N).gen(xs"""
+              public <T${i+1}> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(", ")}> append(T${i+1} t${i+1}) {
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}t${i+1});
               }
             """)}
 
-            ${(i > 0 && i < N).gen(xs"""
-              public <T${i+1}> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(", ")}> concat(T${i+1} t${i+1}) {
-                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}, t${i+1});
-              }
-            """)}
-
-            ${(i > 0 && i < N) gen (1 to N-i).gen(j => xs"""
+            ${(i < N) gen (1 to N-i).gen(j => xs"""
               /$javadoc
                * i=$i
                * j=$j
                */
               public <${(i+1 to i+j).gen(k => s"T$k")(", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(", ")}> concat(Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(", ")}> tuple) {
                   Objects.requireNonNull(tuple, "tuple is null");
-                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}, ${(1 to j).gen(k => s"tuple._$k")(", ")});
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}${(1 to j).gen(k => s"tuple._$k")(", ")});
               }
             """)("\n\n")}
 
