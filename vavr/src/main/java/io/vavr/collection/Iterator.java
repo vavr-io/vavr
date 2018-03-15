@@ -453,6 +453,18 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
+     * Returns a Iterator containing {@code n} times the given {@code element}
+     *
+     * @param <T>     Component type of the Iterator
+     * @param n       The number of elements
+     * @param element The element
+     * @return An iterator of {@code n} sequence elements, where each element is the given {@code element}.
+     */
+    static <T> Iterator<T> fill(int n, T element) {
+        return io.vavr.collection.Collections.fillObject(n, element);
+    }
+
+    /**
      * Creates an Iterator of characters starting from {@code from}, extending to {@code toExclusive - 1}.
      * <p>
      * Examples:

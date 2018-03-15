@@ -158,6 +158,18 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     /**
+     * Returns a Vector containing {@code n} times the given {@code element}
+     *
+     * @param <T>     Component type of the Vector
+     * @param n       The number of elements in the Vector
+     * @param element The element
+     * @return A Vector of size {@code n}, where each element is the given {@code element}.
+     */
+    public static <T> Vector<T> fill(int n, T element) {
+        return io.vavr.collection.Collections.fillObject(n, element, empty(), Vector::of);
+    }
+
+    /**
      * Creates a Vector of the given elements.
      * <p>
      * The resulting vector has the same iteration order as the given iterable of elements

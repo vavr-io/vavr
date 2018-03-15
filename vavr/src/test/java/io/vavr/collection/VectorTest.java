@@ -117,6 +117,11 @@ public class VectorTest extends AbstractIndexedSeqTest {
     }
 
     @Override
+    protected <T> Traversable<T> fill(int n, T element) {
+        return Vector.fill(n, element);
+    }
+
+    @Override
     protected Vector<Character> range(char from, char toExclusive) {
         return Vector.range(from, toExclusive);
     }

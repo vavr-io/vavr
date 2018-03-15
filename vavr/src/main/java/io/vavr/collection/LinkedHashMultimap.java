@@ -210,6 +210,20 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
         }
 
         /**
+         * Returns a LinkedHashMultimap containing {@code n} times the given {@code element}
+         *
+         * @param <K>     The key type
+         * @param <V2>    The value type
+         * @param n       The number of elements in the LinkedHashMultimap
+         * @param element The element
+         * @return A LinkedHashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         */
+        @SuppressWarnings("unchecked")
+        public <K, V2 extends V> LinkedHashMultimap<K, V2> fill(int n, Tuple2<? extends K, ? extends V2> element) {
+            return ofEntries(Collections.fillObject(n, element));
+        }
+
+        /**
          * Creates a LinkedHashMultimap of the given key-value pair.
          *
          * @param key   A singleton map key.

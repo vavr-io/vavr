@@ -415,6 +415,18 @@ public interface List<T> extends LinearSeq<T> {
         return Collections.fill(n, s, empty(), List::of);
     }
 
+    /**
+     * Returns a List containing {@code n} times the given {@code element}
+     *
+     * @param <T>     Component type of the List
+     * @param n       The number of elements in the List
+     * @param element The element
+     * @return A List of size {@code n}, where each element is the given {@code element}.
+     */
+    static <T> List<T> fill(int n, T element) {
+        return Collections.fillObject(n, element, empty(), List::of);
+    }
+
     static List<Character> range(char from, char toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
     }

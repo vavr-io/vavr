@@ -207,6 +207,18 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     /**
+     * Returns a Tree containing {@code n} times the given {@code element}
+     *
+     * @param <T>     Component type of the Tree
+     * @param n       The number of elements in the Tree
+     * @param element The element
+     * @return A Tree of size {@code n}, where each element is the given {@code element}.
+     */
+    static <T> Tree<T> fill(int n, T element) {
+        return io.vavr.collection.Collections.fillObject(n, element, empty(), Tree::of);
+    }
+
+    /**
      * Recursively builds a non-empty {@code Tree}, starting with the given {@code seed} value and proceeding in depth-first order.
      * <p>
      * The children of a node are created by
