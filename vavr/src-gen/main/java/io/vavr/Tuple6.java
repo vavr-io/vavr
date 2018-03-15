@@ -437,13 +437,22 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
         return List.of(_1, _2, _3, _4, _5, _6);
     }
 
+    /**
+     * Append a value to this tuple.
+     *
+     * @param t7 the value to append
+     * @return a new Tuple with the value appended
+     */
     public <T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> append(T7 t7) {
         return Tuple.of(_1, _2, _3, _4, _5, _6, t7);
     }
 
     /**
-     * i=6
-     * j=1
+     * Concat a tuple's values to this tuple.
+     *
+     * @param tuple the tuple to concat
+     * @return a new Tuple with the tuple values appended
+     * @throws NullPointerException if {@code tuple} is null
      */
     public <T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(Tuple1<T7> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
@@ -451,8 +460,11 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     }
 
     /**
-     * i=6
-     * j=2
+     * Concat a tuple's values to this tuple.
+     *
+     * @param tuple the tuple to concat
+     * @return a new Tuple with the tuple values appended
+     * @throws NullPointerException if {@code tuple} is null
      */
     public <T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple2<T7, T8> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");

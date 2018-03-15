@@ -2011,6 +2011,12 @@ def generateMainClasses(): Unit = {
             }
 
             ${(i < N).gen(xs"""
+              /$javadoc
+               * Append a value to this tuple.
+               *
+               * @param t${i+1} the value to append
+               * @return a new Tuple with the value appended
+               */
               public <T${i+1}> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(", ")}> append(T${i+1} t${i+1}) {
                   return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}t${i+1});
               }
@@ -2018,8 +2024,11 @@ def generateMainClasses(): Unit = {
 
             ${(i < N) gen (1 to N-i).gen(j => xs"""
               /$javadoc
-               * i=$i
-               * j=$j
+               * Concat a tuple's values to this tuple.
+               *
+               * @param tuple the tuple to concat
+               * @return a new Tuple with the tuple values appended
+               * @throws NullPointerException if {@code tuple} is null
                */
               public <${(i+1 to i+j).gen(k => s"T$k")(", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(", ")}> concat(Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(", ")}> tuple) {
                   Objects.requireNonNull(tuple, "tuple is null");
