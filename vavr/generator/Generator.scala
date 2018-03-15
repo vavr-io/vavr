@@ -3421,6 +3421,24 @@ def generateTestClasses(): Unit = {
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
 
+              ${(i == 0).gen(xs"""
+                @$test
+                public void shouldAppendValue() {
+                    final Tuple1<Integer> actual = Tuple0.instance().append(1);
+                    final Tuple1<Integer> expected = Tuple.of(1);
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """)}
+
+              ${(i > 0 && i < N).gen(xs"""
+                @$test
+                public void shouldAppendValue() {
+                    final Tuple${i+1}${if (i == 0) "" else s"<${(1 to i+1).gen(j => s"Integer")(", ")}>"} actual = Tuple.of(${(1 to i).gen(j => xs"$j")(", ")}).append(${i+1});
+                    final Tuple${i+1}${if (i == 0) "" else s"<${(1 to i+1).gen(j => s"Integer")(", ")}>"} expected = Tuple.of(${(1 to i+1).gen(j => xs"$j")(", ")});
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """)}
+
               @$test
               public void shouldRecognizeEquality() {
                   final Tuple$i$generics tuple1 = createTuple();

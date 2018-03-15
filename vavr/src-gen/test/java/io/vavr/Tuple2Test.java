@@ -166,6 +166,13 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldAppendValue() {
+        final Tuple3<Integer, Integer, Integer> actual = Tuple.of(1, 2).append(3);
+        final Tuple3<Integer, Integer, Integer> expected = Tuple.of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldRecognizeEquality() {
         final Tuple2<Object, Object> tuple1 = createTuple();
         final Tuple2<Object, Object> tuple2 = createTuple();
