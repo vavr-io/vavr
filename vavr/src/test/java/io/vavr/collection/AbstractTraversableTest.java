@@ -2784,6 +2784,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(tabulate(-1, i -> i)).isEqualTo(empty());
     }
 
+    // -- fill(int, Supplier)
+
     @Test
     public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
         final java.util.LinkedList<Integer> ints = new java.util.LinkedList<>(asList(0, 1));

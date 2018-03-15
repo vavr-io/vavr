@@ -807,7 +807,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     /**
-     * Returns a TreeMap containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a TreeMap containing tuples returned by {@code n} calls to a given Supplier {@code s}.
      *
      * @param <K>           The key type
      * @param <V>           The value type
@@ -824,7 +824,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     /**
-     * Returns a TreeMap containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a TreeMap containing tuples returned by {@code n} calls to a given Supplier {@code s}.
      * The underlying key comparator is the natural comparator of K.
      *
      * @param <K> The key type
