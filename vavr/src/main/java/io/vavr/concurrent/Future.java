@@ -609,7 +609,7 @@ public interface Future<T> extends Value<T> {
         if (!futures.iterator().hasNext()) {
             throw new NoSuchElementException("Future.reduce on empty futures");
         } else {
-            return Future.sequence(futures).map(seq -> seq.reduceLeft(f));
+            return Future.<T> sequence(futures).map(seq -> seq.reduceLeft(f));
         }
     }
 
