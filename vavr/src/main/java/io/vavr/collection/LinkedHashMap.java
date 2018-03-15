@@ -483,6 +483,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             map = map.put(tuple);
             list = list.append(tuple);
         }
+        list = list.reverse().distinctBy(Tuple2::_1).reverse().toQueue();
         return wrap(list, map);
     }
 
@@ -497,7 +498,8 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
         final HashMap<K, V> map = HashMap.ofEntries(entries);
-        final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>[]) entries);
+        Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>[]) entries);
+        list = list.reverse().distinctBy(Tuple2::_1).reverse().toQueue();
         return wrap(list, map);
     }
 
@@ -521,6 +523,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
                 map = map.put(entry);
                 list = list.append((Tuple2<K, V>) entry);
             }
+            list = list.reverse().distinctBy(Tuple2::_1).reverse().toQueue();
             return wrap(list, map);
         }
     }

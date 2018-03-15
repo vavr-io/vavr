@@ -159,6 +159,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @SuppressWarnings("unchecked")
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries);
 
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
+
     @SuppressWarnings("unchecked")
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
 
@@ -1128,6 +1130,38 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void mapOfEntriesShouldReturnTheSingletonEmpty() {
         if (!emptyMapShouldBeSingleton()) { return; }
         assertThat(mapOfEntries()).isSameAs(emptyMap());
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mapOfEntriesShouldReplaceEntryByKey() {
+        assertThat(mapOfEntries(
+                asJavaEntry(1, "1"), asJavaEntry(1, "2"),
+                asJavaEntry(2, "3"), asJavaEntry(2, "4")
+        ))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    public void mapOfTuplesVarargShouldReplaceEntryByKey() {
+        assertThat(mapOfTuples(
+                Tuple.of(1, "1"), Tuple.of(1, "2"),
+                Tuple.of(2, "3"), Tuple.of(2, "4")
+        ))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
+    }
+
+    @Test
+    public void mapOfTuplesIterableShouldReplaceEntryByKey() {
+        assertThat(mapOfTuples(asList(
+                Tuple.of(1, "1"), Tuple.of(1, "2"),
+                Tuple.of(2, "3"), Tuple.of(2, "4")
+        )))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
     }
 
     @Test
