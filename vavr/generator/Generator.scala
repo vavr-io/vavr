@@ -3430,6 +3430,15 @@ def generateTestClasses(): Unit = {
                 }
               """)}
 
+              ${(i < N) gen (1 to N-i).gen(j => xs"""
+                @$test
+                public void shouldConcatTuple$j() {
+                    final Tuple${i+j}<${(1 to i+j).gen(j => s"Integer")(", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(", ")})"}.concat(Tuple.of(${(i+1 to i+j).gen(k => s"$k")(", ")}));
+                    final Tuple${i+j}<${(1 to i+j).gen(j => s"Integer")(", ")}> expected = Tuple.of(${(1 to i+j).gen(j => xs"$j")(", ")});
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """)("\n\n")}
+
               @$test
               public void shouldRecognizeEquality() {
                   final Tuple$i$generics tuple1 = createTuple();
