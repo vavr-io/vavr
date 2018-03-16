@@ -239,6 +239,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                             <configuration>
                                 <sources>
                                     <source>${project.basedir}/src-gen/test/java</source>
+                                    <source>${project.build.directory}/generated-test-sources/test-annotations</source>
                                 </sources>
                             </configuration>
                         </execution>
