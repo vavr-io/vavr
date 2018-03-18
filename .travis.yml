@@ -1,0 +1,15 @@
+language: java
+
+sudo: false
+dist: trusty
+
+before_install: unset _JAVA_OPTIONS
+
+install: echo "Don't let Travis CI execute './gradlew assemble' by default"
+
+matrix:
+  include:
+  - jdk: oraclejdk11
+  - jdk: openjdk-ea
+  allow_failures:
+  - jdk: openjdk-ea

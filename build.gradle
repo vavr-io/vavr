@@ -1,0 +1,23 @@
+subprojects {
+
+    apply plugin: 'java'
+
+    repositories {
+        jcenter()
+    }
+
+    group = 'io.vavr'
+    version = '1.0.0-alpha-1'
+
+    compileJava {
+        sourceCompatibility = 11
+        targetCompatibility = 11
+        options.encoding = 'UTF-8'
+        options.compilerArgs = [ '-Xlint:all', '-Werror' ]
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.12'
+        testCompile 'org.assertj:assertj-core:3.11.0'
+    }
+}

@@ -1,0 +1,3 @@
+rootProject.name = 'vavr'
+
+include 'vavr-control'

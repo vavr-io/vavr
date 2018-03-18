@@ -1,0 +1,23 @@
+# -- Mac OS
+.DS_Store
+*.bak
+
+# -- Gradle
+.gradle
+build/
+
+# -- Eclipse
+.classpath
+.project
+.settings
+bin/
+
+# -- IntelliJ IDEA
+.idea/
+out/
+
+# -- Visual Studio Code
+.vscode/
+
+# -- Emacs
+.#*
