@@ -694,6 +694,18 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Ignore
+    @Test
+    public void shouldTakeZeroOfEmptyFilteredInfiniteStream() {
+        assertThat(Stream.continually(1).filter(i -> false).take(0).isEmpty()).isTrue();
+    }
+
+    @Ignore
+    @Test
+    public void shouldTakeZeroOfEmptyFlatMappedInfiniteStream() {
+        assertThat(Stream.continually(1).flatMap(i -> Stream.empty()).take(0).isEmpty()).isTrue();
+    }
+
+    @Ignore
     @Override
     @Test
     public void shouldReturnSameInstanceIfTakeAll() {
