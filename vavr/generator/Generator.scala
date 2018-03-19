@@ -2014,6 +2014,7 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * Append a value to this tuple.
                *
+               * @param <T${i+1}> type of the value to append
                * @param t${i+1} the value to append
                * @return a new Tuple with the value appended
                */
@@ -2026,6 +2027,7 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * Concat a tuple's values to this tuple.
                *
+               ${(i+1 to i+j).gen(k => s"* @param <T$k> the type of the ${k.ordinal} value in the tuple")("\n")}
                * @param tuple the tuple to concat
                * @return a new Tuple with the tuple values appended
                * @throws NullPointerException if {@code tuple} is null

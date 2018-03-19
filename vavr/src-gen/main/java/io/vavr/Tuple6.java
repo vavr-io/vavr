@@ -440,6 +440,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     /**
      * Append a value to this tuple.
      *
+     * @param <T7> type of the value to append
      * @param t7 the value to append
      * @return a new Tuple with the value appended
      */
@@ -450,6 +451,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     /**
      * Concat a tuple's values to this tuple.
      *
+     * @param <T7> the type of the 7th value in the tuple
      * @param tuple the tuple to concat
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
@@ -462,6 +464,8 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     /**
      * Concat a tuple's values to this tuple.
      *
+     * @param <T7> the type of the 7th value in the tuple
+     * @param <T8> the type of the 8th value in the tuple
      * @param tuple the tuple to concat
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null

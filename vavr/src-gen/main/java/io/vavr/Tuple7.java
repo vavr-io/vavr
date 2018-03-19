@@ -494,6 +494,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     /**
      * Append a value to this tuple.
      *
+     * @param <T8> type of the value to append
      * @param t8 the value to append
      * @return a new Tuple with the value appended
      */
@@ -504,6 +505,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
     /**
      * Concat a tuple's values to this tuple.
      *
+     * @param <T8> the type of the 8th value in the tuple
      * @param tuple the tuple to concat
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
