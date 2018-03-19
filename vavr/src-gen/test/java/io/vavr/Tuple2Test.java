@@ -166,6 +166,55 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldAppendValue() {
+        final Tuple3<Integer, Integer, Integer> actual = Tuple.of(1, 2).append(3);
+        final Tuple3<Integer, Integer, Integer> expected = Tuple.of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple1() {
+        final Tuple3<Integer, Integer, Integer> actual = Tuple.of(1, 2).concat(Tuple.of(3));
+        final Tuple3<Integer, Integer, Integer> expected = Tuple.of(1, 2, 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple2() {
+        final Tuple4<Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2).concat(Tuple.of(3, 4));
+        final Tuple4<Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple3() {
+        final Tuple5<Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2).concat(Tuple.of(3, 4, 5));
+        final Tuple5<Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple4() {
+        final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2).concat(Tuple.of(3, 4, 5, 6));
+        final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple5() {
+        final Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2).concat(Tuple.of(3, 4, 5, 6, 7));
+        final Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6, 7);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple6() {
+        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2).concat(Tuple.of(3, 4, 5, 6, 7, 8));
+        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldRecognizeEquality() {
         final Tuple2<Object, Object> tuple1 = createTuple();
         final Tuple2<Object, Object> tuple2 = createTuple();

@@ -212,6 +212,41 @@ public class Tuple4Test {
     }
 
     @Test
+    public void shouldAppendValue() {
+        final Tuple5<Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2, 3, 4).append(5);
+        final Tuple5<Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple1() {
+        final Tuple5<Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2, 3, 4).concat(Tuple.of(5));
+        final Tuple5<Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple2() {
+        final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2, 3, 4).concat(Tuple.of(5, 6));
+        final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple3() {
+        final Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2, 3, 4).concat(Tuple.of(5, 6, 7));
+        final Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6, 7);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple4() {
+        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2, 3, 4).concat(Tuple.of(5, 6, 7, 8));
+        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldRecognizeEquality() {
         final Tuple4<Object, Object, Object, Object> tuple1 = createTuple();
         final Tuple4<Object, Object, Object, Object> tuple2 = createTuple();

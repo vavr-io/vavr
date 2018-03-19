@@ -1083,7 +1083,7 @@ def generateMainClasses(): Unit = {
                    */
                   long serialVersionUID = 1L;
               }
-              
+
               public static final class Case0<T, R> implements Case<T, R> {
 
                   private static final long serialVersionUID = 1L;
@@ -1160,7 +1160,7 @@ def generateMainClasses(): Unit = {
 
               // These can't be @FunctionalInterfaces because of ambiguities.
               // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
-              
+
               public static abstract class Pattern0<T> implements Pattern<T, T> {
 
                   private static final long serialVersionUID = 1L;
@@ -1506,7 +1506,7 @@ def generateMainClasses(): Unit = {
                * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
                */
               long serialVersionUID = 1L;
-              
+
               /$javadoc
                * Returns a function that always returns the constant
                * value that you give in parameter.
@@ -1796,7 +1796,7 @@ def generateMainClasses(): Unit = {
                 }
               """)}
           }
-          
+
           interface ${className}Module {
 
               // DEV-NOTE: we do not plan to expose this as public API
@@ -1847,7 +1847,6 @@ def generateMainClasses(): Unit = {
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("io.vavr.collection.Seq")
       val List = im.getType("io.vavr.collection.List")
-      val Iterator = im.getType("io.vavr.collection.Iterator")
       if(i==2){
         im.getType("java.util.Map")
         im.getType("java.util.AbstractMap")
@@ -2073,6 +2072,34 @@ def generateMainClasses(): Unit = {
                   return $List.of($params);
                 """}
             }
+
+            ${(i < N).gen(xs"""
+              /$javadoc
+               * Append a value to this tuple.
+               *
+               * @param <T${i+1}> type of the value to append
+               * @param t${i+1} the value to append
+               * @return a new Tuple with the value appended
+               */
+              public <T${i+1}> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(", ")}> append(T${i+1} t${i+1}) {
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}t${i+1});
+              }
+            """)}
+
+            ${(i < N) gen (1 to N-i).gen(j => xs"""
+              /$javadoc
+               * Concat a tuple's values to this tuple.
+               *
+               ${(i+1 to i+j).gen(k => s"* @param <T$k> the type of the ${k.ordinal} value in the tuple")("\n")}
+               * @param tuple the tuple to concat
+               * @return a new Tuple with the tuple values appended
+               * @throws NullPointerException if {@code tuple} is null
+               */
+              public <${(i+1 to i+j).gen(k => s"T$k")(", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(", ")}> concat(Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(", ")}> tuple) {
+                  Objects.requireNonNull(tuple, "tuple is null");
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}${(1 to j).gen(k => s"tuple._$k")(", ")});
+              }
+            """)("\n\n")}
 
             // -- Object
 
@@ -3447,6 +3474,24 @@ def generateTestClasses(): Unit = {
                   final Tuple0 actual = tuple.apply($functionArgs -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
+
+              ${(i < N).gen(xs"""
+                @$test
+                public void shouldAppendValue() {
+                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(", ")})"}.append(${i+1});
+                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> expected = Tuple.of(${(1 to i+1).gen(j => xs"$j")(", ")});
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """)}
+
+              ${(i < N) gen (1 to N-i).gen(j => xs"""
+                @$test
+                public void shouldConcatTuple$j() {
+                    final Tuple${i+j}<${(1 to i+j).gen(j => s"Integer")(", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(", ")})"}.concat(Tuple.of(${(i+1 to i+j).gen(k => s"$k")(", ")}));
+                    final Tuple${i+j}<${(1 to i+j).gen(j => s"Integer")(", ")}> expected = Tuple.of(${(1 to i+j).gen(j => xs"$j")(", ")});
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """)("\n\n")}
 
               @$test
               public void shouldRecognizeEquality() {

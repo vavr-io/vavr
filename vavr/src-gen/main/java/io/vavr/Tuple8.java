@@ -23,7 +23,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.control.HashCodes;
