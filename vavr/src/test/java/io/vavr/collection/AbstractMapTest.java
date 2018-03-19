@@ -32,6 +32,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.*;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -158,6 +159,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @SuppressWarnings("unchecked")
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries);
+
+    protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries);
 
     @SuppressWarnings("unchecked")
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
@@ -330,10 +333,29 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     }
 
     @Test
+    public void shouldConstructFromJavaStreamWithDuplicatedKeys() {
+        assertThat(mapOf(Stream.range(0, 4).toJavaStream()
+                , i -> Math.max(1, Math.min(i, 2))
+                , i -> String.valueOf(i + 1)
+        ))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
+    }
+
+    @Test
     public void shouldConstructFromJavaStreamEntries() {
         final java.util.stream.Stream<Integer> javaStream = java.util.stream.Stream.of(1, 2, 3);
         final Map<String, Integer> map = mapOf(javaStream, i -> Tuple.of(String.valueOf(i), i));
         assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 1).put("2", 2).put("3", 3));
+    }
+
+    @Test
+    public void shouldConstructFromJavaStreamEntriesWithDuplicatedKeys() {
+        assertThat(mapOf(Stream.range(0, 4).toJavaStream(), i ->
+                Map.entry(Math.max(1, Math.min(i, 2)), String.valueOf(i + 1))
+        ))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
     }
 
     @Test
@@ -346,10 +368,49 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldConstructFromEntries() {
+    public void shouldConstructFromUtilEntriesWithDuplicatedKeys() {
+        assertThat(mapOfEntries(
+                asJavaEntry(1, "1"), asJavaEntry(1, "2"),
+                asJavaEntry(2, "3"), asJavaEntry(2, "4")
+        ))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldConstructFromEntriesVararg() {
         final Map<String, Integer> actual = mapOfTuples(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3));
         final Map<String, Integer> expected = this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldConstructFromEntriesVarargWithDuplicatedKeys() {
+        assertThat(mapOfTuples(
+                Map.entry(1, "1"), Map.entry(1, "2"),
+                Map.entry(2, "3"), Map.entry(2, "4")
+        ))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
+    }
+
+    @Test
+    public void shouldConstructFromEntriesIterable() {
+        final Map<String, Integer> actual = mapOfTuples(asList(Map.entry("1", 1), Map.entry("2", 2), Map.entry("3", 3)));
+        final Map<String, Integer> expected = this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFromEntriesIterableWithDuplicatedKeys() {
+        assertThat(mapOfTuples(asList(
+                Map.entry(1, "1"), Map.entry(1, "2"),
+                Map.entry(2, "3"), Map.entry(2, "4")
+        )))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
     }
 
     @Test
@@ -357,6 +418,47 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<String, Integer> actual = mapOf("1", 1, "2", 2, "3", 3);
         final Map<String, Integer> expected = this.<String, Integer>emptyMap().put("1", 1).put("2", 2).put("3", 3);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructFromPairsWithDuplicatedKeys() {
+        final Map<Integer, String> actual = mapOf(1, "1", 1, "2", 2, "3");
+        final Map<Integer, String> expected = this.<Integer, String>emptyMap().put(1, "2").put(2, "3");
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructWithTabulate() {
+        final Map<String, Integer> actual = mapTabulate(4, i -> Tuple.of(i.toString(), i));
+        final Map<String, Integer> expected = this.<String, Integer>emptyMap().put("0", 0).put("1", 1).put("2", 2).put("3", 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructWithTabulateWithDuplicatedKeys() {
+        assertThat(mapTabulate(4, i ->
+                Tuple.of(Math.max(1, Math.min(i, 2)), String.valueOf(i + 1))
+        ))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
+    }
+
+    @Test
+    public void shouldConstructWithFill() {
+        AtomicInteger i = new AtomicInteger();
+        final Map<String, Integer> actual = mapFill(4, () -> Tuple.of(String.valueOf(i.get()), i.getAndIncrement()));
+        final Map<String, Integer> expected = this.<String, Integer>emptyMap().put("0", 0).put("1", 1).put("2", 2).put("3", 3);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConstructWithFillWithDuplicatedKeys() {
+        AtomicInteger i = new AtomicInteger();
+        assertThat(mapFill(4, () ->
+                Tuple.of(Math.max(1, Math.min(i.get(), 2)), String.valueOf(i.getAndIncrement() + 1))
+        ))
+                .hasSize(2)
+                .isEqualTo(mapOf(1, "2", 2, "4"));
     }
 
     // -- PartialFunction
