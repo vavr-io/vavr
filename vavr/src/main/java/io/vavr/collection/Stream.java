@@ -1049,25 +1049,7 @@ public interface Stream<T> extends LinearSeq<T> {
     @Override
     default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Empty.instance() : Stream.ofAll(new Iterator<U>() {
-
-            final Iterator<? extends T> inputs = Stream.this.iterator();
-            java.util.Iterator<? extends U> current = java.util.Collections.emptyIterator();
-
-            @Override
-            public boolean hasNext() {
-                boolean currentHasNext;
-                while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
-                    current = mapper.apply(inputs.next()).iterator();
-                }
-                return currentHasNext;
-            }
-
-            @Override
-            public U next() {
-                return current.next();
-            }
-        });
+        return isEmpty() ? Empty.instance() : Stream.ofAll(new FlatMapIterator<>(this.iterator(), mapper));
     }
 
     @Override
@@ -2144,6 +2126,32 @@ interface StreamModule {
             // DEV-NOTE: we make the stream even more lazy because the next head must not be evaluated on hasNext()
             current = stream::tail;
             return stream.head();
+        }
+    }
+
+    final class FlatMapIterator<T, U> implements Iterator<U> {
+
+        final Function<? super T, ? extends Iterable<? extends U>> mapper;
+        final Iterator<? extends T> inputs;
+        java.util.Iterator<? extends U> current = java.util.Collections.emptyIterator();
+
+        FlatMapIterator(Iterator<? extends T> inputs, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+            this.inputs = inputs;
+            this.mapper = mapper;
+        }
+
+        @Override
+        public boolean hasNext() {
+            boolean currentHasNext;
+            while (!(currentHasNext = current.hasNext()) && inputs.hasNext()) {
+                current = mapper.apply(inputs.next()).iterator();
+            }
+            return currentHasNext;
+        }
+
+        @Override
+        public U next() {
+            return current.next();
         }
     }
 }
