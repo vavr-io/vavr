@@ -23,7 +23,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.control.HashCodes;
@@ -436,6 +435,44 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     @Override
     public Seq<?> toSeq() {
         return List.of(_1, _2, _3, _4, _5, _6);
+    }
+
+    /**
+     * Append a value to this tuple.
+     *
+     * @param <T7> type of the value to append
+     * @param t7 the value to append
+     * @return a new Tuple with the value appended
+     */
+    public <T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> append(T7 t7) {
+        return Tuple.of(_1, _2, _3, _4, _5, _6, t7);
+    }
+
+    /**
+     * Concat a tuple's values to this tuple.
+     *
+     * @param <T7> the type of the 7th value in the tuple
+     * @param tuple the tuple to concat
+     * @return a new Tuple with the tuple values appended
+     * @throws NullPointerException if {@code tuple} is null
+     */
+    public <T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(Tuple1<T7> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, _4, _5, _6, tuple._1);
+    }
+
+    /**
+     * Concat a tuple's values to this tuple.
+     *
+     * @param <T7> the type of the 7th value in the tuple
+     * @param <T8> the type of the 8th value in the tuple
+     * @param tuple the tuple to concat
+     * @return a new Tuple with the tuple values appended
+     * @throws NullPointerException if {@code tuple} is null
+     */
+    public <T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple2<T7, T8> tuple) {
+        Objects.requireNonNull(tuple, "tuple is null");
+        return Tuple.of(_1, _2, _3, _4, _5, _6, tuple._1, tuple._2);
     }
 
     // -- Object

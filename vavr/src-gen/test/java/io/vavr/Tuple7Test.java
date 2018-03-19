@@ -317,6 +317,20 @@ public class Tuple7Test {
     }
 
     @Test
+    public void shouldAppendValue() {
+        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2, 3, 4, 5, 6, 7).append(8);
+        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConcatTuple1() {
+        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2, 3, 4, 5, 6, 7).concat(Tuple.of(8));
+        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5, 6, 7, 8);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldRecognizeEquality() {
         final Tuple7<Object, Object, Object, Object, Object, Object, Object> tuple1 = createTuple();
         final Tuple7<Object, Object, Object, Object, Object, Object, Object> tuple2 = createTuple();
