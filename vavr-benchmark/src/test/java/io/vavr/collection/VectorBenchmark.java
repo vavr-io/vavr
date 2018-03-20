@@ -60,6 +60,7 @@ public class VectorBenchmark {
             Slice.class,
             Sort.class,
             Iterate.class
+            , Fill.class
     );
 
     @Test
@@ -1035,6 +1036,32 @@ public class VectorBenchmark {
             });
             assert aggregate[0] == EXPECTED_AGGREGATE;
             return aggregate[0];
+        }
+    }
+
+    public static class Fill extends Base {
+        @Benchmark
+        public Object scala_persistent() {
+            final scala.collection.immutable.Vector<?> values = scala.collection.immutable.Vector$.MODULE$.fill(CONTAINER_SIZE, () -> ELEMENTS[0]);
+            final Object head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
+        }
+
+        @Benchmark
+        public Object vavr_persistent_constant_supplier() {
+            final io.vavr.collection.Vector<Integer> values = io.vavr.collection.Vector.fill(CONTAINER_SIZE, () -> ELEMENTS[0]);
+            final Integer head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
+        }
+
+        @Benchmark
+        public Object vavr_persistent_constant_object() {
+            final io.vavr.collection.Vector<Integer> values = io.vavr.collection.Vector.fill(CONTAINER_SIZE, ELEMENTS[0]);
+            final Integer head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
         }
     }
 }

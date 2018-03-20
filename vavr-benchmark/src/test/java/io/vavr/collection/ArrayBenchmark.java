@@ -41,6 +41,7 @@ public class ArrayBenchmark {
             Prepend.class,
             Append.class,
             Iterate.class
+            , Fill.class
     );
 
     @Test
@@ -396,6 +397,24 @@ public class ArrayBenchmark {
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
+        }
+    }
+
+    public static class Fill extends Base {
+        @Benchmark
+        public Object vavr_persistent_constant_supplier() {
+            final io.vavr.collection.Array<Integer> values = io.vavr.collection.Array.fill(CONTAINER_SIZE, () -> ELEMENTS[0]);
+            final Integer head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
+        }
+
+        @Benchmark
+        public Object vavr_persistent_constant_object() {
+            final io.vavr.collection.Array<Integer> values = io.vavr.collection.Array.fill(CONTAINER_SIZE, ELEMENTS[0]);
+            final Integer head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
         }
     }
 }
