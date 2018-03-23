@@ -1199,6 +1199,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(mapTabulate(-1, i -> new Tuple2<>(i, i))).isEqualTo(empty());
     }
 
+    // -- fill(int, Supplier)
+
     @SuppressWarnings("unchecked")
     @Test
     public void shouldFillTheSeqCallingTheSupplierInTheRightOrder() {
@@ -1211,6 +1213,14 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     @Test
     public void shouldFillTheSeqWith0Elements() {
         assertThat(mapFill(0, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnSingleMapAfterFillWithConstantKeys() {
+        AtomicInteger value = new AtomicInteger(83);
+        assertThat(mapFill(17, () -> Tuple.of(7, value.getAndIncrement())))
+                .hasSize(1)
+                .isEqualTo(mapOf(7, value.decrementAndGet()));
     }
 
     @Test

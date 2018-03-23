@@ -170,11 +170,32 @@ final class Collections {
         return tabulate(n, ignored -> supplier.get());
     }
 
+    static <T> Iterator<T> fillObject(int n, T element) {
+        if (n <= 0) {
+            return Iterator.empty();
+        } else {
+            return Iterator.continually(element).take(n);
+        }
+    }
+
     static <C extends Traversable<T>, T> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
         Objects.requireNonNull(s, "s is null");
         Objects.requireNonNull(empty, "empty is null");
         Objects.requireNonNull(of, "of is null");
         return tabulate(n, anything -> s.get(), empty, of);
+    }
+
+    static <C extends Traversable<T>, T> C fillObject(int n, T element, C empty, Function<T[], C> of) {
+        Objects.requireNonNull(empty, "empty is null");
+        Objects.requireNonNull(of, "of is null");
+        if (n <= 0) {
+            return empty;
+        } else {
+            @SuppressWarnings("unchecked")
+            final T[] elements = (T[]) new Object[n];
+            Arrays.fill(elements, element);
+            return of.apply(elements);
+        }
     }
 
     static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {

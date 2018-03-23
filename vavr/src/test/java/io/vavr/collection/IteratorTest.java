@@ -184,6 +184,10 @@ public class IteratorTest extends AbstractTraversableTest {
         return Iterator.fill(n, s);
     }
 
+    protected <T> Iterator<T> fill(int n, T element) {
+        return Iterator.fill(n, element);
+    }
+
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
@@ -289,6 +293,32 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldConcatToConcatIterator() {
         assertThat(concat(List.of(1, 2)).concat(List.of(3).iterator())).isEqualTo(Iterator.of(1, 2, 3));
+    }
+
+    // -- fill(int, Supplier)
+
+    @Test
+    public void shouldReturnManyAfterFillWithConstantSupplier() {
+        assertThat(fill(17, () -> 7))
+                .hasSize(17);
+    }
+
+    // -- fill(int, T)
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithZeroCount() {
+        assertThat(fill(0, 7)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithNegativeCount() {
+        assertThat(fill(-1, 7)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnManyAfterFillWithConstant() {
+        assertThat(fill(17, 7))
+                .hasSize(17);
     }
 
     // -- concat

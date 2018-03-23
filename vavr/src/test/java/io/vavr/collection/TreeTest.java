@@ -190,6 +190,10 @@ public class TreeTest extends AbstractTraversableTest {
         return Tree.fill(n, s);
     }
 
+    protected <T> Tree<T> fill(int n, T element) {
+        return Tree.fill(n, element);
+    }
+
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
@@ -214,6 +218,34 @@ public class TreeTest extends AbstractTraversableTest {
         final Tree<Number> numbers = Tree.narrow(doubles);
         final boolean actual = numbers.contains(new BigDecimal("2.0"));
         assertThat(actual).isFalse();
+    }
+
+    // -- fill(int, Supplier)
+
+    @Test
+    public void shouldReturnManyAfterFillWithConstantSupplier() {
+        assertThat(fill(17, () -> 7))
+                .hasSize(17)
+                .containsOnly(7);
+    }
+
+    // -- fill(int, T)
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithZeroCount() {
+        assertThat(fill(0, 7)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithNegativeCount() {
+        assertThat(fill(-1, 7)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnManyAfterFillWithConstant() {
+        assertThat(fill(17, 7))
+                .hasSize(17)
+                .containsOnly(7);
     }
 
     // -- static recurse(T, Function)

@@ -132,7 +132,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Returns an HashSet containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a HashSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
      *
      * @param <T> Component type of the HashSet
      * @param n   The number of elements in the HashSet

@@ -210,6 +210,20 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
         }
 
         /**
+         * Returns a HashMultimap containing {@code n} times the given {@code element}
+         *
+         * @param <K>     The key type
+         * @param <V2>    The value type
+         * @param n       The number of elements in the HashMultimap
+         * @param element The element
+         * @return A HashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         */
+        @SuppressWarnings("unchecked")
+        public <K, V2 extends V> HashMultimap<K, V2> fill(int n, Tuple2<? extends K, ? extends V2> element) {
+            return ofEntries(Collections.fillObject(n, element));
+        }
+
+        /**
          * Creates a HashMultimap of the given key-value pair.
          *
          * @param key   a key for the map

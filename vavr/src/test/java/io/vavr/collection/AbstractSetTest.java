@@ -48,6 +48,15 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- fill(int, Supplier)
+
+    @Test
+    public void shouldReturnSingleAfterFillWithConstant() {
+        assertThat(fill(17, () -> 7))
+                .hasSize(1)
+                .isEqualTo(of(7));
+    }
+
     // -- add
 
     @Test

@@ -136,7 +136,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Returns a LinkedHashSet containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a LinkedHashSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
      *
      * @param <T> Component type of the LinkedHashSet
      * @param n   The number of elements in the LinkedHashSet

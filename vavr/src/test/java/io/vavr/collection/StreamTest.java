@@ -123,6 +123,11 @@ public class StreamTest extends AbstractLinearSeqTest {
     }
 
     @Override
+    protected <T> Traversable<T> fill(int n, T element) {
+        return Stream.fill(n, element);
+    }
+
+    @Override
     protected Stream<Character> range(char from, char toExclusive) {
         return Stream.range(from, toExclusive);
     }

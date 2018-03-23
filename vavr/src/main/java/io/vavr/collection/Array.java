@@ -273,6 +273,18 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return io.vavr.collection.Collections.fill(n, s, empty(), Array::of);
     }
 
+    /**
+     * Returns an Array containing {@code n} times the given {@code element}
+     *
+     * @param <T>     Component type of the Array
+     * @param n       The number of elements in the Array
+     * @param element The element
+     * @return An Array of size {@code n}, where each element is the given {@code element}.
+     */
+    public static <T> Array<T> fill(int n, T element) {
+        return io.vavr.collection.Collections.fillObject(n, element, empty(), Array::of);
+    }
+
     public static Array<Character> range(char from, char toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
     }

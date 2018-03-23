@@ -182,6 +182,20 @@ public class TreeMultimapTest extends AbstractMultimapTest {
         }
     }
 
+    @Override
+    protected <K extends Comparable<K>, V> Multimap<K, V> mapFill(int n, Tuple2<? extends K, ? extends V> element) {
+        switch (containerType) {
+            case SEQ:
+                return TreeMultimap.withSeq().fill(n, element);
+            case SET:
+                return TreeMultimap.withSet().fill(n, element);
+            case SORTED_SET:
+                return TreeMultimap.withSortedSet(Comparators.naturalComparator()).fill(n, element);
+            default:
+                throw new RuntimeException();
+        }
+    }
+
     // -- static narrow
 
     @Test

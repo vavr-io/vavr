@@ -120,6 +120,11 @@ public class QueueTest extends AbstractLinearSeqTest {
     }
 
     @Override
+    protected <T> Traversable<T> fill(int n, T element) {
+        return Queue.fill(n, element);
+    }
+
+    @Override
     protected Queue<Character> range(char from, char toExclusive) {
         return Queue.range(from, toExclusive);
     }

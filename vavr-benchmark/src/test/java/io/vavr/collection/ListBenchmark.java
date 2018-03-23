@@ -45,6 +45,7 @@ public class ListBenchmark {
             Append.class,
             GroupBy.class,
             Iterate.class
+            , Fill.class
     );
 
     @Test
@@ -644,6 +645,32 @@ public class ListBenchmark {
             }
             assert aggregate == EXPECTED_AGGREGATE;
             return aggregate;
+        }
+    }
+
+    public static class Fill extends Base {
+        @Benchmark
+        public Object scala_persistent() {
+            final scala.collection.immutable.List<?> values = scala.collection.immutable.List$.MODULE$.fill(CONTAINER_SIZE, () -> ELEMENTS[0]);
+            final Object head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
+        }
+
+        @Benchmark
+        public Object vavr_persistent_constant_supplier() {
+            final io.vavr.collection.List<Integer> values = io.vavr.collection.List.fill(CONTAINER_SIZE, () -> ELEMENTS[0]);
+            final Integer head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
+        }
+
+        @Benchmark
+        public Object vavr_persistent_constant_object() {
+            final io.vavr.collection.List<Integer> values = io.vavr.collection.List.fill(CONTAINER_SIZE, ELEMENTS[0]);
+            final Integer head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
         }
     }
 }

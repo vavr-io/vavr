@@ -122,6 +122,11 @@ public class ListTest extends AbstractLinearSeqTest {
     }
 
     @Override
+    protected <T> Traversable<T> fill(int n, T element) {
+        return List.fill(n, element);
+    }
+
+    @Override
     protected List<Character> range(char from, char toExclusive) {
         return List.range(from, toExclusive);
     }

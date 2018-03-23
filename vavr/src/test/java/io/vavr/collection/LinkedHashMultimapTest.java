@@ -182,6 +182,20 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
         }
     }
 
+    @Override
+    protected <K extends Comparable<K>, V> Multimap<K, V> mapFill(int n, Tuple2<? extends K, ? extends V> element) {
+        switch (containerType) {
+            case SEQ:
+                return LinkedHashMultimap.withSeq().fill(n, element);
+            case SET:
+                return LinkedHashMultimap.withSet().fill(n, element);
+            case SORTED_SET:
+                return LinkedHashMultimap.withSortedSet(Comparators.naturalComparator()).fill(n, element);
+            default:
+                throw new RuntimeException();
+        }
+    }
+
     // -- narrow
 
     @Test

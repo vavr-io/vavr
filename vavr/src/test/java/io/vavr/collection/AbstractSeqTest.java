@@ -126,6 +126,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     abstract protected <T> Seq<? extends Seq<T>> transpose(Seq<? extends Seq<T>> rows);
 
+    abstract protected <T> Traversable<T> fill(int n, T element);
+
     // -- static narrow
 
     @Test
@@ -134,6 +136,34 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         final Seq<Number> numbers = Seq.narrow(doubles);
         final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
         assertThat(actual).isEqualTo(3);
+    }
+
+    // -- fill(int, Supplier)
+
+    @Test
+    public void shouldReturnManyAfterFillWithConstantSupplier() {
+        assertThat(fill(17, () -> 7))
+                .hasSize(17)
+                .containsOnly(7);
+    }
+
+    // -- fill(int, T)
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithZeroCount() {
+        assertThat(fill(0, 7)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithNegativeCount() {
+        assertThat(fill(-1, 7)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnManyAfterFillWithConstant() {
+        assertThat(fill(17, 7))
+                .hasSize(17)
+                .containsOnly(7);
     }
 
     // -- append

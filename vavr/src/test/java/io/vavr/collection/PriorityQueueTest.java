@@ -117,6 +117,10 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         return PriorityQueue.fill(n, s);
     }
 
+    protected <T> PriorityQueue<T> fill(int n, T element) {
+        return PriorityQueue.fill(n, element);
+    }
+
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
@@ -179,6 +183,34 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         final PriorityQueue<Number> numbers = PriorityQueue.narrow(doubles);
         final int actual = numbers.enqueue(new BigDecimal("2.0")).sum().intValue();
         assertThat(actual).isEqualTo(3);
+    }
+
+    // -- fill(int, Supplier)
+
+    @Test
+    public void shouldReturnManyAfterFillWithConstantSupplier() {
+        assertThat(fill(17, () -> 7))
+                .hasSize(17)
+                .containsOnly(7);
+    }
+
+    // -- fill(int, T)
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithZeroCount() {
+        assertThat(fill(0, 7)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithNegativeCount() {
+        assertThat(fill(-1, 7)).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnManyAfterFillWithConstant() {
+        assertThat(fill(17, 7))
+                .hasSize(17)
+                .containsOnly(7);
     }
 
     // -- toList
