@@ -162,7 +162,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     /**
-     * Returns a TreeSet containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a TreeSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
      *
      * @param <T>        Component type of the TreeSet
      * @param comparator The comparator used to sort the elements
@@ -178,7 +178,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     /**
-     * Returns a TreeSet containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a TreeSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
      * The underlying comparator is the natural comparator of T.
      *
      * @param <T> Component type of the TreeSet

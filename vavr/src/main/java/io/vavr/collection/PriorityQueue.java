@@ -283,6 +283,21 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         return io.vavr.collection.Collections.fill(size, supplier, empty(comparator), values -> ofAll(comparator, io.vavr.collection.List.of(values)));
     }
 
+    /**
+     * Returns a {@link PriorityQueue} containing {@code n} times the given {@code element}
+     *
+     * @param <T>     Component type of the {@link PriorityQueue}
+     * @param size    The number of elements in the {@link PriorityQueue}
+     * @param element The element
+     * @return A {@link PriorityQueue} of size {@code size}, where each element is the given {@code element}.
+     */
+    @GwtIncompatible
+    @SuppressWarnings("unchecked")
+    public static <T> PriorityQueue<T> fill(int size, T element) {
+        final Comparator<? super T> comparator = Comparators.naturalComparator();
+        return io.vavr.collection.Collections.fillObject(size, element, empty(comparator), values -> ofAll(comparator, io.vavr.collection.List.of(values)));
+    }
+
     @Override
     public io.vavr.collection.List<T> toList() {
         io.vavr.collection.List<T> results = io.vavr.collection.List.empty();

@@ -361,6 +361,37 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
         }
 
         /**
+         * Returns a TreeMultimap containing {@code n} times the given {@code element}
+         * The underlying key comparator is the natural comparator of K.
+         *
+         * @param <K>     The key type
+         * @param <V2>    The value type
+         * @param n       The number of elements in the TreeMultimap
+         * @param element The element
+         * @return A TreeMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         */
+        @SuppressWarnings("unchecked")
+        public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> fill(int n, Tuple2<? extends K, ? extends V2> element) {
+            return fill(Comparators.naturalComparator(), n, element);
+        }
+
+        /**
+         * Returns a TreeMultimap containing {@code n} times the given {@code element}
+         *
+         * @param <K>           The key type
+         * @param <V2>          The value type
+         * @param keyComparator The comparator used to sort the entries by their key
+         * @param n             The number of elements in the TreeMultimap
+         * @param element       The element
+         * @return A TreeMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         */
+        @SuppressWarnings("unchecked")
+        public <K, V2 extends V> TreeMultimap<K, V2> fill(Comparator<? super K> keyComparator, int n, Tuple2<? extends K, ? extends V2> element) {
+            Objects.requireNonNull(keyComparator, "keyComparator is null");
+            return ofEntries(keyComparator, Collections.fillObject(n, element));
+        }
+
+        /**
          * Creates a TreeMultimap of the given key-value pair.
          *
          * @param key   A singleton map key.

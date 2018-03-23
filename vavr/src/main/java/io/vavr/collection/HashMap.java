@@ -428,7 +428,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
-     * Returns an HashMap containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a HashMap containing tuples returned by {@code n} calls to a given Supplier {@code s}.
      *
      * @param <K> The key type
      * @param <V> The value type

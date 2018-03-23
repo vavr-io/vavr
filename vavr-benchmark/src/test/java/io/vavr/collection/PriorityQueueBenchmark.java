@@ -31,6 +31,7 @@ import scalaz.Order;
 import scalaz.Order$;
 
 import java.util.Collections;
+import java.util.Objects;
 
 import static java.util.Arrays.asList;
 import static io.vavr.JmhRunner.create;
@@ -43,6 +44,7 @@ public class PriorityQueueBenchmark {
             Enqueue.class,
             Dequeue.class,
             Sort.class
+            , Fill.class
     );
 
     @Test
@@ -369,6 +371,24 @@ public class PriorityQueueBenchmark {
             }
             assert values.isEmpty() && (aggregate == EXPECTED_AGGREGATE);
             return values;
+        }
+    }
+
+    public static class Fill extends Base {
+        @Benchmark
+        public Object vavr_persistent_constant_supplier() {
+            final io.vavr.collection.PriorityQueue<Integer> values = io.vavr.collection.PriorityQueue.fill(CONTAINER_SIZE, () -> ELEMENTS[0]);
+            final Integer head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
+        }
+
+        @Benchmark
+        public Object vavr_persistent_constant_object() {
+            final io.vavr.collection.PriorityQueue<Integer> values = io.vavr.collection.PriorityQueue.fill(CONTAINER_SIZE, ELEMENTS[0]);
+            final Integer head = values.head();
+            assert Objects.equals(head, ELEMENTS[0]);
+            return head;
         }
     }
 }

@@ -361,6 +361,18 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
+     * Returns a Stream containing {@code n} times the given {@code element}
+     *
+     * @param <T>     Component type of the Stream
+     * @param n       The number of elements in the Stream
+     * @param element The element
+     * @return A Stream of size {@code n}, where each element is the given {@code element}.
+     */
+    static <T> Stream<T> fill(int n, T element) {
+        return Stream.ofAll(io.vavr.collection.Collections.fillObject(n, element));
+    }
+
+    /**
      * Creates a Stream of the given elements.
      *
      * @param <T>      Component type of the Stream.

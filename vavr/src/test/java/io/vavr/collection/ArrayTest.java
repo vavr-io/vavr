@@ -115,6 +115,11 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     }
 
     @Override
+    protected <T> Traversable<T> fill(int n, T element) {
+        return Array.fill(n, element);
+    }
+
+    @Override
     protected Array<Character> range(char from, char toExclusive) {
         return Array.range(from, toExclusive);
     }

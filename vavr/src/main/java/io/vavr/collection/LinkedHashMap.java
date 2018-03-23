@@ -451,7 +451,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
-     * Returns a LinkedHashMap containing {@code n} values supplied by a given Supplier {@code s}.
+     * Returns a LinkedHashMap containing tuples returned by {@code n} calls to a given Supplier {@code s}.
      *
      * @param <K> The key type
      * @param <V> The value type

@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
@@ -192,6 +193,8 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f);
 
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s);
+
+    abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapFill(int n, Tuple2<? extends K, ? extends V> element);
 
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
@@ -654,6 +657,33 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @Test
     public void shouldFillTheSeqWith0ElementsWhenNIsNegative() {
         assertThat(mapFill(-1, () -> new Tuple2<>(1, 1))).isEqualTo(empty());
+    }
+
+    // -- fill(int, Supplier)
+
+    @Test
+    public void shouldReturnManyMapAfterFillWithConstantSupplier() {
+        AtomicInteger value = new AtomicInteger(83);
+        assertThat(mapFill(17, () -> Tuple.of(7, value.getAndIncrement())))
+                .hasSize(17);
+    }
+
+    // -- fill(int, T)
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithZeroCount() {
+        assertThat(mapFill(0, Tuple.of(7, 83))).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnEmptyAfterFillWithNegativeCount() {
+        assertThat(mapFill(-1, Tuple.of(7, 83))).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldReturnManyMapAfterFillWithConstant() {
+        assertThat(mapFill(17, Tuple.of(7, 83)))
+                .hasSize(containerType == Multimap.ContainerType.SEQ ? 17 : 1);
     }
 
     // -- mapTabulate
