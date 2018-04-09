@@ -27,6 +27,7 @@ import io.vavr.collection.Seq;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class ValidationTest extends AbstractValueTest {
@@ -134,7 +135,6 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(validation.isValid()).isFalse();
         assertThat(validation.getErrors()).isEqualTo(List.of(throwable));
     }
-
 
     // -- Validation.narrow
 
@@ -651,7 +651,6 @@ public class ValidationTest extends AbstractValueTest {
         }
     }
 
-
     static class TestNestedPojo {
         Option<String> pojoName;
         TestPojo testPojo;
@@ -759,5 +758,38 @@ public class ValidationTest extends AbstractValueTest {
     @Test
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
+    }
+
+    // -- peekInvalid
+
+    private Consumer<Seq<Integer>> withSideEffectOn(ArrayList<Integer> effect) {
+        return e -> e.forEach(effect::add);
+    }
+
+    @Test
+    public void shouldPeekInvalidNoEffectOnValid() {
+        final ArrayList<Integer> mutableList = new ArrayList<>();
+        final Validation<Integer, String> expected = Validation.valid("");
+        final Validation<Integer, String> actual = expected.peekInvalid(withSideEffectOn(mutableList));
+        assertThat(actual).isEqualTo(expected);
+        assertThat(mutableList).isEmpty();
+    }
+
+    @Test
+    public void shouldPeekInvalidEffectOnSingleInvalid() {
+        final ArrayList<Integer> mutableList = new ArrayList<>();
+        final Validation<Integer, String> expected = Validation.invalid(1);
+        final Validation<Integer, String> actual = expected.peekInvalid(withSideEffectOn(mutableList));
+        assertThat(actual).isEqualTo(expected);
+        assertThat(mutableList).containsExactly(1);
+    }
+
+    @Test
+    public void shouldPeekInvalidEffectOnMultipleInvalid() {
+        final ArrayList<Integer> mutableList = new ArrayList<>();
+        final Validation<Integer, String> expected = Validation.invalid(1, 2, 3);
+        final Validation<Integer, String> actual = expected.peekInvalid(withSideEffectOn(mutableList));
+        assertThat(actual).isEqualTo(expected);
+        assertThat(mutableList).containsExactly(1, 2, 3);
     }
 }

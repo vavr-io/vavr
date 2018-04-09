@@ -740,6 +740,19 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
+     * Consumes the errors if this is an Invalid.
+     *
+     * @param action The action that will be performed on the errors.
+     * @return this instance
+     */
+    default Validation<E, T> peekInvalid(Consumer<? super Seq<E>> action) {
+        if (isInvalid()) {
+            action.accept(getErrors());
+        }
+        return this;
+    }
+
+    /**
      * A {@code Validation}'s value is computed synchronously.
      *
      * @return false
