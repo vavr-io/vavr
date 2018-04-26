@@ -100,6 +100,24 @@ public interface Either<L, R> extends Value<R>, Serializable {
         return (Either<L, R>) either;
     }
 
+
+    /**
+     * Return a value of right or left if both sides have same type.
+     *
+     *  Use this to elegantly resolve last step of computation.
+     *
+     * @param either value with both sides of the same type
+     * @param <T> commonly assignable type
+     * @return left or right - whichever is resolved
+     */
+    static <T> T  merge(Either<T,T> either) {
+        if (either.isLeft()) {
+            return either.getLeft();
+        } else {
+            return either.get();
+        }
+    }
+
     /**
      * Returns the left value.
      *

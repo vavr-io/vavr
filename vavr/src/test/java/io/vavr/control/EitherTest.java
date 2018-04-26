@@ -426,4 +426,20 @@ public class EitherTest extends AbstractValueTest {
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
     }
+
+    // merge
+
+    @Test
+    public void shouldMergeRight() {
+        final Either<String, Integer> right = Either.right(1);
+        Either<String,String> result = right.map(String::valueOf);
+        assertThat(Either.merge(result)).isEqualTo("1");
+    }
+
+    @Test
+    public void shouldMergeLeft() {
+        final Either<String, Integer> right = Either.left("ok");
+        Either<String,String> result = right.map(String::valueOf);
+        assertThat(Either.merge(result)).isEqualTo("ok");
+    }
 }
