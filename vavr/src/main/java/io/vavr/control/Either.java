@@ -110,12 +110,8 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param <T> commonly assignable type
      * @return left or right - whichever is resolved
      */
-    static <T> T  merge(Either<T,T> either) {
-        if (either.isLeft()) {
-            return either.getLeft();
-        } else {
-            return either.get();
-        }
+    static <T> T  merge(Either<? extends T,T> either) {
+        return either.getOrElseGet(Function.identity());
     }
 
     /**
