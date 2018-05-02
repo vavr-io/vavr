@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.openjdk.jmh.annotations.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -86,7 +87,11 @@ public class ListBenchmark {
             javaMutableLinked = create(java.util.LinkedList::new, asList(ELEMENTS), v -> areEqual(v, asList(ELEMENTS)));
             scalaMutable = create(v -> (scala.collection.mutable.MutableList<Integer>) scala.collection.mutable.MutableList$.MODULE$.apply(asScalaBuffer(v)), asList(ELEMENTS), v -> areEqual(asJavaCollection(v), javaMutable));
 
-            scalaPersistent = create(v -> scala.collection.immutable.List$.MODULE$.apply(asScalaBuffer(v)), javaMutable, v -> areEqual(asJavaCollection(v), javaMutable));
+            scalaPersistent = JmhRunner.<java.util.List<Integer>, scala.collection.immutable.List<Integer>> create(
+                    v -> scala.collection.immutable.List$.MODULE$.apply(asScalaBuffer(v)), 
+                    javaMutable, 
+                    v -> areEqual(asJavaCollection(v), javaMutable)
+            );
             clojurePersistent = create(clojure.lang.PersistentList::create, javaMutable, v -> areEqual((Iterable<?>) v, javaMutable));
             fjavaPersistent = create(v -> fj.data.List.fromIterator(v.iterator()), javaMutable, v -> areEqual(v, javaMutable));
             pcollectionsPersistent = create(org.pcollections.ConsPStack::from, javaMutable, v -> areEqual(v, javaMutable));
