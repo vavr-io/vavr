@@ -273,6 +273,22 @@ public class EitherTest extends AbstractValueTest {
         assertThat(either.filter(i -> false).get()).isSameAs(either);
     }
 
+    // -- filterOrElse
+
+    @Test
+    public void shouldFilterOrElseRight() {
+        Either<String, Integer> either = Either.right(42);
+        assertThat(either.filterOrElse(i -> true, Object::toString)).isSameAs(either);
+        assertThat(either.filterOrElse(i -> false, Object::toString)).isEqualTo(Either.left("42"));
+    }
+
+    @Test
+    public void shouldFilterOrElseLeft() {
+        Either<String, Integer> either = Either.left("vavr");
+        assertThat(either.filterOrElse(i -> true, Object::toString)).isSameAs(either);
+        assertThat(either.filterOrElse(i -> false, Object::toString)).isSameAs(either);
+    }
+
     // -- flatMap
 
     @Test
