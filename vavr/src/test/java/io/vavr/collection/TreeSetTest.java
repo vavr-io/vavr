@@ -237,6 +237,14 @@ public class TreeSetTest extends AbstractSortedSetTest {
     // -- construct
 
     @Test
+    public void shouldConstructEmptySetWithExplicitComparator() {
+        final TreeSet<Integer> ts = TreeSet.<Integer> of(Comparators.naturalComparator()
+            .reversed())
+            .addAll(Array.ofAll(1, 2, 3));
+        assertThat(ts.toArray()).isEqualTo(Array.of(3, 2, 1));
+    }
+
+    @Test
     public void shouldConstructStreamFromEmptyJavaStream() {
         final TreeSet<Integer> actual = ofJavaStream(java.util.stream.Stream.<Integer>empty());
         final TreeSet<Integer> expected = empty();
