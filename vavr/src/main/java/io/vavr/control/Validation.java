@@ -220,6 +220,24 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
+     * Maps the values of an iterable to a sequence of mapped values into a single {@code Validation} by
+     * transforming an {@code Iterable<? extends T>} into a {@code Validation<Seq<U>>}.
+     * <p>
+     *
+     * @param values   An {@code Iterable} of values.
+     * @param mapper   A mapper of values to Validations
+     * @param <T>      The type of the given values.
+     * @param <U>      The mapped value type.
+     * @return A {@code Validation} of a {@link Seq} of results.
+     * @throws NullPointerException if values or f is null.
+     */
+    static <E, T, U> Validation<E, Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Validation<? extends E, ? extends U>> mapper) {
+        Objects.requireNonNull(values, "values is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return sequence(Iterator.ofAll(values).map(mapper));
+    }
+
+    /**
      * Narrows a widened {@code Validation<? extends E, ? extends T>} to {@code Validation<E, T>}
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
