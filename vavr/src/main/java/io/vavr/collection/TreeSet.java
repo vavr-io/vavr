@@ -192,7 +192,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return fill(Comparators.naturalComparator(), n, s);
     }
 
-    @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(Iterable<? extends T> values) {
         return ofAll(Comparators.naturalComparator(), values);
     }
