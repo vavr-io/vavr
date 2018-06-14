@@ -282,6 +282,17 @@ public class TreeSetTest extends AbstractSortedSetTest {
         final List<Integer> expected = List.of(3, 2, 1);
         assertThat(actual).isEqualTo(expected);
     }
+    
+    // -- removeAll
+    
+    @Test
+    public void shouldKeepComparatorOnRemoveAll() {
+        final TreeSet<Integer> ts = TreeSet.of(Comparators.naturalComparator()
+            .reversed(), 1, 2, 3)
+            .removeAll(Array.ofAll(1, 2, 3))
+            .addAll(Array.ofAll(4, 5, 6));
+        assertThat(ts.toArray()).isEqualTo(Array.of(6, 5, 4));
+    }
 
     // -- diff
 
