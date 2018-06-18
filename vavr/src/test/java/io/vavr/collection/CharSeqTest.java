@@ -3507,7 +3507,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldUnfoldRightSimpleCharSeq() {
-        assertThat(
+        this.<CharSeq> assertThat(
                 CharSeq.unfoldRight('j', x -> x == 'a'
                                               ? Option.none()
                                               : Option.of(new Tuple2<>(x, (char) (x - 1)))))
@@ -3521,7 +3521,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldUnfoldLeftSimpleCharSeq() {
-        assertThat(
+        this.<CharSeq> assertThat(
                 CharSeq.unfoldLeft('j', x -> x == 'a'
                                              ? Option.none()
                                              : Option.of(new Tuple2<>((char) (x - 1), x))))

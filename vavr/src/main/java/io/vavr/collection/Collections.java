@@ -225,8 +225,8 @@ final class Collections {
 
     // @param iterable may not be null
     static boolean isEmpty(Iterable<?> iterable) {
-        return iterable instanceof Traversable && ((Traversable) iterable).isEmpty()
-                || iterable instanceof Collection && ((Collection) iterable).isEmpty()
+        return iterable instanceof Traversable && ((Traversable<?>) iterable).isEmpty()
+                || iterable instanceof Collection && ((Collection<?>) iterable).isEmpty()
                 || !iterable.iterator().hasNext();
     }
 
@@ -437,7 +437,6 @@ final class Collections {
         return rowFactory.apply(Iterator.of(results).map(columnFactory));
     }
 
-    @SuppressWarnings("unchecked")
     static <T> IterableWithSize<T> withSize(Iterable<? extends T> iterable) {
         return isTraversableAgain(iterable) ? withSizeTraversable(iterable) : withSizeTraversable(List.ofAll(iterable));
     }
@@ -471,7 +470,6 @@ final class Collections {
             return size;
         }
 
-        @SuppressWarnings("unchecked")
         Object[] toArray() {
             if (iterable instanceof Collection<?>) {
                 return ((Collection<? extends T>) iterable).toArray();
