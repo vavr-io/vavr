@@ -86,6 +86,24 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Maps the values of an iterable to a sequence of mapped values into a single {@code Option} by
+     * transforming an {@code Iterable<? extends T>} into a {@code Option<Seq<U>>}.
+     * <p>
+     *
+     * @param values   An {@code Iterable} of values.
+     * @param mapper   A mapper of values to Options
+     * @param <T>      The type of the given values.
+     * @param <U>      The mapped value type.
+     * @return A {@code Option} of a {@link Seq} of results.
+     * @throws NullPointerException if values or f is null.
+     */
+    static <T, U> Option<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Option<? extends U>> mapper) {
+        Objects.requireNonNull(values, "values is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return sequence(Iterator.ofAll(values).map(mapper));
+    }
+
+    /**
      * Creates a new {@code Some} of a given value.
      * <p>
      * The only difference to {@link Option#of(Object)} is, when called with argument {@code null}.

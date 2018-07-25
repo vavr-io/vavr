@@ -179,6 +179,31 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(Validation.invalid("error1", "error2", "error3", "error4"));
     }
 
+    // -- Validation.traverse
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenTraversingNull() {
+        Validation.traverse(null, null);
+    }
+
+    @Test
+    public void shouldCreateValidWhenTraversingValids() {
+        final Validation<Seq<String>, Seq<Integer>> actual =
+            Validation.traverse(List.of(1, 2), Validation::valid);
+        assertThat(actual).isEqualTo(Validation.valid(List.of(1, 2)));
+    }
+
+    @Test
+    public void shouldCreateInvalidWhenTraversingAnInvalid() {
+        final Validation<String, Seq<Integer>> actual =
+            Validation.traverse(
+                List.of(1, -1, 2, -2),
+                x -> x >= 0
+                    ? Validation.valid(x)
+                    : Validation.invalid("error" + Integer.toString(x), "error" + Integer.toString(x+1)));
+        assertThat(actual).isEqualTo(Validation.invalid("error-1", "error0", "error-2", "error-1"));
+    }
+
     // -- ap
 
     @Test

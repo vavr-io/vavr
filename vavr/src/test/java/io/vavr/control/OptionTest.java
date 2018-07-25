@@ -160,6 +160,32 @@ public class OptionTest extends AbstractValueTest {
         assertThat(option instanceof Option.None).isTrue();
     }
 
+    // -- traverse
+
+    @Test
+    public void shouldTraverseListOfNonEmptyOptionsToOptionOfList() {
+        final List<String> options = Arrays.asList("a", "b", "c");
+        final Option<Seq<String>> reducedOption = Option.traverse(options, Option::of);
+        assertThat(reducedOption instanceof Option.Some).isTrue();
+        assertThat(reducedOption.get().size()).isEqualTo(3);
+        assertThat(reducedOption.get().mkString()).isEqualTo("abc");
+    }
+
+    @Test
+    public void shouldTraverseListOfEmptyOptionsToOptionOfList() {
+        final List<Option<String>> options = Arrays.asList(Option.none(), Option.none(), Option.none());
+        final Option<Seq<String>> option = Option.traverse(options, Function.identity());
+        assertThat(option instanceof Option.None).isTrue();
+    }
+
+    @Test
+    public void shouldTraverseListOfMixedOptionsToOptionOfList() {
+        final List<String> options = Arrays.asList("a", "b", "c");
+        final Option<Seq<String>> option =
+            Option.traverse(options, x -> x.equals("b") ? Option.none() : Option.of(x));
+        assertThat(option instanceof Option.None).isTrue();
+    }
+
     // -- get
 
     @Test
