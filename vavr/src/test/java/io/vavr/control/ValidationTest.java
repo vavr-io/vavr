@@ -32,8 +32,8 @@ import java.util.Spliterator;
 
 public class ValidationTest extends AbstractValueTest {
 
-    public static final String OK = "ok";
-    public static final List<String> ERRORS = List.of("error1", "error2", "error3");
+    private static final String OK = "ok";
+    private static final List<String> ERRORS = List.of("error1", "error2", "error3");
 
     // -- AbstractValueTest
 
@@ -154,6 +154,31 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(Validation.invalid(List.of("error1", "error2", "error3", "error4")));
     }
 
+    // -- Validation.traverse
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenTraversingNull() {
+        Validation.traverse(null, null);
+    }
+
+    @Test
+    public void shouldCreateValidWhenTraversingValids() {
+        final Validation<Seq<String>, Seq<Integer>> actual =
+            Validation.traverse(List.of(1, 2), t -> Validation.valid(t)); // NOTE: Compilation error with Java 8 if we use a method reference
+        assertThat(actual).isEqualTo(Validation.valid(List.of(1, 2)));
+    }
+
+    @Test
+    public void shouldCreateInvalidWhenTraversingAnInvalid() {
+        final Validation<Seq<String>, Seq<Integer>> actual =
+            Validation.traverse(
+                List.of(1, -1, 2, -2),
+                x -> x >= 0
+                    ? Validation.valid(x)
+                    : Validation.invalid(List.of("error" + x, "error" + (x+1))));
+        assertThat(actual).isEqualTo(Validation.invalid(List.of("error-1", "error0", "error-2", "error-1")));
+    }
+
     // -- toEither
 
     @Test
@@ -211,7 +236,7 @@ public class ValidationTest extends AbstractValueTest {
     @Test
     public void shouldReturnSelfOnOrElseSupplierIfValid() {
         Validation<Seq<String>, String> validValidation = valid();
-        assertThat(validValidation.orElse(() -> invalid())).isSameAs(validValidation);
+        assertThat(validValidation.orElse(this::invalid)).isSameAs(validValidation);
     }
 
     @Test
@@ -489,36 +514,36 @@ public class ValidationTest extends AbstractValueTest {
         return Validation.invalid(ERRORS);
     }
 
-    public static class TestValidation {
-        public String name;
-        public Integer age;
-        public Option<String> address;
-        public String phone;
-        public String alt1;
-        public String alt2;
-        public String alt3;
-        public String alt4;
+    static class TestValidation {
+        String name;
+        Integer age;
+        Option<String> address;
+        String phone;
+        String alt1;
+        String alt2;
+        String alt3;
+        String alt4;
 
-        public TestValidation(String name, Integer age) {
+        TestValidation(String name, Integer age) {
             this.name = name;
             this.age = age;
             address = Option.none();
         }
 
-        public TestValidation(String name, Integer age, Option<String> address) {
+        TestValidation(String name, Integer age, Option<String> address) {
             this.name = name;
             this.age = age;
             this.address = address;
         }
 
-        public TestValidation(String name, Integer age, Option<String> address, String phone) {
+        TestValidation(String name, Integer age, Option<String> address, String phone) {
             this.name = name;
             this.age = age;
             this.address = address;
             this.phone = phone;
         }
 
-        public TestValidation(String name, Integer age, Option<String> address, String phone, String alt1) {
+        TestValidation(String name, Integer age, Option<String> address, String phone, String alt1) {
             this.name = name;
             this.age = age;
             this.address = address;
@@ -526,7 +551,7 @@ public class ValidationTest extends AbstractValueTest {
             this.alt1 = alt1;
         }
 
-        public TestValidation(String name, Integer age, Option<String> address, String phone, String alt1, String alt2) {
+        TestValidation(String name, Integer age, Option<String> address, String phone, String alt1, String alt2) {
             this.name = name;
             this.age = age;
             this.address = address;
@@ -535,7 +560,7 @@ public class ValidationTest extends AbstractValueTest {
             this.alt2 = alt2;
         }
 
-        public TestValidation(String name, Integer age, Option<String> address, String phone, String alt1, String alt2, String alt3) {
+        TestValidation(String name, Integer age, Option<String> address, String phone, String alt1, String alt2, String alt3) {
             this.name = name;
             this.age = age;
             this.address = address;
@@ -545,7 +570,7 @@ public class ValidationTest extends AbstractValueTest {
             this.alt3 = alt3;
         }
 
-        public TestValidation(String name, Integer age, Option<String> address, String phone, String alt1, String alt2, String alt3, String alt4) {
+        TestValidation(String name, Integer age, Option<String> address, String phone, String alt1, String alt2, String alt3, String alt4) {
             this.name = name;
             this.age = age;
             this.address = address;
@@ -590,7 +615,7 @@ public class ValidationTest extends AbstractValueTest {
         private final String validNameChars = "[a-zA-Z ]";
         private final int minAge = 0;
 
-        public Validation<Seq<String>, Person> validatePerson(String name, int age) {
+        Validation<Seq<String>, Person> validatePerson(String name, int age) {
             return Validation.combine(validateName(name), validateAge(age)).ap(Person::new);
         }
 
@@ -608,10 +633,10 @@ public class ValidationTest extends AbstractValueTest {
 
     static class Person {
 
-        public final String name;
-        public final int age;
+        final String name;
+        final int age;
 
-        public Person(String name, int age) {
+        Person(String name, int age) {
             this.name = name;
             this.age = age;
         }

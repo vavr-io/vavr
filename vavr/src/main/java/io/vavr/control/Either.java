@@ -220,6 +220,24 @@ public interface Either<L, R> extends Value<R>, Serializable {
     }
 
     /**
+     * Maps the values of an iterable to a sequence of mapped values into a single {@code Either} by
+     * transforming an {@code Iterable<? extends T>} into a {@code Either<Seq<U>>}.
+     * <p>
+     *
+     * @param values   An {@code Iterable} of values.
+     * @param mapper   A mapper of values to Eithers
+     * @param <T>      The type of the given values.
+     * @param <U>      The mapped value type.
+     * @return A {@code Either} of a {@link Seq} of results.
+     * @throws NullPointerException if values or f is null.
+     */
+    static <L, T, U> Either<Seq<L>, Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends U>> mapper) {
+        Objects.requireNonNull(values, "values is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return sequence(Iterator.ofAll(values).map(mapper));
+    }
+
+    /**
      * Reduces many {@code Either}s into a single {@code Either} by transforming an
      * {@code Iterable<Either<L, R>>} into a {@code Either<L, Seq<R>>}.
      * <p>
@@ -257,6 +275,24 @@ public interface Either<L, R> extends Value<R>, Serializable {
             }
         }
         return Either.right(rightValues);
+    }
+
+    /**
+     * Maps the values of an iterable to a sequence of mapped values into a single {@code Either} by
+     * transforming an {@code Iterable<? extends T>} into a {@code Either<Seq<U>>}.
+     * <p>
+     *
+     * @param values   An {@code Iterable} of values.
+     * @param mapper   A mapper of values to Eithers
+     * @param <T>      The type of the given values.
+     * @param <U>      The mapped value type.
+     * @return A {@code Either} of a {@link Seq} of results.
+     * @throws NullPointerException if values or f is null.
+     */
+    static <L, T, U> Either<L, Seq<U>> traverseRight(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends U>> mapper) {
+        Objects.requireNonNull(values, "values is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return sequenceRight(Iterator.ofAll(values).map(mapper));
     }
 
     /**

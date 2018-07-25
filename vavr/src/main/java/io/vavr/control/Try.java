@@ -157,6 +157,24 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Maps the values of an iterable to a sequence of mapped values into a single {@code Try} by
+     * transforming an {@code Iterable<? extends T>} into a {@code Try<Seq<U>>}.
+     * <p>
+     *
+     * @param values   An {@code Iterable} of values.
+     * @param mapper   A mapper of values to Trys
+     * @param <T>      The type of the given values.
+     * @param <U>      The mapped value type.
+     * @return A {@code Try} of a {@link Seq} of results.
+     * @throws NullPointerException if values or f is null.
+     */
+    static <T, U> Try<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Try<? extends U>> mapper) {
+        Objects.requireNonNull(values, "values is null");
+        Objects.requireNonNull(mapper, "mapper is null");
+        return sequence(Iterator.ofAll(values).map(mapper));
+    }
+
+    /**
      * Creates a {@link Success} that contains the given {@code value}. Shortcut for {@code new Success<>(value)}.
      *
      * @param value A value.

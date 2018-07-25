@@ -1255,6 +1255,33 @@ public class TryTest extends AbstractValueTest {
         assertThat(reducedTry instanceof Try.Failure).isTrue();
     }
 
+    // -- traverse
+
+    @Test
+    public void shouldTraverseListOfSuccessToTryOfList() {
+        final List<String> tries = Arrays.asList("a", "b", "c");
+        final Try<Seq<String>> reducedTry = Try.traverse(tries, Try::success);
+        assertThat(reducedTry instanceof Try.Success).isTrue();
+        assertThat(reducedTry.get().size()).isEqualTo(3);
+        assertThat(reducedTry.get().mkString()).isEqualTo("abc");
+    }
+
+    @Test
+    public void shouldTraverseListOfFailureToTryOfList() {
+        final Throwable t = new RuntimeException("failure");
+        final List<Throwable> tries = Arrays.asList(t, t, t);
+        final Try<Seq<String>> reducedTry = Try.traverse(tries, Try::failure);
+        assertThat(reducedTry instanceof Try.Failure).isTrue();
+    }
+
+    @Test
+    public void shouldTraverseListOfMixedTryToTryOfList() {
+        final Throwable t = new RuntimeException("failure");
+        final List<String> tries = Arrays.asList("a", "b", "c");
+        final Try<Seq<String>> reducedTry = Try.traverse(tries, x -> x.equals("b") ? Try.failure(t) : Try.success(x));
+        assertThat(reducedTry instanceof Try.Failure).isTrue();
+    }
+
     // serialization
 
     @Test
