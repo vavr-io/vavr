@@ -162,6 +162,28 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Serializable 
     Map<K, Traversable<V>> asMap();
 
     /**
+     * Turns this {@code Multimap} into a {@link PartialFunction} which is defined at a specific index, if this {@code Multimap}
+     * contains the given key. When applied to a defined key, the partial function will return
+     * the {@link Traversable} of this {@code Multimap} that is associated with the key.
+     *
+     * @return a new {@link PartialFunction}
+     * @throws NoSuchElementException when a non-existing key is applied to the partial function
+     */
+    default PartialFunction<K, Traversable<V>> asPartialFunction() throws IndexOutOfBoundsException {
+        return new PartialFunction<K, Traversable<V>>() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public Traversable<V> apply(K key) {
+                return get(key).getOrElseThrow(NoSuchElementException::new);
+            }
+            @Override
+            public boolean isDefinedAt(K key) {
+                return containsKey(key);
+            }
+        };
+    }
+
+    /**
      * Maps this {@code Multimap} to a new {@code Multimap} with different component type by applying a function to its elements.
      *
      * @param <K2>        key's component type of the multimap result

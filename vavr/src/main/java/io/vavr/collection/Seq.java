@@ -42,6 +42,12 @@ import java.util.function.*;
  * <li>{@link #update(int, Object)}</li>
  * </ul>
  *
+ * Conversion:
+ *
+ * <ul>
+ * <li>{@link #asPartialFunction}</li>
+ * </ul>
+ *
  * Filtering:
  *
  * <ul>
@@ -191,6 +197,16 @@ public interface Seq<T> extends Traversable<T>, Serializable {
      */
     @GwtIncompatible
     Seq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
+
+    /**
+     * Turns this {@code Seq} into a {@link PartialFunction} which is defined at a specific index, if this {@code Seq}
+     * contains at least index + 1 elements. When applied to a defined index, the partial function will return
+     * the value of this {@code Seq} at the specified index.
+     *
+     * @return a new {@link PartialFunction}
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
+    PartialFunction<Integer, T> asPartialFunction() throws IndexOutOfBoundsException;
 
     @Override
     <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);

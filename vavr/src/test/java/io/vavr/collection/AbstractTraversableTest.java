@@ -326,7 +326,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldCollectUsingMap() {
         final Map<Integer, String> map = Map(1, "one", 3, "three");
-        final Traversable<String> actual = of(1, 2, 3, 4).collect(map);
+        final Traversable<String> actual = of(1, 2, 3, 4).collect(map.asPartialFunction());
         assertThat(actual).isEqualTo(of("one", "three"));
     }
 
@@ -335,7 +335,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldCollectUsingMultimap() {
         if (!isOrdered()) {
             final Multimap<Integer, String> map = HashMultimap.withSeq().of(1, "one", 1, "un", 3, "three", 3, "trois");
-            final Traversable<Traversable<String>> actual = of(1, 2, 3, 4).collect(map);
+            final Traversable<Traversable<String>> actual = of(1, 2, 3, 4).collect(map.asPartialFunction());
             assertThat(actual).isEqualTo(of(List("one", "un"), List("three", "trois")));
         }
     }
@@ -343,7 +343,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldCollectUsingSeq() {
         final Seq<String> map = List("one", "two", "three", "four");
-        final Traversable<String> actual = of(0, 2).collect(map);
+        final Traversable<String> actual = of(0, 2).collect(map.asPartialFunction());
         assertThat(actual).isEqualTo(of("one", "three"));
     }
 

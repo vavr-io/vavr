@@ -609,7 +609,7 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldBeDefinedAtNonNegativeIndexWhenInfinitelyLong() {
-        assertThat(Stream.continually(1).isDefinedAt(1)).isTrue();
+        assertThat(Stream.continually(1).asPartialFunction().isDefinedAt(1)).isTrue();
     }
 
     // -- isLazy

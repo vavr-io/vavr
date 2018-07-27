@@ -99,12 +99,6 @@ public interface Set<T> extends Traversable<T>, Serializable {
         return (Set<T>) set;
     }
 
-    // DELME
-    @Override
-    default Boolean apply(T t) {
-        return true;
-    }
-
     /**
      * Add the given element to this set, if it is not already contained.
      *

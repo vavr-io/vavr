@@ -2752,7 +2752,7 @@ public final class API {
     // -- static Case API
 
     // - Pattern0
-    
+
     @GwtIncompatible
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Function<? super T, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -2767,13 +2767,11 @@ public final class API {
         return new Case0<>(pattern, ignored -> supplier.get());
     }
 
-    /*
     @GwtIncompatible
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case0<>(pattern, ignored -> retVal);
     }
-    */
 
     // - Pattern1
 

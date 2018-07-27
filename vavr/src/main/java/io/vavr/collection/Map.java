@@ -139,6 +139,28 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Serializable {
         return Tuple.of(key, value);
     }
 
+    /**
+     * Turns this {@code Map} into a {@link PartialFunction} which is defined at a specific index, if this {@code Map}
+     * contains the given key. When applied to a defined key, the partial function will return
+     * the value of this {@code Map} that is associated with the key.
+     *
+     * @return a new {@link PartialFunction}
+     * @throws NoSuchElementException when a non-existing key is applied to the partial function
+     */
+    default PartialFunction<K, V> asPartialFunction() throws IndexOutOfBoundsException {
+        return new PartialFunction<K, V>() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public V apply(K key) {
+                return get(key).getOrElseThrow(() -> new NoSuchElementException(String.valueOf(key)));
+            }
+            @Override
+            public boolean isDefinedAt(K key) {
+                return containsKey(key);
+            }
+        };
+    }
+
     @Override
     default <R> Seq<R> collect(PartialFunction<? super Tuple2<K, V>, ? extends R> partialFunction) {
         return io.vavr.collection.Vector.ofAll(iterator().<R> collect(partialFunction));
