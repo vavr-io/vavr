@@ -87,7 +87,7 @@ import java.util.function.*;
  * @param <V> Value type
  * @author Ruslan Sennov
  */
-public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, Traversable<V>>, Serializable {
+public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, Serializable {
 
     long serialVersionUID = 1L;
 
@@ -153,11 +153,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     }
 
     // -- non-static API
-
-    @Override
-    default Traversable<V> apply(K key) {
-        return get(key).getOrElseThrow(NoSuchElementException::new);
-    }
 
     /**
      * Converts this {@code Multimap} to a {@code Map}
@@ -316,11 +311,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     @Override
     default boolean hasDefiniteSize() {
         return true;
-    }
-
-    @Override
-    default boolean isDefinedAt(K key) {
-        return containsKey(key);
     }
 
     @Override

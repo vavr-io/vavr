@@ -87,15 +87,13 @@ import java.util.function.*;
  * <li>{@link #transform(Function)}</li>
  * <li>{@link #unzip(BiFunction)}</li>
  * <li>{@link #unzip3(BiFunction)}</li>
- * <li>{@link #withDefault(Function)}</li>
- * <li>{@link #withDefaultValue(Object)}</li>
  * </ul>
  *
  * @param <K> Key type
  * @param <V> Value type
  * @author Daniel Dietrich, Ruslan Sennov
  */
-public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, V>, Serializable {
+public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Serializable {
 
     long serialVersionUID = 1L;
 
@@ -139,11 +137,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      */
     static <K, V> Tuple2<K, V> entry(K key, V value) {
         return Tuple.of(key, value);
-    }
-
-    @Override
-    default V apply(K key) {
-        return get(key).getOrElseThrow(() -> new NoSuchElementException(String.valueOf(key)));
     }
 
     @Override
@@ -659,29 +652,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
         return iterator().map(Tuple2::_2);
     }
 
-    /**
-     * Turns this map from a partial function into a total function that
-     * returns a value computed by defaultFunction for all keys
-     * absent from the map.
-     *
-     * @param defaultFunction function to evaluate for all keys not present in the map
-     * @return a total function from K to T
-     */
-    default Function1<K, V> withDefault(Function<? super K, ? extends V> defaultFunction) {
-        return k -> get(k).getOrElse(() -> defaultFunction.apply(k));
-    }
-
-    /**
-     * Turns this map from a partial function into a total function that
-     * returns defaultValue for all keys absent from the map.
-     *
-     * @param defaultValue default value to return for all keys not present in the map
-     * @return a total function from K to T
-     */
-    default Function1<K, V> withDefaultValue(V defaultValue) {
-        return k -> get(k).getOrElse(defaultValue);
-    }
-
     @Override
     default <U> Seq<Tuple2<Tuple2<K, V>, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
@@ -745,11 +715,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
 
     @Override
     io.vavr.collection.Iterator<? extends Map<K, V>> grouped(int size);
-
-    @Override
-    default boolean isDefinedAt(K key) {
-        return containsKey(key);
-    }
 
     @Override
     default boolean isDistinct() {
