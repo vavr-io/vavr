@@ -674,7 +674,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return this
      * @throws NullPointerException if {@code exceptionType} or {@code action} is null
      */
-    @GwtIncompatible
     @SuppressWarnings("unchecked")
     default <X extends Throwable> Try<T> onFailure(Class<X> exceptionType, Consumer<? super X> action) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
@@ -801,7 +800,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null or {@code f} is null
      */
-    @GwtIncompatible
     @SuppressWarnings("unchecked")
     default <X extends Throwable> Try<T> recover(Class<X> exceptionType, Function<? super X, ? extends T> f) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
@@ -840,7 +838,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@code Try}
      * @throws NullPointerException if {@code exceptionType} or {@code f} is null
      */
-    @GwtIncompatible
     @SuppressWarnings("unchecked")
     default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType, Function<? super X, Try<? extends T>> f){
         Objects.requireNonNull(exceptionType, "exceptionType is null");
@@ -881,7 +878,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return the given {@code recovered} if this is a {@link Try.Failure} and the cause is of type {@code X}, else {@code this}
      * @throws NullPointerException if {@code exceptionType} or {@code recovered} is null
      */
-    @GwtIncompatible
     default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType,  Try<? extends T> recovered){
         Objects.requireNonNull(exceptionType, "exeptionType is null");
         Objects.requireNonNull(recovered, "recovered is null");
@@ -913,7 +909,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null
      */
-    @GwtIncompatible
     default <X extends Throwable> Try<T> recover(Class<X> exceptionType, T value) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         return (isFailure() && exceptionType.isAssignableFrom(getCause().getClass()))
