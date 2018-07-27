@@ -51,34 +51,39 @@ final class FutureImpl<T> implements Future<T> {
 
     /**
      * Indicates if this Future is cancelled
+     *
+     * GuardedBy("lock")
      */
-    @GuardedBy("lock")
     private volatile boolean cancelled;
 
     /**
      * Once the Future is completed, the value is defined.
+     *
+     * GuardedBy("lock")
      */
-    @GuardedBy("lock")
     private volatile Option<Try<T>> value;
 
     /**
      * The queue of actions is filled when calling onComplete() before the Future is completed or cancelled.
      * Otherwise actions = null.
+     *
+     * GuardedBy("lock")
      */
-    @GuardedBy("lock")
     private Queue<Consumer<Try<T>>> actions;
 
     /**
      * The queue of waiters is filled when calling await() before the Future is completed or cancelled.
      * Otherwise waiters = null.
+     *
+     * GuardedBy("lock")
      */
-    @GuardedBy("lock")
     private Queue<Thread> waiters;
 
     /**
      * The Thread which runs the computation.
+     *
+     * GuardedBy("lock")
      */
-    @GuardedBy("lock")
     private Thread thread;
 
 
