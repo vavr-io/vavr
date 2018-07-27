@@ -20,6 +20,7 @@
 package io.vavr;
 
 import io.vavr.collection.List;
+import io.vavr.collection.Set;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Option.Some;
@@ -338,6 +339,17 @@ public class MatchTest {
         assertThat(actual).isEqualTo("Some(1)::List(Some(2.0))");
     }
     */
+
+    // -- Set
+
+    @Test
+    public void shouldDecomposeSet() {
+        final Set<String> abc = Set("abc");
+        final Set<String> result = Match(abc).of( // Does not compile: the Java inference engine sees abc as a Function1<String, Boolean> before a Set<String> thus expects result to be of type Boolean
+                Case($(), () -> abc)
+        );
+        assertThat(result).isEqualTo(abc);
+    }
 
     // -- Validation
 

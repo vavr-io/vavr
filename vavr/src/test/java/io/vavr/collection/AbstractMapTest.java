@@ -461,14 +461,24 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 .isEqualTo(mapOf(1, "2", 2, "4"));
     }
 
-    // -- PartialFunction
+    // -- asPartialFunction
 
     @Test
     public void shouldImplementPartialFunction() {
-        PartialFunction<Integer, String> f = mapOf(1, "1");
+        PartialFunction<Integer, String> f = mapOf(1, "1").asPartialFunction();
         assertThat(f.isDefinedAt(1)).isTrue();
         assertThat(f.apply(1)).isEqualTo("1");
         assertThat(f.isDefinedAt(2)).isFalse();
+    }
+
+    @Test
+    public void shouldApplyExistingKey() {
+        assertThat(emptyInt().put(1, 2).asPartialFunction().apply(1)).isEqualTo(2);
+    }
+
+    @Test(expected = NoSuchElementException.class)
+    public void shouldApplyNonExistingKey() {
+        emptyInt().put(1, 2).asPartialFunction().apply(3);
     }
 
     // -- equality
@@ -530,18 +540,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Map<Integer, String> actual = mapOf(1, "1", 2, "2", 3, "3");
         final java.util.Map<Integer, String> expected = asJavaMap(asJavaEntry(1, "1"), asJavaEntry(2, "2"), asJavaEntry(3, "3"));
         assertThat(actual.toJavaMap()).isEqualTo(expected);
-    }
-
-    // -- apply
-
-    @Test
-    public void shouldApplyExistingKey() {
-        assertThat(emptyInt().put(1, 2).apply(1)).isEqualTo(2);
-    }
-
-    @Test(expected = NoSuchElementException.class)
-    public void shouldApplyNonExistingKey() {
-        emptyInt().put(1, 2).apply(3);
     }
 
     // -- contains
@@ -1247,20 +1245,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         final Function1<String, Option<Integer>> lifted = mapOf("A", 1).lift();
         assertThat(lifted.apply("A").get()).isEqualTo(1);
         assertThat(lifted.apply("a").isEmpty()).isTrue();
-    }
-
-    @Test
-    public void withDefaultValue() {
-        final Function1<String, Integer> withDef = mapOf("A", 1).withDefaultValue(2);
-        assertThat(withDef.apply("A")).isEqualTo(1);
-        assertThat(withDef.apply("a")).isEqualTo(2);
-    }
-
-    @Test
-    public void withDefault() {
-        final Function1<String, Integer> withDef = mapOf("A", 1).withDefault(String::length);
-        assertThat(withDef.apply("A")).isEqualTo(1);
-        assertThat(withDef.apply("aaa")).isEqualTo(3);
     }
 
     // -- filter
