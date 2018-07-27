@@ -226,12 +226,13 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param values   An {@code Iterable} of values.
      * @param mapper   A mapper of values to Eithers
+     * @param <L>      The mapped left value type.
+     * @param <R>      The mapped right value type.
      * @param <T>      The type of the given values.
-     * @param <U>      The mapped value type.
      * @return A {@code Either} of a {@link Seq} of results.
      * @throws NullPointerException if values or f is null.
      */
-    static <L, T, U> Either<Seq<L>, Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends U>> mapper) {
+    static <L, R, T> Either<Seq<L>, Seq<R>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends R>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
@@ -284,12 +285,13 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param values   An {@code Iterable} of values.
      * @param mapper   A mapper of values to Eithers
+     * @param <L>      The mapped left value type.
+     * @param <R>      The mapped right value type.
      * @param <T>      The type of the given values.
-     * @param <U>      The mapped value type.
      * @return A {@code Either} of a {@link Seq} of results.
      * @throws NullPointerException if values or f is null.
      */
-    static <L, T, U> Either<L, Seq<U>> traverseRight(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends U>> mapper) {
+    static <L, R, T> Either<L, Seq<R>> traverseRight(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends R>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequenceRight(Iterator.ofAll(values).map(mapper));

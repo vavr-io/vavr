@@ -165,7 +165,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param values   An {@code Iterable} of values.
      * @param mapper   A mapper of values to Validations
      * @param <T>      The type of the given values.
-     * @param <U>      The mapped value type.
+     * @param <E>      The mapped error value type.
+     * @param <U>      The mapped valid value type.
      * @return A {@code Validation} of a {@link Seq} of results.
      * @throws NullPointerException if values or f is null.
      */
