@@ -19,7 +19,6 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Function1;
 import io.vavr.Tuple;
 import io.vavr.control.Option;
 import io.vavr.Tuple2;
@@ -251,11 +250,41 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         }
     }
 
-    // -- apply
+    // -- asPartialFunction
 
     @Test
     public void shouldUseSeqAsPartialFunction() {
-        assertThat(of(1, 2, 3).apply(1)).isEqualTo(2);
+        assertThat(of(1, 2, 3).asPartialFunction().apply(1)).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldNotBeDefinedAtNegativeIndexWhenEmpty() {
+        assertThat(empty().asPartialFunction().isDefinedAt(-1)).isFalse();
+    }
+
+    @Test
+    public void shouldNotBeDefinedAtNegativeIndexWhenNonEmpty() {
+        assertThat(of(1).asPartialFunction().isDefinedAt(-1)).isFalse();
+    }
+
+    @Test
+    public void shouldNotBeDefinedAtIndex0WhenEmpty() {
+        assertThat(empty().asPartialFunction().isDefinedAt(0)).isFalse();
+    }
+
+    @Test
+    public void shouldBeDefinedAtIndex0WhenNonEmpty() {
+        assertThat(of(1).asPartialFunction().isDefinedAt(0)).isTrue();
+    }
+
+    @Test
+    public void shouldBeDefinedAtLastIndexWhenNonEmpty() {
+        assertThat(of(1, 2, 3).asPartialFunction().isDefinedAt(2)).isTrue();
+    }
+
+    @Test
+    public void shouldNotBeDefinedAtIndexOutOfBoundsWhenNonEmpty() {
+        assertThat(of(1, 2, 3).asPartialFunction().isDefinedAt(3)).isFalse();
     }
 
     // -- combinations
@@ -901,38 +930,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldIntersperseMultipleElements() {
         assertThat(of('a', 'b').intersperse(',')).isEqualTo(of('a', ',', 'b'));
-    }
-
-    // -- isDefinedAt()
-
-    @Test
-    public void shouldNotBeDefinedAtNegativeIndexWhenEmpty() {
-        assertThat(empty().isDefinedAt(-1)).isFalse();
-    }
-
-    @Test
-    public void shouldNotBeDefinedAtNegativeIndexWhenNonEmpty() {
-        assertThat(of(1).isDefinedAt(-1)).isFalse();
-    }
-
-    @Test
-    public void shouldNotBeDefinedAtIndex0WhenEmpty() {
-        assertThat(empty().isDefinedAt(0)).isFalse();
-    }
-
-    @Test
-    public void shouldBeDefinedAtIndex0WhenNonEmpty() {
-        assertThat(of(1).isDefinedAt(0)).isTrue();
-    }
-
-    @Test
-    public void shouldBeDefinedAtLastIndexWhenNonEmpty() {
-        assertThat(of(1, 2, 3).isDefinedAt(2)).isTrue();
-    }
-
-    @Test
-    public void shouldNotBeDefinedAtIndexOutOfBoundsWhenNonEmpty() {
-        assertThat(of(1, 2, 3).isDefinedAt(3)).isFalse();
     }
 
     // -- isSequential()
@@ -2277,30 +2274,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldTestIndexedSeqEndsWithNonIndexedSeq() {
         assertThat(of(1, 3, 4).endsWith(Stream.of(3, 4))).isTrue();
         assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
-    }
-
-    @Test
-    public void lift() {
-        final Function1<Integer, Option<String>> lifted = of("a", "b", "c").lift();
-        assertThat(lifted.apply(1).get()).isEqualTo("b");
-        assertThat(lifted.apply(-1).isEmpty()).isTrue();
-        assertThat(lifted.apply(3).isEmpty()).isTrue();
-    }
-
-    @Test
-    public void withDefaultValue() {
-        final Function1<Integer, String> withDef = of("a", "b", "c").withDefaultValue("z");
-        assertThat(withDef.apply(2)).isEqualTo("c");
-        assertThat(withDef.apply(-1)).isEqualTo("z");
-        assertThat(withDef.apply(3)).isEqualTo("z");
-    }
-
-    @Test
-    public void withDefault() {
-        final Function1<Integer, String> withDef = of("a", "b", "c").withDefault(Object::toString);
-        assertThat(withDef.apply(2)).isEqualTo("c");
-        assertThat(withDef.apply(-1)).isEqualTo("-1");
-        assertThat(withDef.apply(3)).isEqualTo("3");
     }
 
 }

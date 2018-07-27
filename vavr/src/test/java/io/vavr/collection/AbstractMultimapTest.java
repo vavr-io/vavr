@@ -339,16 +339,24 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         assertThat(map).isEqualTo(this.<String, Integer> emptyMap().put("1", 2).put("3", 4));
     }
 
-    // -- apply
+    // -- asPartialFunction
 
     @Test
     public void shouldApplyExistingKey() {
-        assertThat(emptyIntInt().put(1, 2).apply(1)).isEqualTo(io.vavr.collection.HashSet.of(2));
+        assertThat(emptyIntInt().put(1, 2).asPartialFunction().apply(1)).isEqualTo(io.vavr.collection.HashSet.of(2));
     }
 
     @Test(expected = NoSuchElementException.class)
     public void shouldApplyNonExistingKey() {
-        emptyIntInt().put(1, 2).apply(3);
+        emptyIntInt().put(1, 2).asPartialFunction().apply(3);
+    }
+
+    @Test
+    public void shouldImplementPartialFunction() {
+        PartialFunction<Integer, Traversable<String>> f = mapOf(1, "1").asPartialFunction();
+        assertThat(f.isDefinedAt(1)).isTrue();
+        assertThat(f.apply(1).contains("1")).isTrue();
+        assertThat(f.isDefinedAt(2)).isFalse();
     }
 
     // -- asMap
@@ -1205,16 +1213,6 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowIfZipAllWithThatIsNull() {
         emptyMap().zipAll(null, null, null);
-    }
-
-    // -- PartialFunction
-
-    @Test
-    public void shouldImplementPartialFunction() {
-        PartialFunction<Integer, Traversable<String>> f = mapOf(1, "1");
-        assertThat(f.isDefinedAt(1)).isTrue();
-        assertThat(f.apply(1).contains("1")).isTrue();
-        assertThat(f.isDefinedAt(2)).isFalse();
     }
 
     // -- disabled super tests

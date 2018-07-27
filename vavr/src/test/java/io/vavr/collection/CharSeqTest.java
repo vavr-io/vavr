@@ -2184,11 +2184,11 @@ public class CharSeqTest {
         assertThatThrownBy(() -> CharSeq.empty().appendAll(Arrays.asList('1', null))).isInstanceOf(NullPointerException.class);
     }
 
-    // -- apply
+    // -- asPartialFunction
 
     @Test
     public void shouldUseSeqAsPartialFunction() {
-        assertThat(CharSeq.of('1', '2', '3').apply(1)).isEqualTo('2');
+        assertThat(CharSeq.of('1', '2', '3').asPartialFunction().apply(1)).isEqualTo('2');
     }
 
     // -- combinations

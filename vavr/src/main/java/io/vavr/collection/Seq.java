@@ -42,6 +42,12 @@ import java.util.function.*;
  * <li>{@link #update(int, Object)}</li>
  * </ul>
  *
+ * Conversion:
+ *
+ * <ul>
+ * <li>{@link #asPartialFunction}</li>
+ * </ul>
+ *
  * Filtering:
  *
  * <ul>
@@ -106,7 +112,7 @@ import java.util.function.*;
  * @param <T> Component type
  * @author Daniel Dietrich
  */
-public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Serializable {
+public interface Seq<T> extends Traversable<T>, Serializable {
 
     long serialVersionUID = 1L;
 
@@ -140,19 +146,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @throws NullPointerException if {@code elements} is null
      */
     Seq<T> appendAll(Iterable<? extends T> elements);
-
-    /**
-     * A {@code Seq} is a partial function which returns the element at the specified index by calling
-     * {@linkplain #get(int)}.
-     *
-     * @param index an index
-     * @return the element at the given index
-     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
-     */
-    @Override
-    default T apply(Integer index) {
-        return get(index);
-    }
     
     /**
      * Creates an <strong>immutable</strong> {@link java.util.List} view on top of this {@code Seq},
@@ -204,6 +197,16 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      */
     @GwtIncompatible
     Seq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
+
+    /**
+     * Turns this {@code Seq} into a {@link PartialFunction} which is defined at a specific index, if this {@code Seq}
+     * contains at least index + 1 elements. When applied to a defined index, the partial function will return
+     * the value of this {@code Seq} at the specified index.
+     *
+     * @return a new {@link PartialFunction}
+     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     */
+    PartialFunction<Integer, T> asPartialFunction() throws IndexOutOfBoundsException;
 
     @Override
     <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
@@ -583,16 +586,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      */
     default Option<Integer> lastIndexWhereOption(Predicate<? super T> predicate, int end) {
         return Collections.indexOption(lastIndexWhere(predicate, end));
-    }
-
-    /**
-     * Turns this sequence into a plain function returning an Option result.
-     *
-     * @return a function that takes an index i and returns the value of
-     * this sequence in a Some if the index is within bounds, otherwise a None.
-     */
-    default Function1<Integer, Option<T>> lift() {
-        return i -> (i >= 0 && i < length()) ? Option.some(apply(i)) : Option.none();
     }
 
     /**
@@ -1274,28 +1267,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
 
     @Override
     <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
-
-    /**
-     * Turns this sequence from a partial function into a total function that
-     * returns defaultValue for all indexes that are out of bounds.
-     *
-     * @param defaultValue default value to return for out of bound indexes
-     * @return a total function from index to T
-     */
-    default Function1<Integer, T> withDefaultValue(T defaultValue) {
-        return i -> (i >= 0 && i < length()) ? apply(i) : defaultValue;
-    }
-
-    /**
-     * Turns this sequence from a partial function into a total function that
-     * returns a value computed by defaultFunction for all indexes that are out of bounds.
-     *
-     * @param defaultFunction function to evaluate for all out of bounds indexes.
-     * @return a total function from index to T
-     */
-    default Function1<Integer, T> withDefault(Function<? super Integer, ? extends T> defaultFunction) {
-        return i -> (i >= 0 && i < length()) ? apply(i) : defaultFunction.apply(i);
-    }
 
     @Override
     default boolean isSequential() {

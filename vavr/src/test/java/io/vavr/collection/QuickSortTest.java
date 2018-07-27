@@ -19,9 +19,10 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Function1;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+
+import java.util.function.IntFunction;
 
 import static java.lang.Integer.signum;
 import static io.vavr.API.List;
@@ -43,7 +44,8 @@ public class QuickSortTest {
     }
     private static <T extends Comparable<T>> List<T> sort2(List<T> values) {
         if (values.size() <= 1) return values;
-        final Function1<Integer, List<T>> parts = values.groupBy(v -> signum(v.compareTo(values.head()))).withDefaultValue(List());
+        final Map<Integer, List<T>> map = values.groupBy(v -> signum(v.compareTo(values.head())));
+        final IntFunction<List<T>> parts =  signum -> map.get(signum).getOrElse(List());
         return sort2(parts.apply(-1)).appendAll(parts.apply(0)).appendAll(sort2(parts.apply(1)));
     }
 }
