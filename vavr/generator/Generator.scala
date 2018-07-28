@@ -793,7 +793,6 @@ def generateMainClasses(): Unit = {
            * @param <T> type of the value
            * @return a new {@code Match} instance
            */
-          @GwtIncompatible
           public static <T> Match<T> Match(T value) {
               return new Match<>(value);
           }
@@ -802,21 +801,18 @@ def generateMainClasses(): Unit = {
 
           // - Pattern0
 
-          @GwtIncompatible
           public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $FunctionType<? super T, ? extends R> f) {
               $Objects.requireNonNull(pattern, "pattern is null");
               $Objects.requireNonNull(f, "f is null");
               return new Case0<>(pattern, f);
           }
 
-          @GwtIncompatible
           public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> supplier) {
               $Objects.requireNonNull(pattern, "pattern is null");
               $Objects.requireNonNull(supplier, "supplier is null");
               return new Case0<>(pattern, ignored -> supplier.get());
           }
 
-          @GwtIncompatible
           public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
               $Objects.requireNonNull(pattern, "pattern is null");
               return new Case0<>(pattern, ignored -> retVal);
@@ -834,21 +830,18 @@ def generateMainClasses(): Unit = {
             xs"""
               // - Pattern$i
 
-              @GwtIncompatible
               public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   $Objects.requireNonNull(f, "f is null");
                   return new Case$i<>(pattern, f);
               }
 
-              @GwtIncompatible
               public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, $SupplierType<? extends R> supplier) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   $Objects.requireNonNull(supplier, "supplier is null");
                   return new Case$i<>(pattern, $params -> supplier.get());
               }
 
-              @GwtIncompatible
               public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, R retVal) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   return new Case$i<>(pattern, $params -> retVal);
@@ -866,7 +859,6 @@ def generateMainClasses(): Unit = {
            * @param <T> injected type of the underlying value
            * @return a new {@code Pattern0} instance
            */
-          @GwtIncompatible
           public static <T> Pattern0<T> $$() {
               return Pattern0.any();
           }
@@ -878,7 +870,6 @@ def generateMainClasses(): Unit = {
            * @param prototype the value that should be equal to the underlying object
            * @return a new {@code Pattern0} instance
            */
-          @GwtIncompatible
           public static <T> Pattern0<T> $$(T prototype) {
               return new Pattern0<T>() {
 
@@ -952,7 +943,6 @@ def generateMainClasses(): Unit = {
            * @param predicate the predicate that tests a given value
            * @return a new {@code Pattern0} instance
            */
-          @GwtIncompatible
           public static <T> Pattern0<T> $$($PredicateType<? super T> predicate) {
               $Objects.requireNonNull(predicate, "predicate is null");
               return new Pattern0<T>() {
@@ -975,7 +965,6 @@ def generateMainClasses(): Unit = {
            * Scala-like structural pattern matching for Java. Instances are obtained via {@link API#Match(Object)}.
            * @param <T> type of the object that is matched
            */
-          @GwtIncompatible
           public static final class Match<T> {
 
               private final T value;
@@ -1259,7 +1248,6 @@ def generateMainClasses(): Unit = {
            * @param format A format string as described in {@link $FormatterType}.
            * @param args   Arguments referenced by the format specifiers
            */
-          @GwtIncompatible
           public static void printf(String format, Object... args) {
               System.out.printf(format, args);
           }

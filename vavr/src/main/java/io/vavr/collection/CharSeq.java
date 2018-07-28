@@ -404,25 +404,21 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return of(sb);
     }
 
-    @GwtIncompatible
     @Override
     public java.util.List<Character> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public CharSeq asJava(Consumer<? super java.util.List<Character>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public java.util.List<Character> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public CharSeq asJavaMutable(Consumer<? super java.util.List<Character>> action) {
         return Collections.asJava(this, action, MUTABLE);
@@ -2985,7 +2981,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return the unsigned int value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned int.
      */
-    @GwtIncompatible
     public int parseUnsignedInt() {
         return Integer.parseUnsignedInt(back);
     }
@@ -3010,7 +3005,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return the unsigned int value represented by this {@code CharSeq} in the specified radix
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned int.
      */
-    @GwtIncompatible
     public int parseUnsignedInt(int radix) {
         return Integer.parseUnsignedInt(back, radix);
     }
@@ -3079,7 +3073,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return the unsigned long value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned long.
      */
-    @GwtIncompatible
     public long parseUnsignedLong() {
         return Long.parseUnsignedLong(back);
     }
@@ -3104,7 +3097,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return the unsigned long value represented by this {@code CharSeq} in the specified radix
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned long.
      */
-    @GwtIncompatible
     public long parseUnsignedLong(int radix) {
         return Long.parseUnsignedLong(back, radix);
     }

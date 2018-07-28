@@ -163,7 +163,6 @@ public interface Seq<T> extends Traversable<T>, Serializable {
      *
      * @return A new immutable {@link java.util.Collection} view on this {@code Traversable}.
      */
-    @GwtIncompatible
     java.util.List<T> asJava();
 
     /**
@@ -174,7 +173,6 @@ public interface Seq<T> extends Traversable<T>, Serializable {
      * @return this instance
      * @see Seq#asJava()
      */
-    @GwtIncompatible
     Seq<T> asJava(Consumer<? super java.util.List<T>> action);
 
     /**
@@ -184,7 +182,6 @@ public interface Seq<T> extends Traversable<T>, Serializable {
      * @return A new mutable {@link java.util.Collection} view on this {@code Traversable}.
      * @see Seq#asJava()
      */
-    @GwtIncompatible
     java.util.List<T> asJavaMutable();
 
     /**
@@ -195,7 +192,6 @@ public interface Seq<T> extends Traversable<T>, Serializable {
      * @return this instance, if only read operations are performed on the {@code java.util.List} view or a new instance of this type, if write operations are performed on the {@code java.util.List} view.
      * @see Seq#asJavaMutable()
      */
-    @GwtIncompatible
     Seq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
 
     /**
