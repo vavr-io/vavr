@@ -1445,19 +1445,6 @@ def generateMainClasses(): Unit = {
               long serialVersionUID = 1L;
 
               /$javadoc
-               * Returns a function that always returns the constant
-               * value that you give in parameter.
-               *
-               ${(1 to i).gen(j => s"* @param <T$j> generic parameter type $j of the resulting function")("\n")}
-               * @param <R> the result type
-               * @param value the value to be returned
-               * @return a function always returning the given value
-               */
-              static $fullGenerics $className$fullGenerics constant(R value) {
-                  return ($params) -> value;
-              }
-
-              /$javadoc
                * Creates a {@code $className} based on
                * <ul>
                * <li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method reference</a></li>
@@ -2914,12 +2901,6 @@ def generateTestClasses(): Unit = {
               public void shouldGetArity() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
                   $assertThat(f.arity()).isEqualTo($i);
-              }
-
-              @$test
-              public void shouldConstant()${checked.gen(" throws Throwable")} {
-                  final $name$i<$generics> f = $name$i.constant(6);
-                  $assertThat(f.apply(${(1 to i).gen(j => s"$j")(", ")})).isEqualTo(6);
               }
 
               @$test

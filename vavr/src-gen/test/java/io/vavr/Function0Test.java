@@ -62,12 +62,6 @@ public class Function0Test {
     }
 
     @Test
-    public void shouldConstant() {
-        final Function0<Object> f = Function0.constant(6);
-        assertThat(f.apply()).isEqualTo(6);
-    }
-
-    @Test
     public void shouldCurry() {
         final Function0<Object> f = () -> null;
         final Function0<Object> curried = f.curried();

@@ -49,19 +49,6 @@ public interface Function1<T1, R> extends Lambda<R>, Function<T1, R> {
     long serialVersionUID = 1L;
 
     /**
-     * Returns a function that always returns the constant
-     * value that you give in parameter.
-     *
-     * @param <T1> generic parameter type 1 of the resulting function
-     * @param <R> the result type
-     * @param value the value to be returned
-     * @return a function always returning the given value
-     */
-    static <T1, R> Function1<T1, R> constant(R value) {
-        return (t1) -> value;
-    }
-
-    /**
      * Creates a {@code Function1} based on
      * <ul>
      * <li><a href="https://docs.oracle.com/javase/tutorial/java/javaOO/methodreferences.html">method reference</a></li>
