@@ -62,12 +62,6 @@ public class Function3Test {
     }
 
     @Test
-    public void shouldConstant() {
-        final Function3<Object, Object, Object, Object> f = Function3.constant(6);
-        assertThat(f.apply(1, 2, 3)).isEqualTo(6);
-    }
-
-    @Test
     public void shouldCurry() {
         final Function3<Object, Object, Object, Object> f = (o1, o2, o3) -> null;
         final Function1<Object, Function1<Object, Function1<Object, Object>>> curried = f.curried();

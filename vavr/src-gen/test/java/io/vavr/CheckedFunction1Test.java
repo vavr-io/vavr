@@ -64,12 +64,6 @@ public class CheckedFunction1Test {
     }
 
     @Test
-    public void shouldConstant() throws Throwable {
-        final CheckedFunction1<Object, Object> f = CheckedFunction1.constant(6);
-        assertThat(f.apply(1)).isEqualTo(6);
-    }
-
-    @Test
     public void shouldCurry() {
         final CheckedFunction1<Object, Object> f = (o1) -> null;
         final CheckedFunction1<Object, Object> curried = f.curried();
