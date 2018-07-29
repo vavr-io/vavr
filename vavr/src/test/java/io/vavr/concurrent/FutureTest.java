@@ -508,7 +508,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldHandleInterruptedExceptionCorrectlyInAwait() {
         final Future<Void> future = Future.run(() -> { throw new InterruptedException(); });
-        future.await(100, TimeUnit.MILLISECONDS);
+        future.await(1000, TimeUnit.MILLISECONDS);
         assertThat(future.isFailure()).isTrue();
         assertThat(future.getCause().get()).isInstanceOf(InterruptedException.class);
     }
