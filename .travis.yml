@@ -10,6 +10,14 @@ env:
     - secure: GWvKpGPBF1b/2tkYzJ/IwKpGd3kjfYpadIFoQOdQS3r6iZkutZ9FhW6vINIRsgcIRHTVha0BywG7m5sJIYo/jmsDbXc2VJFO7EcXkK6k96VZYb0pHjbXqeP/u9/ZfSzeQ4w3qNYUiXztmmrLjbCzG2gV4D2CqOaug2o81mVj4LI=
     - secure: m91QxOLHBRnJzRyphCivL79i90pE/FO4yg8qTOaDuyTqVXBKnHmdARFOxSMZN9Qn3B3e28xxPaazIsJGCuPXiQKSObqzPLeFHUOa3atUJSckEUW623l1313A9iMFOYbqSBAHFHmiuuAJBwN/E2OnG3BcLZV1FRibW6J1qLRLdJw=
 install: true
+cache:
+  directories:
+    - "$HOME/.m2/repository"
+    - "$HOME/apache-maven-3.5.4"
+before_install:
+  - export M2_HOME=$HOME/apache-maven-3.5.4
+  - if [ ! -d $M2_HOME/bin ]; then curl https://archive.apache.org/dist/maven/maven-3/3.5.4/binaries/apache-maven-3.5.4-bin.tar.gz | tar zxf - -C $HOME; fi
+  - export PATH=$M2_HOME/bin:$PATH
 script: .travis/run-tests.sh
 after_success:
   - bash <(curl -s https://codecov.io/bash)
