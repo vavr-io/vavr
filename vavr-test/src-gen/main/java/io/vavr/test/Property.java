@@ -621,18 +621,21 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1));
                                 }
                             }
-                        } catch(CheckError err) {
+                        } catch(Try.NonFatalThrowable x) {
+                            final CheckError err = (CheckError) x.getCause();
                             logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                             return new CheckResult.Erroneous(name, i, err, Option.some(Tuple.of(val1)));
                         }
-                    } catch(CheckError err) {
+                    } catch(Try.NonFatalThrowable x) {
+                        final CheckError err = (CheckError) x.getCause();
                         logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                         return new CheckResult.Erroneous(name, i, err, Option.none());
                     }
                 }
                 logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(CheckError err) {
+            } catch(Try.NonFatalThrowable x) {
+                final CheckError err = (CheckError) x.getCause();
                 logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
                 return new CheckResult.Erroneous(name, 0, err, Option.none());
             }
@@ -700,18 +703,21 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2));
                                 }
                             }
-                        } catch(CheckError err) {
+                        } catch(Try.NonFatalThrowable x) {
+                            final CheckError err = (CheckError) x.getCause();
                             logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                             return new CheckResult.Erroneous(name, i, err, Option.some(Tuple.of(val1, val2)));
                         }
-                    } catch(CheckError err) {
+                    } catch(Try.NonFatalThrowable x) {
+                        final CheckError err = (CheckError) x.getCause();
                         logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                         return new CheckResult.Erroneous(name, i, err, Option.none());
                     }
                 }
                 logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(CheckError err) {
+            } catch(Try.NonFatalThrowable x) {
+                final CheckError err = (CheckError) x.getCause();
                 logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
                 return new CheckResult.Erroneous(name, 0, err, Option.none());
             }
@@ -783,18 +789,21 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3));
                                 }
                             }
-                        } catch(CheckError err) {
+                        } catch(Try.NonFatalThrowable x) {
+                            final CheckError err = (CheckError) x.getCause();
                             logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                             return new CheckResult.Erroneous(name, i, err, Option.some(Tuple.of(val1, val2, val3)));
                         }
-                    } catch(CheckError err) {
+                    } catch(Try.NonFatalThrowable x) {
+                        final CheckError err = (CheckError) x.getCause();
                         logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                         return new CheckResult.Erroneous(name, i, err, Option.none());
                     }
                 }
                 logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(CheckError err) {
+            } catch(Try.NonFatalThrowable x) {
+                final CheckError err = (CheckError) x.getCause();
                 logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
                 return new CheckResult.Erroneous(name, 0, err, Option.none());
             }
@@ -870,18 +879,21 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4));
                                 }
                             }
-                        } catch(CheckError err) {
+                        } catch(Try.NonFatalThrowable x) {
+                            final CheckError err = (CheckError) x.getCause();
                             logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                             return new CheckResult.Erroneous(name, i, err, Option.some(Tuple.of(val1, val2, val3, val4)));
                         }
-                    } catch(CheckError err) {
+                    } catch(Try.NonFatalThrowable x) {
+                        final CheckError err = (CheckError) x.getCause();
                         logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                         return new CheckResult.Erroneous(name, i, err, Option.none());
                     }
                 }
                 logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(CheckError err) {
+            } catch(Try.NonFatalThrowable x) {
+                final CheckError err = (CheckError) x.getCause();
                 logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
                 return new CheckResult.Erroneous(name, 0, err, Option.none());
             }
@@ -961,18 +973,21 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5));
                                 }
                             }
-                        } catch(CheckError err) {
+                        } catch(Try.NonFatalThrowable x) {
+                            final CheckError err = (CheckError) x.getCause();
                             logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                             return new CheckResult.Erroneous(name, i, err, Option.some(Tuple.of(val1, val2, val3, val4, val5)));
                         }
-                    } catch(CheckError err) {
+                    } catch(Try.NonFatalThrowable x) {
+                        final CheckError err = (CheckError) x.getCause();
                         logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                         return new CheckResult.Erroneous(name, i, err, Option.none());
                     }
                 }
                 logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(CheckError err) {
+            } catch(Try.NonFatalThrowable x) {
+                final CheckError err = (CheckError) x.getCause();
                 logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
                 return new CheckResult.Erroneous(name, 0, err, Option.none());
             }
@@ -1056,18 +1071,21 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6));
                                 }
                             }
-                        } catch(CheckError err) {
+                        } catch(Try.NonFatalThrowable x) {
+                            final CheckError err = (CheckError) x.getCause();
                             logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                             return new CheckResult.Erroneous(name, i, err, Option.some(Tuple.of(val1, val2, val3, val4, val5, val6)));
                         }
-                    } catch(CheckError err) {
+                    } catch(Try.NonFatalThrowable x) {
+                        final CheckError err = (CheckError) x.getCause();
                         logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                         return new CheckResult.Erroneous(name, i, err, Option.none());
                     }
                 }
                 logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(CheckError err) {
+            } catch(Try.NonFatalThrowable x) {
+                final CheckError err = (CheckError) x.getCause();
                 logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
                 return new CheckResult.Erroneous(name, 0, err, Option.none());
             }
@@ -1155,18 +1173,21 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7));
                                 }
                             }
-                        } catch(CheckError err) {
+                        } catch(Try.NonFatalThrowable x) {
+                            final CheckError err = (CheckError) x.getCause();
                             logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                             return new CheckResult.Erroneous(name, i, err, Option.some(Tuple.of(val1, val2, val3, val4, val5, val6, val7)));
                         }
-                    } catch(CheckError err) {
+                    } catch(Try.NonFatalThrowable x) {
+                        final CheckError err = (CheckError) x.getCause();
                         logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                         return new CheckResult.Erroneous(name, i, err, Option.none());
                     }
                 }
                 logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(CheckError err) {
+            } catch(Try.NonFatalThrowable x) {
+                final CheckError err = (CheckError) x.getCause();
                 logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
                 return new CheckResult.Erroneous(name, 0, err, Option.none());
             }
@@ -1258,18 +1279,21 @@ public class Property {
                                     return new CheckResult.Falsified(name, i, Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8));
                                 }
                             }
-                        } catch(CheckError err) {
+                        } catch(Try.NonFatalThrowable x) {
+                            final CheckError err = (CheckError) x.getCause();
                             logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                             return new CheckResult.Erroneous(name, i, err, Option.some(Tuple.of(val1, val2, val3, val4, val5, val6, val7, val8)));
                         }
-                    } catch(CheckError err) {
+                    } catch(Try.NonFatalThrowable x) {
+                        final CheckError err = (CheckError) x.getCause();
                         logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                         return new CheckResult.Erroneous(name, i, err, Option.none());
                     }
                 }
                 logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                 return new CheckResult.Satisfied(name, tries, exhausted);
-            } catch(CheckError err) {
+            } catch(Try.NonFatalThrowable x) {
+                final CheckError err = (CheckError) x.getCause();
                 logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
                 return new CheckResult.Erroneous(name, 0, err, Option.none());
             }

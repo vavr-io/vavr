@@ -530,6 +530,7 @@ def generateMainClasses(): Unit = {
            * @param supplier A checked supplier
            * @return {@link $TryType.Success} if no exception occurs, otherwise {@link $TryType.Failure} if an
            * exception occurs calling {@code supplier.get()}.
+           * @throws Error if the result is a {@link $TryType.Failure} and the underlying cause is fatal, i.e. non-recoverable
            */
           public static <T> $TryType<T> Try($CheckedFunction0Type<? extends T> supplier) {
               return $TryType.of(supplier);
@@ -553,6 +554,7 @@ def generateMainClasses(): Unit = {
            * @param <T>       Component type of the {@code Try}.
            * @param exception An exception.
            * @return A new {@link $TryType.Failure}.
+           * @throws Error if the given {@code exception} is fatal, i.e. non-recoverable
            */
           @SuppressWarnings("unchecked")
           public static <T> $TryType.Failure<T> Failure(Throwable exception) {

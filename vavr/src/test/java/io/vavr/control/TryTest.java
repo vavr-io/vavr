@@ -26,13 +26,12 @@ import static org.assertj.core.api.Assertions.fail;
 import io.vavr.*;
 import io.vavr.collection.Seq;
 
+import io.vavr.control.Try.NonFatalThrowable;
 import org.assertj.core.api.Assertions;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -74,7 +73,7 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Override
-    @Test(expected = NoSuchElementException.class)
+    @Test(expected = NonFatalThrowable.class)
     public void shouldGetEmpty() {
         empty().get();
     }
@@ -117,7 +116,7 @@ public class TryTest extends AbstractValueTest {
     public void shouldExecuteAndFinallyTryOnFailureWithFailure(){
         final Try<Object> result = Try.of(() -> { throw new IllegalStateException(FAILURE); })
                 .andFinallyTry(() -> { throw new IllegalStateException(FAILURE); });
-        assertThat(result.isFailure());
+        assertThat(result.isFailure()).isTrue();
     }
 
     // -- collect
@@ -131,19 +130,19 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldFilterNotDefinedValueUsingPartialFunction() {
         final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
-        assertThat(Try.success(2).collect(pf).isFailure());
+        assertThat(Try.success(2).collect(pf).isFailure()).isTrue();
     }
 
     @Test
     public void shouldCollectFailureUsingPartialFunction() {
         final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
-        assertThat(Try.<Integer> failure(new RuntimeException()).collect(pf).isFailure());
+        assertThat(TryTest.<Integer> failure().collect(pf).isFailure()).isTrue();
     }
 
     @Test
     public void shouldCollectFailureWhenPartialFunctionThrows() {
-        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(i -> i % 2 == 1);
-        assertThat(Try.success(3).collect(pf).isFailure());
+        final PartialFunction<Integer, String> pf = Function1.<Integer, String> of(String::valueOf).partial(ignored -> { throw error(); });
+        assertThat(Try.success(3).collect(pf).isFailure()).isTrue();
     }
 
     @Test(expected = NullPointerException.class)
@@ -284,7 +283,9 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldThrowNullPointerExceptionWhenCallingTryOfSupplier() {
-        assertThatThrownBy(() -> Try.ofSupplier(null)).isInstanceOf(NullPointerException.class).hasMessage("supplier is null");
+        assertThatThrownBy(() -> Try.ofSupplier(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("supplier is null");
     }
 
     @Test
@@ -305,12 +306,14 @@ public class TryTest extends AbstractValueTest {
     public void shouldCreateFailureWhenCallingTryOfCallable() {
         assertThat(Try.ofCallable(() -> {
             throw new Error("error");
-        }) instanceof Try.Failure).isTrue();
+        }).isFailure()).isTrue();
     }
 
     @Test
     public void shouldThrowNullPointerExceptionWhenCallingTryOfCallable() {
-        assertThatThrownBy(() -> Try.ofCallable(null)).isInstanceOf(NullPointerException.class).hasMessage("callable is null");
+        assertThatThrownBy(() -> Try.ofCallable(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("callable is null");
     }
 
     // -- Try.run
@@ -617,19 +620,25 @@ public class TryTest extends AbstractValueTest {
 
     // -- Failure.Cause
 
-    @Test(expected = InterruptedException.class)
-    public void shouldRethrowInterruptedException() {
-        Try.failure(new InterruptedException());
+    @Test(expected = LinkageError.class)
+    public void shouldRethrowOutOfMemoryError() {
+        Try.failure(new LinkageError());
     }
 
-    @Test(expected = OutOfMemoryError.class)
-    public void shouldRethrowOutOfMemoryError() {
-        Try.failure(new OutOfMemoryError());
+    @Test(expected = ThreadDeath.class)
+    public void shouldRethrowThreadDeath() {
+        Try.failure(new ThreadDeath());
+    }
+
+    @SuppressWarnings("serial")
+    @Test(expected = VirtualMachineError.class)
+    public void shouldRethrowVirtualMachineError() {
+        Try.failure(new VirtualMachineError() {});
     }
 
     @Test
     public void shouldDetectNonFatalException() {
-        final Exception exception = new Exception();
+        final Exception exception = new InterruptedException();
         assertThat(Try.failure(exception).getCause()).isSameAs(exception);
     }
 
@@ -651,7 +660,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldCreateFailureOnNonFatalException() {
-        assertThat(failure().failed().get().getClass().getName()).isEqualTo(RuntimeException.class.getName());
+        assertThat(failure().failed().get()).isExactlyInstanceOf(IllegalStateException.class);
     }
 
     // -- Failure.NonFatal
@@ -732,17 +741,6 @@ public class TryTest extends AbstractValueTest {
         failure().get();
     }
 
-    @Test
-    public void shouldThrowUndeclaredThrowableExceptionWhenUsingDynamicProxiesAndGetThrows() {
-        final Value<?> testee = (Value<?>) Proxy.newProxyInstance(
-                Value.class.getClassLoader(),
-                new Class<?>[] { Value.class },
-                (proxy, method, args) -> Try.failure(new Exception()).get());
-        assertThatThrownBy(testee::get)
-                .isInstanceOf(UndeclaredThrowableException.class)
-                .hasCauseExactlyInstanceOf(Exception.class);
-    }
-
     // -- getOrElse
 
     @Test
@@ -777,8 +775,8 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldRecoverWhenFailureMatchesExactly() {
-        final Try<String> testee = failure(RuntimeException.class);
-        assertThat(testee.recover(RuntimeException.class, x -> OK).isSuccess()).isTrue();
+        final Try<String> testee = failure();
+        assertThat(testee.recover(IllegalStateException.class, x -> OK).isSuccess()).isTrue();
     }
 
     @Test
@@ -789,7 +787,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnThisWhenRecoverDifferentTypeOfFailure() {
-        final Try<String> testee = failure(RuntimeException.class);
+        final Try<String> testee = failure(IllegalStateException.class);
         assertThat(testee.recover(NullPointerException.class, x -> OK)).isSameAs(testee);
     }
 
@@ -803,8 +801,8 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldRecoverWithSuccessWhenFailureMatchesExactly() {
-        final Try<String> testee = failure(RuntimeException.class);
-        assertThat(testee.recover(RuntimeException.class, OK).isSuccess()).isTrue();
+        final Try<String> testee = failure();
+        assertThat(testee.recover(IllegalStateException.class, OK).isSuccess()).isTrue();
     }
 
     @Test
@@ -815,7 +813,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnThisWhenRecoverWithSuccessDifferentTypeOfFailure() {
-        final Try<String> testee = failure(RuntimeException.class);
+        final Try<String> testee = failure(IllegalStateException.class);
         assertThat(testee.recover(NullPointerException.class, OK)).isSameAs(testee);
     }
 
@@ -863,7 +861,9 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldReturnExceptionWhenRecoveryWasNotSuccess(){
         final Try<?> testee = Try.of(() -> { throw error(); }).recoverWith(IOException.class, x -> failure());
-        assertThatThrownBy(testee::get).isInstanceOf(RuntimeException.class).hasMessage("error");
+        assertThatThrownBy(testee::get)
+                .isExactlyInstanceOf(NonFatalThrowable.class)
+                .hasCauseExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
@@ -881,7 +881,9 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldHandleErrorDuringRecovering(){
         final Try<?> t = Try.of(() -> {throw new IllegalArgumentException(OK);}).recoverWith(IOException.class, x -> { throw new IllegalStateException(FAILURE);});
-        assertThatThrownBy(t::get).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(t::get)
+                .isInstanceOf(NonFatalThrowable.class)
+                .hasCauseExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     // -- recoverWith(Class, Try)
@@ -1005,7 +1007,8 @@ public class TryTest extends AbstractValueTest {
         assertThat(future.isCompletedExceptionally());
         assertThatThrownBy(future::get)
                 .isExactlyInstanceOf(ExecutionException.class)
-                .hasCauseExactlyInstanceOf(RuntimeException.class);
+                .hasCauseExactlyInstanceOf(NonFatalThrowable.class)
+                .hasRootCauseExactlyInstanceOf(IllegalStateException.class);
     }
 
     // -- toValidation
@@ -1209,7 +1212,8 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertFailureToString() {
-        assertThat(Try.failure(error()).toString()).isEqualTo("Failure(java.lang.RuntimeException: error)");
+        assertThat(Try.failure(error()).toString())
+                .isEqualTo("Failure(java.lang.IllegalStateException: error)");
     }
 
     // -- sequence
@@ -1374,7 +1378,8 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldFilterNonMatchingPredicateOnSuccess() {
         final Try<?> testee = success().filter(s -> false);
-        assertThatThrownBy(testee::get).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(testee::get).isInstanceOf(NonFatalThrowable.class);
+        assertThat(testee.getCause()).isInstanceOf(NoSuchElementException.class);
     }
 
     @Test
@@ -1441,15 +1446,19 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldMapWithExceptionOnSuccess() {
         final Try<?> testee = success().map(s -> {
-            throw new RuntimeException("xxx");
+            throw new IllegalStateException();
         });
-        assertThatThrownBy(testee::get).isInstanceOf(RuntimeException.class).hasMessage("xxx");
+        assertThatThrownBy(testee::get)
+                .isExactlyInstanceOf(NonFatalThrowable.class)
+                .hasRootCauseExactlyInstanceOf(IllegalStateException.class);
     }
 
     @Test
     public void shouldThrowWhenCallingFailedOnSuccess() {
         final Try<?> testee = success().failed();
-        assertThatThrownBy(testee::get).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(testee::get)
+                .isExactlyInstanceOf(NonFatalThrowable.class)
+                .hasCauseExactlyInstanceOf(NoSuchElementException.class);
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -1560,12 +1569,12 @@ public class TryTest extends AbstractValueTest {
 
     // -- helpers
 
-    private RuntimeException error() {
-        return new RuntimeException("error");
+    private IllegalStateException error() {
+        return new IllegalStateException("error");
     }
 
     private static <T> Try<T> failure() {
-        return Try.failure(new RuntimeException());
+        return Try.failure(new IllegalStateException());
     }
 
     private static <T, X extends Throwable> Try<T> failure(Class<X> exceptionType) {
@@ -1578,15 +1587,15 @@ public class TryTest extends AbstractValueTest {
     }
 
     private <T> boolean filter(T t) {
-        throw new RuntimeException("xxx");
+        throw error();
     }
 
     private <T> Try<T> flatMap(T t) {
-        throw new RuntimeException("xxx");
+        throw error();
     }
 
     private <T> T map(T t) {
-        throw new RuntimeException("xxx");
+        throw error();
     }
 
     private Try<String> success() {

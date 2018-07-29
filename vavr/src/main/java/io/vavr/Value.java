@@ -1344,7 +1344,8 @@ public interface Value<T> extends Iterable<T> {
         if (this instanceof Try) {
             return (Try<T>) this;
         } else {
-            return Try.of(this::get);
+            // TODO: workaround. the Value class will be deleted with Vavr 1.0 and conversion will be moved to types
+            return Try.of(this::get).recoverWith(Try.NonFatalThrowable.class, x -> Try.failure(x.getCause()));
         }
     }
 
