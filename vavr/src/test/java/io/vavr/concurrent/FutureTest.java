@@ -46,7 +46,7 @@ import java.util.function.Predicate;
 import static io.vavr.concurrent.Concurrent.waitUntil;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static io.vavr.concurrent.Concurrent.zZz;
-import static org.assertj.core.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class FutureTest extends AbstractValueTest {
 
@@ -510,8 +510,7 @@ public class FutureTest extends AbstractValueTest {
         final Future<Void> future = Future.run(() -> { throw new InterruptedException(); });
         future.await(100, TimeUnit.MILLISECONDS);
         assertThat(future.isFailure()).isTrue();
-        assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
-        assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 MILLISECONDS");
+        assertThat(future.getCause().get()).isInstanceOf(InterruptedException.class);
     }
 
     // -- failed
@@ -608,7 +607,7 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.isCancelled()).isTrue();
     }
 
-    @Test(expected = CancellationException.class)
+    @Test
     public void shouldThrowOnGetAfterCancellation() {
         final Object monitor = new Object();
         final AtomicBoolean running = new AtomicBoolean(false);
@@ -623,8 +622,9 @@ public class FutureTest extends AbstractValueTest {
             future.cancel();
         }
         assertThat(future.isCancelled()).isTrue();
-        future.get();
-        fail("Future was expected to throw on get() after cancellation!");
+        assertThatThrownBy(future::get)
+                .isExactlyInstanceOf(Try.NonFatalThrowable.class)
+                .hasCauseExactlyInstanceOf(CancellationException.class);
     }
 
     @Test
@@ -905,7 +905,8 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertFailedFutureToTry() {
-        assertThat(Future.failed(new Error("!")).toTry()).isEqualTo(Try.failure(new Error("!")));
+        assertThat(Future.failed(new Error("!")).toTry())
+                .isEqualTo(Try.failure(new Error("!")));
     }
 
     // -- transform()

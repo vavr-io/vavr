@@ -911,6 +911,7 @@ public final class API {
      * @param supplier A checked supplier
      * @return {@link Try.Success} if no exception occurs, otherwise {@link Try.Failure} if an
      * exception occurs calling {@code supplier.get()}.
+     * @throws Error if the result is a {@link Try.Failure} and the underlying cause is fatal, i.e. non-recoverable
      */
     public static <T> Try<T> Try(CheckedFunction0<? extends T> supplier) {
         return Try.of(supplier);
@@ -934,6 +935,7 @@ public final class API {
      * @param <T>       Component type of the {@code Try}.
      * @param exception An exception.
      * @return A new {@link Try.Failure}.
+     * @throws Error if the given {@code exception} is fatal, i.e. non-recoverable
      */
     @SuppressWarnings("unchecked")
     public static <T> Try.Failure<T> Failure(Throwable exception) {

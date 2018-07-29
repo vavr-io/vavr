@@ -274,18 +274,21 @@ def generateMainClasses(): Unit = {
                                                   return new CheckResult.Falsified(name, i, $tupleType.of(${(1 to i).gen(j => s"val$j")(", ")}));
                                               }
                                           }
-                                      } catch(CheckError err) {
+                                      } catch($tryType.NonFatalThrowable x) {
+                                          final CheckError err = (CheckError) x.getCause();
                                           logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                                           return new CheckResult.Erroneous(name, i, err, $optionType.some($tupleType.of(${(1 to i).gen(j => s"val$j")(", ")})));
                                       }
-                                  } catch(CheckError err) {
+                                  } catch($tryType.NonFatalThrowable x) {
+                                      final CheckError err = (CheckError) x.getCause();
                                       logErroneous(name, i, System.currentTimeMillis() - startTime, err.getMessage());
                                       return new CheckResult.Erroneous(name, i, err, $optionType.none());
                                   }
                               }
                               logSatisfied(name, tries, System.currentTimeMillis() - startTime, exhausted);
                               return new CheckResult.Satisfied(name, tries, exhausted);
-                          } catch(CheckError err) {
+                          } catch($tryType.NonFatalThrowable x) {
+                              final CheckError err = (CheckError) x.getCause();
                               logErroneous(name, 0, System.currentTimeMillis() - startTime, err.getMessage());
                               return new CheckResult.Erroneous(name, 0, err, $optionType.none());
                           }
