@@ -25,7 +25,6 @@ import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.collection.List.Nil;
 import io.vavr.collection.Tree.*;
-import io.vavr.control.HashCodes;
 import io.vavr.control.Option;
 
 import java.io.*;
@@ -932,7 +931,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return HashCodes.hash(value, children);
+            return Tuple.hash(value, children);
         }
 
         @Override

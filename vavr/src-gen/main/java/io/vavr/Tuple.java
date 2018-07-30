@@ -226,6 +226,280 @@ public interface Tuple {
     }
 
     /**
+     * Return the order-dependent hash of the one given value.
+     *
+     * @param o1 the 1st value to hash
+     * @return the same result as {@link Objects#hashCode(Object)}
+     */
+    static int hash(Object o1) {
+        return Objects.hashCode(o1);
+    }
+
+    /**
+     * Return the order-dependent hash of the two given values.
+     *
+     * @param o1 the 1st value to hash
+     * @param o2 the 2nd value to hash
+     * @return the same result as {@link Objects#hash(Object...)}
+     */
+    static int hash(Object o1, Object o2) {
+        int result = 1;
+        result = 31 * result + hash(o1);
+        result = 31 * result + hash(o2);
+        return result;
+    }
+
+    /**
+     * Return the order-dependent hash of the three given values.
+     *
+     * @param o1 the 1st value to hash
+     * @param o2 the 2nd value to hash
+     * @param o3 the 3rd value to hash
+     * @return the same result as {@link Objects#hash(Object...)}
+     */
+    static int hash(Object o1, Object o2, Object o3) {
+        int result = 1;
+        result = 31 * result + hash(o1);
+        result = 31 * result + hash(o2);
+        result = 31 * result + hash(o3);
+        return result;
+    }
+
+    /**
+     * Return the order-dependent hash of the 4 given values.
+     *
+     * @param o1 the 1st value to hash
+     * @param o2 the 2nd value to hash
+     * @param o3 the 3rd value to hash
+     * @param o4 the 4th value to hash
+     * @return the same result as {@link Objects#hash(Object...)}
+     */
+    static int hash(Object o1, Object o2, Object o3, Object o4) {
+        int result = 1;
+        result = 31 * result + hash(o1);
+        result = 31 * result + hash(o2);
+        result = 31 * result + hash(o3);
+        result = 31 * result + hash(o4);
+        return result;
+    }
+
+    /**
+     * Return the order-dependent hash of the 5 given values.
+     *
+     * @param o1 the 1st value to hash
+     * @param o2 the 2nd value to hash
+     * @param o3 the 3rd value to hash
+     * @param o4 the 4th value to hash
+     * @param o5 the 5th value to hash
+     * @return the same result as {@link Objects#hash(Object...)}
+     */
+    static int hash(Object o1, Object o2, Object o3, Object o4, Object o5) {
+        int result = 1;
+        result = 31 * result + hash(o1);
+        result = 31 * result + hash(o2);
+        result = 31 * result + hash(o3);
+        result = 31 * result + hash(o4);
+        result = 31 * result + hash(o5);
+        return result;
+    }
+
+    /**
+     * Return the order-dependent hash of the 6 given values.
+     *
+     * @param o1 the 1st value to hash
+     * @param o2 the 2nd value to hash
+     * @param o3 the 3rd value to hash
+     * @param o4 the 4th value to hash
+     * @param o5 the 5th value to hash
+     * @param o6 the 6th value to hash
+     * @return the same result as {@link Objects#hash(Object...)}
+     */
+    static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6) {
+        int result = 1;
+        result = 31 * result + hash(o1);
+        result = 31 * result + hash(o2);
+        result = 31 * result + hash(o3);
+        result = 31 * result + hash(o4);
+        result = 31 * result + hash(o5);
+        result = 31 * result + hash(o6);
+        return result;
+    }
+
+    /**
+     * Return the order-dependent hash of the 7 given values.
+     *
+     * @param o1 the 1st value to hash
+     * @param o2 the 2nd value to hash
+     * @param o3 the 3rd value to hash
+     * @param o4 the 4th value to hash
+     * @param o5 the 5th value to hash
+     * @param o6 the 6th value to hash
+     * @param o7 the 7th value to hash
+     * @return the same result as {@link Objects#hash(Object...)}
+     */
+    static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7) {
+        int result = 1;
+        result = 31 * result + hash(o1);
+        result = 31 * result + hash(o2);
+        result = 31 * result + hash(o3);
+        result = 31 * result + hash(o4);
+        result = 31 * result + hash(o5);
+        result = 31 * result + hash(o6);
+        result = 31 * result + hash(o7);
+        return result;
+    }
+
+    /**
+     * Return the order-dependent hash of the 8 given values.
+     *
+     * @param o1 the 1st value to hash
+     * @param o2 the 2nd value to hash
+     * @param o3 the 3rd value to hash
+     * @param o4 the 4th value to hash
+     * @param o5 the 5th value to hash
+     * @param o6 the 6th value to hash
+     * @param o7 the 7th value to hash
+     * @param o8 the 8th value to hash
+     * @return the same result as {@link Objects#hash(Object...)}
+     */
+    static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8) {
+        int result = 1;
+        result = 31 * result + hash(o1);
+        result = 31 * result + hash(o2);
+        result = 31 * result + hash(o3);
+        result = 31 * result + hash(o4);
+        result = 31 * result + hash(o5);
+        result = 31 * result + hash(o6);
+        result = 31 * result + hash(o7);
+        result = 31 * result + hash(o8);
+        return result;
+    }
+
+    /**
+     * Narrows a widened {@code Tuple1<? extends T1>} to {@code Tuple1<T1>}.
+     * This is eligible because immutable/read-only tuples are covariant.
+     * @param t A {@code Tuple1}.
+     * @param <T1> the 1st component type
+     * @return the given {@code t} instance as narrowed type {@code Tuple1<T1>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T1> Tuple1<T1> narrow(Tuple1<? extends T1> t) {
+        return (Tuple1<T1>) t;
+    }
+
+    /**
+     * Narrows a widened {@code Tuple2<? extends T1, ? extends T2>} to {@code Tuple2<T1, T2>}.
+     * This is eligible because immutable/read-only tuples are covariant.
+     * @param t A {@code Tuple2}.
+     * @param <T1> the 1st component type
+     * @param <T2> the 2nd component type
+     * @return the given {@code t} instance as narrowed type {@code Tuple2<T1, T2>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2> Tuple2<T1, T2> narrow(Tuple2<? extends T1, ? extends T2> t) {
+        return (Tuple2<T1, T2>) t;
+    }
+
+    /**
+     * Narrows a widened {@code Tuple3<? extends T1, ? extends T2, ? extends T3>} to {@code Tuple3<T1, T2, T3>}.
+     * This is eligible because immutable/read-only tuples are covariant.
+     * @param t A {@code Tuple3}.
+     * @param <T1> the 1st component type
+     * @param <T2> the 2nd component type
+     * @param <T3> the 3rd component type
+     * @return the given {@code t} instance as narrowed type {@code Tuple3<T1, T2, T3>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3> Tuple3<T1, T2, T3> narrow(Tuple3<? extends T1, ? extends T2, ? extends T3> t) {
+        return (Tuple3<T1, T2, T3>) t;
+    }
+
+    /**
+     * Narrows a widened {@code Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4>} to {@code Tuple4<T1, T2, T3, T4>}.
+     * This is eligible because immutable/read-only tuples are covariant.
+     * @param t A {@code Tuple4}.
+     * @param <T1> the 1st component type
+     * @param <T2> the 2nd component type
+     * @param <T3> the 3rd component type
+     * @param <T4> the 4th component type
+     * @return the given {@code t} instance as narrowed type {@code Tuple4<T1, T2, T3, T4>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> narrow(Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4> t) {
+        return (Tuple4<T1, T2, T3, T4>) t;
+    }
+
+    /**
+     * Narrows a widened {@code Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5>} to {@code Tuple5<T1, T2, T3, T4, T5>}.
+     * This is eligible because immutable/read-only tuples are covariant.
+     * @param t A {@code Tuple5}.
+     * @param <T1> the 1st component type
+     * @param <T2> the 2nd component type
+     * @param <T3> the 3rd component type
+     * @param <T4> the 4th component type
+     * @param <T5> the 5th component type
+     * @return the given {@code t} instance as narrowed type {@code Tuple5<T1, T2, T3, T4, T5>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> narrow(Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5> t) {
+        return (Tuple5<T1, T2, T3, T4, T5>) t;
+    }
+
+    /**
+     * Narrows a widened {@code Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6>} to {@code Tuple6<T1, T2, T3, T4, T5, T6>}.
+     * This is eligible because immutable/read-only tuples are covariant.
+     * @param t A {@code Tuple6}.
+     * @param <T1> the 1st component type
+     * @param <T2> the 2nd component type
+     * @param <T3> the 3rd component type
+     * @param <T4> the 4th component type
+     * @param <T5> the 5th component type
+     * @param <T6> the 6th component type
+     * @return the given {@code t} instance as narrowed type {@code Tuple6<T1, T2, T3, T4, T5, T6>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> narrow(Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6> t) {
+        return (Tuple6<T1, T2, T3, T4, T5, T6>) t;
+    }
+
+    /**
+     * Narrows a widened {@code Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7>} to {@code Tuple7<T1, T2, T3, T4, T5, T6, T7>}.
+     * This is eligible because immutable/read-only tuples are covariant.
+     * @param t A {@code Tuple7}.
+     * @param <T1> the 1st component type
+     * @param <T2> the 2nd component type
+     * @param <T3> the 3rd component type
+     * @param <T4> the 4th component type
+     * @param <T5> the 5th component type
+     * @param <T6> the 6th component type
+     * @param <T7> the 7th component type
+     * @return the given {@code t} instance as narrowed type {@code Tuple7<T1, T2, T3, T4, T5, T6, T7>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> narrow(Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7> t) {
+        return (Tuple7<T1, T2, T3, T4, T5, T6, T7>) t;
+    }
+
+    /**
+     * Narrows a widened {@code Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8>} to {@code Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>}.
+     * This is eligible because immutable/read-only tuples are covariant.
+     * @param t A {@code Tuple8}.
+     * @param <T1> the 1st component type
+     * @param <T2> the 2nd component type
+     * @param <T3> the 3rd component type
+     * @param <T4> the 4th component type
+     * @param <T5> the 5th component type
+     * @param <T6> the 6th component type
+     * @param <T7> the 7th component type
+     * @param <T8> the 8th component type
+     * @return the given {@code t} instance as narrowed type {@code Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>}.
+     */
+    @SuppressWarnings("unchecked")
+    static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> narrow(Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8> t) {
+        return (Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>) t;
+    }
+
+    /**
      * Turns a sequence of {@code Tuple1} into a Tuple1 of {@code Seq}.
      *
      * @param <T1> 1st component type
@@ -355,130 +629,6 @@ public interface Tuple {
         Objects.requireNonNull(tuples, "tuples is null");
         final Stream<Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8>> s = Stream.ofAll(tuples);
         return new Tuple8<>(s.map(Tuple8::_1), s.map(Tuple8::_2), s.map(Tuple8::_3), s.map(Tuple8::_4), s.map(Tuple8::_5), s.map(Tuple8::_6), s.map(Tuple8::_7), s.map(Tuple8::_8));
-    }
-
-    /**
-     * Narrows a widened {@code Tuple1<? extends T1>} to {@code Tuple1<T1>}.
-     * This is eligible because immutable/read-only tuples are covariant.
-     * @param t A {@code Tuple1}.
-     * @param <T1> the 1st component type
-     * @return the given {@code t} instance as narrowed type {@code Tuple1<T1>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <T1> Tuple1<T1> narrow(Tuple1<? extends T1> t) {
-        return (Tuple1<T1>) t;
-    }
-
-    /**
-     * Narrows a widened {@code Tuple2<? extends T1, ? extends T2>} to {@code Tuple2<T1, T2>}.
-     * This is eligible because immutable/read-only tuples are covariant.
-     * @param t A {@code Tuple2}.
-     * @param <T1> the 1st component type
-     * @param <T2> the 2nd component type
-     * @return the given {@code t} instance as narrowed type {@code Tuple2<T1, T2>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <T1, T2> Tuple2<T1, T2> narrow(Tuple2<? extends T1, ? extends T2> t) {
-        return (Tuple2<T1, T2>) t;
-    }
-
-    /**
-     * Narrows a widened {@code Tuple3<? extends T1, ? extends T2, ? extends T3>} to {@code Tuple3<T1, T2, T3>}.
-     * This is eligible because immutable/read-only tuples are covariant.
-     * @param t A {@code Tuple3}.
-     * @param <T1> the 1st component type
-     * @param <T2> the 2nd component type
-     * @param <T3> the 3rd component type
-     * @return the given {@code t} instance as narrowed type {@code Tuple3<T1, T2, T3>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <T1, T2, T3> Tuple3<T1, T2, T3> narrow(Tuple3<? extends T1, ? extends T2, ? extends T3> t) {
-        return (Tuple3<T1, T2, T3>) t;
-    }
-
-    /**
-     * Narrows a widened {@code Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4>} to {@code Tuple4<T1, T2, T3, T4>}.
-     * This is eligible because immutable/read-only tuples are covariant.
-     * @param t A {@code Tuple4}.
-     * @param <T1> the 1st component type
-     * @param <T2> the 2nd component type
-     * @param <T3> the 3rd component type
-     * @param <T4> the 4th component type
-     * @return the given {@code t} instance as narrowed type {@code Tuple4<T1, T2, T3, T4>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> narrow(Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4> t) {
-        return (Tuple4<T1, T2, T3, T4>) t;
-    }
-
-    /**
-     * Narrows a widened {@code Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5>} to {@code Tuple5<T1, T2, T3, T4, T5>}.
-     * This is eligible because immutable/read-only tuples are covariant.
-     * @param t A {@code Tuple5}.
-     * @param <T1> the 1st component type
-     * @param <T2> the 2nd component type
-     * @param <T3> the 3rd component type
-     * @param <T4> the 4th component type
-     * @param <T5> the 5th component type
-     * @return the given {@code t} instance as narrowed type {@code Tuple5<T1, T2, T3, T4, T5>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <T1, T2, T3, T4, T5> Tuple5<T1, T2, T3, T4, T5> narrow(Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5> t) {
-        return (Tuple5<T1, T2, T3, T4, T5>) t;
-    }
-
-    /**
-     * Narrows a widened {@code Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6>} to {@code Tuple6<T1, T2, T3, T4, T5, T6>}.
-     * This is eligible because immutable/read-only tuples are covariant.
-     * @param t A {@code Tuple6}.
-     * @param <T1> the 1st component type
-     * @param <T2> the 2nd component type
-     * @param <T3> the 3rd component type
-     * @param <T4> the 4th component type
-     * @param <T5> the 5th component type
-     * @param <T6> the 6th component type
-     * @return the given {@code t} instance as narrowed type {@code Tuple6<T1, T2, T3, T4, T5, T6>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <T1, T2, T3, T4, T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> narrow(Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6> t) {
-        return (Tuple6<T1, T2, T3, T4, T5, T6>) t;
-    }
-
-    /**
-     * Narrows a widened {@code Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7>} to {@code Tuple7<T1, T2, T3, T4, T5, T6, T7>}.
-     * This is eligible because immutable/read-only tuples are covariant.
-     * @param t A {@code Tuple7}.
-     * @param <T1> the 1st component type
-     * @param <T2> the 2nd component type
-     * @param <T3> the 3rd component type
-     * @param <T4> the 4th component type
-     * @param <T5> the 5th component type
-     * @param <T6> the 6th component type
-     * @param <T7> the 7th component type
-     * @return the given {@code t} instance as narrowed type {@code Tuple7<T1, T2, T3, T4, T5, T6, T7>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <T1, T2, T3, T4, T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> narrow(Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7> t) {
-        return (Tuple7<T1, T2, T3, T4, T5, T6, T7>) t;
-    }
-
-    /**
-     * Narrows a widened {@code Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8>} to {@code Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>}.
-     * This is eligible because immutable/read-only tuples are covariant.
-     * @param t A {@code Tuple8}.
-     * @param <T1> the 1st component type
-     * @param <T2> the 2nd component type
-     * @param <T3> the 3rd component type
-     * @param <T4> the 4th component type
-     * @param <T5> the 5th component type
-     * @param <T6> the 6th component type
-     * @param <T7> the 7th component type
-     * @param <T8> the 8th component type
-     * @return the given {@code t} instance as narrowed type {@code Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> narrow(Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8> t) {
-        return (Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>) t;
     }
 
 }

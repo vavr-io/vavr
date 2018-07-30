@@ -25,7 +25,6 @@ package io.vavr;
 
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
-import io.vavr.control.HashCodes;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -456,7 +455,7 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
 
     @Override
     public int hashCode() {
-        return HashCodes.hash(_1, _2, _3, _4, _5);
+        return Tuple.hash(_1, _2, _3, _4, _5);
     }
 
     @Override

@@ -19,9 +19,9 @@
  */
 package io.vavr.collection;
 
+import io.vavr.Tuple;
 import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
-import io.vavr.control.HashCodes;
 import io.vavr.control.Option;
 
 import java.util.*;
@@ -233,7 +233,7 @@ final class Collections {
         } else {
             int hashCode = 1;
             for (Object o : iterable) {
-                hashCode = accumulator.applyAsInt(hashCode, HashCodes.hash(o));
+                hashCode = accumulator.applyAsInt(hashCode, Objects.hashCode(o));
             }
             return hashCode;
         }
