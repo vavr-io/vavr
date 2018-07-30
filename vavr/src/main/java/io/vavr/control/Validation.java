@@ -849,7 +849,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return HashCodes.hash(value);
+            return Objects.hashCode(value);
         }
 
         @Override
@@ -907,7 +907,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return HashCodes.hash(errors);
+            return Objects.hashCode(errors);
         }
 
         @Override

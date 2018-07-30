@@ -20,6 +20,7 @@
 package io.vavr.control;
 
 import io.vavr.PartialFunction;
+import io.vavr.Tuple;
 import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
@@ -485,7 +486,7 @@ public interface Option<T> extends Value<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return HashCodes.hash(value);
+            return Objects.hashCode(value);
         }
 
         @Override

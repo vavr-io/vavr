@@ -2035,7 +2035,7 @@ def generateMainClasses(): Unit = {
 
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else s"""${im.getType("io.vavr.control.HashCodes")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else s"""Tuple.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override
@@ -2088,24 +2088,25 @@ def generateMainClasses(): Unit = {
         """
       }
 
-      def genSeqMethod(i: Int) = {
-        val generics = (1 to i).gen(j => s"T$j")(", ")
-        val seqs = (1 to i).gen(j => s"Seq<T$j>")(", ")
-        val Stream = im.getType("io.vavr.collection.Stream")
-        val widenedGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
+      def genHashMethod(i: Int) = {
+        val paramsDecl = (1 to i).gen(j => s"Object o$j")(", ")
         xs"""
-            /**
-             * Turns a sequence of {@code Tuple$i} into a Tuple$i of {@code Seq}${(i > 1).gen("s")}.
-             *
-             ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type")("\n")}
-             * @param tuples an {@code Iterable} of tuples
-             * @return a tuple of ${i.numerus(s"{@link $Seq}")}.
-             */
-            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
-                $Objects.requireNonNull(tuples, "tuples is null");
-                final Stream<Tuple$i<$widenedGenerics>> s = $Stream.ofAll(tuples);
-                return new Tuple$i<>(${(1 to i).gen(j => s"s.map(Tuple$i::_$j)")(s", ")});
-            }
+          /**
+           * Return the order-dependent hash of the ${i.numerus("given value")}.
+           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param o$j the ${j.ordinal} value to hash")("\n")}
+           * @return the same result as {@link $Objects#${if (i == 1) "hashCode(Object)" else "hash(Object...)"}}
+           */
+          static int hash($paramsDecl) {
+              ${if (i == 1) {
+                s"return $Objects.hashCode(o1);"
+              } else {
+                xs"""
+                  int result = 1;
+                  ${(1 to i).gen(j => s"result = 31 * result + hash(o$j);")("\n")}
+                  return result;
+                """
+              }}
+          }
         """
       }
 
@@ -2124,6 +2125,27 @@ def generateMainClasses(): Unit = {
           static <$generics> Tuple$i<$generics> narrow(Tuple$i<$wideGenerics> t) {
               return (Tuple$i<$generics>) t;
           }
+        """
+      }
+
+      def genSeqMethod(i: Int) = {
+        val generics = (1 to i).gen(j => s"T$j")(", ")
+        val seqs = (1 to i).gen(j => s"Seq<T$j>")(", ")
+        val Stream = im.getType("io.vavr.collection.Stream")
+        val widenedGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
+        xs"""
+            /**
+             * Turns a sequence of {@code Tuple$i} into a Tuple$i of {@code Seq}${(i > 1).gen("s")}.
+             *
+             ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type")("\n")}
+             * @param tuples an {@code Iterable} of tuples
+             * @return a tuple of ${i.numerus(s"{@link $Seq}")}.
+             */
+            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
+                $Objects.requireNonNull(tuples, "tuples is null");
+                final Stream<Tuple$i<$widenedGenerics>> s = $Stream.ofAll(tuples);
+                return new Tuple$i<>(${(1 to i).gen(j => s"s.map(Tuple$i::_$j)")(s", ")});
+            }
         """
       }
 
@@ -2183,10 +2205,11 @@ def generateMainClasses(): Unit = {
 
             ${(1 to N).gen(genFactoryMethod)("\n\n")}
 
-            ${(1 to N).gen(genSeqMethod)("\n\n")}
+            ${(1 to N).gen(genHashMethod)("\n\n")}
 
             ${(1 to N).gen(genNarrowMethod)("\n\n")}
 
+            ${(1 to N).gen(genSeqMethod)("\n\n")}
 
         }
       """
