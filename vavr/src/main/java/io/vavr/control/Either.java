@@ -1105,7 +1105,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
 
         @Override
         public int hashCode() {
-            return HashCodes.hash(value);
+            return Objects.hashCode(value);
         }
 
         @Override
@@ -1168,7 +1168,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
 
         @Override
         public int hashCode() {
-            return HashCodes.hash(value);
+            return Objects.hashCode(value);
         }
 
         @Override

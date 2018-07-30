@@ -22,11 +22,9 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashArrayMappedTrieModule.EmptyNode;
-import io.vavr.control.HashCodes;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Objects;
 
 import static java.lang.Integer.bitCount;
@@ -234,12 +232,12 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Option<V> get(K key) {
-            return lookup(0, HashCodes.hash(key), key);
+            return lookup(0, Objects.hashCode(key), key);
         }
 
         @Override
         public V getOrElse(K key, V defaultValue) {
-            return lookup(0, HashCodes.hash(key), key, defaultValue);
+            return lookup(0, Objects.hashCode(key), key, defaultValue);
         }
 
         @Override
@@ -249,12 +247,12 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public HashArrayMappedTrie<K, V> put(K key, V value) {
-            return modify(0, HashCodes.hash(key), key, value, PUT);
+            return modify(0, Objects.hashCode(key), key, value, PUT);
         }
 
         @Override
         public HashArrayMappedTrie<K, V> remove(K key) {
-            return modify(0, HashCodes.hash(key), key, null, REMOVE);
+            return modify(0, Objects.hashCode(key), key, null, REMOVE);
         }
 
         @Override
