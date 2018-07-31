@@ -19,7 +19,8 @@
  */
 package io.vavr;
 
-import io.vavr.control.Option;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Represents a partial function T -&gt; R that is not necessarily defined for all input values of type T.
@@ -42,68 +43,13 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
     long serialVersionUID = 1L;
 
     /**
-     * Unlifts a {@code totalFunction} that returns an {@code Option} result into a partial function.
-     * The total function should be side effect free because it might be invoked twice: when checking if the
-     * unlifted partial function is defined at a value and when applying the partial function to a value.
-     *
-     * @param totalFunction the function returning an {@code Option} result.
-     * @param <T> type of the function input, called <em>domain</em> of the function
-     * @param <R> type of the function output, called <em>codomain</em> of the function
-     * @return a partial function that is not necessarily defined for all input values of type T.
-     */
-    static <T, R> PartialFunction<T, R> unlift(Function1<? super T, ? extends Option<? extends R>> totalFunction) {
-        return new PartialFunction<T, R>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public R apply(T t) {
-                return totalFunction.apply(t).get();
-            }
-
-            @Override
-            public boolean isDefinedAt(T value) {
-                return totalFunction.apply(value).isDefined();
-            }
-
-        };
-    }
-
-    /**
-     * Factory method for creating a partial function that maps a given {@code Value} to its underlying value.
-     * The partial function is defined for an input {@code Value} if and only if the input {@code Value} is not
-     * empty. If the input {@code Value} is not empty, the partial function will return the underlying value of
-     * the input {@code Value}.
-     *
-     * @param <T> type of the underlying value of the input {@code Value}.
-     * @param <V> type of the function input, called <em>domain</em> of the function
-     * @return a partial function that maps a {@code Value} to its underlying value.
-     */
-    static <T, V extends Value<T>> PartialFunction<V, T> getIfDefined() {
-        return new PartialFunction<V, T>() {
-
-            private static final long serialVersionUID = 1L;
-
-            @Override
-            public T apply(V v) {
-                return v.get();
-            }
-
-            @Override
-            public boolean isDefinedAt(V v) {
-                return !v.isEmpty();
-            }
-
-        };
-    }
-
-    /**
      * Applies this function to the given argument and returns the result.
      *
      * @param t the argument
      * @return the result of function application
      *
      */
+    @Override
     R apply(T t);
 
     /**
@@ -115,13 +61,98 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
     boolean isDefinedAt(T value);
 
     /**
-     * Lifts this partial function into a total function that returns an {@code Option} result.
+     * Applies this {@code PartialFunction} to the given {@code value} if it in its domain, i.e.
+     * {@code this.isDefinedAt(value) == true}. Otherwise the given function {@code orElse} is
+     * applied to the given {@code value}.
+     * <p>
+     * This is a shortcut for
+     * <pre>{@code
+     * this.isDefinedAt(value) ? this.apply(value) : orElse.apply(value)
+     * }</pre>
      *
-     * @return a function that applies arguments to this function and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     * @param value a value
+     * @param fallback a function that returns a default result for a given input value
+     * @return the result of applying this partial function or the given {@code fallback} function
      */
-    default Function1<T, Option<R>> lift() {
-        return t -> Option.when(isDefinedAt(t), apply(t));
+    default R applyOrElse(T value, Function<? super T, ? extends R> fallback) {
+        return isDefinedAt(value) ? apply(value) : fallback.apply(value);
     }
 
+    /**
+     * Composes this partial function with then given function {@code after} that gets applied to results of this
+     * partial function.
+     *
+     * @param after the function applied after this
+     * @param <V> the result type the given function {@code after}
+     * @return a new {@code PartialFunction} {@code after.apply(this.apply(t))} which is defined for the same input as this.
+     */
+    @Override
+    default <V> PartialFunction<T, V> andThen(Function<? super R, ? extends V> after) {
+        final PartialFunction<T, R> self = this;
+        return new PartialFunction<T, V>() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public V apply(T t) {
+                return after.apply(self.apply(t));
+            }
+            @Override
+            public boolean isDefinedAt(T value) {
+                return self.isDefinedAt(value);
+            }
+        };
+    }
+
+    /**
+     * Same as {@link Function1#compose(Function)} because Java's type system does not allow to specialize this method.
+     * <p>
+     * <strong>Caution!</strong> The resulting function may be undefined for certain inputs. Applying it might lead to
+     * arbitrary behavior, including throwing runtime exceptions.
+     *
+     * @param <V> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
+     */
+    @Override
+    default <V> Function1<V, R> compose(Function<? super V, ? extends T> before) {
+        return Function1.super.compose(before);
+    }
+
+    /**
+     * Turns this {@code PartialFunction} into a new {@code PartialFunction} using a partial {@code fallback} function.
+     * 
+     * @param fallback a fallback function
+     * @return a new {@code PartialFunction} that is defined for a given {@code value} if {@code this.isDefined(value) || fallback.isDefined(value)}.
+     */
+    default PartialFunction<T, R> orElse(PartialFunction<? super T, ? extends R> fallback) {
+        final PartialFunction<T, R> self = this;
+        return new PartialFunction<T, R>() {
+            private static final long serialVersionUID = 1L;
+            @Override
+            public R apply(T t) {
+                return self.isDefinedAt(t) ? self.apply(t) : fallback.apply(t);
+            }
+            @Override
+            public boolean isDefinedAt(T value) {
+                return self.isDefinedAt(value) || fallback.isDefinedAt(value);
+            }
+        };
+    }
+
+    /**
+     * Composes this {@code PartialFunction} with an {@code action} which receives results of this partial function.
+     *
+     * @param action a {@link Consumer} that receives values of this codomain
+     * @return true, if the this is defined for a given value (and the action ran), false otherwise.
+     */
+    default Function<T, Boolean> runWith(Consumer<? super R> action) {
+        return t -> {
+            if (isDefinedAt(t)) {
+                action.accept(apply(t));
+                return true;
+            } else {
+                return false;
+            }
+        };
+    }
 }
