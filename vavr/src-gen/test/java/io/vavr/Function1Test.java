@@ -57,12 +57,6 @@ public class Function1Test {
     }
 
     @Test
-    public void shouldGetArity() {
-        final Function1<Object, Object> f = (o1) -> null;
-        assertThat(f.arity()).isEqualTo(1);
-    }
-
-    @Test
     public void shouldCurry() {
         final Function1<Object, Object> f = (o1) -> null;
         final Function1<Object, Object> curried = f.curried();

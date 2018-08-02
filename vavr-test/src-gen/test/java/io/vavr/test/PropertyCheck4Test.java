@@ -30,7 +30,7 @@ import org.junit.Test;
 
 public class PropertyCheck4Test {
 
-    static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
+    private static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
 
     @Test
     public void shouldApplyForAllOfArity4() {
@@ -50,7 +50,7 @@ public class PropertyCheck4Test {
     public void shouldCheckTrueProperty4() {
         final Property.ForAll4<Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction4<Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4) -> true;
-        final CheckResult result = forAll.suchThat(predicate).check();
+        final CheckResult<?> result = forAll.suchThat(predicate).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isFalse();
     }
@@ -59,7 +59,7 @@ public class PropertyCheck4Test {
     public void shouldCheckFalseProperty4() {
         final Property.ForAll4<Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction4<Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4) -> false;
-        final CheckResult result = forAll.suchThat(predicate).check();
+        final CheckResult<?> result = forAll.suchThat(predicate).check();
         assertThat(result.isFalsified()).isTrue();
     }
 
@@ -67,7 +67,7 @@ public class PropertyCheck4Test {
     public void shouldCheckErroneousProperty4() {
         final Property.ForAll4<Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction4<Object, Object, Object, Object, Boolean> predicate = (o1, o2, o3, o4) -> { throw new RuntimeException("yay! (this is a negative test)"); };
-        final CheckResult result = forAll.suchThat(predicate).check();
+        final CheckResult<?> result = forAll.suchThat(predicate).check();
         assertThat(result.isErroneous()).isTrue();
     }
 
@@ -76,7 +76,7 @@ public class PropertyCheck4Test {
         final Property.ForAll4<Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction4<Object, Object, Object, Object, Boolean> p1 = (o1, o2, o3, o4) -> true;
         final CheckedFunction4<Object, Object, Object, Object, Boolean> p2 = (o1, o2, o3, o4) -> true;
-        final CheckResult result = forAll.suchThat(p1).implies(p2).check();
+        final CheckResult<?> result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isFalse();
     }
@@ -86,7 +86,7 @@ public class PropertyCheck4Test {
         final Property.ForAll4<Object, Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction4<Object, Object, Object, Object, Boolean> p1 = (o1, o2, o3, o4) -> false;
         final CheckedFunction4<Object, Object, Object, Object, Boolean> p2 = (o1, o2, o3, o4) -> true;
-        final CheckResult result = forAll.suchThat(p1).implies(p2).check();
+        final CheckResult<?> result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
     }
@@ -102,7 +102,7 @@ public class PropertyCheck4Test {
     @Test
     public void shouldReturnErroneousProperty4CheckResultIfGenFails() {
         final Arbitrary<Object> failingGen = Gen.fail("yay! (this is a negative test)").arbitrary();
-        final CheckResult result = Property.def("test")
+        final CheckResult<?> result = Property.def("test")
             .forAll(failingGen, OBJECTS, OBJECTS, OBJECTS)
             .suchThat((o1, o2, o3, o4) -> true)
             .check();
@@ -112,7 +112,7 @@ public class PropertyCheck4Test {
     @Test
     public void shouldReturnErroneousProperty4CheckResultIfArbitraryFails() {
         final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("yay! (this is a negative test)"); };
-        final CheckResult result = Property.def("test")
+        final CheckResult<?> result = Property.def("test")
             .forAll(failingArbitrary, OBJECTS, OBJECTS, OBJECTS)
             .suchThat((o1, o2, o3, o4) -> true)
             .check();

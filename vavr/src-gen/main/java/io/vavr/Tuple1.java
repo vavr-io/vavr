@@ -23,8 +23,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import io.vavr.collection.List;
-import io.vavr.collection.Seq;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -36,7 +34,7 @@ import java.util.function.Function;
  * @param <T1> type of the 1st element
  * @author Daniel Dietrich
  */
-public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializable {
+public final class Tuple1<T1> implements Comparable<Tuple1<T1>>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -78,11 +76,6 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
 
         // all components are equal
         return 0;
-    }
-
-    @Override
-    public int arity() {
-        return 1;
     }
 
     @Override
@@ -133,11 +126,6 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     public <U> U apply(Function<? super T1, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1);
-    }
-
-    @Override
-    public Seq<?> toSeq() {
-        return List.of(_1);
     }
 
     /**

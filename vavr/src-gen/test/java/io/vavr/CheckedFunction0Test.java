@@ -51,12 +51,6 @@ public class CheckedFunction0Test {
     }
 
     @Test
-    public void shouldGetArity() {
-        final CheckedFunction0<Object> f = () -> null;
-        assertThat(f.arity()).isEqualTo(0);
-    }
-
-    @Test
     public void shouldCurry() {
         final CheckedFunction0<Object> f = () -> null;
         final CheckedFunction0<Object> curried = f.curried();

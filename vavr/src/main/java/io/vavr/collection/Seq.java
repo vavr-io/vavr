@@ -929,7 +929,7 @@ public interface Seq<T> extends Traversable<T>, Serializable {
      * {@code Tuple.of(take(n), drop(n))}.
      *
      * @param n An index.
-     * @return A {@link Tuple} containing the first n and the remaining elements.
+     * @return A {@link Tuple2} containing the first n and the remaining elements.
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(int n);
 
@@ -937,7 +937,7 @@ public interface Seq<T> extends Traversable<T>, Serializable {
      * Splits a sequence at the first element which satisfies the {@link Predicate}, e.g. Tuple(init, element+tail).
      *
      * @param predicate An predicate
-     * @return A {@link Tuple} containing divided sequences
+     * @return A {@link Tuple2} containing divided sequences
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(Predicate<? super T> predicate);
 
@@ -945,7 +945,7 @@ public interface Seq<T> extends Traversable<T>, Serializable {
      * Splits a sequence at the first element which satisfies the {@link Predicate}, e.g. Tuple(init+element, tail).
      *
      * @param predicate An predicate
-     * @return A {@link Tuple} containing divided sequences
+     * @return A {@link Tuple2} containing divided sequences
      */
     Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAtInclusive(Predicate<? super T> predicate);
 

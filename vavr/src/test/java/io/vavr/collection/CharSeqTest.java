@@ -22,6 +22,7 @@ package io.vavr.collection;
 import io.vavr.Serializables;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.Tuple3;
 import io.vavr.control.Option;
 import org.assertj.core.api.*;
 import org.junit.Test;
@@ -3449,8 +3450,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldUnzipNonNil() {
-        final Tuple actual = CharSeq.of('0', '1').unzip(i -> Tuple.of(i, i == '0' ? 'a' : 'b'));
-        final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'));
+        final Tuple2<?, ?> actual = CharSeq.of('0', '1').unzip(i -> Tuple.of(i, i == '0' ? 'a' : 'b'));
+        final Tuple2<?, ?> expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -3461,8 +3462,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldUnzip3NonNil() {
-        final Tuple actual = CharSeq.of('0', '1').unzip3(i -> Tuple.of(i, i == '0' ? 'a' : 'b', i == '0' ? 'b' : 'a'));
-        final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'), Vector.of('b', 'a'));
+        final Tuple3<?, ?, ?> actual = CharSeq.of('0', '1').unzip3(i -> Tuple.of(i, i == '0' ? 'a' : 'b', i == '0' ? 'b' : 'a'));
+        final Tuple3<?, ?, ?> expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'), Vector.of('b', 'a'));
         assertThat(actual).isEqualTo(expected);
     }
 

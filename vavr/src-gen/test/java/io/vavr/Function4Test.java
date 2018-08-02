@@ -57,12 +57,6 @@ public class Function4Test {
     }
 
     @Test
-    public void shouldGetArity() {
-        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.arity()).isEqualTo(4);
-    }
-
-    @Test
     public void shouldCurry() {
         final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
         final Function1<Object, Function1<Object, Function1<Object, Function1<Object, Object>>>> curried = f.curried();

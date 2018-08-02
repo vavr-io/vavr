@@ -90,7 +90,7 @@ interface Lambda<R> extends Serializable {
      * Zero Abstract Method (ZAM) interface for marking functions as memoized using intersection types.
      */
     interface Memoized {
-        static <T extends Tuple, R> R of(Map<T, R> cache, T key, Function1<T, R> tupled) {
+        static <T, R> R of(Map<T, R> cache, T key, Function1<T, R> tupled) {
             synchronized (cache) {
                 if (cache.containsKey(key)) {
                     return cache.get(key);
