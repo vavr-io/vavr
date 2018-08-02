@@ -2112,7 +2112,7 @@ def generateMainClasses(): Unit = {
 
       xs"""
         /**
-         * The base interface of all tuples.
+         * The API entry point of {@code Tuple}.
          *
          * @author Daniel Dietrich
          */
