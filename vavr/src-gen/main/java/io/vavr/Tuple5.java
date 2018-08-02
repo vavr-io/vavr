@@ -23,8 +23,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import io.vavr.collection.List;
-import io.vavr.collection.Seq;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -40,7 +38,7 @@ import java.util.function.Function;
  * @param <T5> type of the 5th element
  * @author Daniel Dietrich
  */
-public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple5<T1, T2, T3, T4, T5>>, Serializable {
+public final class Tuple5<T1, T2, T3, T4, T5> implements Comparable<Tuple5<T1, T2, T3, T4, T5>>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -150,11 +148,6 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
 
         // all components are equal
         return 0;
-    }
-
-    @Override
-    public int arity() {
-        return 5;
     }
 
     @Override
@@ -375,11 +368,6 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple
     public <U> U apply(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1, _2, _3, _4, _5);
-    }
-
-    @Override
-    public Seq<?> toSeq() {
-        return List.of(_1, _2, _3, _4, _5);
     }
 
     /**

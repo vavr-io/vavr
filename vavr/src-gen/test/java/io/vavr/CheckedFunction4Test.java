@@ -59,12 +59,6 @@ public class CheckedFunction4Test {
     }
 
     @Test
-    public void shouldGetArity() {
-        final CheckedFunction4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.arity()).isEqualTo(4);
-    }
-
-    @Test
     public void shouldCurry() {
         final CheckedFunction4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
         final Function1<Object, Function1<Object, Function1<Object, CheckedFunction1<Object, Object>>>> curried = f.curried();

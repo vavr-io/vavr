@@ -38,72 +38,117 @@ import java.util.Objects;
  * and no sample could be found that satisfied the pre-condition. In this case the post-condition is satisfied by
  * definition (see <a href="http://en.wikipedia.org/wiki/Principle_of_explosion">ex falso quodlibet</a>).
  *
+ * @param <T> type of a sample
+ *
  * @author Daniel Dietrich
  */
-public interface CheckResult {
+public abstract class CheckResult<T> {
+
+    private CheckResult() {
+    }
+
+    /**
+     * TODO: JAVADOC
+     * 
+     * @param propertyName
+     * @param count
+     * @param exhausted
+     * @param <T>
+     * @return
+     */
+    static <T> CheckResult<T> satisfied(String propertyName, int count, boolean exhausted) {
+        return new Satisfied<>(propertyName, count, exhausted);
+    }
+
+    /**
+     * TODO: JAVADOC
+     * 
+     * @param propertyName
+     * @param count
+     * @param sample
+     * @param <T>
+     * @return
+     */
+    static <T> CheckResult<T> falsified(String propertyName, int count, T sample) {
+        return new Falsified<>(propertyName, count, sample);
+    }
+
+    /**
+     * TODO: JAVADOC
+     *
+     * @param propertyName
+     * @param count
+     * @param error
+     * @param sample
+     * @param <T>
+     * @return
+     */
+    static <T> CheckResult<T> erroneous(String propertyName, int count, CheckError error, Option<T> sample) {
+        return new Erroneous<>(propertyName, count, error, sample);
+    }
 
     /**
      * If this check result is satisfied as specified above.
      *
      * @return true, if this check result is satisfied, false otherwise
      */
-    boolean isSatisfied();
+    public abstract boolean isSatisfied();
 
     /**
      * If this check result is falsified as specified above.
      *
      * @return true, if this check result is falsified, false otherwise
      */
-    boolean isFalsified();
+    public abstract boolean isFalsified();
 
     /**
      * If this check result is erroneous as specified above.
      *
      * @return true, if this check result is erroneous, false otherwise
      */
-    boolean isErroneous();
+    public abstract boolean isErroneous();
 
     /**
      * If this check result is exhausted as specified above.
      *
      * @return true, if this check result is exhausted, false otherwise
      */
-    boolean isExhausted();
+    public abstract boolean isExhausted();
 
     /**
      * The name of the checked property this result refers to.
      *
      * @return a property name
      */
-    String propertyName();
+    public abstract String propertyName();
 
     /**
      * The number of checks performed using random generated input data.
      *
      * @return the number of checks performed
      */
-    int count();
+    public abstract int count();
 
     /**
      * An optional sample which falsified the property or which lead to an error.
      *
      * @return an optional sample
      */
-    Option<Tuple> sample();
+    public abstract Option<T> sample();
 
     /**
-     * An optional error.
+     * Returns {@code Some(CheckError)} if this {@code CheckResult} is erroneous, otherwise {@code None}.
      *
-     * @return an optional error
+     * @return an optional {@link CheckError}
      */
-    Option<Error> error();
+    public abstract Option<CheckError> error();
 
     /**
      * Asserts that this CheckResult is satisfied.
      *
      * @throws AssertionError if this CheckResult is not satisfied.
      */
-    default void assertIsSatisfied() {
+    public void assertIsSatisfied() {
         if (!isSatisfied()) {
             throw new AssertionError("Expected satisfied check result but was " + this);
         }
@@ -115,7 +160,7 @@ public interface CheckResult {
      * @param exhausted The exhausted state to be checked in the case of a satisfied CheckResult.
      * @throws AssertionError if this CheckResult is not satisfied or the exhausted state does not match.
      */
-    default void assertIsSatisfiedWithExhaustion(boolean exhausted) {
+    public void assertIsSatisfiedWithExhaustion(boolean exhausted) {
         if (!isSatisfied()) {
             throw new AssertionError("Expected satisfied check result but was " + this);
         } else if (isExhausted() != exhausted) {
@@ -128,7 +173,7 @@ public interface CheckResult {
      *
      * @throws AssertionError if this CheckResult is not falsified.
      */
-    default void assertIsFalsified() {
+    public void assertIsFalsified() {
         if (!isFalsified()) {
             throw new AssertionError("Expected falsified check result but was " + this);
         }
@@ -139,7 +184,7 @@ public interface CheckResult {
      *
      * @throws AssertionError if this CheckResult is not erroneous.
      */
-    default void assertIsErroneous() {
+    public void assertIsErroneous() {
         if (!isErroneous()) {
             throw new AssertionError("Expected erroneous check result but was " + this);
         }
@@ -148,7 +193,7 @@ public interface CheckResult {
     /**
      * Represents a satisfied property check.
      */
-    class Satisfied implements CheckResult, Serializable {
+    private static final class Satisfied<T> extends CheckResult<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -193,21 +238,22 @@ public interface CheckResult {
         }
 
         @Override
-        public Option<Tuple> sample() {
+        public Option<T> sample() {
             return Option.none();
         }
 
         @Override
-        public Option<Error> error() {
+        public Option<CheckError> error() {
             return Option.none();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
             } else if (o instanceof Satisfied) {
-                final Satisfied that = (Satisfied) o;
+                final Satisfied<?> that = (Satisfied<?>) o;
                 return Objects.equals(this.propertyName, that.propertyName)
                         && this.count == that.count
                         && this.exhausted == that.exhausted;
@@ -218,7 +264,7 @@ public interface CheckResult {
 
         @Override
         public int hashCode() {
-            return Objects.hash(propertyName, count, exhausted);
+            return Tuple.hash(propertyName, count, exhausted);
         }
 
         @Override
@@ -230,15 +276,15 @@ public interface CheckResult {
     /**
      * Represents a falsified property check.
      */
-    class Falsified implements CheckResult, Serializable {
+    private static final class Falsified<T> extends CheckResult<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
         private final String propertyName;
         private final int count;
-        private final Tuple sample;
+        private final T sample;
 
-        Falsified(String propertyName, int count, Tuple sample) {
+        Falsified(String propertyName, int count, T sample) {
             this.propertyName = propertyName;
             this.count = count;
             this.sample = sample;
@@ -275,21 +321,22 @@ public interface CheckResult {
         }
 
         @Override
-        public Option<Tuple> sample() {
+        public Option<T> sample() {
             return Option.some(sample);
         }
 
         @Override
-        public Option<Error> error() {
+        public Option<CheckError> error() {
             return Option.none();
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
             } else if (o instanceof Falsified) {
-                final Falsified that = (Falsified) o;
+                final Falsified<?> that = (Falsified<?>) o;
                 return Objects.equals(this.propertyName, that.propertyName)
                         && this.count == that.count
                         && Objects.equals(this.sample, that.sample);
@@ -300,7 +347,7 @@ public interface CheckResult {
 
         @Override
         public int hashCode() {
-            return Objects.hash(propertyName, count, sample);
+            return Tuple.hash(propertyName, count, sample);
         }
 
         @Override
@@ -312,16 +359,16 @@ public interface CheckResult {
     /**
      * Represents an erroneous property check.
      */
-    class Erroneous implements CheckResult, Serializable {
+    private static final class Erroneous<T> extends CheckResult<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
         private final String propertyName;
         private final int count;
-        private final Error error;
-        private final Option<Tuple> sample;
+        private final CheckError error;
+        private final Option<T> sample;
 
-        Erroneous(String propertyName, int count, Error error, Option<Tuple> sample) {
+        Erroneous(String propertyName, int count, CheckError error, Option<T> sample) {
             this.propertyName = propertyName;
             this.count = count;
             this.error = error;
@@ -359,49 +406,34 @@ public interface CheckResult {
         }
 
         @Override
-        public Option<Tuple> sample() {
+        public Option<T> sample() {
             return sample;
         }
 
         @Override
-        public Option<Error> error() {
+        public Option<CheckError> error() {
             return Option.some(error);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public boolean equals(Object o) {
             if (o == this) {
                 return true;
             } else if (o instanceof Erroneous) {
-                final Erroneous that = (Erroneous) o;
+                final Erroneous<?> that = (Erroneous<?>) o;
                 return Objects.equals(this.propertyName, that.propertyName)
                         && this.count == that.count
-                        && deepEquals(this.error, that.error)
+                        && Objects.equals(this.error, that.error)
                         && Objects.equals(this.sample, that.sample);
             } else {
                 return false;
             }
         }
 
-        boolean deepEquals(Throwable t1, Throwable t2) {
-            return (t1 == null && t2 == null) || (
-                    t1 != null && t2 != null
-                            && Objects.equals(t1.getMessage(), t2.getMessage())
-                            && deepEquals(t1.getCause(), t2.getCause())
-            );
-        }
-
         @Override
         public int hashCode() {
-            return Objects.hash(propertyName, count, deepHashCode(error), sample);
-        }
-
-        int deepHashCode(Throwable t) {
-            if (t == null) {
-                return 0;
-            } else {
-                return Objects.hash(t.getMessage(), deepHashCode(t.getCause()));
-            }
+            return Tuple.hash(propertyName, count, error, sample);
         }
 
         @Override

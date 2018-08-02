@@ -1759,8 +1759,6 @@ def generateMainClasses(): Unit = {
       }
       val Comparator = im.getType("java.util.Comparator")
       val Objects = im.getType("java.util.Objects")
-      val Seq = im.getType("io.vavr.collection.Seq")
-      val List = im.getType("io.vavr.collection.List")
       if(i==2){
         im.getType("java.util.Map")
         im.getType("java.util.AbstractMap")
@@ -1772,7 +1770,7 @@ def generateMainClasses(): Unit = {
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
          * @author Daniel Dietrich
          */
-        public final class $className$generics implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
+        public final class $className$generics implements Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
 
             private static final long serialVersionUID = 1L;
 
@@ -1851,11 +1849,6 @@ def generateMainClasses(): Unit = {
                   return 0;
               }
             """)}
-
-            @Override
-            public int arity() {
-                return $i;
-            }
 
             @Override
             public int compareTo($className$generics that) {
@@ -1978,15 +1971,6 @@ def generateMainClasses(): Unit = {
               }
             """}
 
-            @Override
-            public $Seq<?> toSeq() {
-                ${if (i == 0) xs"""
-                  return $List.empty();
-                """ else xs"""
-                  return $List.of($params);
-                """}
-            }
-
             ${(i < N).gen(xs"""
               /$javadoc
                * Append a value to this tuple.
@@ -2068,13 +2052,11 @@ def generateMainClasses(): Unit = {
 
       val Map = im.getType("java.util.Map")
       val Objects = im.getType("java.util.Objects")
-      val Seq = im.getType("io.vavr.collection.Seq")
 
       def genFactoryMethod(i: Int) = {
         val generics = (1 to i).gen(j => s"T$j")(", ")
         val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
         val params = (1 to i).gen(j => s"t$j")(", ")
-        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
         xs"""
           /**
            * Creates a tuple of ${i.numerus("element")}.
@@ -2082,7 +2064,7 @@ def generateMainClasses(): Unit = {
            ${(1 to i).gen(j => s"* @param t$j the ${j.ordinal} element")("\n")}
            * @return a tuple of ${i.numerus("element")}.
            */
-          static <$generics> Tuple$i<$generics> of($paramsDecl) {
+          public static <$generics> Tuple$i<$generics> of($paramsDecl) {
               return new Tuple$i<>($params);
           }
         """
@@ -2096,7 +2078,7 @@ def generateMainClasses(): Unit = {
            ${(0 to i).gen(j => if (j == 0) "*" else s"* @param o$j the ${j.ordinal} value to hash")("\n")}
            * @return the same result as {@link $Objects#${if (i == 1) "hashCode(Object)" else "hash(Object...)"}}
            */
-          static int hash($paramsDecl) {
+          public static int hash($paramsDecl) {
               ${if (i == 1) {
                 s"return $Objects.hashCode(o1);"
               } else {
@@ -2122,30 +2104,9 @@ def generateMainClasses(): Unit = {
            * @return the given {@code t} instance as narrowed type {@code Tuple$i<$generics>}.
            */
           @SuppressWarnings("unchecked")
-          static <$generics> Tuple$i<$generics> narrow(Tuple$i<$wideGenerics> t) {
+          public static <$generics> Tuple$i<$generics> narrow(Tuple$i<$wideGenerics> t) {
               return (Tuple$i<$generics>) t;
           }
-        """
-      }
-
-      def genSeqMethod(i: Int) = {
-        val generics = (1 to i).gen(j => s"T$j")(", ")
-        val seqs = (1 to i).gen(j => s"Seq<T$j>")(", ")
-        val Stream = im.getType("io.vavr.collection.Stream")
-        val widenedGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
-        xs"""
-            /**
-             * Turns a sequence of {@code Tuple$i} into a Tuple$i of {@code Seq}${(i > 1).gen("s")}.
-             *
-             ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type")("\n")}
-             * @param tuples an {@code Iterable} of tuples
-             * @return a tuple of ${i.numerus(s"{@link $Seq}")}.
-             */
-            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
-                $Objects.requireNonNull(tuples, "tuples is null");
-                final Stream<Tuple$i<$widenedGenerics>> s = $Stream.ofAll(tuples);
-                return new Tuple$i<>(${(1 to i).gen(j => s"s.map(Tuple$i::_$j)")(s", ")});
-            }
         """
       }
 
@@ -2155,29 +2116,10 @@ def generateMainClasses(): Unit = {
          *
          * @author Daniel Dietrich
          */
-        public interface Tuple {
+        public final class Tuple {
 
-            /**
-             * The maximum arity of an Tuple.
-             * <p>
-             * Note: This value might be changed in a future version of Vavr.
-             * So it is recommended to use this constant instead of hardcoding the current maximum arity.
-             */
-            int MAX_ARITY = $N;
-
-            /**
-             * Returns the number of elements of this tuple.
-             *
-             * @return the number of elements.
-             */
-            int arity();
-
-            /**
-             * Converts this tuple to a sequence.
-             *
-             * @return A new {@code Seq}.
-             */
-            $Seq<?> toSeq();
+            private Tuple() {
+            }
 
             // -- factory methods
 
@@ -2186,7 +2128,7 @@ def generateMainClasses(): Unit = {
              *
              * @return the empty tuple.
              */
-            static Tuple0 empty() {
+            public static Tuple0 empty() {
                 return Tuple0.instance();
             }
 
@@ -2198,7 +2140,7 @@ def generateMainClasses(): Unit = {
              * @param      entry A {@link java.util.Map.Entry}
              * @return a new {@code Tuple2} containing key and value of the given {@code entry}
              */
-            static <T1, T2> Tuple2<T1, T2> fromEntry($Map.Entry<? extends T1, ? extends T2> entry) {
+            public static <T1, T2> Tuple2<T1, T2> fromEntry($Map.Entry<? extends T1, ? extends T2> entry) {
                 $Objects.requireNonNull(entry, "entry is null");
                 return new Tuple2<>(entry.getKey(), entry.getValue());
             }
@@ -2208,8 +2150,6 @@ def generateMainClasses(): Unit = {
             ${(1 to N).gen(genHashMethod)("\n\n")}
 
             ${(1 to N).gen(genNarrowMethod)("\n\n")}
-
-            ${(1 to N).gen(genSeqMethod)("\n\n")}
 
         }
       """
@@ -2911,12 +2851,6 @@ def generateTestClasses(): Unit = {
               """)}
 
               @$test
-              public void shouldGetArity() {
-                  final $name$i<$generics> f = ($functionArgs) -> null;
-                  $assertThat(f.arity()).isEqualTo($i);
-              }
-
-              @$test
               public void shouldCurry() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
                   final ${curriedType(i, name)} curried = f.curried();
@@ -3271,9 +3205,6 @@ def generateTestClasses(): Unit = {
       genVavrFile("io.vavr", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
         val test = im.getType("org.junit.Test")
-        val seq = im.getType("io.vavr.collection.Seq")
-        val list = im.getType("io.vavr.collection.List")
-        val stream = if (i == 0) "" else im.getType("io.vavr.collection.Stream")
         val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Object")(", ")}>"
@@ -3295,12 +3226,6 @@ def generateTestClasses(): Unit = {
                   $assertThat(tuple).isNotNull();
               }
 
-              @$test
-              public void shouldGetArity() {
-                  final Tuple$i$generics tuple = createTuple();
-                  $assertThat(tuple.arity()).isEqualTo($i);
-              }
-
               ${(i > 0).gen(xs"""
                 @$test
                 public void shouldReturnElements() {
@@ -3317,12 +3242,6 @@ def generateTestClasses(): Unit = {
                     ${(1 to i).gen(k => s"$assertThat(tuple._$k).isEqualTo(${if (j == k) 42 else k});\n")}
                   }
                 """)("\n\n")}
-
-              @$test
-              public void shouldConvertToSeq() {
-                  final $seq<?> actual = createIntTuple(${genArgsForComparing(i, 1)}).toSeq();
-                  $assertThat(actual).isEqualTo($list.of(${genArgsForComparing(i, 1)}));
-              }
 
               @$test
               public void shouldCompareEqual() {
@@ -3377,22 +3296,6 @@ def generateTestClasses(): Unit = {
                   ${(1 to i).gen(j => xs"""final Function1<Object, Object> f$j = Function1.identity();""")("\n")}
                   final Tuple$i$generics actual = tuple.map(${(1 to i).gen(j => s"f$j")(", ")});
                   $assertThat(actual).isEqualTo(tuple);
-                }
-
-                @$test
-                public void shouldReturnTuple${i}OfSequence$i() {
-                  final $seq<Tuple$i<${(1 to i).gen(j => xs"Integer")(", ")}>> iterable = $list.of(${(1 to i).gen(j => xs"Tuple.of(${(1 to i).gen(k => xs"${k+2*j-1}")(", ")})")(", ")});
-                  final Tuple$i<${(1 to i).gen(j => xs"$seq<Integer>")(", ")}> expected = Tuple.of(${(1 to i).gen(j => xs"$stream.of(${(1 to i).gen(k => xs"${2*k+j-1}")(", ")})")(", ")});
-                  $assertThat(Tuple.sequence$i(iterable)).isEqualTo(expected);
-                }
-              """)}
-
-              ${(i > 1).gen(xs"""
-                @$test
-                public void shouldReturnTuple${i}OfSequence1() {
-                  final $seq<Tuple$i<${(1 to i).gen(j => xs"Integer")(", ")}>> iterable = $list.of(Tuple.of(${(1 to i).gen(k => xs"$k")(", ")}));
-                  final Tuple$i<${(1 to i).gen(j => xs"$seq<Integer>")(", ")}> expected = Tuple.of(${(1 to i).gen(j => xs"$stream.of($j)")(", ")});
-                  $assertThat(Tuple.sequence$i(iterable)).isEqualTo(expected);
                 }
               """)}
 
@@ -3497,7 +3400,7 @@ def generateTestClasses(): Unit = {
  * @param className Simple java class name
  * @param gen A generator which produces a String.
  */
-def genVavrFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
+def genVavrFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()): Unit =
   genJavaFile(baseDir, packageName, className)(xraw"""
     /*  __    __  __  __    __  ___
      * \  \  /  /    \  \  /  /  __/

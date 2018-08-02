@@ -25,9 +25,6 @@ package io.vavr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.vavr.collection.List;
-import io.vavr.collection.Seq;
-import io.vavr.collection.Stream;
 import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.Map;
@@ -40,12 +37,6 @@ public class Tuple2Test {
     public void shouldCreateTuple() {
         final Tuple2<Object, Object> tuple = createTuple();
         assertThat(tuple).isNotNull();
-    }
-
-    @Test
-    public void shouldGetArity() {
-        final Tuple2<Object, Object> tuple = createTuple();
-        assertThat(tuple.arity()).isEqualTo(2);
     }
 
     @Test
@@ -67,12 +58,6 @@ public class Tuple2Test {
       final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2).update2(42);
       assertThat(tuple._1).isEqualTo(1);
       assertThat(tuple._2).isEqualTo(42);
-    }
-
-    @Test
-    public void shouldConvertToSeq() {
-        final Seq<?> actual = createIntTuple(1, 0).toSeq();
-        assertThat(actual).isEqualTo(List.of(1, 0));
     }
 
     @Test
@@ -128,20 +113,6 @@ public class Tuple2Test {
       final Function1<Object, Object> f2 = Function1.identity();
       final Tuple2<Object, Object> actual = tuple.map(f1, f2);
       assertThat(actual).isEqualTo(tuple);
-    }
-
-    @Test
-    public void shouldReturnTuple2OfSequence2() {
-      final Seq<Tuple2<Integer, Integer>> iterable = List.of(Tuple.of(2, 3), Tuple.of(4, 5));
-      final Tuple2<Seq<Integer>, Seq<Integer>> expected = Tuple.of(Stream.of(2, 4), Stream.of(3, 5));
-      assertThat(Tuple.sequence2(iterable)).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldReturnTuple2OfSequence1() {
-      final Seq<Tuple2<Integer, Integer>> iterable = List.of(Tuple.of(1, 2));
-      final Tuple2<Seq<Integer>, Seq<Integer>> expected = Tuple.of(Stream.of(1), Stream.of(2));
-      assertThat(Tuple.sequence2(iterable)).isEqualTo(expected);
     }
 
     @Test

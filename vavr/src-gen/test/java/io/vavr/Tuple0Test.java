@@ -25,8 +25,6 @@ package io.vavr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.vavr.collection.List;
-import io.vavr.collection.Seq;
 import java.util.Comparator;
 import java.util.Objects;
 import org.junit.Test;
@@ -37,18 +35,6 @@ public class Tuple0Test {
     public void shouldCreateTuple() {
         final Tuple0 tuple = createTuple();
         assertThat(tuple).isNotNull();
-    }
-
-    @Test
-    public void shouldGetArity() {
-        final Tuple0 tuple = createTuple();
-        assertThat(tuple.arity()).isEqualTo(0);
-    }
-
-    @Test
-    public void shouldConvertToSeq() {
-        final Seq<?> actual = createIntTuple().toSeq();
-        assertThat(actual).isEqualTo(List.of());
     }
 
     @Test
