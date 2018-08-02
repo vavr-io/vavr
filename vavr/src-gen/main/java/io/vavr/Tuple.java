@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * The base interface of all tuples.
+ * The API entry point of {@code Tuple}.
  *
  * @author Daniel Dietrich
  */
