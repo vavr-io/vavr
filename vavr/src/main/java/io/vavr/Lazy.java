@@ -20,9 +20,6 @@
 package io.vavr;
 
 import io.vavr.collection.Iterator;
-import io.vavr.collection.Seq;
-import io.vavr.collection.Vector;
-import io.vavr.control.Option;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
@@ -55,8 +52,6 @@ import java.util.function.Supplier;
  *
  * @author Daniel Dietrich
  */
-// DEV-NOTE: No flatMap and orElse because this more like a Functor than a Monad.
-//           It represents a value rather than capturing a specific state.
 public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -103,21 +98,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Reduces many {@code Lazy} values into a single {@code Lazy} by transforming an
-     * {@code Iterable<Lazy<? extends T>>} into a {@code Lazy<Seq<T>>}.
-     *
-     * @param <T>    Type of the lazy values.
-     * @param values An iterable of lazy values.
-     * @return A lazy sequence of values.
-     * @throws NullPointerException if values is null
-     */
-    @SuppressWarnings("Convert2MethodRef") // TODO should be fixed in JDK 9 and Idea
-    public static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
-        Objects.requireNonNull(values, "values is null");
-        return Lazy.of(() -> Vector.ofAll(values).map(lazy -> lazy.get()));
-    }
-
-    /**
      * Creates a real _lazy value_ of type {@code T}, backed by a {@linkplain java.lang.reflect.Proxy} which delegates
      * to a {@code Lazy} instance.
      *
@@ -146,28 +126,32 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * Examples:
      *
      * <pre>{@code
-     * // = Lazy(?)
-     * Lazy<Option<Integer>> val1 = Lazy.of(() -> 1).filter(i -> false);
+     * Lazy<String> hank = Lazy.of(() -> "Hank").filter(name -> name.startsWith("H"), name -> "Nikola");
      *
-     * // = None
-     * val1.get();
-     * // after that, val1 = Lazy(None)
-     *
-     * // = Lazy(?)
-     * Lazy<Option<Integer>> val2 = Lazy.of(() -> 1).filter(i -> true);
-     *
-     * // = Some(1)
-     * val2.get();
-     * // after that, val2 = Lazy(Some(1))
+     * Lazy<String> nikola = Lazy.of(() -> "Hank").filter(name -> name.startsWith("N"), name -> "Nikola");
      * }</pre>
      *
      * @param predicate a predicate that states whether the element passes the filter (true) or not (false)
-     * @return a new, unevaluated {@code Lazy<Option<T>>} instance
-     * @throws NullPointerException if {@code predicate} is null
+     * @param defaultValue creates a default value, if this lazy value does not make it through the filter
+     * @return a new, unevaluated {@code Lazy<T>} instance
+     * @throws NullPointerException if {@code predicate} or {@code defaultValue} is null
      */
-    public Lazy<Option<T>> filter(Predicate<? super T> predicate) {
+    public Lazy<T> filter(Predicate<? super T> predicate, Function<? super T, ? extends T> defaultValue) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return map(t -> Option.some(t).filter(predicate));
+        Objects.requireNonNull(predicate, "defaultValue is null");
+        return map(t -> predicate.test(t) ? t : defaultValue.apply(t));
+    }
+
+    /**
+     * Returns a new {@code Lazy} instance that applies the given mapper when being evaluated,
+     * e.g. by calling {@link #get()}.
+     *
+     * @param mapper a function that maps this underlying lazy value to a new {@code Lazy} instance.
+     * @param <U> mapped value type
+     * @return a new {@code Lazy} instance
+     */
+    public <U> Lazy<U> flatMap(Function<? super T, Lazy<? extends U>> mapper) {
+        return Lazy.of(() -> mapper.apply(get()).get());
     }
 
     /**
