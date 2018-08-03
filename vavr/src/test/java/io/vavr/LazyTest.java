@@ -119,52 +119,34 @@ public class LazyTest extends AbstractValueTest {
         assertThat(peek).isSameAs(lazy);
     }
 
-    // -- sequence(Iterable)
+    // -- flatMap
 
     @Test
-    public void shouldSequenceEmpty() {
-        final List<Lazy<Integer>> testee = List.empty();
-        final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
-        assertThat(sequence.get()).isEqualTo(Vector.empty());
-    }
-
-    @Test
-    public void shouldSequenceNonEmptyLazy() {
-        final List<Lazy<Integer>> testee = List.of(1, 2, 3).map(i -> Lazy.of(() -> i));
-        final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
-        assertThat(sequence.get()).isEqualTo(Vector.of(1, 2, 3));
-    }
-
-    @Test
-    public void shouldNotEvaluateEmptySequence() {
-        final List<Lazy<Integer>> testee = List.empty();
-        final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
-        assertThat(sequence.isEvaluated()).isFalse();
-    }
-
-    @Test
-    public void shouldNotEvaluateNonEmptySequence() {
-        final List<Lazy<Integer>> testee = List.of(1, 2, 3).map(i -> Lazy.of(() -> i));
-        final Lazy<Seq<Integer>> sequence = Lazy.sequence(testee);
-        assertThat(sequence.isEvaluated()).isFalse();
-    }
-
-    @Test
-    public void shouldMapOverLazyValue() {
+    public void shouldFlatMapLazyValue() {
         final Lazy<Integer> testee = Lazy.of(() -> 42);
         final Lazy<Integer> expected = Lazy.of(() -> 21);
+        assertThat(testee.flatMap(i -> Lazy.of(() -> i / 2))).isEqualTo(expected);
+    }
 
+    // -- map
+
+    @Test
+    public void shouldMapLazyValue() {
+        final Lazy<Integer> testee = Lazy.of(() -> 42);
+        final Lazy<Integer> expected = Lazy.of(() -> 21);
         assertThat(testee.map(i -> i / 2)).isEqualTo(expected);
     }
+
+    // -- filter
 
     @Test
     public void shouldFilterOverLazyValue() {
         final Lazy<Integer> testee = Lazy.of(() -> 42);
-        final Lazy<Option<Integer>> expectedPositive = Lazy.of(() -> Option.some(42));
-        final Lazy<Option<Integer>> expectedNegative = Lazy.of(Option::none);
+        final Lazy<Integer> expectedPositive = Lazy.of(() -> 42);
+        final Lazy<Integer> expectedNegative = Lazy.of(() -> -1);
 
-        assertThat(testee.filter(i -> i % 2 == 0)).isEqualTo(expectedPositive);
-        assertThat(testee.filter(i -> i % 2 != 0)).isEqualTo(expectedNegative);
+        assertThat(testee.filter(i -> i % 2 == 0, i -> -1)).isEqualTo(expectedPositive);
+        assertThat(testee.filter(i -> i % 2 != 0, i -> -1)).isEqualTo(expectedNegative);
     }
 
     @Test
