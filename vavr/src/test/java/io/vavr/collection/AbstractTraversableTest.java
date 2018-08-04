@@ -850,6 +850,24 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of("a", "b", "c").foldRight("!", (x, xs) -> x + xs)).isEqualTo("abc!");
     }
 
+    // -- forEachWithIndex
+
+    @Test
+    public void shouldConsumeNoElementWithIndexWhenEmpty() {
+        final boolean[] actual = { false };
+        final boolean[] expected = { false };
+        empty().forEachWithIndex((chr, index) -> actual[0] = true);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldConsumeEachElementWithIndexWhenNonEmpty() {
+        final java.util.List<Tuple2<Character, Integer>> actual = new java.util.ArrayList<>();
+        final java.util.List<Tuple2<Character, Integer>> expected = Arrays.asList(Tuple.of('a', 0), Tuple.of('b', 1), Tuple.of('c', 2));
+        ofAll('a', 'b', 'c').forEachWithIndex((chr, index) -> actual.add(Tuple.of(chr, index)));
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- groupBy
 
     @Test
