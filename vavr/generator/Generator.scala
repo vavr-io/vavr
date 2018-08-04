@@ -100,6 +100,8 @@ def generateMainClasses(): Unit = {
       val PredicateType = im.getType("java.util.function.Predicate")
       val SupplierType = im.getType("java.util.function.Supplier")
 
+      val monadicTypesFor = List("Iterable", OptionType, FutureType, TryType, ListType)
+
       def genTraversableAliases(traversableType: String, returnType: String, name: String) = xs"""
         // -- $name
 
@@ -770,24 +772,28 @@ def generateMainClasses(): Unit = {
               return $IteratorType.ofAll(ts).flatMap(f);
           }
 
-          ${(1 to N).gen(i => {
+          ${monadicTypesFor.gen(mtype => (1 to N).gen(i => {
+            val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
             val generics = (1 to i).gen(j => s"T$j")(", ")
-            val params = (1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")
+            val params = (1 to i).gen(j => s"$mtype<T$j> ts$j")(", ")
             xs"""
               /$javadoc
-               * Creates a {@code For}-comprehension of ${i.numerus("Iterable")}.
-               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} Iterable")("\n")}
-               ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} Iterable")("\n")}
+               * Creates a {@code For}-comprehension of ${i.numerus(mtype)}.
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} $mtype")("\n")}
+               ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} $mtype")("\n")}
                * @return a new {@code For}-comprehension of arity $i
                */
-              public static <$generics> For$i<$generics> For($params) {
+              public static <$generics> $forClassName<$generics> For($params) {
                   ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
-                  return new For$i<>(${(1 to i).gen(j => s"ts$j")(", ")});
+                  return new $forClassName<>(${(1 to i).gen(j => s"ts$j")(", ")});
               }
             """
-          })("\n\n")}
+          })("\n\n"))("\n\n")}
 
-          ${(1 to N).gen(i => {
+           ${monadicTypesFor.gen(mtype => (1 to N).gen(i => {
+            val rtype = if (mtype == "Iterable") { IteratorType } else { mtype }
+            val cons: String => String = if (mtype == "Iterable") { m => s"$IteratorType.ofAll($m)" } else { m => m }
+            val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
             val generics = (1 to i).gen(j => s"T$j")(", ")
             val functionType = i match {
               case 1 => FunctionType
@@ -797,31 +803,31 @@ def generateMainClasses(): Unit = {
             val args = (1 to i).gen(j => s"? super T$j")(", ")
             xs"""
               /$javadoc
-               * For-comprehension with ${i.numerus("Iterable")}.
+               * For-comprehension with ${i.numerus(mtype)}.
                */
-              public static class For$i<$generics> {
+              public static class $forClassName<$generics> {
 
-                  ${(1 to i).gen(j => xs"""private final Iterable<T$j> ts$j;""")("\n")}
+                  ${(1 to i).gen(j => xs"""private final $mtype<T$j> ts$j;""")("\n")}
 
-                  private For$i(${(1 to i).gen(j => s"Iterable<T$j> ts$j")(", ")}) {
+                  private $forClassName(${(1 to i).gen(j => s"$mtype<T$j> ts$j")(", ")}) {
                       ${(1 to i).gen(j => xs"""this.ts$j = ts$j;""")("\n")}
                   }
 
                   /$javadoc
-                   * Yields a result for elements of the cross product of the underlying Iterables.
+                   * Yields a result for elements of the cross product of the underlying ${i.plural(mtype)}.
                    *
                    * @param f a function that maps an element of the cross product to a result
-                   * @param <R> type of the resulting {@code Iterator} elements
-                   * @return an {@code Iterator} of mapped results
+                   * @param <R> type of the resulting {@code $rtype} elements
+                   * @return an {@code $rtype} of mapped results
                    */
-                  public <R> $IteratorType<R> yield($functionType<$args, ? extends R> f) {
+                  public <R> $rtype<R> yield($functionType<$args, ? extends R> f) {
                       $Objects.requireNonNull(f, "f is null");
                       ${if (i == 1) xs"""
-                        return $IteratorType.ofAll(ts1).map(f);
+                        return ${cons("ts1")}.map(f);
                       """ else xs"""
                         return
-                            ${(1 until i).gen(j => s"$IteratorType.ofAll(ts$j).flatMap(t$j ->")("\n")}
-                            $IteratorType.ofAll(ts$i).map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
+                            ${(1 until i).gen(j => s"${cons(s"ts$j")}.flatMap(t$j ->")("\n")}
+                            ${cons(s"ts$i")}.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
                       """}
                   }
 
@@ -831,13 +837,13 @@ def generateMainClasses(): Unit = {
                      *
                      * @return an {@code Iterator} of mapped results
                      */
-                    public $IteratorType<T1> yield() {
+                    public $rtype<T1> yield() {
                         return yield(Function.identity());
                     }
                   """)}
               }
             """
-          })("\n\n")}
+          })("\n\n"))("\n\n")}
         """
       }
 
@@ -2594,6 +2600,9 @@ def generateTestClasses(): Unit = {
       val TryType = im.getType("io.vavr.control.Try")
       val JavaComparatorType = im.getType("java.util.Comparator")
 
+      val monadicTypesFor = List(OptionType)
+      val monadicFunctionTypesFor = List(FutureType, TryType)
+
       val d = "$"
 
       im.getStatic("io.vavr.API.*")
@@ -2879,7 +2888,7 @@ def generateTestClasses(): Unit = {
 
             ${(1 to N).gen(i => xs"""
               @$test
-              public void shouldIterateFor$i() {
+              public void shouldIterateFor$ListType$i() {
                   final $ListType<Integer> result = For(
                       ${(1 to i).gen(j => s"$ListType.of(1, 2, 3)")(",\n")}
                   ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")}).toList();
@@ -2889,11 +2898,31 @@ def generateTestClasses(): Unit = {
               }
             """)("\n\n")}
 
+            ${monadicTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
+              @$test
+              public void shouldIterateFor$mtype$i() {
+                  final $mtype<Integer> result = For(
+                      ${(1 to i).gen(j => s"$mtype.of($j)")(",\n")}
+                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                  $assertThat(result.get()).isEqualTo(${(1 to i).sum});
+              }
+            """})("\n\n"))("\n\n")}
+
+            ${monadicFunctionTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
+              @$test
+              public void shouldIterateFor$mtype$i() {
+                  final $mtype<Integer> result = For(
+                      ${(1 to i).gen(j => s"$mtype.of(() -> $j)")(",\n")}
+                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                  $assertThat(result.get()).isEqualTo(${(1 to i).sum});
+              }
+            """})("\n\n"))("\n\n")}
+
             @$test
             public void shouldIterateNestedFor() {
                 final $ListType<String> result =
                         For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
-                                For(${im.getType("io.vavr.collection.CharSeq")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
+                                For(${im.getType("io.vavr.collection.List")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
                 assertThat(result).isEqualTo($ListType.of("1:a", "1:b", "2:a", "2:b"));
             }
 

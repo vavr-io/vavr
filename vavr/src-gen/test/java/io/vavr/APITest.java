@@ -29,7 +29,6 @@ import static io.vavr.Patterns.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
 
-import io.vavr.collection.CharSeq;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.concurrent.Future;
@@ -985,7 +984,7 @@ public class APITest {
     }
 
     @Test
-    public void shouldIterateFor1() {
+    public void shouldIterateForList1() {
         final List<Integer> result = For(
             List.of(1, 2, 3)
         ).yield(i1 -> i1).toList();
@@ -995,7 +994,7 @@ public class APITest {
     }
 
     @Test
-    public void shouldIterateFor2() {
+    public void shouldIterateForList2() {
         final List<Integer> result = For(
             List.of(1, 2, 3),
             List.of(1, 2, 3)
@@ -1006,7 +1005,7 @@ public class APITest {
     }
 
     @Test
-    public void shouldIterateFor3() {
+    public void shouldIterateForList3() {
         final List<Integer> result = For(
             List.of(1, 2, 3),
             List.of(1, 2, 3),
@@ -1018,7 +1017,7 @@ public class APITest {
     }
 
     @Test
-    public void shouldIterateFor4() {
+    public void shouldIterateForList4() {
         final List<Integer> result = For(
             List.of(1, 2, 3),
             List.of(1, 2, 3),
@@ -1031,7 +1030,7 @@ public class APITest {
     }
 
     @Test
-    public void shouldIterateFor5() {
+    public void shouldIterateForList5() {
         final List<Integer> result = For(
             List.of(1, 2, 3),
             List.of(1, 2, 3),
@@ -1045,7 +1044,7 @@ public class APITest {
     }
 
     @Test
-    public void shouldIterateFor6() {
+    public void shouldIterateForList6() {
         final List<Integer> result = For(
             List.of(1, 2, 3),
             List.of(1, 2, 3),
@@ -1060,7 +1059,7 @@ public class APITest {
     }
 
     @Test
-    public void shouldIterateFor7() {
+    public void shouldIterateForList7() {
         final List<Integer> result = For(
             List.of(1, 2, 3),
             List.of(1, 2, 3),
@@ -1076,7 +1075,7 @@ public class APITest {
     }
 
     @Test
-    public void shouldIterateFor8() {
+    public void shouldIterateForList8() {
         final List<Integer> result = For(
             List.of(1, 2, 3),
             List.of(1, 2, 3),
@@ -1093,10 +1092,286 @@ public class APITest {
     }
 
     @Test
+    public void shouldIterateForOption1() {
+        final Option<Integer> result = For(
+            Option.of(1)
+        ).yield(i1 -> i1);
+        assertThat(result.get()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldIterateForOption2() {
+        final Option<Integer> result = For(
+            Option.of(1),
+            Option.of(2)
+        ).yield((i1, i2) -> i1 + i2);
+        assertThat(result.get()).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldIterateForOption3() {
+        final Option<Integer> result = For(
+            Option.of(1),
+            Option.of(2),
+            Option.of(3)
+        ).yield((i1, i2, i3) -> i1 + i2 + i3);
+        assertThat(result.get()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldIterateForOption4() {
+        final Option<Integer> result = For(
+            Option.of(1),
+            Option.of(2),
+            Option.of(3),
+            Option.of(4)
+        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+        assertThat(result.get()).isEqualTo(10);
+    }
+
+    @Test
+    public void shouldIterateForOption5() {
+        final Option<Integer> result = For(
+            Option.of(1),
+            Option.of(2),
+            Option.of(3),
+            Option.of(4),
+            Option.of(5)
+        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+        assertThat(result.get()).isEqualTo(15);
+    }
+
+    @Test
+    public void shouldIterateForOption6() {
+        final Option<Integer> result = For(
+            Option.of(1),
+            Option.of(2),
+            Option.of(3),
+            Option.of(4),
+            Option.of(5),
+            Option.of(6)
+        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+        assertThat(result.get()).isEqualTo(21);
+    }
+
+    @Test
+    public void shouldIterateForOption7() {
+        final Option<Integer> result = For(
+            Option.of(1),
+            Option.of(2),
+            Option.of(3),
+            Option.of(4),
+            Option.of(5),
+            Option.of(6),
+            Option.of(7)
+        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+        assertThat(result.get()).isEqualTo(28);
+    }
+
+    @Test
+    public void shouldIterateForOption8() {
+        final Option<Integer> result = For(
+            Option.of(1),
+            Option.of(2),
+            Option.of(3),
+            Option.of(4),
+            Option.of(5),
+            Option.of(6),
+            Option.of(7),
+            Option.of(8)
+        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+        assertThat(result.get()).isEqualTo(36);
+    }
+
+    @Test
+    public void shouldIterateForFuture1() {
+        final Future<Integer> result = For(
+            Future.of(() -> 1)
+        ).yield(i1 -> i1);
+        assertThat(result.get()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldIterateForFuture2() {
+        final Future<Integer> result = For(
+            Future.of(() -> 1),
+            Future.of(() -> 2)
+        ).yield((i1, i2) -> i1 + i2);
+        assertThat(result.get()).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldIterateForFuture3() {
+        final Future<Integer> result = For(
+            Future.of(() -> 1),
+            Future.of(() -> 2),
+            Future.of(() -> 3)
+        ).yield((i1, i2, i3) -> i1 + i2 + i3);
+        assertThat(result.get()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldIterateForFuture4() {
+        final Future<Integer> result = For(
+            Future.of(() -> 1),
+            Future.of(() -> 2),
+            Future.of(() -> 3),
+            Future.of(() -> 4)
+        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+        assertThat(result.get()).isEqualTo(10);
+    }
+
+    @Test
+    public void shouldIterateForFuture5() {
+        final Future<Integer> result = For(
+            Future.of(() -> 1),
+            Future.of(() -> 2),
+            Future.of(() -> 3),
+            Future.of(() -> 4),
+            Future.of(() -> 5)
+        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+        assertThat(result.get()).isEqualTo(15);
+    }
+
+    @Test
+    public void shouldIterateForFuture6() {
+        final Future<Integer> result = For(
+            Future.of(() -> 1),
+            Future.of(() -> 2),
+            Future.of(() -> 3),
+            Future.of(() -> 4),
+            Future.of(() -> 5),
+            Future.of(() -> 6)
+        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+        assertThat(result.get()).isEqualTo(21);
+    }
+
+    @Test
+    public void shouldIterateForFuture7() {
+        final Future<Integer> result = For(
+            Future.of(() -> 1),
+            Future.of(() -> 2),
+            Future.of(() -> 3),
+            Future.of(() -> 4),
+            Future.of(() -> 5),
+            Future.of(() -> 6),
+            Future.of(() -> 7)
+        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+        assertThat(result.get()).isEqualTo(28);
+    }
+
+    @Test
+    public void shouldIterateForFuture8() {
+        final Future<Integer> result = For(
+            Future.of(() -> 1),
+            Future.of(() -> 2),
+            Future.of(() -> 3),
+            Future.of(() -> 4),
+            Future.of(() -> 5),
+            Future.of(() -> 6),
+            Future.of(() -> 7),
+            Future.of(() -> 8)
+        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+        assertThat(result.get()).isEqualTo(36);
+    }
+
+    @Test
+    public void shouldIterateForTry1() {
+        final Try<Integer> result = For(
+            Try.of(() -> 1)
+        ).yield(i1 -> i1);
+        assertThat(result.get()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldIterateForTry2() {
+        final Try<Integer> result = For(
+            Try.of(() -> 1),
+            Try.of(() -> 2)
+        ).yield((i1, i2) -> i1 + i2);
+        assertThat(result.get()).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldIterateForTry3() {
+        final Try<Integer> result = For(
+            Try.of(() -> 1),
+            Try.of(() -> 2),
+            Try.of(() -> 3)
+        ).yield((i1, i2, i3) -> i1 + i2 + i3);
+        assertThat(result.get()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldIterateForTry4() {
+        final Try<Integer> result = For(
+            Try.of(() -> 1),
+            Try.of(() -> 2),
+            Try.of(() -> 3),
+            Try.of(() -> 4)
+        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+        assertThat(result.get()).isEqualTo(10);
+    }
+
+    @Test
+    public void shouldIterateForTry5() {
+        final Try<Integer> result = For(
+            Try.of(() -> 1),
+            Try.of(() -> 2),
+            Try.of(() -> 3),
+            Try.of(() -> 4),
+            Try.of(() -> 5)
+        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+        assertThat(result.get()).isEqualTo(15);
+    }
+
+    @Test
+    public void shouldIterateForTry6() {
+        final Try<Integer> result = For(
+            Try.of(() -> 1),
+            Try.of(() -> 2),
+            Try.of(() -> 3),
+            Try.of(() -> 4),
+            Try.of(() -> 5),
+            Try.of(() -> 6)
+        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+        assertThat(result.get()).isEqualTo(21);
+    }
+
+    @Test
+    public void shouldIterateForTry7() {
+        final Try<Integer> result = For(
+            Try.of(() -> 1),
+            Try.of(() -> 2),
+            Try.of(() -> 3),
+            Try.of(() -> 4),
+            Try.of(() -> 5),
+            Try.of(() -> 6),
+            Try.of(() -> 7)
+        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+        assertThat(result.get()).isEqualTo(28);
+    }
+
+    @Test
+    public void shouldIterateForTry8() {
+        final Try<Integer> result = For(
+            Try.of(() -> 1),
+            Try.of(() -> 2),
+            Try.of(() -> 3),
+            Try.of(() -> 4),
+            Try.of(() -> 5),
+            Try.of(() -> 6),
+            Try.of(() -> 7),
+            Try.of(() -> 8)
+        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+        assertThat(result.get()).isEqualTo(36);
+    }
+
+    @Test
     public void shouldIterateNestedFor() {
         final List<String> result =
                 For(Arrays.asList(1, 2), i ->
-                        For(CharSeq.of('a', 'b')).yield(c -> i + ":" + c)).toList();
+                        For(List.of('a', 'b')).yield(c -> i + ":" + c)).toList();
         assertThat(result).isEqualTo(List.of("1:a", "1:b", "2:a", "2:b"));
     }
 
