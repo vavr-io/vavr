@@ -58,6 +58,7 @@ import java.util.stream.DoubleStream;
  * Iteration:
  *
  * <ul>
+ * <li>{@link #forEachWithIndex(ObjIntConsumer)}</li>
  * <li>{@link #grouped(int)}</li>
  * <li>{@link #iterator()}</li>
  * <li>{@link #slideBy(Function)}</li>
@@ -490,6 +491,30 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     @Override
     <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f);
+
+    /**
+     * Performs an action on each element. In contrast to {@link #forEach(Consumer)},
+     * additionally the element's index is passed to the given {@code action}.
+     * <p>
+     * This is essentially the same as {@code iterator().zipWithIndex().forEach()} but performs better because
+     * no intermediate {@code Tuple2} instances are created and no boxing of int values takes place.
+     * <p>
+     * Please note that subsequent calls to {@code forEachWithIndex} might lead to different iteration orders,
+     * depending on the underlying {@code Traversable} implementation.
+     * <p>
+     * Please also note that {@code forEachWithIndex} might loop infinitely if the {@code Traversable} is lazily
+     * evaluated, like {@link Stream}.
+     *
+     * @param action A {@link ObjIntConsumer}
+     * @throws NullPointerException if {@code action} is null
+     */
+    default void forEachWithIndex(ObjIntConsumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        int index = 0;
+        for (T t : this) {
+            action.accept(t, index++);
+        }
+    }
 
     /**
      * Gets the first value in iteration order if this {@code Traversable} is not empty, otherwise throws.
