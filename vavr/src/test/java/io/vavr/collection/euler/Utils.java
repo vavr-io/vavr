@@ -31,7 +31,6 @@ import java.net.URL;
 import java.util.Scanner;
 
 import static io.vavr.API.$;
-import static io.vavr.API.Case;
 
 final class Utils {
 

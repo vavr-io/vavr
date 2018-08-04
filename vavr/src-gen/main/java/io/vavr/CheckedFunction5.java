@@ -23,10 +23,7 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import static io.vavr.CheckedFunction5Module.sneakyThrow;
-
-import io.vavr.control.Option;
-import io.vavr.control.Try;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -44,7 +41,7 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Lambda<R> {
+public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Serializable {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -91,41 +88,6 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Lambda<R> {
      */
     static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> of(CheckedFunction5<T1, T2, T3, T4, T5, R> methodReference) {
         return methodReference;
-    }
-
-    /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
-     * @param <T3> 3rd argument
-     * @param <T4> 4th argument
-     * @param <T5> 5th argument
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
-     */
-    @SuppressWarnings("RedundantTypeArguments")
-    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, Option<R>> lift(CheckedFunction5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
-        return (t1, t2, t3, t4, t5) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5)).toOption();
-    }
-
-    /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
-     * @param <T3> 3rd argument
-     * @param <T4> 4th argument
-     * @param <T5> 5th argument
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
-     */
-    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, Try<R>> liftTry(CheckedFunction5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
-        return (t1, t2, t3, t4, t5) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5));
     }
 
     /**
@@ -204,36 +166,63 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Lambda<R> {
         return (T5 t5) -> apply(t1, t2, t3, t4, t5);
     }
 
-    @Override
-    default int arity() {
-        return 5;
-    }
-
-    @Override
+    /**
+     * Returns a curried version of this function.
+     *
+     * @return a curried function equivalent to this.
+     */
     default Function1<T1, Function1<T2, Function1<T3, Function1<T4, CheckedFunction1<T5, R>>>>> curried() {
         return t1 -> t2 -> t3 -> t4 -> t5 -> apply(t1, t2, t3, t4, t5);
     }
 
-    @Override
+    /**
+     * Returns a tupled version of this function.
+     *
+     * @return a tupled function equivalent to this.
+     */
     default CheckedFunction1<Tuple5<T1, T2, T3, T4, T5>, R> tupled() {
         return t -> apply(t._1, t._2, t._3, t._4, t._5);
     }
 
-    @Override
+    /**
+     * Returns a reversed version of this function. This may be useful in a recursive context.
+     *
+     * @return a reversed function equivalent to this.
+     */
     default CheckedFunction5<T5, T4, T3, T2, T1, R> reversed() {
         return (t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5);
     }
 
-    @Override
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
+
     default CheckedFunction5<T1, T2, T3, T4, T5, R> memoized() {
         if (isMemoized()) {
             return this;
         } else {
             final Map<Tuple5<T1, T2, T3, T4, T5>, R> cache = new HashMap<>();
-            return (CheckedFunction5<T1, T2, T3, T4, T5, R> & Memoized) (t1, t2, t3, t4, t5)
-                    -> Memoized.of(cache, Tuple.of(t1, t2, t3, t4, t5), t -> Try.of(() -> apply(t1, t2, t3, t4, t5)).get());
+            return (CheckedFunction5<T1, T2, T3, T4, T5, R> & Memoized) (t1, t2, t3, t4, t5) -> {
+                final Tuple5<T1, T2, T3, T4, T5> key = Tuple.of(t1, t2, t3, t4, t5);
+                synchronized (cache) {
+                    if (cache.containsKey(key)) {
+                        return cache.get(key);
+                    } else {
+                        final R value = tupled().apply(key);
+                        cache.put(key, value);
+                        return value;
+                    }
+                }
+            };
         }
     }
+
+    interface Memoized { /* zero abstract method (ZAM) interface */ }
 
     /**
      * Return a composed function that first applies this CheckedFunction5 to the given arguments and in case of throwable
@@ -257,21 +246,6 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Lambda<R> {
     }
 
     /**
-     * Returns an unchecked function that will <em>sneaky throw</em> if an exceptions occurs when applying the function.
-     *
-     * @return a new Function5 that throws a {@code Throwable}.
-     */
-    default Function5<T1, T2, T3, T4, T5, R> unchecked() {
-        return (t1, t2, t3, t4, t5) -> {
-            try {
-                return apply(t1, t2, t3, t4, t5);
-            } catch(Throwable t) {
-                return sneakyThrow(t);
-            }
-        };
-    }
-
-    /**
      * Returns a composed function that first applies this CheckedFunction5 to the given argument and then applies
      * {@linkplain CheckedFunction1} {@code after} to the result.
      *
@@ -285,13 +259,4 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Lambda<R> {
         return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
     }
 
-}
-
-interface CheckedFunction5Module {
-
-    // DEV-NOTE: we do not plan to expose this as public API
-    @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
-        throw (T) t;
-    }
 }

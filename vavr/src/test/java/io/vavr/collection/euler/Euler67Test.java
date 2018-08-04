@@ -61,7 +61,7 @@ public class Euler67Test {
             (Vector<Vector<Integer>> tr, Integer row, Integer col) -> {
                 int value = tr.get(row).get(col);
                 if (row == tr.length() - 1) {
-                    return tr.get(row).get(col);
+                    return value;
                 } else {
                     return value + Math.max(Euler67Test.smart.apply(tr, row + 1, col), Euler67Test.smart.apply(tr, row + 1, col + 1));
                 }

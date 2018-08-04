@@ -23,10 +23,7 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import static io.vavr.Function0Module.sneakyThrow;
-
-import io.vavr.control.Option;
-import io.vavr.control.Try;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,7 +35,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface Function0<R> extends Lambda<R>, Supplier<R> {
+public interface Function0<R> extends Serializable, Supplier<R> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -83,31 +80,6 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
-     */
-    @SuppressWarnings("RedundantTypeArguments")
-    static <R> Function0<Option<R>> lift(Supplier<? extends R> partialFunction) {
-        return () -> Try.<R>of(partialFunction::get).toOption();
-    }
-
-    /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
-     */
-    static <R> Function0<Try<R>> liftTry(Supplier<? extends R> partialFunction) {
-        return () -> Try.of(partialFunction::get);
-    }
-
-    /**
      * Narrows the given {@code Function0<? extends R>} to {@code Function0<R>}
      *
      * @param f A {@code Function0}
@@ -137,34 +109,51 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
         return apply();
     }
 
-    @Override
-    default int arity() {
-        return 0;
-    }
-
-    @Override
+    /**
+     * Returns a curried version of this function.
+     *
+     * @return a curried function equivalent to this.
+     */
     default Function0<R> curried() {
         return this;
     }
 
-    @Override
+    /**
+     * Returns a tupled version of this function.
+     *
+     * @return a tupled function equivalent to this.
+     */
     default Function1<Tuple0, R> tupled() {
         return t -> apply();
     }
 
-    @Override
+    /**
+     * Returns a reversed version of this function. This may be useful in a recursive context.
+     *
+     * @return a reversed function equivalent to this.
+     */
     default Function0<R> reversed() {
         return this;
     }
 
-    @Override
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
+
     default Function0<R> memoized() {
         if (isMemoized()) {
             return this;
         } else {
-            return (Function0<R> & Memoized) Lazy.of(this::apply)::get;
+            return (Function0<R> & Memoized) Lazy.of(this)::get;
         }
     }
+
+    interface Memoized { /* zero abstract method (ZAM) interface */ }
 
     /**
      * Returns a composed function that first applies this Function0 to the given argument and then applies
@@ -180,13 +169,4 @@ public interface Function0<R> extends Lambda<R>, Supplier<R> {
         return () -> after.apply(apply());
     }
 
-}
-
-interface Function0Module {
-
-    // DEV-NOTE: we do not plan to expose this as public API
-    @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
-        throw (T) t;
-    }
 }

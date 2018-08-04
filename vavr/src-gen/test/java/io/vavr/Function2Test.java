@@ -25,7 +25,6 @@ package io.vavr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
@@ -41,37 +40,6 @@ public class Function2Test {
         }
         final Type type = new Type();
         assertThat(Function2.of(type::methodReference)).isNotNull();
-    }
-
-    @Test
-    public void shouldLiftPartialFunction() {
-        assertThat(Function2.lift((o1, o2) -> { while(true); })).isNotNull();
-    }
-
-    @Test
-    public void shouldPartiallyApply() {
-        final Function2<Object, Object, Object> f = (o1, o2) -> null;
-        assertThat(f.apply(null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCurry() {
-        final Function2<Object, Object, Object> f = (o1, o2) -> null;
-        final Function1<Object, Function1<Object, Object>> curried = f.curried();
-        assertThat(curried).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple() {
-        final Function2<Object, Object, Object> f = (o1, o2) -> null;
-        final Function1<Tuple2<Object, Object>, Object> tupled = f.tupled();
-        assertThat(tupled).isNotNull();
-    }
-
-    @Test
-    public void shouldReverse() {
-        final Function2<Object, Object, Object> f = (o1, o2) -> null;
-        assertThat(f.reversed()).isNotNull();
     }
 
     @Test
@@ -112,20 +80,29 @@ public class Function2Test {
     }
 
     @Test
-    public void shouldLiftTryPartialFunction() {
-        AtomicInteger integer = new AtomicInteger();
-        Function2<Integer, Integer, Integer> divByZero = (i1, i2) -> 10 / integer.get();
-        Function2<Integer, Integer, Try<Integer>> divByZeroTry = Function2.liftTry(divByZero);
+    public void shouldPartiallyApply() {
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
+        assertThat(f.apply(null)).isNotNull();
+    }
 
-        Try<Integer> res = divByZeroTry.apply(0, 0);
-        assertThat(res.isFailure()).isTrue();
-        assertThat(res.getCause()).isNotNull();
-        assertThat(res.getCause().getMessage()).isEqualToIgnoringCase("/ by zero");
+    @Test
+    public void shouldCurry() {
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
+        final Function1<Object, Function1<Object, Object>> curried = f.curried();
+        assertThat(curried).isNotNull();
+    }
 
-        integer.incrementAndGet();
-        res = divByZeroTry.apply(1, 2);
-        assertThat(res.isSuccess()).isTrue();
-        assertThat(res.get()).isEqualTo(10);
+    @Test
+    public void shouldTuple() {
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
+        final Function1<Tuple2<Object, Object>, Object> tupled = f.tupled();
+        assertThat(tupled).isNotNull();
+    }
+
+    @Test
+    public void shouldReverse() {
+        final Function2<Object, Object, Object> f = (o1, o2) -> null;
+        assertThat(f.reversed()).isNotNull();
     }
 
     private static final Function2<Integer, Integer, Integer> recurrent1 = (i1, i2) -> i1 <= 0 ? i1 : Function2Test.recurrent2.apply(i1 - 1, i2) + 1;

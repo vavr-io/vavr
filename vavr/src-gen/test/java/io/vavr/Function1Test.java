@@ -26,7 +26,6 @@ package io.vavr;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
@@ -45,35 +44,10 @@ public class Function1Test {
     }
 
     @Test
-    public void shouldLiftPartialFunction() {
-        assertThat(Function1.lift((o1) -> { while(true); })).isNotNull();
-    }
-
-    @Test
     public void shouldCreateIdentityFunction() {
         final Function1<String, String> identity = Function1.identity();
         final String s = "test";
         assertThat(identity.apply(s)).isEqualTo(s);
-    }
-
-    @Test
-    public void shouldCurry() {
-        final Function1<Object, Object> f = (o1) -> null;
-        final Function1<Object, Object> curried = f.curried();
-        assertThat(curried).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple() {
-        final Function1<Object, Object> f = (o1) -> null;
-        final Function1<Tuple1<Object>, Object> tupled = f.tupled();
-        assertThat(tupled).isNotNull();
-    }
-
-    @Test
-    public void shouldReverse() {
-        final Function1<Object, Object> f = (o1) -> null;
-        assertThat(f.reversed()).isNotNull();
     }
 
     @Test
@@ -114,6 +88,26 @@ public class Function1Test {
     }
 
     @Test
+    public void shouldCurry() {
+        final Function1<Object, Object> f = (o1) -> null;
+        final Function1<Object, Object> curried = f.curried();
+        assertThat(curried).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple() {
+        final Function1<Object, Object> f = (o1) -> null;
+        final Function1<Tuple1<Object>, Object> tupled = f.tupled();
+        assertThat(tupled).isNotNull();
+    }
+
+    @Test
+    public void shouldReverse() {
+        final Function1<Object, Object> f = (o1) -> null;
+        assertThat(f.reversed()).isNotNull();
+    }
+
+    @Test
     public void shouldThrowOnPartialWithNullPredicate() {
         final Function1<Integer, String> f = String::valueOf;
         assertThatThrownBy(() -> f.partial(null))
@@ -129,23 +123,6 @@ public class Function1Test {
         assertThat(pf.isDefinedAt(1)).isFalse();
         assertThat(pf.apply(0)).isEqualTo("0");
         assertThat(pf.apply(1)).isEqualTo("1"); // it is valid to return a value, even if isDefinedAt returns false
-    }
-
-    @Test
-    public void shouldLiftTryPartialFunction() {
-        AtomicInteger integer = new AtomicInteger();
-        Function1<Integer, Integer> divByZero = (i1) -> 10 / integer.get();
-        Function1<Integer, Try<Integer>> divByZeroTry = Function1.liftTry(divByZero);
-
-        Try<Integer> res = divByZeroTry.apply(0);
-        assertThat(res.isFailure()).isTrue();
-        assertThat(res.getCause()).isNotNull();
-        assertThat(res.getCause().getMessage()).isEqualToIgnoringCase("/ by zero");
-
-        integer.incrementAndGet();
-        res = divByZeroTry.apply(1);
-        assertThat(res.isSuccess()).isTrue();
-        assertThat(res.get()).isEqualTo(10);
     }
 
     private static final Function1<Integer, Integer> recurrent1 = (i1) -> i1 <= 0 ? i1 : Function1Test.recurrent2.apply(i1 - 1) + 1;

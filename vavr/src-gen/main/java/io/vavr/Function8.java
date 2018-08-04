@@ -23,10 +23,7 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import static io.vavr.Function8Module.sneakyThrow;
-
-import io.vavr.control.Option;
-import io.vavr.control.Try;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -47,7 +44,7 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lambda<R> {
+public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Serializable {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -97,47 +94,6 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lambda<R> 
      */
     static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> of(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
         return methodReference;
-    }
-
-    /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
-     * @param <T3> 3rd argument
-     * @param <T4> 4th argument
-     * @param <T5> 5th argument
-     * @param <T6> 6th argument
-     * @param <T7> 7th argument
-     * @param <T8> 8th argument
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
-     */
-    @SuppressWarnings("RedundantTypeArguments")
-    static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, Option<R>> lift(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> partialFunction) {
-        return (t1, t2, t3, t4, t5, t6, t7, t8) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6, t7, t8)).toOption();
-    }
-
-    /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
-     * @param <T3> 3rd argument
-     * @param <T4> 4th argument
-     * @param <T5> 5th argument
-     * @param <T6> 6th argument
-     * @param <T7> 7th argument
-     * @param <T8> 8th argument
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
-     */
-    static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, Try<R>> liftTry(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> partialFunction) {
-        return (t1, t2, t3, t4, t5, t6, t7, t8) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
     /**
@@ -267,36 +223,63 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lambda<R> 
         return (T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
     }
 
-    @Override
-    default int arity() {
-        return 8;
-    }
-
-    @Override
+    /**
+     * Returns a curried version of this function.
+     *
+     * @return a curried function equivalent to this.
+     */
     default Function1<T1, Function1<T2, Function1<T3, Function1<T4, Function1<T5, Function1<T6, Function1<T7, Function1<T8, R>>>>>>>> curried() {
         return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> t7 -> t8 -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
     }
 
-    @Override
+    /**
+     * Returns a tupled version of this function.
+     *
+     * @return a tupled function equivalent to this.
+     */
     default Function1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled() {
         return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8);
     }
 
-    @Override
+    /**
+     * Returns a reversed version of this function. This may be useful in a recursive context.
+     *
+     * @return a reversed function equivalent to this.
+     */
     default Function8<T8, T7, T6, T5, T4, T3, T2, T1, R> reversed() {
         return (t8, t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
     }
 
-    @Override
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
+
     default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> memoized() {
         if (isMemoized()) {
             return this;
         } else {
             final Map<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> cache = new HashMap<>();
-            return (Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7, t8)
-                    -> Memoized.of(cache, Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8), tupled());
+            return (Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7, t8) -> {
+                final Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> key = Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8);
+                synchronized (cache) {
+                    if (cache.containsKey(key)) {
+                        return cache.get(key);
+                    } else {
+                        final R value = tupled().apply(key);
+                        cache.put(key, value);
+                        return value;
+                    }
+                }
+            };
         }
     }
+
+    interface Memoized { /* zero abstract method (ZAM) interface */ }
 
     /**
      * Returns a composed function that first applies this Function8 to the given argument and then applies
@@ -312,13 +295,4 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Lambda<R> 
         return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
     }
 
-}
-
-interface Function8Module {
-
-    // DEV-NOTE: we do not plan to expose this as public API
-    @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
-        throw (T) t;
-    }
 }

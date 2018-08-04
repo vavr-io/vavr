@@ -23,10 +23,7 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import static io.vavr.Function2Module.sneakyThrow;
-
-import io.vavr.control.Option;
-import io.vavr.control.Try;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -42,7 +39,7 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
+public interface Function2<T1, T2, R> extends Serializable, BiFunction<T1, T2, R> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -89,35 +86,6 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
-     */
-    @SuppressWarnings("RedundantTypeArguments")
-    static <T1, T2, R> Function2<T1, T2, Option<R>> lift(BiFunction<? super T1, ? super T2, ? extends R> partialFunction) {
-        return (t1, t2) -> Try.<R>of(() -> partialFunction.apply(t1, t2)).toOption();
-    }
-
-    /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @param <T2> 2nd argument
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
-     */
-    static <T1, T2, R> Function2<T1, T2, Try<R>> liftTry(BiFunction<? super T1, ? super T2, ? extends R> partialFunction) {
-        return (t1, t2) -> Try.of(() -> partialFunction.apply(t1, t2));
-    }
-
-    /**
      * Narrows the given {@code Function2<? super T1, ? super T2, ? extends R>} to {@code Function2<T1, T2, R>}
      *
      * @param f A {@code Function2}
@@ -151,36 +119,63 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
         return (T2 t2) -> apply(t1, t2);
     }
 
-    @Override
-    default int arity() {
-        return 2;
-    }
-
-    @Override
+    /**
+     * Returns a curried version of this function.
+     *
+     * @return a curried function equivalent to this.
+     */
     default Function1<T1, Function1<T2, R>> curried() {
         return t1 -> t2 -> apply(t1, t2);
     }
 
-    @Override
+    /**
+     * Returns a tupled version of this function.
+     *
+     * @return a tupled function equivalent to this.
+     */
     default Function1<Tuple2<T1, T2>, R> tupled() {
         return t -> apply(t._1, t._2);
     }
 
-    @Override
+    /**
+     * Returns a reversed version of this function. This may be useful in a recursive context.
+     *
+     * @return a reversed function equivalent to this.
+     */
     default Function2<T2, T1, R> reversed() {
         return (t2, t1) -> apply(t1, t2);
     }
 
-    @Override
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
+
     default Function2<T1, T2, R> memoized() {
         if (isMemoized()) {
             return this;
         } else {
             final Map<Tuple2<T1, T2>, R> cache = new HashMap<>();
-            return (Function2<T1, T2, R> & Memoized) (t1, t2)
-                    -> Memoized.of(cache, Tuple.of(t1, t2), tupled());
+            return (Function2<T1, T2, R> & Memoized) (t1, t2) -> {
+                final Tuple2<T1, T2> key = Tuple.of(t1, t2);
+                synchronized (cache) {
+                    if (cache.containsKey(key)) {
+                        return cache.get(key);
+                    } else {
+                        final R value = tupled().apply(key);
+                        cache.put(key, value);
+                        return value;
+                    }
+                }
+            };
         }
     }
+
+    interface Memoized { /* zero abstract method (ZAM) interface */ }
 
     /**
      * Returns a composed function that first applies this Function2 to the given argument and then applies
@@ -196,13 +191,4 @@ public interface Function2<T1, T2, R> extends Lambda<R>, BiFunction<T1, T2, R> {
         return (t1, t2) -> after.apply(apply(t1, t2));
     }
 
-}
-
-interface Function2Module {
-
-    // DEV-NOTE: we do not plan to expose this as public API
-    @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
-        throw (T) t;
-    }
 }
