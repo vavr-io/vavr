@@ -59,13 +59,13 @@ public class ForBenchmark {
     public static class Base {
         int CONTAINER_SIZE = 1000;
         int AGGREGATE;
-        List<Integer> ELEMENTS;
+        io.vavr.collection.List<Integer> ELEMENTS;
 
         final BiFunction<Integer, Integer, Integer> AGGREGATOR = (i, j) -> i ^ j;
 
         @Setup
         public void setup() {
-            ELEMENTS = Arrays.asList(getRandomValues(CONTAINER_SIZE, 0, true));
+            ELEMENTS = io.vavr.collection.List.ofAll(Arrays.stream(getRandomValues(CONTAINER_SIZE, 0, true)));
 
             AGGREGATE = 0;
             for (Integer i : ELEMENTS) {
