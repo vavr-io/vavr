@@ -23,10 +23,7 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import static io.vavr.CheckedFunction1Module.sneakyThrow;
-
-import io.vavr.control.Option;
-import io.vavr.control.Try;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +37,7 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface CheckedFunction1<T1, R> extends Lambda<R> {
+public interface CheckedFunction1<T1, R> extends Serializable {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -86,33 +83,6 @@ public interface CheckedFunction1<T1, R> extends Lambda<R> {
     }
 
     /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
-     *         if the function is defined for the given arguments, and {@code None} otherwise.
-     */
-    @SuppressWarnings("RedundantTypeArguments")
-    static <T1, R> Function1<T1, Option<R>> lift(CheckedFunction1<? super T1, ? extends R> partialFunction) {
-        return t1 -> Try.<R>of(() -> partialFunction.apply(t1)).toOption();
-    }
-
-    /**
-     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
-     *
-     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-     * @param <R> return type
-     * @param <T1> 1st argument
-     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
-     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
-     */
-    static <T1, R> Function1<T1, Try<R>> liftTry(CheckedFunction1<? super T1, ? extends R> partialFunction) {
-        return t1 -> Try.of(() -> partialFunction.apply(t1));
-    }
-
-    /**
      * Narrows the given {@code CheckedFunction1<? super T1, ? extends R>} to {@code CheckedFunction1<T1, R>}
      *
      * @param f A {@code CheckedFunction1}
@@ -144,36 +114,62 @@ public interface CheckedFunction1<T1, R> extends Lambda<R> {
      */
     R apply(T1 t1) throws Exception;
 
-    @Override
-    default int arity() {
-        return 1;
-    }
-
-    @Override
+    /**
+     * Returns a curried version of this function.
+     *
+     * @return a curried function equivalent to this.
+     */
     default CheckedFunction1<T1, R> curried() {
         return this;
     }
 
-    @Override
+    /**
+     * Returns a tupled version of this function.
+     *
+     * @return a tupled function equivalent to this.
+     */
     default CheckedFunction1<Tuple1<T1>, R> tupled() {
         return t -> apply(t._1);
     }
 
-    @Override
+    /**
+     * Returns a reversed version of this function. This may be useful in a recursive context.
+     *
+     * @return a reversed function equivalent to this.
+     */
     default CheckedFunction1<T1, R> reversed() {
         return this;
     }
 
-    @Override
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
+
     default CheckedFunction1<T1, R> memoized() {
         if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple1<T1>, R> cache = new HashMap<>();
-            return (CheckedFunction1<T1, R> & Memoized) (t1)
-                    -> Memoized.of(cache, Tuple.of(t1), t -> Try.of(() -> apply(t1)).get());
+            final Map<T1, R> cache = new HashMap<>();
+            return (CheckedFunction1<T1, R> & Memoized) (t1) -> {
+                synchronized (cache) {
+                    if (cache.containsKey(t1)) {
+                        return cache.get(t1);
+                    } else {
+                        final R value = apply(t1);
+                        cache.put(t1, value);
+                        return value;
+                    }
+                }
+            };
         }
     }
+
+    interface Memoized { /* zero abstract method (ZAM) interface */ }
 
     /**
      * Return a composed function that first applies this CheckedFunction1 to the given arguments and in case of throwable
@@ -192,21 +188,6 @@ public interface CheckedFunction1<T1, R> extends Lambda<R> {
                 final Function<? super T1, ? extends R> func = recover.apply(throwable);
                 Objects.requireNonNull(func, () -> "recover return null for " + throwable.getClass() + ": " + throwable.getMessage());
                 return func.apply(t1);
-            }
-        };
-    }
-
-    /**
-     * Returns an unchecked function that will <em>sneaky throw</em> if an exceptions occurs when applying the function.
-     *
-     * @return a new Function1 that throws a {@code Throwable}.
-     */
-    default Function1<T1, R> unchecked() {
-        return (t1) -> {
-            try {
-                return apply(t1);
-            } catch(Throwable t) {
-                return sneakyThrow(t);
             }
         };
     }
@@ -237,14 +218,5 @@ public interface CheckedFunction1<T1, R> extends Lambda<R> {
     default <V> CheckedFunction1<V, R> compose(CheckedFunction1<? super V, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
-    }
-}
-
-interface CheckedFunction1Module {
-
-    // DEV-NOTE: we do not plan to expose this as public API
-    @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
-        throw (T) t;
     }
 }
