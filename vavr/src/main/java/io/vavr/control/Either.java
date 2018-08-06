@@ -382,15 +382,11 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * <pre><code>
      * import static io.vavr.API.*;
      *
-     * class Example {{
+     * // = Right("A")
+     * Right("a").map(String::toUpperCase);
      *
-     *     // = Right("A")
-     *     Right("a").map(String::toUpperCase);
-     *
-     *     // = Left(1)
-     *     Left(1).map(String::toUpperCase);
-     *
-     * }}
+     * // = Left(1)
+     * Left(1).map(String::toUpperCase);
      * </code></pre>
      *
      * @param mapper A mapper
@@ -415,15 +411,11 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * <pre>{@code
      * import static io.vavr.API.*;
      *
-     * class Example {
+     * // = Left(2)
+     * Left(1).mapLeft(i -> i + 1);
      *
-     *     // = Left(2)
-     *     Left(1).mapLeft(i -> i + 1);
-     *
-     *     // = Right("a")
-     *     Right("a").mapLeft(i -> i + 1);
-     *
-     * }
+     * // = Right("a")
+     * Right("a").mapLeft(i -> i + 1);
      * }</pre>
      *
      * @param leftMapper A mapper
@@ -454,6 +446,38 @@ public interface Either<L, R> extends Value<R>, Serializable {
     default Option<Either<L, R>> filter(Predicate<? super R> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isLeft() || predicate.test(get()) ? Option.some(this) : Option.none();
+    }
+
+    /**
+     * Filters this right-biased {@code Either} by testing a predicate.
+     * If the {@code Either} is a {@code Right} and the predicate doesn't match, the
+     * {@code Either} will be turned into a {@code Left} with contents computed by applying
+     * the filterVal function to the {@code Either} value.
+     * <p>
+     *
+     * <pre>{@code
+     * import static io.vavr.API.*;
+     *
+     * // = Left("bad: a")
+     * Right("a").filterOrElse(i -> false, val -> "bad: " + val);
+     *
+     * // = Right("a")
+     * Right("a").filterOrElse(i -> true, val -> "bad: " + val);
+     * }</pre>
+     *
+     * @param predicate A predicate
+     * @return an {@code Either} instance
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default Either<L,R> filterOrElse(Predicate<? super R> predicate,
+                                     Function<? super R, ? extends L> zero) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        Objects.requireNonNull(zero, "zero is null");
+        if (isLeft() || predicate.test(get())) {
+            return this;
+        } else {
+            return Either.left(zero.apply(get()));
+        }
     }
 
     /**
