@@ -994,6 +994,15 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Converts this {@code Try} to a {@link Option}.
+     *
+     * @return {@code Option.some(get())} if this is defined, otherwise {@code Option.none()}
+     */
+    default Option<T> toOption() {
+        return isEmpty() ? Option.none() : Option.some(get());
+    }
+
+    /**
      * Converts this {@code Try} to a {@link Validation}.
      *
      * @return A new {@code Validation}

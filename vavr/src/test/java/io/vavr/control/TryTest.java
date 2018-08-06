@@ -232,6 +232,14 @@ public class TryTest extends AbstractValueTest {
         assertThat((Iterator<Integer>) Try.success(1).iterator()).isNotNull();
     }
 
+    // -- toOption
+
+    @Test
+    public void shouldConvertToOption() {
+        assertThat(empty().toOption()).isSameAs(Option.none());
+        assertThat(of(1).toOption()).isEqualTo(Option.of(1));
+    }
+
     @Test
     public void shouldReturnIteratorOfFailure() {
         assertThat((Iterator<Object>) failure().iterator()).isNotNull();

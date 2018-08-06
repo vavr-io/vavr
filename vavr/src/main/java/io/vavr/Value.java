@@ -1135,19 +1135,6 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to an {@link Option}.
-     *
-     * @return A new {@link Option}.
-     */
-    default Option<T> toOption() {
-        if (this instanceof Option) {
-            return (Option<T>) this;
-        } else {
-            return isEmpty() ? Option.none() : Option.some(get());
-        }
-    }
-
-    /**
      * Converts this to an {@link Either}.
      *
      * @param left A left value for the {@link Either}
@@ -1330,37 +1317,6 @@ public interface Value<T> extends Iterable<T> {
      */
     default Stream<T> toStream() {
         return ValueModule.toTraversable(this, Stream.empty(), Stream::of, Stream::ofAll);
-    }
-
-    /**
-     * Converts this to a {@link Try}.
-     * <p>
-     * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
-     * otherwise a new {@code Success(value)} is returned.
-     *
-     * @return A new {@link Try}.
-     */
-    default Try<T> toTry() {
-        if (this instanceof Try) {
-            return (Try<T>) this;
-        } else {
-            // TODO: workaround. the Value class will be deleted with Vavr 1.0 and conversion will be moved to types
-            return Try.of(this::get).recoverWith(Try.NonFatalThrowable.class, x -> Try.failure(x.getCause()));
-        }
-    }
-
-    /**
-     * Converts this to a {@link Try}.
-     * <p>
-     * If this value is undefined, i.e. empty, then a new {@code Failure(ifEmpty.get())} is returned,
-     * otherwise a new {@code Success(value)} is returned.
-     *
-     * @param ifEmpty an exception supplier
-     * @return A new {@link Try}.
-     */
-    default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
-        Objects.requireNonNull(ifEmpty, "ifEmpty is null");
-        return isEmpty() ? Try.failure(ifEmpty.get()) : toTry();
     }
 
     /**

@@ -369,12 +369,6 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToOption() {
-        assertThat(empty().toOption()).isSameAs(Option.none());
-        assertThat(of(1).toOption()).isEqualTo(Option.of(1));
-    }
-
-    @Test
     public void shouldConvertToEither() {
         assertThat(empty().toEither("test")).isEqualTo(Left("test"));
         assertThat(empty().toEither(() -> "test")).isEqualTo(Left("test"));
@@ -508,30 +502,6 @@ public abstract class AbstractValueTest {
         } else {
             assertThat(stream).isEqualTo(Stream.of(1, 2, 3));
         }
-    }
-
-    @Test
-    public void shouldConvertNonEmptyToTry() {
-        assertThat(of(1, 2, 3).toTry()).isEqualTo(Try.of(() -> 1));
-    }
-
-    @Test
-    public void shouldConvertEmptyToTry() {
-        final Try<?> actual = empty().toTry();
-        assertThat(actual.isFailure()).isTrue();
-        assertThat(actual.getCause()).isExactlyInstanceOf(NoSuchElementException.class);
-    }
-
-    @Test
-    public void shouldConvertNonEmptyToTryUsingExceptionSupplier() {
-        final Exception x = new Exception("test");
-        assertThat(of(1, 2, 3).toTry(() -> x)).isEqualTo(Try.of(() -> 1));
-    }
-
-    @Test
-    public void shouldConvertEmptyToTryUsingExceptionSupplier() {
-        final Exception x = new Exception("test");
-        assertThat(empty().toTry(() -> x)).isEqualTo(Try.failure(x));
     }
 
     @Test

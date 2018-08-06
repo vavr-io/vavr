@@ -274,6 +274,32 @@ public class OptionTest extends AbstractValueTest {
         assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
     }
 
+    // -- toTry
+
+    @Test
+    public void shouldConvertNonEmptyToTry() {
+        assertThat(of(1, 2, 3).toTry()).isEqualTo(Try.of(() -> 1));
+    }
+
+    @Test
+    public void shouldConvertEmptyToTry() {
+        final Try<?> actual = empty().toTry();
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(actual.getCause()).isExactlyInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    public void shouldConvertNonEmptyToTryUsingExceptionSupplier() {
+        final Exception x = new Exception("test");
+        assertThat(of(1, 2, 3).toTry(() -> x)).isEqualTo(Try.of(() -> 1));
+    }
+
+    @Test
+    public void shouldConvertEmptyToTryUsingExceptionSupplier() {
+        final Exception x = new Exception("test");
+        assertThat(empty().toTry(() -> x)).isEqualTo(Try.failure(x));
+    }
+
     // -- isDefined
 
     @Test
