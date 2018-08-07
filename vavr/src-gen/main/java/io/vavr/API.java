@@ -4374,7 +4374,6 @@ public final class API {
 
         // -- CASES
 
-        // javac needs fqn's here
         public interface Case<T, R> extends PartialFunction<T, R> {
 
             /**

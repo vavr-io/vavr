@@ -986,7 +986,6 @@ def generateMainClasses(): Unit = {
 
               // -- CASES
 
-              // javac needs fqn's here
               public interface Case<T, R> extends $PartialFunctionType<T, R> {
 
                   /**
