@@ -217,34 +217,6 @@ public abstract class AbstractValueTest {
         assertThat(of(1).isLazy()).isFalse();
     }
 
-    // -- peek
-
-    @Test
-    public void shouldPeekNil() {
-        assertThat(empty().peek(t -> {})).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldPeekNonNilPerformingNoAction() {
-        assertThat(of(1).peek(t -> {})).isEqualTo(of(1));
-    }
-
-    @Test
-    public void shouldPeekSingleValuePerformingAnAction() {
-        final int[] effect = { 0 };
-        final Value<Integer> actual = of(1).peek(i -> effect[0] = i);
-        assertThat(actual).isEqualTo(of(1));
-        assertThat(effect[0]).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldPeekNonNilPerformingAnAction() {
-        final int[] effect = { 0 };
-        final Value<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
-        assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
-        assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
-    }
-
     // -- Conversions toXxx()
 
     @Test

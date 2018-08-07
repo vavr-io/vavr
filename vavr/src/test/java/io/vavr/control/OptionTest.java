@@ -19,7 +19,6 @@
  */
 package io.vavr.control;
 
-import io.vavr.*;
 import io.vavr.collection.Seq;
 import io.vavr.AbstractValueTest;
 import io.vavr.Function1;
@@ -356,6 +355,24 @@ public class OptionTest extends AbstractValueTest {
         }
     }
 
+    // -- onSuccess
+
+    @Test
+    public void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
+        final int[] actual = new int[] { -1 };
+        final Option<Integer> testee = Option.of(1).onSuccess(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(1);
+        assertThat(testee).isEqualTo(Option.of(1));
+    }
+
+    @Test
+    public void shouldNotConsumeAnythingOnPeekWhenValueIsNotDefined() {
+        final int[] actual = new int[] { -1 };
+        final Option<Integer> testee = Option.<Integer> none().onSuccess(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(-1);
+        assertThat(testee).isEqualTo(Option.none());
+    }
+
     // -- filter
 
     @Test
@@ -457,24 +474,6 @@ public class OptionTest extends AbstractValueTest {
         final int[] actual = new int[] { -1 };
         Option.<Integer> none().forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
-    }
-
-    // -- peek
-
-    @Test
-    public void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
-        final int[] actual = new int[] { -1 };
-        final Option<Integer> testee = Option.of(1).peek(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(1);
-        assertThat(testee).isEqualTo(Option.of(1));
-    }
-
-    @Test
-    public void shouldNotConsumeAnythingOnPeekWhenValueIsNotDefined() {
-        final int[] actual = new int[] { -1 };
-        final Option<Integer> testee = Option.<Integer> none().peek(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(-1);
-        assertThat(testee).isEqualTo(Option.none());
     }
 
     // -- transform

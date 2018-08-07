@@ -785,36 +785,56 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
     }
 
-    // -- peekInvalid
+    // -- onInvalid
 
-    private Consumer<Seq<Integer>> withSideEffectOn(ArrayList<Integer> effect) {
+    private <T> Consumer<Seq<T>> withSideEffectOn(ArrayList<T> effect) {
         return e -> e.forEach(effect::add);
     }
-
+    
     @Test
-    public void shouldPeekInvalidNoEffectOnValid() {
+    public void shouldOnInvalidNoEffectOnValid() {
         final ArrayList<Integer> mutableList = new ArrayList<>();
         final Validation<Integer, String> expected = Validation.valid("");
-        final Validation<Integer, String> actual = expected.peekInvalid(withSideEffectOn(mutableList));
+        final Validation<Integer, String> actual = expected.onInvalid(withSideEffectOn(mutableList));
         assertThat(actual).isEqualTo(expected);
         assertThat(mutableList).isEmpty();
     }
 
     @Test
-    public void shouldPeekInvalidEffectOnSingleInvalid() {
+    public void shouldOnInvalidEffectOnSingleInvalid() {
         final ArrayList<Integer> mutableList = new ArrayList<>();
         final Validation<Integer, String> expected = Validation.invalid(1);
-        final Validation<Integer, String> actual = expected.peekInvalid(withSideEffectOn(mutableList));
+        final Validation<Integer, String> actual = expected.onInvalid(withSideEffectOn(mutableList));
         assertThat(actual).isEqualTo(expected);
         assertThat(mutableList).containsExactly(1);
     }
 
     @Test
-    public void shouldPeekInvalidEffectOnMultipleInvalid() {
+    public void shouldOnInvalidEffectOnMultipleInvalid() {
         final ArrayList<Integer> mutableList = new ArrayList<>();
         final Validation<Integer, String> expected = Validation.invalid(1, 2, 3);
-        final Validation<Integer, String> actual = expected.peekInvalid(withSideEffectOn(mutableList));
+        final Validation<Integer, String> actual = expected.onInvalid(withSideEffectOn(mutableList));
         assertThat(actual).isEqualTo(expected);
         assertThat(mutableList).containsExactly(1, 2, 3);
+    }
+
+    // -- onValid
+
+    @Test
+    public void shouldOnValidEffectOnSingleInvalid() {
+        final ArrayList<String> mutableList = new ArrayList<>();
+        final Validation<Integer, String> expected = Validation.valid("");
+        final Validation<Integer, String> actual = expected.onValid(mutableList::add);
+        assertThat(actual).isEqualTo(expected);
+        assertThat(mutableList).containsExactly("");
+    }
+
+    @Test
+    public void shouldOnValidNoEffectOnValid() {
+        final ArrayList<String> mutableList = new ArrayList<>();
+        final Validation<Integer, String> expected = Validation.invalid(1);
+        final Validation<Integer, String> actual = expected.onValid(mutableList::add);
+        assertThat(actual).isEqualTo(expected);
+        assertThat(mutableList).isEmpty();
     }
 }

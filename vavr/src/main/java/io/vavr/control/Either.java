@@ -522,19 +522,32 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
     }
 
-    @Override
-    default Either<L, R> peek(Consumer<? super R> action) {
+    /**
+     * Applies an action to this left value if this is a {@code Left}, otherwise nothing happens.
+     *
+     * @param action An action that takes a left value and performs a side-effect
+     * @return this {@code Either}
+     * @throws NullPointerException if the given {@code action} is null
+     */
+    default Either<L, R> onLeft(Consumer<? super L> action) {
         Objects.requireNonNull(action, "action is null");
-        if (isRight()) {
-            action.accept(get());
+        if (isLeft()) {
+            action.accept(getLeft());
         }
         return this;
     }
 
-    default Either<L, R> peekLeft(Consumer<? super L> action) {
+    /**
+     * Applies an action to this right value if this is a {@code Right}, otherwise nothing happens.
+     *
+     * @param action An action that takes a right value and performs a side-effect
+     * @return this {@code Either}
+     * @throws NullPointerException if the given {@code action} is null
+     */
+    default Either<L, R> onRight(Consumer<? super R> action) {
         Objects.requireNonNull(action, "action is null");
-        if (isLeft()) {
-            action.accept(getLeft());
+        if (isRight()) {
+            action.accept(get());
         }
         return this;
     }
