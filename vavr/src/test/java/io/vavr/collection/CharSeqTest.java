@@ -1688,34 +1688,6 @@ public class CharSeqTest {
         assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'd'), 1)).isFalse();
     }
 
-    // -- stderr
-
-    @Test
-    public void shouldWriteToStderr() {
-        assertThat(captureErrOut(()->CharSeq.of('1', '2', '3').stderr())).isEqualTo("1\n" +
-                "2\n" +
-                "3\n");
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldHandleStderrIOException() {
-        withFailingErrOut(()->CharSeq.of('0').stderr());
-    }
-
-    // -- stdout
-
-    @Test
-    public void shouldWriteToStdout() {
-        assertThat(captureStdOut(()->CharSeq.of('1', '2', '3').stdout())).isEqualTo("1\n" +
-                "2\n" +
-                "3\n");
-    }
-
-    @Test(expected = IllegalStateException.class)
-    public void shouldHandleStdoutIOException() {
-        withFailingStdOut(()->CharSeq.of('0').stdout());
-    }
-
     // -- sum
 
     @Test

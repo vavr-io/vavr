@@ -19,10 +19,8 @@
  */
 package io.vavr;
 
-import io.vavr.collection.Seq;
 import io.vavr.control.Try;
 import io.vavr.collection.Iterator;
-import io.vavr.collection.List;
 import io.vavr.collection.Vector;
 import io.vavr.control.Option;
 import org.junit.Test;
@@ -33,7 +31,6 @@ import java.util.Objects;
 import java.util.Spliterator;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static java.util.concurrent.CompletableFuture.runAsync;
@@ -46,7 +43,7 @@ public class LazyTest extends AbstractValueTest {
     protected <T> Undefined<T> empty() {
         return (Undefined<T>) Undefined.INSTANCE;
     }
-    
+
     @Override
     protected <T> Lazy<T> of(T element) {
         return Lazy.of(() -> element);
@@ -108,15 +105,6 @@ public class LazyTest extends AbstractValueTest {
         final Iterator<Integer> iterator = Lazy.of(() -> 1).iterator();
         assertThat(iterator.next()).isEqualTo(1);
         assertThat(iterator.hasNext()).isFalse();
-    }
-
-    // -- peek
-
-    @Test
-    public void shouldPeek() {
-        final Lazy<Integer> lazy = Lazy.of(() -> 1);
-        final Lazy<Integer> peek = lazy.peek(v -> assertThat(v).isEqualTo(1));
-        assertThat(peek).isSameAs(lazy);
     }
 
     // -- flatMap
@@ -404,11 +392,6 @@ final class Undefined<T> implements Value<T>, Serializable {
     @Override
     public boolean isSingleValued() {
         return prototype.isSingleValued();
-    }
-
-    @Override
-    public Value<T> peek(Consumer<? super T> action) {
-        return this;
     }
 
     @Override

@@ -376,21 +376,21 @@ public class EitherTest extends AbstractValueTest {
     // -- peekLeft
 
     @Test
-    public void shouldPeekLeftNil() {
-        assertThat(empty().peekLeft(t -> {})).isEqualTo(empty());
+    public void shouldOnLeftNil() {
+        assertThat(empty().onLeft(t -> {})).isEqualTo(empty());
     }
 
     @Test
-    public void shouldPeekLeftForLeft() {
+    public void shouldOnLeftForLeft() {
         final int[] effect = { 0 };
-        final Either<Integer, ?> actual = Either.left(1).peekLeft(i -> effect[0] = i);
+        final Either<Integer, ?> actual = Either.left(1).onLeft(i -> effect[0] = i);
         assertThat(actual).isEqualTo(Either.left(1));
         assertThat(effect[0]).isEqualTo(1);
     }
 
     @Test
-    public void shouldNotPeekLeftForRight() {
-        Either.right(1).peekLeft(i -> { throw new IllegalStateException(); });
+    public void shouldNotOnLeftForRight() {
+        Either.right(1).onLeft(i -> { throw new IllegalStateException(); });
     }
 
     // equals

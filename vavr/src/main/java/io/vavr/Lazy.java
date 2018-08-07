@@ -27,7 +27,6 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Objects;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -224,12 +223,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     @Override
     public <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
         return Lazy.of(() -> mapper.apply(get()));
-    }
-
-    @Override
-    public Lazy<T> peek(Consumer<? super T> action) {
-        action.accept(get());
-        return this;
     }
 
     /**

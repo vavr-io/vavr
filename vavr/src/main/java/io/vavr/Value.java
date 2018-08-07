@@ -92,16 +92,6 @@ import static io.vavr.API.*;
  * <li>{@link #iterator()}</li>
  * </ul>
  *
- * Side-effects:
- *
- * <ul>
- * <li>{@link #out(PrintStream)}</li>
- * <li>{@link #out(PrintWriter)}</li>
- * <li>{@link #peek(Consumer)}</li>
- * <li>{@link #stderr()}</li>
- * <li>{@link #stdout()}</li>
- * </ul>
- *
  * Tests:
  *
  * <ul>
@@ -443,75 +433,11 @@ public interface Value<T> extends Iterable<T> {
     <U> Value<U> map(Function<? super T, ? extends U> mapper);
 
     /**
-     * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.
-     * Performs the given {@code action} on all elements (the first immediately, successive deferred),
-     * if this is a <em>lazy</em> implementation.
-     *
-     * @param action The action that will be performed on the element(s).
-     * @return this instance
-     */
-    Value<T> peek(Consumer<? super T> action);
-
-    /**
      * Returns the name of this Value type, which is used by toString().
      *
      * @return This type name.
      */
     String stringPrefix();
-
-    // -- output
-
-    /**
-     * Sends the string representations of this to the {@link PrintStream}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
-     *
-     * @param out The PrintStream to write to
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stream.
-     */
-    default void out(PrintStream out) {
-        for (T t : this) {
-            out.println(String.valueOf(t));
-            if (out.checkError()) {
-                throw new IllegalStateException("Error writing to PrintStream");
-            }
-        }
-    }
-
-    /**
-     * Sends the string representations of this to the {@link PrintWriter}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
-     *
-     * @param writer The PrintWriter to write to
-     * @throws IllegalStateException if {@code PrintWriter.checkError()} is true after writing to writer.
-     */
-    default void out(PrintWriter writer) {
-        for (T t : this) {
-            writer.println(String.valueOf(t));
-            if (writer.checkError()) {
-                throw new IllegalStateException("Error writing to PrintWriter");
-            }
-        }
-    }
-
-    /**
-     * Sends the string representations of this to the standard error stream {@linkplain System#err}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
-     *
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
-     */
-    default void stderr() {
-        out(System.err);
-    }
-
-    /**
-     * Sends the string representations of this to the standard output stream {@linkplain System#out}.
-     * If this value consists of multiple elements, each element is displayed in a new line.
-     *
-     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
-     */
-    default void stdout() {
-        out(System.out);
-    }
 
     // -- Adjusted return types of Iterable
 

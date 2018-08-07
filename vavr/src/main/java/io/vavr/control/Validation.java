@@ -750,8 +750,14 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         }
     }
 
-    @Override
-    default Validation<E, T> peek(Consumer<? super T> action) {
+    /**
+     * Consumes the valid value if this is a {@code Valid}, otherwise nothing happens.
+     *
+     * @param action The action that will be performed on the errors.
+     * @return this instance
+     * @throws NullPointerException if the given {@code action} is null
+     */
+    default Validation<E, T> onValid(Consumer<? super T> action) {
         if (isValid()) {
             action.accept(get());
         }
@@ -759,12 +765,13 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Consumes the errors if this is an Invalid.
+     * Consumes the errors if this is an {@code Invalid}, otherwise nothing happens.
      *
      * @param action The action that will be performed on the errors.
      * @return this instance
+     * @throws NullPointerException if the given {@code action} is null
      */
-    default Validation<E, T> peekInvalid(Consumer<? super Seq<E>> action) {
+    default Validation<E, T> onInvalid(Consumer<? super Seq<E>> action) {
         if (isInvalid()) {
             action.accept(getErrors());
         }

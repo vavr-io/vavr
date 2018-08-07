@@ -933,6 +933,27 @@ public class TryTest extends AbstractValueTest {
         assertThat(result[0]).isEqualTo(SUCCESS);
     }
 
+    // -- onSuccess
+
+    @Test
+    public void shouldPerformActionOnSuccess() {
+        final List<Object> list = new ArrayList<>();
+        assertThat(success().onSuccess(list::add)).isEqualTo(success());
+        assertThat(list.isEmpty()).isFalse();
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldRethrowWhenPerfomingOnSuccessAction() {
+        success().onSuccess(t -> failure().get());
+    }
+
+    @Test
+    public void shouldDoNothingWhenIsFailureAndCallingOnSuccess() {
+        final List<Object> list = new ArrayList<>();
+        assertThat(failure().onSuccess(list::add)).isEqualTo(failure());
+        assertThat(list.isEmpty()).isTrue();
+    }
+
     // -- transform
 
     @Test(expected = NullPointerException.class)
@@ -1133,15 +1154,6 @@ public class TryTest extends AbstractValueTest {
                 .andThen(arr -> arr.add(20))
                 .map(arr -> arr.get(1));
         assertThat(actual.toString()).isEqualTo("Failure(java.lang.NumberFormatException: For input string: \"aaa\")");
-    }
-
-    // peek
-
-    @Test
-    public void shouldPeekFailure() {
-        final List<Object> list = new ArrayList<>();
-        assertThat(failure().peek(list::add)).isEqualTo(failure());
-        assertThat(list.isEmpty()).isTrue();
     }
 
     // equals
@@ -1444,20 +1456,6 @@ public class TryTest extends AbstractValueTest {
         });
         final Try<Void> expected = Try.success(null);
         assertThat(actual).isEqualTo(expected);
-    }
-
-    // peek
-
-    @Test
-    public void shouldPeekSuccess() {
-        final List<Object> list = new ArrayList<>();
-        assertThat(success().peek(list::add)).isEqualTo(success());
-        assertThat(list.isEmpty()).isFalse();
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void shouldPeekSuccessAndThrow() {
-        success().peek(t -> failure().get());
     }
 
     // equals

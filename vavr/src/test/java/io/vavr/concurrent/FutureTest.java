@@ -1035,14 +1035,6 @@ public class FutureTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldPeekFuture() {
-        final int[] consumer = new int[] { -1 };
-        Future.of(zZz(42)).peek(i -> consumer[0] = i);
-        waitUntil(() -> consumer[0] > 0);
-        assertThat(consumer[0]).isEqualTo(42);
-    }
-
-    @Test
     public void shouldReturnIterator() {
         final Iterator<Integer> it = Future.successful(42).iterator();
         assertThat(it.hasNext()).isTrue();

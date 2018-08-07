@@ -768,22 +768,6 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Applies the action to the value of a Success or does nothing in the case of a Failure.
-     *
-     * @param action A Consumer
-     * @return this {@code Try}
-     * @throws NullPointerException if {@code action} is null
-     */
-    @Override
-    default Try<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (isSuccess()) {
-            action.accept(get());
-        }
-        return this;
-    }
-
-    /**
      * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
      * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f},
      * i.e. calling {@code Try.of(() -> f.apply((X) getCause())}.

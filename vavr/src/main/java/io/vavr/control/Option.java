@@ -224,11 +224,27 @@ public interface Option<T> extends Value<T>, Serializable {
      *
      * @param action a given Runnable to be run
      * @return this {@code Option}
+     * @throws NullPointerException if the given {@code action} is null
      */
     default Option<T> onEmpty(Runnable action) {
         Objects.requireNonNull(action, "action is null");
         if (isEmpty()) {
             action.run();
+        }
+        return this;
+    }
+
+    /**
+     * Applies an action to this value if this is defined, otherwise nothing happens.
+     *
+     * @param action An action which can be applied to an optional value
+     * @return this {@code Option}
+     * @throws NullPointerException if the given {@code action} is null
+     */
+    default Option<T> onSuccess(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (isDefined()) {
+            action.accept(get());
         }
         return this;
     }
@@ -401,21 +417,6 @@ public interface Option<T> extends Value<T>, Serializable {
      */
     default <U> U fold(Supplier<? extends U> ifNone, Function<? super T, ? extends U> f) {
         return this.<U>map(f).getOrElse(ifNone);
-    }
-
-    /**
-     * Applies an action to this value, if this option is defined, otherwise does nothing.
-     *
-     * @param action An action which can be applied to an optional value
-     * @return this {@code Option}
-     */
-    @Override
-    default Option<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (isDefined()) {
-            action.accept(get());
-        }
-        return this;
     }
 
     /**
