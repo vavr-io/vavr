@@ -259,18 +259,18 @@ public class OptionTest extends AbstractValueTest {
         Option.none().getOrElseThrow(() -> new RuntimeException("none"));
     }
 
-    // -- toJavaOptional
+    // -- toOptional
 
     @Test
-    public void shouldConvertNoneToJavaOptional() {
+    public void shouldConvertNoneToOptional() {
         final Option<Object> none = Option.none();
-        assertThat(none.toJavaOptional()).isEqualTo(Optional.empty());
+        assertThat(none.toOptional()).isEqualTo(Optional.empty());
     }
 
     @Test
-    public void shouldConvertSomeToJavaOptional() {
+    public void shouldConvertSomeToOptional() {
         final Option<Integer> some = Option.some(1);
-        assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
+        assertThat(some.toOptional()).isEqualTo(Optional.of(1));
     }
     
     // -- toTry

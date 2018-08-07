@@ -436,7 +436,7 @@ public interface Option<T> extends Value<T>, Serializable {
      *
      * @return {@code Optional.ofNullable(get())} if this is defined, otherwise {@code Optional.empty()}
      */
-    default Optional<T> toJavaOptional() {
+    default Optional<T> toOptional() {
         return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
     }
 

@@ -995,21 +995,21 @@ public interface Try<T> extends Value<T>, Serializable {
     }
     
     /**
-     * Converts this {@code Try} to a {@link java.util.Optional}.
-     *
-     * @return {@code Optional.ofNullable(get())} if this is defined, otherwise {@code Optional.empty()}
-     */
-    default Optional<T> toJavaOptional() {
-        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
-    }
-
-    /**
      * Converts this {@code Try} to a {@link Option}.
      *
      * @return {@code Option.some(get())} if this is defined, otherwise {@code Option.none()}
      */
     default Option<T> toOption() {
         return isEmpty() ? Option.none() : Option.some(get());
+    }
+
+    /**
+     * Converts this {@code Try} to a {@link java.util.Optional}.
+     *
+     * @return {@code Optional.ofNullable(get())} if this is defined, otherwise {@code Optional.empty()}
+     */
+    default Optional<T> toOptional() {
+        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
     }
 
     /**

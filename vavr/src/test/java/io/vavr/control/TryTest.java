@@ -1008,16 +1008,16 @@ public class TryTest extends AbstractValueTest {
         assertThat(failure().toValid(() -> "test").isInvalid()).isTrue();
     }
 
-    // -- toJavaOptional
+    // -- toOptional
 
     @Test
-    public void shouldConvertSuccessToJavaOptional() {
-        assertThat(success().toJavaOptional()).isEqualTo(Optional.of(SUCCESS));
+    public void shouldConvertSuccessToOptional() {
+        assertThat(success().toOptional()).isEqualTo(Optional.of(SUCCESS));
     }
 
     @Test
-    public void shouldConvertFailureToJavaOptional() {
-        assertThat(failure().toJavaOptional()).isEqualTo(Optional.empty());
+    public void shouldConvertFailureToOptional() {
+        assertThat(failure().toOptional()).isEqualTo(Optional.empty());
     }
 
     // -- filter
