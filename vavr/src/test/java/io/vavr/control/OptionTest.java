@@ -459,40 +459,6 @@ public class OptionTest extends AbstractValueTest {
         assertThat(actual[0]).isEqualTo(-1);
     }
 
-    // -- toEither
-
-    @Test
-    public void shouldMakeRightOnSomeToEither() {
-        assertThat(API.Some(5).toEither("bad")).isEqualTo(API.Right(5));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToEither() {
-        assertThat(API.None().toEither("bad")).isEqualTo(API.Left("bad"));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToEitherSupplier() {
-        assertThat(API.None().toEither(() -> "bad")).isEqualTo(API.Left("bad"));
-    }
-
-    // -- toValidation
-
-    @Test
-    public void shouldMakeValidOnSomeToValidation() {
-        assertThat(API.Some(5).toValid("bad")).isEqualTo(API.Valid(5));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToValidation() {
-        assertThat(API.None().toValid("bad")).isEqualTo(API.Invalid("bad"));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToValidationSupplier() {
-        assertThat(API.None().toValid(() -> "bad")).isEqualTo(API.Invalid("bad"));
-    }
-
     // -- peek
 
     @Test

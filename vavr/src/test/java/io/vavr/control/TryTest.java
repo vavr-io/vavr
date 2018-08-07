@@ -967,17 +967,6 @@ public class TryTest extends AbstractValueTest {
         assertThat(failure().toEither().isLeft()).isTrue();
     }
 
-    @Test
-    public void shouldConvertFailureToEitherLeft() {
-        assertThat(failure().toEither("test").isLeft()).isTrue();
-    }
-
-    @Test
-    public void shouldConvertFailureToEitherLeftSupplier() {
-        assertThat(failure().toEither(() -> "test").isLeft()).isTrue();
-    }
-
-
     // -- toValidation
 
     @Test
@@ -994,18 +983,6 @@ public class TryTest extends AbstractValueTest {
         final Validation<String, Object> validation = failure.toValidation(e -> e.toString());
         assertThat(validation.getErrors().get(0)).isEqualTo(failure.getCause().toString());
         assertThat(validation.isInvalid()).isTrue();
-    }
-
-    // -- toValidation
-
-    @Test
-    public void shouldConvertFailureToValidationLeft() {
-        assertThat(failure().toValid("test").isInvalid()).isTrue();
-    }
-
-    @Test
-    public void shouldConvertFailureToValidationLeftSupplier() {
-        assertThat(failure().toValid(() -> "test").isInvalid()).isTrue();
     }
 
     // -- toOptional
