@@ -827,8 +827,6 @@ public abstract class AbstractValueTest {
         final boolean actual = nonEmpty instanceof Serializable;
         final boolean expected = Match(nonEmpty).of(
                 Case($(anyOf(
-                        instanceOf(Either.LeftProjection.class),
-                        instanceOf(Either.RightProjection.class),
                         instanceOf(Future.class),
                         instanceOf(io.vavr.collection.Iterator.class)
                 )), false),
