@@ -699,11 +699,6 @@ public abstract class AbstractValueTest {
     }
 
     @Test
-    public void shouldConvertToJavaOptional() {
-        assertThat(of(1, 2, 3).toJavaOptional()).isEqualTo(Optional.of(1));
-    }
-
-    @Test
     public void shouldConvertToJavaSet() {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.Set<Integer> set = value.toJavaSet();

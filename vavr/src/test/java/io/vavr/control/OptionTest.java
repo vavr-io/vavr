@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -273,7 +272,7 @@ public class OptionTest extends AbstractValueTest {
         final Option<Integer> some = Option.some(1);
         assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
     }
-
+    
     // -- toTry
 
     @Test
@@ -645,24 +644,6 @@ public class OptionTest extends AbstractValueTest {
     public void shouldPreserveSingletonWhenDeserializingNone() {
         final Object none = Serializables.deserialize(Serializables.serialize(Option.none()));
         assertThat(none == Option.none()).isTrue();
-    }
-
-    // -- toCompletableFuture
-
-    @Test
-    public void shouldConvertSomeToCompletableFuture() {
-        final String some = "some";
-        final CompletableFuture<String> future = API.Option(some).toCompletableFuture();
-        assertThat(future.isDone());
-        assertThat(Try.of(future::get).get()).isEqualTo(some);
-    }
-
-    @Test
-    public void shouldConvertNoneToFailedCompletableFuture() {
-
-        final CompletableFuture<Object> future = API.None().toCompletableFuture();
-        assertThat(future.isDone());
-        assertThat(future.isCompletedExceptionally());
     }
 
     // -- spliterator

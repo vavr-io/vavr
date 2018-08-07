@@ -160,18 +160,6 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
         assertThat(self.left().toEither()).isEqualTo(self);
     }
 
-    // toJavaOptional
-
-    @Test
-    public void shouldConvertLeftProjectionOfLeftToJavaOptional() {
-        assertThat(Either.left(1).left().toJavaOptional()).isEqualTo(Optional.of(1));
-    }
-
-    @Test
-    public void shouldConvertLeftProjectionOfRightToJavaOptional() {
-        assertThat(Either.<Integer, String> right("x").left().toJavaOptional()).isEqualTo(Optional.empty());
-    }
-
     // filter
 
     @Test

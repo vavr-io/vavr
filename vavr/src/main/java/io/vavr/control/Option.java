@@ -432,6 +432,15 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Converts this {@code Try} to a {@link java.util.Optional}.
+     *
+     * @return {@code Optional.ofNullable(get())} if this is defined, otherwise {@code Optional.empty()}
+     */
+    default Optional<T> toJavaOptional() {
+        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
+    }
+
+    /**
      * Converts this {@code Option} to a {@link Try}.
      *
      * @return {@code Try.success(get())} if this is defined, otherwise {@code Try.failure(new NoSuchElementException())}

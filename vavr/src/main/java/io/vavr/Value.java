@@ -129,7 +129,6 @@ import static io.vavr.API.*;
  * <li>{@link #toJavaMap(Function)}</li>
  * <li>{@link #toJavaMap(Supplier, Function)}</li>
  * <li>{@link #toJavaMap(Supplier, Function, Function)} </li>
- * <li>{@link #toJavaOptional()}</li>
  * <li>{@link #toJavaParallelStream()}</li>
  * <li>{@link #toJavaSet()}</li>
  * <li>{@link #toJavaSet(Function)}</li>
@@ -142,7 +141,6 @@ import static io.vavr.API.*;
  * <li>{@link #toList()}</li>
  * <li>{@link #toMap(Function)}</li>
  * <li>{@link #toMap(Function, Function)}</li>
- * <li>{@link #toOption()}</li>
  * <li>{@link #toPriorityQueue()}</li>
  * <li>{@link #toPriorityQueue(Comparator)}</li>
  * <li>{@link #toQueue()}</li>
@@ -158,8 +156,6 @@ import static io.vavr.API.*;
  * <li>{@link #toStream()}</li>
  * <li>{@link #toString()}</li>
  * <li>{@link #toTree()}</li>
- * <li>{@link #toTry()}</li>
- * <li>{@link #toTry(Supplier)}</li>
  * <li>{@link #toValid(Object)}</li>
  * <li>{@link #toValid(Supplier)}</li>
  * <li>{@link #toVector()}</li>
@@ -563,19 +559,6 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a {@link CompletableFuture}
-     *
-     * @return A new {@link CompletableFuture} containing the value
-     */
-    default CompletableFuture<T> toCompletableFuture() {
-        final CompletableFuture<T> completableFuture = new CompletableFuture<>();
-        Try.of(this::get)
-                .onSuccess(completableFuture::complete)
-                .onFailure(completableFuture::completeExceptionally);
-        return completableFuture;
-    }
-
-    /**
      * Converts this to a {@link Validation}.
      *
      * @param <U>   value type of a {@code Valid}
@@ -852,29 +835,6 @@ public interface Value<T> extends Iterable<T> {
             }
         }
         return map;
-    }
-
-    /**
-     * Converts this to an {@link java.util.Optional}.
-     *
-     * <pre>{@code
-     * // = Optional.empty
-     * Future.of(() -> { throw new Error(); })
-     *       .toJavaOptional()
-     *
-     * // = Optional[ok]
-     * Try.of(() -> "ok")
-     *     .toJavaOptional()
-     *
-     * // = Optional[1]
-     * List.of(1, 2, 3)
-     *     .toJavaOptional()
-     * }</pre>
-     *
-     * @return A new {@link java.util.Optional}.
-     */
-    default Optional<T> toJavaOptional() {
-        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
     }
 
     /**
