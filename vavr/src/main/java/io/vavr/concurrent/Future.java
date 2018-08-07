@@ -597,7 +597,12 @@ public interface Future<T> extends Value<T> {
         return FutureImpl.of(executor, Try.success(result));
     }
 
-    @Override
+
+    /**
+     * Converts this {@code Future} to a {@link java.util.concurrent.CompletableFuture}
+     *
+     * @return A new {@link CompletableFuture} that completes with this value on success, otherwise it completes exceptionally with this cause.
+     */
     default CompletableFuture<T> toCompletableFuture() {
         final CompletableFuture<T> future = new CompletableFuture<>();
         onSuccess(future::complete);

@@ -28,6 +28,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -991,6 +992,24 @@ public interface Try<T> extends Value<T>, Serializable {
         } else {
             return Either.right(get());
         }
+    }
+    
+    /**
+     * Converts this {@code Try} to a {@link Option}.
+     *
+     * @return {@code Option.some(get())} if this is defined, otherwise {@code Option.none()}
+     */
+    default Option<T> toOption() {
+        return isEmpty() ? Option.none() : Option.some(get());
+    }
+
+    /**
+     * Converts this {@code Try} to a {@link java.util.Optional}.
+     *
+     * @return {@code Optional.ofNullable(get())} if this is defined, otherwise {@code Optional.empty()}
+     */
+    default Optional<T> toOptional() {
+        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
     }
 
     /**

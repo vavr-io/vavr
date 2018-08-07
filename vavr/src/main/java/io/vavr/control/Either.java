@@ -449,7 +449,6 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * If the {@code Either} is a {@code Right} and the predicate doesn't match, the
      * {@code Either} will be turned into a {@code Left} with contents computed by applying
      * the filterVal function to the {@code Either} value.
-     * <p>
      *
      * <pre>{@code
      * import static io.vavr.API.*;
@@ -462,11 +461,11 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * }</pre>
      *
      * @param predicate A predicate
+     * @param zero a function that transforms the right value to a left value, if it does not make it through the given filter {@code predicate}
      * @return an {@code Either} instance
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Either<L,R> filterOrElse(Predicate<? super R> predicate,
-                                     Function<? super R, ? extends L> zero) {
+    default Either<L,R> filterOrElse(Predicate<? super R> predicate, Function<? super R, ? extends L> zero) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(zero, "zero is null");
         if (isLeft() || predicate.test(get())) {

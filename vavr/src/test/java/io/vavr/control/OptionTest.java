@@ -30,7 +30,6 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -260,18 +259,44 @@ public class OptionTest extends AbstractValueTest {
         Option.none().getOrElseThrow(() -> new RuntimeException("none"));
     }
 
-    // -- toJavaOptional
+    // -- toOptional
 
     @Test
-    public void shouldConvertNoneToJavaOptional() {
+    public void shouldConvertNoneToOptional() {
         final Option<Object> none = Option.none();
-        assertThat(none.toJavaOptional()).isEqualTo(Optional.empty());
+        assertThat(none.toOptional()).isEqualTo(Optional.empty());
     }
 
     @Test
-    public void shouldConvertSomeToJavaOptional() {
+    public void shouldConvertSomeToOptional() {
         final Option<Integer> some = Option.some(1);
-        assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
+        assertThat(some.toOptional()).isEqualTo(Optional.of(1));
+    }
+    
+    // -- toTry
+
+    @Test
+    public void shouldConvertNonEmptyToTry() {
+        assertThat(of(1, 2, 3).toTry()).isEqualTo(Try.of(() -> 1));
+    }
+
+    @Test
+    public void shouldConvertEmptyToTry() {
+        final Try<?> actual = empty().toTry();
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(actual.getCause()).isExactlyInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    public void shouldConvertNonEmptyToTryUsingExceptionSupplier() {
+        final Exception x = new Exception("test");
+        assertThat(of(1, 2, 3).toTry(() -> x)).isEqualTo(Try.of(() -> 1));
+    }
+
+    @Test
+    public void shouldConvertEmptyToTryUsingExceptionSupplier() {
+        final Exception x = new Exception("test");
+        assertThat(empty().toTry(() -> x)).isEqualTo(Try.failure(x));
     }
 
     // -- isDefined
@@ -434,40 +459,6 @@ public class OptionTest extends AbstractValueTest {
         assertThat(actual[0]).isEqualTo(-1);
     }
 
-    // -- toEither
-
-    @Test
-    public void shouldMakeRightOnSomeToEither() {
-        assertThat(API.Some(5).toEither("bad")).isEqualTo(API.Right(5));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToEither() {
-        assertThat(API.None().toEither("bad")).isEqualTo(API.Left("bad"));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToEitherSupplier() {
-        assertThat(API.None().toEither(() -> "bad")).isEqualTo(API.Left("bad"));
-    }
-
-    // -- toValidation
-
-    @Test
-    public void shouldMakeValidOnSomeToValidation() {
-        assertThat(API.Some(5).toValid("bad")).isEqualTo(API.Valid(5));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToValidation() {
-        assertThat(API.None().toValid("bad")).isEqualTo(API.Invalid("bad"));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToValidationSupplier() {
-        assertThat(API.None().toValid(() -> "bad")).isEqualTo(API.Invalid("bad"));
-    }
-
     // -- peek
 
     @Test
@@ -619,24 +610,6 @@ public class OptionTest extends AbstractValueTest {
     public void shouldPreserveSingletonWhenDeserializingNone() {
         final Object none = Serializables.deserialize(Serializables.serialize(Option.none()));
         assertThat(none == Option.none()).isTrue();
-    }
-
-    // -- toCompletableFuture
-
-    @Test
-    public void shouldConvertSomeToCompletableFuture() {
-        final String some = "some";
-        final CompletableFuture<String> future = API.Option(some).toCompletableFuture();
-        assertThat(future.isDone());
-        assertThat(Try.of(future::get).get()).isEqualTo(some);
-    }
-
-    @Test
-    public void shouldConvertNoneToFailedCompletableFuture() {
-
-        final CompletableFuture<Object> future = API.None().toCompletableFuture();
-        assertThat(future.isDone());
-        assertThat(future.isCompletedExceptionally());
     }
 
     // -- spliterator

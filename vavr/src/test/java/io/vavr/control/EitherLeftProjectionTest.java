@@ -146,18 +146,6 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
         Either.right("1").left().getOrElseThrow(s -> new RuntimeException(s));
     }
 
-    // toOption
-
-    @Test
-    public void shouldConvertLeftProjectionOfLeftToSome() {
-        assertThat(Either.left(1).left().toOption()).isEqualTo(Option.of(1));
-    }
-
-    @Test
-    public void shouldConvertLeftProjectionOfRightToNone() {
-        assertThat(Either.right("x").left().toOption()).isEqualTo(Option.none());
-    }
-
     // toEither
 
     @Test
@@ -172,23 +160,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
         assertThat(self.left().toEither()).isEqualTo(self);
     }
 
-    // toJavaOptional
-
-    @Test
-    public void shouldConvertLeftProjectionOfLeftToJavaOptional() {
-        assertThat(Either.left(1).left().toJavaOptional()).isEqualTo(Optional.of(1));
-    }
-
-    @Test
-    public void shouldConvertLeftProjectionOfRightToJavaOptional() {
-        assertThat(Either.<Integer, String> right("x").left().toJavaOptional()).isEqualTo(Optional.empty());
-    }
-
     // filter
 
     @Test
     public void shouldFilterSomeOnLeftProjectionOfLeftIfPredicateMatches() {
-        final boolean actual = Either.left(1).left().filter(i -> true).toOption().isDefined();
+        final boolean actual = Either.left(1).left().filter(i -> true).isDefined();
         assertThat(actual).isTrue();
     }
 

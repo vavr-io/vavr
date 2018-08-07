@@ -20,7 +20,6 @@
 package io.vavr.control;
 
 import io.vavr.PartialFunction;
-import io.vavr.Tuple;
 import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
@@ -430,6 +429,36 @@ public interface Option<T> extends Value<T>, Serializable {
     default <U> U transform(Function<? super Option<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
+    }
+
+    /**
+     * Converts this {@code Try} to a {@link java.util.Optional}.
+     *
+     * @return {@code Optional.ofNullable(get())} if this is defined, otherwise {@code Optional.empty()}
+     */
+    default Optional<T> toOptional() {
+        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
+    }
+
+    /**
+     * Converts this {@code Option} to a {@link Try}.
+     *
+     * @return {@code Try.success(get())} if this is defined, otherwise {@code Try.failure(new NoSuchElementException())}
+     */
+    default Try<T> toTry() {
+        return isEmpty() ? Try.failure(new NoSuchElementException()) : Try.success(get());
+    }
+
+    /**
+     * Converts this {@code Option} to a {@link Try}.
+     *
+     * @param ifEmpty an exception supplier
+     * @return {@code Try.success(get())} if this is defined, otherwise {@code Try.failure(ifEmpty.get()}
+     * @throws NullPointerException if the given supplier {@code ifEmpty} is null
+     */
+    default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
+        Objects.requireNonNull(ifEmpty, "ifEmpty is null");
+        return isEmpty() ? Try.failure(ifEmpty.get()) : Try.success(get());
     }
 
     @Override

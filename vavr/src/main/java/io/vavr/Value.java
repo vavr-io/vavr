@@ -118,9 +118,6 @@ import static io.vavr.API.*;
  * <li>{@link #collect(Supplier, BiConsumer, BiConsumer)}</li>
  * <li>{@link #toArray()}</li>
  * <li>{@link #toCharSeq()}</li>
- * <li>{@link #toEither(Object)}</li>
- * <li>{@link #toEither(Supplier)}</li>
- * <li>{@link #toInvalid(Object)}</li>
  * <li>{@link #toJavaArray()}</li>
  * <li>{@link #toJavaArray(Class)}</li>
  * <li>{@link #toJavaCollection(Function)}</li>
@@ -129,25 +126,19 @@ import static io.vavr.API.*;
  * <li>{@link #toJavaMap(Function)}</li>
  * <li>{@link #toJavaMap(Supplier, Function)}</li>
  * <li>{@link #toJavaMap(Supplier, Function, Function)} </li>
- * <li>{@link #toJavaOptional()}</li>
  * <li>{@link #toJavaParallelStream()}</li>
  * <li>{@link #toJavaSet()}</li>
  * <li>{@link #toJavaSet(Function)}</li>
  * <li>{@link #toJavaStream()}</li>
- * <li>{@link #toLeft(Object)}</li>
- * <li>{@link #toLeft(Supplier)}</li>
  * <li>{@link #toLinkedMap(Function)}</li>
  * <li>{@link #toLinkedMap(Function, Function)}</li>
  * <li>{@link #toLinkedSet()}</li>
  * <li>{@link #toList()}</li>
  * <li>{@link #toMap(Function)}</li>
  * <li>{@link #toMap(Function, Function)}</li>
- * <li>{@link #toOption()}</li>
  * <li>{@link #toPriorityQueue()}</li>
  * <li>{@link #toPriorityQueue(Comparator)}</li>
  * <li>{@link #toQueue()}</li>
- * <li>{@link #toRight(Object)}</li>
- * <li>{@link #toRight(Supplier)}</li>
  * <li>{@link #toSet()}</li>
  * <li>{@link #toSortedMap(Comparator, Function)}</li>
  * <li>{@link #toSortedMap(Comparator, Function, Function)}</li>
@@ -158,10 +149,6 @@ import static io.vavr.API.*;
  * <li>{@link #toStream()}</li>
  * <li>{@link #toString()}</li>
  * <li>{@link #toTree()}</li>
- * <li>{@link #toTry()}</li>
- * <li>{@link #toTry(Supplier)}</li>
- * <li>{@link #toValid(Object)}</li>
- * <li>{@link #toValid(Supplier)}</li>
  * <li>{@link #toVector()}</li>
  * </ul>
  *
@@ -563,45 +550,6 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to a {@link CompletableFuture}
-     *
-     * @return A new {@link CompletableFuture} containing the value
-     */
-    default CompletableFuture<T> toCompletableFuture() {
-        final CompletableFuture<T> completableFuture = new CompletableFuture<>();
-        Try.of(this::get)
-                .onSuccess(completableFuture::complete)
-                .onFailure(completableFuture::completeExceptionally);
-        return completableFuture;
-    }
-
-    /**
-     * Converts this to a {@link Validation}.
-     *
-     * @param <U>   value type of a {@code Valid}
-     * @param value An instance of a {@code Valid} value
-     * @return A new {@link Validation.Valid} containing the given {@code value} if this is empty, otherwise
-     * a new {@link Validation.Invalid} containing this value.
-     */
-    default <U> Validation<T, U> toInvalid(U value) {
-        return isEmpty() ? Validation.valid(value) : Validation.invalid(get());
-    }
-
-    /**
-     * Converts this to a {@link Validation}.
-     *
-     * @param <U>           value type of a {@code Valid}
-     * @param valueSupplier A supplier of a {@code Valid} value
-     * @return A new {@link Validation.Valid} containing the result of {@code valueSupplier} if this is empty,
-     * otherwise a new {@link Validation.Invalid} containing this value.
-     * @throws NullPointerException if {@code valueSupplier} is null
-     */
-    default <U> Validation<T, U> toInvalid(Supplier<? extends U> valueSupplier) {
-        Objects.requireNonNull(valueSupplier, "valueSupplier is null");
-        return isEmpty() ? Validation.valid(valueSupplier.get()) : Validation.invalid(get());
-    }
-
-    /**
      * Converts this to a Java array with component type {@code Object}
      *
      * <pre>{@code
@@ -855,29 +803,6 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to an {@link java.util.Optional}.
-     *
-     * <pre>{@code
-     * // = Optional.empty
-     * Future.of(() -> { throw new Error(); })
-     *       .toJavaOptional()
-     *
-     * // = Optional[ok]
-     * Try.of(() -> "ok")
-     *     .toJavaOptional()
-     *
-     * // = Optional[1]
-     * List.of(1, 2, 3)
-     *     .toJavaOptional()
-     * }</pre>
-     *
-     * @return A new {@link java.util.Optional}.
-     */
-    default Optional<T> toJavaOptional() {
-        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
-    }
-
-    /**
      * Converts this to a mutable {@link java.util.Set}.
      * Elements are added by calling {@link java.util.Set#add(Object)}.
      *
@@ -975,32 +900,6 @@ public interface Value<T> extends Iterable<T> {
      */
     default java.util.stream.Stream<T> toJavaParallelStream() {
         return StreamSupport.stream(spliterator(), true);
-    }
-
-    /**
-     * Converts this to a {@link Either}.
-     *
-     * @param <R>   right type
-     * @param right An instance of a right value
-     * @return A new {@link Either.Right} containing the value of {@code right} if this is empty, otherwise
-     * a new {@link Either.Left} containing this value.
-     */
-    default <R> Either<T, R> toLeft(R right) {
-        return isEmpty() ? Either.right(right) : Either.left(get());
-    }
-
-    /**
-     * Converts this to a {@link Either}.
-     *
-     * @param <R>   right type
-     * @param right A supplier of a right value
-     * @return A new {@link Either.Right} containing the result of {@code right} if this is empty, otherwise
-     * a new {@link Either.Left} containing this value.
-     * @throws NullPointerException if {@code right} is null
-     */
-    default <R> Either<T, R> toLeft(Supplier<? extends R> right) {
-        Objects.requireNonNull(right, "right is null");
-        return isEmpty() ? Either.right(right.get()) : Either.left(get());
     }
 
     /**
@@ -1135,81 +1034,6 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
-     * Converts this to an {@link Option}.
-     *
-     * @return A new {@link Option}.
-     */
-    default Option<T> toOption() {
-        if (this instanceof Option) {
-            return (Option<T>) this;
-        } else {
-            return isEmpty() ? Option.none() : Option.some(get());
-        }
-    }
-
-    /**
-     * Converts this to an {@link Either}.
-     *
-     * @param left A left value for the {@link Either}
-     * @param <L>  Either left component type
-     * @return A new {@link Either}.
-     */
-    default <L> Either<L, T> toEither(L left) {
-        if (this instanceof Either) {
-            return ((Either<?, T>) this).mapLeft(ignored -> left);
-        } else {
-            return isEmpty() ? Left(left) : Right(get());
-        }
-    }
-
-    /**
-     * Converts this to an {@link Either}.
-     *
-     * @param leftSupplier A {@link Supplier} for the left value for the {@link Either}
-     * @param <L>          Validation error component type
-     * @return A new {@link Either}.
-     */
-    default <L> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
-        Objects.requireNonNull(leftSupplier, "leftSupplier is null");
-        if (this instanceof Either) {
-            return ((Either<?, T>) this).mapLeft(ignored -> leftSupplier.get());
-        } else {
-            return isEmpty() ? Left(leftSupplier.get()) : Right(get());
-        }
-    }
-
-    /**
-     * Converts this to an {@link Validation}.
-     *
-     * @param invalid An invalid value for the {@link Validation}
-     * @param <E>     Validation error component type
-     * @return A new {@link Validation}.
-     */
-    default <E> Validation<E, T> toValid(E invalid) {
-        if (this instanceof Validation) {
-            return ((Validation<?, T>) this).mapErrors(ignored -> invalid);
-        } else {
-            return isEmpty() ? Validation.invalid(invalid) : Validation.valid(get());
-        }
-    }
-
-    /**
-     * Converts this to an {@link Validation}.
-     *
-     * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
-     * @param <E>             Validation error component type
-     * @return A new {@link Validation}.
-     */
-    default <E> Validation<E, T> toValid(Supplier<? extends E> invalidSupplier) {
-        Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
-        if (this instanceof Validation) {
-            return ((Validation<?, T>) this).mapErrors(ignored -> invalidSupplier.get());
-        } else {
-            return isEmpty() ? Validation.invalid(invalidSupplier.get()) : Validation.valid(get());
-        }
-    }
-
-    /**
      * Converts this to a {@link Queue}.
      *
      * @return A new {@link Queue}.
@@ -1247,32 +1071,6 @@ public interface Value<T> extends Iterable<T> {
         final Function<T, PriorityQueue<T>> of = value -> PriorityQueue.of(comparator, value);
         final Function<Iterable<T>, PriorityQueue<T>> ofAll = values -> PriorityQueue.ofAll(comparator, values);
         return ValueModule.toTraversable(this, empty, of, ofAll);
-    }
-
-    /**
-     * Converts this to a {@link Either}.
-     *
-     * @param <L>  left type
-     * @param left An instance of a left value
-     * @return A new {@link Either.Left} containing the value of {@code left} if this is empty, otherwise
-     * a new {@link Either.Right} containing this value.
-     */
-    default <L> Either<L, T> toRight(L left) {
-        return isEmpty() ? Either.left(left) : Either.right(get());
-    }
-
-    /**
-     * Converts this to a {@link Either}.
-     *
-     * @param <L>  left type
-     * @param left A supplier of a left value
-     * @return A new {@link Either.Left} containing the result of {@code left} if this is empty, otherwise
-     * a new {@link Either.Right} containing this value.
-     * @throws NullPointerException if {@code left} is null
-     */
-    default <L> Either<L, T> toRight(Supplier<? extends L> left) {
-        Objects.requireNonNull(left, "left is null");
-        return isEmpty() ? Either.left(left.get()) : Either.right(get());
     }
 
     /**
@@ -1330,37 +1128,6 @@ public interface Value<T> extends Iterable<T> {
      */
     default Stream<T> toStream() {
         return ValueModule.toTraversable(this, Stream.empty(), Stream::of, Stream::ofAll);
-    }
-
-    /**
-     * Converts this to a {@link Try}.
-     * <p>
-     * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
-     * otherwise a new {@code Success(value)} is returned.
-     *
-     * @return A new {@link Try}.
-     */
-    default Try<T> toTry() {
-        if (this instanceof Try) {
-            return (Try<T>) this;
-        } else {
-            // TODO: workaround. the Value class will be deleted with Vavr 1.0 and conversion will be moved to types
-            return Try.of(this::get).recoverWith(Try.NonFatalThrowable.class, x -> Try.failure(x.getCause()));
-        }
-    }
-
-    /**
-     * Converts this to a {@link Try}.
-     * <p>
-     * If this value is undefined, i.e. empty, then a new {@code Failure(ifEmpty.get())} is returned,
-     * otherwise a new {@code Success(value)} is returned.
-     *
-     * @param ifEmpty an exception supplier
-     * @return A new {@link Try}.
-     */
-    default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
-        Objects.requireNonNull(ifEmpty, "ifEmpty is null");
-        return isEmpty() ? Try.failure(ifEmpty.get()) : toTry();
     }
 
     /**

@@ -896,19 +896,6 @@ public class FutureTest extends AbstractValueTest {
         assertThat(Try.of(completableFuture::get).get()).isEqualTo(42);
     }
 
-    // -- toTry()
-
-    @Test
-    public void shouldConvertSuccessfulFutureToTry() {
-        assertThat(Future.successful(1).toTry()).isEqualTo(Try.success(1));
-    }
-
-    @Test
-    public void shouldConvertFailedFutureToTry() {
-        assertThat(Future.failed(new Error("!")).toTry())
-                .isEqualTo(Try.failure(new Error("!")));
-    }
-
     // -- transform()
 
     @Test
