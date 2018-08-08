@@ -25,3 +25,4 @@ after_success:
   - mvn clean deploy -DskipTests --settings .travis/maven-settings.xml
   - .travis/trigger-build.sh vavr-gwt
   - .travis/trigger-build.sh vavr-jackson
+  - .travis/trigger-build.sh vavr-gson
