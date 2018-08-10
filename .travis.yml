@@ -26,3 +26,4 @@ after_success:
   - .travis/trigger-build.sh vavr-gwt
   - .travis/trigger-build.sh vavr-jackson
   - .travis/trigger-build.sh vavr-gson
+  - .travis/trigger-build.sh vavr-kotlin
