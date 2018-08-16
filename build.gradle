@@ -1,3 +1,5 @@
+ext.junitVersion = '5.3.1'
+
 subprojects {
 
     apply plugin: 'java'
@@ -17,7 +19,11 @@ subprojects {
     }
 
     dependencies {
-        testCompile 'junit:junit:4.12'
-        testCompile 'org.assertj:assertj-core:3.11.0'
+        testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }

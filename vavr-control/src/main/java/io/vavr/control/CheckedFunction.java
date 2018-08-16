@@ -2,7 +2,7 @@
  * \   \/   /      \   \/   /   __/   /      \   \/   /      \
  *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
- * Copyright 2014-2018 Vavr, http://vavr.io
+ * Copyright 2018 Vavr, http://vavr.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ public interface CheckedFunction<T, R> {
      * @throws NullPointerException if {@code after} is null
      */
     default <U> CheckedFunction<T, U> andThen(CheckedFunction<? super R, ? extends U> after) {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after is null");
         return t -> after.apply(apply(t));
     }
 
@@ -72,7 +72,7 @@ public interface CheckedFunction<T, R> {
      * @throws NullPointerException if {@code before} is null
      */
     default <U> CheckedFunction<U, R> compose(CheckedFunction<? super U, ? extends T> before) {
-        Objects.requireNonNull(before);
+        Objects.requireNonNull(before, "before is null");
         return u -> apply(before.apply(u));
     }
 

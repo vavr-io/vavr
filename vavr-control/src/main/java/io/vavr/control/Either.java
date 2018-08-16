@@ -19,35 +19,17 @@
 package io.vavr.control;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Stream;
 
 /**
  * Either represents a value of two possible types. An Either is either a {@link Left} or a
  * {@link Right}.
- * <p>
- * If the given Either is a Right and projected to a Left, the Left operations have no effect on the Right value.<br>
- * If the given Either is a Left and projected to a Right, the Right operations have no effect on the Left value.<br>
- * If a Left is projected to a Left or a Right is projected to a Right, the operations have an effect.
- * <p>
- * <strong>Example:</strong> A compute() function, which results either in an Integer value (in the case of success) or
- * in an error message of type String (in the case of failure). By convention the success case is Right and the failure
- * is Left.
- *
- * <pre>
- * <code>
- * Either&lt;String,Integer&gt; value = compute().right().map(i -&gt; i * 2).toEither();
- * </code>
- * </pre>
- *
- * If the result of compute() is Right(1), the value is Right(2).<br>
- * If the result of compute() is Left("error"), the value is Left("error").
  *
  * @param <L> The type of the Left value of an Either.
  * @param <R> The type of the Right value of an Either.
@@ -59,18 +41,6 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
 
     // sealed
     private Either() {}
-
-    /**
-     * Constructs a {@code Right} Either.
-     *
-     * @param right The value.
-     * @param <L>   Type of left value.
-     * @param <R>   Type of right value.
-     * @return A new {@code Right} instance.
-     */
-    public static <L, R> Either<L, R> right(R right) {
-        return new Right<>(right);
-    }
 
     /**
      * Constructs a {@code Left}  Either.
@@ -85,124 +55,68 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
     }
 
     /**
-     * Returns the left value.
+     * Constructs a {@code Right} Either.
      *
-     * @return The left value.
-     * @throws NoSuchElementException if this is a {@code Right}.
+     * @param right The value.
+     * @param <L>   Type of left value.
+     * @param <R>   Type of right value.
+     * @return A new {@code Right} instance.
      */
-    public abstract L getLeft();
+    public static <L, R> Either<L, R> right(R right) {
+        return new Right<>(right);
+    }
 
     /**
-     * Returns whether this Either is a Left.
+     * Conditionally returns either a {@code Left} or a {@code Right}, depending of the given {@code test} value.
      *
-     * @return true, if this is a Left, false otherwise
+     * @param test a boolean condition
+     * @param leftSupplier left value supplier
+     * @param rightSupplier right value supplier
+     * @param <L> type of a left value
+     * @param <R> type of a right value
+     * @return {@code Either.right(rightSupplier.get())} if {@code test} is true, otherwise {@code Either.left(leftSupplier.get())}
      */
-    public abstract boolean isLeft();
+    public static <L, R> Either<L, R> cond(boolean test, Supplier<? extends L> leftSupplier, Supplier<? extends R> rightSupplier) {
+        Objects.requireNonNull(leftSupplier, "leftSupplier is null");
+        Objects.requireNonNull(rightSupplier, "rightSupplier is null");
+        return test ? Either.right(rightSupplier.get()) : Either.left(leftSupplier.get());
+    }
 
     /**
-     * Returns whether this Either is a Right.
+     * Collects the underlying value (if present) using the provided {@code collector}.
+     * <p>
+     * Shortcut for {@code .stream().collect(collector)}.
      *
-     * @return true, if this is a Right, false otherwise
+     * @param <A>       the mutable accumulation type of the reduction operation
+     * @param <T>       the result type of the reduction operation
+     * @param collector Collector performing reduction
+     * @return the reduction result of type {@code T}
+     * @throws NullPointerException if the given {@code collector} is null
      */
-    public abstract boolean isRight();
+    public <T, A> T collect(Collector<? super R, A, T> collector) {
+        return stream().collect(collector);
+    }
 
     /**
-     * Maps either the left or the right side of this disjunction.
+     * Filters this right-biased {@code Either} by testing a predicate.
+     * If the {@code Either} is a {@code Right} and the predicate doesn't match, the
+     * {@code Either} will be turned into a {@code Left} with contents computed by applying
+     * the filterVal function to the {@code Either} value.
      *
-     * @param leftMapper  maps the left value if this is a Left
-     * @param rightMapper maps the right value if this is a Right
-     * @param <X>         The new left type of the resulting Either
-     * @param <Y>         The new right type of the resulting Either
-     * @return A new Either instance
+     * @param predicate A predicate
+     * @param zero a function that transforms the right value to a left value, if it does not make it through the given filter {@code predicate}
+     * @return an {@code Either} instance
+     * @throws NullPointerException if {@code predicate} is null
      */
-    public <X, Y> Either<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
-        Objects.requireNonNull(leftMapper, "leftMapper is null");
-        Objects.requireNonNull(rightMapper, "rightMapper is null");
-        if (isRight()) {
-            return new Right<>(rightMapper.apply(get()));
+    public Either<L, R> filterOrElse(Predicate<? super R> predicate, Function<? super R, ? extends L> zero) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        Objects.requireNonNull(zero, "zero is null");
+        if (isLeft() || predicate.test(get())) {
+            return this;
         } else {
-            return new Left<>(leftMapper.apply(getLeft()));
+            return Either.left(zero.apply(get()));
         }
     }
-
-    /**
-     * Folds either the left or the right side of this disjunction.
-     *
-     * @param leftMapper  maps the left value if this is a Left
-     * @param rightMapper maps the right value if this is a Right
-     * @param <U>         type of the folded value
-     * @return A value of type U
-     */
-    public <U> U fold(Function<? super L, ? extends U> leftMapper, Function<? super R, ? extends U> rightMapper) {
-        Objects.requireNonNull(leftMapper, "leftMapper is null");
-        Objects.requireNonNull(rightMapper, "rightMapper is null");
-        if (isRight()) {
-            return rightMapper.apply(get());
-        } else {
-            return leftMapper.apply(getLeft());
-        }
-    }
-
-    /**
-     * Gets the Right value or an alternate value, if the projected Either is a Left.
-     *
-     * @param other a function which converts a Left value to an alternative Right value
-     * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
-     * {@code other} by applying the Left value.
-     */
-    public R getOrElseGet(Function<? super L, ? extends R> other) {
-        Objects.requireNonNull(other, "other is null");
-        if (isRight()) {
-            return get();
-        } else {
-            return other.apply(getLeft());
-        }
-    }
-
-    /**
-     * Runs an action in the case this is a projection on a Left value.
-     *
-     * @param action an action which consumes a Left value
-     */
-    public void orElseRun(Consumer<? super L> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (isLeft()) {
-            action.accept(getLeft());
-        }
-    }
-
-    /**
-     * Gets the Right value or throws, if the projected Either is a Left.
-     *
-     * @param <X>               a throwable type
-     * @param exceptionFunction a function which creates an exception based on a Left value
-     * @return the right value, if the underlying Either is a Right or else throws the exception provided by
-     * {@code exceptionFunction} by applying the Left value.
-     * @throws X if the projected Either is a Left
-     */
-    public <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionFunction) throws X {
-        Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
-        if (isRight()) {
-            return get();
-        } else {
-            throw exceptionFunction.apply(getLeft());
-        }
-    }
-
-    /**
-     * Converts a {@code Left} to a {@code Right} vice versa by wrapping the value in a new type.
-     *
-     * @return a new {@code Either}
-     */
-    public Either<R, L> swap() {
-        if (isRight()) {
-            return new Left<>(get());
-        } else {
-            return new Right<>(getLeft());
-        }
-    }
-
-    // -- Adjusted return types of Monad methods
 
     /**
      * FlatMaps this right-biased Either.
@@ -223,16 +137,113 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
     }
 
     /**
+     * Folds either the left or the right side of this disjunction.
+     *
+     * @param ifLeft  maps the left value if this is a Left
+     * @param ifRight maps the right value if this is a Right
+     * @param <U>         type of the folded value
+     * @return A value of type U
+     */
+    public <U> U fold(Function<? super L, ? extends U> ifLeft, Function<? super R, ? extends U> ifRight) {
+        Objects.requireNonNull(ifLeft, "ifLeft is null");
+        Objects.requireNonNull(ifRight, "ifRight is null");
+        if (isRight()) {
+            return ifRight.apply(get());
+        } else {
+            return ifLeft.apply(getLeft());
+        }
+    }
+    
+    /**
+     * Gets the right value if this is a {@code Right} or throws if this is a {@code Left}.
+     *
+     * @return the right value
+     * @throws NoSuchElementException if this is a {@code Left}.
+     * @deprecated TODO: description
+     */
+    @Deprecated
+    public abstract R get();
+
+    /**
+     * Gets the left value if this is a {@code Left} or throws if this is a {@code Right}.
+     *
+     * @return The left value.
+     * @throws NoSuchElementException if this is a {@code Right}.
+     * @deprecated TODO: description
+     */
+    @Deprecated
+    public abstract L getLeft();
+
+
+    /**
+     * Gets the Right value or an alternate value, if the Either is a Left.
+     *
+     * @param other an alternative right value
+     * @return the right value, if the underlying Either is a Right or else the alternative Right value {@code other}
+     */
+    public R getOrElse(R other) {
+        return isRight() ? get() : other;
+    }
+
+    /**
+     * Gets the Right value or an alternate value, if the Either is a Left.
+     *
+     * @param other a function which converts a Left value to an alternative Right value
+     * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
+     * {@code other} by applying the Left value.
+     * @throws NullPointerException if {@code other} is null
+     */
+    public R getOrElseGet(Function<? super L, ? extends R> other) {
+        Objects.requireNonNull(other, "other is null");
+        return isRight() ? get() : other.apply(getLeft());
+    }
+    
+    /**
+     * Gets the Right value or throws, if this Either is a Left.
+     *
+     * @param <X>               a throwable type
+     * @param exceptionProvider a function which creates an exception based on a Left value
+     * @return the right value, if the underlying Either is a Right or else throws the exception provided by
+     * {@code exceptionProvider} by applying the Left value.
+     * @throws X if this Either is a Left
+     */
+    public <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionProvider) throws X {
+        Objects.requireNonNull(exceptionProvider, "exceptionProvider is null");
+        if (isRight()) {
+            return get();
+        } else {
+            throw exceptionProvider.apply(getLeft());
+        }
+    }
+    
+    /**
+     * Returns whether this Either is a Left.
+     *
+     * @return true, if this is a Left, false otherwise
+     */
+    public abstract boolean isLeft();
+
+    /**
+     * Returns whether this Either is a Right.
+     *
+     * @return true, if this is a Right, false otherwise
+     */
+    public abstract boolean isRight();
+
+    @Override
+    public Iterator<R> iterator() {
+        return isRight() ? Collections.singleton(get()).iterator() : Collections.emptyIterator();
+    }
+
+    /**
      * Maps the value of this Either if it is a Right, performs no operation if this is a Left.
      *
      * <pre><code>
-     * import static io.vavr.API.*;
-     *
      * // = Right("A")
-     * Right("a").map(String::toUpperCase);
+     * Either.right("a").map(String::toUpperCase);
      *
      * // = Left(1)
-     * Left(1).map(String::toUpperCase);
+     * Either.left(1).map(String::toUpperCase);
      * </code></pre>
      *
      * @param mapper A mapper
@@ -254,105 +265,26 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
      * Maps the value of this Either if it is a Left, performs no operation if this is a Right.
      *
      * <pre>{@code
-     * import static io.vavr.API.*;
-     *
      * // = Left(2)
-     * Left(1).mapLeft(i -> i + 1);
+     * Either.left(1).mapLeft(i -> i + 1);
      *
      * // = Right("a")
-     * Right("a").mapLeft(i -> i + 1);
+     * Either.right("a").mapLeft(i -> i + 1);
      * }</pre>
      *
-     * @param leftMapper A mapper
-     * @param <U>        Component type of the mapped right value
+     * @param mapper A mapper
+     * @param <U>    Component type of the mapped right value
      * @return a mapped {@code Monad}
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
-    public <U> Either<U, R> mapLeft(Function<? super L, ? extends U> leftMapper) {
-        Objects.requireNonNull(leftMapper, "leftMapper is null");
+    public <U> Either<U, R> mapLeft(Function<? super L, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
         if (isLeft()) {
-            return Either.left(leftMapper.apply(getLeft()));
+            return Either.left(mapper.apply(getLeft()));
         } else {
             return (Either<U, R>) this;
         }
-    }
-
-    // -- Adjusted return types of Value methods
-
-    /**
-     * Filters this right-biased {@code Either} by testing a predicate.
-     * <p>
-     *
-     * @param predicate A predicate
-     * @return a new {@code Option} instance
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    public Either<L, R> filter(Predicate<? super R> predicate, Function<? super R, ? extends L> defaultLeftValue) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        Objects.requireNonNull(defaultLeftValue, "defaultLeftValue is null");
-        if (isLeft()) {
-            return this;
-        } else {
-            final R value = get();
-            return predicate.test(value) ? this : left(defaultLeftValue.apply(value));
-        }
-    }
-
-    /**
-     * Filters this right-biased {@code Either} by testing a predicate.
-     * If the {@code Either} is a {@code Right} and the predicate doesn't match, the
-     * {@code Either} will be turned into a {@code Left} with contents computed by applying
-     * the filterVal function to the {@code Either} value.
-     *
-     * <pre>{@code
-     * import static io.vavr.API.*;
-     *
-     * // = Left("bad: a")
-     * Right("a").filterOrElse(i -> false, val -> "bad: " + val);
-     *
-     * // = Right("a")
-     * Right("a").filterOrElse(i -> true, val -> "bad: " + val);
-     * }</pre>
-     *
-     * @param predicate A predicate
-     * @param zero a function that transforms the right value to a left value, if it does not make it through the given filter {@code predicate}
-     * @return an {@code Either} instance
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    public Either<L,R> filterOrElse(Predicate<? super R> predicate, Function<? super R, ? extends L> zero) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        Objects.requireNonNull(zero, "zero is null");
-        if (isLeft() || predicate.test(get())) {
-            return this;
-        } else {
-            return Either.left(zero.apply(get()));
-        }
-    }
-
-    /**
-     * Gets the right value if this is a {@code Right} or throws if this is a {@code Left}.
-     *
-     * @return the right value
-     * @throws NoSuchElementException if this is a {@code Left}.
-     */
-    public abstract R get();
-
-    @SuppressWarnings("unchecked")
-    public Either<L, R> orElse(Either<? extends L, ? extends R> other) {
-        Objects.requireNonNull(other, "other is null");
-        return isRight() ? this : (Either<L, R>) other;
-    }
-
-    @SuppressWarnings("unchecked")
-    public Either<L, R> orElse(Supplier<Either<? extends L, ? extends R>> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        return isRight() ? this : (Either<L, R>) supplier.get();
-    }
-
-    @Override
-    public Iterator<R> iterator() {
-        return isRight() ? Collections.singleton(get()).iterator() : Collections.emptyIterator();
     }
 
     /**
@@ -384,6 +316,106 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
         }
         return this;
     }
+
+    @SuppressWarnings("unchecked")
+    public Either<L, R> orElse(Supplier<Either<? extends L, ? extends R>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isRight() ? this : (Either<L, R>) supplier.get();
+    }
+    
+    /**
+     * Converts this {@code Either} to a {@link Stream}.
+     *
+     * @return {@code Stream.of(get()} if this is a {@code Right}, otherwise {@code Stream.empty()}
+     */
+    public Stream<R> stream() {
+        return isRight() ? Stream.of(get()) : Stream.empty();
+    }
+
+    /**
+     * Converts a {@code Left} to a {@code Right} vice versa by wrapping the value in a new type.
+     *
+     * @return a new {@code Either}
+     */
+    public Either<R, L> swap() {
+        return isRight() ? left(get()): right(getLeft());
+    }
+
+    /**
+     * Converts this {@code Either} to an {@link Option}.
+     *
+     * @return {@code Option.some(get()} if this is a {@code Right}, otherwise {@code Option.none()}
+     */
+    public Option<R> toOption() {
+        return isRight() ? Option.some(get()) : Option.none();
+    }
+
+    /**
+     * Converts this {@code Either} to an {@link Optional}.
+     *
+     * @return {@code Optional.ofNullable(get()) if this is a {@code Right}, otherwise {@code Optional.empty()}
+     */
+    public Optional<R> toOptional() {
+        return isRight() ? Optional.ofNullable(get()) : Optional.empty();
+    }
+
+    /**
+     * Converts this {@code Either} to a {@link Try}.
+     *
+     * @param leftMapper a function that maps a left value to a {@link Throwable}
+     * @return {@code Try.success(get()} if this is a {@code Right}, otherwise {@code Try.failure(leftMapper.apply(getLeft())}
+     * @throws NullPointerException if the given {@code leftMapper} is null
+     */
+    public Try<R> toTry(Function<? super L, ? extends Throwable> leftMapper) {
+        Objects.requireNonNull(leftMapper, "leftMapper is null");
+        return isRight() ? Try.success(get()) : Try.failure(leftMapper.apply(getLeft()));
+    }
+
+    /**
+     * Transforms this {@code Either} by applying either {@code ifRight} to this right value or {@code ifLeft} to this left value.
+     *
+     * @param ifLeft  maps the left value if this is a {@code Left}
+     * @param ifRight maps the right value if this is a {@code Right}
+     * @param <U>     type of the transformed right value
+     * @return A new {@code Either} instance
+     * @throws NullPointerException if one of the given {@code ifRight} or {@code ifLeft} is null
+     */
+    @SuppressWarnings("unchecked")
+    public <U> Either<L, U> transform(Function<? super L, ? extends Either<L, ? extends U>> ifLeft, Function<? super R, ? extends Either<L, ? extends U>> ifRight) {
+        Objects.requireNonNull(ifLeft, "ifLeft is null");
+        Objects.requireNonNull(ifRight, "ifRight is null");
+        return isRight()
+               ? (Either<L, U>) ifRight.apply(get())
+               : (Either<L, U>) ifLeft.apply(getLeft());
+    }
+
+    /**
+     * Checks if this {@code Either} is equal to the given object {@code o}.
+     *
+     * @param that an object, may be null
+     * @return true, if {@code this} and {@code that} both are a {@code Right} and the underlying values are equal
+     *         or if {@code this} and {@code that} both are a {@code Left} and the underlying values are equal.
+     *         Otherwise it returns false.
+     */
+    @Override
+    public abstract boolean equals(Object that);
+
+    /**
+     * Computes the hash of this {@code Either}.
+     *
+     * @return {@code 31 + Objects.hashCode(get())} if this is a {@code Right}, otherwise {@code 31 + Objects.hashCode(getLeft())}
+     */
+    @Override
+    public abstract int hashCode();
+
+    /**
+     * Returns a string representation of this {@code Either}.
+     *
+     * @return {@code "Right(" + get() + ")"} if this is a {@code Right}, otherwise {@code "Left(" + getLeft() + ")"}
+     */
+    @Override
+    public abstract String toString();
+    
     
     private static final class Left<L, R> extends Either<L, R> implements Serializable {
 
@@ -427,7 +459,7 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(value);
+            return 31 + Objects.hashCode(value);
         }
 
         @Override
@@ -478,7 +510,7 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(value);
+            return 31 + Objects.hashCode(value);
         }
 
         @Override

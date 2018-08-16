@@ -2,7 +2,7 @@
  * \   \/   /      \   \/   /   __/   /      \   \/   /      \
  *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
- * Copyright 2014-2018 Vavr, http://vavr.io
+ * Copyright 2018 Vavr, http://vavr.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,15 +18,17 @@
  */
 package io.vavr.control;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import java.io.*;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
-public class TryTest {
+@SuppressWarnings("deprecation")
+class TryTest {
 
     // -- Testees
 
@@ -36,20 +38,11 @@ public class TryTest {
     private static final Exception FAILURE_CAUSE = new IllegalStateException("failure");
     private static final Try<String> FAILURE = Try.failure(FAILURE_CAUSE);
 
-    // ---- alternate errors, e.g. when chaining a failure
-
     private static final Error ERROR = new Error();
-
-    // ---- unexpected behavior like running unexpected code
-
     private static final AssertionError ASSERTION_ERROR = new AssertionError("unexpected");
 
-    // ---- rethrown fatal errors
-
     private static final LinkageError LINKAGE_ERROR = new LinkageError();
-
     private static final ThreadDeath THREAD_DEATH = new ThreadDeath();
-
     private static final VirtualMachineError VM_ERROR = new VirtualMachineError() {
         private static final long serialVersionUID = 1L;
     };
@@ -57,944 +50,1165 @@ public class TryTest {
     // -- static .of(Callable)
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryOfWithNullValue() {
-        assertThat(Try.of(() -> null)).isNotNull();
+    void shouldCreateSuccessWhenCallingTryOfWithNullValue() {
+        assertNotNull(Try.of(() -> null));
     }
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryOfCallable() {
-        assertThat(Try.of(() -> SUCCESS_VALUE).isSuccess()).isTrue();
+    void shouldCreateSuccessWhenCallingTryOfCallable() {
+        assertTrue(Try.of(() -> SUCCESS_VALUE).isSuccess());
     }
 
     @Test
-    public void shouldCreateFailureWhenCallingTryOfCallable() {
-        assertThat(Try.of(() -> { throw FAILURE_CAUSE; }).isFailure()).isTrue();
+    void shouldCreateFailureWhenCallingTryOfCallable() {
+        assertTrue(Try.of(() -> { throw FAILURE_CAUSE; }).isFailure());
     }
 
     @Test
-    public void shouldThrowNPEWhenCallingTryOfCallable() {
-        assertThatThrownBy(() -> Try.of(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("callable is null");
+    void shouldThrowNPEWhenCallingTryOfCallable() {
+        assertEquals(
+                "callable is null",
+                assertThrows(NullPointerException.class, () -> Try.of(null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldRethrowLinkageErrorWhenCallingTryOfCallable() {
-        assertThatThrownBy(() -> Try.of(() -> { throw LINKAGE_ERROR; })).isSameAs(LINKAGE_ERROR);
+    void shouldRethrowLinkageErrorWhenCallingTryOfCallable() {
+        assertSame(
+                LINKAGE_ERROR,
+                assertThrows(LINKAGE_ERROR.getClass(), () -> Try.of(() -> { throw LINKAGE_ERROR; }))
+        );
     }
 
     @Test
-    public void shouldRethrowThreadDeathWhenCallingTryOfCallable() {
-        assertThatThrownBy(() -> Try.of(() -> { throw THREAD_DEATH; })).isSameAs(THREAD_DEATH);
+    void shouldRethrowThreadDeathWhenCallingTryOfCallable() {
+        assertSame(
+                THREAD_DEATH,
+                assertThrows(THREAD_DEATH.getClass(), () -> Try.of(() -> { throw THREAD_DEATH; }))
+        );
     }
 
     @Test
-    public void shouldRethrowVirtualMachoneErrorWhenCallingTryOfCallable() {
-        assertThatThrownBy(() -> Try.of(() -> { throw VM_ERROR; })).isSameAs(VM_ERROR);
+    void shouldRethrowVirtualMachoneErrorWhenCallingTryOfCallable() {
+        assertSame(
+                VM_ERROR,
+                assertThrows(VM_ERROR.getClass(), () -> Try.of(() -> { throw VM_ERROR; }))
+        );
     }
 
     @Test
-    public void shouldBeIndistinguishableWhenCreatingFailureWithOfFactoryOrWithFailureFactory() {
-        final Try<?> failure1 = Try.of(() -> { throw FAILURE_CAUSE; });
-        final Try<?> failure2 = Try.failure(FAILURE_CAUSE);
-        assertThatThrownBy(failure1::get)
-                .isExactlyInstanceOf(RuntimeException.class)
-                .hasMessage("Failure.get()")
-                .hasCause(FAILURE_CAUSE);
-        assertThatThrownBy(failure2::get)
-                .isExactlyInstanceOf(RuntimeException.class)
-                .hasMessage("Failure.get()")
-                .hasCause(FAILURE_CAUSE);
-        assertThat(failure1.getCause()).isSameAs(failure2.getCause());
-        assertThat(failure1.isFailure()).isEqualTo(failure2.isFailure());
-        assertThat(failure1.isSuccess()).isEqualTo(failure2.isSuccess());
-        assertThat(failure1.equals(failure2)).isTrue();
-        assertThat(failure1.hashCode()).isEqualTo(failure2.hashCode());
-        assertThat(failure1.toString()).isEqualTo(failure2.toString());
+    void shouldBeIndistinguishableWhenCreatingFailureWithOfFactoryOrWithFailureFactory() {
+        final var failure1 = Try.of(() -> { throw FAILURE_CAUSE; });
+        final var failure2 = Try.failure(FAILURE_CAUSE);
+        assertSame(
+                FAILURE_CAUSE,
+                assertThrows(NonFatalException.class, failure1::get).getCause()
+        );
+        assertSame(
+                FAILURE_CAUSE,
+                assertThrows(NonFatalException.class, failure2::get).getCause()
+        );
+        assertSame(failure1.getCause(), failure2.getCause());
+        assertEquals(failure1.isFailure(), failure2.isFailure());
+        assertEquals(failure1.isSuccess(), failure2.isSuccess());
+        assertEquals(failure1, failure2);
+        assertEquals(failure1.hashCode(), failure2.hashCode());
+        assertEquals(failure1.toString(), failure2.toString());
     }
 
     @Test
-    public void shouldBeIndistinguishableWhenCreatingSuccessWithOfFactoryOrWithSuccessFactory() {
-        final Try<?> success1 = Try.of(() -> SUCCESS_VALUE);
-        final Try<?> success2 = Try.success(SUCCESS_VALUE);
-        assertThat(success1.get()).isSameAs(success2.get());
-        assertThatThrownBy(success1::getCause).isExactlyInstanceOf(UnsupportedOperationException.class);
-        assertThatThrownBy(success2::getCause).isExactlyInstanceOf(UnsupportedOperationException.class);
-        assertThat(success1.isFailure()).isEqualTo(success2.isFailure());
-        assertThat(success1.isSuccess()).isEqualTo(success2.isSuccess());
-        assertThat(success1.equals(success2)).isTrue();
-        assertThat(success1.hashCode()).isEqualTo(success2.hashCode());
-        assertThat(success1.toString()).isEqualTo(success2.toString());
+    void shouldBeIndistinguishableWhenCreatingSuccessWithOfFactoryOrWithSuccessFactory() {
+        final var success1 = Try.of(() -> SUCCESS_VALUE);
+        final var success2 = Try.success(SUCCESS_VALUE);
+        assertSame(success1.get(), success2.get());
+        assertThrows(UnsupportedOperationException.class, success1::getCause);
+        assertThrows(UnsupportedOperationException.class, success2::getCause);
+        assertEquals(success1.isFailure(), success2.isFailure());
+        assertEquals(success1.isSuccess(), success2.isSuccess());
+        assertEquals(success1, success2);
+        assertEquals(success1.hashCode(), success2.hashCode());
+        assertEquals(success1.toString(), success2.toString());
     }
 
     // -- static .run(CheckedRunnable)
 
     @Test
-    public void shouldCreateSuccessWhenCallingTryRunCheckedRunnable() {
-        assertThat(Try.run(() -> {}).isSuccess()).isTrue();
+    void shouldCreateSuccessWhenCallingTryRunCheckedRunnable() {
+        assertTrue(Try.run(() -> {}).isSuccess());
     }
 
     @Test
-    public void shouldCreateFailureWhenCallingTryRunCheckedRunnable() {
-        assertThat(Try.run(() -> { throw ERROR; }).isFailure()).isTrue();
+    void shouldCreateFailureWhenCallingTryRunCheckedRunnable() {
+        assertTrue(Try.run(() -> { throw ERROR; }).isFailure());
     }
 
     @Test
-    public void shouldThrowNPEWhenCallingTryRunCheckedRunnable() {
-        assertThatThrownBy(() -> Try.run(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("runnable is null");
+    void shouldThrowNPEWhenCallingTryRunCheckedRunnable() {
+        assertEquals(
+                "runnable is null",
+                assertThrows(NullPointerException.class, () -> Try.run(null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldRethrowLinkageErrorWhenCallingTryRunCheckedRunnable() {
-        assertThatThrownBy(() -> Try.run(() -> { throw LINKAGE_ERROR; })).isSameAs(LINKAGE_ERROR);
+    void shouldRethrowLinkageErrorWhenCallingTryRunCheckedRunnable() {
+        assertSame(
+                LINKAGE_ERROR,
+                assertThrows(LINKAGE_ERROR.getClass(), () -> Try.run(() -> { throw LINKAGE_ERROR; }))
+        );
     }
 
     @Test
-    public void shouldRethrowThreadDeathWhenCallingTryRunCheckedRunnable() {
-        assertThatThrownBy(() -> Try.run(() -> { throw THREAD_DEATH; })).isSameAs(THREAD_DEATH);
+    void shouldRethrowThreadDeathWhenCallingTryRunCheckedRunnable() {
+        assertSame(
+                THREAD_DEATH,
+                assertThrows(THREAD_DEATH.getClass(), () -> Try.run(() -> { throw THREAD_DEATH; }))
+        );
     }
 
     @Test
-    public void shouldRethrowVirtualMachineErrorWhenCallingTryRunCheckedRunnable() {
-        assertThatThrownBy(() -> Try.run(() -> { throw VM_ERROR; })).isSameAs(VM_ERROR);
+    void shouldRethrowVirtualMachineErrorWhenCallingTryRunCheckedRunnable() {
+        assertSame(
+                VM_ERROR,
+                assertThrows(VM_ERROR.getClass(), () -> Try.run(() -> { throw VM_ERROR; }))
+        );
     }
 
     // -- static .success(Object)
-
+    
     @Test
-    public void shouldCreateSuccessWithNullValue() {
-        assertThat(Try.success(null)).isNotNull();
+    void shouldCreateSuccessWithNullValue() {
+        assertNotNull(Try.success(null));
     }
 
     @Test
-    public void shouldCreateSuccess() {
-        assertThat(Try.success(SUCCESS_VALUE)).isNotNull();
+    void shouldCreateSuccess() {
+        assertNotNull(Try.success(SUCCESS_VALUE));
     }
 
     @Test
-    public void shouldVerifyBasicSuccessProperties() {
-        final Try<?> success = Try.success(SUCCESS_VALUE);
-        assertThat(success.get()).isSameAs(SUCCESS_VALUE);
-        assertThatThrownBy(success::getCause).isExactlyInstanceOf(UnsupportedOperationException.class);
-        assertThat(success.isFailure()).isFalse();
-        assertThat(success.isSuccess()).isTrue();
-        assertThat(success.equals(SUCCESS)).isTrue();
-        assertThat(success.hashCode()).isEqualTo(Objects.hashCode(SUCCESS_VALUE));
-        assertThat(success.toString()).isEqualTo("Success(" + SUCCESS_VALUE + ")");
+    void shouldVerifyBasicSuccessProperties() {
+        assertSame(SUCCESS_VALUE, SUCCESS.get());
+        assertSame(
+                "getCause() on Success",
+                assertThrows(UnsupportedOperationException.class, SUCCESS::getCause).getMessage()
+        );
+        assertFalse(SUCCESS.isFailure());
+        assertTrue(SUCCESS.isSuccess());
+        assertEquals(Try.success(SUCCESS_VALUE), SUCCESS);
+        assertEquals(31 + Objects.hashCode(SUCCESS_VALUE), SUCCESS.hashCode());
+        assertEquals("Success(" + SUCCESS_VALUE + ")", SUCCESS.toString());
     }
 
     // -- static .failure(Throwable)
 
     @Test
-    public void shouldCreateFailureWithNullValue() {
-        assertThat(Try.failure(null)).isNotNull();
+    void shouldCreateFailureWithNullValue() {
+        assertNotNull(Try.failure(null));
     }
 
     @Test
-    public void shouldCreateFailure() {
-        assertThat(Try.failure(FAILURE_CAUSE)).isNotNull();
+    void shouldCreateFailure() {
+        assertNotNull(Try.failure(FAILURE_CAUSE));
     }
 
     @Test
-    public void shouldVerifyBasicFailureProperties() {
-        final Try<?> failure = Try.failure(FAILURE_CAUSE);
-        assertThatThrownBy(failure::get).hasCause(FAILURE_CAUSE);
-        assertThat(failure.getCause()).isSameAs(FAILURE_CAUSE);
-        assertThat(failure.isSuccess()).isFalse();
-        assertThat(failure.isFailure()).isTrue();
-        assertThat(failure.equals(FAILURE)).isTrue();
-        assertThat(failure.hashCode()).isEqualTo(Objects.hashCode(FAILURE_CAUSE));
-        assertThat(failure.toString()).isEqualTo("Failure(" + FAILURE_CAUSE + ")");
+    void shouldVerifyBasicFailureProperties() {
+        assertSame(
+                FAILURE_CAUSE,
+                assertThrows(RuntimeException.class, FAILURE::get).getCause()
+        );
+        assertSame(FAILURE_CAUSE, FAILURE.getCause());
+        assertFalse(FAILURE.isSuccess());
+        assertTrue(FAILURE.isFailure());
+        assertEquals(Try.failure(FAILURE_CAUSE), FAILURE);
+        assertEquals(Objects.hashCode(FAILURE_CAUSE), FAILURE.hashCode());
+        assertEquals("Failure(" + FAILURE_CAUSE + ")", FAILURE.toString());
     }
 
     @Test
-    public void shouldRethrowLinkageErrorWhenCallingTryFailure() {
-        assertThatThrownBy(() -> Try.failure(LINKAGE_ERROR)).isSameAs(LINKAGE_ERROR);
+    void shouldRethrowLinkageErrorWhenCallingTryFailure() {
+        assertSame(
+                LINKAGE_ERROR,
+                assertThrows(LINKAGE_ERROR.getClass(), () -> Try.failure(LINKAGE_ERROR))
+        );
     }
 
     @Test
-    public void shouldRethrowThreadDeathWhenCallingTryFailure() {
-        assertThatThrownBy(() -> Try.failure(THREAD_DEATH)).isSameAs(THREAD_DEATH);
+    void shouldRethrowThreadDeathWhenCallingTryFailure() {
+        assertSame(
+                THREAD_DEATH,
+                assertThrows(THREAD_DEATH.getClass(), () -> Try.failure(THREAD_DEATH))
+        );
     }
 
     @Test
-    public void shouldRethrowVirtualMachineErrorWhenCallingTryFailure() {
-        assertThatThrownBy(() -> Try.failure(VM_ERROR)).isSameAs(VM_ERROR);
+    void shouldRethrowVirtualMachineErrorWhenCallingTryFailure() {
+        assertSame(
+                VM_ERROR,
+                assertThrows(VM_ERROR.getClass(), () -> Try.failure(VM_ERROR))
+        );
+    }
+
+    // -- .collect(Collector)
+
+    @Test
+    void shouldCollectNone() {
+        assertEquals("", FAILURE.collect(Collectors.joining()));
+    }
+
+    @Test
+    void shouldCollectSome() {
+        assertEquals(SUCCESS_VALUE, SUCCESS.collect(Collectors.joining()));
     }
 
     // -- .failed()
 
     @Test
-    public void shouldInvertSuccessByCallingFailed() {
-        final Try<?> testee = SUCCESS.failed();
-        // we check it manually because exceptions generally don't override equals()
-        assertThat(testee.isFailure()).isTrue();
-        assertThat(testee.getCause()).isExactlyInstanceOf(UnsupportedOperationException.class);
-        assertThat(testee.getCause()).hasMessage("Success.failed()");
+    void shouldInvertSuccessByCallingFailed() {
+        final var testee = SUCCESS.failed();
+        assertTrue(testee.isFailure());
+        assertEquals(UnsupportedOperationException.class, testee.getCause().getClass());
+        assertEquals("Success.failed()", testee.getCause().getMessage());
     }
 
     @Test
-    public void shouldInvertSuccessWithNullValueByCallingFailed() {
-        assertThat(Try.success(null).failed()).isNotNull();
+    void shouldInvertSuccessWithNullValueByCallingFailed() {
+        assertNotNull(Try.success(null).failed());
     }
 
     @Test
-    public void shouldInvertFailureByCallingFailed() {
-        assertThat(FAILURE.failed()).isEqualTo(Try.success(FAILURE_CAUSE));
+    void shouldInvertFailureByCallingFailed() {
+        assertEquals(Try.success(FAILURE_CAUSE), FAILURE.failed());
     }
 
     @Test
-    public void shouldInvertFailureWithNullCauseByCallingFailed() {
-        assertThat(Try.failure(null).failed()).isNotNull();
+    void shouldInvertFailureWithNullCauseByCallingFailed() {
+        assertNotNull(Try.failure(null).failed());
     }
 
     // -- .filter(CheckedPredicate)
 
     @Test
-    public void shouldFilterMatchingPredicateOnFailure() {
-        assertThat(FAILURE.filter(s -> true)).isSameAs(FAILURE);
+    void shouldFilterMatchingPredicateOnFailure() {
+        assertSame(FAILURE, FAILURE.filter(s -> true));
     }
 
     @Test
-    public void shouldFilterNonMatchingPredicateOnFailure() {
-        assertThat(FAILURE.filter(s -> false)).isSameAs(FAILURE);
+    void shouldFilterNonMatchingPredicateOnFailure() {
+        assertSame(FAILURE, FAILURE.filter(s -> false));
     }
 
     @Test
-    public void shouldFilterWithExceptionOnFailure() {
-        assertThat(FAILURE.filter(t -> { throw ERROR; })).isSameAs(FAILURE);
+    void shouldFilterWithExceptionOnFailure() {
+        assertSame(FAILURE, FAILURE.filter(t -> { throw ERROR; }));
     }
 
     @Test
-    public void shouldFilterMatchingPredicateOnSuccess() {
-        assertThat(SUCCESS.filter(s -> true)).isSameAs(SUCCESS);
+    void shouldFilterMatchingPredicateOnSuccess() {
+        assertSame(SUCCESS, SUCCESS.filter(s -> true));
     }
 
     @Test
-    public void shouldFilterNonMatchingPredicateOnSuccess() {
-        final String message = "Predicate does not hold for " + SUCCESS_VALUE;
-        final Try<String> testee = SUCCESS.filter(s -> false);
-        assertThat(testee.isFailure()).isTrue();
-        assertThat(testee.getCause())
-                .isExactlyInstanceOf(NoSuchElementException.class)
-                .hasMessage(message);
+    void shouldFilterNonMatchingPredicateOnSuccess() {
+        final var testee = SUCCESS.filter(s -> false);
+        assertTrue(testee.isFailure());
+        assertEquals(NoSuchElementException.class, testee.getCause().getClass());
+        assertEquals("Predicate does not hold for " + SUCCESS_VALUE, testee.getCause().getMessage());
     }
 
     @Test
-    public void shouldFilterWithExceptionOnSuccess() {
-        final Try<String> testee = SUCCESS.filter(t -> { throw ERROR; });
-        assertThat(testee.isFailure()).isTrue();
-        assertThat(testee.getCause()).isSameAs(ERROR);
+    void shouldFilterWithExceptionOnSuccess() {
+        final var testee = SUCCESS.filter(t -> { throw ERROR; });
+        assertTrue(testee.isFailure());
+        assertSame(ERROR, testee.getCause());
     }
 
     @Test
-    public void shouldThrowNPEWhenFilteringFailureWithNullPredicate() {
-        assertThatThrownBy(() -> FAILURE.filter(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("predicate is null");
+    void shouldThrowNPEWhenFilteringFailureWithNullPredicate() {
+        assertEquals(
+                "predicate is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.filter(null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEWhenFilteringSuccessWithNullPredicate() {
-        assertThatThrownBy(() -> SUCCESS.filter(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("predicate is null");
+    void shouldThrowNPEWhenFilteringSuccessWithNullPredicate() {
+        assertEquals(
+                "predicate is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.filter(null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldFilterFailureWithNullCause() {
-        assertThat(Try.failure(null).filter(x -> true)).isNotNull();
+    void shouldFilterFailureWithNullCause() {
+        assertNotNull(Try.failure(null).filter(x -> true));
     }
 
     @Test
-    public void shouldFilterSuccessWithNullValue() {
-        assertThat(Try.success(null).filter(x -> true)).isNotNull();
+    void shouldFilterSuccessWithNullValue() {
+        assertNotNull(Try.success(null).filter(x -> true));
     }
 
     // -- .flatMap(CheckedFunction)
 
     @Test
-    public void shouldFlatMapSuccessToNull() {
-        assertThat(SUCCESS.flatMap(ignored -> null)).isNull();
+    void shouldFlatMapSuccessToNull() {
+        assertNull(SUCCESS.flatMap(ignored -> null));
     }
 
     @Test
-    public void shouldFlatMapToSuccessOnSuccess() {
-        assertThat(SUCCESS.flatMap(ignored -> SUCCESS)).isSameAs(SUCCESS);
+    void shouldFlatMapToSuccessOnSuccess() {
+        assertSame(SUCCESS, SUCCESS.flatMap(ignored -> SUCCESS));
     }
 
     @Test
-    public void shouldFlatMapToFailureOnSuccess() {
-        assertThat(SUCCESS.flatMap(ignored -> FAILURE)).isSameAs(FAILURE);
+    void shouldFlatMapToFailureOnSuccess() {
+        assertSame(FAILURE, SUCCESS.flatMap(ignored -> FAILURE));
     }
 
     @Test
-    public void shouldFlatMapOnFailure() {
-        assertThat(FAILURE.flatMap(ignored -> SUCCESS)).isSameAs(FAILURE);
+    void shouldFlatMapOnFailure() {
+        assertSame(FAILURE, FAILURE.flatMap(ignored -> { throw ASSERTION_ERROR; }));
     }
 
     @Test
-    public void shouldCaptureExceptionWhenFlatMappingSuccess() {
-        assertThat(SUCCESS.flatMap(ignored -> { throw ERROR; })).isEqualTo(Try.failure(ERROR));
+    void shouldCaptureExceptionWhenFlatMappingSuccess() {
+        assertEquals(Try.failure(ERROR), SUCCESS.flatMap(ignored -> { throw ERROR; }));
     }
 
     @Test
-    public void shouldIgnoreExceptionWhenFlatMappingFailure() {
-        assertThat(FAILURE.flatMap(ignored -> { throw ERROR; })).isSameAs(FAILURE);
+    void shouldIgnoreExceptionWhenFlatMappingFailure() {
+        assertSame(FAILURE, FAILURE.flatMap(ignored -> { throw ERROR; }));
     }
 
     @Test
-    public void shouldThrowNPEWhenFlatMappingFailureWithNullParam() {
-        assertThatThrownBy(() -> FAILURE.flatMap(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("mapper is null");
+    void shouldThrowNPEWhenFlatMappingFailureWithNullParam() {
+        assertEquals(
+                "mapper is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.flatMap(null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEWhenFlatMappingSuccessWithNullParam() {
-        assertThatThrownBy(() -> SUCCESS.flatMap(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("mapper is null");
+    void shouldThrowNPEWhenFlatMappingSuccessWithNullParam() {
+        assertEquals(
+                "mapper is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.flatMap(null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldFlatMapFailureWithNullCause() {
-        assertThat(Try.failure(null).flatMap(x -> null)).isNotNull();
+    void shouldFlatMapFailureWithNullCause() {
+        assertNotNull(Try.failure(null).flatMap(x -> null));
     }
 
     @Test
-    public void shouldFlatMapSuccessWithNullValue() {
-        assertThat(Try.success(null).flatMap(s -> SUCCESS)).isSameAs(SUCCESS);
+    void shouldFlatMapSuccessWithNullValue() {
+        assertSame(SUCCESS, Try.success(null).flatMap(s -> SUCCESS));
     }
 
     // -- .fold(Function, Function)
 
     @Test
-    public void shouldFoldFailureWhenCauseIsNull() {
-        assertThat(Try.failure(null).<Integer> fold(x -> 0, s -> 1)).isEqualTo(0);
+    void shouldFoldFailureWhenCauseIsNull() {
+        assertEquals(0, Try.failure(null).fold(x -> 0, s -> 1).intValue());
     }
 
     @Test
-    public void shouldFoldSuccessWhenValueIsNull() {
-        assertThat(Try.success(null).<Integer> fold(x -> 0, s -> 1)).isEqualTo(1);
+    void shouldFoldSuccessWhenValueIsNull() {
+        assertEquals(1, Try.success(null).fold(x -> 0, s -> 1).intValue());
     }
 
     @Test
-    public void shouldFoldFailureToNull() {
-        assertThat(FAILURE.<Object> fold(x -> null, s -> "")).isSameAs(null);
+    void shouldFoldFailureToNull() {
+        assertNull(FAILURE.fold(x -> null, s -> ""));
     }
 
     @Test
-    public void shouldFoldSuccessToNull() {
-        assertThat(SUCCESS.<Object> fold(x -> "", s -> null)).isSameAs(null);
+    void shouldFoldSuccessToNull() {
+        assertNull(SUCCESS.fold(x -> "", s -> null));
     }
 
     @Test
-    public void shouldFoldAndReturnValueIfSuccess() {
+    void shouldFoldAndReturnValueIfSuccess() {
         final int folded = SUCCESS.fold(x -> { throw ASSERTION_ERROR; }, String::length);
-        assertThat(folded).isEqualTo(SUCCESS_VALUE.length());
+        assertEquals(SUCCESS_VALUE.length(), folded);
     }
 
     @Test
-    public void shouldFoldAndReturnAlternateValueIfFailure() {
-        final String folded = FAILURE.fold(x -> SUCCESS_VALUE, a -> { throw ASSERTION_ERROR; });
-        assertThat(folded).isEqualTo(SUCCESS_VALUE);
+    void shouldFoldAndReturnAlternateValueIfFailure() {
+        final var folded = FAILURE.fold(x -> SUCCESS_VALUE, a -> { throw ASSERTION_ERROR; });
+        assertEquals(SUCCESS_VALUE, folded);
     }
 
     @Test
-    public void shouldFoldAndThrowNPEOnWhenOnFailureFunctionIsNullIfSuccess() {
-        assertThatThrownBy(() -> SUCCESS.fold(null, Function.identity()))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("onFailure is null");
+    void shouldFoldSuccessAndThrowNPEOnWhenIfFailureFunctionIsNull() {
+        assertEquals(
+                "ifFailure is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.fold(null, Function.identity())).getMessage()
+        );
     }
 
     @Test
-    public void shouldFoldAndThrowNPEOnWhenOnFailureFunctionIsNullIfFailure() {
-        assertThatThrownBy(() -> FAILURE.fold(null, Function.identity()))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("onFailure is null");
+    void shouldFoldFailureAndThrowNPEOnWhenIfFailureFunctionIsNull() {
+        assertEquals(
+                "ifFailure is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.fold(null, Function.identity())).getMessage()
+        );
     }
 
     @Test
-    public void shouldFoldAndThrowNPEOnWhenOnSuccessFunctionIsNullIfSuccess() {
-        assertThatThrownBy(() -> SUCCESS.fold(Function.identity(), null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("onSuccess is null");
+    void shouldFoldSuccessAndThrowNPEOnWhenIfSuccessFunctionIsNull() {
+        assertEquals(
+                "ifSuccess is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.fold(Function.identity(), null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldFoldAndThrowNPEOnWhenOnSuccessFunctionIsNullIfFailure() {
-        assertThatThrownBy(() -> FAILURE.fold(Function.identity(), null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("onSuccess is null");
+    void shouldFoldFailureAndThrowNPEOnWhenIfSuccessFunctionIsNull() {
+        assertEquals(
+                "ifSuccess is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.fold(Function.identity(), null)).getMessage()
+        );
+    }
+
+    // -- .forEach(Consumer)
+
+    @Test
+    void shouldConsumeFailureWithForEach() {
+        final var list = new ArrayList<>();
+        FAILURE.forEach(list::add);
+        assertEquals(List.of(), list);
+    }
+
+    @Test
+    void shouldConsumeSuccessWithForEach() {
+        final var list = new ArrayList<>();
+        SUCCESS.forEach(list::add);
+        assertEquals(List.of(SUCCESS_VALUE), list);
+    }
+
+    @Test
+    void shouldThrowNPEWhenConsumingFailureWithForEachAndActionIsNull() {
+        //noinspection ConstantConditions
+        assertThrows(NullPointerException.class, () -> FAILURE.forEach(null));
+    }
+
+    @Test
+    void shouldThrowNPEWhenConsumingSuccessWithForEachAndActionIsNull() {
+        //noinspection ConstantConditions
+        assertThrows(NullPointerException.class, () -> SUCCESS.forEach(null));
     }
 
     // -- .get()
 
     @Test
-    public void shouldGetOnSuccessWhenValueIsNull() {
-        assertThat(Try.success(null).get()).isSameAs(null);
+    void shouldGetOnSuccessWhenValueIsNull() {
+        assertNull(Try.success(null).get());
     }
 
     @Test
-    public void shouldThrowCauseWrappedInRuntimeExceptionWhenGetOnFailure() {
-        assertThatThrownBy(FAILURE::get)
-                .isExactlyInstanceOf(RuntimeException.class)
-                .hasMessage("Failure.get()")
-                .hasCause(FAILURE_CAUSE);
+    void shouldGetOnSuccessWhenValueIsNonNull() {
+        assertEquals(SUCCESS_VALUE, SUCCESS.get());
     }
 
     @Test
-    public void shouldThrowNullCauseWrappedInRuntimeExceptionWhenGetOnFailure() {
-        assertThatThrownBy(() -> Try.failure(null).get())
-                .isExactlyInstanceOf(RuntimeException.class)
-                .hasMessage("Failure.get()")
-                .hasCause(null);
+    void shouldThrowCauseWrappedInRuntimeExceptionWhenGetOnFailure() {
+        assertSame(
+                FAILURE_CAUSE,
+                assertThrows(NonFatalException.class, FAILURE::get).getCause()
+        );
     }
 
     @Test
-    public void shouldGetOnSuccess() {
-        assertThat(SUCCESS.get()).isEqualTo(SUCCESS_VALUE);
+    void shouldThrowNullCauseWrappedInRuntimeExceptionWhenGetOnFailure() {
+        assertNull(assertThrows(NonFatalException.class, () -> Try.failure(null).get()).getCause());
     }
 
     // -- .getCause()
 
     @Test
-    public void shouldGetCauseOnFailureWhenCauseIsNull() {
-        assertThat(Try.failure(null).getCause()).isSameAs(null);
+    void shouldGetCauseOnFailureWhenCauseIsNull() {
+        assertNull(Try.failure(null).getCause());
     }
     
     @Test
-    public void shouldGetCauseOnFailure() {
-        assertThat(FAILURE.getCause()).isSameAs(FAILURE_CAUSE);
+    void shouldGetCauseOnFailure() {
+        assertSame(FAILURE_CAUSE, FAILURE.getCause());
     }
 
     @Test
-    public void shouldThrowWhenCallingGetCauseOnSuccess() {
-        assertThatThrownBy(SUCCESS::getCause)
-                .isExactlyInstanceOf(UnsupportedOperationException.class)
-                .hasMessage("Success.getCause()");
+    void shouldThrowWhenCallingGetCauseOnSuccess() {
+        assertEquals(
+                "getCause() on Success",
+                assertThrows(UnsupportedOperationException.class, SUCCESS::getCause).getMessage()
+        );
     }
 
     // -- .getOrElse(Object)
 
     @Test
-    public void shouldReturnElseWhenOrElseOnFailure() {
-        assertThat(FAILURE.getOrElse(SUCCESS_VALUE)).isEqualTo(SUCCESS_VALUE);
+    void shouldReturnElseWhenGetOrElseOnFailure() {
+        assertSame(SUCCESS_VALUE, FAILURE.getOrElse(SUCCESS_VALUE));
     }
 
     @Test
-    public void shouldGetOrElseOnSuccess() {
-        assertThat(SUCCESS.getOrElse(null)).isEqualTo(SUCCESS_VALUE);
+    void shouldGetOrElseOnSuccess() {
+        assertSame(SUCCESS_VALUE, SUCCESS.getOrElse(null));
     }
 
     // -- .getOrElseGet(Supplier)
 
     @Test
-    public void shouldReturnElseWhenOrElseGetOnFailure() {
-        assertThat(FAILURE.getOrElseGet(() -> SUCCESS_VALUE)).isEqualTo(SUCCESS_VALUE);
+    void shouldReturnElseWhenGetOrElseGetOnFailure() {
+        assertSame(SUCCESS_VALUE, FAILURE.getOrElseGet(() -> SUCCESS_VALUE));
     }
 
     @Test
-    public void shouldOrElseGetOnSuccess() {
-        assertThat(SUCCESS.getOrElseGet(() -> null)).isEqualTo(SUCCESS_VALUE);
+    void shouldGetOrElseGetOnSuccess() {
+        assertSame(SUCCESS_VALUE, SUCCESS.getOrElseGet(() -> { throw ASSERTION_ERROR; }));
     }
 
     // -- .getOrElseThrow(Function)
 
     @Test
-    public void shouldThrowOtherWhenGetOrElseThrowOnFailure() {
-        assertThatThrownBy(() -> FAILURE.getOrElseThrow(x -> ERROR)).isSameAs(ERROR);
+    void shouldThrowOtherWhenGetOrElseThrowOnFailure() {
+        assertSame(
+                ERROR,
+                assertThrows(ERROR.getClass(), () -> FAILURE.getOrElseThrow(x -> ERROR))
+        );
     }
 
     @Test
-    public void shouldOrElseThrowOnSuccess() {
-        assertThat(SUCCESS.getOrElseThrow(x -> null)).isEqualTo(SUCCESS_VALUE);
+    void shouldOrElseThrowOnSuccess() {
+        assertSame(SUCCESS_VALUE, SUCCESS.getOrElseThrow(x -> null));
+    }
+
+    @Test
+    void shouldThrowNPEWhenWhenGetOrElseThrowOnFailureAndExceptionProviderIsNull() {
+        assertEquals(
+                "exceptionProvider is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.getOrElseThrow(null)).getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowNPEWhenWhenGetOrElseThrowOnSuccessAndExceptionProviderIsNull() {
+        assertEquals(
+                "exceptionProvider is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.getOrElseThrow(null)).getMessage()
+        );
     }
 
     // -- .isFailure()
 
     @Test
-    public void shouldDetectFailureIfFailure() {
-        assertThat(FAILURE.isFailure()).isTrue();
+    void shouldDetectFailureIfFailure() {
+        assertTrue(FAILURE.isFailure());
     }
 
     @Test
-    public void shouldDetectNonFailureIfSuccess() {
-        assertThat(SUCCESS.isFailure()).isFalse();
+    void shouldDetectNonFailureIfSuccess() {
+        assertFalse(SUCCESS.isFailure());
     }
 
     // -- .isSuccess()
 
     @Test
-    public void shouldDetectSuccessIfSuccess() {
-        assertThat(SUCCESS.isSuccess()).isTrue();
+    void shouldDetectSuccessIfSuccess() {
+        assertTrue(SUCCESS.isSuccess());
     }
 
     @Test
-    public void shouldDetectNonSuccessIfSuccess() {
-        assertThat(FAILURE.isSuccess()).isFalse();
+    void shouldDetectNonSuccessIfSuccess() {
+        assertFalse(FAILURE.isSuccess());
     }
 
     // -- .iterator()
 
     @Test
-    public void shouldReturnIteratorOfSuccess() {
-        assertThat(SUCCESS.iterator()).isNotNull();
+    void shouldIterateSuccess() {
+        final var testee = SUCCESS.iterator();
+        assertTrue(testee.hasNext());
+        assertSame(SUCCESS_VALUE, testee.next());
+        assertFalse(testee.hasNext());
+        assertThrows(NoSuchElementException.class, testee::next);
     }
 
     @Test
-    public void shouldReturnIteratorOfFailure() {
-        assertThat(FAILURE.iterator()).isNotNull();
+    void shouldIterateFailure() {
+        final var testee = FAILURE.iterator();
+        assertFalse(testee.hasNext());
+        assertThrows(NoSuchElementException.class, testee::next);
     }
 
     // -- .map(CheckedFunction)
 
     @Test
-    public void shouldMapOnFailure() {
-        assertThat(FAILURE.map(s -> s + "!")).isSameAs(FAILURE);
+    void shouldMapFailure() {
+        assertSame(FAILURE, FAILURE.map(ignored -> { throw ASSERTION_ERROR; }));
     }
 
     @Test
-    public void shouldMapWithExceptionOnFailure() {
-        assertThat(FAILURE.map(ignored -> { throw ERROR; })).isSameAs(FAILURE);
+    void shouldMapSuccess() {
+        assertEquals(Try.success(SUCCESS_VALUE + "!"), SUCCESS.map(s -> s + "!"));
     }
 
     @Test
-    public void shouldMapOnSuccess() {
-        assertThat(SUCCESS.map(s -> s + "!")).isEqualTo(Try.success(SUCCESS_VALUE + "!"));
+    void shouldMapSuccessWhenValueIsNull() {
+        assertEquals(Try.success("null!"), Try.success(null).map(s -> s + "!"));
     }
 
     @Test
-    public void shouldMapOnSuccessWhenValueIsNull() {
-        assertThat(Try.success(null).map(s -> s + "!")).isEqualTo(Try.success("null!"));
+    void shouldMapSuccessWithException() {
+        assertEquals(Try.failure(ERROR), SUCCESS.map(ignored -> { throw ERROR; }));
     }
 
     @Test
-    public void shouldMapWithExceptionOnSuccess() {
-        assertThat(SUCCESS.map(ignored -> { throw ERROR; })).isEqualTo(Try.failure(ERROR));
+    void shouldThrowNPEWhenMappingFailureAndParamIsNull() {
+        assertEquals(
+                "mapper is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.map(null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEWhenMappingFailureAndParamIsNull() {
-        assertThatThrownBy(() -> FAILURE.map(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("mapper is null");
-    }
-
-    @Test
-    public void shouldThrowNPEWhenMappingSuccessAndParamIsNull() {
-        assertThatThrownBy(() -> SUCCESS.map(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("mapper is null");
+    void shouldThrowNPEWhenMappingSuccessAndParamIsNull() {
+        assertEquals(
+                "mapper is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.map(null)).getMessage()
+        );
     }
 
     // -- .mapFailure(CheckedFunction)
 
     @Test
-    public void shouldMapFailureOnFailure() {
-        assertThat(FAILURE.mapFailure(x -> ERROR)).isEqualTo(Try.failure(ERROR));
+    void shouldMapFailureOnFailure() {
+        assertEquals(Try.failure(ERROR), FAILURE.mapFailure(x -> ERROR));
     }
 
     @Test
-    public void shouldMapFailureOnFailureWhenCauseIsNull() {
-        assertThat(Try.failure(null).mapFailure(x -> ERROR)).isEqualTo(Try.failure(ERROR));
+    void shouldMapFailureOnFailureWhenCauseIsNull() {
+        assertEquals(Try.failure(ERROR), Try.failure(null).mapFailure(x -> ERROR));
     }
 
     @Test
-    public void shouldMapFailureWithExceptionOnFailure() {
-        assertThat(FAILURE.mapFailure(x -> { throw ERROR; })).isEqualTo(Try.failure(ERROR));
+    void shouldMapFailureWithExceptionOnFailure() {
+        assertEquals(Try.failure(ERROR), FAILURE.mapFailure(x -> { throw ERROR; }));
     }
 
     @Test
-    public void shouldMapFailureOnSuccess() {
-        assertThat(SUCCESS.mapFailure(x -> ERROR)).isSameAs(SUCCESS);
+    void shouldMapFailureOnSuccess() {
+        assertSame(SUCCESS, SUCCESS.mapFailure(x -> { throw ASSERTION_ERROR; }));
     }
 
     @Test
-    public void shouldMapFailureWithExceptionOnSuccess() {
-        assertThat(SUCCESS.mapFailure(x -> { throw ERROR; })).isSameAs(SUCCESS);
+    void shouldThrowNPEWhenCallingMapFailureOnFailureAndParamIsNull() {
+        assertEquals(
+                "mapper is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.mapFailure(null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEWhenCallingMapFailureOnFailureAndParamIsNull() {
-        assertThatThrownBy(() -> FAILURE.mapFailure(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("mapper is null");
-    }
-
-    @Test
-    public void shouldThrowNPEWhenCallingMapFailureOnSuccessAndParamIsNull() {
-        assertThatThrownBy(() -> SUCCESS.mapFailure(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("mapper is null");
+    void shouldThrowNPEWhenCallingMapFailureOnSuccessAndParamIsNull() {
+        assertEquals(
+                "mapper is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.mapFailure(null)).getMessage()
+        );
     }
 
     // -- .onFailure(Consumer)
 
     @Test
-    public void shouldConsumeThrowableWhenCallingOnFailureGivenFailure() {
-        final List<Throwable> sideEffect = new ArrayList<>();
+    void shouldConsumeThrowableWhenCallingOnFailureGivenFailure() {
+        final var sideEffect = new ArrayList<>();
         FAILURE.onFailure(sideEffect::add);
-        assertThat(sideEffect).isEqualTo(Collections.singletonList(FAILURE_CAUSE));
+        assertEquals(Collections.singletonList(FAILURE_CAUSE), sideEffect);
     }
 
     @Test
-    public void shouldNotHandleUnexpectedExceptionWhenCallingOnFailureGivenFailure() {
-        assertThatThrownBy(() -> FAILURE.onFailure(ignored -> { throw ERROR; })).isSameAs(ERROR);
-    }
-
-    @Test
-    public void shouldDoNothingWhenCallingOnFailureGivenSuccess() {
-        assertThat(SUCCESS.onFailure(x -> { throw ERROR; })).isSameAs(SUCCESS);
-    }
-
-    @Test
-    public void shouldThrowNPEWhenCallingOnFailureWithNullParamOnFailure() {
-        assertThatThrownBy(() -> FAILURE.onFailure(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("action is null");
+    void shouldNotHandleUnexpectedExceptionWhenCallingOnFailureGivenFailure() {
+        assertSame(
+                ERROR,
+                assertThrows(ERROR.getClass(), () -> FAILURE.onFailure(ignored -> { throw ERROR; }))
+        );
     }
     
     @Test
-    public void shouldThrowNPEWhenCallingOnFailureWithNullParamOnSuccess() {
-        assertThatThrownBy(() -> SUCCESS.onFailure(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("action is null");
+    void shouldDoNothingWhenCallingOnFailureGivenSuccess() {
+        assertSame(SUCCESS, SUCCESS.onFailure(x -> { throw ASSERTION_ERROR; }));
+    }
+
+    @Test
+    void shouldThrowNPEWhenCallingOnFailureWithNullParamGivenFailure() {
+        assertEquals(
+                "action is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.onFailure(null)).getMessage()
+        );
+    }
+    
+    @Test
+    void shouldThrowNPEWhenCallingOnFailureWithNullParamGivenSuccess() {
+        assertEquals(
+                "action is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.onFailure(null)).getMessage()
+        );
     }
 
     // -- .onSuccess(Consumer)
 
     @Test
-    public void shouldConsumeValueWhenCallingOnSuccessGivenSuccess() {
-        final List<String> sideEffect = new ArrayList<>();
+    void shouldConsumeValueWhenCallingOnSuccessGivenSuccess() {
+        final var sideEffect = new ArrayList<>();
         SUCCESS.onSuccess(sideEffect::add);
-        assertThat(sideEffect).isEqualTo(Collections.singletonList(SUCCESS_VALUE));
+        assertEquals(Collections.singletonList(SUCCESS_VALUE), sideEffect);
     }
 
     @Test
-    public void shouldNotHandleUnexpectedExceptionWhenCallingOnSuccessGivenSuccess() {
-        assertThatThrownBy(() -> SUCCESS.onSuccess(ignored -> { throw ERROR; })).isSameAs(ERROR);
+    void shouldNotHandleUnexpectedExceptionWhenCallingOnSuccessGivenSuccess() {
+        assertSame(
+                ERROR,
+                assertThrows(ERROR.getClass(), () -> SUCCESS.onSuccess(ignored -> { throw ERROR; }))
+        );
     }
 
     @Test
-    public void shouldDoNothingWhenCallingOnSuccessGivenFailure() {
-        assertThat(FAILURE.onSuccess(x -> { throw ERROR; })).isSameAs(FAILURE);
+    void shouldDoNothingWhenCallingOnSuccessGivenFailure() {
+        assertSame(FAILURE, FAILURE.onSuccess(x -> { throw ASSERTION_ERROR; }));
     }
 
     @Test
-    public void shouldThrowNPEWhenCallingOnSuccessWithNullParamOnFailure() {
-        assertThatThrownBy(() -> FAILURE.onSuccess(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("action is null");
+    void shouldThrowNPEWhenCallingOnSuccessWithNullParamOnFailure() {
+        assertEquals(
+                "action is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.onSuccess(null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEWhenCallingOnSuccessWithNullParamOnSuccess() {
-        assertThatThrownBy(() -> SUCCESS.onSuccess(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("action is null");
+    void shouldThrowNPEWhenCallingOnSuccessWithNullParamOnSuccess() {
+        assertEquals(
+                "action is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.onSuccess(null)).getMessage()
+        );
     }
 
     // -- .orElse(Callable)
 
     @Test
-    public void shouldReturnSelfOnOrElseIfSuccess() {
-        assertThat(SUCCESS.orElse(() -> null)).isSameAs(SUCCESS);
+    void shouldReturnSelfOnOrElseIfSuccess() {
+        assertSame(SUCCESS, SUCCESS.orElse(() -> null));
     }
 
     @Test
-    public void shouldReturnAlternativeOnOrElseIfFailure() {
-        assertThat(FAILURE.orElse(() -> SUCCESS)).isSameAs(SUCCESS);
+    void shouldReturnAlternativeOnOrElseIfFailure() {
+        assertSame(SUCCESS, FAILURE.orElse(() -> SUCCESS));
     }
 
     @Test
-    public void shouldCaptureErrorOnOrElseIfFailure() {
-        assertThat(FAILURE.orElse(() -> { throw ERROR; }).getCause()).isSameAs(ERROR);
+    void shouldCaptureErrorOnOrElseIfFailure() {
+        assertSame(ERROR, FAILURE.orElse(() -> { throw ERROR; }).getCause());
     }
 
     @Test
-    public void shouldThrowNPEOnOrElseWithNullParameterIfSuccess() {
-        assertThatThrownBy(() -> SUCCESS.orElse(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("supplier is null");
+    void shouldThrowNPEOnOrElseWithNullParameterIfSuccess() {
+        assertEquals(
+                "callable is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.orElse(null)).getMessage()
+
+        );
     }
 
     @Test
-    public void shouldThrowNPEOnOrElseWithNullParameterIfFailure() {
-        assertThatThrownBy(() -> FAILURE.orElse(null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("supplier is null");
+    void shouldThrowNPEOnOrElseWithNullParameterIfFailure() {
+        assertEquals(
+                "callable is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.orElse(null)).getMessage()
+        );
     }
 
     // -- .recover(Class, CheckedFunction)
 
     @Test
-    public void shouldRecoverWhenFailureMatchesExactly() {
-        assertThat(FAILURE.recover(FAILURE_CAUSE.getClass(), x -> SUCCESS_VALUE)).isEqualTo(SUCCESS);
+    void shouldRecoverWhenFailureMatchesExactly() {
+        assertEquals(SUCCESS, FAILURE.recover(FAILURE_CAUSE.getClass(), x -> SUCCESS_VALUE));
     }
 
     @Test
-    public void shouldRecoverWhenFailureIsAssignableFrom() {
-        assertThat(FAILURE.recover(Throwable.class, x -> SUCCESS_VALUE)).isEqualTo(SUCCESS);
+    void shouldRecoverWhenFailureIsAssignableFrom() {
+        assertEquals(SUCCESS, FAILURE.recover(Throwable.class, x -> SUCCESS_VALUE));
     }
 
     @Test
-    public void shouldNotRecoverWhenFailureIsNotAssignableFrom() {
-        assertThat(FAILURE.recover(VirtualMachineError.class, x -> SUCCESS_VALUE)).isSameAs(FAILURE);
+    void shouldNotRecoverWhenFailureIsNotAssignableFrom() {
+        assertEquals(FAILURE, FAILURE.recover(VirtualMachineError.class, x -> SUCCESS_VALUE));
     }
 
     @Test
-    public void shouldRecoverWhenSuccess() {
-        assertThat(SUCCESS.recover(Throwable.class, x -> null)).isEqualTo(SUCCESS);
+    void shouldRecoverWhenSuccess() {
+        assertSame(SUCCESS, SUCCESS.recover(Throwable.class, x -> null));
     }
 
     @Test
-    public void shouldThrowNPEOnRecoverFailureWhenExceptionTypeIsNull() {
-        assertThatThrownBy(() -> FAILURE.recover(null, x -> null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("exceptionType is null");
+    void shouldThrowNPEOnRecoverFailureWhenExceptionTypeIsNull() {
+        assertEquals(
+                "exceptionType is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.recover(null, x -> null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEOnRecoverFailureWhenRecoveryFunctionIsNull() {
-        assertThatThrownBy(() -> FAILURE.recover(Error.class, null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("recoveryFunction is null");
+    void shouldThrowNPEOnRecoverFailureWhenRecoveryFunctionIsNull() {
+        assertEquals(
+                "recoveryFunction is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.recover(Error.class, null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEOnRecoverSuccessWhenExceptionTypeIsNull() {
-        assertThatThrownBy(() -> SUCCESS.recover(null, x -> null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("exceptionType is null");
+    void shouldThrowNPEOnRecoverSuccessWhenExceptionTypeIsNull() {
+        assertEquals(
+                "exceptionType is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.recover(null, x -> null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEOnRecoverSuccessWhenRecoveryFunctionIsNull() {
-        assertThatThrownBy(() -> SUCCESS.recover(Error.class, null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("recoveryFunction is null");
+    void shouldThrowNPEOnRecoverSuccessWhenRecoveryFunctionIsNull() {
+        assertEquals(
+                "recoveryFunction is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.recover(Error.class, null)).getMessage()
+        );
     }
 
     // -- .recoverWith(Class, CheckedFunction)
 
     @Test
-    public void shouldRecoverWithWhenFailureMatchesExactly() {
-        assertThat(FAILURE.recoverWith(FAILURE_CAUSE.getClass(), x -> SUCCESS)).isEqualTo(SUCCESS);
+    void shouldRecoverWithWhenFailureMatchesExactly() {
+        assertSame(SUCCESS, FAILURE.recoverWith(FAILURE_CAUSE.getClass(), x -> SUCCESS));
     }
 
     @Test
-    public void shouldRecoverWithSuccessWhenFailureIsAssignableFrom() {
-        assertThat(FAILURE.recoverWith(Throwable.class, x -> SUCCESS)).isEqualTo(SUCCESS);
+    void shouldRecoverWithSuccessWhenFailureIsAssignableFrom() {
+        assertSame(SUCCESS, FAILURE.recoverWith(Throwable.class, x -> SUCCESS));
     }
 
     @Test
-    public void shouldRecoverWithFailureWhenFailureIsAssignableFrom() {
+    void shouldRecoverWithFailureWhenFailureIsAssignableFrom() {
         final Try<String> failure = Try.failure(ERROR);
-        assertThat(FAILURE.recoverWith(Throwable.class, x -> failure)).isEqualTo(failure);
+        assertSame(failure, FAILURE.recoverWith(Throwable.class, x -> failure));
     }
 
     @Test
-    public void shouldNotRecoverWithWhenFailureIsNotAssignableFrom() {
-        assertThat(FAILURE.recoverWith(VirtualMachineError.class, x -> SUCCESS)).isSameAs(FAILURE);
+    void shouldNotRecoverWithWhenFailureIsNotAssignableFrom() {
+        assertSame(FAILURE, FAILURE.recoverWith(VirtualMachineError.class, x -> SUCCESS));
     }
 
     @Test
-    public void shouldRecoverWithWhenSuccess() {
-        assertThat(SUCCESS.recoverWith(Throwable.class, x -> null)).isEqualTo(SUCCESS);
+    void shouldRecoverWithWhenSuccess() {
+        assertSame(SUCCESS, SUCCESS.recoverWith(Throwable.class, x -> null));
     }
 
     @Test
-    public void shouldThrowNPEOnRecoverWithFailureWhenExceptionTypeIsNull() {
-        assertThatThrownBy(() -> FAILURE.recoverWith(null, x -> null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("exceptionType is null");
+    void shouldThrowNPEOnRecoverWithFailureWhenExceptionTypeIsNull() {
+        assertEquals(
+                "exceptionType is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.recoverWith(null, x -> null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEOnRecoverWithFailureWhenRecoveryFunctionIsNull() {
-        assertThatThrownBy(() -> FAILURE.recoverWith(Error.class, null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("recoveryFunction is null");
+    void shouldThrowNPEOnRecoverWithFailureWhenRecoveryFunctionIsNull() {
+        assertEquals(
+                "recoveryFunction is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.recoverWith(Error.class, null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEOnRecoverWithSuccessWhenExceptionTypeIsNull() {
-        assertThatThrownBy(() -> SUCCESS.recoverWith(null, x -> null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("exceptionType is null");
+    void shouldThrowNPEOnRecoverWithSuccessWhenExceptionTypeIsNull() {
+        assertEquals(
+                "exceptionType is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.recoverWith(null, x -> null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldThrowNPEOnRecoverWithSuccessWhenRecoveryFunctionIsNull() {
-        assertThatThrownBy(() -> SUCCESS.recoverWith(Error.class, null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("recoveryFunction is null");
+    void shouldThrowNPEOnRecoverWithSuccessWhenRecoveryFunctionIsNull() {
+        assertEquals(
+                "recoveryFunction is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.recoverWith(Error.class, null)).getMessage()
+        );
+    }
+
+    @Test
+    void shouldCaptureExceptionWhenRecoverWithFailure() {
+        assertEquals(Try.failure(ERROR), FAILURE.recoverWith(Throwable.class, ignored -> { throw ERROR; }));
+    }
+
+    // -- .stream()
+
+    @Test
+    void shouldStreamFailure() {
+        assertEquals(Collections.emptyList(), FAILURE.stream().collect(Collectors.toList()));
+    }
+
+    @Test
+    void shouldStreamSuccess() {
+        assertEquals(Collections.singletonList(SUCCESS_VALUE), SUCCESS.stream().collect(Collectors.toList()));
+    }
+
+    // -- .toEither(Function)
+
+    @Test
+    void shouldConvertFailureToEitherUsingIdentityThrowableMapper() {
+        assertEquals(Either.left(FAILURE_CAUSE), FAILURE.toEither(Function.identity()));
+    }
+
+    @Test
+    void shouldConvertFailureToEitherUsingNonTrivialThrowableMapper() {
+        assertEquals(Either.left(ERROR), FAILURE.toEither(ignored -> ERROR));
+    }
+
+    @Test
+    void shouldConvertSuccessToEither() {
+        assertEquals(Either.right(SUCCESS_VALUE), SUCCESS.toEither(ignored -> { throw ASSERTION_ERROR; }));
+    }
+
+    @Test
+    void shouldThrowNPEWhenConvertingFailureToEitherUsingNullThrowableMapper() {
+        assertEquals(
+                "failureMapper is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.toEither(null)).getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowNPEWhenConvertingSuccessToEitherUsingNullThrowableMapper() {
+        assertEquals(
+                "failureMapper is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.toEither(null)).getMessage()
+        );
+    }
+
+    // -- .toOption()
+
+    @Test
+    void shouldConvertFailureToOption() {
+        assertEquals(Option.none(), FAILURE.toOption());
+    }
+
+
+    @Test
+    void shouldConvertSuccessOfNonNullToOption() {
+        assertEquals(Option.some(SUCCESS_VALUE), SUCCESS.toOption());
+    }
+
+    @Test
+    void shouldConvertSuccessOfNullToOption() {
+        assertEquals(Option.some(null), Try.success(null).toOption());
     }
 
     // -- .toOptional()
 
     @Test
-    public void shouldConvertFailureToOptional() {
-        assertThat(FAILURE.toOptional()).isEqualTo(Optional.empty());
+    void shouldConvertFailureToOptional() {
+        assertEquals(Optional.empty(), FAILURE.toOptional());
     }
 
 
     @Test
-    public void shouldConvertSuccessOfNonNullToOptional() {
-        assertThat(SUCCESS.toOptional()).isEqualTo(Optional.of(SUCCESS_VALUE));
+    void shouldConvertSuccessOfNonNullToOptional() {
+        assertEquals(Optional.of(SUCCESS_VALUE), SUCCESS.toOptional());
     }
 
     @Test
-    public void shouldConvertSuccessOfNullToOptional() {
-        assertThat(Try.success(null).toOptional()).isEqualTo(Optional.empty());
+    void shouldConvertSuccessOfNullToOptional() {
+        assertEquals(Optional.empty(), Try.success(null).toOptional());
     }
 
     // -- .transform(CheckedFunction, CheckedFunction)
 
     @Test
-    public void shouldTransformFailureWhenCauseIsNull() {
-        assertThat(Try.failure(null).transform(x -> SUCCESS, s -> SUCCESS)).isSameAs(SUCCESS);
+    void shouldTransformFailureWhenCauseIsNull() {
+        assertSame(SUCCESS, Try.failure(null).transform(x -> SUCCESS, s -> { throw ASSERTION_ERROR; }));
     }
 
     @Test
-    public void shouldTransformSuccessWhenValueIsNull() {
-        assertThat(Try.success(null).transform(x -> SUCCESS, s -> SUCCESS)).isSameAs(SUCCESS);
+    void shouldTransformSuccessWhenValueIsNull() {
+        assertSame(SUCCESS, Try.success(null).transform(x -> { throw ASSERTION_ERROR; }, s -> SUCCESS));
     }
 
     @Test
-    public void shouldTransformFailureToNull() {
-        assertThat(FAILURE.transform(x -> null, s -> SUCCESS)).isSameAs(null);
+    void shouldTransformFailureToNull() {
+        assertNull(FAILURE.transform(x -> null, s -> { throw ASSERTION_ERROR; }));
     }
 
     @Test
-    public void shouldTransformSuccessToNull() {
-        assertThat(SUCCESS.transform(x -> FAILURE, s -> null)).isSameAs(null);
+    void shouldTransformSuccessToNull() {
+        assertNull(SUCCESS.transform(x -> { throw ASSERTION_ERROR; }, s -> null));
     }
 
     @Test
-    public void shouldTransformAndReturnValueIfSuccess() {
-        final Try<Integer> transformed = SUCCESS.transform(x -> { throw ASSERTION_ERROR; }, s -> Try.success(s.length()));
-        assertThat(transformed).isEqualTo(Try.success(SUCCESS_VALUE.length()));
+    void shouldTransformAndReturnValueIfSuccess() {
+        final var transformed = SUCCESS.transform(x -> { throw ASSERTION_ERROR; }, s -> Try.success(s.length()));
+        assertEquals(Try.success(SUCCESS_VALUE.length()), transformed);
     }
 
     @Test
-    public void shouldTransformAndReturnAlternateValueIfFailure() {
-        final Try<String> transformed = FAILURE.transform(x -> SUCCESS, a -> { throw ASSERTION_ERROR; });
-        assertThat(transformed).isSameAs(SUCCESS);
+    void shouldTransformAndReturnAlternateValueIfFailure() {
+        final var transformed = FAILURE.transform(x -> SUCCESS, a -> { throw ASSERTION_ERROR; });
+        assertSame(SUCCESS, transformed);
     }
 
     @Test
-    public void shouldTransformAndThrowNPEOnWhenOnFailureFunctionIsNullIfSuccess() {
-        assertThatThrownBy(() -> SUCCESS.transform(null, s -> SUCCESS))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("onFailure is null");
+    void shouldTransformAndThrowNPEOnWhenOnFailureFunctionIsNullIfSuccess() {
+        assertEquals(
+                "ifFailure is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.transform(null, s -> { throw ASSERTION_ERROR; })).getMessage()
+        );
     }
 
     @Test
-    public void shouldTransformAndThrowNPEOnWhenOnFailureFunctionIsNullIfFailure() {
-        assertThatThrownBy(() -> FAILURE.transform(null, s -> SUCCESS))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("onFailure is null");
+    void shouldTransformAndThrowNPEOnWhenOnFailureFunctionIsNullIfFailure() {
+        assertEquals(
+                "ifFailure is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.transform(null, s -> { throw ASSERTION_ERROR; })).getMessage()
+        );
     }
 
     @Test
-    public void shouldTransformAndThrowNPEOnWhenOnSuccessFunctionIsNullIfSuccess() {
-        assertThatThrownBy(() -> SUCCESS.transform(x -> FAILURE, null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("onSuccess is null");
+    void shouldTransformAndThrowNPEOnWhenOnSuccessFunctionIsNullIfSuccess() {
+        assertEquals(
+                "ifSuccess is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.transform(x -> { throw ASSERTION_ERROR; }, null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldTransformAndThrowNPEOnWhenOnSuccessFunctionIsNullIfFailure() {
-        assertThatThrownBy(() -> FAILURE.transform(x -> FAILURE, null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("onSuccess is null");
+    void shouldTransformAndThrowNPEOnWhenOnSuccessFunctionIsNullIfFailure() {
+        assertEquals(
+                "ifSuccess is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.transform(x -> { throw ASSERTION_ERROR; }, null)).getMessage()
+        );
     }
 
     @Test
-    public void shouldTransformFailureAndCaptureException() {
-        final Try<String> transformed = FAILURE.transform(x -> { throw ERROR; }, s -> SUCCESS);
-        assertThat(transformed).isEqualTo(Try.failure(ERROR));
+    void shouldTransformFailureAndCaptureException() {
+        final var transformed = FAILURE.transform(x -> { throw ERROR; }, s -> { throw ASSERTION_ERROR; });
+        assertEquals(Try.failure(ERROR), transformed);
     }
 
     @Test
-    public void shouldTransformSuccessAndCaptureException() {
-        final Try<String> transformed = SUCCESS.transform(x -> FAILURE, s -> { throw ERROR; });
-        assertThat(transformed).isEqualTo(Try.failure(ERROR));
+    void shouldTransformSuccessAndCaptureException() {
+        final var transformed = SUCCESS.transform(x -> { throw ASSERTION_ERROR; }, s -> { throw ERROR; });
+        assertEquals(Try.failure(ERROR), transformed);
     }
 
     // -- Object.equals(Object)
 
     @Test
-    public void shouldEqualFailureIfObjectIsSame() {
-        assertThat(FAILURE).isEqualTo(FAILURE);
+    void shouldEqualFailureIfObjectIsSame() {
+        assertEquals(FAILURE, FAILURE);
     }
 
     @Test
-    public void shouldNotEqualFailureIfObjectIsNotSame() {
-        assertThat(Try.failure(new Error())).isNotEqualTo(Try.failure(new Error()));
+    void shouldNotEqualFailureIfObjectIsNotSame() {
+        assertNotEquals(Try.failure(new Error()), Try.failure(new Error()));
     }
 
     @Test
-    public void shouldEqualSuccessIfObjectIsSame() {
-        assertThat(SUCCESS).isEqualTo(SUCCESS);
+    void shouldEqualSuccessIfObjectIsSame() {
+        assertEquals(SUCCESS, SUCCESS);
     }
 
     @Test
-    public void shouldEqualSuccessIfObjectIsNotSame() {
-        assertThat(Try.success(1)).isEqualTo(Try.success(1));
+    void shouldNotEqualFailureAndSuccess() {
+        assertNotEquals(SUCCESS, FAILURE);
     }
 
     @Test
-    public void shouldNotEqualSuccessIfValueTypesDiffer() {
-        assertThat(Try.success(1)).isNotEqualTo(Try.success("1"));
+    void shouldNotEqualSuccessAndFailure() {
+        assertNotEquals(FAILURE, SUCCESS);
+    }
+
+    @Test
+    void shouldNotEqualSuccessIfValuesDiffer() {
+        assertNotEquals(Try.success("1"), Try.success(1));
     }
 
     // -- Object.hashCode()
 
     @Test
-    public void shouldHashFailure() {
-        assertThat(FAILURE.hashCode()).isEqualTo(Objects.hashCode(FAILURE_CAUSE));
+    void shouldHashFailure() {
+        assertEquals(Objects.hashCode(FAILURE_CAUSE), FAILURE.hashCode());
     }
 
     @Test
-    public void shouldHashFailureWithNullCause() {
-        assertThat(Try.failure(null).hashCode()).isEqualTo(Objects.hashCode(null));
+    void shouldHashFailureWithNullCause() {
+        assertEquals(Objects.hashCode(null), Try.failure(null).hashCode());
     }
 
     @Test
-    public void shouldHashSuccess() {
-        assertThat(SUCCESS.hashCode()).isEqualTo(Objects.hashCode(SUCCESS_VALUE));
+    void shouldHashSuccess() {
+        assertEquals(31 + Objects.hashCode(SUCCESS_VALUE), SUCCESS.hashCode());
     }
 
     @Test
-    public void shouldHashSuccessWithNullValue() {
-        assertThat(Try.success(null).hashCode()).isEqualTo(Objects.hashCode(null));
+    void shouldHashSuccessWithNullValue() {
+        assertEquals(31 + Objects.hashCode(null), Try.success(null).hashCode());
     }
 
     // -- Object.toString()
 
     @Test
-    public void shouldConvertFailureToString() {
-        assertThat(FAILURE.toString()).isEqualTo("Failure(" + FAILURE_CAUSE + ")");
+    void shouldConvertFailureToString() {
+        assertEquals("Failure(" + FAILURE_CAUSE + ")", FAILURE.toString());
     }
 
     @Test
-    public void shouldConvertFailureWithNullCauseToString() {
-        assertThat(Try.failure(null).toString()).isEqualTo("Failure(null)");
+    void shouldConvertFailureWithNullCauseToString() {
+        assertEquals("Failure(null)", Try.failure(null).toString());
     }
 
     @Test
-    public void shouldConvertSuccessToString() {
-        assertThat(SUCCESS.toString()).isEqualTo("Success(" + SUCCESS_VALUE + ")");
+    void shouldConvertSuccessToString() {
+        assertEquals("Success(" + SUCCESS_VALUE + ")", SUCCESS.toString());
     }
 
     @Test
-    public void shouldConvertSuccessWithNullValueToString() {
-        assertThat(Try.success(null).toString()).isEqualTo("Success(null)");
+    void shouldConvertSuccessWithNullValueToString() {
+        assertEquals("Success(null)", Try.success(null).toString());
+    }
+
+    // Serialization
+
+    @Test
+    void shouldSerializeFailure() throws IOException, ClassNotFoundException {
+        final Try<String> testee = deserialize(serialize(FAILURE));
+        assertSame(FAILURE.getCause().getClass(), testee.getCause().getClass());
+        assertEquals(FAILURE.getCause().getMessage(), testee.getCause().getMessage());
+    }
+
+    @Test
+    void shouldSerializeSuccess() throws IOException, ClassNotFoundException {
+        assertEquals(SUCCESS, deserialize(serialize(SUCCESS)));
+    }
+
+    private static byte[] serialize(Object obj) throws IOException {
+        try (final var buf = new ByteArrayOutputStream(); final var stream = new ObjectOutputStream(buf)) {
+            stream.writeObject(obj);
+            return buf.toByteArray();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T deserialize(byte[] data) throws IOException, ClassNotFoundException {
+        try (final var stream = new ObjectInputStream(new ByteArrayInputStream(data))) {
+            return (T) stream.readObject();
+        }
     }
 }

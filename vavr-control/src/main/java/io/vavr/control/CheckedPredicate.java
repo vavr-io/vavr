@@ -56,9 +56,10 @@ public interface CheckedPredicate<T> {
      * 
      * @param that a {@code CheckedPredicate}
      * @return a new {@code CheckedPredicate} with {@code p1.and(p2).test(t) == true :<=> p1.test(t) && p2.test(t) == true}
+     * @throws NullPointerException if the given predicate {@code that} is null
      */
     default CheckedPredicate<T> and(CheckedPredicate<? super T> that) {
-        Objects.requireNonNull(that);
+        Objects.requireNonNull(that, "that is null");
         return t -> test(t) && that.test(t);
     }
 
@@ -76,9 +77,10 @@ public interface CheckedPredicate<T> {
      *
      * @param that a {@code CheckedPredicate}
      * @return a new {@code CheckedPredicate} with {@code p1.or(p2).test(t) :<=> p1.test(t) || p2.test(t)}
+     * @throws NullPointerException if the given predicate {@code that} is null
      */
     default CheckedPredicate<T> or(CheckedPredicate<? super T> that) {
-        Objects.requireNonNull(that);
+        Objects.requireNonNull(that, "that is null");
         return t -> test(t) || that.test(t);
     }
 

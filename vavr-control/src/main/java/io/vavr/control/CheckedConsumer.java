@@ -50,7 +50,7 @@ public interface CheckedConsumer<T> {
      * @throws NullPointerException if {@code after} is null
      */
     default CheckedConsumer<T> andThen(CheckedConsumer<? super T> after) {
-        Objects.requireNonNull(after);
+        Objects.requireNonNull(after, "after is null");
         return t -> { accept(t); after.accept(t); };
     }
 

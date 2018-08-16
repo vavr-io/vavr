@@ -2,7 +2,7 @@
  * \   \/   /      \   \/   /   __/   /      \   \/   /      \
  *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
- * Copyright 2014-2018 Vavr, http://vavr.io
+ * Copyright 2018 Vavr, http://vavr.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 /**
@@ -207,6 +208,21 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
     }
 
     /**
+     * Collects the underlying value (if present) using the provided {@code collector}.
+     * <p>
+     * Shortcut for {@code .stream().collect(collector)}.
+     *
+     * @param <A>       the mutable accumulation type of the reduction operation
+     * @param <R>       the result type of the reduction operation
+     * @param collector Collector performing reduction
+     * @return the reduction result of type {@code R}
+     * @throws NullPointerException if the given {@code collector} is null
+     */
+    public <R, A> R collect(Collector<? super T, A, R> collector) {
+        return stream().collect(collector);
+    }
+
+    /**
      * Inverts this {@code Try}.
      *
      * @return {@code Success(throwable)} if this is a {@code Failure(throwable)},
@@ -271,16 +287,16 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
     /**
      * Folds either the {@code Failure} or the {@code Success} side of the Try value.
      *
-     * @param onFailure maps the cause if this is a {@code Failure}
-     * @param onSuccess maps the value if this is a {@code Success}
+     * @param ifFailure maps the cause if this is a {@code Failure}
+     * @param ifSuccess maps the value if this is a {@code Success}
      * @param <U>       type of the folded value
      * @return A value of type U
-     * @throws NullPointerException if one of the given {@code onFailure} or {@code onSuccess} is null
+     * @throws NullPointerException if one of the given {@code ifFailure} or {@code ifSuccess} is null
      */
-    public <U> U fold(Function<? super Throwable, ? extends U> onFailure, Function<? super T, ? extends U> onSuccess) {
-        Objects.requireNonNull(onFailure, "onFailure is null");
-        Objects.requireNonNull(onSuccess, "onSuccess is null");
-        return isSuccess() ? onSuccess.apply(get()) : onFailure.apply(getCause());
+    public <U> U fold(Function<? super Throwable, ? extends U> ifFailure, Function<? super T, ? extends U> ifSuccess) {
+        Objects.requireNonNull(ifFailure, "ifFailure is null");
+        Objects.requireNonNull(ifSuccess, "ifSuccess is null");
+        return isSuccess() ? ifSuccess.apply(get()) : ifFailure.apply(getCause());
     }
 
     /**
@@ -290,7 +306,9 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
      *
      * @return The computation result if this is a {@code Success}
      * @throws NonFatalException if this is a {@link Failure}
+     * @deprecated TODO: description
      */
+    @Deprecated
     public abstract T get() throws NonFatalException;
 
     /**
@@ -298,7 +316,9 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
      *
      * @return The cause if this is a Failure
      * @throws UnsupportedOperationException if this is a Success
+     * @deprecated TODO: description
      */
+    @Deprecated
     public abstract Throwable getCause() throws UnsupportedOperationException;
 
     /**
@@ -326,18 +346,18 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
     /**
      * Returns the underlying value if present, otherwise throws a user-specific exception.
      *
-     * @param exceptionSupplier provides a user-specific exception
+     * @param exceptionProvider provides a user-specific exception
      * @param <X>               exception type
      * @return A value of type {@code T}
      * @throws X                    if this is a {@code Failure}
      * @throws NullPointerException if the given {@code exceptionProvider} is null
      */
-    public <X extends Throwable> T getOrElseThrow(Function<? super Throwable, ? extends X> exceptionSupplier) throws X {
-        Objects.requireNonNull(exceptionSupplier, "exceptionSupplier is null");
+    public <X extends Throwable> T getOrElseThrow(Function<? super Throwable, ? extends X> exceptionProvider) throws X {
+        Objects.requireNonNull(exceptionProvider, "exceptionProvider is null");
         if (isSuccess()) {
             return get();
         } else {
-            throw exceptionSupplier.apply(getCause());
+            throw exceptionProvider.apply(getCause());
         }
     }
 
@@ -461,19 +481,19 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
     }
 
     /**
-     * Returns this {@code Try} in the case of a {@code Success}, otherwise {@code other.get()}.
+     * Returns this {@code Try} in the case of a {@code Success}, otherwise {@code other.call()}.
      *
-     * @param supplier a {@code Try} supplier
+     * @param callable a {@link Callable}
      * @return a {@code Try} instance
      */
     @SuppressWarnings("unchecked")
-    public Try<T> orElse(Callable<? extends Try<? extends T>> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
+    public Try<T> orElse(Callable<? extends Try<? extends T>> callable) {
+        Objects.requireNonNull(callable, "callable is null");
         if (isSuccess()) {
             return this;
         } else {
             try {
-                return (Try<T>) supplier.call();
+                return (Try<T>) callable.call();
             } catch (Throwable x) {
                 return failure(x);
             }
@@ -602,22 +622,22 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
     }
 
     /**
-     * Transforms this {@code Try} by applying either {@code onSuccess} to this value or {@code onFailure} to this cause.
+     * Transforms this {@code Try} by applying either {@code ifSuccess} to this value or {@code ifFailure} to this cause.
      *
-     * @param onFailure maps the cause if this is a {@code Failure}
-     * @param onSuccess maps the value if this is a {@code Success}
-     * @param <U>       type of the folded value
+     * @param ifFailure maps the cause if this is a {@code Failure}
+     * @param ifSuccess maps the value if this is a {@code Success}
+     * @param <U>       type of the transformed value
      * @return A new {@code Try} instance
-     * @throws NullPointerException if one of the given {@code onSuccess} or {@code onFailure} is null
+     * @throws NullPointerException if one of the given {@code ifSuccess} or {@code ifFailure} is null
      */
     @SuppressWarnings("unchecked")
-    public <U> Try<U> transform(CheckedFunction<? super Throwable, ? extends Try<? extends U>> onFailure, CheckedFunction<? super T, ? extends Try<? extends U>> onSuccess) {
-        Objects.requireNonNull(onFailure, "onFailure is null");
-        Objects.requireNonNull(onSuccess, "onSuccess is null");
+    public <U> Try<U> transform(CheckedFunction<? super Throwable, ? extends Try<? extends U>> ifFailure, CheckedFunction<? super T, ? extends Try<? extends U>> ifSuccess) {
+        Objects.requireNonNull(ifFailure, "ifFailure is null");
+        Objects.requireNonNull(ifSuccess, "ifSuccess is null");
         try {
             return isSuccess()
-                   ? (Try<U>) onSuccess.apply(get())
-                   : (Try<U>) onFailure.apply(getCause());
+                   ? (Try<U>) ifSuccess.apply(get())
+                   : (Try<U>) ifFailure.apply(getCause());
         } catch (Throwable t) {
             return failure(t);
         }
@@ -637,7 +657,7 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
     /**
      * Computes the hash of this {@code Try}.
      *
-     * @return {@code Objects.hashCode(get())} if this is a success, otherwise {@code Objects.hashCode(getCause())}
+     * @return {@code 31 + Objects.hashCode(get())} if this is a success, otherwise {@code Objects.hashCode(getCause())}
      */
     @Override
     public abstract int hashCode();
@@ -677,7 +697,7 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
 
         @Override
         public Throwable getCause() {
-            throw new UnsupportedOperationException("Success.getCause()");
+            throw new UnsupportedOperationException("getCause() on Success");
         }
 
         @Override
@@ -697,7 +717,7 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(value);
+            return 31 + Objects.hashCode(value);
         }
 
         @Override
