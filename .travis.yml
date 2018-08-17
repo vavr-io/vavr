@@ -13,3 +13,6 @@ matrix:
   - jdk: openjdk-ea
   allow_failures:
   - jdk: openjdk-ea
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)

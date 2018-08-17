@@ -3,6 +3,7 @@ ext.junitVersion = '5.3.1'
 subprojects {
 
     apply plugin: 'java'
+    apply plugin: "jacoco"
 
     repositories {
         jcenter()
@@ -26,4 +27,18 @@ subprojects {
     test {
         useJUnitPlatform()
     }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+        }
+    }
+
+    check.dependsOn jacocoTestReport
+
+    // TODO: REMOVE THIS WORKAROUND FOR https://github.com/jacoco/jacoco/issues/663 -->
+    jacoco {
+        toolVersion = "0.8.2" // intentionally no ext.jacocoVersion
+    }
+    // <-- TODO: REMOVE THIS WORKAROUND
 }
