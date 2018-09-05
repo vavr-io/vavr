@@ -56,7 +56,7 @@
                 <configuration>
                     <archive>
                         <manifestEntries>
-                            <Automatic-Module-Name>io.vavr.match</Automatic-Module-Name>
+                            <Automatic-Module-Name>io.vavr.match.processor</Automatic-Module-Name>
                         </manifestEntries>
                     </archive>
                 </configuration>

@@ -23,8 +23,13 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>vavr-match</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vavr-annotation-processor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
