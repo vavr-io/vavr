@@ -232,6 +232,24 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(either.getLeft()).isEqualTo(List.of("vavr"));
     }
 
+    // -- toTry
+
+    @Test
+    public void shouldConvertToSuccessfulTry() {
+        final Try<Integer> tryRight = Validation.valid(42).toTry(errors -> new RuntimeException("vavr"));
+        assertThat(tryRight.isSuccess()).isTrue();
+        assertThat(tryRight.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldConvertToFailedTry() {
+        final Try<?> tryLeft = Validation.invalid("vavr", "rvav")
+                .toTry(errors -> new RuntimeException(errors.mkString(",")));
+        assertThat(tryLeft.isFailure()).isTrue();
+        assertThat(tryLeft.getCause()).isInstanceOf(RuntimeException.class);
+        assertThat(tryLeft.getCause().getMessage()).isEqualTo("vavr,rvav");
+    }
+
     // -- filter
 
     @Test

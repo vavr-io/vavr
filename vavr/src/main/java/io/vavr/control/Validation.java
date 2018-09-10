@@ -539,6 +539,16 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         return isValid() ? Either.right(get()) : Either.left(getErrors());
     }
 
+    /**
+     * Returns this as {@code Try}.
+     *
+     * @param function a function to map sequence of errors {@code Seq<E>} to Throwable.
+     * @return {@code Try.success(get())} if this is valid, otherwise {@code Try.failure(function.apply(getErrors()))}
+     */
+    default Try<T> toTry(Function<? super Seq<? super E>, ? extends Throwable> function) {
+        return isValid() ? Try.success(get()) : Try.failure(function.apply(getErrors()));
+    }
+
     @Override
     boolean equals(Object o);
 
