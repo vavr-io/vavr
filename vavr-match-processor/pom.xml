@@ -6,9 +6,9 @@
         <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>vavr-annotation-processor</artifactId>
+    <artifactId>vavr-match-processor</artifactId>
     <packaging>jar</packaging>
-    <name>Vavr Annotation Processor</name>
+    <name>Vavr Match Annotation Processor</name>
     <description>Processor for structural pattern matching.</description>
     <url>http://vavr.io</url>
     <licenses>

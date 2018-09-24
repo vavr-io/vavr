@@ -27,7 +27,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>vavr-annotation-processor</artifactId>
+            <artifactId>vavr-match-processor</artifactId>
             <version>${project.version}</version>
             <optional>true</optional>
         </dependency>
