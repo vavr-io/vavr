@@ -90,7 +90,7 @@ subprojects {
     }
 }
 
-// TODO: REMOVE THIS WORKAROUND FOR for https://github.com/researchgate/gradle-release/issues/186 -->
+// workaround, see https://github.com/researchgate/gradle-release/issues/186
 task build {}
 
 release {
@@ -98,18 +98,4 @@ release {
     tagTemplate = '$name-$version'
 }
 
-task startmessage {
-    doLast {
-        println 'starting build'
-    }
-}
-
-task printversion {
-    doLast {
-        println project.version
-    }
-}
-
-beforeReleaseBuild.dependsOn startmessage
-afterReleaseBuild.dependsOn printversion
-// <-- TODO: REMOVE THIS WORKAROUND
+afterReleaseBuild.dependsOn bintrayUpload
