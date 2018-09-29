@@ -615,7 +615,7 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
     /**
      * Converts this {@code Try} to an {@link Optional}.
      *
-     * @return {@code Optional.ofNullable(get()) if this is a success, otherwise {@code Optional.empty()}
+     * @return {@code Optional.ofNullable(get())} if this is a success, otherwise {@code Optional.empty()}
      */
     public Optional<T> toOptional() {
         return isSuccess() ? Optional.ofNullable(get()) : Optional.empty();

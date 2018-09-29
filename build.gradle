@@ -42,6 +42,21 @@ subprojects {
         toolVersion = "0.8.2" // intentionally no ext.jacocoVersion
     }
     // <-- TODO: REMOVE THIS WORKAROUND
+
+    task sourcesJar(type: Jar) {
+        from sourceSets.main.allJava
+        classifier = 'sources'
+    }
+
+    task javadocJar(type: Jar) {
+        from javadoc
+        classifier = 'javadoc'
+    }
+
+    artifacts {
+        archives sourcesJar
+        archives javadocJar
+    }
 }
 
 // TODO: REMOVE THIS WORKAROUND FOR for https://github.com/researchgate/gradle-release/issues/186 -->

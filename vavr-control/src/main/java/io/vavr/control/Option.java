@@ -31,8 +31,7 @@ import java.util.stream.Stream;
  * Replacement for {@link Optional}.
  * <p>
  * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a> container type which
- * represents an optional value. Instances of Option are either an instance of {@link Some} or the
- * singleton {@link None}.
+ * represents an optional value.
  * <p>
  * Most of the API is taken from {@link Optional}. A similar type can be found in <a
  * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a
@@ -53,7 +52,7 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
      *
      * @param value A value
      * @param <T>   type of the value
-     * @return {@code Some(value)} if value is not {@code null}, {@code None} otherwise
+     * @return A new {@code Option} containing the given {@code value} if value is not {@code null}, otherwise the empty {@code Option}.
      */
     public static <T> Option<T> of(T value) {
         return (value == null) ? none() : some(value);
@@ -366,6 +365,7 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
     /**
      * Converts this {@code Option} to a {@link Try}.
      *
+     * @param ifEmpty supplies a {@code Throwable} if this {@code Option} is empty
      * @return {@code Try.success(get()} if this is a defined {@code Option}, otherwise {@code Try.failure(ifEmpty.get())}
      * @throws NullPointerException if the given {@code ifEmpty} is null
      */
@@ -377,8 +377,8 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
     /**
      * Transforms this {@code Option} by applying either {@code ifDefined} to this value or by calling {@code ifEmpty}.
      *
-     * @param ifEmpty supplies an {@code Option} if this is a {@code None}
-     * @param ifDefined maps the value if this is a {@code Some}
+     * @param ifEmpty supplies an {@code Option} if this {@code Option} is empty
+     * @param ifDefined maps the value if this {@code Option} is defined
      * @param <U>    type of the transformed value
      * @return A new {@code Option} instance
      * @throws NullPointerException if one of the given {@code ifDefined} or {@code ifEmpty} is null
@@ -413,7 +413,7 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
     /**
      * Returns a string representation of this {@code Option}.
      *
-     * @return {@code "Some(" + get() + ")"} if this is a {@code Some}, otherwise {@code "None"}
+     * @return {@code "Some(" + get() + ")"} if this {@code Option} is defined, otherwise {@code "None"}
      */
     @Override
     public abstract String toString();

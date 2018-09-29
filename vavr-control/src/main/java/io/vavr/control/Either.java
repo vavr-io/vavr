@@ -353,7 +353,7 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
     /**
      * Converts this {@code Either} to an {@link Optional}.
      *
-     * @return {@code Optional.ofNullable(get()) if this is a {@code Right}, otherwise {@code Optional.empty()}
+     * @return {@code Optional.ofNullable(get())} if this is a {@code Right}, otherwise {@code Optional.empty()}
      */
     public Optional<R> toOptional() {
         return isRight() ? Optional.ofNullable(get()) : Optional.empty();
