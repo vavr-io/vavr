@@ -69,6 +69,42 @@ subprojects {
         archives javadocJar
     }
 
+    // generate sonatype conform pom for bintray maven-sync, see https://central.sonatype.org/pages/requirements.html
+    install {
+        repositories.mavenInstaller {
+            doFirst {
+                pom {
+                    project {
+                        name = project.name
+                        description = "The ${project.name} module of Vavr"
+                        url = 'https://www.vavr.io'
+                        inceptionYear '2014'
+                        licenses {
+                            license {
+                                name 'The Apache Software License, Version 2.0'
+                                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                                distribution 'repo'
+                            }
+                        }
+                        developers {
+                            developer {
+                                name = 'Daniel Dietrich'
+                                email = 'cafebab3@gmail.com'
+                                organization = 'Vavr'
+                                organizationUrl = 'https://github.com/vavr-io'
+                            }
+                        }
+                        scm {
+                            connection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                            developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                            url = 'https://github.com/vavr-io/vavr/tree/master'
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     bintray {
         user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
         key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
@@ -83,6 +119,7 @@ subprojects {
             licenses = ['Apache-2.0']
             desc = 'Vavr is an object-functional language extension to Java 11'
             githubRepo = 'vavr-io/vavr'
+            githubReleaseNotesFile = 'README.md'
             issueTrackerUrl = 'https://github.com/vavr-io/vavr/issues'
             vcsUrl = 'https://github.com/vavr-io/vavr.git'
             websiteUrl = 'https://www.vavr.io'
