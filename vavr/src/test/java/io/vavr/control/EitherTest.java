@@ -481,6 +481,23 @@ public class EitherTest extends AbstractValueTest {
         assertThat(validation.getErrors()).isEqualTo(List.of("vavr"));
     }
 
+    // -- toTry
+
+    @Test
+    public void shouldConvertToSuccessfulTry() {
+        final Try<Integer> tryRight = Either.right(42).toTry(left -> new RuntimeException("vavr"));
+        assertThat(tryRight.isSuccess()).isTrue();
+        assertThat(tryRight.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldConvertToFailedTry() {
+        final Try<?> tryLeft = Either.left("vavr").toTry(RuntimeException::new);
+        assertThat(tryLeft.isFailure()).isTrue();
+        assertThat(tryLeft.getCause()).isInstanceOf(RuntimeException.class);
+        assertThat(tryLeft.getCause().getMessage()).isEqualTo("vavr");
+    }
+
     // hashCode
 
     @Test

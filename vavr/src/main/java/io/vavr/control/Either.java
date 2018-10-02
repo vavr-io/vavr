@@ -561,6 +561,17 @@ public interface Either<L, R> extends Value<R>, Serializable {
         return isRight() ? Validation.valid(get()) : Validation.invalid(getLeft());
     }
 
+    /**
+     * Returns this as {@code Try}.
+     *
+     * @param function a function to map left value to Throwable.
+     * @return right value as {@code Try.success(get())}, otherwise applied {@code function}
+     * on left value {@code Try.failure(function.apply(getLeft()))}
+     */
+    default Try<R> toTry(Function<? super L, ? extends Throwable> function) {
+        return isRight() ? Try.success(get()) : Try.failure(function.apply(getLeft()));
+    }
+
     // -- Object.*
 
     @Override
