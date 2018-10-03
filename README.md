@@ -12,7 +12,15 @@ To stay up to date please follow the [blog](http://blog.vavr.io).
 
 ---
 
+## Prerequisites:
+
+* Vavr 1.x runs with Java 11 and is completely modularized (JPMS conform). It runs also on the classpath.
+* Java 8 users are able to fall back to Vavr 0.9.
+
 ## Using Vavr
+
+Starting with v1, Vavr is available on JCenter and Maven Central. 
+Vavr v0.9 is available on Maven Central.
 
 ### Gradle
 
