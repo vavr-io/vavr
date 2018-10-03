@@ -2863,14 +2863,23 @@ def generateTestClasses(): Unit = {
                   $assertThat(memo.isMemoized()).isTrue();
               }
 
-              ${(i == 0 && !checked).gen(xs"""
-                @$test
-                public void shouldGetValue()${checked.gen(" throws Throwable")} {
-                    final String s = "test";
-                    final ${name}0<String> supplier = () -> s;
-                    assertThat(supplier.get()).isEqualTo(s);
-                }
-              """)}
+              ${(i == 0).gen(
+                if (checked) xs"""
+                  @$test
+                  public void shouldCallValue() throws Exception {
+                      final String s = "test";
+                      final ${name}0<String> callable = () -> s;
+                      assertThat(callable.call()).isEqualTo(s);
+                  }
+                """ else xs"""
+                  @$test
+                  public void shouldGetValue() {
+                      final String s = "test";
+                      final ${name}0<String> supplier = () -> s;
+                      assertThat(supplier.get()).isEqualTo(s);
+                  }
+                """
+              )}
 
               ${(i > 1).gen(xs"""
                 @$test
