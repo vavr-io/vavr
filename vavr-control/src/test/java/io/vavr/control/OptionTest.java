@@ -658,20 +658,6 @@ class OptionTest {
         assertEquals(Optional.empty(), Option.some(null).toOptional());
     }
 
-    // -- .toTry()
-
-    @Test
-    void shouldConvertSomeToTry() {
-        assertEquals(Try.success(SOME_VALUE), SOME.toTry());
-    }
-
-    @Test
-    void shouldConvertNoneToTry() {
-        final var testee = NONE.toTry();
-        assertTrue(testee.isFailure());
-        assertTrue(testee.getCause() instanceof NoSuchElementException);
-    }
-
     // -- .toTry(Supplier)
 
     @Test
