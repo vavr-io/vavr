@@ -353,16 +353,6 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
     }
 
     /**
-     * Shortcut for {@code toTry(NoSuchElementException::new)}.
-     *
-     * @return a new {@code Try} instance
-     * @see #toTry(Supplier)
-     */
-    public Try<T> toTry() {
-        return toTry(NoSuchElementException::new);
-    }
-
-    /**
      * Converts this {@code Option} to a {@link Try}.
      *
      * @param ifEmpty supplies a {@code Throwable} if this {@code Option} is empty
