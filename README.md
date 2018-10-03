@@ -12,4 +12,28 @@ To stay up to date please follow the [blog](http://blog.vavr.io).
 
 ---
 
+## Using Vavr
+
+### Gradle
+
+```groovy
+dependencies {
+    compile "io.vavr:vavr-control:1.0.0-alpha-1"
+}
+```
+
+### Maven
+
+```xml
+<dependencies>
+    <dependency>
+        <groupId>io.vavr</groupId>
+        <artifactId>vavr-control</artifactId>
+        <version>1.0.0-alpha-1</version>
+    </dependency>
+</dependencies>
+```
+
+---
+
 Developers, please note that the previous version Vavr 0.9 was moved to the branch [v0.9.x](https://github.com/vavr-io/vavr/tree/v0.9.x) and master was replaced with v1.0, which is a complete rewrite. 
