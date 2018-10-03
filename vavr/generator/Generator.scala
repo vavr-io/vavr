@@ -1365,6 +1365,7 @@ def generateMainClasses(): Unit = {
         val Serializable = im.getType("java.io.Serializable")
         val additionalExtends = (checked, i) match {
           case (false, 0) => ", " + im.getType("java.util.function.Supplier") + "<R>"
+          case (true, 0) => ", " + im.getType("java.util.concurrent.Callable") + "<R>"
           case (false, 1) => ", " + im.getType("java.util.function.Function") + "<T1, R>"
           case (false, 2) => ", " + im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
           case _ => ""
@@ -1376,7 +1377,6 @@ def generateMainClasses(): Unit = {
           case (false, 2) => im.getType("java.util.function.BiFunction") + "<? super T1, ? super T2, ? extends R>"
           case (false, _) => im.getType(s"io.vavr.Function$i") + fullWideGenerics
         }
-        val fullGenericsType = fullGenericsTypeF(checked, i)
         val refApply = i match {
           case 0 => "get"
           case _ => "apply"
@@ -1500,17 +1500,30 @@ def generateMainClasses(): Unit = {
                 """
               })("\n\n")}
 
-              ${(!checked && i == 0).gen(xs"""
-                /$javadoc
-                 * Implementation of {@linkplain java.util.function.Supplier#get()}, just calls {@linkplain #apply()}.
-                 *
-                 * @return the result of {@code apply()}
-                 */
-                @Override
-                default R get() {
-                    return apply();
-                }
-              """)}
+              ${(i == 0).gen(
+                if (checked) xs"""
+                  /$javadoc
+                   * Implementation of {@linkplain java.util.concurrent.Callable#call()}, just calls {@linkplain #apply()}.
+                   *
+                   * @return the result of {@code apply()}
+                   * @throws Exception if something goes wrong when calling this function
+                   */
+                  @Override
+                  default R call() throws Exception {
+                      return apply();
+                  }
+                """ else xs"""
+                  /$javadoc
+                   * Implementation of {@linkplain java.util.function.Supplier#get()}, just calls {@linkplain #apply()}.
+                   *
+                   * @return the result of {@code apply()}
+                   */
+                  @Override
+                  default R get() {
+                      return apply();
+                  }
+                """
+              )}
 
               /**
                * Returns a curried version of this function.
@@ -2850,14 +2863,23 @@ def generateTestClasses(): Unit = {
                   $assertThat(memo.isMemoized()).isTrue();
               }
 
-              ${(i == 0 && !checked).gen(xs"""
-                @$test
-                public void shouldGetValue()${checked.gen(" throws Throwable")} {
-                    final String s = "test";
-                    final ${name}0<String> supplier = () -> s;
-                    assertThat(supplier.get()).isEqualTo(s);
-                }
-              """)}
+              ${(i == 0).gen(
+                if (checked) xs"""
+                  @$test
+                  public void shouldCallValue() throws Exception {
+                      final String s = "test";
+                      final ${name}0<String> callable = () -> s;
+                      assertThat(callable.call()).isEqualTo(s);
+                  }
+                """ else xs"""
+                  @$test
+                  public void shouldGetValue() {
+                      final String s = "test";
+                      final ${name}0<String> supplier = () -> s;
+                      assertThat(supplier.get()).isEqualTo(s);
+                  }
+                """
+              )}
 
               ${(i > 1).gen(xs"""
                 @$test

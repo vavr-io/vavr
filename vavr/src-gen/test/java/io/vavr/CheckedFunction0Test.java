@@ -71,6 +71,13 @@ public class CheckedFunction0Test {
     }
 
     @Test
+    public void shouldCallValue() throws Exception {
+        final String s = "test";
+        final CheckedFunction0<String> callable = () -> s;
+        assertThat(callable.call()).isEqualTo(s);
+    }
+
+    @Test
     public void shouldCurry() {
         final CheckedFunction0<Object> f = () -> null;
         final CheckedFunction0<Object> curried = f.curried();

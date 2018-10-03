@@ -25,6 +25,7 @@ package io.vavr;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -35,7 +36,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface CheckedFunction0<R> extends Serializable {
+public interface CheckedFunction0<R> extends Serializable, Callable<R> {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -98,6 +99,17 @@ public interface CheckedFunction0<R> extends Serializable {
      * @throws Exception if something goes wrong applying this function to the given arguments
      */
     R apply() throws Exception;
+
+    /**
+     * Implementation of {@linkplain java.util.concurrent.Callable#call()}, just calls {@linkplain #apply()}.
+     *
+     * @return the result of {@code apply()}
+     * @throws Exception if something goes wrong when calling this function
+     */
+    @Override
+    default R call() throws Exception {
+        return apply();
+    }
 
     /**
      * Returns a curried version of this function.
