@@ -128,7 +128,7 @@ subprojects {
     }
 }
 
-// workaround, see https://github.com/researchgate/gradle-release/issues/186
+// TODO: WORKAROUND, SEE https://github.com/researchgate/gradle-release/issues/186
 task build {}
 
 release {
