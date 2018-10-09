@@ -1956,14 +1956,14 @@ public class CharSeqTest {
 
     @Test
     public void shouldConvertNilToJavaArray() {
-        final Character[] actual = CharSeq.empty().toJavaArray(Character.class);
+        final Character[] actual = CharSeq.empty().toJavaArray(Character[]::new);
         final Character[] expected = new Character[] {};
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldConvertNonNilToJavaArray() {
-        final Character[] array = CharSeq.of('1', '2').toJavaArray(Character.class);
+        final Character[] array = CharSeq.of('1', '2').toJavaArray(Character[]::new);
         final Character[] expected = new Character[] { '1', '2' };
         assertThat(array).isEqualTo(expected);
     }

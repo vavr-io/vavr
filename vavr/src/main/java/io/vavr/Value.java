@@ -661,11 +661,13 @@ public interface Value<T> extends Iterable<T> {
      * List.of(1, 2, 3)
      *     .toJavaArray(Integer.class)
      * }</pre>
-     * 
+     *
      * @param componentType Component type of the array
      * @return A new Java array.
      * @throws NullPointerException if componentType is null
+     * @deprecated Use {@link #toJavaArray(IntFunction)} instead
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     @GwtIncompatible("reflection is not supported")
     default T[] toJavaArray(Class<T> componentType) {
@@ -685,6 +687,34 @@ public interface Value<T> extends Iterable<T> {
         }
         final java.util.List<T> list = toJavaList();
         return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
+    }
+
+    /**
+     * Converts this to a Java array having an accurate component type.
+     *
+     * <pre>{@code
+     * // = [] of type String[]
+     * Future.<String> of(() -> { throw new Error(); })
+     *       .toJavaArray(String[]::new)
+     *
+     * // = [ok] of type String[]
+     * Try.of(() -> "ok")
+     *    .toJavaArray(String[]::new)
+     *
+     * // = [1, 2, 3] of type Integer[]
+     * List.of(1, 2, 3)
+     *     .toJavaArray(Integer[]::new)
+     * }</pre>
+     *
+     * @param arrayFactory an <code>int</code> argument function that
+     *                     creates an array of the correct component
+     *                     type with the specified size
+     * @return The array provided by the factory filled with the values from this <code>Value</code>.
+     * @throws NullPointerException if componentType is null
+     */
+    default T[] toJavaArray(IntFunction<T[]> arrayFactory) {
+        java.util.List<T> javaList = toJavaList();
+        return javaList.toArray(arrayFactory.apply(javaList.size()));
     }
 
     /**
