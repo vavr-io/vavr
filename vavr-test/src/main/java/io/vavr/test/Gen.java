@@ -344,6 +344,7 @@ public interface Gen<T> {
         if (stream.isEmpty()) {
             throw new IllegalArgumentException("generators is empty");
         }
+        @SuppressWarnings("unchecked")
         final Gen<T>[] array = stream.toJavaArray(Gen[]::new);
         return oneOf(array);
     }
