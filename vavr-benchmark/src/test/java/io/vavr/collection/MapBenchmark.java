@@ -78,7 +78,7 @@ public class MapBenchmark {
         public void setup() {
             ELEMENTS = getRandomValues(CONTAINER_SIZE, 0);
             sampleTreeMap = index(ELEMENTS);
-            KEYS = predicableShuffle(sampleTreeMap.keySet().toJavaArray(Integer.class));
+            KEYS = predicableShuffle(sampleTreeMap.keySet().toJavaArray(Integer[]::new));
             REMOVAL = predicableShuffle(KEYS.clone());
             EXPECTED_AGGREGATE = sampleTreeMap.values().reduce(JmhRunner::aggregate);
 

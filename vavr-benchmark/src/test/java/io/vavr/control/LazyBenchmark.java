@@ -54,7 +54,7 @@ public class LazyBenchmark {
         @Setup
         @SuppressWarnings({ "unchecked", "rawtypes" })
         public void setup() {
-            EAGERS = Iterator.range(0, SIZE).toJavaArray(Integer.class);
+            EAGERS = Iterator.range(0, SIZE).toJavaArray(Integer[]::new);
             INITED_LAZIES = Iterator.of(EAGERS).map(i -> {
                 final Lazy<Integer> lazy = Lazy.of(() -> i);
                 lazy.get();
