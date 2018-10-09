@@ -484,8 +484,20 @@ public abstract class AbstractValueTest {
     }
 
     @Test
+    public void shouldConvertToJavaArrayWithFactory() {
+        final Value<Integer> value = of(1, 2, 3);
+        final Integer[] ints = value.toJavaArray(Integer[]::new);
+        if (value.isSingleValued()) {
+            assertThat(ints).containsOnly(1);
+        } else {
+            assertThat(ints).containsOnly(1, 2, 3);
+        }
+    }
+
+    @Test
     public void shouldConvertToJavaArrayWithTypeHint() {
         final Value<Integer> value = of(1, 2, 3);
+        @SuppressWarnings("deprecation")
         final Integer[] ints = value.toJavaArray(Integer.class);
         if (value.isSingleValued()) {
             assertThat(ints).containsOnly(1);
@@ -497,6 +509,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveBoolean() {
         final Value<Boolean> value = of(true, false);
+        @SuppressWarnings("deprecation")
         final Boolean[] array = value.toJavaArray(boolean.class);
         if (value.isSingleValued()) {
             assertThat(array).containsOnly(true);
@@ -508,6 +521,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveByte() {
         final Value<Byte> value = of((byte) 1, (byte) 2);
+        @SuppressWarnings("deprecation")
         final Byte[] array = value.toJavaArray(byte.class);
         if (value.isSingleValued()) {
             assertThat(array).containsOnly((byte) 1);
@@ -519,6 +533,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveChar() {
         final Value<Character> value = of('a', 'b');
+        @SuppressWarnings("deprecation")
         final Character[] array = value.toJavaArray(char.class);
         if (value.isSingleValued()) {
             assertThat(array).containsOnly('a');
@@ -530,6 +545,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveDouble() {
         final Value<Double> value = of(.1, .2);
+        @SuppressWarnings("deprecation")
         final Double[] array = value.toJavaArray(double.class);
         if (value.isSingleValued()) {
             assertThat(array).containsOnly(.1);
@@ -541,6 +557,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveFloat() {
         final Value<Float> value = of(.1f, .2f);
+        @SuppressWarnings("deprecation")
         final Float[] array = value.toJavaArray(float.class);
         if (value.isSingleValued()) {
             assertThat(array).containsOnly(.1f);
@@ -552,6 +569,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveInt() {
         final Value<Integer> value = of(1, 2);
+        @SuppressWarnings("deprecation")
         final Integer[] array = value.toJavaArray(int.class);
         if (value.isSingleValued()) {
             assertThat(array).containsOnly(1);
@@ -563,6 +581,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveLong() {
         final Value<Long> value = of(1L, 2L);
+        @SuppressWarnings("deprecation")
         final Long[] array = value.toJavaArray(long.class);
         if (value.isSingleValued()) {
             assertThat(array).containsOnly(1L);
@@ -574,6 +593,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveShort() {
         final Value<Short> value = of((short) 1, (short) 2);
+        @SuppressWarnings("deprecation")
         final Short[] array = value.toJavaArray(short.class);
         if (value.isSingleValued()) {
             assertThat(array).containsOnly((short) 1);
@@ -585,6 +605,7 @@ public abstract class AbstractValueTest {
     @Test
     public void shouldConvertToJavaArrayWithTypeHintPrimitiveVoid() {
         final Value<Void> value = of((Void) null);
+        @SuppressWarnings("deprecation")
         final Void[] array = value.toJavaArray(void.class);
         assertThat(array).containsOnly((Void) null);
     }

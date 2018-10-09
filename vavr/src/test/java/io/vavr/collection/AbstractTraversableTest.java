@@ -2481,18 +2481,18 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- toJavaArray(Class)
+    // -- toJavaArray(IntFunction)
 
     @Test
     public void shouldConvertNilToJavaArray() {
-        final Integer[] actual = List.<Integer> empty().toJavaArray(Integer.class);
+        final Integer[] actual = List.<Integer> empty().toJavaArray(Integer[]::new);
         final Integer[] expected = new Integer[] {};
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldConvertNonNilToJavaArray() {
-        final Integer[] array = of(1, 2).toJavaArray(Integer.class);
+        final Integer[] array = of(1, 2).toJavaArray(Integer[]::new);
         final Integer[] expected = new Integer[] { 1, 2 };
         assertThat(array).isEqualTo(expected);
     }

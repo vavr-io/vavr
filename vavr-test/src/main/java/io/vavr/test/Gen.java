@@ -181,7 +181,7 @@ public interface Gen<T> {
      */
     static Gen<Character> choose(char... characters) {
         Objects.requireNonNull(characters, "characters is null");
-        final Character[] validCharacters = List.ofAll(characters).toJavaArray(Character.class);
+        final Character[] validCharacters = List.ofAll(characters).toJavaArray(Character[]::new);
         return choose(validCharacters);
     }
 
@@ -344,8 +344,7 @@ public interface Gen<T> {
         if (stream.isEmpty()) {
             throw new IllegalArgumentException("generators is empty");
         }
-        @SuppressWarnings("unchecked")
-        final Gen<T>[] array = stream.toJavaArray((Class<Gen<T>>) (Object) Gen.class);
+        final Gen<T>[] array = stream.toJavaArray(Gen[]::new);
         return oneOf(array);
     }
 
