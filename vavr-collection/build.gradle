@@ -1,0 +1,15 @@
+dependencies {
+    compile project(':vavr-control')
+}
+
+// TODO: REMOVE THIS WORKAROUND FOR https://github.com/gradle/gradle/issues/890, SEE https://guides.gradle.org/building-java-9-modules/#modify_the_code_compilejava_code_task_to_produce_a_module -->
+compileJava {
+    inputs.property("moduleName", 'io.vavr.collection')
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+        ]
+        classpath = files()
+    }
+}
+// <-- TODO: REMOVE WORKAROUND

@@ -1,3 +1,4 @@
 rootProject.name = 'vavr'
 
+include 'vavr-collection'
 include 'vavr-control'
