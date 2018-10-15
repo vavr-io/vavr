@@ -24,7 +24,6 @@ import java.util.function.Function;
 
 public interface Map<K, V> extends Iterable<Tuple2<K, V>>, Serializable {
 
-
     @Override
     <U> Iterable<U> flatMap(Function<? super Tuple2<K, V>, ? extends java.lang.Iterable<? extends U>> mapper);
 
