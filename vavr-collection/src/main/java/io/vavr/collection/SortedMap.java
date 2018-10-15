@@ -30,7 +30,7 @@ public interface SortedMap<K, V> extends Map<K, V> {
     @Override
     <K2, V2> Map<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends K2, ? extends V2>>> mapper);
 
-    <K2, V2> SortedMap<K2, V2> flatMap(Comparator<? super K> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends K2, ? extends V2>>> mapper);
+    <K2, V2> SortedMap<K2, V2> flatMap(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<? extends Tuple2<? extends K2, ? extends V2>>> mapper);
 
     @Override
     <U> Iterable<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper);
@@ -38,6 +38,6 @@ public interface SortedMap<K, V> extends Map<K, V> {
     @Override
     <K2, V2> Map<K2, V2> map(BiFunction<? super K, ? super V, ? extends Tuple2<? extends K2, ? extends V2>> mapper);
 
-    <K2, V2> SortedMap<K2, V2> map(Comparator<? super K> keyComparator, BiFunction<? super K, ? super V, ? extends Tuple2<? extends K2, ? extends V2>> mapper);
+    <K2, V2> SortedMap<K2, V2> map(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, ? extends Tuple2<? extends K2, ? extends V2>> mapper);
 
 }
