@@ -21,6 +21,7 @@ package io.vavr.control;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -44,7 +45,7 @@ class CheckedConsumerTest {
         final CheckedConsumer<String> f1 = s -> list.add("before:" + s);
         final CheckedConsumer<String> f2 = s -> list.add("andThen:" + s);
         f1.andThen(f2).accept("ok");
-        assertEquals(List.of("before:ok", "andThen:ok"), list);
+        assertEquals(Arrays.asList("before:ok", "andThen:ok"), list);
     }
 
     @Test

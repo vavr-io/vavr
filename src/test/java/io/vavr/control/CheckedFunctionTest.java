@@ -28,7 +28,7 @@ class CheckedFunctionTest {
 
     @Test
     void shouldCreateIdentity() throws Exception {
-        var f = CheckedFunction.identity();
+        CheckedFunction<Object, Object> f = CheckedFunction.identity();
         assertNull(f.apply(null));
         assertEquals(1, f.apply(1));
     }
@@ -39,7 +39,7 @@ class CheckedFunctionTest {
     void shouldApplyOneCheckedFunctionAndThenAnotherCheckedFunction() throws Exception {
         final CheckedFunction<Integer, Boolean> before = i -> i % 2 == 0;
         final CheckedFunction<Boolean, String> after = Object::toString;
-        var f = before.andThen(after);
+        final CheckedFunction<Integer, String> f = before.andThen(after);
         assertEquals("true", f.apply(0));
         assertEquals("false", f.apply(1));
     }
@@ -48,7 +48,7 @@ class CheckedFunctionTest {
     void shouldNotApplyAfterWhenBeforeThrowsWhenCombiningWithAndThen() {
         final CheckedFunction<Integer, Boolean> before = ignored -> { throw new Exception("before"); };
         final CheckedFunction<Boolean, String> after = ignored -> { throw new AssertionError("after called"); };
-        var f = before.andThen(after);
+        final CheckedFunction<Integer, String> f = before.andThen(after);
         assertEquals(
                 "before",
                 assertThrows(Exception.class, () -> f.apply(null)).getMessage()
@@ -59,7 +59,7 @@ class CheckedFunctionTest {
     void shouldApplyBeforeWhenAfterThrowsWhenCombiningWithAndThen() {
         final CheckedFunction<Integer, Boolean> before = ignored -> true;
         final CheckedFunction<Boolean, String> after = ignored -> { throw new Exception("after"); };
-        var f = before.andThen(after);
+        final CheckedFunction<Integer, String> f = before.andThen(after);
         assertEquals(
                 "after",
                 assertThrows(Exception.class, () -> f.apply(null)).getMessage()
@@ -89,7 +89,7 @@ class CheckedFunctionTest {
     void shouldApplyOneCheckedFunctionComposedWithAnotherCheckedFunction() throws Exception {
         final CheckedFunction<Integer, Boolean> before = i -> i % 2 == 0;
         final CheckedFunction<Boolean, String> after = Object::toString;
-        var f = after.compose(before);
+        final CheckedFunction<Integer, String> f = after.compose(before);
         assertEquals("true", f.apply(0));
         assertEquals("false", f.apply(1));
     }
@@ -98,7 +98,7 @@ class CheckedFunctionTest {
     void shouldNotApplyAfterWhenBeforeThrowsWhenCombiningWithCompose() {
         final CheckedFunction<Integer, Boolean> before = ignored -> { throw new Exception("before"); };
         final CheckedFunction<Boolean, String> after = ignored -> { throw new AssertionError("before called"); };
-        var f = after.compose(before);
+        final CheckedFunction<Integer, String> f = after.compose(before);
         assertEquals(
                 "before",
                 assertThrows(Exception.class, () -> f.apply(null)).getMessage()
@@ -109,7 +109,7 @@ class CheckedFunctionTest {
     void shouldApplyBeforeWhenAfterThrowsWhenCombiningWithCompose() {
         final CheckedFunction<Integer, Boolean> before = ignored -> true;
         final CheckedFunction<Boolean, String> after = ignored -> { throw new Exception("after"); };
-        var f = after.compose(before);
+        final CheckedFunction<Integer, String> f = after.compose(before);
         assertEquals(
                 "after",
                 assertThrows(Exception.class, () -> f.apply(null)).getMessage()

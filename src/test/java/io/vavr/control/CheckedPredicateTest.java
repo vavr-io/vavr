@@ -43,7 +43,7 @@ class CheckedPredicateTest {
 
     @Test
     void shouldRethrowWhenUsingStaticNot() {
-        var p = CheckedPredicate.not(ignored -> { throw ERROR; });
+        final CheckedPredicate<?> p = CheckedPredicate.not(ignored -> { throw ERROR; });
         assertThrows(ERROR.getClass(), () -> p.test(null));
     }
 
