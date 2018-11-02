@@ -13,123 +13,130 @@ plugins {
 
 ext.junitVersion = '5.3.1'
 
-subprojects {
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven' // generates a default .pom
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'idea'
 
-    apply plugin: 'com.jfrog.bintray'
-    apply plugin: 'maven' // generates a default .pom
-    apply plugin: 'java'
-    apply plugin: 'jacoco'
+repositories {
+    jcenter()
+}
 
-    repositories {
-        jcenter()
+compileJava {
+    sourceCompatibility = 8
+    targetCompatibility = 8
+    options.encoding = 'UTF-8'
+    options.compilerArgs = [ '-Xlint:all', '-Werror' ]
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
     }
+}
 
-    compileJava {
-        sourceCompatibility = 11
-        targetCompatibility = 11
-        options.encoding = 'UTF-8'
-        options.compilerArgs = [ '-Xlint:all', '-Werror' ]
+check.dependsOn jacocoTestReport
+
+// TODO: REMOVE THIS WORKAROUND FOR https://github.com/jacoco/jacoco/issues/663 -->
+jacoco {
+    toolVersion = "0.8.2" // intentionally no ext.jacocoVersion
+}
+// <-- TODO: REMOVE THIS WORKAROUND
+
+jar {
+    manifest {
+        attributes('Automatic-Module-Name': 'io.vavr')
     }
+}
 
-    dependencies {
-        testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
-        testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
-    }
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    classifier = 'sources'
+}
 
-    test {
-        useJUnitPlatform()
-    }
+task testSourcesJar(type: Jar) {
+    from sourceSets.test.allJava
+    classifier = 'test-sources'
+}
 
-    jacocoTestReport {
-        reports {
-            xml.enabled = true
-        }
-    }
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
 
-    check.dependsOn jacocoTestReport
+artifacts {
+    archives sourcesJar
+    archives testSourcesJar
+    archives javadocJar
+}
 
-    // TODO: REMOVE THIS WORKAROUND FOR https://github.com/jacoco/jacoco/issues/663 -->
-    jacoco {
-        toolVersion = "0.8.2" // intentionally no ext.jacocoVersion
-    }
-    // <-- TODO: REMOVE THIS WORKAROUND
-
-    task sourcesJar(type: Jar) {
-        from sourceSets.main.allJava
-        classifier = 'sources'
-    }
-
-    task javadocJar(type: Jar) {
-        from javadoc
-        classifier = 'javadoc'
-    }
-
-    artifacts {
-        archives sourcesJar
-        archives javadocJar
-    }
-
-    // Generate Sonatype conform .pom for Bintray Maven-sync, see https://central.sonatype.org/pages/requirements.html
-    install {
-        repositories.mavenInstaller {
-            doFirst {
-                pom {
-                    project {
-                        name = project.name
-                        description = "The ${project.name} module of Vavr"
-                        url = 'https://www.vavr.io'
-                        inceptionYear '2014'
-                        licenses {
-                            license {
-                                name 'The Apache Software License, Version 2.0'
-                                url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                                distribution 'repo'
-                            }
+// Generate Sonatype conform .pom for Bintray Maven-sync, see https://central.sonatype.org/pages/requirements.html
+install {
+    repositories.mavenInstaller {
+        doFirst {
+            pom {
+                project {
+                    name = project.name
+                    description = "The ${project.name} module of Vavr"
+                    url = 'https://www.vavr.io'
+                    inceptionYear '2014'
+                    licenses {
+                        license {
+                            name 'The Apache Software License, Version 2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution 'repo'
                         }
-                        developers {
-                            developer {
-                                name = 'Daniel Dietrich'
-                                email = 'cafebab3@gmail.com'
-                                organization = 'Vavr'
-                                organizationUrl = 'https://github.com/vavr-io'
-                            }
+                    }
+                    developers {
+                        developer {
+                            name = 'Daniel Dietrich'
+                            email = 'cafebab3@gmail.com'
+                            organization = 'Vavr'
+                            organizationUrl = 'https://github.com/vavr-io'
                         }
-                        scm {
-                            connection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                            developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                            url = 'https://github.com/vavr-io/vavr/tree/master'
-                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                        developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                        url = 'https://github.com/vavr-io/vavr/tree/master'
                     }
                 }
             }
         }
     }
-
-    // Publishing to Bintray, see https://github.com/bintray/gradle-bintray-plugin#table-of-contents
-    bintray {
-        user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-        key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-        configurations = ['archives']
-        dryRun = false   // [Default: false] Whether to run this as dry-run, without deploying
-        publish = false  // [Default: false] Whether version should be auto published after an upload
-        override = false // [Default: false] Whether to override version artifacts already published
-        pkg {
-            repo = 'maven-release'
-            name = project.name
-            userOrg = 'vavr-io'
-            licenses = ['Apache-2.0']
-            desc = 'Vavr is an object-functional language extension to Java 11'
-            githubRepo = 'vavr-io/vavr'
-            githubReleaseNotesFile = 'README.md'
-            issueTrackerUrl = 'https://github.com/vavr-io/vavr/issues'
-            vcsUrl = 'https://github.com/vavr-io/vavr.git'
-            websiteUrl = 'https://www.vavr.io'
-        }
-    }
 }
 
-// TODO: WORKAROUND, SEE https://github.com/researchgate/gradle-release/issues/186
-task build {}
+// Publishing to Bintray, see https://github.com/bintray/gradle-bintray-plugin#table-of-contents
+bintray {
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+    configurations = ['archives']
+    dryRun = false   // [Default: false] Whether to run this as dry-run, without deploying
+    publish = false  // [Default: false] Whether version should be auto published after an upload
+    override = false // [Default: false] Whether to override version artifacts already published
+    pkg {
+        repo = 'maven-release'
+        name = project.name
+        userOrg = 'vavr-io'
+        licenses = ['Apache-2.0']
+        desc = 'Vavr is an object-functional language extension to Java 8'
+        githubRepo = 'vavr-io/vavr'
+        githubReleaseNotesFile = 'README.md'
+        issueTrackerUrl = 'https://github.com/vavr-io/vavr/issues'
+        vcsUrl = 'https://github.com/vavr-io/vavr.git'
+        websiteUrl = 'https://www.vavr.io'
+    }
+}
 
 release {
     buildTasks=['build']

@@ -9,7 +9,10 @@ install: echo "Don't let Travis CI execute './gradlew assemble' by default"
 
 matrix:
   include:
-  - jdk: oraclejdk11
+  - jdk: oraclejdk8
+  - jdk: oraclejdk9
+  - jdk: openjdk10
+  - jdk: openjdk11
   - jdk: openjdk-ea
   allow_failures:
   - jdk: openjdk-ea

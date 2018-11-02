@@ -5,17 +5,12 @@
 
 # [Vavr](http://vavr.io/)
 
-Vavr is an object-functional language extension to Java 11, which aims to increase code quality and readability.
+Vavr is an object-functional language extension to Java 8, which aims to increase code quality and readability.
 It provides persistent collections, functional abstractions for error handling, concurrent programming, pattern matching and much more.
 
 To stay up to date please follow the [blog](http://blog.vavr.io).
 
 ---
-
-## Prerequisites:
-
-* Vavr 1.x runs with Java 11 and is completely modularized (JPMS conform). It runs also on the classpath.
-* Java 8 users are able to fall back to Vavr 0.9.
 
 ## Using Vavr
 
@@ -41,7 +36,3 @@ dependencies {
     </dependency>
 </dependencies>
 ```
-
----
-
-Developers, please note that the previous version Vavr 0.9 was moved to the branch [v0.9.x](https://github.com/vavr-io/vavr/tree/v0.9.x) and master was replaced with v1.0, which is a complete rewrite. 

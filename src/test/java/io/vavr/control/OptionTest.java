@@ -296,7 +296,7 @@ class OptionTest {
 
     @Test
     void shouldFoldAndReturnAlternateValueIfNone() {
-        final var folded = NONE.fold(() -> SOME_VALUE, a -> { throw ASSERTION_ERROR; });
+        final String folded = NONE.fold(() -> SOME_VALUE, a -> { throw ASSERTION_ERROR; });
         assertEquals(SOME_VALUE, folded);
     }
 
@@ -336,16 +336,16 @@ class OptionTest {
 
     @Test
     void shouldConsumeNoneWithForEach() {
-        final var list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         NONE.forEach(list::add);
-        assertEquals(List.of(), list);
+        assertEquals(Collections.emptyList(), list);
     }
 
     @Test
     void shouldConsumeSomeWithForEach() {
-        final var list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         SOME.forEach(list::add);
-        assertEquals(List.of(SOME_VALUE), list);
+        assertEquals(Collections.singletonList(SOME_VALUE), list);
     }
 
     @Test
@@ -463,7 +463,7 @@ class OptionTest {
 
     @Test
     void shouldIterateSome() {
-        final var testee = SOME.iterator();
+        final Iterator<String> testee = SOME.iterator();
         assertTrue(testee.hasNext());
         assertSame(SOME_VALUE, testee.next());
         assertFalse(testee.hasNext());
@@ -472,7 +472,7 @@ class OptionTest {
 
     @Test
     void shouldIterateNone() {
-        final var testee = NONE.iterator();
+        final Iterator<String> testee = NONE.iterator();
         assertFalse(testee.hasNext());
         assertThrows(NoSuchElementException.class, testee::next);
     }
@@ -515,7 +515,7 @@ class OptionTest {
 
     @Test
     void shouldConsumeThrowableWhenCallingOnEmptyGivenNone() {
-        final var sideEffect = new ArrayList<>();
+        final List<String> sideEffect = new ArrayList<>();
         NONE.onEmpty(() -> sideEffect.add(null));
         assertEquals(Collections.singletonList(null), sideEffect);
     }
@@ -545,7 +545,7 @@ class OptionTest {
 
     @Test
     void shouldConsumeValueWhenCallingOnSomeGivenSuccess() {
-        final var sideEffect = new ArrayList<>();
+        final List<String> sideEffect = new ArrayList<>();
         SOME.onDefined(sideEffect::add);
         assertEquals(Collections.singletonList(SOME_VALUE), sideEffect);
     }
@@ -716,13 +716,13 @@ class OptionTest {
 
     @Test
     void shouldTransformSomeValueToNonNull() {
-        final var transformed = SOME.transform(() -> { throw ASSERTION_ERROR; }, s -> Option.some(s.length()));
+        final Option<Integer> transformed = SOME.transform(() -> { throw ASSERTION_ERROR; }, s -> Option.some(s.length()));
         assertEquals(Option.some(SOME_VALUE.length()), transformed);
     }
 
     @Test
     void shouldTransformNoneAndReturnAlternateValue() {
-        final var transformed = NONE.transform(() -> SOME, a -> { throw ASSERTION_ERROR; });
+        final Option<String> transformed = NONE.transform(() -> SOME, a -> { throw ASSERTION_ERROR; });
         assertSame(SOME, transformed);
     }
 
@@ -823,7 +823,7 @@ class OptionTest {
 
     @Test
     void shouldSerializeNone() throws IOException, ClassNotFoundException {
-        final var testee = deserialize(serialize(NONE));
+        final Option<String> testee = deserialize(serialize(NONE));
         assertSame(NONE, testee);
     }
 
@@ -833,7 +833,7 @@ class OptionTest {
     }
 
     private static byte[] serialize(Object obj) throws IOException {
-        try (final var buf = new ByteArrayOutputStream(); final var stream = new ObjectOutputStream(buf)) {
+        try (final ByteArrayOutputStream buf = new ByteArrayOutputStream(); final ObjectOutputStream stream = new ObjectOutputStream(buf)) {
             stream.writeObject(obj);
             return buf.toByteArray();
         }
@@ -841,7 +841,7 @@ class OptionTest {
 
     @SuppressWarnings("unchecked")
     private static <T> T deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        try (final var stream = new ObjectInputStream(new ByteArrayInputStream(data))) {
+        try (final ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(data))) {
             return (T) stream.readObject();
         }
     }

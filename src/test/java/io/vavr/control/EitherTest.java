@@ -274,7 +274,7 @@ class EitherTest {
 
     @Test
     void shouldFoldAndReturnAlternateValueIfLeft() {
-        final var folded = LEFT.fold(x -> RIGHT_VALUE, a -> { throw ASSERTION_ERROR; });
+        final String folded = LEFT.fold(x -> RIGHT_VALUE, a -> { throw ASSERTION_ERROR; });
         assertEquals(RIGHT_VALUE, folded);
     }
 
@@ -314,16 +314,16 @@ class EitherTest {
 
     @Test
     void shouldConsumeLeftWithForEach() {
-        final var list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         LEFT.forEach(list::add);
-        assertEquals(List.of(), list);
+        assertEquals(Collections.emptyList(), list);
     }
 
     @Test
     void shouldConsumeRightWithForEach() {
-        final var list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         RIGHT.forEach(list::add);
-        assertEquals(List.of(RIGHT_VALUE), list);
+        assertEquals(Collections.singletonList(RIGHT_VALUE), list);
     }
 
     @Test
@@ -461,7 +461,7 @@ class EitherTest {
 
     @Test
     void shouldIterateRight() {
-        final var testee = RIGHT.iterator();
+        final Iterator<String> testee = RIGHT.iterator();
         assertTrue(testee.hasNext());
         assertSame(RIGHT_VALUE, testee.next());
         assertFalse(testee.hasNext());
@@ -470,7 +470,7 @@ class EitherTest {
 
     @Test
     void shouldIterateLeft() {
-        final var testee = LEFT.iterator();
+        final Iterator<String> testee = LEFT.iterator();
         assertFalse(testee.hasNext());
         assertThrows(NoSuchElementException.class, testee::next);
     }
@@ -545,7 +545,7 @@ class EitherTest {
 
     @Test
     void shouldConsumeThrowableWhenCallingOnLeftGivenLeft() {
-        final var sideEffect = new ArrayList<>();
+        final List<Integer> sideEffect = new ArrayList<>();
         LEFT.onLeft(sideEffect::add);
         assertEquals(Collections.singletonList(LEFT_VALUE), sideEffect);
     }
@@ -583,7 +583,7 @@ class EitherTest {
 
     @Test
     void shouldConsumeValueWhenCallingOnRightGivenRight() {
-        final var sideEffect = new ArrayList<>();
+        final List<String> sideEffect = new ArrayList<>();
         RIGHT.onRight(sideEffect::add);
         assertEquals(Collections.singletonList(RIGHT_VALUE), sideEffect);
     }
@@ -758,13 +758,13 @@ class EitherTest {
 
     @Test
     void shouldTransformAndReturnValueIfRight() {
-        final var transformed = RIGHT.transform(x -> { throw ASSERTION_ERROR; }, s -> Either.right(s.length()));
+        final Either<Integer, Integer> transformed = RIGHT.transform(x -> { throw ASSERTION_ERROR; }, s -> Either.right(s.length()));
         assertEquals(Either.right(RIGHT_VALUE.length()), transformed);
     }
 
     @Test
     void shouldTransformAndReturnAlternateValueIfLeft() {
-        final var transformed = LEFT.transform(x -> RIGHT, a -> { throw ASSERTION_ERROR; });
+        final Either<Integer, String> transformed = LEFT.transform(x -> RIGHT, a -> { throw ASSERTION_ERROR; });
         assertSame(RIGHT, transformed);
     }
 
@@ -889,7 +889,7 @@ class EitherTest {
     }
 
     private static byte[] serialize(Object obj) throws IOException {
-        try (final var buf = new ByteArrayOutputStream(); final var stream = new ObjectOutputStream(buf)) {
+        try (final ByteArrayOutputStream buf = new ByteArrayOutputStream(); final ObjectOutputStream stream = new ObjectOutputStream(buf)) {
             stream.writeObject(obj);
             return buf.toByteArray();
         }
@@ -897,7 +897,7 @@ class EitherTest {
 
     @SuppressWarnings("unchecked")
     private static <T> T deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        try (final var stream = new ObjectInputStream(new ByteArrayInputStream(data))) {
+        try (final ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(data))) {
             return (T) stream.readObject();
         }
     }

@@ -98,8 +98,8 @@ class TryTest {
 
     @Test
     void shouldBeIndistinguishableWhenCreatingFailureWithOfFactoryOrWithFailureFactory() {
-        final var failure1 = Try.of(() -> { throw FAILURE_CAUSE; });
-        final var failure2 = Try.failure(FAILURE_CAUSE);
+        final Try<String> failure1 = Try.of(() -> { throw FAILURE_CAUSE; });
+        final Try<String> failure2 = Try.failure(FAILURE_CAUSE);
         assertSame(
                 FAILURE_CAUSE,
                 assertThrows(NonFatalException.class, failure1::get).getCause()
@@ -118,8 +118,8 @@ class TryTest {
 
     @Test
     void shouldBeIndistinguishableWhenCreatingSuccessWithOfFactoryOrWithSuccessFactory() {
-        final var success1 = Try.of(() -> SUCCESS_VALUE);
-        final var success2 = Try.success(SUCCESS_VALUE);
+        final Try<String> success1 = Try.of(() -> SUCCESS_VALUE);
+        final Try<String> success2 = Try.success(SUCCESS_VALUE);
         assertSame(success1.get(), success2.get());
         assertThrows(UnsupportedOperationException.class, success1::getCause);
         assertThrows(UnsupportedOperationException.class, success2::getCause);
@@ -266,7 +266,7 @@ class TryTest {
 
     @Test
     void shouldInvertSuccessByCallingFailed() {
-        final var testee = SUCCESS.failed();
+        final Try<Throwable> testee = SUCCESS.failed();
         assertTrue(testee.isFailure());
         assertEquals(UnsupportedOperationException.class, testee.getCause().getClass());
         assertEquals("Success.failed()", testee.getCause().getMessage());
@@ -311,7 +311,7 @@ class TryTest {
 
     @Test
     void shouldFilterNonMatchingPredicateOnSuccess() {
-        final var testee = SUCCESS.filter(s -> false);
+        final Try<String> testee = SUCCESS.filter(s -> false);
         assertTrue(testee.isFailure());
         assertEquals(NoSuchElementException.class, testee.getCause().getClass());
         assertEquals("Predicate does not hold for " + SUCCESS_VALUE, testee.getCause().getMessage());
@@ -319,7 +319,7 @@ class TryTest {
 
     @Test
     void shouldFilterWithExceptionOnSuccess() {
-        final var testee = SUCCESS.filter(t -> { throw ERROR; });
+        final Try<String> testee = SUCCESS.filter(t -> { throw ERROR; });
         assertTrue(testee.isFailure());
         assertSame(ERROR, testee.getCause());
     }
@@ -438,7 +438,7 @@ class TryTest {
 
     @Test
     void shouldFoldAndReturnAlternateValueIfFailure() {
-        final var folded = FAILURE.fold(x -> SUCCESS_VALUE, a -> { throw ASSERTION_ERROR; });
+        final String folded = FAILURE.fold(x -> SUCCESS_VALUE, a -> { throw ASSERTION_ERROR; });
         assertEquals(SUCCESS_VALUE, folded);
     }
 
@@ -478,16 +478,16 @@ class TryTest {
 
     @Test
     void shouldConsumeFailureWithForEach() {
-        final var list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         FAILURE.forEach(list::add);
-        assertEquals(List.of(), list);
+        assertEquals(Collections.emptyList(), list);
     }
 
     @Test
     void shouldConsumeSuccessWithForEach() {
-        final var list = new ArrayList<>();
+        final List<String> list = new ArrayList<>();
         SUCCESS.forEach(list::add);
-        assertEquals(List.of(SUCCESS_VALUE), list);
+        assertEquals(Collections.singletonList(SUCCESS_VALUE), list);
     }
 
     @Test
@@ -630,7 +630,7 @@ class TryTest {
 
     @Test
     void shouldIterateSuccess() {
-        final var testee = SUCCESS.iterator();
+        final Iterator<String> testee = SUCCESS.iterator();
         assertTrue(testee.hasNext());
         assertSame(SUCCESS_VALUE, testee.next());
         assertFalse(testee.hasNext());
@@ -639,7 +639,7 @@ class TryTest {
 
     @Test
     void shouldIterateFailure() {
-        final var testee = FAILURE.iterator();
+        final Iterator<String> testee = FAILURE.iterator();
         assertFalse(testee.hasNext());
         assertThrows(NoSuchElementException.class, testee::next);
     }
@@ -724,7 +724,7 @@ class TryTest {
 
     @Test
     void shouldConsumeThrowableWhenCallingOnFailureGivenFailure() {
-        final var sideEffect = new ArrayList<>();
+        final List<Throwable> sideEffect = new ArrayList<>();
         FAILURE.onFailure(sideEffect::add);
         assertEquals(Collections.singletonList(FAILURE_CAUSE), sideEffect);
     }
@@ -762,7 +762,7 @@ class TryTest {
 
     @Test
     void shouldConsumeValueWhenCallingOnSuccessGivenSuccess() {
-        final var sideEffect = new ArrayList<>();
+        final List<String> sideEffect = new ArrayList<>();
         SUCCESS.onSuccess(sideEffect::add);
         assertEquals(Collections.singletonList(SUCCESS_VALUE), sideEffect);
     }
@@ -1054,13 +1054,13 @@ class TryTest {
 
     @Test
     void shouldTransformAndReturnValueIfSuccess() {
-        final var transformed = SUCCESS.transform(x -> { throw ASSERTION_ERROR; }, s -> Try.success(s.length()));
+        final Try<Integer> transformed = SUCCESS.transform(x -> { throw ASSERTION_ERROR; }, s -> Try.success(s.length()));
         assertEquals(Try.success(SUCCESS_VALUE.length()), transformed);
     }
 
     @Test
     void shouldTransformAndReturnAlternateValueIfFailure() {
-        final var transformed = FAILURE.transform(x -> SUCCESS, a -> { throw ASSERTION_ERROR; });
+        final Try<String> transformed = FAILURE.transform(x -> SUCCESS, a -> { throw ASSERTION_ERROR; });
         assertSame(SUCCESS, transformed);
     }
 
@@ -1098,13 +1098,13 @@ class TryTest {
 
     @Test
     void shouldTransformFailureAndCaptureException() {
-        final var transformed = FAILURE.transform(x -> { throw ERROR; }, s -> { throw ASSERTION_ERROR; });
+        final Try<String> transformed = FAILURE.transform(x -> { throw ERROR; }, s -> { throw ASSERTION_ERROR; });
         assertEquals(Try.failure(ERROR), transformed);
     }
 
     @Test
     void shouldTransformSuccessAndCaptureException() {
-        final var transformed = SUCCESS.transform(x -> { throw ASSERTION_ERROR; }, s -> { throw ERROR; });
+        final Try<String> transformed = SUCCESS.transform(x -> { throw ASSERTION_ERROR; }, s -> { throw ERROR; });
         assertEquals(Try.failure(ERROR), transformed);
     }
 
@@ -1199,7 +1199,7 @@ class TryTest {
     }
 
     private static byte[] serialize(Object obj) throws IOException {
-        try (final var buf = new ByteArrayOutputStream(); final var stream = new ObjectOutputStream(buf)) {
+        try (final ByteArrayOutputStream buf = new ByteArrayOutputStream(); final ObjectOutputStream stream = new ObjectOutputStream(buf)) {
             stream.writeObject(obj);
             return buf.toByteArray();
         }
@@ -1207,7 +1207,7 @@ class TryTest {
 
     @SuppressWarnings("unchecked")
     private static <T> T deserialize(byte[] data) throws IOException, ClassNotFoundException {
-        try (final var stream = new ObjectInputStream(new ByteArrayInputStream(data))) {
+        try (final ObjectInputStream stream = new ObjectInputStream(new ByteArrayInputStream(data))) {
             return (T) stream.readObject();
         }
     }
