@@ -57,9 +57,7 @@ public class SumArbitraryValuesTest {
     }
 
     private ExampleSummableValue sum(List<ExampleSummableValue> items) {
-        return items.isEmpty()
-               ? ExampleSummableValue.with(0)
-               : items.foldLeft(ExampleSummableValue.with(0), (sum, each) -> sum.add(each));
+        return items.foldLeft(ExampleSummableValue.with(0), (sum, each) -> sum.add(each));
     }
 
     // REFACTOR Should this implement Value?
