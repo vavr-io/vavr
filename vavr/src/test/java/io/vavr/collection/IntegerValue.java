@@ -19,7 +19,11 @@
  */
 package io.vavr.collection;
 
+import java.util.function.BiFunction;
+
 public class IntegerValue {
+    private static final IntegerValueMonoid integerValueMonoid = new IntegerValueMonoid();
+
     private final int integerValue;
 
     public IntegerValue(int integerValue) {
@@ -32,6 +36,10 @@ public class IntegerValue {
 
     public IntegerValue add(IntegerValue that) {
         return new IntegerValue(this.integerValue + that.integerValue);
+    }
+
+    public static IntegerValueMonoid monoid() {
+        return integerValueMonoid;
     }
 
     @Override
@@ -52,5 +60,17 @@ public class IntegerValue {
     @Override
     public String toString() {
         return String.format("IntegerValue[integerValue=%d]", integerValue);
+    }
+
+    public static class IntegerValueMonoid implements Monoid<IntegerValue> {
+        @Override
+        public IntegerValue identityElement() {
+            return with(0);
+        }
+
+        @Override
+        public BiFunction<IntegerValue, IntegerValue, IntegerValue> addFunction() {
+            return IntegerValue::add;
+        }
     }
 }

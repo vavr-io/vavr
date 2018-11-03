@@ -23,7 +23,6 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Collection;
-import java.util.function.BiFunction;
 
 import static org.junit.runners.Parameterized.Parameters;
 
@@ -60,17 +59,7 @@ public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObj
 
     @Override
     protected Monoid<IntegerValue> monoid() {
-        return new Monoid<IntegerValue>() {
-            @Override
-            public IntegerValue identityElement() {
-                return IntegerValue.with(0);
-            }
-
-            @Override
-            public BiFunction<IntegerValue, IntegerValue, IntegerValue> addFunction() {
-                return IntegerValue::add;
-            }
-        };
+        return IntegerValue.monoid();
     }
 
     @Override
