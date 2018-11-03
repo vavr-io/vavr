@@ -19,26 +19,9 @@
  */
 package io.vavr.collection;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
-
 import java.util.function.BiFunction;
 
-public abstract class SumArbitraryValueObjectsTest<ValueType> {
-    @Test
-    public void checkSum() throws Exception {
-        Assertions.assertThat(
-                sum(items(), identityElement(), addFunction()))
-                .isEqualTo(expectedSum());
-    }
-
-    protected abstract ValueType expectedSum();
-    protected abstract BiFunction<ValueType, ValueType, ValueType> addFunction();
-    protected abstract ValueType identityElement();
-    protected abstract List<ValueType> items();
-
-    // REFACTOR Production code. Not sure where it goes yet. Traversable?
-    private <T> T sum(List<T> items, T identityElement, BiFunction<T, T, T> addFunction) {
-        return items.foldLeft(identityElement, addFunction);
-    }
+public interface Monoid<ValueType> {
+    ValueType identityElement();
+    BiFunction<ValueType, ValueType, ValueType> addFunction();
 }

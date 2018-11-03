@@ -27,7 +27,6 @@ import java.util.function.BiFunction;
 
 import static org.junit.runners.Parameterized.Parameters;
 
-// REFACTOR Move this onto Traversable?
 @RunWith(Parameterized.class)
 public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObjectsTest<IntegerValue> {
     private List<IntegerValue> items;

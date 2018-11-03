@@ -60,12 +60,16 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
 
     @Override
     protected BiFunction<StringValue, StringValue, StringValue> addFunction() {
-        return StringValue::append;
+        return monoid().addFunction();
+    }
+
+    protected Monoid<StringValue> monoid() {
+        return StringValue.monoid();
     }
 
     @Override
     protected StringValue identityElement() {
-        return StringValue.with("");
+        return monoid().identityElement();
     }
 
     @Override
@@ -86,6 +90,20 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
 
         public StringValue append(StringValue that) {
             return StringValue.with(this.text + that.text);
+        }
+
+        public static Monoid<StringValue> monoid() {
+            return new Monoid<StringValue>() {
+                @Override
+                public StringValue identityElement() {
+                    return StringValue.with("");
+                }
+
+                @Override
+                public BiFunction<StringValue, StringValue, StringValue> addFunction()  {
+                    return StringValue::append;
+                }
+            };
         }
 
         @Override
