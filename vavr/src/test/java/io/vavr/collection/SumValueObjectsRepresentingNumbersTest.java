@@ -62,6 +62,20 @@ public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObj
     protected BiFunction<IntegerValue, IntegerValue, IntegerValue> addFunction() {
         return IntegerValue::add;
     }
+    @Override
+    protected Monoid<IntegerValue> monoid() {
+        return new Monoid<IntegerValue>() {
+            @Override
+            public IntegerValue identityElement() {
+                return IntegerValue.with(0);
+            }
+
+            @Override
+            public BiFunction<IntegerValue, IntegerValue, IntegerValue> addFunction() {
+                return IntegerValue::add;
+            }
+        };
+    }
 
     @Override
     protected IntegerValue identityElement() {

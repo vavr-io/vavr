@@ -63,6 +63,7 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
         return monoid().addFunction();
     }
 
+    @Override
     protected Monoid<StringValue> monoid() {
         return StringValue.monoid();
     }
