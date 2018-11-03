@@ -78,6 +78,8 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
     }
 
     public static class StringValue {
+        private static StringValueMonoid monoid = new StringValueMonoid();
+
         private final String text;
 
         public StringValue(String text) {
@@ -93,7 +95,7 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
         }
 
         public static Monoid<StringValue> monoid() {
-            return new StringValueMonoid();
+            return monoid;
         }
 
         @Override
