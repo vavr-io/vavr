@@ -28,7 +28,7 @@ public abstract class SumArbitraryValueObjectsTest<ValueType> {
     @Test
     public void checkSum() throws Exception {
         Assertions.assertThat(
-                sum(items(), identityElement(), addFunction()))
+                sum(items(), monoid()))
                 .isEqualTo(expectedSum());
     }
 
@@ -38,8 +38,9 @@ public abstract class SumArbitraryValueObjectsTest<ValueType> {
     protected abstract ValueType identityElement();
     protected abstract List<ValueType> items();
 
-    // REFACTOR Production code. Not sure where it goes yet. Traversable?
-    private <T> T sum(List<T> items, T identityElement, BiFunction<T, T, T> addFunction) {
-        return items.foldLeft(identityElement, addFunction);
+    // REFACTOR Production code. Not sure where it goes yet. Traversable? or Monoid?
+    // Traversable.sum(Monoid) sounds better to me.
+    private ValueType sum(List<ValueType> items, Monoid<ValueType> monoid) {
+        return items.foldLeft(monoid.identityElement(), monoid().addFunction());
     }
 }
