@@ -59,11 +59,24 @@ public class SumValueObjectsRepresentingNumbersTest {
     @Test
     public void checkSum() throws Exception {
         Assertions.assertThat(
-                sum(
-                        itemsAsExampleSummableValues,
-                        ExampleSummableValue.with(0),
-                        ExampleSummableValue::add))
-                .isEqualTo(expectedSumOfExampleSummableValues);
+                sum(items(), identityElement(), addFunction()))
+                .isEqualTo(expectedSum());
+    }
+
+    protected ExampleSummableValue expectedSum() {
+        return expectedSumOfExampleSummableValues;
+    }
+
+    protected BiFunction<ExampleSummableValue, ExampleSummableValue, ExampleSummableValue> addFunction() {
+        return ExampleSummableValue::add;
+    }
+
+    protected ExampleSummableValue identityElement() {
+        return ExampleSummableValue.with(0);
+    }
+
+    protected List<ExampleSummableValue> items() {
+        return itemsAsExampleSummableValues;
     }
 
     private ExampleSummableValue sum(List<ExampleSummableValue> items, ExampleSummableValue identityElement, BiFunction<ExampleSummableValue, ExampleSummableValue, ExampleSummableValue> addFunction) {
