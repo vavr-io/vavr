@@ -33,9 +33,7 @@ public abstract class SumArbitraryValueObjectsTest<ValueType> {
     }
 
     protected abstract ValueType expectedSum();
-    protected abstract BiFunction<ValueType, ValueType, ValueType> addFunction();
     protected abstract Monoid<ValueType> monoid();
-    protected abstract ValueType identityElement();
     protected abstract List<ValueType> items();
 
     // REFACTOR Production code. Not sure where it goes yet. Traversable? or Monoid?

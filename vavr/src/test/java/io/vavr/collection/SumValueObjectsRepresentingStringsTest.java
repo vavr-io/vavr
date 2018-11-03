@@ -59,18 +59,8 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
     }
 
     @Override
-    protected BiFunction<StringValue, StringValue, StringValue> addFunction() {
-        return monoid().addFunction();
-    }
-
-    @Override
     protected Monoid<StringValue> monoid() {
         return StringValue.monoid();
-    }
-
-    @Override
-    protected StringValue identityElement() {
-        return monoid().identityElement();
     }
 
     @Override
