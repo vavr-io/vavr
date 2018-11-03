@@ -33,26 +33,30 @@ import static org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SumArbitraryValuesTest {
     @Parameter(0)
-    public List<Integer> itemsAsIntegers;
+    public List<ExampleSummableValue> itemsAsExampleSummableValues;
 
     @Parameter(1)
-    public int expectedSumAsInt;
+    public ExampleSummableValue expectedSumOfExampleSummableValues;
 
     @Parameters(name = "case {index}: sum({0}) = {1}")
     public static Collection<Object[]> data() {
         return List.of(
-                Array.of(List.empty(), 0),
-                Array.of(List.of(45), 45),
-                Array.of(List.of(2, 8, -5), 5)
+                exampleSummableValueCase(List.empty(), 0),
+                exampleSummableValueCase(List.of(45), 45),
+                exampleSummableValueCase(List.of(2, 8, -5), 5)
         ).map(Array::toJavaArray).toJavaList();
+    }
+
+    private static Array<Object> exampleSummableValueCase(List<Integer> itemsAsIntegers, int expectedSumAsInt) {
+        return Array.of(
+                itemsAsIntegers.map(ExampleSummableValue::with),
+                ExampleSummableValue.with(expectedSumAsInt));
     }
 
     @Test
     public void checkSum() throws Exception {
-        List<ExampleSummableValue> items = List.ofAll(itemsAsIntegers).map(ExampleSummableValue::with);
-        ExampleSummableValue expectedSum = ExampleSummableValue.with(expectedSumAsInt);
-
-        Assertions.assertThat(sum(items)).isEqualTo(expectedSum);
+        Assertions.assertThat(sum(itemsAsExampleSummableValues))
+                .isEqualTo(expectedSumOfExampleSummableValues);
     }
 
     private ExampleSummableValue sum(List<ExampleSummableValue> items) {
@@ -93,6 +97,51 @@ public class SumArbitraryValuesTest {
         @Override
         public String toString() {
             return String.format("ExampleSummableValue[integerValue=%d]", integerValue);
+        }
+    }
+
+    public static class AnotherExampleSummableValue {
+        private final String text;
+
+        public AnotherExampleSummableValue(String text) {
+            this.text = text;
+        }
+
+        public static AnotherExampleSummableValue with(String text) {
+            return new AnotherExampleSummableValue(text);
+        }
+
+        public AnotherExampleSummableValue append(AnotherExampleSummableValue that) {
+            return AnotherExampleSummableValue.with(this.text + ":" + that.text);
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other instanceof AnotherExampleSummableValue) {
+                AnotherExampleSummableValue that = (AnotherExampleSummableValue) other;
+                if (this.text == that.text) {
+                    return true;
+                }
+                else if (this.text == null || that.text == null) {
+                    return false;
+                }
+                else {
+                    return this.text.equals(that.text);
+                }
+            }
+            else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return text.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return String.format("AnotherExampleSummableValue[text=%s]", text);
         }
     }
 }
