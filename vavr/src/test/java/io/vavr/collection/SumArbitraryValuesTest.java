@@ -19,7 +19,6 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Tuple2;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -28,7 +27,7 @@ import org.junit.runners.Parameterized.Parameter;
 
 import java.util.Collection;
 
-import static org.junit.runners.Parameterized.*;
+import static org.junit.runners.Parameterized.Parameters;
 
 // REFACTOR Move this onto Traversable?
 @RunWith(Parameterized.class)
@@ -39,7 +38,7 @@ public class SumArbitraryValuesTest {
     @Parameter(1)
     public int expectedSumAsInt;
 
-    @Parameters(name="case {index}: sum({0}) = {1}")
+    @Parameters(name = "case {index}: sum({0}) = {1}")
     public static Collection<Object[]> data() {
         return List.of(
                 Array.of(List.empty(), 0),
@@ -85,6 +84,7 @@ public class SumArbitraryValuesTest {
                 return false;
             }
         }
+
         @Override
         public int hashCode() {
             return integerValue;
