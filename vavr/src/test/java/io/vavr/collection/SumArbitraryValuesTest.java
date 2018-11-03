@@ -23,7 +23,6 @@ import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameter;
 
 import java.util.Collection;
 import java.util.function.BiFunction;
@@ -33,11 +32,14 @@ import static org.junit.runners.Parameterized.Parameters;
 // REFACTOR Move this onto Traversable?
 @RunWith(Parameterized.class)
 public class SumArbitraryValuesTest {
-    @Parameter(0)
-    public List<ExampleSummableValue> itemsAsExampleSummableValues;
+    private List<ExampleSummableValue> itemsAsExampleSummableValues;
 
-    @Parameter(1)
-    public ExampleSummableValue expectedSumOfExampleSummableValues;
+    private ExampleSummableValue expectedSumOfExampleSummableValues;
+
+    public SumArbitraryValuesTest(List<ExampleSummableValue> itemsAsExampleSummableValues, ExampleSummableValue expectedSumOfExampleSummableValues) {
+        this.itemsAsExampleSummableValues = itemsAsExampleSummableValues;
+        this.expectedSumOfExampleSummableValues = expectedSumOfExampleSummableValues;
+    }
 
     @Parameters(name = "case {index}: sum({0}) = {1}")
     public static Collection<Object[]> data() {
@@ -45,13 +47,13 @@ public class SumArbitraryValuesTest {
                 exampleSummableValueCase(List.empty(), 0),
                 exampleSummableValueCase(List.of(45), 45),
                 exampleSummableValueCase(List.of(2, 8, -5), 5)
-        ).map(Array::toJavaArray).toJavaList();
+        ).toJavaList();
     }
 
-    private static Array<Object> exampleSummableValueCase(List<Integer> itemsAsIntegers, int expectedSumAsInt) {
-        return Array.of(
+    private static Object[] exampleSummableValueCase(List<Integer> itemsAsIntegers, int expectedSumAsInt) {
+        return new Object[] {
                 itemsAsIntegers.map(ExampleSummableValue::with),
-                ExampleSummableValue.with(expectedSumAsInt));
+                ExampleSummableValue.with(expectedSumAsInt) };
     }
 
     @Test
