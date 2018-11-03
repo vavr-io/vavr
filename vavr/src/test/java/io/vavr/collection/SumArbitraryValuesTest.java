@@ -41,10 +41,10 @@ public class SumArbitraryValuesTest {
 
     @Parameters(name="case {index}: sum({0}) = {1}")
     public static Collection<Object[]> data() {
-        return List.<Object[]> of(
-                Array.of(List.empty(), 0).toJavaArray(),
-                Array.of(List.of(45), 45).toJavaArray()
-        ).toJavaList();
+        return List.of(
+                Array.of(List.empty(), 0),
+                Array.of(List.of(45), 45)
+        ).map(Array::toJavaArray).toJavaList();
     }
 
     @Test
