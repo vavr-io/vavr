@@ -31,12 +31,12 @@ import static org.junit.runners.Parameterized.Parameters;
 
 // REFACTOR Move this onto Traversable?
 @RunWith(Parameterized.class)
-public class SumArbitraryValuesTest {
+public class SumValueObjectsRepresentingNumbersTest {
     private List<ExampleSummableValue> itemsAsExampleSummableValues;
 
     private ExampleSummableValue expectedSumOfExampleSummableValues;
 
-    public SumArbitraryValuesTest(List<ExampleSummableValue> itemsAsExampleSummableValues, ExampleSummableValue expectedSumOfExampleSummableValues) {
+    public SumValueObjectsRepresentingNumbersTest(List<ExampleSummableValue> itemsAsExampleSummableValues, ExampleSummableValue expectedSumOfExampleSummableValues) {
         this.itemsAsExampleSummableValues = itemsAsExampleSummableValues;
         this.expectedSumOfExampleSummableValues = expectedSumOfExampleSummableValues;
     }
