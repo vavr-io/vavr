@@ -68,7 +68,6 @@ public class SumArbitraryValuesTest {
         return items.foldLeft(identityElement, addFunction);
     }
 
-    // REFACTOR Should this implement Value?
     public static class ExampleSummableValue {
         private final int integerValue;
 
