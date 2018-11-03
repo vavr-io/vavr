@@ -26,6 +26,7 @@ import org.junit.runners.Parameterized.Parameters;
 import java.util.Collection;
 import java.util.function.BiFunction;
 
+// An example of summing value objects that represent String values.
 @RunWith(Parameterized.class)
 public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObjectsTest<SumValueObjectsRepresentingStringsTest.StringValue> {
     private List<StringValue> items;
@@ -53,6 +54,11 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
     }
 
     @Override
+    protected List<StringValue> items() {
+        return items;
+    }
+
+    @Override
     protected StringValue expectedSum() {
         return expectedSum;
     }
@@ -62,11 +68,7 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
         return StringValue.monoid();
     }
 
-    @Override
-    protected List<StringValue> items() {
-        return items;
-    }
-
+    // An example of a Value Object that represents a String value.
     public static class StringValue {
         private static StringValueMonoid monoid = new StringValueMonoid();
 
@@ -84,6 +86,7 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
             return StringValue.with(this.text + that.text);
         }
 
+        // Just a convention for making it easy to use this monoid
         public static Monoid<StringValue> monoid() {
             return monoid;
         }
@@ -114,6 +117,7 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
             return String.format("StringValue[text=%s]", text);
         }
 
+        // This is a separate named class merely for clarity.
         public static class StringValueMonoid implements Monoid<StringValue> {
             @Override
             public StringValue identityElement() {

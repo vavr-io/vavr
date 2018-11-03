@@ -22,7 +22,21 @@ package io.vavr.collection;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
+import java.util.function.BiFunction;
+
+// Subclasses of this contract test need to provide special cases
+// to check that the sum of a collection of items is correct according to a monoid.
+//
+// Subclass this class, then use the JUnit Parameterized Test pattern.
+// For each special case in the @Parameters object, expose the input collection
+// of items with the method items() and the expected sum with the method
+// expectedSum(). Expose the monoid for your value type with the method
+// monoid().
+//
+// See the existing subclasses of this class as an example of how to wire up
+// the special case data.
 public abstract class SumArbitraryValueObjectsTest<ValueType> {
+    // Every special case is a list of items with its expected sum.
     @Test
     public void checkSum() throws Exception {
         Assertions.assertThat(sum(items(), monoid())).isEqualTo(expectedSum());
@@ -36,5 +50,18 @@ public abstract class SumArbitraryValueObjectsTest<ValueType> {
     // Traversable.sum(Monoid) sounds better to me.
     private ValueType sum(List<ValueType> items, Monoid<ValueType> monoid) {
         return items.foldLeft(monoid.identityElement(), monoid().addFunction());
+    }
+
+    // REFACTOR Production code. I assume it goes alongside Traversable.
+    // A Monoid describes a Value Object type in enough detail that we can
+    // sum a Traversable of those Value Objects.
+    public interface Monoid<ValueType> {
+        ValueType identityElement();
+        // REFACTOR Should we keep "add" in the name as a helpful metaphor?
+        // Or is it better to just call this the binary operation?
+        // I find the concrete name more helpful, but this operation could
+        // also be like "multiply", so that could cause confusion for people
+        // already comfortable with the Monoid concept.
+        BiFunction<ValueType, ValueType, ValueType> addFunction();
     }
 }
