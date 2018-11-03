@@ -19,6 +19,7 @@
  */
 package io.vavr.collection;
 
+import io.vavr.Tuple2;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,8 +42,8 @@ public class SumArbitraryValuesTest {
     @Parameters(name="case {index}: sum({0}) = {1}")
     public static Collection<Object[]> data() {
         return List.<Object[]> of(
-                new Object[] { List.empty(), 0 },
-                new Object[] { List.of(45), 45 }
+                Array.of(List.empty(), 0).toJavaArray(),
+                Array.of(List.of(45), 45).toJavaArray()
         ).toJavaList();
     }
 
