@@ -74,45 +74,4 @@ public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObj
         return itemsAsExampleSummableValues;
     }
 
-    public static class AnotherExampleSummableValue {
-        private final String text;
-
-        public AnotherExampleSummableValue(String text) {
-            this.text = text;
-        }
-
-        public static AnotherExampleSummableValue with(String text) {
-            return new AnotherExampleSummableValue(text);
-        }
-
-        public AnotherExampleSummableValue append(AnotherExampleSummableValue that) {
-            return AnotherExampleSummableValue.with(this.text + ":" + that.text);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (other instanceof AnotherExampleSummableValue) {
-                AnotherExampleSummableValue that = (AnotherExampleSummableValue) other;
-                if (this.text == that.text) {
-                    return true;
-                } else if (this.text == null || that.text == null) {
-                    return false;
-                } else {
-                    return this.text.equals(that.text);
-                }
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return text.hashCode();
-        }
-
-        @Override
-        public String toString() {
-            return String.format("AnotherExampleSummableValue[text=%s]", text);
-        }
-    }
 }
