@@ -21,13 +21,36 @@ package io.vavr.collection;
 
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
+
+import java.util.Collection;
+
+import static org.junit.runners.Parameterized.*;
 
 // REFACTOR Move this onto Traversable?
+@RunWith(Parameterized.class)
 public class SumArbitraryValuesTest {
+    @Parameter(0)
+    public List<Integer> itemsAsIntegers;
+
+    @Parameter(1)
+    public int expectedSumAsInt;
+
+    @Parameters(name="case {index}: sum({0}) = {1}")
+    public static Collection<Object[]> data() {
+        return List.<Object[]> of(
+                new Object[] { List.empty(), 0 }
+        ).toJavaList();
+    }
+
     @Test
-    public void empty() throws Exception {
-        Assertions.assertThat(sum(List.empty()))
-                .isEqualTo(ExampleSummableValue.with(0));
+    public void checkSum() throws Exception {
+        List<ExampleSummableValue> items = List.ofAll(itemsAsIntegers).map(ExampleSummableValue::with);
+        ExampleSummableValue expectedSum = ExampleSummableValue.with(expectedSumAsInt);
+
+        Assertions.assertThat(sum(items)).isEqualTo(expectedSum);
     }
 
     private ExampleSummableValue sum(List<ExampleSummableValue> empty) {
