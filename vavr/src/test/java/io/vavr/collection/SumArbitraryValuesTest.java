@@ -125,15 +125,12 @@ public class SumArbitraryValuesTest {
                 AnotherExampleSummableValue that = (AnotherExampleSummableValue) other;
                 if (this.text == that.text) {
                     return true;
-                }
-                else if (this.text == null || that.text == null) {
+                } else if (this.text == null || that.text == null) {
                     return false;
-                }
-                else {
+                } else {
                     return this.text.equals(that.text);
                 }
-            }
-            else {
+            } else {
                 return false;
             }
         }
