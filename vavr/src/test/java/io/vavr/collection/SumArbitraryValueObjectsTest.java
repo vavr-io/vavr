@@ -25,14 +25,12 @@ import org.junit.Test;
 public abstract class SumArbitraryValueObjectsTest<ValueType> {
     @Test
     public void checkSum() throws Exception {
-        Assertions.assertThat(
-                sum(items(), monoid()))
-                .isEqualTo(expectedSum());
+        Assertions.assertThat(sum(items(), monoid())).isEqualTo(expectedSum());
     }
 
+    protected abstract List<ValueType> items();
     protected abstract ValueType expectedSum();
     protected abstract Monoid<ValueType> monoid();
-    protected abstract List<ValueType> items();
 
     // REFACTOR Production code. Not sure where it goes yet. Traversable? or Monoid?
     // Traversable.sum(Monoid) sounds better to me.

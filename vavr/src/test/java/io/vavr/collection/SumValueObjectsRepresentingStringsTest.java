@@ -29,13 +29,13 @@ import java.util.function.BiFunction;
 @RunWith(Parameterized.class)
 public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObjectsTest<SumValueObjectsRepresentingStringsTest.StringValue> {
     private List<StringValue> items;
-
     private StringValue expectedSum;
 
     public SumValueObjectsRepresentingStringsTest(List<StringValue> items, StringValue expectedSum) {
         this.items = items;
         this.expectedSum = expectedSum;
     }
+
     @Parameters(name = "case {index}: sum({0}) = {1}")
     public static Collection<Object[]> data() {
         return List.of(

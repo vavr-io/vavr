@@ -23,13 +23,13 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Collection;
+import java.util.function.BiFunction;
 
 import static org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObjectsTest<IntegerValue> {
+public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObjectsTest<SumValueObjectsRepresentingNumbersTest.IntegerValue> {
     private List<IntegerValue> items;
-
     private IntegerValue expectedSum;
 
     public SumValueObjectsRepresentingNumbersTest(List<IntegerValue> items, IntegerValue expectedSum) {
@@ -53,6 +53,11 @@ public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObj
     }
 
     @Override
+    protected List<IntegerValue> items() {
+        return items;
+    }
+
+    @Override
     protected IntegerValue expectedSum() {
         return expectedSum;
     }
@@ -62,9 +67,57 @@ public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObj
         return IntegerValue.monoid();
     }
 
-    @Override
-    protected List<IntegerValue> items() {
-        return items;
-    }
+    public static class IntegerValue {
+        private static final IntegerValueMonoid integerValueMonoid = new IntegerValueMonoid();
 
+        private final int integerValue;
+
+        public IntegerValue(int integerValue) {
+            this.integerValue = integerValue;
+        }
+
+        public static IntegerValue with(int integerValue) {
+            return new IntegerValue(integerValue);
+        }
+
+        public IntegerValue add(IntegerValue that) {
+            return new IntegerValue(this.integerValue + that.integerValue);
+        }
+
+        public static IntegerValueMonoid monoid() {
+            return integerValueMonoid;
+        }
+
+        @Override
+        public boolean equals(Object other) {
+            if (other instanceof IntegerValue) {
+                IntegerValue that = (IntegerValue) other;
+                return this.integerValue == that.integerValue;
+            } else {
+                return false;
+            }
+        }
+
+        @Override
+        public int hashCode() {
+            return integerValue;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("IntegerValue[integerValue=%d]", integerValue);
+        }
+
+        public static class IntegerValueMonoid implements Monoid<IntegerValue> {
+            @Override
+            public IntegerValue identityElement() {
+                return with(0);
+            }
+
+            @Override
+            public BiFunction<IntegerValue, IntegerValue, IntegerValue> addFunction() {
+                return IntegerValue::add;
+            }
+        }
+    }
 }
