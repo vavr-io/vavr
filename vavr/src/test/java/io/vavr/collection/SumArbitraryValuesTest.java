@@ -20,15 +20,14 @@
 package io.vavr.collection;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
 import org.junit.Test;
 
 // REFACTOR Move this onto Traversable?
 public class SumArbitraryValuesTest {
     @Test
     public void empty() throws Exception {
-        List<ExampleSummableValue> empty = List.<ExampleSummableValue> empty();
-        Assertions.assertThat(sum(empty)).isEqualTo(ExampleSummableValue.with(0));
+        Assertions.assertThat(sum(List.empty()))
+                .isEqualTo(ExampleSummableValue.with(0));
     }
 
     private ExampleSummableValue sum(List<ExampleSummableValue> empty) {
@@ -56,8 +55,7 @@ public class SumArbitraryValuesTest {
             if (other instanceof ExampleSummableValue) {
                 ExampleSummableValue that = (ExampleSummableValue) other;
                 return this.integerValue == that.integerValue;
-            }
-            else {
+            } else {
                 return false;
             }
         }
