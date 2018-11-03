@@ -52,7 +52,6 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
                 StringValue.with(expectedSumAsString) };
     }
 
-
     @Override
     protected StringValue expectedSum() {
         return expectedSum;
@@ -122,7 +121,7 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
             }
 
             @Override
-            public BiFunction<StringValue, StringValue, StringValue> addFunction()  {
+            public BiFunction<StringValue, StringValue, StringValue> addFunction() {
                 return StringValue::append;
             }
         }

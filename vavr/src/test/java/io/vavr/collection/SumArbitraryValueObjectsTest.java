@@ -22,8 +22,6 @@ package io.vavr.collection;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
-import java.util.function.BiFunction;
-
 public abstract class SumArbitraryValueObjectsTest<ValueType> {
     @Test
     public void checkSum() throws Exception {
