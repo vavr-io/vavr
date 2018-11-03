@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import java.util.function.BiFunction;
 
-public abstract class SumArbitraryValueObjectsTest {
+public abstract class SumArbitraryValueObjectsTest<ValueType> {
     @Test
     public void checkSum() throws Exception {
         Assertions.assertThat(
@@ -32,11 +32,11 @@ public abstract class SumArbitraryValueObjectsTest {
                 .isEqualTo(expectedSum());
     }
 
-    protected abstract ExampleSummableValue expectedSum();
-    protected abstract BiFunction<ExampleSummableValue, ExampleSummableValue, ExampleSummableValue> addFunction();
-    protected abstract ExampleSummableValue identityElement();
-    protected abstract List<ExampleSummableValue> items();
-    private ExampleSummableValue sum(List<ExampleSummableValue> items, ExampleSummableValue identityElement, BiFunction<ExampleSummableValue, ExampleSummableValue, ExampleSummableValue> addFunction) {
+    protected abstract ValueType expectedSum();
+    protected abstract BiFunction<ValueType, ValueType, ValueType> addFunction();
+    protected abstract ValueType identityElement();
+    protected abstract List<ValueType> items();
+    private <T> T sum(List<T> items, T identityElement, BiFunction<T, T, T> addFunction) {
         return items.foldLeft(identityElement, addFunction);
     }
 }

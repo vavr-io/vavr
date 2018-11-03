@@ -29,7 +29,7 @@ import static org.junit.runners.Parameterized.Parameters;
 
 // REFACTOR Move this onto Traversable?
 @RunWith(Parameterized.class)
-public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObjectsTest {
+public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObjectsTest<ExampleSummableValue> {
     private List<ExampleSummableValue> itemsAsExampleSummableValues;
 
     private ExampleSummableValue expectedSumOfExampleSummableValues;
