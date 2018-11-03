@@ -19,8 +19,6 @@
  */
 package io.vavr.collection;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
@@ -31,7 +29,7 @@ import static org.junit.runners.Parameterized.Parameters;
 
 // REFACTOR Move this onto Traversable?
 @RunWith(Parameterized.class)
-public class SumValueObjectsRepresentingNumbersTest {
+public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObjectsTest {
     private List<ExampleSummableValue> itemsAsExampleSummableValues;
 
     private ExampleSummableValue expectedSumOfExampleSummableValues;
@@ -56,67 +54,24 @@ public class SumValueObjectsRepresentingNumbersTest {
                 ExampleSummableValue.with(expectedSumAsInt) };
     }
 
-    @Test
-    public void checkSum() throws Exception {
-        Assertions.assertThat(
-                sum(items(), identityElement(), addFunction()))
-                .isEqualTo(expectedSum());
-    }
-
+    @Override
     protected ExampleSummableValue expectedSum() {
         return expectedSumOfExampleSummableValues;
     }
 
+    @Override
     protected BiFunction<ExampleSummableValue, ExampleSummableValue, ExampleSummableValue> addFunction() {
         return ExampleSummableValue::add;
     }
 
+    @Override
     protected ExampleSummableValue identityElement() {
         return ExampleSummableValue.with(0);
     }
 
+    @Override
     protected List<ExampleSummableValue> items() {
         return itemsAsExampleSummableValues;
-    }
-
-    private ExampleSummableValue sum(List<ExampleSummableValue> items, ExampleSummableValue identityElement, BiFunction<ExampleSummableValue, ExampleSummableValue, ExampleSummableValue> addFunction) {
-        return items.foldLeft(identityElement, addFunction);
-    }
-
-    public static class ExampleSummableValue {
-        private final int integerValue;
-
-        public ExampleSummableValue(int integerValue) {
-            this.integerValue = integerValue;
-        }
-
-        public static ExampleSummableValue with(int integerValue) {
-            return new ExampleSummableValue(integerValue);
-        }
-
-        public ExampleSummableValue add(ExampleSummableValue that) {
-            return new ExampleSummableValue(this.integerValue + that.integerValue);
-        }
-
-        @Override
-        public boolean equals(Object other) {
-            if (other instanceof ExampleSummableValue) {
-                ExampleSummableValue that = (ExampleSummableValue) other;
-                return this.integerValue == that.integerValue;
-            } else {
-                return false;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            return integerValue;
-        }
-
-        @Override
-        public String toString() {
-            return String.format("ExampleSummableValue[integerValue=%d]", integerValue);
-        }
     }
 
     public static class AnotherExampleSummableValue {
