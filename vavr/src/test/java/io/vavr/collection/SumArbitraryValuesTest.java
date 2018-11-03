@@ -43,7 +43,8 @@ public class SumArbitraryValuesTest {
     public static Collection<Object[]> data() {
         return List.of(
                 Array.of(List.empty(), 0),
-                Array.of(List.of(45), 45)
+                Array.of(List.of(45), 45),
+                Array.of(List.of(2, 8, -5), 5)
         ).map(Array::toJavaArray).toJavaList();
     }
 
@@ -56,7 +57,9 @@ public class SumArbitraryValuesTest {
     }
 
     private ExampleSummableValue sum(List<ExampleSummableValue> items) {
-        return items.isEmpty() ? ExampleSummableValue.with(0) : items.get(0);
+        return items.isEmpty()
+               ? ExampleSummableValue.with(0)
+               : items.foldLeft(ExampleSummableValue.with(0), (sum, each) -> sum.add(each));
     }
 
     // REFACTOR Should this implement Value?
