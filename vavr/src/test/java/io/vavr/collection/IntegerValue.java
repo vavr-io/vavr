@@ -19,25 +19,25 @@
  */
 package io.vavr.collection;
 
-public class ExampleSummableValue {
+public class IntegerValue {
     private final int integerValue;
 
-    public ExampleSummableValue(int integerValue) {
+    public IntegerValue(int integerValue) {
         this.integerValue = integerValue;
     }
 
-    public static ExampleSummableValue with(int integerValue) {
-        return new ExampleSummableValue(integerValue);
+    public static IntegerValue with(int integerValue) {
+        return new IntegerValue(integerValue);
     }
 
-    public ExampleSummableValue add(ExampleSummableValue that) {
-        return new ExampleSummableValue(this.integerValue + that.integerValue);
+    public IntegerValue add(IntegerValue that) {
+        return new IntegerValue(this.integerValue + that.integerValue);
     }
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof ExampleSummableValue) {
-            ExampleSummableValue that = (ExampleSummableValue) other;
+        if (other instanceof IntegerValue) {
+            IntegerValue that = (IntegerValue) other;
             return this.integerValue == that.integerValue;
         } else {
             return false;
@@ -51,6 +51,6 @@ public class ExampleSummableValue {
 
     @Override
     public String toString() {
-        return String.format("ExampleSummableValue[integerValue=%d]", integerValue);
+        return String.format("IntegerValue[integerValue=%d]", integerValue);
     }
 }

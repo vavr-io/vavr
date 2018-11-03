@@ -27,12 +27,12 @@ import java.util.Collection;
 import java.util.function.BiFunction;
 
 @RunWith(Parameterized.class)
-public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObjectsTest<SumValueObjectsRepresentingStringsTest.AnotherExampleSummableValue> {
-    private List<AnotherExampleSummableValue> items;
+public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObjectsTest<SumValueObjectsRepresentingStringsTest.StringValue> {
+    private List<StringValue> items;
 
-    private AnotherExampleSummableValue expectedSum;
+    private StringValue expectedSum;
 
-    public SumValueObjectsRepresentingStringsTest(List<AnotherExampleSummableValue> items, AnotherExampleSummableValue expectedSum) {
+    public SumValueObjectsRepresentingStringsTest(List<StringValue> items, StringValue expectedSum) {
         this.items = items;
         this.expectedSum = expectedSum;
     }
@@ -48,50 +48,50 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
 
     private static Object[] specialCase(List<String> itemsAsStrings, String expectedSumAsString) {
         return new Object[] {
-                itemsAsStrings.map(AnotherExampleSummableValue::with),
-                AnotherExampleSummableValue.with(expectedSumAsString) };
+                itemsAsStrings.map(StringValue::with),
+                StringValue.with(expectedSumAsString) };
     }
 
 
     @Override
-    protected AnotherExampleSummableValue expectedSum() {
+    protected StringValue expectedSum() {
         return expectedSum;
     }
 
     @Override
-    protected BiFunction<AnotherExampleSummableValue, AnotherExampleSummableValue, AnotherExampleSummableValue> addFunction() {
-        return AnotherExampleSummableValue::append;
+    protected BiFunction<StringValue, StringValue, StringValue> addFunction() {
+        return StringValue::append;
     }
 
     @Override
-    protected AnotherExampleSummableValue identityElement() {
-        return AnotherExampleSummableValue.with("");
+    protected StringValue identityElement() {
+        return StringValue.with("");
     }
 
     @Override
-    protected List<AnotherExampleSummableValue> items() {
+    protected List<StringValue> items() {
         return items;
     }
 
-    public static class AnotherExampleSummableValue {
+    public static class StringValue {
         private final String text;
 
-        public AnotherExampleSummableValue(String text) {
+        public StringValue(String text) {
             this.text = text;
         }
 
-        public static AnotherExampleSummableValue with(String text) {
-            return new AnotherExampleSummableValue(text);
+        public static StringValue with(String text) {
+            return new StringValue(text);
         }
 
-        public AnotherExampleSummableValue append(AnotherExampleSummableValue that) {
-            return AnotherExampleSummableValue.with(this.text + that.text);
+        public StringValue append(StringValue that) {
+            return StringValue.with(this.text + that.text);
         }
 
         @Override
         public boolean equals(Object other) {
-            if (other instanceof AnotherExampleSummableValue) {
-                AnotherExampleSummableValue that = (AnotherExampleSummableValue) other;
+            if (other instanceof StringValue) {
+                StringValue that = (StringValue) other;
                 if (this.text == that.text) {
                     return true;
                 } else if (this.text == null || that.text == null) {
@@ -111,7 +111,7 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
 
         @Override
         public String toString() {
-            return String.format("AnotherExampleSummableValue[text=%s]", text);
+            return String.format("StringValue[text=%s]", text);
         }
     }
 }

@@ -29,49 +29,49 @@ import static org.junit.runners.Parameterized.Parameters;
 
 // REFACTOR Move this onto Traversable?
 @RunWith(Parameterized.class)
-public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObjectsTest<ExampleSummableValue> {
-    private List<ExampleSummableValue> itemsAsExampleSummableValues;
+public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObjectsTest<IntegerValue> {
+    private List<IntegerValue> items;
 
-    private ExampleSummableValue expectedSumOfExampleSummableValues;
+    private IntegerValue expectedSum;
 
-    public SumValueObjectsRepresentingNumbersTest(List<ExampleSummableValue> itemsAsExampleSummableValues, ExampleSummableValue expectedSumOfExampleSummableValues) {
-        this.itemsAsExampleSummableValues = itemsAsExampleSummableValues;
-        this.expectedSumOfExampleSummableValues = expectedSumOfExampleSummableValues;
+    public SumValueObjectsRepresentingNumbersTest(List<IntegerValue> items, IntegerValue expectedSum) {
+        this.items = items;
+        this.expectedSum = expectedSum;
     }
 
     @Parameters(name = "case {index}: sum({0}) = {1}")
     public static Collection<Object[]> data() {
         return List.of(
-                exampleSummableValueCase(List.empty(), 0),
-                exampleSummableValueCase(List.of(45), 45),
-                exampleSummableValueCase(List.of(2, 8, -5), 5)
+                specialCase(List.empty(), 0),
+                specialCase(List.of(45), 45),
+                specialCase(List.of(2, 8, -5), 5)
         ).toJavaList();
     }
 
-    private static Object[] exampleSummableValueCase(List<Integer> itemsAsIntegers, int expectedSumAsInt) {
+    private static Object[] specialCase(List<Integer> itemsAsIntegers, int expectedSumAsInt) {
         return new Object[] {
-                itemsAsIntegers.map(ExampleSummableValue::with),
-                ExampleSummableValue.with(expectedSumAsInt) };
+                itemsAsIntegers.map(IntegerValue::with),
+                IntegerValue.with(expectedSumAsInt) };
     }
 
     @Override
-    protected ExampleSummableValue expectedSum() {
-        return expectedSumOfExampleSummableValues;
+    protected IntegerValue expectedSum() {
+        return expectedSum;
     }
 
     @Override
-    protected BiFunction<ExampleSummableValue, ExampleSummableValue, ExampleSummableValue> addFunction() {
-        return ExampleSummableValue::add;
+    protected BiFunction<IntegerValue, IntegerValue, IntegerValue> addFunction() {
+        return IntegerValue::add;
     }
 
     @Override
-    protected ExampleSummableValue identityElement() {
-        return ExampleSummableValue.with(0);
+    protected IntegerValue identityElement() {
+        return IntegerValue.with(0);
     }
 
     @Override
-    protected List<ExampleSummableValue> items() {
-        return itemsAsExampleSummableValues;
+    protected List<IntegerValue> items() {
+        return items;
     }
 
 }
