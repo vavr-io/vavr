@@ -36,6 +36,8 @@ public abstract class SumArbitraryValueObjectsTest<ValueType> {
     protected abstract BiFunction<ValueType, ValueType, ValueType> addFunction();
     protected abstract ValueType identityElement();
     protected abstract List<ValueType> items();
+
+    // REFACTOR Production code. Not sure where it goes yet.
     private <T> T sum(List<T> items, T identityElement, BiFunction<T, T, T> addFunction) {
         return items.foldLeft(identityElement, addFunction);
     }
