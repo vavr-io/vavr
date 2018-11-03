@@ -41,7 +41,8 @@ public class SumArbitraryValuesTest {
     @Parameters(name="case {index}: sum({0}) = {1}")
     public static Collection<Object[]> data() {
         return List.<Object[]> of(
-                new Object[] { List.empty(), 0 }
+                new Object[] { List.empty(), 0 },
+                new Object[] { List.of(45), 45 }
         ).toJavaList();
     }
 
@@ -53,8 +54,8 @@ public class SumArbitraryValuesTest {
         Assertions.assertThat(sum(items)).isEqualTo(expectedSum);
     }
 
-    private ExampleSummableValue sum(List<ExampleSummableValue> empty) {
-        return ExampleSummableValue.with(0);
+    private ExampleSummableValue sum(List<ExampleSummableValue> items) {
+        return items.isEmpty() ? ExampleSummableValue.with(0) : items.get(0);
     }
 
     // REFACTOR Should this implement Value?
