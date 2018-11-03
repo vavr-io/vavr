@@ -26,6 +26,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 
 import java.util.Collection;
+import java.util.function.BiFunction;
 
 import static org.junit.runners.Parameterized.Parameters;
 
@@ -55,12 +56,16 @@ public class SumArbitraryValuesTest {
 
     @Test
     public void checkSum() throws Exception {
-        Assertions.assertThat(sum(itemsAsExampleSummableValues))
+        Assertions.assertThat(
+                sum(
+                        itemsAsExampleSummableValues,
+                        ExampleSummableValue.with(0),
+                        ExampleSummableValue::add))
                 .isEqualTo(expectedSumOfExampleSummableValues);
     }
 
-    private ExampleSummableValue sum(List<ExampleSummableValue> items) {
-        return items.foldLeft(ExampleSummableValue.with(0), (sum, each) -> sum.add(each));
+    private ExampleSummableValue sum(List<ExampleSummableValue> items, ExampleSummableValue identityElement, BiFunction<ExampleSummableValue, ExampleSummableValue, ExampleSummableValue> addFunction) {
+        return items.foldLeft(identityElement, addFunction);
     }
 
     // REFACTOR Should this implement Value?
