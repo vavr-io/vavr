@@ -39,6 +39,10 @@ Currently, only basic microbenchmarks are available. To run:
 mvn clean test -P benchmark -pl vavr-benchmark
 ```
 
+### Contributing
+
+A small number of users have reported problems building Vavr. Read "How to Contribute" (CONTRIBUTING.md) for details.
+
 ---
 
 If you like Vavr you can support us by donating.

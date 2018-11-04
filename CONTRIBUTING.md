@@ -4,6 +4,10 @@ Vavr needs to be compiled with **jdk 1.8.0_40** at a minimum, which fixes many t
 
 [Fork](https://help.github.com/articles/fork-a-repo) the GitHub, send a [pull request](https://help.github.com/articles/using-pull-requests) and keep your fork in [sync](https://help.github.com/articles/syncing-a-fork/) with the upstream repository.
 
+## Building
+
+Some people have reported problems building Vavr on their platforms. You should be able to build Vavr with Java 8 or above, but on some platforms (operating systems or distributions), you might need to choose from a narrower range of versions of Java, Maven, and the Scala plugin for Maven. See [this issue](https://github.com/vavr-io/vavr/issues/2321) for details.
+
 ## IDE
 
 We use recent IDE version to develop Vavr. IntelliJ IDEA is preferred over Eclipse.
