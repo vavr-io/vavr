@@ -19,6 +19,7 @@
  */
 package io.vavr.collection;
 
+import io.vavr.Function2;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -62,6 +63,6 @@ public abstract class SumArbitraryValueObjectsTest<ValueType> {
         // I find the concrete name more helpful, but this operation could
         // also be like "multiply", so that could cause confusion for people
         // already comfortable with the Monoid concept.
-        BiFunction<ValueType, ValueType, ValueType> addFunction();
+        Function2<ValueType, ValueType, ValueType> addFunction();
     }
 }

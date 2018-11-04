@@ -19,11 +19,11 @@
  */
 package io.vavr.collection;
 
+import io.vavr.Function2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import java.util.Collection;
-import java.util.function.BiFunction;
 
 import static org.junit.runners.Parameterized.Parameters;
 
@@ -115,9 +115,10 @@ public class SumValueObjectsRepresentingNumbersTest extends SumArbitraryValueObj
             }
 
             @Override
-            public BiFunction<IntegerValue, IntegerValue, IntegerValue> addFunction() {
+            public Function2<IntegerValue, IntegerValue, IntegerValue> addFunction() {
                 return IntegerValue::add;
             }
+
         }
     }
 }

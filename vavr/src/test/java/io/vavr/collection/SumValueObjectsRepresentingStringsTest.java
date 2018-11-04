@@ -19,12 +19,12 @@
  */
 package io.vavr.collection;
 
+import io.vavr.Function2;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.Collection;
-import java.util.function.BiFunction;
 
 // An example of summing value objects that represent String values.
 @RunWith(Parameterized.class)
@@ -125,9 +125,10 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
             }
 
             @Override
-            public BiFunction<StringValue, StringValue, StringValue> addFunction() {
+            public Function2<StringValue, StringValue, StringValue> addFunction() {
                 return StringValue::append;
             }
+
         }
     }
 }
