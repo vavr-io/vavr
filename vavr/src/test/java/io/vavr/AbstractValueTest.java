@@ -422,11 +422,17 @@ public abstract class AbstractValueTest {
 
     @Test(expected = ClassCastException.class)
     public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
-        final Value<StringBuilder> value = of(new StringBuilder("3"), new StringBuilder("7"), new StringBuilder("1"), new StringBuilder("15"), new StringBuilder("0"));
-        final io.vavr.collection.SortedSet<StringBuilder> set = value.toSortedSet();
+        class NonComparable {
+            final String s;
+            NonComparable(String s) {
+                this.s = s;
+            }
+        }
+        final Value<NonComparable> value = of(new NonComparable("3"), new NonComparable("7"), new NonComparable("1"), new NonComparable("15"), new NonComparable("0"));
+        final io.vavr.collection.SortedSet<NonComparable> set = value.toSortedSet();
         if (value.isSingleValued()) {
             //Comparator is not used yet
-            set.add(new StringBuilder("7"));
+            set.add(new NonComparable("7"));
         }
     }
 
