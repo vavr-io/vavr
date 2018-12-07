@@ -128,7 +128,6 @@ public class SumValueObjectsRepresentingStringsTest extends SumArbitraryValueObj
             public Function2<StringValue, StringValue, StringValue> addFunction() {
                 return StringValue::append;
             }
-
         }
     }
 }
