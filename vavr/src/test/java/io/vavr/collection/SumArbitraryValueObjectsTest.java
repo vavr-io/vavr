@@ -50,7 +50,7 @@ public abstract class SumArbitraryValueObjectsTest<ValueType> {
     // REFACTOR Production code. Not sure where it goes yet. Traversable? or Monoid?
     // Traversable.sum(Monoid) sounds better to me.
     private ValueType sum(Traversable<ValueType> items, Monoid<ValueType> monoid) {
-        return items.foldLeft(monoid.identityElement(), monoid().addFunction());
+        return items.foldLeft(monoid.identityElement(), monoid.addFunction());
     }
 
     // REFACTOR Production code. I assume it goes alongside Traversable.
