@@ -2221,13 +2221,13 @@ public class JavaConvertersTest {
 
     @Test
     public void shouldThrowNPEWhenCallingToArrayNullWhenEmpty() {
-        assertThatThrownBy(() -> empty().toArray(null))
+        assertThatThrownBy(() -> empty().toArray((Object[]) null))
                 .isInstanceOf(NullPointerException.class);
     }
 
     @Test
     public void shouldThrowNPEWhenCallingToArrayNullWhenNotEmpty() {
-        assertThatThrownBy(() -> of('1').toArray(null))
+        assertThatThrownBy(() -> of('1').toArray((Object[]) null))
                 .isInstanceOf(NullPointerException.class);
     }
 
