@@ -19,11 +19,8 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Function2;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
-
-import java.util.function.BiFunction;
 
 // Subclasses of this contract test need to provide special cases
 // to check that the sum of a collection of items is correct according to a monoid.
@@ -53,16 +50,4 @@ public abstract class SumArbitraryValueObjectsTest<ValueType> {
         return items.foldLeft(monoid.identityElement(), monoid.addFunction());
     }
 
-    // REFACTOR Production code. I assume it goes alongside Traversable.
-    // A Monoid describes a Value Object type in enough detail that we can
-    // sum a Traversable of those Value Objects.
-    public interface Monoid<ValueType> {
-        ValueType identityElement();
-        // REFACTOR Should we keep "add" in the name as a helpful metaphor?
-        // Or is it better to just call this the binary operation?
-        // I find the concrete name more helpful, but this operation could
-        // also be like "multiply", so that could cause confusion for people
-        // already comfortable with the Monoid concept.
-        Function2<ValueType, ValueType, ValueType> addFunction();
-    }
 }

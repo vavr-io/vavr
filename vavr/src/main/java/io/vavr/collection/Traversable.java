@@ -19,10 +19,7 @@
  */
 package io.vavr.collection;
 
-import io.vavr.PartialFunction;
-import io.vavr.Tuple2;
-import io.vavr.Tuple3;
-import io.vavr.Value;
+import io.vavr.*;
 import io.vavr.control.Option;
 
 import java.math.BigDecimal;
@@ -96,6 +93,7 @@ import java.util.stream.DoubleStream;
  * <li>{@link #reduceLeftOption(BiFunction)}</li>
  * <li>{@link #reduceRight(BiFunction)}</li>
  * <li>{@link #reduceRightOption(BiFunction)}</li>
+ * <li>{@link #sum(Monoid)}</li>
  * </ul>
  *
  * Selection:
@@ -1419,7 +1417,54 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             }
         }
     }
-    
+
+    /**
+     * Calculates the "sum" of {@code this}'s elements, according to the supplied {@link Monoid}.
+     * This method generalizes the concept of "sum" so that you can compute the "sum"
+     * of a {@link Traversable} of value objects of any type, not merely the common Java types
+     * for numbers.
+     *
+     * <p>
+     * Examples:
+     * <pre>
+     * <code>
+     * List.empty().sum(MonetaryAmount.monoid)    // = new MonetaryAmount(0)
+     * List.of(new MonetaryAmount(1), new MonetaryAmount(2), new MonetaryAmount(3)).sum(MonetaryAmount.monoid)    // = new MonetaryAmount(6)
+     *
+     * public class MonetaryAmount {
+     *     public static final Monoid&lt;MonetaryAmount&gt; monoid = new MonetaryAmount.Monoid();
+     *
+     *     public final int cents;
+     *
+     *     public MonetaryAmount(int cents) { this.cents = cents; }
+     *
+     *     public MonetaryAmount plus(MonetaryAmount that) {
+     *         return new MonetaryAmount(this.cents + that.cents);
+     *     }
+     *
+     *     // equals(), hashCode(), toString(), all as you'd expect them.
+     *
+     *     public static class Monoid implements Monoid&lt;MonetaryAmount&gt; {
+     *         public MonetaryAmount identityElement() { return new MonetaryAmount(0); }
+     *
+     *         public Function2&lt;MonetaryAmount, MonetaryAmount, MonetaryAmount&gt; addFunction() {
+     *             return MonetaryAmount::plus;
+     *         }
+     *     }
+     * }
+     * </code>
+     * </pre>
+     *
+     * Please also see {@link #foldLeft(Object, BiFunction)}, a way to "sum" elements with an "accumulator"
+     * that isn't necessarily of the same type as the objects being "sum"med. You might use this to "sum"
+     * a {@link Traversable} of {@code String}s using a {@code StringBuilder}.
+     *
+     * @return a {@code T} representing the "sum" of {@code this}'s elements
+     */
+    default T sum(Monoid<T> monoid) {
+        return foldLeft(monoid.identityElement(), monoid.addFunction());
+    }
+
     /**
      * Drops the first element of a non-empty Traversable.
      *
