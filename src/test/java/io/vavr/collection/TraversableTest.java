@@ -1,6 +1,6 @@
 package io.vavr.collection;
 
-class IterableTest {
+class TraversableTest {
 }
 
 @SuppressWarnings("unused")
@@ -10,14 +10,14 @@ final class ShouldJustCompile {
         throw new Error("Should just compile.");
     }
 
-    <T> LinearSeq<T> toLinearSeq(java.lang.Iterable<? extends T> iterable) {
+    <T> LinearSeq<T> toLinearSeq(Iterable<? extends T> iterable) {
         return null;
     }
 
     void shouldConvertIndexedSeqToIterable(IndexedSeq<String> indexedSeq) {
-        { // Iterable
-            Iterable<String> iterable1 = indexedSeq.to(this::toLinearSeq);
-            Iterable<CharSequence> iterable2 = indexedSeq.to(this::toLinearSeq);
+        { // Traversable
+            Traversable<String> traversable1 = indexedSeq.to(this::toLinearSeq);
+            Traversable<CharSequence> traversable2 = indexedSeq.to(this::toLinearSeq);
         }
         { // Seq
             Seq<String> seq1 = indexedSeq.to(this::toLinearSeq);

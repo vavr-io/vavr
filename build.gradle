@@ -11,7 +11,7 @@ plugins {
     id 'net.researchgate.release' version '2.7.0'
 }
 
-ext.junitVersion = '5.3.1'
+ext.junitVersion = '5.4.0-M1'
 
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'maven' // generates a default .pom

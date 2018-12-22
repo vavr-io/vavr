@@ -24,9 +24,9 @@ import java.util.function.Function;
 public interface SortedSet<T> extends Set<T> {
 
     @Override
-    <U> Set<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
-    <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <U> Set<U> map(Function<? super T, ? extends U> mapper);

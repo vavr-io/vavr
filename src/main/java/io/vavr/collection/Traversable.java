@@ -20,12 +20,14 @@ package io.vavr.collection;
 
 import java.util.function.Function;
 
-public interface Set<T> extends Traversable<T> {
+public interface Traversable<T> extends io.vavr.Iterable<T> {
 
-    @Override
-    <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
-    @Override
-    <U> Set<U> map(Function<? super T, ? extends U> mapper);
+    <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
+
+    default <C> C to(Function<Iterable<T>, C> fromIterable) {
+        return fromIterable.apply(this);
+    }
 
 }

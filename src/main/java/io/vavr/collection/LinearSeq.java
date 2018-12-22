@@ -23,7 +23,7 @@ import java.util.function.Function;
 public interface LinearSeq<T> extends Seq<T> {
 
     @Override
-    <U> LinearSeq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> LinearSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <U> LinearSeq<U> map(Function<? super T, ? extends U> mapper);

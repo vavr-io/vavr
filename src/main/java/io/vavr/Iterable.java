@@ -16,21 +16,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vavr.collection;
+package io.vavr;
 
-import java.util.function.Function;
+import io.vavr.collection.Iterator;
 
+/**
+ * Extension of the well-known Java {@link java.lang.Iterable} in the sense that a rich
+ * Vavr {@link io.vavr.collection.Iterator} is returned by {@link #iterator()}.
+ *
+ * @param <T> the type of Iterator elements
+ */
 public interface Iterable<T> extends java.lang.Iterable<T> {
 
-    <U> Iterable<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
-
+    /**
+     * Returns an {@link Iterator} that allows us to perform intermediate, sequential
+     * operations known from Vavr's collection library.
+     *
+     * @return an {@link Iterator} instance. It is not necessarily a new instance, like that returned by {@link Iterator#empty()}.
+     */
     @Override
     Iterator<T> iterator();
-
-    <U> Iterable<U> map(Function<? super T, ? extends U> mapper);
-
-    default <C> C to(Function<java.lang.Iterable<T>, C> fromIterable) {
-        return fromIterable.apply(this);
-    }
 
 }

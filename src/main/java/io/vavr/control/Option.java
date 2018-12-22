@@ -18,8 +18,12 @@
  */
 package io.vavr.control;
 
+import io.vavr.collection.Iterator;
+
 import java.io.Serializable;
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -40,7 +44,7 @@ import java.util.stream.Stream;
  * @param <T> The type of the optional value.
  * @author Daniel Dietrich
  */
-public abstract class Option<T> implements Iterable<T>, Serializable {
+public abstract class Option<T> implements io.vavr.Iterable<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -197,7 +201,9 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
      *
      * @return the value
      * @throws NoSuchElementException if this is a {@code None}.
-     * @deprecated TODO: description
+     * @deprecated Unsafe operation (but not marked for removal).
+     *             User {@link #getOrElse(Object)}, {@link #getOrElseGet(Supplier)} or {@link #getOrElseThrow(Supplier)} instead.
+     *             Other alternatives are {@link #onDefined(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
      */
     @Deprecated
     public abstract T get() throws NoSuchElementException;
@@ -264,7 +270,7 @@ public abstract class Option<T> implements Iterable<T>, Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        return isDefined() ? Collections.singleton(get()).iterator() : Collections.emptyIterator();
+        return isDefined() ? Iterator.of(get()) : Iterator.empty();
     }
 
     /**

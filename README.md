@@ -21,7 +21,7 @@ Vavr v0.9 is available on Maven Central.
 
 ```groovy
 dependencies {
-    compile "io.vavr:vavr-control:1.0.0-alpha-1"
+    compile "io.vavr:vavr-control:1.0.0-alpha-2"
 }
 ```
 
@@ -32,7 +32,7 @@ dependencies {
     <dependency>
         <groupId>io.vavr</groupId>
         <artifactId>vavr-control</artifactId>
-        <version>1.0.0-alpha-1</version>
+        <version>1.0.0-alpha-2</version>
     </dependency>
 </dependencies>
 ```

@@ -18,8 +18,12 @@
  */
 package io.vavr.control;
 
+import io.vavr.collection.Iterator;
+
 import java.io.Serializable;
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -35,7 +39,7 @@ import java.util.stream.Stream;
  * @param <R> The type of the Right value of an Either.
  * @author Daniel Dietrich
  */
-public abstract class Either<L, R> implements Iterable<R>, Serializable {
+public abstract class Either<L, R> implements io.vavr.Iterable<R>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -159,7 +163,9 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
      *
      * @return the right value
      * @throws NoSuchElementException if this is a {@code Left}.
-     * @deprecated TODO: description
+     * @deprecated Unsafe operation (but not marked for removal).
+     *             Use {@link #fold(Function, Function)}, {@link #getOrElse(Object)}, {@link #getOrElseGet(Function)} or {@link #getOrElseThrow(Function)} instead.
+     *             Other alternatives are {@link #onRight(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
      */
     @Deprecated
     public abstract R get();
@@ -169,7 +175,9 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
      *
      * @return The left value.
      * @throws NoSuchElementException if this is a {@code Right}.
-     * @deprecated TODO: description
+     * @deprecated Unsafe operation (but not marked for removal).
+     *             Use {@link #fold(Function, Function)} instead.
+     *             An alternative is {@link #onLeft(Consumer)}.
      */
     @Deprecated
     public abstract L getLeft();
@@ -232,7 +240,7 @@ public abstract class Either<L, R> implements Iterable<R>, Serializable {
 
     @Override
     public Iterator<R> iterator() {
-        return isRight() ? Collections.singleton(get()).iterator() : Collections.emptyIterator();
+        return isRight() ? Iterator.of(get()) : Iterator.empty();
     }
 
     /**

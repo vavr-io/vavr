@@ -20,10 +20,10 @@ package io.vavr.collection;
 
 import java.util.function.Function;
 
-public interface Seq<T> extends Iterable<T> {
+public interface Seq<T> extends Traversable<T> {
 
     @Override
-    <U> Seq<U> flatMap(Function<? super T, ? extends java.lang.Iterable<? extends U>> mapper);
+    <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <U> Seq<U> map(Function<? super T, ? extends U> mapper);

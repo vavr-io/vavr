@@ -18,8 +18,12 @@
  */
 package io.vavr.control;
 
+import io.vavr.collection.Iterator;
+
 import java.io.Serializable;
-import java.util.*;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -138,7 +142,7 @@ import java.util.stream.Stream;
  * @param <T> Value type of a successful computation
  * @author Daniel Dietrich
  */
-public abstract class Try<T> implements Iterable<T>, Serializable {
+public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -306,7 +310,9 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
      *
      * @return The computation result if this is a {@code Success}
      * @throws NonFatalException if this is a {@link Failure}
-     * @deprecated TODO: description
+     * @deprecated Unsafe operation (but not marked for removal).
+     *             Use {@link #fold(Function, Function)}, {@link #getOrElse(Object)}, {@link #getOrElseGet(Supplier)} or {@link #getOrElseThrow(Function)} instead.
+     *             Other alternatives are {@link #onSuccess(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
      */
     @Deprecated
     public abstract T get() throws NonFatalException;
@@ -316,7 +322,9 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
      *
      * @return The cause if this is a Failure
      * @throws UnsupportedOperationException if this is a Success
-     * @deprecated TODO: description
+     * @deprecated Unsafe operation (but not marked for removal).
+     *             Use {@link #fold(Function, Function)} instead.
+     *             An alternative is {@link #onFailure(Consumer)}.
      */
     @Deprecated
     public abstract Throwable getCause() throws UnsupportedOperationException;
@@ -377,7 +385,7 @@ public abstract class Try<T> implements Iterable<T>, Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        return isSuccess() ? Collections.singleton(get()).iterator() : Collections.emptyIterator();
+        return isSuccess() ? Iterator.of(get()) : Iterator.empty();
     }
 
     /**
