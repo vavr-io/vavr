@@ -87,7 +87,7 @@ install {
             pom {
                 project {
                     name = project.name
-                    description = "The ${project.name} module of Vavr"
+                    description = "Vavr is an object-functional library for Java 8+"
                     url = 'https://www.vavr.io'
                     inceptionYear '2014'
                     licenses {
@@ -129,7 +129,7 @@ bintray {
         name = project.name
         userOrg = 'vavr-io'
         licenses = ['Apache-2.0']
-        desc = 'Vavr is an object-functional language extension to Java 8'
+        desc = 'Vavr is an object-functional library for Java 8+'
         githubRepo = 'vavr-io/vavr'
         githubReleaseNotesFile = 'README.md'
         issueTrackerUrl = 'https://github.com/vavr-io/vavr/issues'
