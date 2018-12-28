@@ -139,8 +139,9 @@ bintray {
 }
 
 release {
-    buildTasks=['build']
+    buildTasks = ['build']
     tagTemplate = '$name-$version'
+    pushReleaseVersionBranch = 'v1.0.0'
 }
 
 afterReleaseBuild.dependsOn bintrayUpload
