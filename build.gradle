@@ -1,14 +1,6 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.+'
-    }
-}
-
 plugins {
-    id 'net.researchgate.release' version '2.7.0'
+    id "com.jfrog.bintray" version "1.8.4"
+    id "net.researchgate.release" version "2.8.0"
 }
 
 ext.junitVersion = '5.4.0-M1'
