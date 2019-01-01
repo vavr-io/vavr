@@ -133,7 +133,11 @@ bintray {
 release {
     buildTasks = ['build']
     tagTemplate = '$name-$version'
-    pushReleaseVersionBranch = 'v1.0.0'
+    git {
+        requireBranch = ''
+        pushToRemote = 'origin'
+        pushToCurrentBranch = true
+    }
 }
 
 afterReleaseBuild.dependsOn bintrayUpload
