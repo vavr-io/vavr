@@ -24,6 +24,7 @@ package io.vavr;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import static io.vavr.API.*;
+import static io.vavr.OutputTester.captureStdOut;
 import static io.vavr.Patterns.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.fail;
@@ -71,22 +72,22 @@ public class APITest {
 
     @Test
     public void shouldCallprint_Object() {
-        print("ok");
+        assertThat(captureStdOut(()->print("ok"))).isEqualTo("ok");
     }
 
     @Test
     public void shouldCallprintf() {
-        printf("%s", "ok");
+        assertThat(captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
     }
 
     @Test
     public void shouldCallprintln_Object() {
-        println("ok");
+        assertThat(captureStdOut(()->println("ok"))).isEqualTo("ok\n");
     }
 
     @Test
     public void shouldCallprintln() {
-        println();
+        assertThat(captureStdOut(()->println())).isEqualTo("\n");
     }
 
     //

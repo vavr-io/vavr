@@ -54,7 +54,7 @@ public class CharSeqBenchmark {
 
     @State(Scope.Benchmark)
     public static class Base {
-        @Param({ "10", "100", "1000" })
+        @Param({"10", "100", "1000", "2500"})
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;

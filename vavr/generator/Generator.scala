@@ -2056,10 +2056,9 @@ def generateMainClasses(): Unit = {
                 }
             }
 
-            ${(i == 1).gen("// if _1 == null, hashCode() returns Objects.hash(new T1[] { null }) = 31 instead of 0 = Objects.hash(null)")}
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else s"""${im.getType("java.util.Objects")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else s"""${im.getType("io.vavr.control.HashCodes")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override
@@ -2641,6 +2640,7 @@ def generateTestClasses(): Unit = {
       def genShortcutsTests(im: ImportManager, packageName: String, className: String): String = {
 
         val fail = im.getStatic("org.junit.Assert.fail")
+        val captureStdOut = im.getStatic("io.vavr.OutputTester.captureStdOut")
 
         xs"""
           @$test
@@ -2666,22 +2666,22 @@ def generateTestClasses(): Unit = {
 
           @$test
           public void shouldCallprint_Object() {
-              print("ok");
+              assertThat($captureStdOut(()->print("ok"))).isEqualTo("ok");
           }
 
           @$test
           public void shouldCallprintf() {
-              printf("%s", "ok");
+              assertThat($captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
           }
 
           @$test
           public void shouldCallprintln_Object() {
-              println("ok");
+              assertThat($captureStdOut(()->println("ok"))).isEqualTo("ok\\n");
           }
 
           @$test
           public void shouldCallprintln() {
-              println();
+              assertThat($captureStdOut(()->println())).isEqualTo("\\n");
           }
         """
       }
@@ -3439,7 +3439,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldComputeCorrectHashCode() {
                   final int actual = createTuple().hashCode();
-                  final int expected = ${im.getType("java.util.Objects")}.hash(${if (i == 1) "new Object[] { null }" else nullArgs});
+                  final int expected = ${im.getType("java.util.Objects")}.${if (i == 1) "hashCode" else "hash"}($nullArgs);
                   $assertThat(actual).isEqualTo(expected);
               }
 

@@ -455,9 +455,32 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void shouldReturnsKeySet() {
+    public void shouldReturnKeySet() {
         final io.vavr.collection.Set<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).keySet();
         assertThat(actual).isEqualTo(io.vavr.collection.HashSet.of(1, 2, 3));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldReturnKeysIterator() {
+        final Iterator<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).keysIterator();
+        assertThat(actual).isEqualTo(io.vavr.collection.Iterator.of(1, 2, 3));
+    }
+
+    // -- values
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldReturnValuesSeq() {
+        final Seq<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).values();
+        assertThat(actual).isEqualTo(io.vavr.collection.Iterator.of(11, 22, 33));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldReturnValuesIterator() {
+        final Iterator<Integer> actual = mapOfTuples(Tuple.of(1, 11), Tuple.of(2, 22), Tuple.of(3, 33)).valuesIterator();
+        assertThat(actual).isEqualTo(io.vavr.collection.Iterator.of(11, 22, 33));
     }
 
     // -- biMap

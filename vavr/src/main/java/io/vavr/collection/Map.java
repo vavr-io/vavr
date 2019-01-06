@@ -70,6 +70,8 @@ import java.util.function.*;
  * <ul>
  * <li>{@link #forEach(BiConsumer)}</li>
  * <li>{@link #iterator(BiFunction)}</li>
+ * <li>{@link #keysIterator()}</li>
+ * <li>{@link #valuesIterator()}</li>
  * </ul>
  *
  * Transformation:
@@ -333,6 +335,15 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V>, S
      * @return {@code Set} of the keys contained in this map.
      */
     io.vavr.collection.Set<K> keySet();
+
+    /**
+     * Returns the keys contained in this map as an iterator.
+     *
+     * @return {@code Iterator} of the keys contained in this map.
+     */
+    default Iterator<K> keysIterator() {
+        return iterator().map(Tuple2::_1);
+    }
 
     @Override
     default int length() {
@@ -600,6 +611,20 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, Function1<K, V>, S
      * @return a new {@link Seq}
      */
     Seq<V> values();
+
+    /**
+     * Returns the values in this map.
+     *
+     * <pre>{@code
+     * // = Iterator.of("a", "b", "c")
+     * HashMap.of(1, "a", 2, "b", 3, "c").values()
+     * }</pre>
+     *
+     * @return a new {@link Iterator}
+     */
+    default Iterator<V> valuesIterator() {
+        return iterator().map(Tuple2::_2);
+    }
 
     /**
      * Turns this map from a partial function into a total function that

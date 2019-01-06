@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static io.vavr.OutputTester.*;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -1671,36 +1672,28 @@ public class CharSeqTest {
 
     @Test
     public void shouldWriteToStderr() {
-        CharSeq.of('1', '2', '3').stderr();
+        assertThat(captureErrOut(()->CharSeq.of('1', '2', '3').stderr())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStderrIOException() {
-        final PrintStream originalErr = System.err;
-        try (PrintStream failingPrintStream = failingPrintStream()) {
-            System.setErr(failingPrintStream);
-            CharSeq.of('0').stderr();
-        } finally {
-            System.setErr(originalErr);
-        }
+        withFailingErrOut(()->CharSeq.of('0').stderr());
     }
 
     // -- stdout
 
     @Test
     public void shouldWriteToStdout() {
-        CharSeq.of('1', '2', '3').stdout();
+        assertThat(captureStdOut(()->CharSeq.of('1', '2', '3').stdout())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldHandleStdoutIOException() {
-        final PrintStream originalOut = System.out;
-        try (PrintStream failingPrintStream = failingPrintStream()) {
-            System.setOut(failingPrintStream);
-            CharSeq.of('0').stdout();
-        } finally {
-            System.setOut(originalOut);
-        }
+        withFailingStdOut(()->CharSeq.of('0').stdout());
     }
 
     // -- sum

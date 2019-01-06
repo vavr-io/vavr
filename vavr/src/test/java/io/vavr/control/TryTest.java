@@ -1225,7 +1225,8 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldDetectSuccessOfRunnable() {
-        assertThat(Try.run(() -> System.out.println("side-effect")).isSuccess()).isTrue();
+        //noinspection ResultOfMethodCallIgnored
+        assertThat(Try.run(() -> String.valueOf("side-effect")).isSuccess()).isTrue();
     }
 
     @Test

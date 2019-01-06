@@ -52,6 +52,7 @@ public class JmhRunner {
                 CharSeqBenchmark.class,
                 HashSetBenchmark.class,
                 ListBenchmark.class,
+                MapBenchmark.class,
                 PriorityQueueBenchmark.class,
                 VectorBenchmark.class,
 
@@ -168,7 +169,7 @@ public class JmhRunner {
 
     private enum PrintInlining {
         ENABLE,
-        DISABLE;
+        DISABLE
     }
 
     /* Helper methods */

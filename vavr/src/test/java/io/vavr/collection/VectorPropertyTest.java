@@ -26,7 +26,6 @@ import org.junit.Test;
 
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -232,9 +231,7 @@ public class VectorPropertyTest {
 
     @Test
     public void shouldBehaveLikeArray() {
-        final int seed = ThreadLocalRandom.current().nextInt();
-        System.out.println("using seed " + seed);
-        final Random random = new Random(seed);
+        final Random random = new Random(13579);
 
         for (int i = 1; i < 10; i++) {
             Seq<Object> expected = Array.empty();

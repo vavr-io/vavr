@@ -60,7 +60,7 @@ public class PriorityQueueBenchmark {
         static final Ordering<Integer> SCALA_ORDERING = Ordering$.MODULE$.comparatorToOrdering(Integer::compareTo);
         static final Order<Integer> SCALAZ_ORDER = Order$.MODULE$.fromScalaOrdering(SCALA_ORDERING);
 
-        @Param({ "10", "100", "1000" })
+        @Param({"10", "100", "1000", "2500"})
         public int CONTAINER_SIZE;
 
         int EXPECTED_AGGREGATE;
