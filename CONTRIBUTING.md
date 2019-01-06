@@ -49,7 +49,7 @@ _Source: http://users.ece.utexas.edu/~adnan/pike.html_
  *  \  \/  /  /\  \  \/  /  /
  *   \____/__/  \__\____/__/
  *
- * Copyright 2014-2018 Vavr, http://vavr.io
+ * Copyright 2014-2019 Vavr, http://vavr.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
