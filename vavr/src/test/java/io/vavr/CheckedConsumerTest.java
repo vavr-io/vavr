@@ -19,24 +19,35 @@
  */
 package io.vavr;
 
-import io.vavr.collection.HashMap;
-import io.vavr.control.Option;
 import org.junit.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PartialFunctionTest {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
+
+public class CheckedConsumerTest {
 
     @Test
-    public void shouldReturnSome() {
-        Option<String> oneToOne = HashMap.of(1, "One").lift().apply(1);
-        assertThat(oneToOne).isEqualTo(Option.some("One"));
+    public void shouldApplyNonThrowingCheckedConsumer() {
+        final CheckedConsumer<?> f = t -> {};
+        try {
+            f.accept(null);
+        } catch(Throwable x) {
+            fail("should not have thrown", x);
+        }
     }
 
     @Test
-    public void shouldReturnNone() {
-        Option<String> oneToOne = HashMap.<Integer, String>empty().lift().apply(1);
-        assertThat(oneToOne).isEqualTo(Option.none());
+    public void shouldApplyThrowingCheckedConsumer() {
+        final CheckedConsumer<?> f = t -> { throw new Error(); };
+        try {
+            f.accept(null);
+            fail("should have thrown");
+        } catch(Throwable x) {
+            // ok
+        }
     }
 
 }
