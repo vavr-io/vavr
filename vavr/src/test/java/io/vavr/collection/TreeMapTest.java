@@ -78,6 +78,11 @@ public class TreeMapTest extends AbstractSortedMapTest {
         return TreeMap.ofEntries(entries);
     }
 
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+        return TreeMap.ofEntries(entries);
+    }
+
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override

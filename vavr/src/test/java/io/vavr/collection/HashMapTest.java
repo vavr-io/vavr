@@ -61,6 +61,11 @@ public class HashMapTest extends AbstractMapTest {
         return HashMap.ofEntries(entries);
     }
 
+    @Override
+    protected <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+        return HashMap.ofEntries(entries);
+    }
+
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
