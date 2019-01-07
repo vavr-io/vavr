@@ -2058,7 +2058,7 @@ def generateMainClasses(): Unit = {
 
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else s"""${im.getType("io.vavr.control.HashCodes")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else s"""${im.getType("io.vavr.HashCodes")}.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override

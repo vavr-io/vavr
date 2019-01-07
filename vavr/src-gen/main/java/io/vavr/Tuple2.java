@@ -26,7 +26,6 @@ package io.vavr;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
-import io.vavr.control.HashCodes;
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.Comparator;

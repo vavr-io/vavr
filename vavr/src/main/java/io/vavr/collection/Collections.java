@@ -21,7 +21,6 @@ package io.vavr.collection;
 
 import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
-import io.vavr.control.HashCodes;
 import io.vavr.control.Option;
 
 import java.util.*;

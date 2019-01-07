@@ -22,7 +22,6 @@ package io.vavr.other;
 import io.vavr.API;
 import io.vavr.JmhRunner;
 import io.vavr.collection.Array;
-import io.vavr.control.HashCodes;
 import org.junit.Test;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;

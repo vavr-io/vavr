@@ -1,4 +1,4 @@
-package io.vavr.control;
+package io.vavr.other;
 
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +27,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given integers.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -135,7 +135,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -155,7 +155,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -175,7 +175,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -195,7 +195,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -215,7 +215,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -235,7 +235,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -255,7 +255,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -275,7 +275,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -295,7 +295,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the two given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the two given values.
      * <p>
      * More formally, it returns the value {@code 31 * (31 + hash(v1)) + hash(v2)}.
      *
@@ -315,7 +315,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the three given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the given values.
      *
      * @param v1 the first value to hash
      * @param v2 the second value to hash
@@ -335,7 +335,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the given values.
      *
      * @param v1 the first value to hash
      * @param v2 the second value to hash
@@ -357,7 +357,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the given values.
      *
      * @param v1 the first value to hash
      * @param v2 the second value to hash
@@ -381,7 +381,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the given values.
      *
      * @param v1 the first value to hash
      * @param v2 the second value to hash
@@ -407,7 +407,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the given values.
      *
      * @param v1 the first value to hash
      * @param v2 the second value to hash
@@ -435,7 +435,7 @@ final class HashCodes {
     /**
      * Return the order-dependent hash of the two given values.
      * <p>
-     * The hashcode is equivalent to the hashcode of a {@link java.util.List} containing the given values.
+     * The hashcode is equivalent to the hashcode of a {@link List} containing the given values.
      *
      * @param v1 the first value to hash
      * @param v2 the second value to hash

@@ -22,11 +22,9 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashArrayMappedTrieModule.EmptyNode;
-import io.vavr.control.HashCodes;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Objects;
 
 import static java.lang.Integer.bitCount;
