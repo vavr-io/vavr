@@ -859,7 +859,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
-    public Stream<V> values() {
+    public Seq<V> values() {
         return trie.valuesIterator().toStream();
     }
 
