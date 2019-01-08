@@ -1,18 +1,14 @@
-plugins {
-    id "com.jfrog.bintray" version "1.8.4"
-    id "net.researchgate.release" version "2.8.0"
-}
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 ext.junitVersion = '5.4.0-M1'
 
-apply plugin: 'com.jfrog.bintray'
-apply plugin: 'maven' // generates a default .pom
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'idea'
-
 repositories {
-    jcenter()
+    mavenLocal()
+    mavenCentral()
 }
 
 compileJava {
@@ -39,11 +35,38 @@ jacocoTestReport {
 
 check.dependsOn jacocoTestReport
 
-// TODO: REMOVE THIS WORKAROUND FOR https://github.com/jacoco/jacoco/issues/663 -->
-jacoco {
-    toolVersion = "0.8.2" // intentionally no ext.jacocoVersion
+task createPom {
+    doLast {
+        pom {
+            project {
+                name = project.name
+                description = "Vavr is an object-functional library for Java 8+"
+                url = 'https://www.vavr.io'
+                inceptionYear '2014'
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+                developers {
+                    developer {
+                        name = 'Daniel Dietrich'
+                        email = 'cafebab3@gmail.com'
+                        organization = 'Vavr'
+                        organizationUrl = 'https://github.com/vavr-io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                    developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                    url = 'https://github.com/vavr-io/vavr/tree/master'
+                }
+            }
+        }.writeTo("$mavenPomDir/pom.xml") // mavenPomDir is used by the uploadArchives task
+    }
 }
-// <-- TODO: REMOVE THIS WORKAROUND
 
 jar {
     manifest {
@@ -52,12 +75,12 @@ jar {
 }
 
 task sourcesJar(type: Jar) {
-    from sourceSets.main.allJava
+    from sourceSets.main.allSource
     classifier = 'sources'
 }
 
 task testSourcesJar(type: Jar) {
-    from sourceSets.test.allJava
+    from sourceSets.test.allSource
     classifier = 'test-sources'
 }
 
@@ -67,82 +90,41 @@ task javadocJar(type: Jar) {
 }
 
 artifacts {
-    archives sourcesJar
-    archives testSourcesJar
-    archives javadocJar
+    archives javadocJar, sourcesJar, testSourcesJar
 }
 
-// Generate Sonatype conform .pom for Bintray Maven-sync, see https://central.sonatype.org/pages/requirements.html
-install {
-    repositories.mavenInstaller {
-        doFirst {
-            pom {
-                project {
-                    name = project.name
-                    description = "Vavr is an object-functional library for Java 8+"
-                    url = 'https://www.vavr.io'
-                    inceptionYear '2014'
-                    licenses {
-                        license {
-                            name 'The Apache Software License, Version 2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                            distribution 'repo'
-                        }
-                    }
-                    developers {
-                        developer {
-                            name = 'Daniel Dietrich'
-                            email = 'cafebab3@gmail.com'
-                            organization = 'Vavr'
-                            organizationUrl = 'https://github.com/vavr-io'
-                        }
-                    }
-                    scm {
-                        connection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                        developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                        url = 'https://github.com/vavr-io/vavr/tree/master'
-                    }
-                }
+// Requirements:
+//
+// - Get public key ID `gpg --list-keys --keyid-format SHORT`
+// - Export key `gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg`
+// - Add the following properties to ~/.gradle/gradle.properties
+//      signing.keyId=0ABCDEF
+//      signing.password=password
+//      signing.secretKeyRingFile=/absolute/path/to/.gnupg/secring.gpg
+//
+signing {
+    required { !version.endsWith("-SNAPSHOT") }
+    sign configurations.archives
+}
+
+// Requirements:
+//
+// - Add the following properties to ~/.gradle/gradle.properties
+//     ossrhUsername=<username>
+//     ossrhPassword=<password>
+//
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
             }
         }
     }
 }
-
-// Publishing to Bintray, see https://github.com/bintray/gradle-bintray-plugin#table-of-contents
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
-    configurations = ['archives']
-    dryRun = false   // [Default: false] Whether to run this as dry-run, without deploying
-    publish = false  // [Default: false] Whether version should be auto published after an upload
-    override = false // [Default: false] Whether to override version artifacts already published
-    pkg {
-        repo = 'maven-release'
-        name = project.name
-        userOrg = 'vavr-io'
-        licenses = ['Apache-2.0']
-        githubRepo = 'vavr-io/vavr'
-        githubReleaseNotesFile = 'README.md'
-        issueTrackerUrl = 'https://github.com/vavr-io/vavr/issues'
-        vcsUrl = 'https://github.com/vavr-io/vavr.git'
-        websiteUrl = 'https://www.vavr.io'
-        version {
-            desc = 'Vavr is an object-functional library for Java 8+'
-            gpg {
-                sign = true
-            }
-        }
-    }
-}
-
-release {
-    buildTasks = ['build']
-    tagTemplate = '$name-$version'
-    git {
-        requireBranch = ''
-        pushToRemote = 'origin'
-        pushToCurrentBranch = true
-    }
-}
-
-afterReleaseBuild.dependsOn bintrayUpload
