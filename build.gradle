@@ -1,3 +1,11 @@
+/*
+ * Some Gradle tasks we use:
+ *
+ * - Build and test project: `./gradlew check`
+ * - Create jars: `./gradlew assemble`
+ * - Release: `./gradlew uploadArchives --info`
+ *
+ */
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'jacoco'
@@ -83,14 +91,18 @@ signing {
 uploadArchives {
     repositories {
         mavenDeployer {
+
+            def sonatypeUser = project.hasProperty('ossrhUsername') ? ossrhUsername : ''
+            def sonatypePass = project.hasProperty('ossrhPassword') ? ossrhPassword : ''
+
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 
             repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: sonatypeUser, password: sonatypePass)
             }
 
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
+                authentication(userName: sonatypeUser, password: sonatypePass)
             }
 
             pom.project {
