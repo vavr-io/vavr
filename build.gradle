@@ -1,9 +1,10 @@
 /*
  * Some Gradle tasks we use:
  *
- * - Build and test project: `./gradlew check`
- * - Create jars: `./gradlew assemble`
- * - Release: `./gradlew uploadArchives --info`
+ * - Build: `./gradlew check`
+ *   | test reports: ./build/reports/tests/test/index.html
+ *   | coverage reports: ./build/reports/jacoco/test/html/index.html
+ * - Release: `./gradlew release --info`
  *
  */
 

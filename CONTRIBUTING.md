@@ -22,9 +22,8 @@ Developing Vavr requires forking and cloning the Github project.
 
 Local reports:
 
-| vavr-control |
-| --- |
-| [tests](./vavr-control/build/reports/tests/test/index.html), [coverage](./vavr-control/build/reports/jacoco/test/html/index.html) |
+* [tests](./build/reports/tests/test/index.html)
+* [coverage](./build/reports/jacoco/test/html/index.html)
 
 ## Checklist
 
