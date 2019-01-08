@@ -6,6 +6,11 @@
  * - Release: `./gradlew uploadArchives --info`
  *
  */
+
+plugins {
+    id "net.researchgate.release" version "2.8.0"
+}
+
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'jacoco'
@@ -105,6 +110,7 @@ uploadArchives {
                 authentication(userName: sonatypeUser, password: sonatypePass)
             }
 
+            // Generate Sonatype conform .pom for Bintray Maven-sync, see https://central.sonatype.org/pages/requirements.html
             pom.project {
                 name = project.name
                 description = "Vavr is an object-functional library for Java 8+"
@@ -133,3 +139,15 @@ uploadArchives {
         }
     }
 }
+
+release {
+    buildTasks = ['build']
+    tagTemplate = '$name-$version'
+    git {
+        requireBranch = ''
+        pushToRemote = 'origin'
+        pushToCurrentBranch = true
+    }
+}
+
+afterReleaseBuild.dependsOn uploadArchives
