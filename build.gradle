@@ -35,39 +35,6 @@ jacocoTestReport {
 
 check.dependsOn jacocoTestReport
 
-task createPom {
-    doLast {
-        pom {
-            project {
-                name = project.name
-                description = "Vavr is an object-functional library for Java 8+"
-                url = 'https://www.vavr.io'
-                inceptionYear '2014'
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                        distribution 'repo'
-                    }
-                }
-                developers {
-                    developer {
-                        name = 'Daniel Dietrich'
-                        email = 'cafebab3@gmail.com'
-                        organization = 'Vavr'
-                        organizationUrl = 'https://github.com/vavr-io'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                    developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                    url = 'https://github.com/vavr-io/vavr/tree/master'
-                }
-            }
-        }.writeTo("$mavenPomDir/pom.xml") // mavenPomDir is used by the uploadArchives task
-    }
-}
-
 jar {
     manifest {
         attributes('Automatic-Module-Name': 'io.vavr')
@@ -124,6 +91,32 @@ uploadArchives {
 
             snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
                 authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name = project.name
+                description = "Vavr is an object-functional library for Java 8+"
+                url = 'https://www.vavr.io'
+                inceptionYear '2014'
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        name = 'Daniel Dietrich'
+                        email = 'cafebab3@gmail.com'
+                        organization = 'Vavr'
+                        organizationUrl = 'https://github.com/vavr-io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                    developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                    url = 'https://github.com/vavr-io/vavr/tree/master'
+                }
             }
         }
     }
