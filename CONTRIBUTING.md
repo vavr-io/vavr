@@ -32,3 +32,6 @@ Local reports:
 * [ ] double-check null-safe guards
   * `Objects.requireNonNull(<parameter-name>, "<parameter-name> is null")`
   * javadoc `@throws NullPointerException if the given {@code <parameter-name>} is null`
+* [ ] hash code generation
+  * don't use `Objects.hash(Object...)` because of implicit array creation
+  * use `Objects.hashCode(Object)` to perform null checks
