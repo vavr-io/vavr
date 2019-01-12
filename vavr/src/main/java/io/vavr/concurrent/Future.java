@@ -30,6 +30,7 @@ import io.vavr.collection.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.*;
 
@@ -55,10 +56,30 @@ import java.util.function.*;
 public interface Future<T> extends Value<T> {
 
     /**
-     * The default executor service is {@link Executors#newCachedThreadPool()}.
-     * Please note that it may prevent the VM from shutdown.
+     * The default executor service is {@link ForkJoinPool#commonPool()}.
+     * <p>
+     * Facts about ForkJoinPool:
+     *
+     * <ul>
+     * <li>It is work-stealing, i.e. all threads in the pool attempt to find work submitted to the pool.
+     * Especially this is efficient under heavy load (many small tasks), e.g. when tasks create subtasks
+     * (recursive threads).</li>
+     * <li>The ForkJoinPool is dynamic, it has a maximum of 32767 running threads. Compared to fixed-size pools,
+     * this reduces the risk of dead-locks.</li>
+     * <li>The commonPool() is shared across the entire VM. Keep this in mind when also using
+     * {@link java.util.stream.Stream#parallel()} and {@link java.util.concurrent.CompletableFuture}}</li>
+     * </ul>
+     *
+     * The ForkJoinPool creates daemon threads but its run state is unaffected by attempts to shutdown() or shutdownNow().
+     * However, all running tasks are immediately terminated upon program System.exit(int).
+     * <p>
+     * IMPORTANT: Invoke {@code ForkJoinPool.commonPool().awaitQuiescence(long, TimeUnit)} before exit in order to
+     * ensure that all running async tasks complete before program termination.
+     *
+     * @see ForkJoinPool#awaitQuiescence(long, TimeUnit)
      */
-    ExecutorService DEFAULT_EXECUTOR_SERVICE = Executors.newCachedThreadPool();
+    // See https://zeroturnaround.com/rebellabs/fixedthreadpool-cachedthreadpool-or-forkjoinpool-picking-correct-java-executors-for-background-tasks
+    ExecutorService DEFAULT_EXECUTOR_SERVICE = ForkJoinPool.commonPool();
 
     /**
      * Creates a failed {@code Future} with the given {@code exception}, backed by the {@link #DEFAULT_EXECUTOR_SERVICE}.
@@ -85,7 +106,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> failed(ExecutorService executorService, Throwable exception) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(exception, "exception is null");
-        return Promise.<T> failed(executorService, exception).future();
+        return FutureImpl.of(executorService, Try.failure(exception));
     }
 
     /**
@@ -121,31 +142,32 @@ public interface Future<T> extends Value<T> {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(futures, "futures is null");
         Objects.requireNonNull(predicate, "predicate is null");
-        final Promise<Option<T>> promise = Promise.make(executorService);
         final List<Future<? extends T>> list = List.ofAll(futures);
         if (list.isEmpty()) {
-            promise.success(Option.none());
+            return successful(executorService, Option.none());
         } else {
-            final AtomicInteger count = new AtomicInteger(list.length());
-            list.forEach(future -> future.onComplete(result -> {
-                synchronized (count) {
-                    // if the promise is already completed we already found our result and there is nothing more to do.
-                    if (!promise.isCompleted()) {
-                        // when there are no more results we return a None
-                        final boolean wasLast = count.decrementAndGet() == 0;
-                        // when result is a Failure or predicate is false then we check in onFailure for finish
-                        result.filter(predicate)
-                                .onSuccess(value -> promise.trySuccess(Option.some(value)))
-                                .onFailure(ignored -> {
-                                    if (wasLast) {
-                                        promise.trySuccess(Option.none());
-                                    }
-                                });
+            return join(executorService, tryComplete -> {
+                final AtomicBoolean completed = new AtomicBoolean(false);
+                final AtomicInteger count = new AtomicInteger(list.length());
+                list.forEach(future -> future.onComplete(result -> {
+                    synchronized (count) {
+                        // if the future is already completed we already found our result and there is nothing more to do.
+                        if (!completed.get()) {
+                            // when there are no more results we return a None
+                            final boolean wasLast = count.decrementAndGet() == 0;
+                            // when result is a Failure or predicate is false then we check in onFailure for finish
+                            result.filter(predicate)
+                                    .onSuccess(value -> completed.set(tryComplete.test(Try.success(Option.some(value)))))
+                                    .onFailure(ignored -> {
+                                        if (wasLast) {
+                                            completed.set(tryComplete.test(Try.success(Option.none())));
+                                        }
+                                    });
+                        }
                     }
-                }
-            }));
+                }));
+            });
         }
-        return promise.future();
     }
 
     /**
@@ -174,10 +196,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> firstCompletedOf(ExecutorService executorService, Iterable<? extends Future<? extends T>> futures) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(futures, "futures is null");
-        final Promise<T> promise = Promise.make(executorService);
-        final Consumer<Try<? extends T>> completeFirst = promise::tryComplete;
-        futures.forEach(future -> future.onComplete(completeFirst));
-        return promise.future();
+        return join(executorService, tryComplete -> futures.forEach(future -> future.onComplete(tryComplete::test)));
     }
 
     /**
@@ -234,7 +253,7 @@ public interface Future<T> extends Value<T> {
      */
     static <T> Future<T> fromJavaFuture(java.util.concurrent.Future<T> future) {
         Objects.requireNonNull(future, "future is null");
-        return Future.of(DEFAULT_EXECUTOR_SERVICE, future::get);
+        return of(DEFAULT_EXECUTOR_SERVICE, future::get);
     }
 
     /**
@@ -249,7 +268,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> fromJavaFuture(ExecutorService executorService, java.util.concurrent.Future<T> future) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(future, "future is null");
-        return Future.of(executorService, future::get);
+        return of(executorService, future::get);
     }
 
     /**
@@ -278,9 +297,13 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> fromCompletableFuture(ExecutorService executorService, CompletableFuture<T> future) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(future, "future is null");
-        final Promise<T> promise = Promise.make();
-        future.handle((t, err) -> err == null ? promise.success(t) : promise.failure(err));
-        return promise.future();
+        if (future.isDone() || future.isCompletedExceptionally() || future.isCancelled()) {
+            return fromTry(Try.of(future::get).recoverWith(error -> Try.failure(error.getCause())));
+        } else {
+            return join(executorService, tryComplete ->
+                    future.handle((t, err) -> tryComplete.test((err == null) ? Try.success(t) : Try.failure(err)))
+            );
+        }
     }
 
     /**
@@ -307,7 +330,7 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> fromTry(ExecutorService executorService, Try<? extends T> result) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(result, "result is null");
-        return Promise.<T> fromTry(executorService, result).future();
+        return FutureImpl.of(executorService, result);
     }
 
     /**
@@ -424,7 +447,7 @@ public interface Future<T> extends Value<T> {
      * @throws NullPointerException if computation is null.
      */
     static <T> Future<T> of(CheckedFunction0<? extends T> computation) {
-        return Future.of(DEFAULT_EXECUTOR_SERVICE, computation);
+        return of(DEFAULT_EXECUTOR_SERVICE, computation);
     }
 
     /**
@@ -439,9 +462,84 @@ public interface Future<T> extends Value<T> {
     static <T> Future<T> of(ExecutorService executorService, CheckedFunction0<? extends T> computation) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(computation, "computation is null");
-        final FutureImpl<T> future = new FutureImpl<>(executorService);
-        future.run(computation);
-        return future;
+        return FutureImpl.async(executorService, tryComplete -> tryComplete.test(Try.of(computation)));
+    }
+
+    /**
+     * Creates a (possibly blocking) Future that joins the results of the given {@code computation}
+     * using a completion handler:
+     *
+     * <pre>{@code
+     * CheckedConsumer<Predicate<Try<T>>> computation = tryComplete -> {
+     *     // computation
+     * };
+     * }</pre>
+     *
+     * The {@code computation} is executed synchronously. It requires to complete the returned Future.
+     * A common use-case is to hand over the {@code tryComplete} predicate to another {@code Future}
+     * in order to prevent blocking:
+     *
+     * <pre>{@code
+     * Future<String> greeting(Future<String> nameFuture) {
+     *     return Future.join(tryComplete -> {
+     *         nameFuture.onComplete(name -> tryComplete.test("Hi " + name));
+     *     });
+     * }}</pre>
+     *
+     * The computation receives a {@link Predicate}, named {@code tryComplete} by convention,
+     * that takes a result of type {@code Try<T>} and returns a boolean that states whether the
+     * Future was completed.
+     * <p>
+     * Future completion is an idempotent operation in the way that the first call of {@code tryComplete}
+     * will return true, successive calls will return false.
+     *
+     * @param computation A computational task
+     * @param <T> Type of the result
+     * @return a new {@code Future} instance
+     * @deprecated Experimental API
+     */
+    @Deprecated
+    static <T> Future<T> join(CheckedConsumer<Predicate<Try<? extends T>>> computation) {
+        return join(DEFAULT_EXECUTOR_SERVICE, computation);
+    }
+
+    /**
+     * Creates a (possibly blocking) Future that joins the results of the given {@code computation}
+     * using a completion handler:
+     *
+     * <pre>{@code
+     * CheckedConsumer<Predicate<Try<T>>> computation = tryComplete -> {
+     *     // computation
+     * };
+     * }</pre>
+     *
+     * The {@code computation} is executed synchronously. It requires to complete the returned Future.
+     * A common use-case is to hand over the {@code tryComplete} predicate to another {@code Future}
+     * in order to prevent blocking:
+     *
+     * <pre>{@code
+     * Future<String> greeting(Future<String> nameFuture) {
+     *     return Future.join(tryComplete -> {
+     *         nameFuture.onComplete(name -> tryComplete.test("Hi " + name));
+     *     });
+     * }}</pre>
+     *
+     * The computation receives a {@link Predicate}, named {@code tryComplete} by convention,
+     * that takes a result of type {@code Try<T>} and returns a boolean that states whether the
+     * Future was completed.
+     * <p>
+     * Future completion is an idempotent operation in the way that the first call of {@code tryComplete}
+     * will return true, successive calls will return false.
+     *
+     * @param executorService an executor service that runs the given {@code computation}
+     * @param computation A computational task
+     * @param <T> Type of the result
+     * @return a new {@code Future} instance
+     * @deprecated Experimental API
+     */
+    @Deprecated
+    static <T> Future<T> join(ExecutorService executorService, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
+        return FutureImpl.sync(executorService, computation);
     }
 
     /**
@@ -506,7 +604,7 @@ public interface Future<T> extends Value<T> {
     static Future<Void> run(ExecutorService executorService, CheckedRunnable unit) {
         Objects.requireNonNull(executorService, "executorService is null");
         Objects.requireNonNull(unit, "unit is null");
-        return Future.of(executorService, () -> {
+        return of(executorService, () -> {
             unit.run();
             return null;
         });
@@ -593,7 +691,7 @@ public interface Future<T> extends Value<T> {
      */
     static <T> Future<T> successful(ExecutorService executorService, T result) {
         Objects.requireNonNull(executorService, "executorService is null");
-        return Promise.successful(executorService, result).future();
+        return FutureImpl.of(executorService, Try.success(result));
     }
 
     @Override
@@ -665,12 +763,12 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> andThen(Consumer<? super Try<T>> action) {
         Objects.requireNonNull(action, "action is null");
-        final Promise<T> promise = Promise.make(executorService());
-        onComplete(t -> {
-            Try.run(() -> action.accept(t));
-            promise.complete(t);
-        });
-        return promise.future();
+        return join(executorService(), tryComplete ->
+                onComplete(t -> {
+                    Try.run(() -> action.accept(t));
+                    tryComplete.test(t);
+                })
+        );
     }
 
     /**
@@ -741,9 +839,9 @@ public interface Future<T> extends Value<T> {
      */
     default <R> Future<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        final Promise<R> promise = Promise.make(executorService());
-        onComplete(result -> promise.complete(result.collect(partialFunction)));
-        return promise.future();
+        return join(executorService(), tryComplete ->
+                onComplete(result -> tryComplete.test(result.collect(partialFunction)))
+        );
     }
 
     /**
@@ -763,15 +861,15 @@ public interface Future<T> extends Value<T> {
      * @return A new Future which contains an exception at a point of time.
      */
     default Future<Throwable> failed() {
-        final Promise<Throwable> promise = Promise.make(executorService());
-        onComplete(result -> {
-            if (result.isFailure()) {
-                promise.success(result.getCause());
-            } else {
-                promise.failure(new NoSuchElementException("Future.failed completed without a throwable"));
-            }
-        });
-        return promise.future();
+        return join(executorService(), tryComplete ->
+                onComplete(result -> {
+                    if (result.isFailure()) {
+                        tryComplete.test(Try.success(result.getCause()));
+                    } else {
+                        tryComplete.test(Try.failure(new NoSuchElementException("Future.failed completed without a throwable")));
+                    }
+                })
+        );
     }
 
     /**
@@ -795,21 +893,15 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> fallbackTo(Future<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
-        final Promise<T> promise = Promise.make(executorService());
-        onComplete(t -> {
-            if (t.isSuccess()) {
-                promise.complete(t);
-            } else {
-                that.onComplete(alt -> {
-                    if (alt.isSuccess()) {
-                        promise.complete(alt);
+        return join(executorService(), tryComplete ->
+                onComplete(t -> {
+                    if (t.isSuccess()) {
+                        tryComplete.test(t);
                     } else {
-                        promise.complete(t);
+                        that.onComplete(alt -> tryComplete.test(alt.isSuccess() ? alt : t));
                     }
-                });
-            }
-        });
-        return promise.future();
+                })
+        );
     }
 
     /**
@@ -833,9 +925,7 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> filterTry(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final Promise<T> promise = Promise.make(executorService());
-        onComplete(result -> promise.complete(result.filterTry(predicate)));
-        return promise.future();
+        return join(executorService(), tryComplete -> onComplete(result -> tryComplete.test(result.filterTry(predicate))));
     }
 
     /**
@@ -856,6 +946,13 @@ public interface Future<T> extends Value<T> {
     Option<Try<T>> getValue();
 
     /**
+     * Checks if this Future is cancelled, i.e. the thread was forced to stop before completion.
+     *
+     * @return true, if the computation was cancelled, false otherwise
+     */
+    boolean isCancelled();
+
+    /**
      * Checks if this Future is completed, i.e. has a value.
      *
      * @return true, if the computation successfully finished, failed or was cancelled, false otherwise.
@@ -868,7 +965,7 @@ public interface Future<T> extends Value<T> {
      * @return true, if this Future completed and is a Success, false otherwise.
      */
     default boolean isSuccess() {
-        return getValue().map(Try::isSuccess).getOrElse(false);
+        return isCompleted() && getValue().get().isSuccess();
     }
 
     /**
@@ -877,7 +974,7 @@ public interface Future<T> extends Value<T> {
      * @return true, if this Future completed and is a Failure, false otherwise.
      */
     default boolean isFailure() {
-        return getValue().map(Try::isFailure).getOrElse(false);
+        return isCompleted() && getValue().get().isFailure();
     }
 
     /**
@@ -947,15 +1044,16 @@ public interface Future<T> extends Value<T> {
      */
     default Future<T> recoverWith(Function<? super Throwable, ? extends Future<? extends T>> f) {
         Objects.requireNonNull(f, "f is null");
-        final Promise<T> promise = Promise.make(executorService());
-        onComplete(t -> {
-            if (t.isFailure()) {
-                Try.run(() -> f.apply(t.getCause()).onComplete(promise::complete)).onFailure(promise::failure);
-            } else {
-                promise.complete(t);
-            }
-        });
-        return promise.future();
+        return join(executorService(), tryComplete ->
+                onComplete(t -> {
+                    if (t.isFailure()) {
+                        Try.run(() -> f.apply(t.getCause()).onComplete(tryComplete::test))
+                                .onFailure(x -> tryComplete.test(Try.failure(x)));
+                    } else {
+                        tryComplete.test(t);
+                    }
+                })
+        );
     }
 
     /**
@@ -981,9 +1079,11 @@ public interface Future<T> extends Value<T> {
      */
     default <U> Future<U> transformValue(Function<? super Try<T>, ? extends Try<? extends U>> f) {
         Objects.requireNonNull(f, "f is null");
-        final Promise<U> promise = Promise.make(executorService());
-        onComplete(t -> Try.run(() -> promise.complete(f.apply(t))).onFailure(promise::failure));
-        return promise.future();
+        return join(executorService(), tryComplete ->
+                onComplete(t -> Try.run(() -> tryComplete.test(f.apply(t)))
+                        .onFailure(x -> tryComplete.test(Try.failure(x)))
+                )
+        );
     }
 
     /**
@@ -1019,18 +1119,18 @@ public interface Future<T> extends Value<T> {
     default <U, R> Future<R> zipWith(Future<? extends U> that, BiFunction<? super T, ? super U, ? extends R> combinator) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(combinator, "combinator is null");
-        final Promise<R> promise = Promise.make(executorService());
-        onComplete(res1 -> {
-            if (res1.isFailure()) {
-                promise.complete((Try.Failure<R>) res1);
-            } else {
-                that.onComplete(res2 -> {
-                    final Try<R> result = res1.flatMap(t -> res2.map(u -> combinator.apply(t, u)));
-                    promise.complete(result);
-                });
-            }
-        });
-        return promise.future();
+        return join(executorService(), tryComplete ->
+                onComplete(res1 -> {
+                    if (res1.isFailure()) {
+                        tryComplete.test((Try.Failure<R>) res1);
+                    } else {
+                        that.onComplete(res2 -> {
+                            final Try<R> result = res1.flatMap(t -> res2.map(u -> combinator.apply(t, u)));
+                            tryComplete.test(result);
+                        });
+                    }
+                })
+        );
     }
 
     // -- Value & Monad implementation
@@ -1042,12 +1142,12 @@ public interface Future<T> extends Value<T> {
 
     default <U> Future<U> flatMapTry(CheckedFunction1<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final Promise<U> promise = Promise.make(executorService());
-        onComplete((Try<T> result) -> result.mapTry(mapper)
-                .onSuccess(promise::completeWith)
-                .onFailure(promise::failure)
+        return join(executorService(), tryComplete ->
+                onComplete(result -> result.mapTry(mapper)
+                        .onSuccess(future -> future.onComplete(tryComplete::test))
+                        .onFailure(x -> tryComplete.test(Try.failure(x)))
+                )
         );
-        return promise.future();
     }
 
     /**
@@ -1133,28 +1233,28 @@ public interface Future<T> extends Value<T> {
 
     default Future<T> orElse(Future<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
-        final Promise<T> promise = Promise.make(executorService());
-        onComplete(result -> {
-            if (result.isSuccess()) {
-                promise.complete(result);
-            } else {
-                other.onComplete(promise::complete);
-            }
-        });
-        return promise.future();
+        return join(executorService(), tryComplete ->
+                onComplete(result -> {
+                    if (result.isSuccess()) {
+                        tryComplete.test(result);
+                    } else {
+                        other.onComplete(tryComplete::test);
+                    }
+                })
+        );
     }
 
     default Future<T> orElse(Supplier<? extends Future<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        final Promise<T> promise = Promise.make(executorService());
-        onComplete(result -> {
-            if (result.isSuccess()) {
-                promise.complete(result);
-            } else {
-                supplier.get().onComplete(promise::complete);
-            }
-        });
-        return promise.future();
+        return join(executorService(), tryComplete ->
+                onComplete(result -> {
+                    if (result.isSuccess()) {
+                        tryComplete.test(result);
+                    } else {
+                        supplier.get().onComplete(tryComplete::test);
+                    }
+                })
+        );
     }
 
     @Override

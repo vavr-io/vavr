@@ -302,10 +302,13 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.version}</version>
                     <configuration>
-                        <!-- ForkJoinPool configuration for io.vavr.concurrent.Future -->
-                        <argLine>-Djava.util.concurrent.ForkJoinPool.common.parallelism=4</argLine>
-                        <!-- parallel tests could lead to deadlocks because of limited common thread pool parallelism -->
-                        <parallel>none</parallel>
+                        <!-- ForkJoinPool parallelism for io.vavr.concurrent.Future.
+	                             Typically this is the number of cores by default.
+	                             In the travis-ci build env this is currently set to 1. -->
+                        <!--<argLine>-Djava.util.concurrent.ForkJoinPool.common.parallelism=1</argLine>-->
+                        <parallel>all</parallel>
+                        <threadCount>4</threadCount>
+                        <reuseForks>true</reuseForks>
                     </configuration>
                 </plugin>
             </plugins>

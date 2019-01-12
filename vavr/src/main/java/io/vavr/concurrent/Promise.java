@@ -153,7 +153,7 @@ public interface Promise<T> {
      */
     static <T> Promise<T> make(ExecutorService executorService) {
         Objects.requireNonNull(executorService, "executorService is null");
-        return new PromiseImpl<>(new FutureImpl<>(executorService));
+        return new PromiseImpl<>(FutureImpl.of(executorService));
     }
 
     /**
