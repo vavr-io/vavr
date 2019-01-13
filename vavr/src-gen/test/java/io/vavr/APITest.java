@@ -26,6 +26,7 @@ import java.util.Comparator;
 import java.util.concurrent.Executors;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class APITest {
 
     @Test

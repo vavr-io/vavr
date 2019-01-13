@@ -222,7 +222,9 @@ def generateMainClasses(): Unit = {
          * @param <V>     The value type.
          * @param entries Map entries.
          * @return A new {@link $mapType} instance containing the given entries
+         * @deprecated Will be removed in a future version.
          */
+        @Deprecated
         @SuppressWarnings("varargs")
         @SafeVarargs
         public static <K, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
@@ -291,7 +293,9 @@ def generateMainClasses(): Unit = {
          * @param <V>     The value type.
          * @param entries Map entries.
          * @return A new {@link $mapType} instance containing the given entries
+         * @deprecated Will be removed in a future version.
          */
+        @Deprecated
         @SuppressWarnings("varargs")
         @SafeVarargs
         public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
@@ -306,7 +310,9 @@ def generateMainClasses(): Unit = {
          * @param keyComparator The comparator used to sort the entries by their key
          * @param entries       Map entries.
          * @return A new {@link $mapType} instance containing the given entry
+         * @deprecated Will be removed in a future version.
          */
+        @Deprecated
         @SuppressWarnings("varargs")
         @SafeVarargs
         public static <K, V> $returnType<K, V> $name($JavaComparatorType<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
@@ -320,7 +326,9 @@ def generateMainClasses(): Unit = {
          * @param <V> The value type.
          * @param map A map entry.
          * @return A new {@link $mapType} instance containing the given map
+         * @deprecated Will be removed in a future version.
          */
+        @Deprecated
         public static <K extends Comparable<? super K>, V> $returnType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
             return $mapType.ofAll(map);
         }
@@ -2701,6 +2709,7 @@ def generateTestClasses(): Unit = {
       }
 
       xs"""
+        @SuppressWarnings("deprecation")
         public class $className {
 
             @$test

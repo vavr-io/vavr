@@ -1490,7 +1490,9 @@ public final class API {
      * @param <V>     The value type.
      * @param entries Map entries.
      * @return A new {@link HashMap} instance containing the given entries
+     * @deprecated Will be removed in a future version.
      */
+    @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <K, V> Map<K, V> Map(Tuple2<? extends K, ? extends V>... entries) {
@@ -1736,7 +1738,9 @@ public final class API {
      * @param <V>     The value type.
      * @param entries Map entries.
      * @return A new {@link LinkedHashMap} instance containing the given entries
+     * @deprecated Will be removed in a future version.
      */
+    @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <K, V> Map<K, V> LinkedMap(Tuple2<? extends K, ? extends V>... entries) {
@@ -2006,7 +2010,9 @@ public final class API {
      * @param <V>     The value type.
      * @param entries Map entries.
      * @return A new {@link TreeMap} instance containing the given entries
+     * @deprecated Will be removed in a future version.
      */
+    @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(Tuple2<? extends K, ? extends V>... entries) {
@@ -2021,7 +2027,9 @@ public final class API {
      * @param keyComparator The comparator used to sort the entries by their key
      * @param entries       Map entries.
      * @return A new {@link TreeMap} instance containing the given entry
+     * @deprecated Will be removed in a future version.
      */
+    @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <K, V> SortedMap<K, V> SortedMap(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
@@ -2035,7 +2043,9 @@ public final class API {
      * @param <V> The value type.
      * @param map A map entry.
      * @return A new {@link TreeMap} instance containing the given map
+     * @deprecated Will be removed in a future version.
      */
+    @Deprecated
     public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(java.util.Map<? extends K, ? extends V> map) {
         return TreeMap.ofAll(map);
     }
