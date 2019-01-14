@@ -334,7 +334,9 @@ public interface Future<T> extends Value<T> {
      * @param <T>      Type of the computation result.
      * @return A new Future instance
      * @throws NullPointerException if computation is null.
+     * @deprecated Will be removed. Use {@code Future.of(supplier::get)} instead of {@code Future.ofSupplier(supplier)}.
      */
+    @Deprecated
     static <T> Future<T> ofSupplier(Supplier<? extends T> computation) {
         Objects.requireNonNull(computation, "computation is null");
         return of(DEFAULT_EXECUTOR_SERVICE, computation::get);
@@ -348,7 +350,9 @@ public interface Future<T> extends Value<T> {
      * @param <T>      Type of the computation result.
      * @return A new Future instance
      * @throws NullPointerException if one of executorService or computation is null.
+     * @deprecated Will be removed. Use {@code Future.of(executor, supplier::get)} instead of {@code Future.ofSupplier(executor, supplier)}.
      */
+    @Deprecated
     static <T> Future<T> ofSupplier(ExecutorService executorService, Supplier<? extends T> computation) {
         Objects.requireNonNull(computation, "computation is null");
         return of(executorService, computation::get);
@@ -361,7 +365,9 @@ public interface Future<T> extends Value<T> {
      * @param <T>      Type of the computation result.
      * @return A new Future instance
      * @throws NullPointerException if computation is null.
+     * @deprecated Will be removed. Use {@code Future.of(callable::call)} instead of {@code Future.ofCallable(callable)}.
      */
+    @Deprecated
     static <T> Future<T> ofCallable(Callable<? extends T> computation) {
         Objects.requireNonNull(computation, "computation is null");
         return of(DEFAULT_EXECUTOR_SERVICE, computation::call);
@@ -375,7 +381,9 @@ public interface Future<T> extends Value<T> {
      * @param <T>      Type of the computation result.
      * @return A new Future instance
      * @throws NullPointerException if one of executorService or computation is null.
+     * @deprecated Will be removed. Use {@code Future.of(executor, callable::call)} instead of {@code Future.ofCallable(executor, callable)}.
      */
+    @Deprecated
     static <T> Future<T> ofCallable(ExecutorService executorService, Callable<? extends T> computation) {
         Objects.requireNonNull(computation, "computation is null");
         return of(executorService, computation::call);
@@ -387,7 +395,9 @@ public interface Future<T> extends Value<T> {
      * @param computation A computation
      * @return A new Future instance
      * @throws NullPointerException if computation is null.
+     * @deprecated Will be removed. Use {@code Future.of(runnable::run)} instead of {@code Future.runRunnable(runnable)}.
      */
+    @Deprecated
     static Future<Void> runRunnable(Runnable computation) {
         Objects.requireNonNull(computation, "computation is null");
         return run(DEFAULT_EXECUTOR_SERVICE, computation::run);
@@ -400,7 +410,9 @@ public interface Future<T> extends Value<T> {
      * @param computation A computation.
      * @return A new Future instance
      * @throws NullPointerException if one of executorService or computation is null.
+     * @deprecated Will be removed. Use {@code Future.of(executor, runnable::run)} instead of {@code Future.runRunnable(executor, runnable)}.
      */
+    @Deprecated
     static Future<Void> runRunnable(ExecutorService executorService, Runnable computation) {
         Objects.requireNonNull(computation, "computation is null");
         return run(executorService, computation::run);

@@ -43,6 +43,7 @@ import static io.vavr.concurrent.ExecutorServices.rejectingExecutorService;
 import static io.vavr.concurrent.ExecutorServices.trivialExecutorService;
 import static org.assertj.core.api.Assertions.fail;
 
+@SuppressWarnings("deprecation")
 public class FutureTest extends AbstractValueTest {
 
     @Override
