@@ -20,17 +20,24 @@
 package io.vavr.concurrent;
 
 import io.vavr.control.Try;
+import org.junit.AfterClass;
 import org.junit.Test;
 
-import static io.vavr.concurrent.Concurrent.zZz;
+import java.util.concurrent.TimeoutException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class PromiseTest {
 
+    @AfterClass
+    public static void gracefullyFinishThreads() throws TimeoutException {
+        Concurrent.gracefullyFinishThreads();
+    }
+
     @Test
     public void shouldReturnExecutorService() {
         final Promise<Integer> promise = Promise.successful(42);
-        assertThat(promise.executorService()).isNotNull();
+        assertThat(promise.executor()).isNotNull();
     }
 
     @Test
@@ -82,7 +89,7 @@ public class PromiseTest {
 
     @Test
     public void shouldCompletePromiseWithItsOwnFuture() {
-        final Promise<String> promise = Promise.make(ExecutorServices.trivialExecutorService());
+        final Promise<String> promise = Promise.make(FutureTest.TRIVIAL_EXECUTOR);
         promise.completeWith(promise.future());
         assertThat(promise.isCompleted()).isFalse();
         assertThat(promise.success("ok").isCompleted()).isTrue();
@@ -95,17 +102,17 @@ public class PromiseTest {
 
         class Context {
 
-            String produceSomething() {
+            private String produceSomething() {
                 Concurrent.zZz();
                 System.out.println("Making " + product);
                 return product;
             }
 
-            void continueDoingSomethingUnrelated() {
+            private void continueDoingSomethingUnrelated() {
                 System.out.println("Unreleated stuff");
             }
 
-            void startDoingSomething() {
+            private void startDoingSomething() {
                 System.out.println("Something else");
             }
         }
