@@ -108,8 +108,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * Creates a {@code Validation} of an {@code Either}.
      *
      * @param either An {@code Either}
-     * @param <E>    type of the given {@code error}
-     * @param <T>    type of the value
+     * @param <E>    error type
+     * @param <T>    value type
      * @return A {@code Valid(either.get())} if either is a Right, otherwise {@code Invalid(either.getLeft())}.
      * @throws NullPointerException if either is null
      */
@@ -407,7 +407,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     T get();
 
     /**
-     * Gets the value if it is a Valid or an value calculated from the error
+     * Gets the value if it is a Valid or an value calculated from the error.
      *
      * @param other a function which converts an error to an alternative value
      * @return the value, if the underlying Validation is a Valid, or else the alternative value
@@ -423,15 +423,15 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Gets the error of this Validation if is an Invalid or throws if this is a Valid
+     * Gets the error of this Validation if it is an {@code Invalid} or throws if this is a {@code Valid}.
      *
-     * @return The error of this Invalid
-     * @throws RuntimeException if this is a Valid
+     * @return The error, if present
+     * @throws RuntimeException if this is a {@code Valid}
      */
     E getError();
 
     /**
-     * Returns this as {@code Either}.
+     * Converts this Validation to an {@link Either}.
      *
      * @return {@code Either.right(get())} if this is valid, otherwise {@code Either.left(getError())}.
      */
@@ -449,8 +449,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     String toString();
 
     /**
-     * Performs the given action for the value contained in {@code Valid}, or do nothing
-     * if this is an Invalid.
+     * Performs the given action for the value contained in {@code Valid}, or does nothing
+     * if this is an {@code Invalid}.
      *
      * @param action the action to be performed on the contained value
      * @throws NullPointerException if action is null
@@ -464,34 +464,24 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Performs the action in {@code fInvalid} on {@code error} if this is an {@code Invalid},
-     * or {@code fValid} on {@code value} if this is a {@code Valid}.
-     * Returns an object of type U.
-     *
+     * Transforms this {@code Validation} to a value of type {@code U}.
      * <p>
-     * <code>
-     * For example:<br>
-     * Validation&lt;List&lt;String&gt;,String&gt; valid = ...;<br>
-     * Integer i = valid.fold(List::length, String::length);
-     * </code>
-     * </p>
+     * Example:
+     * <pre>{@code
+     * Validation<List<String>, String> valid = ...;<br>
+     * int i = valid.fold(List::length, String::length);
+     * }</pre>
      *
-     * @param <U>      the fold result type
-     * @param fInvalid the invalid fold operation
-     * @param fValid   the valid fold operation
-     * @return an instance of type U
-     * @throws NullPointerException if fInvalid or fValid is null
+     * @param <U>       the fold result type
+     * @param ifInvalid an error mapper
+     * @param ifValid   an mapper for a valid value
+     * @return {@code ifValid.apply(get())} if this is valid, otherwise {@code ifInvalid.apply(getError())}.
+     * @throws NullPointerException if one of the given mappers {@code ifInvalid} or {@code ifValid} is null
      */
-    default <U> U fold(Function<? super E, ? extends U> fInvalid, Function<? super T, ? extends U> fValid) {
-        Objects.requireNonNull(fInvalid, "fInvalid is null");
-        Objects.requireNonNull(fValid, "fValid is null");
-        if (isInvalid()) {
-            final E error = this.getError();
-            return fInvalid.apply(error);
-        } else {
-            final T value = this.get();
-            return fValid.apply(value);
-        }
+    default <U> U fold(Function<? super E, ? extends U> ifInvalid, Function<? super T, ? extends U> ifValid) {
+        Objects.requireNonNull(ifInvalid, "ifInvalid is null");
+        Objects.requireNonNull(ifValid, "ifValid is null");
+        return isValid() ? ifValid.apply(get()) : ifInvalid.apply(getError());
     }
 
     /**

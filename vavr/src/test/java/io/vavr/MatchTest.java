@@ -23,13 +23,13 @@ import io.vavr.collection.List;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Option.Some;
+import io.vavr.control.Validation;
 import io.vavr.match.annotation.Patterns;
 import io.vavr.match.annotation.Unapply;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.Year;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static io.vavr.API.$;
@@ -317,10 +317,12 @@ public class MatchTest {
         assertThat(actual).isEqualTo("(begin, 10, 4.5)::List((middle, 11, 0.0), (end, 12, 1.2))");
     }
 
-    /* Java 9 compiler error:
-        [ERROR]    incompatible types: inferred type does not conform to equality constraint(s)
-        [ERROR]     inferred: io.vavr.control.Option.Some<java.lang.Number>
-        [ERROR]     equality constraints(s): io.vavr.control.Option.Some<java.lang.Double>
+    /*
+	     JDK 9 compiler errors:
+
+        [ERROR] incompatible types: inferred type does not conform to equality constraint(s)
+            inferred: io.vavr.control.Option.Some<java.lang.Number>
+            equality constraints(s): io.vavr.control.Option.Some<java.lang.Integer>
 
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Test
@@ -328,14 +330,36 @@ public class MatchTest {
         final List<Option<Number>> numberOptionList = List.of(Option.some(1), Option.some(2.0));
         final String actual = Match(numberOptionList).of(
                 Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())),  (x, xs) -> {
-                    final Some<Number> head = x;
-                    final List.Cons<Option<Number>> tail = xs;
+                    final Option<Number> head = x;
+                    final List<Option<Number>> tail = xs;
                     return head + "::" + tail;
                 })
         );
         assertThat(actual).isEqualTo("Some(1)::List(Some(2.0))");
     }
     */
+
+    // -- Validation
+
+    @Test
+    public void shouldDecomposeValid() {
+        final Validation<String, Integer> valid = Validation.valid(1);
+        final String actual = Match(valid).of(
+                Case($Valid($(1)), i -> "ok"),
+                Case($Invalid($()), error -> error)
+        );
+        assertThat(actual).isEqualTo("ok");
+    }
+
+    @Test
+    public void shouldDecomposeInvalid() {
+        final Validation<String, Integer> valid = Validation.invalid("ok");
+        final String actual = Match(valid).of(
+                Case($Valid($()), i -> "error"),
+                Case($Invalid($("ok")), error -> error)
+        );
+        assertThat(actual).isEqualTo("ok");
+    }
 
     // -- run
 

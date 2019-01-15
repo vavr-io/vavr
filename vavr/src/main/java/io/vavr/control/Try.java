@@ -993,7 +993,7 @@ public interface Try<T> extends Value<T>, Serializable {
      *
      * <pre>
      * <code>
-     * Validation<Failure, Integer> = Try.of(() -> 1/0).toValidation(t -> Failure.from(throwable.getMessage()));
+     * Validation<String, Integer> = Try.of(() -> 1/0).toValidation(Throwable::getMessage));
      * </code>
      * </pre>
      *

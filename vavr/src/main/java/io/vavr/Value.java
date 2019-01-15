@@ -591,7 +591,9 @@ public interface Value<T> extends Iterable<T> {
      * @param value An instance of a {@code Valid} value
      * @return A new {@link Validation.Valid} containing the given {@code value} if this is empty, otherwise
      * a new {@link Validation.Invalid} containing this value.
+     * @deprecated Use {@link #toValidation(Object)} instead.
      */
+    @Deprecated
     default <U> Validation<T, U> toInvalid(U value) {
         return isEmpty() ? Validation.valid(value) : Validation.invalid(get());
     }
@@ -604,7 +606,9 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Validation.Valid} containing the result of {@code valueSupplier} if this is empty,
      * otherwise a new {@link Validation.Invalid} containing this value.
      * @throws NullPointerException if {@code valueSupplier} is null
+     * @deprecated Use {@link #toValidation(Supplier)} instead.
      */
+    @Deprecated
     default <U> Validation<T, U> toInvalid(Supplier<? extends U> valueSupplier) {
         Objects.requireNonNull(valueSupplier, "valueSupplier is null");
         return isEmpty() ? Validation.valid(valueSupplier.get()) : Validation.invalid(get());
@@ -994,7 +998,9 @@ public interface Value<T> extends Iterable<T> {
      * @param right An instance of a right value
      * @return A new {@link Either.Right} containing the value of {@code right} if this is empty, otherwise
      * a new {@link Either.Left} containing this value.
+     * @deprecated Use {@link #toEither(Object)} instead.
      */
+    @Deprecated
     default <R> Either<T, R> toLeft(R right) {
         return isEmpty() ? Either.right(right) : Either.left(get());
     }
@@ -1007,7 +1013,9 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Either.Right} containing the result of {@code right} if this is empty, otherwise
      * a new {@link Either.Left} containing this value.
      * @throws NullPointerException if {@code right} is null
+     * @deprecated Use {@link #toEither(Supplier)} instead.
      */
+    @Deprecated
     default <R> Either<T, R> toLeft(Supplier<? extends R> right) {
         Objects.requireNonNull(right, "right is null");
         return isEmpty() ? Either.right(right.get()) : Either.left(get());
@@ -1192,10 +1200,10 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Validation}.
      *
      * @param invalid An invalid value for the {@link Validation}
-     * @param <L>     Validation error component type
+     * @param <E>     Validation error component type
      * @return A new {@link Validation}.
      */
-    default <L> Validation<L, T> toValidation(L invalid) {
+    default <E> Validation<E, T> toValidation(E invalid) {
         if (this instanceof Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalid);
         } else {
@@ -1207,10 +1215,10 @@ public interface Value<T> extends Iterable<T> {
      * Converts this to an {@link Validation}.
      *
      * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
-     * @param <L>             Validation error component type
+     * @param <E>             Validation error component type
      * @return A new {@link Validation}.
      */
-    default <L> Validation<L, T> toValidation(Supplier<? extends L> invalidSupplier) {
+    default <E> Validation<E, T> toValidation(Supplier<? extends E> invalidSupplier) {
         Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
         if (this instanceof Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
@@ -1266,7 +1274,9 @@ public interface Value<T> extends Iterable<T> {
      * @param left An instance of a left value
      * @return A new {@link Either.Left} containing the value of {@code left} if this is empty, otherwise
      * a new {@link Either.Right} containing this value.
+     * @deprecated Use {@link #toEither(Object)} instead.
      */
+    @Deprecated
     default <L> Either<L, T> toRight(L left) {
         return isEmpty() ? Either.left(left) : Either.right(get());
     }
@@ -1279,7 +1289,9 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Either.Left} containing the result of {@code left} if this is empty, otherwise
      * a new {@link Either.Right} containing this value.
      * @throws NullPointerException if {@code left} is null
+     * @deprecated Use {@link #toEither(Supplier)} instead.
      */
+    @Deprecated
     default <L> Either<L, T> toRight(Supplier<? extends L> left) {
         Objects.requireNonNull(left, "left is null");
         return isEmpty() ? Either.left(left.get()) : Either.right(get());
@@ -1401,7 +1413,9 @@ public interface Value<T> extends Iterable<T> {
      * @param error An error
      * @return A new {@link Validation.Invalid} containing the given {@code error} if this is empty, otherwise
      * a new {@link Validation.Valid} containing this value.
+     * @deprecated Use {@link #toValidation(Object)} instead.
      */
+    @Deprecated
     default <E> Validation<E, T> toValid(E error) {
         return isEmpty() ? Validation.invalid(error) : Validation.valid(get());
     }
@@ -1414,7 +1428,9 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Validation.Invalid} containing the result of {@code errorSupplier} if this is empty,
      * otherwise a new {@link Validation.Valid} containing this value.
      * @throws NullPointerException if {@code valueSupplier} is null
+     * @deprecated Use {@link #toValidation(Supplier)} instead.
      */
+    @Deprecated
     default <E> Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
         Objects.requireNonNull(errorSupplier, "errorSupplier is null");
         return isEmpty() ? Validation.invalid(errorSupplier.get()) : Validation.valid(get());

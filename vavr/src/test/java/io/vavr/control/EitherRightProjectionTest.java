@@ -23,7 +23,6 @@ import io.vavr.API;
 import io.vavr.AbstractValueTest;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import io.vavr.control.Either.RightProjection;
 import org.junit.Test;
 
 import java.util.*;
@@ -31,23 +30,24 @@ import java.util.*;
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 
+@SuppressWarnings("deprecation")
 public class EitherRightProjectionTest extends AbstractValueTest {
 
     // -- AbstractValueTest
 
     @Override
-    protected <T> RightProjection<?, T> empty() {
+    protected <T> Either.RightProjection<?, T> empty() {
         return Either.<T, T> left(null).right();
     }
 
     @Override
-    protected <T> RightProjection<?, T> of(T element) {
+    protected <T> Either.RightProjection<?, T> of(T element) {
         return Either.<T, T> right(element).right();
     }
 
     @SafeVarargs
     @Override
-    protected final <T> RightProjection<?, T> of(T... elements) {
+    protected final <T> Either.RightProjection<?, T> of(T... elements) {
         return of(elements[0]);
     }
 
@@ -79,14 +79,14 @@ public class EitherRightProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldRightProjectionOrElseRightProjection() {
-        final RightProjection<Integer, Integer> elseProjection = API.<Integer, Integer>Right(2).right();
+        final Either.RightProjection<Integer, Integer> elseProjection = API.<Integer, Integer>Right(2).right();
         assertThat(Right(1).right().orElse(elseProjection).get()).isEqualTo(1);
         assertThat(Left(1).right().orElse(elseProjection).get()).isEqualTo(2);
     }
 
     @Test
     public void shouldRightProjectionOrElseRightProjectionFromSupplier() {
-        final RightProjection<Integer, Integer> elseProjection = API.<Integer, Integer>Right(2).right();
+        final Either.RightProjection<Integer, Integer> elseProjection = API.<Integer, Integer>Right(2).right();
         assertThat(Right(1).right().orElse(() -> elseProjection).get()).isEqualTo(1);
         assertThat(Left(1).right().orElse(() -> elseProjection).get()).isEqualTo(2);
     }
@@ -241,7 +241,7 @@ public class EitherRightProjectionTest extends AbstractValueTest {
     public void shouldFlatMapRightProjectionOfLeftOnRightProjectionOfRight() {
         final Either<String, String> good = Either.right("good");
         final Either<String, String> bad = Either.left("bad");
-        final RightProjection<String, Tuple2<String, String>> actual = good.right().flatMap(g -> bad.right().map(b -> Tuple.of(g, b)));
+        final Either.RightProjection<String, Tuple2<String, String>> actual = good.right().flatMap(g -> bad.right().map(b -> Tuple.of(g, b)));
         assertThat(actual.toEither()).isEqualTo(Either.left("bad"));
     }
 
@@ -343,13 +343,13 @@ public class EitherRightProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldEqualRightProjectionOfRightIfObjectIsSame() {
-        final RightProjection<?, ?> r = Either.right(1).right();
+        final Either.RightProjection<?, ?> r = Either.right(1).right();
         assertThat(r.equals(r)).isTrue();
     }
 
     @Test
     public void shouldEqualRightProjectionOfLeftIfObjectIsSame() {
-        final RightProjection<?, ?> r = Either.left(1).right();
+        final Either.RightProjection<?, ?> r = Either.left(1).right();
         assertThat(r.equals(r)).isTrue();
     }
 

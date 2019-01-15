@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import java.util.*;
 
+@SuppressWarnings("deprecation")
 public class EitherLeftProjectionTest extends AbstractValueTest {
 
     // -- AbstractValueTest

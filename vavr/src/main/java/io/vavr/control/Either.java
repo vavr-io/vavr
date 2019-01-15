@@ -126,7 +126,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * Returns a LeftProjection of this Either.
      *
      * @return a new LeftProjection of this
+     * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
+    @Deprecated
     default LeftProjection<L, R> left() {
         return new LeftProjection<>(this);
     }
@@ -135,7 +137,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * Returns a RightProjection of this Either.
      *
      * @return a new RightProjection of this
+     * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
+    @Deprecated
     default RightProjection<L, R> right() {
         return new RightProjection<>(this);
     }
@@ -523,7 +527,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param <L> The type of the Left value of an Either.
      * @param <R> The type of the Right value of an Either.
+     * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
+    @Deprecated
     final class LeftProjection<L, R> implements Value<L> {
 
         private final Either<L, R> either;
@@ -776,7 +782,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param <L> The type of the Left value of an Either.
      * @param <R> The type of the Right value of an Either.
+     * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
+    @Deprecated
     final class RightProjection<L, R> implements Value<R> {
 
         private final Either<L, R> either;

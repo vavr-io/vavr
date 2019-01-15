@@ -33,6 +33,7 @@ import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SuppressWarnings("deprecation")
 public class EitherTest extends AbstractValueTest {
 
     // -- AbstractValueTest

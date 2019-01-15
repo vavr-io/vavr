@@ -41,6 +41,7 @@ import static io.vavr.API.*;
 import static io.vavr.Predicates.anyOf;
 import static io.vavr.Predicates.instanceOf;
 
+@SuppressWarnings("deprecation")
 public abstract class AbstractValueTest {
 
     protected Random getRandom(int seed) {
@@ -470,11 +471,11 @@ public abstract class AbstractValueTest {
 
     @Test(expected = ClassCastException.class)
     public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
-        final Value<StringBuilder> value = of(new StringBuilder("3"), new StringBuilder("7"), new StringBuilder("1"), new StringBuilder("15"), new StringBuilder("0"));
-        final io.vavr.collection.SortedSet<StringBuilder> set = value.toSortedSet();
+        final Value<Object> value = of(new Object(), new Object());
+        final io.vavr.collection.SortedSet<Object> set = value.toSortedSet();
         if (value.isSingleValued()) {
-            //Comparator is not used yet
-            set.add(new StringBuilder("7"));
+            // Comparator wasn't used on of(...)
+            set.add(new Object());
         }
     }
 
