@@ -329,6 +329,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return LinkedHashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    @GwtIncompatible
     public static LinkedHashSet<Double> rangeBy(double from, double toExclusive, double step) {
         return LinkedHashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -433,6 +434,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return LinkedHashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    @GwtIncompatible
     public static LinkedHashSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return LinkedHashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
@@ -1014,6 +1016,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      *
      * @return A SerializationProxy for this enclosing class.
      */
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private Object writeReplace() {
         return new SerializationProxy<>(this.map);
     }
@@ -1026,6 +1029,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param stream An object serialization stream.
      * @throws InvalidObjectException This method will throw with the message "Proxy required".
      */
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private void readObject(ObjectInputStream stream) throws InvalidObjectException {
         throw new InvalidObjectException("Proxy required");
     }
@@ -1038,6 +1042,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      */
     // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
     // classes. Also, it may not be compatible with circular object graphs.
+    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private static final class SerializationProxy<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;

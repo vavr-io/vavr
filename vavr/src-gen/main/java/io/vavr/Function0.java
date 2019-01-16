@@ -23,6 +23,10 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static io.vavr.Function0Module.sneakyThrow;
+
+import io.vavr.control.Option;
+import io.vavr.control.Try;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
@@ -41,6 +45,19 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
      */
     long serialVersionUID = 1L;
+
+    /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+
+     * @param <R> the result type
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <R> Function0<R> constant(R value) {
+        return () -> value;
+    }
 
     /**
      * Creates a {@code Function0} based on
@@ -80,6 +97,31 @@ public interface Function0<R> extends Serializable, Supplier<R> {
     }
 
     /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
+     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     */
+    @SuppressWarnings("RedundantTypeArguments")
+    static <R> Function0<Option<R>> lift(Supplier<? extends R> partialFunction) {
+        return () -> Try.<R>of(partialFunction::get).toOption();
+    }
+
+    /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     */
+    static <R> Function0<Try<R>> liftTry(Supplier<? extends R> partialFunction) {
+        return () -> Try.of(partialFunction::get);
+    }
+
+    /**
      * Narrows the given {@code Function0<? extends R>} to {@code Function0<R>}
      *
      * @param f A {@code Function0}
@@ -110,6 +152,15 @@ public interface Function0<R> extends Serializable, Supplier<R> {
     }
 
     /**
+     * Returns the number of function arguments.
+     * @return an int value >= 0
+     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
+     */
+    default int arity() {
+        return 0;
+    }
+
+    /**
      * Returns a curried version of this function.
      *
      * @return a curried function equivalent to this.
@@ -137,14 +188,13 @@ public interface Function0<R> extends Serializable, Supplier<R> {
     }
 
     /**
-     * Checks if this function is memoizing (= caching) computed values.
+     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     * <p>
+     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
      *
-     * @return true, if this function is memoizing, false otherwise
+     * @return a memoizing function equivalent to this.
      */
-    default boolean isMemoized() {
-        return this instanceof Memoized;
-    }
-
     default Function0<R> memoized() {
         if (isMemoized()) {
             return this;
@@ -153,7 +203,14 @@ public interface Function0<R> extends Serializable, Supplier<R> {
         }
     }
 
-    interface Memoized { /* zero abstract method (ZAM) interface */ }
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
 
     /**
      * Returns a composed function that first applies this Function0 to the given argument and then applies
@@ -169,4 +226,13 @@ public interface Function0<R> extends Serializable, Supplier<R> {
         return () -> after.apply(apply());
     }
 
+}
+
+interface Function0Module {
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
+    }
 }

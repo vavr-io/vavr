@@ -25,8 +25,10 @@ package io.vavr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
@@ -41,6 +43,50 @@ public class CheckedFunction0Test {
         }
         final Type type = new Type();
         assertThat(CheckedFunction0.of(type::methodReference)).isNotNull();
+    }
+
+    @Test
+    public void shouldLiftPartialFunction() {
+        assertThat(CheckedFunction0.lift(() -> { while(true); })).isNotNull();
+    }
+
+    @Test
+    public void shouldCallValue() throws Exception {
+        final String s = "test";
+        final CheckedFunction0<String> callable = () -> s;
+        assertThat(callable.call()).isEqualTo(s);
+    }
+
+    @Test
+    public void shouldGetArity() {
+        final CheckedFunction0<Object> f = () -> null;
+        assertThat(f.arity()).isEqualTo(0);
+    }
+
+    @Test
+    public void shouldConstant() throws Throwable {
+        final CheckedFunction0<Object> f = CheckedFunction0.constant(6);
+        assertThat(f.apply()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldCurry() {
+        final CheckedFunction0<Object> f = () -> null;
+        final CheckedFunction0<Object> curried = f.curried();
+        assertThat(curried).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple() {
+        final CheckedFunction0<Object> f = () -> null;
+        final CheckedFunction1<Tuple0, Object> tupled = f.tupled();
+        assertThat(tupled).isNotNull();
+    }
+
+    @Test
+    public void shouldReverse() {
+        final CheckedFunction0<Object> f = () -> null;
+        assertThat(f.reversed()).isNotNull();
     }
 
     @Test
@@ -71,33 +117,6 @@ public class CheckedFunction0Test {
     }
 
     @Test
-    public void shouldCallValue() throws Exception {
-        final String s = "test";
-        final CheckedFunction0<String> callable = () -> s;
-        assertThat(callable.call()).isEqualTo(s);
-    }
-
-    @Test
-    public void shouldCurry() {
-        final CheckedFunction0<Object> f = () -> null;
-        final CheckedFunction0<Object> curried = f.curried();
-        assertThat(curried).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple() {
-        final CheckedFunction0<Object> f = () -> null;
-        final CheckedFunction1<Tuple0, Object> tupled = f.tupled();
-        assertThat(tupled).isNotNull();
-    }
-
-    @Test
-    public void shouldReverse() {
-        final CheckedFunction0<Object> f = () -> null;
-        assertThat(f.reversed()).isNotNull();
-    }
-
-    @Test
     public void shouldRecover() {
         final AtomicInteger integer = new AtomicInteger();
         CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
@@ -108,6 +127,60 @@ public class CheckedFunction0Test {
         assertThat(md5.getDigestLength()).isEqualTo(16);
         integer.incrementAndGet();
         assertThat(recover.apply()).isNull();
+    }
+
+    @Test
+    public void shouldRecoverNonNull() {
+        final AtomicInteger integer = new AtomicInteger();
+        CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+        Function0<MessageDigest> recover = digest.recover(throwable -> null);
+
+        MessageDigest md5 = recover.apply();
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+
+        integer.incrementAndGet();
+        Try<MessageDigest> unknown = Function0.liftTry(recover).apply();
+        assertThat(unknown).isNotNull();
+        assertThat(unknown.isFailure()).isTrue();
+        assertThat(unknown.getCause()).isNotNull().isInstanceOf(NullPointerException.class);
+        assertThat(unknown.getCause().getMessage()).isNotEmpty().isEqualToIgnoringCase("recover return null for class java.security.NoSuchAlgorithmException: Unknown MessageDigest not available");
+    }
+
+    @Test
+    public void shouldUncheckedWork() {
+        CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance("MD5");
+        Function0<MessageDigest> unchecked = digest.unchecked();
+        MessageDigest md5 = unchecked.apply();
+        assertThat(md5).isNotNull();
+        assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.getDigestLength()).isEqualTo(16);
+    }
+
+    @Test(expected = NoSuchAlgorithmException.class)
+    public void shouldThrowCheckedExceptionWhenUnchecked() {
+        CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance("Unknown");
+        Function0<MessageDigest> unchecked = digest.unchecked();
+        unchecked.apply(); // Look ma, we throw an undeclared checked exception!
+    }
+
+    @Test
+    public void shouldLiftTryPartialFunction() {
+        final AtomicInteger integer = new AtomicInteger();
+        CheckedFunction0<MessageDigest> digest = () -> MessageDigest.getInstance(integer.get() == 0 ? "MD5" : "Unknown");
+        Function0<Try<MessageDigest>> liftTry = CheckedFunction0.liftTry(digest);
+        Try<MessageDigest> md5 = liftTry.apply();
+        assertThat(md5.isSuccess()).isTrue();
+        assertThat(md5.get()).isNotNull();
+        assertThat(md5.get().getAlgorithm()).isEqualToIgnoringCase("MD5");
+        assertThat(md5.get().getDigestLength()).isEqualTo(16);
+
+        integer.incrementAndGet();
+        Try<MessageDigest> unknown = liftTry.apply();
+        assertThat(unknown.isFailure()).isTrue();
+        assertThat(unknown.getCause()).isNotNull();
+        assertThat(unknown.getCause().getMessage()).isEqualToIgnoringCase("Unknown MessageDigest not available");
     }
 
     private static final CheckedFunction0<Integer> recurrent1 = () -> 11;

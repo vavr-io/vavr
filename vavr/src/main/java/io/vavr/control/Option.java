@@ -20,6 +20,7 @@
 package io.vavr.control;
 
 import io.vavr.PartialFunction;
+import io.vavr.Tuple;
 import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
@@ -208,7 +209,7 @@ public interface Option<T> extends Value<T>, Serializable {
      */
     default <R> Option<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        return filter(partialFunction::isDefinedAt).map(partialFunction::apply);
+        return flatMap(partialFunction.lift()::apply);
     }
 
     /**
@@ -224,27 +225,11 @@ public interface Option<T> extends Value<T>, Serializable {
      *
      * @param action a given Runnable to be run
      * @return this {@code Option}
-     * @throws NullPointerException if the given {@code action} is null
      */
     default Option<T> onEmpty(Runnable action) {
         Objects.requireNonNull(action, "action is null");
         if (isEmpty()) {
             action.run();
-        }
-        return this;
-    }
-
-    /**
-     * Applies an action to this value if this is defined, otherwise nothing happens.
-     *
-     * @param action An action which can be applied to an optional value
-     * @return this {@code Option}
-     * @throws NullPointerException if the given {@code action} is null
-     */
-    default Option<T> onSuccess(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (isDefined()) {
-            action.accept(get());
         }
         return this;
     }
@@ -420,6 +405,21 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Applies an action to this value, if this option is defined, otherwise does nothing.
+     *
+     * @param action An action which can be applied to an optional value
+     * @return this {@code Option}
+     */
+    @Override
+    default Option<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (isDefined()) {
+            action.accept(get());
+        }
+        return this;
+    }
+
+    /**
      * Transforms this {@code Option}.
      *
      * @param f   A transformation
@@ -430,36 +430,6 @@ public interface Option<T> extends Value<T>, Serializable {
     default <U> U transform(Function<? super Option<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
-    }
-
-    /**
-     * Converts this {@code Try} to a {@link java.util.Optional}.
-     *
-     * @return {@code Optional.ofNullable(get())} if this is defined, otherwise {@code Optional.empty()}
-     */
-    default Optional<T> toOptional() {
-        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
-    }
-
-    /**
-     * Converts this {@code Option} to a {@link Try}.
-     *
-     * @return {@code Try.success(get())} if this is defined, otherwise {@code Try.failure(new NoSuchElementException())}
-     */
-    default Try<T> toTry() {
-        return isEmpty() ? Try.failure(new NoSuchElementException()) : Try.success(get());
-    }
-
-    /**
-     * Converts this {@code Option} to a {@link Try}.
-     *
-     * @param ifEmpty an exception supplier
-     * @return {@code Try.success(get())} if this is defined, otherwise {@code Try.failure(ifEmpty.get()}
-     * @throws NullPointerException if the given supplier {@code ifEmpty} is null
-     */
-    default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
-        Objects.requireNonNull(ifEmpty, "ifEmpty is null");
-        return isEmpty() ? Try.failure(ifEmpty.get()) : Try.success(get());
     }
 
     @Override

@@ -319,20 +319,20 @@ public class MatchTest {
     }
 
     /*
-     JDK 9 compiler errors:
+	     JDK 9 compiler errors:
 
-      [ERROR] incompatible types: inferred type does not conform to equality constraint(s)
-      [ERROR]     inferred: io.vavr.control.Option<? extends java.lang.Number>
-      [ERROR]     equality constraints(s): io.vavr.control.Option.Some<? extends java.lang.Number&java.lang.Comparable<? extends java.lang.Number&java.lang.Comparable<?>>>
+        [ERROR] incompatible types: inferred type does not conform to equality constraint(s)
+            inferred: io.vavr.control.Option.Some<java.lang.Number>
+            equality constraints(s): io.vavr.control.Option.Some<java.lang.Integer>
 
     @SuppressWarnings("UnnecessaryLocalVariable")
     @Test
     public void shouldDecomposeListWithNonEmptyTail() {
-        final List<Option<? extends Number>> numberOptionList = List.of(Option.some(1), Option.some(2.0));
+        final List<Option<Number>> numberOptionList = List.of(Option.some(1), Option.some(2.0));
         final String actual = Match(numberOptionList).of(
                 Case($Cons($Some($(1)), $Cons($Some($(2.0)), $())),  (x, xs) -> {
-                    final Some<Integer> head = x;
-                    final List.Cons<Option<? extends Number>> tail = xs;
+                    final Option<Number> head = x;
+                    final List<Option<Number>> tail = xs;
                     return head + "::" + tail;
                 })
         );
@@ -358,7 +358,7 @@ public class MatchTest {
         final Validation<String, Integer> valid = Validation.valid(1);
         final String actual = Match(valid).of(
                 Case($Valid($(1)), i -> "ok"),
-                Case($Invalid($()), errors -> errors.get(0))
+                Case($Invalid($()), error -> error)
         );
         assertThat(actual).isEqualTo("ok");
     }
@@ -368,11 +368,10 @@ public class MatchTest {
         final Validation<String, Integer> valid = Validation.invalid("ok");
         final String actual = Match(valid).of(
                 Case($Valid($()), i -> "error"),
-                Case($Invalid($(List.of("ok"))), errors -> errors.get(0))
+                Case($Invalid($("ok")), error -> error)
         );
         assertThat(actual).isEqualTo("ok");
     }
-
 
     // -- run
 

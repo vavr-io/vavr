@@ -367,6 +367,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    @GwtIncompatible
     public static TreeSet<Double> rangeBy(double from, double toExclusive, double step) {
         return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -471,6 +472,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    @GwtIncompatible
     public static TreeSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }

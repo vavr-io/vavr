@@ -20,9 +20,9 @@
 package io.vavr.control;
 
 import io.vavr.*;
+import io.vavr.collection.Seq;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
-import io.vavr.collection.Seq;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -34,55 +34,40 @@ import java.util.function.Supplier;
 
 /**
  * An implementation similar to scalaz's <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a> control.
+ *
  * <p>
  * The Validation type is different from a Monad type, it is an applicative
- * functor. Whereas a Monad will short circuit after the first errors, the
+ * functor. Whereas a Monad will short circuit after the first error, the
  * applicative functor will continue on, accumulating ALL errors. This is
  * especially helpful in cases such as validation, where you want to know
  * all the validation errors that have occurred, not just the first one.
- * <p>
- * <strong>Validation construction:</strong>
+ * </p>
  *
- * <pre>{@code
- * // = Valid(5)
- * Validation<String, Integer> valid = Validation.valid(5);
+ * <pre>
+ * <code>
+ * <b>Validation construction:</b>
  *
- * // = Invalid(List("error1", "error2"))
- * Validation<String, Integer> invalid = Validation.invalid("error1", "error2");
- * }</pre>
+ * <i>Valid:</i>
+ * Validation&lt;String,Integer&gt; valid = Validation.valid(5);
  *
- * <strong>Validation combination:</strong>
+ * <i>Invalid:</i>
+ * Validation&lt;List&lt;String&gt;,Integer&gt; invalid = Validation.invalid(List.of("error1","error2"));
  *
- * <pre>{@code
- * Validation<String, String> valid1 = Validation.valid("John");
- * Validation<String, Integer> valid2 = Validation.valid(5);
- * Validation<String, Option<String>> valid3 = Validation.valid(Option.of("123 Fake St."));
- * Function3<String, Integer, Option<String>, Person> f = ...;
+ * <b>Validation combination:</b>
  *
- * Validation<String, String> result = valid1.combine(valid2).ap((name,age) -> "Name: " + name + " Age: " + age);
- * Validation<String, Person> result2 = valid1.combine(valid2).combine(valid3).ap(f);
- * }</pre>
+ * Validation&lt;String,String&gt; valid1 = Validation.valid("John");
+ * Validation&lt;String,Integer&gt; valid2 = Validation.valid(5);
+ * Validation&lt;String,Option&lt;String&gt;&gt; valid3 = Validation.valid(Option.of("123 Fake St."));
+ * Function3&lt;String,Integer,Option&lt;String&gt;,Person&gt; f = ...;
  *
- * <strong>Another form of combining validations:</strong>
+ * Validation&lt;List&lt;String&gt;,String&gt; result = valid1.combine(valid2).ap((name,age) -&gt; "Name: "+name+" Age: "+age);
+ * Validation&lt;List&lt;String&gt;,Person&gt; result2 = valid1.combine(valid2).combine(valid3).ap(f);
  *
- * <pre>{@code
- * Validation<String, Person> result3 = Validation.combine(valid1, valid2, valid3).ap(f);
- * }</pre>
+ * <b>Another form of combining validations:</b>
  *
- * <hr>
- *
- * <strong>Background:</strong>
- *
- * Validation is an <em>Applicative</em> that satisfies the following laws (beside the Functor laws):
- *
- * <ul>
- * <li>identity: {@code validation.ap(lift(v -> v)) = validation}</li>
- * <li>homomorphism: {@code valid(v).ap(lift(f)) = valid(f.apply(v))}</li>
- * <li>interchange: {@code valid(v).ap(lift(f)) = lift(f).ap(lift(g -> g.apply(v)))}</li>
- * </ul>
- *
- * See also <a href="http://www.staff.city.ac.uk/~ross/papers/Applicative.pdf">Applicative programming with effects</a>
- * by Conor McBride and Ross Patterson (2008).
+ * Validation&lt;List&lt;String&gt;,Person&gt; result3 = Validation.combine(valid1, valid2, valid3).ap(f);
+ * </code>
+ * </pre>
  *
  * @param <E> value type in the case of invalid
  * @param <T> value type in the case of valid
@@ -106,65 +91,17 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Lifts a given function {@code f} to a {@code Validation}.
-     * <p>
-     * This method is syntactic sugar because {@link Validation#valid(Object)} does not accept lambdas.
-     *
-     * @param f   a lambda expression
-     * @param <E> type of the error
-     * @param <T> input type of the given function {@code f}
-     * @param <U> output type of the given function {@code f}
-     * @return a new {@code Valid} instance containing the given function {@code f}
-     */
-    @SuppressWarnings("unchecked")
-    static <E, T, U> Validation<E, Function<T, U>> lift(Function<? super T, ? extends U> f) {
-        return new Valid<>((Function<T, U>) f);
-    }
-
-    /**
      * Creates an {@link Invalid} that contains the given {@code error}.
      *
      * @param <E>   type of the given {@code error}
      * @param <T>   type of the value
-     * @param error a validation error that is encapsulated by the invalid state
-     * @return a new {@link Validation.Invalid} instance that contains the given {@code error}
-     * @throws NullPointerException if {@code error} is null
+     * @param error An error
+     * @return {@code Invalid(error)}
+     * @throws NullPointerException if error is null
      */
     static <E, T> Validation<E, T> invalid(E error) {
         Objects.requireNonNull(error, "error is null");
-        return new Invalid<>(List.of(error));
-    }
-
-    /**
-     * Creates an {@link Invalid} that contains the given {@code errors}.
-     *
-     * @param <E>    type of the given {@code errors}
-     * @param <T>    type of the value
-     * @param errors validation errors that are encapsulated by the invalid state. Empty errors are allowed (because of {@link #filter(Predicate)}) but not recommended.
-     * @return a new {@link Validation.Invalid} instance that contains the given {@code errors}
-     * @throws NullPointerException if {@code errors} is null
-     */
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    static <E, T> Validation<E, T> invalid(E... errors) {
-        Objects.requireNonNull(errors, "errors is null");
-        return invalidAll(List.of(errors));
-    }
-
-    /**
-     * Creates an {@link Invalid} that contains the given {@code errors}.
-     *
-     * @param <E>    component type of the given {@code errors}
-     * @param <T>    type of the value
-     * @param errors validation errors that are encapsulated by the invalid state. Empty errors are allowed (because of {@link #filter(Predicate)}) but not recommended.
-     * @return a new {@link Validation.Invalid} instance that contains the given {@code errors}
-     * @throws NullPointerException if {@code errors} is null
-     */
-    @SuppressWarnings("unchecked")
-    static <E, T> Validation<E, T> invalidAll(Iterable<? extends E> errors) {
-        Objects.requireNonNull(errors, "errors is null");
-        final Seq<E> errorSeq = (errors instanceof Seq) ? (Seq<E>) errors : List.ofAll(errors);
-        return new Invalid<>(errorSeq);
+        return new Invalid<>(error);
     }
 
     /**
@@ -184,8 +121,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * Creates a {@code Validation} of an {@code Try}.
      *
-     * @param t   A {@code Try}
-     * @param <T> type of the valid value
+     * @param t      A {@code Try}
+     * @param <T>    type of the valid value
      * @return A {@code Valid(t.get())} if t is a Success, otherwise {@code Invalid(t.getCause())}.
      * @throws NullPointerException if {@code t} is null
      */
@@ -193,6 +130,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         Objects.requireNonNull(t, "t is null");
         return t.isSuccess() ? valid(t.get()) : invalid(t.getCause());
     }
+
 
     /**
      * Reduces many {@code Validation} instances into a single {@code Validation} by transforming an
@@ -205,18 +143,18 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * or an invalid Validation containing an accumulated List of errors.
      * @throws NullPointerException if values is null
      */
-    static <E, T> Validation<E, Seq<T>> sequence(Iterable<? extends Validation<? extends E, ? extends T>> values) {
+    static <E, T> Validation<Seq<E>, Seq<T>> sequence(Iterable<? extends Validation<? extends Seq<? extends E>, ? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
         List<E> errors = List.empty();
         List<T> list = List.empty();
-        for (Validation<? extends E, ? extends T> value : values) {
+        for (Validation<? extends Seq<? extends E>, ? extends T> value : values) {
             if (value.isInvalid()) {
-                errors = errors.prependAll(value.getErrors().reverse());
+                errors = errors.prependAll(value.getError().reverse());
             } else if (errors.isEmpty()) {
                 list = list.prepend(value.get());
             }
         }
-        return errors.isEmpty() ? valid(list.reverse()) : invalidAll(errors.reverse());
+        return errors.isEmpty() ? valid(list.reverse()) : invalid(errors.reverse());
     }
 
     /**
@@ -232,7 +170,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return A {@code Validation} of a {@link Seq} of results.
      * @throws NullPointerException if values or f is null.
      */
-    static <E, T, U> Validation<E, Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Validation<? extends E, ? extends U>> mapper) {
+    static <E, T, U> Validation<Seq<E>, Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Validation<? extends Seq<? extends E>, ? extends U>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
@@ -254,7 +192,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Combines two {@code Validation}s into a {@link Builder2}.
+     * Combines two {@code Validation}s into a {@link Builder}.
      *
      * @param <E>         type of error
      * @param <T1>        type of first valid value
@@ -264,10 +202,10 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Builder&lt;E,T1,T2&gt;
      * @throws NullPointerException if validation1 or validation2 is null
      */
-    static <E, T1, T2> Builder2<E, T1, T2> combine(Validation<E, T1> validation1, Validation<E, T2> validation2) {
+    static <E, T1, T2> Builder<E, T1, T2> combine(Validation<E, T1> validation1, Validation<E, T2> validation2) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
-        return new Builder2<>(validation1, validation2);
+        return new Builder<>(validation1, validation2);
     }
 
     /**
@@ -436,25 +374,6 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Applies a given {@code Validation} that encapsulates a function to this {@code Validation}'s value or combines both errors.
-     *
-     * @param validation a function that transforms this value (on the 'sunny path')
-     * @param <U>        the new value type
-     * @return a new {@code Validation} that contains a transformed value or combined errors.
-     */
-    @SuppressWarnings("unchecked")
-    default <U> Validation<E, U> ap(Validation<E, ? extends Function<? super T, ? extends U>> validation) {
-        Objects.requireNonNull(validation, "validation is null");
-        if (isValid()) {
-            return validation.map(f -> f.apply(get()));
-        } else if (validation.isValid()) {
-            return (Validation<E, U>) this;
-        } else {
-            return invalidAll(getErrors().prependAll(validation.getErrors()));
-        }
-    }
-
-    /**
      * Check whether this is of type {@code Valid}
      *
      * @return true if is a Valid, false if is an Invalid
@@ -507,36 +426,36 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     T get();
 
     /**
-     * Gets the value if it is a Valid or an value calculated from the errors
+     * Gets the value if it is a Valid or an value calculated from the error.
      *
      * @param other a function which converts an error to an alternative value
      * @return the value, if the underlying Validation is a Valid, or else the alternative value
-     * provided by {@code other} by applying the errors.
+     * provided by {@code other} by applying the error.
      */
-    default T getOrElseGet(Function<? super Seq<? super E>, ? extends T> other) {
+    default T getOrElseGet(Function<? super E, ? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         if (isValid()) {
             return get();
         } else {
-            return other.apply(getErrors());
+            return other.apply(getError());
         }
     }
 
     /**
-     * Gets the errors of this Validation if is an Invalid or throws if this is a Valid
+     * Gets the error of this Validation if it is an {@code Invalid} or throws if this is a {@code Valid}.
      *
-     * @return The errors of this Invalid
-     * @throws RuntimeException if this is a Valid
+     * @return The error, if present
+     * @throws RuntimeException if this is a {@code Valid}
      */
-    Seq<E> getErrors();
+    E getError();
 
     /**
-     * Returns this as {@code Either}.
+     * Converts this Validation to an {@link Either}.
      *
-     * @return {@code Either.right(get())} if this is valid, otherwise {@code Either.left(getErrors())}.
+     * @return {@code Either.right(get())} if this is valid, otherwise {@code Either.left(getError())}.
      */
-    default Either<Seq<E>, T> toEither() {
-        return isValid() ? Either.right(get()) : Either.left(getErrors());
+    default Either<E, T> toEither() {
+        return isValid() ? Either.right(get()) : Either.left(getError());
     }
 
     @Override
@@ -549,8 +468,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     String toString();
 
     /**
-     * Performs the given action for the value contained in {@code Valid}, or do nothing
-     * if this is an Invalid.
+     * Performs the given action for the value contained in {@code Valid}, or does nothing
+     * if this is an {@code Invalid}.
      *
      * @param action the action to be performed on the contained value
      * @throws NullPointerException if action is null
@@ -564,82 +483,50 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
-     * Performs the action in {@code fInvalid} on {@code errors} if this is an {@code Invalid},
-     * or {@code fValid} on {@code value} if this is a {@code Valid}.
-     * Returns an object of type U.
-     *
+     * Transforms this {@code Validation} to a value of type {@code U}.
      * <p>
-     * <code>
-     * For example:<br>
-     * Validation&lt;List&lt;String&gt;,String&gt; valid = ...;<br>
-     * Integer i = valid.fold(List::length, String::length);
-     * </code>
-     * </p>
+     * Example:
+     * <pre>{@code
+     * Validation<List<String>, String> valid = ...;<br>
+     * int i = valid.fold(List::length, String::length);
+     * }</pre>
      *
-     * @param <U>      the fold result type
-     * @param fInvalid the invalid fold operation
-     * @param fValid   the valid fold operation
-     * @return an instance of type U
-     * @throws NullPointerException if fInvalid or fValid is null
+     * @param <U>       the fold result type
+     * @param ifInvalid an error mapper
+     * @param ifValid   an mapper for a valid value
+     * @return {@code ifValid.apply(get())} if this is valid, otherwise {@code ifInvalid.apply(getError())}.
+     * @throws NullPointerException if one of the given mappers {@code ifInvalid} or {@code ifValid} is null
      */
-    default <U> U fold(Function<? super Seq<? super E>, ? extends U> fInvalid, Function<? super T, ? extends U> fValid) {
-        Objects.requireNonNull(fInvalid, "fInvalid is null");
-        Objects.requireNonNull(fValid, "fValid is null");
-        if (isValid()) {
-            return fValid.apply(get());
-        } else {
-            return fInvalid.apply(getErrors());
-        }
+    default <U> U fold(Function<? super E, ? extends U> ifInvalid, Function<? super T, ? extends U> ifValid) {
+        Objects.requireNonNull(ifInvalid, "ifInvalid is null");
+        Objects.requireNonNull(ifValid, "ifValid is null");
+        return isValid() ? ifValid.apply(get()) : ifInvalid.apply(getError());
     }
 
     /**
-     * Flip the valid/invalid values for this Validation.
-     * <p>
-     * If this is a {@code Valid<E, T>}, {@code swap} returns an {@code Invalid<T, Seq<E>>}.
-     * <p>
-     * If this is an {@code Invalid<E, T>}, {@code swap} returns a {@code Valid<T, Seq<E>>}.
-     * <p>
-     * Please note that {@code validation.swap().swap()} isn't the identity {@code validation}.
+     * Flip the valid/invalid values for this Validation. If this is a Valid&lt;E,T&gt;, returns Invalid&lt;T,E&gt;.
+     * Or if this is an Invalid&lt;E,T&gt;, return a Valid&lt;T,E&gt;.
      *
-     * @return a flipped instance of {@code Validation}
+     * @return a flipped instance of Validation
      */
-    default Validation<T, Seq<E>> swap() {
-        if (isValid()) {
-            return invalid(get());
+    default Validation<T, E> swap() {
+        if (isInvalid()) {
+            final E error = this.getError();
+            return Validation.valid(error);
         } else {
-            return valid(getErrors());
+            final T value = this.get();
+            return Validation.invalid(value);
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     default <U> Validation<E, U> map(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        if (isValid()) {
-            return valid(f.apply(get()));
+        if (isInvalid()) {
+            return Validation.invalid(this.getError());
         } else {
-            return (Validation<E, U>) this;
-        }
-    }
-
-    /**
-     * Maps the errors if this {@code Validation} is an {@code Invalid}, otherwise does nothing.
-     * <p>
-     * <strong>Hint</strong>: if a transformation of errors is needed use {@code getErrors().map(f)} instead.
-     * They can be wrapped in an {@code Invalid} again using {@link #invalidAll(Iterable)}.
-     *
-     * @param <U> type of the errors resulting from the mapping
-     * @param f   a function that maps errors
-     * @return an instance of {@code Validation<U, T>}
-     * @throws NullPointerException if the given function {@code f} is null
-     */
-    @SuppressWarnings("unchecked")
-    default <U> Validation<U, T> mapErrors(Function<? super E, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        if (isValid()) {
-            return (Validation<U, T>) this;
-        } else {
-            return invalidAll(getErrors().map(f));
+            final T value = this.get();
+            return Validation.valid(f.apply(value));
         }
     }
 
@@ -657,123 +544,89 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Validation&lt;U,R&gt;
      * @throws NullPointerException if invalidMapper or validMapper is null
      */
-    default <E2, T2> Validation<E2, T2> bimap(
-            Function<? super E, ? extends E2> errorMapper,
-            Function<? super T, ? extends T2> valueMapper) {
+    default <E2, T2> Validation<E2, T2> bimap(Function<? super E, ? extends E2> errorMapper, Function<? super T, ? extends T2> valueMapper) {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        if (isValid()) {
-            return valid(valueMapper.apply(get()));
+        if (isInvalid()) {
+            final E error = this.getError();
+            return Validation.invalid(errorMapper.apply(error));
         } else {
-            return invalidAll(getErrors().map(errorMapper));
+            final T value = this.get();
+            return Validation.valid(valueMapper.apply(value));
         }
     }
 
     /**
-     * Combines two {@code Validation}s to form a {@link Builder2}, which can then be used to perform further
-     * combines, or apply a function to it in order to transform the {@link Builder2} into a {@code Validation}.
+     * Applies a function f to the error of this Validation if this is an Invalid. Otherwise does nothing
+     * if this is a Valid.
+     *
+     * @param <U> type of the error resulting from the mapping
+     * @param f   a function that maps the error in this Invalid
+     * @return an instance of Validation&lt;U,T&gt;
+     * @throws NullPointerException if mapping operation f is null
+     */
+    default <U> Validation<U, T> mapError(Function<? super E, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        if (isInvalid()) {
+            final E error = this.getError();
+            return Validation.invalid(f.apply(error));
+        } else {
+            return Validation.valid(this.get());
+        }
+    }
+
+    default <U> Validation<Seq<E>, U> ap(Validation<Seq<E>, ? extends Function<? super T, ? extends U>> validation) {
+        Objects.requireNonNull(validation, "validation is null");
+        if (isValid()) {
+            if (validation.isValid()) {
+                final Function<? super T, ? extends U> f = validation.get();
+                final U u = f.apply(this.get());
+                return valid(u);
+            } else {
+                final Seq<E> errors = validation.getError();
+                return invalid(errors);
+            }
+        } else {
+            if (validation.isValid()) {
+                final E error = this.getError();
+                return invalid(List.of(error));
+            } else {
+                final Seq<E> errors = validation.getError();
+                final E error = this.getError();
+                return invalid(errors.append(error));
+            }
+        }
+    }
+
+    /**
+     * Combines two {@code Validation}s to form a {@link Builder}, which can then be used to perform further
+     * combines, or apply a function to it in order to transform the {@link Builder} into a {@code Validation}.
      *
      * @param <U>        type of the value contained in validation
      * @param validation the validation object to combine this with
      * @return an instance of Builder
      */
-    default <U> Builder2<E, T, U> combine(Validation<E, U> validation) {
-        return new Builder2<>(this, validation);
+    default <U> Builder<E, T, U> combine(Validation<E, U> validation) {
+        return new Builder<>(this, validation);
     }
 
     // -- Implementation of Value
 
-    /**
-     * Tests the value using the given {@code predicate} if this is valid.
-     * Returns this instance, if this is valid and the value makes it through the filter.
-     * <p>
-     * If a value does not make it through the filter, an {@link Invalid} instance is returned, having an empty error list.
-     *
-     * <pre>{@code
-     * // = Valid(1)
-     * Validation.valid(1).filter(i -> i == 1)
-     *
-     * // = Invalid(List())
-     * Validation.valid(1).filter(i -> i == 2)
-     *
-     * // = Invalid(List("err1", "err2"))
-     * Validation.invalid("err1", "err2").filter(o -> true)
-     * }</pre>
-     *
-     * @param predicate a filter function
-     * @return a {@code Validation} instance
-     */
-    default Validation<E, T> filter(Predicate<? super T> predicate) {
+    default Option<Validation<E, T>> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return isInvalid() || predicate.test(get()) ? this : invalid();
-    }
-
-    /**
-     * Applies a given function {@code f} to the <strong>error sequence</strong> of this {@code Validation}
-     * if this is an {@code Invalid}. Otherwise does nothing if this is a {@code Valid}.
-     *
-     * @param predicate a filtering function that tests errors
-     * @return an instance of {@code Validation<E, T>}
-     * @throws NullPointerException if the give {@code predicate} is null
-     */
-    @SuppressWarnings("unchecked")
-    default Validation<E, T> filterErrors(Predicate<? super E> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isValid()) {
-            return this;
-        } else {
-            return invalidAll(getErrors().filter(predicate));
-        }
+        return isInvalid() || predicate.test(get()) ? Option.some(this) : Option.none();
     }
 
     @SuppressWarnings("unchecked")
     default <U> Validation<E, U> flatMap(Function<? super T, ? extends Validation<E, ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isValid() ? (Validation<E, U>) mapper.apply(get()) : (Validation<E, U>) this;
+        return isInvalid() ? (Validation<E, U>) this : (Validation<E, U>) mapper.apply(get());
     }
 
-    /**
-     * FlatMaps the errors if this {@code Validation} is an {@code Invalid}, otherwise does nothing.
-     *
-     * @param <U> type of the errors resulting from the mapping
-     * @param f   a function that maps errors to sequences
-     * @return an instance of {@code Validation<U, T>}
-     * @throws NullPointerException if the given function {@code f} is null
-     */
-    @SuppressWarnings("unchecked")
-    default <U> Validation<U, T> flatMapErrors(Function<? super E, ? extends Iterable<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
-        if (isValid()) {
-            return (Validation<U, T>) this;
-        } else {
-            return invalidAll(getErrors().flatMap(f));
-        }
-    }
-
-    /**
-     * Consumes the valid value if this is a {@code Valid}, otherwise nothing happens.
-     *
-     * @param action The action that will be performed on the errors.
-     * @return this instance
-     * @throws NullPointerException if the given {@code action} is null
-     */
-    default Validation<E, T> onValid(Consumer<? super T> action) {
+    @Override
+    default Validation<E, T> peek(Consumer<? super T> action) {
         if (isValid()) {
             action.accept(get());
-        }
-        return this;
-    }
-
-    /**
-     * Consumes the errors if this is an {@code Invalid}, otherwise nothing happens.
-     *
-     * @param action The action that will be performed on the errors.
-     * @return this instance
-     * @throws NullPointerException if the given {@code action} is null
-     */
-    default Validation<E, T> onInvalid(Consumer<? super Seq<E>> action) {
-        if (isInvalid()) {
-            action.accept(getErrors());
         }
         return this;
     }
@@ -811,7 +664,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * A valid Validation
      *
-     * @param <E> type of the errors of this Validation
+     * @param <E> type of the error of this Validation
      * @param <T> type of the value of this Validation
      */
     final class Valid<E, T> implements Validation<E, T>, Serializable {
@@ -845,8 +698,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         }
 
         @Override
-        public Seq<E> getErrors() throws RuntimeException {
-            throw new NoSuchElementException("errors of 'valid' Validation");
+        public E getError() throws RuntimeException {
+            throw new NoSuchElementException("error of 'valid' Validation");
         }
 
         @Override
@@ -874,17 +727,22 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     /**
      * An invalid Validation
      *
-     * @param <E> type of the errors of this Validation
+     * @param <E> type of the error of this Validation
      * @param <T> type of the value of this Validation
      */
     final class Invalid<E, T> implements Validation<E, T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
-        private final Seq<E> errors;
+        private final E error;
 
-        private Invalid(Seq<E> errors) {
-            this.errors = errors;
+        /**
+         * Construct an {@code Invalid}
+         *
+         * @param error The value of this error
+         */
+        private Invalid(E error) {
+            this.error = error;
         }
 
         @Override
@@ -898,23 +756,23 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         }
 
         @Override
-        public T get() throws NoSuchElementException {
+        public T get() throws RuntimeException {
             throw new NoSuchElementException("get of 'invalid' Validation");
         }
 
         @Override
-        public Seq<E> getErrors() {
-            return errors;
+        public E getError() {
+            return error;
         }
 
         @Override
         public boolean equals(Object obj) {
-            return (obj == this) || (obj instanceof Invalid && Objects.equals(errors, ((Invalid<?, ?>) obj).errors));
+            return (obj == this) || (obj instanceof Invalid && Objects.equals(error, ((Invalid<?, ?>) obj).error));
         }
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(errors);
+            return Objects.hashCode(error);
         }
 
         @Override
@@ -924,23 +782,23 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
         @Override
         public String toString() {
-            return stringPrefix() + "(" + errors + ")";
+            return stringPrefix() + "(" + error + ")";
         }
 
     }
 
-    final class Builder2<E, T1, T2> {
+    final class Builder<E, T1, T2> {
 
-        private final Validation<E, T1> v1;
-        private final Validation<E, T2> v2;
+        private Validation<E, T1> v1;
+        private Validation<E, T2> v2;
 
-        private Builder2(Validation<E, T1> v1, Validation<E, T2> v2) {
+        private Builder(Validation<E, T1> v1, Validation<E, T2> v2) {
             this.v1 = v1;
             this.v2 = v2;
         }
 
-        public <R> Validation<E, R> ap(Function2<T1, T2, R> f) {
-            return v2.ap(v1.ap(valid(f.curried())));
+        public <R> Validation<Seq<E>, R> ap(Function2<T1, T2, R> f) {
+            return v2.ap(v1.ap(Validation.valid(f.curried())));
         }
 
         public <T3> Builder3<E, T1, T2, T3> combine(Validation<E, T3> v3) {
@@ -951,9 +809,9 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     final class Builder3<E, T1, T2, T3> {
 
-        private final Validation<E, T1> v1;
-        private final Validation<E, T2> v2;
-        private final Validation<E, T3> v3;
+        private Validation<E, T1> v1;
+        private Validation<E, T2> v2;
+        private Validation<E, T3> v3;
 
         private Builder3(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3) {
             this.v1 = v1;
@@ -961,8 +819,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v3 = v3;
         }
 
-        public <R> Validation<E, R> ap(Function3<T1, T2, T3, R> f) {
-            return v3.ap(v2.ap(v1.ap(valid(f.curried()))));
+        public <R> Validation<Seq<E>, R> ap(Function3<T1, T2, T3, R> f) {
+            return v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))));
         }
 
         public <T4> Builder4<E, T1, T2, T3, T4> combine(Validation<E, T4> v4) {
@@ -973,10 +831,10 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     final class Builder4<E, T1, T2, T3, T4> {
 
-        private final Validation<E, T1> v1;
-        private final Validation<E, T2> v2;
-        private final Validation<E, T3> v3;
-        private final Validation<E, T4> v4;
+        private Validation<E, T1> v1;
+        private Validation<E, T2> v2;
+        private Validation<E, T3> v3;
+        private Validation<E, T4> v4;
 
         private Builder4(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4) {
             this.v1 = v1;
@@ -985,8 +843,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v4 = v4;
         }
 
-        public <R> Validation<E, R> ap(Function4<T1, T2, T3, T4, R> f) {
-            return v4.ap(v3.ap(v2.ap(v1.ap(valid(f.curried())))));
+        public <R> Validation<Seq<E>, R> ap(Function4<T1, T2, T3, T4, R> f) {
+            return v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))));
         }
 
         public <T5> Builder5<E, T1, T2, T3, T4, T5> combine(Validation<E, T5> v5) {
@@ -997,11 +855,11 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     final class Builder5<E, T1, T2, T3, T4, T5> {
 
-        private final Validation<E, T1> v1;
-        private final Validation<E, T2> v2;
-        private final Validation<E, T3> v3;
-        private final Validation<E, T4> v4;
-        private final Validation<E, T5> v5;
+        private Validation<E, T1> v1;
+        private Validation<E, T2> v2;
+        private Validation<E, T3> v3;
+        private Validation<E, T4> v4;
+        private Validation<E, T5> v5;
 
         private Builder5(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5) {
             this.v1 = v1;
@@ -1011,8 +869,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v5 = v5;
         }
 
-        public <R> Validation<E, R> ap(Function5<T1, T2, T3, T4, T5, R> f) {
-            return v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(valid(f.curried()))))));
+        public <R> Validation<Seq<E>, R> ap(Function5<T1, T2, T3, T4, T5, R> f) {
+            return v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))));
         }
 
         public <T6> Builder6<E, T1, T2, T3, T4, T5, T6> combine(Validation<E, T6> v6) {
@@ -1023,12 +881,12 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     final class Builder6<E, T1, T2, T3, T4, T5, T6> {
 
-        private final Validation<E, T1> v1;
-        private final Validation<E, T2> v2;
-        private final Validation<E, T3> v3;
-        private final Validation<E, T4> v4;
-        private final Validation<E, T5> v5;
-        private final Validation<E, T6> v6;
+        private Validation<E, T1> v1;
+        private Validation<E, T2> v2;
+        private Validation<E, T3> v3;
+        private Validation<E, T4> v4;
+        private Validation<E, T5> v5;
+        private Validation<E, T6> v6;
 
         private Builder6(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5, Validation<E, T6> v6) {
             this.v1 = v1;
@@ -1039,8 +897,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v6 = v6;
         }
 
-        public <R> Validation<E, R> ap(Function6<T1, T2, T3, T4, T5, T6, R> f) {
-            return v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(valid(f.curried())))))));
+        public <R> Validation<Seq<E>, R> ap(Function6<T1, T2, T3, T4, T5, T6, R> f) {
+            return v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))));
         }
 
         public <T7> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(Validation<E, T7> v7) {
@@ -1051,13 +909,13 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     final class Builder7<E, T1, T2, T3, T4, T5, T6, T7> {
 
-        private final Validation<E, T1> v1;
-        private final Validation<E, T2> v2;
-        private final Validation<E, T3> v3;
-        private final Validation<E, T4> v4;
-        private final Validation<E, T5> v5;
-        private final Validation<E, T6> v6;
-        private final Validation<E, T7> v7;
+        private Validation<E, T1> v1;
+        private Validation<E, T2> v2;
+        private Validation<E, T3> v3;
+        private Validation<E, T4> v4;
+        private Validation<E, T5> v5;
+        private Validation<E, T6> v6;
+        private Validation<E, T7> v7;
 
         private Builder7(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5, Validation<E, T6> v6, Validation<E, T7> v7) {
             this.v1 = v1;
@@ -1069,8 +927,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v7 = v7;
         }
 
-        public <R> Validation<E, R> ap(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
-            return v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(valid(f.curried()))))))));
+        public <R> Validation<Seq<E>, R> ap(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
+            return v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))))));
         }
 
         public <T8> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(Validation<E, T8> v8) {
@@ -1081,14 +939,14 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     final class Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> {
 
-        private final Validation<E, T1> v1;
-        private final Validation<E, T2> v2;
-        private final Validation<E, T3> v3;
-        private final Validation<E, T4> v4;
-        private final Validation<E, T5> v5;
-        private final Validation<E, T6> v6;
-        private final Validation<E, T7> v7;
-        private final Validation<E, T8> v8;
+        private Validation<E, T1> v1;
+        private Validation<E, T2> v2;
+        private Validation<E, T3> v3;
+        private Validation<E, T4> v4;
+        private Validation<E, T5> v5;
+        private Validation<E, T6> v6;
+        private Validation<E, T7> v7;
+        private Validation<E, T8> v8;
 
         private Builder8(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5, Validation<E, T6> v6, Validation<E, T7> v7, Validation<E, T8> v8) {
             this.v1 = v1;
@@ -1101,8 +959,8 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v8 = v8;
         }
 
-        public <R> Validation<E, R> ap(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
-            return v8.ap(v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(valid(f.curried())))))))));
+        public <R> Validation<Seq<E>, R> ap(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+            return v8.ap(v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))))));
         }
     }
 }

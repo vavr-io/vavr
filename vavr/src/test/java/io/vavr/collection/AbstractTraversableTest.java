@@ -23,6 +23,7 @@ import io.vavr.*;
 import io.vavr.control.Option;
 import org.junit.Test;
 
+import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -31,6 +32,8 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static io.vavr.API.*;
+import static io.vavr.OutputTester.*;
+import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingInt;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -1541,34 +1544,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     public void shouldPartitionIntsInOddAndEvenHavingOnlyEvenNumbers() {
         assertThat(of(2, 4).partition(i -> i % 2 != 0)).isEqualTo(Tuple.of(empty(), of(2, 4)));
     }
-    
-    // -- peek
-
-    @Test
-    public void shouldPeekNil() {
-        assertThat(empty().peek(t -> {})).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldPeekNonNilPerformingNoAction() {
-        assertThat(of(1).peek(t -> {})).isEqualTo(of(1));
-    }
-
-    @Test
-    public void shouldPeekSingleValuePerformingAnAction() {
-        final int[] effect = { 0 };
-        final Value<Integer> actual = of(1).peek(i -> effect[0] = i);
-        assertThat(actual).isEqualTo(of(1));
-        assertThat(effect[0]).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldPeekNonNilPerformingAnAction() {
-        final int[] effect = { 0 };
-        final Value<Integer> actual = of(1, 2, 3).peek(i -> effect[0] = i);
-        assertThat(actual).isEqualTo(of(1, 2, 3)); // traverses all elements in the lazy case
-        assertThat(effect[0]).isEqualTo(getPeekNonNilPerformingAnAction());
-    }
 
     // -- product
 
@@ -2082,6 +2057,68 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.IMMUTABLE)).isTrue();
     }
 
+    // -- stderr
+
+    @Test
+    public void shouldWriteToStderr() {
+        assertThat(captureErrOut(()->of(1, 2, 3).stderr())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandleStderrIOException() {
+        withFailingErrOut(()->of(0).stderr());
+    }
+
+    // -- stdout
+
+    @Test
+    public void shouldWriteToStdout() {
+        assertThat(captureStdOut(()->of(1, 2, 3).stdout())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandleStdoutIOException() {
+        withFailingStdOut(()->of(0).stdout());
+    }
+
+    // -- PrintStream
+
+    @Test
+    public void shouldWriteToPrintStream() {
+        final ByteArrayOutputStream baos = new ByteArrayOutputStream(1024);
+        final PrintStream out = new PrintStream(baos);
+        of(1, 2, 3).out(out);
+        assertThat(baos.toString()).isEqualTo(of(1, 2, 3).mkString("", lineSeparator(), lineSeparator()));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandlePrintStreamIOException() {
+        try (PrintStream failingPrintStream = failingPrintStream()) {
+            of(0).out(failingPrintStream);
+        }
+    }
+
+    // -- PrintWriter
+
+    @Test
+    public void shouldWriteToPrintWriter() {
+        final StringWriter sw = new StringWriter();
+        final PrintWriter out = new PrintWriter(sw);
+        of(1, 2, 3).out(out);
+        assertThat(sw.toString()).isEqualTo(of(1, 2, 3).mkString("", lineSeparator(), lineSeparator()));
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandlePrintWriterIOException() {
+        try (PrintWriter failingPrintWriter = failingPrintWriter()) {
+            of(0).out(failingPrintWriter);
+        }
+    }
+
     // -- sum
 
     @Test
@@ -2333,8 +2370,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldUnzipNonNil() {
-        final Tuple2<?, ?> actual = of(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
-        final Tuple2<?, ?> expected = Tuple.of(of(0, 1), of('a', 'b'));
+        final Tuple actual = of(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
+        final Tuple expected = Tuple.of(of(0, 1), of('a', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2345,8 +2382,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldUnzip3NonNil() {
-        final Tuple3<?, ?, ?> actual = of(0, 1).unzip3(i -> Tuple.of(i, (char) ((short) 'a' + i), (char) ((short) 'a' + i + 1)));
-        final Tuple3<?, ?, ?> expected = Tuple.of(of(0, 1), of('a', 'b'), of('b', 'c'));
+        final Tuple actual = of(0, 1).unzip3(i -> Tuple.of(i, (char) ((short) 'a' + i), (char) ((short) 'a' + i + 1)));
+        final Tuple expected = Tuple.of(of(0, 1), of('a', 'b'), of('b', 'c'));
         assertThat(actual).isEqualTo(expected);
     }
 

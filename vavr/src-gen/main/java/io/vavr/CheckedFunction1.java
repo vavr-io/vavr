@@ -23,6 +23,10 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static io.vavr.CheckedFunction1Module.sneakyThrow;
+
+import io.vavr.control.Option;
+import io.vavr.control.Try;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,6 +47,19 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
      */
     long serialVersionUID = 1L;
+
+    /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param <T1> generic parameter type 1 of the resulting function
+     * @param <R> the result type
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <T1, R> CheckedFunction1<T1, R> constant(R value) {
+        return (t1) -> value;
+    }
 
     /**
      * Creates a {@code CheckedFunction1} based on
@@ -83,6 +100,33 @@ public interface CheckedFunction1<T1, R> extends Serializable {
     }
 
     /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
+     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     */
+    @SuppressWarnings("RedundantTypeArguments")
+    static <T1, R> Function1<T1, Option<R>> lift(CheckedFunction1<? super T1, ? extends R> partialFunction) {
+        return t1 -> Try.<R>of(() -> partialFunction.apply(t1)).toOption();
+    }
+
+    /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     */
+    static <T1, R> Function1<T1, Try<R>> liftTry(CheckedFunction1<? super T1, ? extends R> partialFunction) {
+        return t1 -> Try.of(() -> partialFunction.apply(t1));
+    }
+
+    /**
      * Narrows the given {@code CheckedFunction1<? super T1, ? extends R>} to {@code CheckedFunction1<T1, R>}
      *
      * @param f A {@code CheckedFunction1}
@@ -115,6 +159,15 @@ public interface CheckedFunction1<T1, R> extends Serializable {
     R apply(T1 t1) throws Exception;
 
     /**
+     * Returns the number of function arguments.
+     * @return an int value >= 0
+     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
+     */
+    default int arity() {
+        return 1;
+    }
+
+    /**
      * Returns a curried version of this function.
      *
      * @return a curried function equivalent to this.
@@ -142,14 +195,13 @@ public interface CheckedFunction1<T1, R> extends Serializable {
     }
 
     /**
-     * Checks if this function is memoizing (= caching) computed values.
+     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     * <p>
+     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
      *
-     * @return true, if this function is memoizing, false otherwise
+     * @return a memoizing function equivalent to this.
      */
-    default boolean isMemoized() {
-        return this instanceof Memoized;
-    }
-
     default CheckedFunction1<T1, R> memoized() {
         if (isMemoized()) {
             return this;
@@ -169,7 +221,14 @@ public interface CheckedFunction1<T1, R> extends Serializable {
         }
     }
 
-    interface Memoized { /* zero abstract method (ZAM) interface */ }
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
 
     /**
      * Return a composed function that first applies this CheckedFunction1 to the given arguments and in case of throwable
@@ -188,6 +247,21 @@ public interface CheckedFunction1<T1, R> extends Serializable {
                 final Function<? super T1, ? extends R> func = recover.apply(throwable);
                 Objects.requireNonNull(func, () -> "recover return null for " + throwable.getClass() + ": " + throwable.getMessage());
                 return func.apply(t1);
+            }
+        };
+    }
+
+    /**
+     * Returns an unchecked function that will <em>sneaky throw</em> if an exceptions occurs when applying the function.
+     *
+     * @return a new Function1 that throws a {@code Throwable}.
+     */
+    default Function1<T1, R> unchecked() {
+        return (t1) -> {
+            try {
+                return apply(t1);
+            } catch(Throwable t) {
+                return sneakyThrow(t);
             }
         };
     }
@@ -218,5 +292,14 @@ public interface CheckedFunction1<T1, R> extends Serializable {
     default <V> CheckedFunction1<V, R> compose(CheckedFunction1<? super V, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
+    }
+}
+
+interface CheckedFunction1Module {
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
     }
 }

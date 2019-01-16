@@ -30,7 +30,7 @@ import org.junit.Test;
 
 public class PropertyCheck3Test {
 
-    private static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
+    static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
 
     @Test
     public void shouldApplyForAllOfArity3() {
@@ -50,7 +50,7 @@ public class PropertyCheck3Test {
     public void shouldCheckTrueProperty3() {
         final Property.ForAll3<Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction3<Object, Object, Object, Boolean> predicate = (o1, o2, o3) -> true;
-        final CheckResult<?> result = forAll.suchThat(predicate).check();
+        final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isFalse();
     }
@@ -59,7 +59,7 @@ public class PropertyCheck3Test {
     public void shouldCheckFalseProperty3() {
         final Property.ForAll3<Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction3<Object, Object, Object, Boolean> predicate = (o1, o2, o3) -> false;
-        final CheckResult<?> result = forAll.suchThat(predicate).check();
+        final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isFalsified()).isTrue();
     }
 
@@ -67,7 +67,7 @@ public class PropertyCheck3Test {
     public void shouldCheckErroneousProperty3() {
         final Property.ForAll3<Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction3<Object, Object, Object, Boolean> predicate = (o1, o2, o3) -> { throw new RuntimeException("yay! (this is a negative test)"); };
-        final CheckResult<?> result = forAll.suchThat(predicate).check();
+        final CheckResult result = forAll.suchThat(predicate).check();
         assertThat(result.isErroneous()).isTrue();
     }
 
@@ -76,7 +76,7 @@ public class PropertyCheck3Test {
         final Property.ForAll3<Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction3<Object, Object, Object, Boolean> p1 = (o1, o2, o3) -> true;
         final CheckedFunction3<Object, Object, Object, Boolean> p2 = (o1, o2, o3) -> true;
-        final CheckResult<?> result = forAll.suchThat(p1).implies(p2).check();
+        final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isFalse();
     }
@@ -86,7 +86,7 @@ public class PropertyCheck3Test {
         final Property.ForAll3<Object, Object, Object> forAll = Property.def("test").forAll(OBJECTS, OBJECTS, OBJECTS);
         final CheckedFunction3<Object, Object, Object, Boolean> p1 = (o1, o2, o3) -> false;
         final CheckedFunction3<Object, Object, Object, Boolean> p2 = (o1, o2, o3) -> true;
-        final CheckResult<?> result = forAll.suchThat(p1).implies(p2).check();
+        final CheckResult result = forAll.suchThat(p1).implies(p2).check();
         assertThat(result.isSatisfied()).isTrue();
         assertThat(result.isExhausted()).isTrue();
     }
@@ -102,7 +102,7 @@ public class PropertyCheck3Test {
     @Test
     public void shouldReturnErroneousProperty3CheckResultIfGenFails() {
         final Arbitrary<Object> failingGen = Gen.fail("yay! (this is a negative test)").arbitrary();
-        final CheckResult<?> result = Property.def("test")
+        final CheckResult result = Property.def("test")
             .forAll(failingGen, OBJECTS, OBJECTS)
             .suchThat((o1, o2, o3) -> true)
             .check();
@@ -112,7 +112,7 @@ public class PropertyCheck3Test {
     @Test
     public void shouldReturnErroneousProperty3CheckResultIfArbitraryFails() {
         final Arbitrary<Object> failingArbitrary = size -> { throw new RuntimeException("yay! (this is a negative test)"); };
-        final CheckResult<?> result = Property.def("test")
+        final CheckResult result = Property.def("test")
             .forAll(failingArbitrary, OBJECTS, OBJECTS)
             .suchThat((o1, o2, o3) -> true)
             .check();

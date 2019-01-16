@@ -39,6 +39,7 @@ import java.util.Comparator;
 import java.util.concurrent.Executors;
 import org.junit.Test;
 
+@SuppressWarnings("deprecation")
 public class APITest {
 
     @Test
@@ -182,6 +183,51 @@ public class APITest {
     @Test
     public void shouldCheckedFunction8ReturnNotNull() {
         assertThat(CheckedFunction((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isNotNull();
+    }
+
+    @Test
+    public void shouldUnchecked0ReturnNonCheckedFunction() {
+        assertThat(unchecked(() -> null)).isInstanceOf(Function0.class);
+    }
+
+    @Test
+    public void shouldUnchecked1ReturnNonCheckedFunction() {
+        assertThat(unchecked((v1) -> null)).isInstanceOf(Function1.class);
+    }
+
+    @Test
+    public void shouldUnchecked2ReturnNonCheckedFunction() {
+        assertThat(unchecked((v1, v2) -> null)).isInstanceOf(Function2.class);
+    }
+
+    @Test
+    public void shouldUnchecked3ReturnNonCheckedFunction() {
+        assertThat(unchecked((v1, v2, v3) -> null)).isInstanceOf(Function3.class);
+    }
+
+    @Test
+    public void shouldUnchecked4ReturnNonCheckedFunction() {
+        assertThat(unchecked((v1, v2, v3, v4) -> null)).isInstanceOf(Function4.class);
+    }
+
+    @Test
+    public void shouldUnchecked5ReturnNonCheckedFunction() {
+        assertThat(unchecked((v1, v2, v3, v4, v5) -> null)).isInstanceOf(Function5.class);
+    }
+
+    @Test
+    public void shouldUnchecked6ReturnNonCheckedFunction() {
+        assertThat(unchecked((v1, v2, v3, v4, v5, v6) -> null)).isInstanceOf(Function6.class);
+    }
+
+    @Test
+    public void shouldUnchecked7ReturnNonCheckedFunction() {
+        assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7) -> null)).isInstanceOf(Function7.class);
+    }
+
+    @Test
+    public void shouldUnchecked8ReturnNonCheckedFunction() {
+        assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isInstanceOf(Function8.class);
     }
 
     @Test
@@ -539,6 +585,11 @@ public class APITest {
     }
 
     @Test
+    public void shouldLinkedMapFromTuplesReturnNotNull() {
+        assertThat(LinkedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+    }
+
+    @Test
     public void shouldLinkedMapFromPairsReturnNotNull() {
         assertThat(LinkedMap(1, '1', 2, '2', 3, '3')).isNotNull();
     }
@@ -656,6 +707,11 @@ public class APITest {
     @Test
     public void shouldMapFromSingleReturnNotNull() {
         assertThat(Map(1, '1')).isNotNull();
+    }
+
+    @Test
+    public void shouldMapFromTuplesReturnNotNull() {
+        assertThat(Map(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
     }
 
     @Test
@@ -779,6 +835,11 @@ public class APITest {
     }
 
     @Test
+    public void shouldSortedMapFromTuplesReturnNotNull() {
+        assertThat(SortedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+    }
+
+    @Test
     public void shouldSortedMapFromPairsReturnNotNull() {
         assertThat(SortedMap(1, '1', 2, '2', 3, '3')).isNotNull();
     }
@@ -896,6 +957,11 @@ public class APITest {
     @Test
     public void shouldSortedMapFromSingleAndComparatorReturnNotNull() {
         assertThat(SortedMap(Integer::compareTo, 1, '1')).isNotNull();
+    }
+
+    @Test
+    public void shouldSortedMapFromTuplesAndComparatorReturnNotNull() {
+        assertThat(SortedMap((Comparator<Integer>)Integer::compareTo, Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
     }
 
     // -- run
@@ -1336,22 +1402,6 @@ public class APITest {
     }
 
     // -- Match patterns
-
-    @Test
-    public void shouldPartialMatchAsSome() {
-        final Option<String> actual = Match(1).option(
-                Case($(1), "ok")
-        );
-        assertThat(actual).isEqualTo(Option.some("ok"));
-    }
-
-    @Test
-    public void shouldPartialMatchAsNone() {
-        final Option<String> actual = Match(2).option(
-                Case($(1), "ok")
-        );
-        assertThat(actual).isEqualTo(Option.none());
-    }
 
     static class ClzMatch {}
     static class ClzMatch1 extends ClzMatch {}

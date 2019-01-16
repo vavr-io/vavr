@@ -22,7 +22,6 @@ package io.vavr.collection;
 import io.vavr.Serializables;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import io.vavr.Tuple3;
 import io.vavr.control.Option;
 import org.assertj.core.api.*;
 import org.junit.Test;
@@ -1686,6 +1685,34 @@ public class CharSeqTest {
         assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'c'), 1)).isTrue();
         assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'c', 'd'), 1)).isFalse();
         assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'd'), 1)).isFalse();
+    }
+
+    // -- stderr
+
+    @Test
+    public void shouldWriteToStderr() {
+        assertThat(captureErrOut(()->CharSeq.of('1', '2', '3').stderr())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandleStderrIOException() {
+        withFailingErrOut(()->CharSeq.of('0').stderr());
+    }
+
+    // -- stdout
+
+    @Test
+    public void shouldWriteToStdout() {
+        assertThat(captureStdOut(()->CharSeq.of('1', '2', '3').stdout())).isEqualTo("1\n" +
+                "2\n" +
+                "3\n");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void shouldHandleStdoutIOException() {
+        withFailingStdOut(()->CharSeq.of('0').stdout());
     }
 
     // -- sum
@@ -3422,8 +3449,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldUnzipNonNil() {
-        final Tuple2<?, ?> actual = CharSeq.of('0', '1').unzip(i -> Tuple.of(i, i == '0' ? 'a' : 'b'));
-        final Tuple2<?, ?> expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'));
+        final Tuple actual = CharSeq.of('0', '1').unzip(i -> Tuple.of(i, i == '0' ? 'a' : 'b'));
+        final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -3434,8 +3461,8 @@ public class CharSeqTest {
 
     @Test
     public void shouldUnzip3NonNil() {
-        final Tuple3<?, ?, ?> actual = CharSeq.of('0', '1').unzip3(i -> Tuple.of(i, i == '0' ? 'a' : 'b', i == '0' ? 'b' : 'a'));
-        final Tuple3<?, ?, ?> expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'), Vector.of('b', 'a'));
+        final Tuple actual = CharSeq.of('0', '1').unzip3(i -> Tuple.of(i, i == '0' ? 'a' : 'b', i == '0' ? 'b' : 'a'));
+        final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'), Vector.of('b', 'a'));
         assertThat(actual).isEqualTo(expected);
     }
 

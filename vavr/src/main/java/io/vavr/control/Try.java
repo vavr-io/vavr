@@ -28,22 +28,31 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static io.vavr.API.Match;
+import static io.vavr.control.TryModule.isFatal;
+import static io.vavr.control.TryModule.sneakyThrow;
+
 /**
  * The Try control gives us the ability write safe code without focusing on try-catch blocks in the presence of exceptions.
  * <p>
  * The following exceptions are considered to be fatal/non-recoverable:
  * <ul>
+ * <li>{@linkplain InterruptedException}</li>
  * <li>{@linkplain LinkageError}</li>
  * <li>{@linkplain ThreadDeath}</li>
  * <li>{@linkplain VirtualMachineError} (i.e. {@linkplain OutOfMemoryError} or {@linkplain StackOverflowError})</li>
  * </ul>
+ * <p>
+ * <strong>Important note:</strong> Try may re-throw (undeclared) exceptions, e.g. on {@code get()}. From within a
+ * dynamic proxy {@link java.lang.reflect.InvocationHandler} this will lead to an
+ * {@link java.lang.reflect.UndeclaredThrowableException}. For more information, please read
+ * <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/proxy.html">Dynamic Proxy Classes</a>.
  *
  * @param <T> Value type in the case of success.
  * @author Daniel Dietrich
@@ -59,16 +68,16 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T>      Component type
      * @return {@code Success(supplier.apply())} if no exception occurs, otherwise {@code Failure(throwable)} if an
      * exception occurs calling {@code supplier.apply()}.
-     * @throws Error if the cause of the {@link Failure} is fatal, i.e. non-recoverable
      */
     static <T> Try<T> of(CheckedFunction0<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         try {
-            return success(supplier.apply());
+            return new Success<>(supplier.apply());
         } catch (Throwable t) {
-            return failure(t);
+            return new Failure<>(t);
         }
     }
+
 
     /**
      * Creates a Try of a Supplier.
@@ -77,7 +86,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T>      Component type
      * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(throwable)} if an
      * exception occurs calling {@code supplier.get()}.
-     * @throws Error if the cause of the {@link Failure} is fatal, i.e. non-recoverable
      */
     static <T> Try<T> ofSupplier(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
@@ -91,7 +99,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T>      Component type
      * @return {@code Success(callable.call())} if no exception occurs, otherwise {@code Failure(throwable)} if an
      * exception occurs calling {@code callable.call()}.
-     * @throws Error if the cause of the {@link Failure} is fatal, i.e. non-recoverable
      */
     static <T> Try<T> ofCallable(Callable<? extends T> callable) {
         Objects.requireNonNull(callable, "callable is null");
@@ -104,15 +111,14 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param runnable A checked runnable
      * @return {@code Success(null)} if no exception occurs, otherwise {@code Failure(throwable)} if an exception occurs
      * calling {@code runnable.run()}.
-     * @throws Error if the cause of the {@link Failure} is fatal, i.e. non-recoverable
      */
     static Try<Void> run(CheckedRunnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
         try {
             runnable.run();
-            return success(null); // null represents the absence of an value, i.e. Void
+            return new Success<>(null); // null represents the absence of an value, i.e. Void
         } catch (Throwable t) {
-            return failure(t);
+            return new Failure<>(t);
         }
     }
 
@@ -122,7 +128,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param runnable A runnable
      * @return {@code Success(null)} if no exception occurs, otherwise {@code Failure(throwable)} if an exception occurs
      * calling {@code runnable.run()}.
-     * @throws Error if the cause of the {@link Failure} is fatal, i.e. non-recoverable
      */
     static Try<Void> runRunnable(Runnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
@@ -186,7 +191,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param exception An exception.
      * @param <T>       Component type of the {@code Try}.
      * @return A new {@code Failure}.
-     * @throws Error if the given {@code exception} is fatal, i.e. non-recoverable
      */
     static <T> Try<T> failure(Throwable exception) {
         return new Failure<>(exception);
@@ -213,7 +217,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return this {@code Try} if this is a {@code Failure} or the consumer succeeded, otherwise the
      * {@code Failure} of the consumption.
      * @throws NullPointerException if {@code consumer} is null
-     * @throws Error if the given {@code consumer} throws a fatal error
      */
     default Try<T> andThen(Consumer<? super T> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
@@ -237,7 +240,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return this {@code Try} if this is a {@code Failure} or the consumer succeeded, otherwise the
      * {@code Failure} of the consumption.
      * @throws NullPointerException if {@code consumer} is null
-     * @throws Error if the given {@code consumer} throws a fatal error
      */
     default Try<T> andThenTry(CheckedConsumer<? super T> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
@@ -248,7 +250,7 @@ public interface Try<T> extends Value<T>, Serializable {
                 consumer.accept(get());
                 return this;
             } catch (Throwable t) {
-                return failure(t);
+                return new Failure<>(t);
             }
         }
     }
@@ -260,7 +262,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return this {@code Try} if this is a {@code Failure} or the runnable succeeded, otherwise the
      * {@code Failure} of the run.
      * @throws NullPointerException if {@code runnable} is null
-     * @throws Error if the given {@code runnable} throws a fatal error
      */
     default Try<T> andThen(Runnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
@@ -298,7 +299,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return this {@code Try} if this is a {@code Failure} or the runnable succeeded, otherwise the
      * {@code Failure} of the run.
      * @throws NullPointerException if {@code runnable} is null
-     * @throws Error if the given {@code runnable} throws a fatal error
      */
     default Try<T> andThenTry(CheckedRunnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
@@ -309,7 +309,7 @@ public interface Try<T> extends Value<T>, Serializable {
                 runnable.run();
                 return this;
             } catch (Throwable t) {
-                return failure(t);
+                return new Failure<>(t);
             }
         }
     }
@@ -349,7 +349,7 @@ public interface Try<T> extends Value<T>, Serializable {
         if (isFailure()) {
             return new Success<>(getCause());
         } else {
-            return failure(new NoSuchElementException("Success.failed()"));
+            return new Failure<>(new NoSuchElementException("Success.failed()"));
         }
     }
 
@@ -406,7 +406,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param throwableSupplier A supplier of a throwable
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is null
-     * @throws Error if the given {@code predicate} throws a fatal error or the {@code throwableSupplier} returns a fatal error
      */
     default Try<T> filterTry(CheckedPredicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -419,10 +418,10 @@ public interface Try<T> extends Value<T>, Serializable {
                 if (predicate.test(get())) {
                     return this;
                 } else {
-                    return failure(throwableSupplier.get());
+                    return new Failure<>(throwableSupplier.get());
                 }
             } catch (Throwable t) {
-                return failure(t);
+                return new Failure<>(t);
             }
         }
     }
@@ -480,7 +479,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <U>    The new component type
      * @return a {@code Try}
      * @throws NullPointerException if {@code mapper} is null
-     * @throws Error if the given {@code mapper} throws a fatal error
      */
     @SuppressWarnings("unchecked")
     default <U> Try<U> flatMapTry(CheckedFunction1<? super T, ? extends Try<? extends U>> mapper) {
@@ -491,7 +489,7 @@ public interface Try<T> extends Value<T>, Serializable {
             try {
                 return (Try<U>) mapper.apply(get());
             } catch (Throwable t) {
-                return failure(t);
+                return new Failure<>(t);
             }
         }
     }
@@ -499,14 +497,11 @@ public interface Try<T> extends Value<T>, Serializable {
     /**
      * Gets the result of this Try if this is a {@code Success} or throws if this is a {@code Failure}.
      * <p>
-     * <strong>
-     * IMPORTANT! If this is a {@link Failure}, the underlying {@code cause} of type {@link Throwable} is
-     * wrapped in a {@link NonFatalThrowable} and thrown. In Java, it is not possible to directly throw the
-     * cause in a safe way.
-     * </strong>
+     * <strong>IMPORTANT! If this is a {@link Failure}, the underlying {@code cause} of type {@link Throwable} is thrown.</strong>
+     * <p>
+     * The thrown exception is exactly the same as the result of {@link #getCause()}.
      *
-     * @return The computation result if this is a {@code Success}
-     * @throws NonFatalThrowable if this is a {@link Failure}
+     * @return The result of this {@code Try}.
      */
     @Override
     T get();
@@ -592,15 +587,20 @@ public interface Try<T> extends Value<T>, Serializable {
 
     /**
      * Maps the cause to a new exception if this is a {@code Failure} or returns this instance if this is a {@code Success}.
+     * <p>
+     * If none of the given cases matches the cause, the same {@code Failure} is returned.
      *
-     * @param mapper A function that maps the cause of a failure to another exception.
+     * @param cases A not necessarily exhaustive sequence of cases that will be matched against a cause.
      * @return A new {@code Try} if this is a {@code Failure}, otherwise this.
      */
-    default Try<T> mapFailure(Function<? super Throwable, ? extends Throwable> mapper) {
+    @GwtIncompatible
+    @SuppressWarnings({ "unchecked", "varargs" })
+    default Try<T> mapFailure(Match.Case<? extends Throwable, ? extends Throwable>... cases) {
         if (isSuccess()) {
             return this;
         } else {
-            return failure(mapper.apply(getCause()));
+            final Option<Throwable> x = Match(getCause()).option(cases);
+            return x.isEmpty() ? this : failure(x.get());
         }
     }
 
@@ -623,7 +623,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param mapper A checked function
      * @return a {@code Try}
      * @throws NullPointerException if {@code mapper} is null
-     * @throws Error if the given {@code mapper} throws a fatal error
      */
     @SuppressWarnings("unchecked")
     default <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
@@ -634,7 +633,7 @@ public interface Try<T> extends Value<T>, Serializable {
             try {
                 return new Success<>(mapper.apply(get()));
             } catch (Throwable t) {
-                return failure(t);
+                return new Failure<>(t);
             }
         }
     }
@@ -681,6 +680,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return this
      * @throws NullPointerException if {@code exceptionType} or {@code action} is null
      */
+    @GwtIncompatible
     @SuppressWarnings("unchecked")
     default <X extends Throwable> Try<T> onFailure(Class<X> exceptionType, Consumer<? super X> action) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
@@ -768,6 +768,22 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Applies the action to the value of a Success or does nothing in the case of a Failure.
+     *
+     * @param action A Consumer
+     * @return this {@code Try}
+     * @throws NullPointerException if {@code action} is null
+     */
+    @Override
+    default Try<T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        if (isSuccess()) {
+            action.accept(get());
+        }
+        return this;
+    }
+
+    /**
      * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
      * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f},
      * i.e. calling {@code Try.of(() -> f.apply((X) getCause())}.
@@ -791,6 +807,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null or {@code f} is null
      */
+    @GwtIncompatible
     @SuppressWarnings("unchecked")
     default <X extends Throwable> Try<T> recover(Class<X> exceptionType, Function<? super X, ? extends T> f) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
@@ -828,10 +845,10 @@ public interface Try<T> extends Value<T>, Serializable {
      *                      If Try is {@link Try#isSuccess()} then recovery ends up successfully. Otherwise the function was not able to recover.
      * @return a {@code Try}
      * @throws NullPointerException if {@code exceptionType} or {@code f} is null
-     * @throws Error if the given recovery function {@code f} throws a fatal error
      */
+    @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType, Function<? super X, Try<? extends T>> f) {
+    default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType, Function<? super X, Try<? extends T>> f){
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(f, "f is null");
         if(isFailure()){
@@ -840,7 +857,7 @@ public interface Try<T> extends Value<T>, Serializable {
                 try {
                     return narrow(f.apply((X) cause));
                 } catch (Throwable t) {
-                    return failure(t);
+                    return new Failure<>(t);
                 }
             }
         }
@@ -870,6 +887,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return the given {@code recovered} if this is a {@link Try.Failure} and the cause is of type {@code X}, else {@code this}
      * @throws NullPointerException if {@code exceptionType} or {@code recovered} is null
      */
+    @GwtIncompatible
     default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType,  Try<? extends T> recovered){
         Objects.requireNonNull(exceptionType, "exeptionType is null");
         Objects.requireNonNull(recovered, "recovered is null");
@@ -901,6 +919,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@code Try}
      * @throws NullPointerException if {@code exception} is null
      */
+    @GwtIncompatible
     default <X extends Throwable> Try<T> recover(Class<X> exceptionType, T value) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         return (isFailure() && exceptionType.isAssignableFrom(getCause().getClass()))
@@ -949,7 +968,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param f A recovery function taking a Throwable
      * @return a {@code Try}
      * @throws NullPointerException if {@code f} is null
-     * @throws Error if the given recovery function {@code f} throws a fatal error
      */
     @SuppressWarnings("unchecked")
     default Try<T> recoverWith(Function<? super Throwable, ? extends Try<? extends T>> f) {
@@ -958,7 +976,7 @@ public interface Try<T> extends Value<T>, Serializable {
             try {
                 return (Try<T>) f.apply(getCause());
             } catch (Throwable t) {
-                return failure(t);
+                return new Failure<>(t);
             }
         } else {
             return this;
@@ -977,24 +995,6 @@ public interface Try<T> extends Value<T>, Serializable {
             return Either.right(get());
         }
     }
-    
-    /**
-     * Converts this {@code Try} to a {@link Option}.
-     *
-     * @return {@code Option.some(get())} if this is defined, otherwise {@code Option.none()}
-     */
-    default Option<T> toOption() {
-        return isEmpty() ? Option.none() : Option.some(get());
-    }
-
-    /**
-     * Converts this {@code Try} to a {@link java.util.Optional}.
-     *
-     * @return {@code Optional.ofNullable(get())} if this is defined, otherwise {@code Optional.empty()}
-     */
-    default Optional<T> toOptional() {
-        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
-    }
 
     /**
      * Converts this {@code Try} to a {@link Validation}.
@@ -1009,9 +1009,11 @@ public interface Try<T> extends Value<T>, Serializable {
      * Converts this {@code Try} to a {@link Validation}, converting the Throwable (if present)
      * to another object using passed {@link Function}.
      *
-     * <pre>{@code
-     * Validation<String, Integer> = Try.of(() -> 1/0).toValidation(Throwable::getMessage);
-     * }</pre>
+     * <pre>
+     * <code>
+     * Validation<String, Integer> = Try.of(() -> 1/0).toValidation(Throwable::getMessage));
+     * </code>
+     * </pre>
      *
      * @param <U> result type of the throwable mapper
      * @param throwableMapper  A transformation from throwable to desired invalid type of new {@code Validation}
@@ -1058,7 +1060,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param runnable A runnable
      * @return this {@code Try}.
      * @throws NullPointerException if {@code runnable} is null
-     * @throws Error if the given {@code runnable} throws a fatal error
      */
     default Try<T> andFinallyTry(CheckedRunnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
@@ -1066,7 +1067,7 @@ public interface Try<T> extends Value<T>, Serializable {
             runnable.run();
             return this;
         } catch (Throwable t) {
-            return failure(t);
+            return new Failure<>(t);
         }
     }
 
@@ -1147,9 +1148,7 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * A failed Try. It represents an exceptional state.
-     * <p>
-     * The cause of type {@code Throwable} is internally stored for further processing.
+     * A failed Try.
      *
      * @param <T> component type of this Failure
      * @author Daniel Dietrich
@@ -1163,22 +1162,21 @@ public interface Try<T> extends Value<T>, Serializable {
         /**
          * Constructs a Failure.
          *
-         * @param cause                 A cause of type Throwable, may not be null.
+         * @param cause A cause of type Throwable, may not be null.
          * @throws NullPointerException if {@code cause} is null
-         * @throws Error                if the given {@code cause} is fatal, i.e. non-recoverable
-         * @throws NullPointerException if the given {@code cause} is null
+         * @throws Throwable            if the given {@code cause} is fatal, i.e. non-recoverable
          */
         private Failure(Throwable cause) {
             Objects.requireNonNull(cause, "cause is null");
-            if (cause instanceof LinkageError || cause instanceof ThreadDeath || cause instanceof VirtualMachineError) {
-                throw (Error) cause;
+            if (isFatal(cause)) {
+                sneakyThrow(cause);
             }
             this.cause = cause;
         }
 
         @Override
         public T get() {
-            throw new NonFatalThrowable(cause);
+            return sneakyThrow(cause);
         }
 
         @Override
@@ -1692,35 +1690,21 @@ public interface Try<T> extends Value<T>, Serializable {
             });
         }
     }
+}
 
-    /**
-     * A wrapper for non-fatal throwables (i.e. errors and exceptions).
-     * <p>
-     * {@code NonFatalThrowable} has one purpose: it is a wrapper for non-runtime exceptions (= checked exceptions).
-     * The only method that makes use of it is {@link Try#get()}. In the case of a {@link Failure} it rethrows the
-     * underlying cause wrapped in a {@code NonFatalThrowable}.
-     */
-    final class NonFatalThrowable extends RuntimeException {
+interface TryModule {
 
-        private static final long serialVersionUID = 1L;
-
-        private NonFatalThrowable(Throwable cause) {
-            super(cause);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            return o instanceof NonFatalThrowable && Objects.equals(((NonFatalThrowable) o).getCause(), getCause());
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hashCode(getCause());
-        }
-
-        @Override
-        public String toString() {
-            return "NonFatalThrowable(" + getCause() + ")";
-        }
+    static boolean isFatal(Throwable throwable) {
+        return throwable instanceof InterruptedException
+                || throwable instanceof LinkageError
+                || throwable instanceof ThreadDeath
+                || throwable instanceof VirtualMachineError;
     }
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
+    }
+
 }

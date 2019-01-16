@@ -25,6 +25,7 @@ package io.vavr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
@@ -40,6 +41,53 @@ public class Function6Test {
         }
         final Type type = new Type();
         assertThat(Function6.of(type::methodReference)).isNotNull();
+    }
+
+    @Test
+    public void shouldLiftPartialFunction() {
+        assertThat(Function6.lift((o1, o2, o3, o4, o5, o6) -> { while(true); })).isNotNull();
+    }
+
+    @Test
+    public void shouldPartiallyApply() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        assertThat(f.apply(null)).isNotNull();
+        assertThat(f.apply(null, null)).isNotNull();
+        assertThat(f.apply(null, null, null)).isNotNull();
+        assertThat(f.apply(null, null, null, null)).isNotNull();
+        assertThat(f.apply(null, null, null, null, null)).isNotNull();
+    }
+
+    @Test
+    public void shouldGetArity() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        assertThat(f.arity()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldConstant() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = Function6.constant(6);
+        assertThat(f.apply(1, 2, 3, 4, 5, 6)).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldCurry() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        final Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Object>>>>>> curried = f.curried();
+        assertThat(curried).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        final Function1<Tuple6<Object, Object, Object, Object, Object, Object>, Object> tupled = f.tupled();
+        assertThat(tupled).isNotNull();
+    }
+
+    @Test
+    public void shouldReverse() {
+        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
+        assertThat(f.reversed()).isNotNull();
     }
 
     @Test
@@ -80,33 +128,20 @@ public class Function6Test {
     }
 
     @Test
-    public void shouldPartiallyApply() {
-        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
-        assertThat(f.apply(null)).isNotNull();
-        assertThat(f.apply(null, null)).isNotNull();
-        assertThat(f.apply(null, null, null)).isNotNull();
-        assertThat(f.apply(null, null, null, null)).isNotNull();
-        assertThat(f.apply(null, null, null, null, null)).isNotNull();
-    }
+    public void shouldLiftTryPartialFunction() {
+        AtomicInteger integer = new AtomicInteger();
+        Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> divByZero = (i1, i2, i3, i4, i5, i6) -> 10 / integer.get();
+        Function6<Integer, Integer, Integer, Integer, Integer, Integer, Try<Integer>> divByZeroTry = Function6.liftTry(divByZero);
 
-    @Test
-    public void shouldCurry() {
-        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
-        final Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Function1<Object, Object>>>>>> curried = f.curried();
-        assertThat(curried).isNotNull();
-    }
+        Try<Integer> res = divByZeroTry.apply(0, 0, 0, 0, 0, 0);
+        assertThat(res.isFailure()).isTrue();
+        assertThat(res.getCause()).isNotNull();
+        assertThat(res.getCause().getMessage()).isEqualToIgnoringCase("/ by zero");
 
-    @Test
-    public void shouldTuple() {
-        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
-        final Function1<Tuple6<Object, Object, Object, Object, Object, Object>, Object> tupled = f.tupled();
-        assertThat(tupled).isNotNull();
-    }
-
-    @Test
-    public void shouldReverse() {
-        final Function6<Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6) -> null;
-        assertThat(f.reversed()).isNotNull();
+        integer.incrementAndGet();
+        res = divByZeroTry.apply(1, 2, 3, 4, 5, 6);
+        assertThat(res.isSuccess()).isTrue();
+        assertThat(res.get()).isEqualTo(10);
     }
 
     private static final Function6<Integer, Integer, Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4, i5, i6) -> i1 <= 0 ? i1 : Function6Test.recurrent2.apply(i1 - 1, i2, i3, i4, i5, i6) + 1;

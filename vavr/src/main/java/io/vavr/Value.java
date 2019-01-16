@@ -38,6 +38,7 @@ import io.vavr.collection.Stream;
 import io.vavr.collection.TreeMap;
 import io.vavr.collection.TreeSet;
 import io.vavr.collection.Vector;
+import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -92,6 +93,16 @@ import static io.vavr.API.*;
  * <li>{@link #iterator()}</li>
  * </ul>
  *
+ * Side-effects:
+ *
+ * <ul>
+ * <li>{@link #out(PrintStream)}</li>
+ * <li>{@link #out(PrintWriter)}</li>
+ * <li>{@link #peek(Consumer)}</li>
+ * <li>{@link #stderr()}</li>
+ * <li>{@link #stdout()}</li>
+ * </ul>
+ *
  * Tests:
  *
  * <ul>
@@ -108,6 +119,10 @@ import static io.vavr.API.*;
  * <li>{@link #collect(Supplier, BiConsumer, BiConsumer)}</li>
  * <li>{@link #toArray()}</li>
  * <li>{@link #toCharSeq()}</li>
+ * <li>{@link #toEither(Object)}</li>
+ * <li>{@link #toEither(Supplier)}</li>
+ * <li>{@link #toInvalid(Object)}</li>
+ * <li>{@link #toInvalid(Supplier)}</li>
  * <li>{@link #toJavaArray()}</li>
  * <li>{@link #toJavaArray(Class)}</li>
  * <li>{@link #toJavaCollection(Function)}</li>
@@ -116,19 +131,25 @@ import static io.vavr.API.*;
  * <li>{@link #toJavaMap(Function)}</li>
  * <li>{@link #toJavaMap(Supplier, Function)}</li>
  * <li>{@link #toJavaMap(Supplier, Function, Function)} </li>
+ * <li>{@link #toJavaOptional()}</li>
  * <li>{@link #toJavaParallelStream()}</li>
  * <li>{@link #toJavaSet()}</li>
  * <li>{@link #toJavaSet(Function)}</li>
  * <li>{@link #toJavaStream()}</li>
+ * <li>{@link #toLeft(Object)}</li>
+ * <li>{@link #toLeft(Supplier)}</li>
  * <li>{@link #toLinkedMap(Function)}</li>
  * <li>{@link #toLinkedMap(Function, Function)}</li>
  * <li>{@link #toLinkedSet()}</li>
  * <li>{@link #toList()}</li>
  * <li>{@link #toMap(Function)}</li>
  * <li>{@link #toMap(Function, Function)}</li>
+ * <li>{@link #toOption()}</li>
  * <li>{@link #toPriorityQueue()}</li>
  * <li>{@link #toPriorityQueue(Comparator)}</li>
  * <li>{@link #toQueue()}</li>
+ * <li>{@link #toRight(Object)}</li>
+ * <li>{@link #toRight(Supplier)}</li>
  * <li>{@link #toSet()}</li>
  * <li>{@link #toSortedMap(Comparator, Function)}</li>
  * <li>{@link #toSortedMap(Comparator, Function, Function)}</li>
@@ -139,6 +160,12 @@ import static io.vavr.API.*;
  * <li>{@link #toStream()}</li>
  * <li>{@link #toString()}</li>
  * <li>{@link #toTree()}</li>
+ * <li>{@link #toTry()}</li>
+ * <li>{@link #toTry(Supplier)}</li>
+ * <li>{@link #toValid(Object)}</li>
+ * <li>{@link #toValid(Supplier)}</li>
+ * <li>{@link #toValidation(Object)}</li>
+ * <li>{@link #toValidation(Supplier)}</li>
  * <li>{@link #toVector()}</li>
  * </ul>
  *
@@ -433,11 +460,79 @@ public interface Value<T> extends Iterable<T> {
     <U> Value<U> map(Function<? super T, ? extends U> mapper);
 
     /**
+     * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.
+     * Performs the given {@code action} on all elements (the first immediately, successive deferred),
+     * if this is a <em>lazy</em> implementation.
+     *
+     * @param action The action that will be performed on the element(s).
+     * @return this instance
+     */
+    Value<T> peek(Consumer<? super T> action);
+
+    /**
      * Returns the name of this Value type, which is used by toString().
      *
      * @return This type name.
      */
     String stringPrefix();
+
+    // -- output
+
+    /**
+     * Sends the string representations of this to the {@link PrintStream}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @param out The PrintStream to write to
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stream.
+     */
+    @GwtIncompatible("java.io.PrintStream is not implemented")
+    default void out(PrintStream out) {
+        for (T t : this) {
+            out.println(String.valueOf(t));
+            if (out.checkError()) {
+                throw new IllegalStateException("Error writing to PrintStream");
+            }
+        }
+    }
+
+    /**
+     * Sends the string representations of this to the {@link PrintWriter}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @param writer The PrintWriter to write to
+     * @throws IllegalStateException if {@code PrintWriter.checkError()} is true after writing to writer.
+     */
+    @GwtIncompatible("java.io.PrintWriter is not implemented")
+    default void out(PrintWriter writer) {
+        for (T t : this) {
+            writer.println(String.valueOf(t));
+            if (writer.checkError()) {
+                throw new IllegalStateException("Error writing to PrintWriter");
+            }
+        }
+    }
+
+    /**
+     * Sends the string representations of this to the standard error stream {@linkplain System#err}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stderr.
+     */
+    @GwtIncompatible("java.io.PrintStream is not implemented")
+    default void stderr() {
+        out(System.err);
+    }
+
+    /**
+     * Sends the string representations of this to the standard output stream {@linkplain System#out}.
+     * If this value consists of multiple elements, each element is displayed in a new line.
+     *
+     * @throws IllegalStateException if {@code PrintStream.checkError()} is true after writing to stdout.
+     */
+    @GwtIncompatible("java.io.PrintStream is not implemented")
+    default void stdout() {
+        out(System.out);
+    }
 
     // -- Adjusted return types of Iterable
 
@@ -473,6 +568,50 @@ public interface Value<T> extends Iterable<T> {
         } else {
             return CharSeq.of(iterator().mkString());
         }
+    }
+
+    /**
+     * Converts this to a {@link CompletableFuture}
+     *
+     * @return A new {@link CompletableFuture} containing the value
+     */
+    @GwtIncompatible
+    default CompletableFuture<T> toCompletableFuture() {
+        final CompletableFuture<T> completableFuture = new CompletableFuture<>();
+        Try.of(this::get)
+                .onSuccess(completableFuture::complete)
+                .onFailure(completableFuture::completeExceptionally);
+        return completableFuture;
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <U>   value type of a {@code Valid}
+     * @param value An instance of a {@code Valid} value
+     * @return A new {@link Validation.Valid} containing the given {@code value} if this is empty, otherwise
+     * a new {@link Validation.Invalid} containing this value.
+     * @deprecated Use {@link #toValidation(Object)} instead.
+     */
+    @Deprecated
+    default <U> Validation<T, U> toInvalid(U value) {
+        return isEmpty() ? Validation.valid(value) : Validation.invalid(get());
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <U>           value type of a {@code Valid}
+     * @param valueSupplier A supplier of a {@code Valid} value
+     * @return A new {@link Validation.Valid} containing the result of {@code valueSupplier} if this is empty,
+     * otherwise a new {@link Validation.Invalid} containing this value.
+     * @throws NullPointerException if {@code valueSupplier} is null
+     * @deprecated Use {@link #toValidation(Supplier)} instead.
+     */
+    @Deprecated
+    default <U> Validation<T, U> toInvalid(Supplier<? extends U> valueSupplier) {
+        Objects.requireNonNull(valueSupplier, "valueSupplier is null");
+        return isEmpty() ? Validation.valid(valueSupplier.get()) : Validation.invalid(get());
     }
 
     /**
@@ -530,6 +669,7 @@ public interface Value<T> extends Iterable<T> {
      */
     @Deprecated
     @SuppressWarnings("unchecked")
+    @GwtIncompatible("reflection is not supported")
     default T[] toJavaArray(Class<T> componentType) {
         Objects.requireNonNull(componentType, "componentType is null");
         if (componentType.isPrimitive()) {
@@ -759,6 +899,29 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Converts this to an {@link java.util.Optional}.
+     *
+     * <pre>{@code
+     * // = Optional.empty
+     * Future.of(() -> { throw new Error(); })
+     *       .toJavaOptional()
+     *
+     * // = Optional[ok]
+     * Try.of(() -> "ok")
+     *     .toJavaOptional()
+     *
+     * // = Optional[1]
+     * List.of(1, 2, 3)
+     *     .toJavaOptional()
+     * }</pre>
+     *
+     * @return A new {@link java.util.Optional}.
+     */
+    default Optional<T> toJavaOptional() {
+        return isEmpty() ? Optional.empty() : Optional.ofNullable(get());
+    }
+
+    /**
      * Converts this to a mutable {@link java.util.Set}.
      * Elements are added by calling {@link java.util.Set#add(Object)}.
      *
@@ -856,6 +1019,36 @@ public interface Value<T> extends Iterable<T> {
      */
     default java.util.stream.Stream<T> toJavaParallelStream() {
         return StreamSupport.stream(spliterator(), true);
+    }
+
+    /**
+     * Converts this to a {@link Either}.
+     *
+     * @param <R>   right type
+     * @param right An instance of a right value
+     * @return A new {@link Either.Right} containing the value of {@code right} if this is empty, otherwise
+     * a new {@link Either.Left} containing this value.
+     * @deprecated Use {@link #toEither(Object)} instead.
+     */
+    @Deprecated
+    default <R> Either<T, R> toLeft(R right) {
+        return isEmpty() ? Either.right(right) : Either.left(get());
+    }
+
+    /**
+     * Converts this to a {@link Either}.
+     *
+     * @param <R>   right type
+     * @param right A supplier of a right value
+     * @return A new {@link Either.Right} containing the result of {@code right} if this is empty, otherwise
+     * a new {@link Either.Left} containing this value.
+     * @throws NullPointerException if {@code right} is null
+     * @deprecated Use {@link #toEither(Supplier)} instead.
+     */
+    @Deprecated
+    default <R> Either<T, R> toLeft(Supplier<? extends R> right) {
+        Objects.requireNonNull(right, "right is null");
+        return isEmpty() ? Either.right(right.get()) : Either.left(get());
     }
 
     /**
@@ -990,6 +1183,81 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Converts this to an {@link Option}.
+     *
+     * @return A new {@link Option}.
+     */
+    default Option<T> toOption() {
+        if (this instanceof Option) {
+            return (Option<T>) this;
+        } else {
+            return isEmpty() ? Option.none() : Option.some(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Either}.
+     *
+     * @param left A left value for the {@link Either}
+     * @param <L>  Either left component type
+     * @return A new {@link Either}.
+     */
+    default <L> Either<L, T> toEither(L left) {
+        if (this instanceof Either) {
+            return ((Either<?, T>) this).mapLeft(ignored -> left);
+        } else {
+            return isEmpty() ? Left(left) : Right(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Either}.
+     *
+     * @param leftSupplier A {@link Supplier} for the left value for the {@link Either}
+     * @param <L>          Validation error component type
+     * @return A new {@link Either}.
+     */
+    default <L> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
+        Objects.requireNonNull(leftSupplier, "leftSupplier is null");
+        if (this instanceof Either) {
+            return ((Either<?, T>) this).mapLeft(ignored -> leftSupplier.get());
+        } else {
+            return isEmpty() ? Left(leftSupplier.get()) : Right(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Validation}.
+     *
+     * @param invalid An invalid value for the {@link Validation}
+     * @param <E>     Validation error component type
+     * @return A new {@link Validation}.
+     */
+    default <E> Validation<E, T> toValidation(E invalid) {
+        if (this instanceof Validation) {
+            return ((Validation<?, T>) this).mapError(ignored -> invalid);
+        } else {
+            return isEmpty() ? Invalid(invalid) : Valid(get());
+        }
+    }
+
+    /**
+     * Converts this to an {@link Validation}.
+     *
+     * @param invalidSupplier A {@link Supplier} for the invalid value for the {@link Validation}
+     * @param <E>             Validation error component type
+     * @return A new {@link Validation}.
+     */
+    default <E> Validation<E, T> toValidation(Supplier<? extends E> invalidSupplier) {
+        Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
+        if (this instanceof Validation) {
+            return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
+        } else {
+            return isEmpty() ? Invalid(invalidSupplier.get()) : Valid(get());
+        }
+    }
+
+    /**
      * Converts this to a {@link Queue}.
      *
      * @return A new {@link Queue}.
@@ -1027,6 +1295,36 @@ public interface Value<T> extends Iterable<T> {
         final Function<T, PriorityQueue<T>> of = value -> PriorityQueue.of(comparator, value);
         final Function<Iterable<T>, PriorityQueue<T>> ofAll = values -> PriorityQueue.ofAll(comparator, values);
         return ValueModule.toTraversable(this, empty, of, ofAll);
+    }
+
+    /**
+     * Converts this to a {@link Either}.
+     *
+     * @param <L>  left type
+     * @param left An instance of a left value
+     * @return A new {@link Either.Left} containing the value of {@code left} if this is empty, otherwise
+     * a new {@link Either.Right} containing this value.
+     * @deprecated Use {@link #toEither(Object)} instead.
+     */
+    @Deprecated
+    default <L> Either<L, T> toRight(L left) {
+        return isEmpty() ? Either.left(left) : Either.right(get());
+    }
+
+    /**
+     * Converts this to a {@link Either}.
+     *
+     * @param <L>  left type
+     * @param left A supplier of a left value
+     * @return A new {@link Either.Left} containing the result of {@code left} if this is empty, otherwise
+     * a new {@link Either.Right} containing this value.
+     * @throws NullPointerException if {@code left} is null
+     * @deprecated Use {@link #toEither(Supplier)} instead.
+     */
+    @Deprecated
+    default <L> Either<L, T> toRight(Supplier<? extends L> left) {
+        Objects.requireNonNull(left, "left is null");
+        return isEmpty() ? Either.left(left.get()) : Either.right(get());
     }
 
     /**
@@ -1087,6 +1385,36 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Converts this to a {@link Try}.
+     * <p>
+     * If this value is undefined, i.e. empty, then a new {@code Failure(NoSuchElementException)} is returned,
+     * otherwise a new {@code Success(value)} is returned.
+     *
+     * @return A new {@link Try}.
+     */
+    default Try<T> toTry() {
+        if (this instanceof Try) {
+            return (Try<T>) this;
+        } else {
+            return Try.of(this::get);
+        }
+    }
+
+    /**
+     * Converts this to a {@link Try}.
+     * <p>
+     * If this value is undefined, i.e. empty, then a new {@code Failure(ifEmpty.get())} is returned,
+     * otherwise a new {@code Success(value)} is returned.
+     *
+     * @param ifEmpty an exception supplier
+     * @return A new {@link Try}.
+     */
+    default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
+        Objects.requireNonNull(ifEmpty, "ifEmpty is null");
+        return isEmpty() ? Try.failure(ifEmpty.get()) : toTry();
+    }
+
+    /**
      * Converts this to a {@link Tree}.
      *
      * @return A new {@link Tree}.
@@ -1106,6 +1434,36 @@ public interface Value<T> extends Iterable<T> {
      */
     default <ID> List<Tree.Node<T>> toTree(Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
         return Tree.build(this, idMapper, parentMapper);
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <E>   error type of an {@code Invalid}
+     * @param error An error
+     * @return A new {@link Validation.Invalid} containing the given {@code error} if this is empty, otherwise
+     * a new {@link Validation.Valid} containing this value.
+     * @deprecated Use {@link #toValidation(Object)} instead.
+     */
+    @Deprecated
+    default <E> Validation<E, T> toValid(E error) {
+        return isEmpty() ? Validation.invalid(error) : Validation.valid(get());
+    }
+
+    /**
+     * Converts this to a {@link Validation}.
+     *
+     * @param <E>           error type of an {@code Invalid}
+     * @param errorSupplier A supplier of an error
+     * @return A new {@link Validation.Invalid} containing the result of {@code errorSupplier} if this is empty,
+     * otherwise a new {@link Validation.Valid} containing this value.
+     * @throws NullPointerException if {@code valueSupplier} is null
+     * @deprecated Use {@link #toValidation(Supplier)} instead.
+     */
+    @Deprecated
+    default <E> Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
+        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
+        return isEmpty() ? Validation.invalid(errorSupplier.get()) : Validation.valid(get());
     }
 
     /**

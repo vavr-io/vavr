@@ -27,6 +27,7 @@ import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.assertj.core.api.IterableAssert;
+import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -46,13 +47,19 @@ import java.util.function.Predicate;
 import static io.vavr.concurrent.Concurrent.waitUntil;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static io.vavr.concurrent.Concurrent.zZz;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
+@SuppressWarnings("deprecation")
 public class FutureTest extends AbstractValueTest {
 
-    private static final Executor TRIVIAL_EXECUTOR = Runnable::run;
+    static final Executor TRIVIAL_EXECUTOR = Runnable::run;
 
     private static final Executor REJECTING_EXECUTOR = ignored -> { throw new RejectedExecutionException(); };
+
+    @AfterClass
+    public static void gracefullyFinishThreads() throws TimeoutException {
+        Concurrent.gracefullyFinishThreads();
+    }
 
     @Rule
     public TestRule watcher = new TestWatcher() {
@@ -314,7 +321,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldNotCancelCompletedFutureUsingTrivialExecutor() {
         final Future<Integer> future = Future.of(TRIVIAL_EXECUTOR, () -> 1);
-        assertThat(future.cancel().isCancelled()).isFalse();
+        assertThat(future.cancel()).isFalse();
         assertCompleted(future, 1);
     }
 
@@ -346,6 +353,105 @@ public class FutureTest extends AbstractValueTest {
     private static <T> T expensiveOperation(T value) throws InterruptedException {
         Thread.sleep(500);
         return value;
+    }
+
+    // -- static ofSupplier()
+
+    @Test
+    public void shouldCreateAndCompleteAFutureUsingTrivialExecutorServiceAndSupplier() {
+        final Future<Integer> future = Future.ofSupplier(TRIVIAL_EXECUTOR, () -> 1);
+        assertThat(future.executor()).isSameAs(TRIVIAL_EXECUTOR);
+        assertCompleted(future, 1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenExecutorIsNullUsingSupplier() {
+        Future.ofSupplier(null, () -> 1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenSupplierIsNull() {
+        Future.ofSupplier(TRIVIAL_EXECUTOR, null);
+    }
+
+    @Test
+    public void shouldCreateAndCompleteAFutureUsingDefaultExecutorServiceAndSupplier() {
+        final Future<Integer> future = Future.ofSupplier(() -> 1);
+        assertThat(future.executor()).isSameAs(Future.DEFAULT_EXECUTOR);
+        future.await();
+        assertThat(future.get()).isEqualTo(1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEUsingDefaultExecutorWhenSupplierIsNull() {
+        Future.ofSupplier(null);
+    }
+
+    // -- static ofCallable()
+
+    @Test
+    public void shouldCreateAndCompleteAFutureUsingTrivialExecutorServiceAndCallable() {
+        final Future<Integer> future = Future.ofCallable(TRIVIAL_EXECUTOR, () -> 1);
+        assertThat(future.executor()).isSameAs(TRIVIAL_EXECUTOR);
+        assertCompleted(future, 1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenExecutorIsNullUsingCallable() {
+        Future.ofCallable(null, () -> 1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenCallableIsNull() {
+        Future.ofCallable(TRIVIAL_EXECUTOR, null);
+    }
+
+    @Test
+    public void shouldCreateAndCompleteAFutureUsingDefaultExecutorServiceAndCallable() {
+        final Future<Integer> future = Future.ofCallable(() -> 1);
+        assertThat(future.executor()).isSameAs(Future.DEFAULT_EXECUTOR);
+        future.await();
+        assertThat(future.get()).isEqualTo(1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEUsingDefaultExecutorWhenCallableIsNull() {
+        Future.ofCallable(null);
+    }
+
+    // -- static runRunnable()
+
+    @Test
+    public void shouldCreateAndCompleteAFutureUsingTrivialExecutorServiceAndRunnable() {
+        final int[] sideEffect = new int[] { 0 };
+        final Future<Void> future = Future.runRunnable(TRIVIAL_EXECUTOR, () -> sideEffect[0] = 42);
+        assertThat(future.executor()).isSameAs(TRIVIAL_EXECUTOR);
+        future.await();
+        assertThat(sideEffect[0]).isEqualTo(42);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenExecutorIsNullUsingRunnable() {
+        Future.runRunnable(null, () -> {});
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEWhenRunnableIsNull() {
+        Future.runRunnable(TRIVIAL_EXECUTOR, null);
+    }
+
+    @Test
+    public void shouldCreateAndCompleteAFutureUsingDefaultExecutorServiceAndRunnable() {
+        final int[] sideEffect = new int[] { 0 };
+        final Future<Void> future = Future.runRunnable(() -> sideEffect[0] = 42);
+        assertThat(future.executor()).isSameAs(Future.DEFAULT_EXECUTOR);
+        future.await();
+        assertThat(sideEffect[0]).isEqualTo(42);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNPEUsingDefaultExecutorWhenRunnableIsNull() {
+        Future.runRunnable(null);
     }
 
     // -- static reduce()
@@ -488,7 +594,7 @@ public class FutureTest extends AbstractValueTest {
     }
 
     // -- await(timeout, timeunit)
-    
+
     @Test
     public void shouldAwaitAndTimeout() {
         final long timeout = 100;
@@ -504,13 +610,16 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
         assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 MILLISECONDS");
     }
-
+    
     @Test
     public void shouldHandleInterruptedExceptionCorrectlyInAwait() {
+        // the Future should never be completed as long as the InterruptedException is rethrown by the Try...
         final Future<Void> future = Future.run(() -> { throw new InterruptedException(); });
-        future.await(1000, TimeUnit.MILLISECONDS);
+        // ...therefore the timeout will occur
+        future.await(100, TimeUnit.MILLISECONDS);
         assertThat(future.isFailure()).isTrue();
-        assertThat(future.getCause().get()).isInstanceOf(InterruptedException.class);
+        assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
+        assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 MILLISECONDS");
     }
 
     // -- failed
@@ -607,7 +716,7 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.isCancelled()).isTrue();
     }
 
-    @Test
+    @Test(expected = CancellationException.class)
     public void shouldThrowOnGetAfterCancellation() {
         final Object monitor = new Object();
         final AtomicBoolean running = new AtomicBoolean(false);
@@ -622,13 +731,13 @@ public class FutureTest extends AbstractValueTest {
             future.cancel();
         }
         assertThat(future.isCancelled()).isTrue();
-        assertThatThrownBy(future::get)
-                .isExactlyInstanceOf(Try.NonFatalThrowable.class)
-                .hasCauseExactlyInstanceOf(CancellationException.class);
+        future.get();
+        fail("Future was expected to throw on get() after cancellation!");
     }
 
     @Test
     public void shouldCancelJoinedFutureThatNeverCompletes() {
+        @SuppressWarnings("deprecation")
         final Future<?> future = Future.join(tryComplete -> {
             // we break our promise, the Future is never completed
         });
@@ -636,7 +745,7 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.isCompleted()).isFalse();
         assertThat(future.isCancelled()).isFalse();
 
-        assertThat(future.cancel().isCancelled()).isTrue();
+        assertThat(future.cancel()).isTrue();
         assertThat(future.isCompleted()).isTrue();
     }
 
@@ -779,7 +888,7 @@ public class FutureTest extends AbstractValueTest {
     public void shouldBeFailed() {
         assertThat(Future.failed(new Exception()).isFailure()).isTrue();
     }
-
+    
     // -- onComplete()
 
     @Test
@@ -789,6 +898,7 @@ public class FutureTest extends AbstractValueTest {
         final AtomicReference<Predicate<Try<? extends Boolean>>> computation = new AtomicReference<>(null);
 
         // this computation never ends
+        @SuppressWarnings("deprecation")
         final Future<Boolean> future = Future.join(computation::set);
 
         // now we have time to register an onComplete handler
@@ -894,6 +1004,18 @@ public class FutureTest extends AbstractValueTest {
     public void shouldConvertLateFutureToCompletableFuture() {
         final CompletableFuture<Integer> completableFuture = Future.of(zZz(42)).toCompletableFuture();
         assertThat(Try.of(completableFuture::get).get()).isEqualTo(42);
+    }
+
+    // -- toTry()
+
+    @Test
+    public void shouldConvertSuccessfulFutureToTry() {
+        assertThat(Future.successful(1).toTry()).isEqualTo(Try.success(1));
+    }
+
+    @Test
+    public void shouldConvertFailedFutureToTry() {
+        assertThat(Future.failed(new Error("!")).toTry()).isEqualTo(Try.failure(new Error("!")));
     }
 
     // -- transform()
@@ -1032,6 +1154,14 @@ public class FutureTest extends AbstractValueTest {
         final Future<Integer> future = Future.of(zZz(42)).map(i -> i * 2);
         future.await();
         assertThat(future.get()).isEqualTo(84);
+    }
+
+    @Test
+    public void shouldPeekFuture() {
+        final int[] consumer = new int[] { -1 };
+        Future.of(zZz(42)).peek(i -> consumer[0] = i);
+        waitUntil(() -> consumer[0] > 0);
+        assertThat(consumer[0]).isEqualTo(42);
     }
 
     @Test
