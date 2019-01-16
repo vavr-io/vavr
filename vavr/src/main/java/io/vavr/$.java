@@ -19,7 +19,6 @@
  */
 package io.vavr;
 
-import io.vavr.collection.Seq;
 import io.vavr.control.Either;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
@@ -94,6 +93,6 @@ class $ {
     @Unapply
     static <E, T> Tuple1<T> Valid(Validation.Valid<E, T> valid) { return Tuple.of(valid.get()); }
     @Unapply
-    static <E, T> Tuple1<Seq<E>> Invalid(Validation.Invalid<E, T> invalid) { return Tuple.of(invalid.getErrors()); }
+    static <E, T> Tuple1<E> Invalid(Validation.Invalid<E, T> invalid) { return Tuple.of(invalid.getError()); }
 
 }

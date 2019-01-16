@@ -17,16 +17,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vavr.test;
+package io.vavr.collection;
 
-/**
- * Internally used to provide more specific error messages.
- */
-public class CheckError extends Error {
+import java.lang.annotation.*;
 
-    private static final long serialVersionUID = 1L;
-
-    CheckError(String message, Throwable cause) {
-        super(message, cause);
-    }
+@Retention(RetentionPolicy.CLASS)
+@Target({ ElementType.TYPE, ElementType.METHOD, ElementType.CONSTRUCTOR, ElementType.FIELD })
+@Documented
+@interface GwtIncompatible {
+    String value() default "";
 }

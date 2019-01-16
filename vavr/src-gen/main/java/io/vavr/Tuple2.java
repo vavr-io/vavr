@@ -23,6 +23,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import java.io.Serializable;
 import java.util.AbstractMap;
 import java.util.Comparator;
@@ -38,7 +40,7 @@ import java.util.function.Function;
  * @param <T2> type of the 2nd element
  * @author Daniel Dietrich
  */
-public final class Tuple2<T1, T2> implements Comparable<Tuple2<T1, T2>>, Serializable {
+public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -97,6 +99,11 @@ public final class Tuple2<T1, T2> implements Comparable<Tuple2<T1, T2>>, Seriali
 
         // all components are equal
         return 0;
+    }
+
+    @Override
+    public int arity() {
+        return 2;
     }
 
     @Override
@@ -229,6 +236,11 @@ public final class Tuple2<T1, T2> implements Comparable<Tuple2<T1, T2>>, Seriali
     public <U> U apply(BiFunction<? super T1, ? super T2, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1, _2);
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.of(_1, _2);
     }
 
     /**

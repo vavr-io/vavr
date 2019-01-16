@@ -104,12 +104,24 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     /**
+     * Creates a {@code FutureImpl} that needs to be automatically completed by calling {@link #tryComplete(Try)}.
+     *
+     * @param executor An {@link Executor} to run and control the computation and to perform the actions.
+     * @param <T> value type of the Future
+     * @return a new {@code FutureImpl} instance
+     */
+    static <T> FutureImpl<T> of(Executor executor) {
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (tryComplete, updateThread) -> {});
+    }
+
+    /**
      * Creates a {@code FutureImpl} that is immediately completed with the given value. No task will be started.
      *
      * @param executor An {@link Executor} to run and control the computation and to perform the actions.
-     * @param value    the result of this Future
+     * @param value the result of this Future
+     * @param <T> value type of the Future
+     * @return a new {@code FutureImpl} instance
      */
-    @SuppressWarnings("unchecked")
     static <T> FutureImpl<T> of(Executor executor, Try<? extends T> value) {
         return new FutureImpl<>(executor, Option.some(Try.narrow(value)), null, null, (tryComplete, updateThread) -> {});
     }
@@ -244,7 +256,7 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
-    public Future<T> cancel(boolean mayInterruptIfRunning) {
+    public boolean cancel(boolean mayInterruptIfRunning) {
         if (!isCompleted()) {
             synchronized (lock) {
                 if (!isCompleted()) {
@@ -252,10 +264,11 @@ final class FutureImpl<T> implements Future<T> {
                         this.thread.interrupt();
                     }
                     this.cancelled = tryComplete(Try.failure(new CancellationException()));
+                    return this.cancelled;
                 }
             }
         }
-        return this;
+        return false;
     }
 
     private void updateThread() {
@@ -272,6 +285,16 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public Executor executor() {
         return executor;
+    }
+
+    @Deprecated
+    @Override
+    public ExecutorService executorService() {
+        if (executor instanceof ExecutorService) {
+            return (ExecutorService) executor;
+        } else {
+            throw new UnsupportedOperationException("Removed starting with Vavr 0.10.0, use executor() instead.");
+        }
     }
 
     @Override
@@ -328,7 +351,7 @@ final class FutureImpl<T> implements Future<T> {
      * @throws IllegalStateException if the Future is already completed or cancelled.
      * @throws NullPointerException  if the given {@code value} is null.
      */
-    private boolean tryComplete(Try<? extends T> value) {
+    boolean tryComplete(Try<? extends T> value) {
         Objects.requireNonNull(value, "value is null");
         if (isCompleted()) {
             return false;

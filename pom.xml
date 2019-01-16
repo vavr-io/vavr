@@ -311,8 +311,8 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     <version>${maven.surefire.version}</version>
                     <configuration>
                         <!-- ForkJoinPool parallelism for io.vavr.concurrent.Future.
-                             Typically this is the number of cores by default.
-                             In the travis-ci build env this is currently set to 1. -->
+	                             Typically this is the number of cores by default.
+	                             In the travis-ci build env this is currently set to 1. -->
                         <!--<argLine>-Djava.util.concurrent.ForkJoinPool.common.parallelism=1</argLine>-->
                         <parallel>all</parallel>
                         <threadCount>4</threadCount>

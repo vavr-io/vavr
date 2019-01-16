@@ -33,6 +33,7 @@ import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SuppressWarnings("deprecation")
 public class EitherTest extends AbstractValueTest {
 
     // -- AbstractValueTest
@@ -73,10 +74,24 @@ public class EitherTest extends AbstractValueTest {
     }
 
     @Test
+    public void shouldBimapLeftProjection() {
+        final Either.LeftProjection<Integer, String> actual = Either.<Integer, String> left(1).left().bimap(i -> i + 1, s -> s + "1");
+        final Either<Integer, String> expected = Either.left(2);
+        assertThat(actual.get()).isEqualTo(expected.getLeft());
+    }
+
+    @Test
     public void shouldBimapRight() {
         final Either<Integer, String> actual = Either.<Integer, String> right("1").bimap(i -> i + 1, s -> s + "1");
         final Either<Integer, String> expected = Either.right("11");
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldBimapRightProjection() {
+        final Either.RightProjection<Integer, String> actual = Either.<Integer, String> right("1").right().bimap(i -> i + 1, s -> s + "1");
+        final Either<Integer, String> expected = Either.right("11");
+        assertThat(actual.get()).isEqualTo(expected.get());
     }
 
     @Test
@@ -376,21 +391,21 @@ public class EitherTest extends AbstractValueTest {
     // -- peekLeft
 
     @Test
-    public void shouldOnLeftNil() {
-        assertThat(empty().onLeft(t -> {})).isEqualTo(empty());
+    public void shouldPeekLeftNil() {
+        assertThat(empty().peekLeft(t -> {})).isEqualTo(empty());
     }
 
     @Test
-    public void shouldOnLeftForLeft() {
+    public void shouldPeekLeftForLeft() {
         final int[] effect = { 0 };
-        final Either<Integer, ?> actual = Either.left(1).onLeft(i -> effect[0] = i);
+        final Either<Integer, ?> actual = Either.left(1).peekLeft(i -> effect[0] = i);
         assertThat(actual).isEqualTo(Either.left(1));
         assertThat(effect[0]).isEqualTo(1);
     }
 
     @Test
-    public void shouldNotOnLeftForRight() {
-        Either.right(1).onLeft(i -> { throw new IllegalStateException(); });
+    public void shouldNotPeekLeftForRight() {
+        Either.right(1).peekLeft(i -> { throw new IllegalStateException(); });
     }
 
     // equals
@@ -478,7 +493,7 @@ public class EitherTest extends AbstractValueTest {
     public void shouldConvertToInvalidValidation() {
         final Validation<String, ?> validation = Either.left("vavr").toValidation();
         assertThat(validation.isInvalid()).isTrue();
-        assertThat(validation.getErrors()).isEqualTo(List.of("vavr"));
+        assertThat(validation.getError()).isEqualTo("vavr");
     }
 
     // hashCode

@@ -1073,14 +1073,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     Tuple2<? extends Traversable<T>, ? extends Traversable<T>> partition(Predicate<? super T> predicate);
 
-    /**
-     * Performs the given {@code action} on the first element if this is an <em>eager</em> implementation.
-     * Performs the given {@code action} on all elements (the first immediately, successive deferred),
-     * if this is a <em>lazy</em> implementation.
-     *
-     * @param action The action that will be performed on the element(s).
-     * @return this instance
-     */
+    @Override
     Traversable<T> peek(Consumer<? super T> action);
 
     /**

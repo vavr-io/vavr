@@ -23,6 +23,10 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import static io.vavr.Function5Module.sneakyThrow;
+
+import io.vavr.control.Option;
+import io.vavr.control.Try;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,6 +51,23 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
      */
     long serialVersionUID = 1L;
+
+    /**
+     * Returns a function that always returns the constant
+     * value that you give in parameter.
+     *
+     * @param <T1> generic parameter type 1 of the resulting function
+     * @param <T2> generic parameter type 2 of the resulting function
+     * @param <T3> generic parameter type 3 of the resulting function
+     * @param <T4> generic parameter type 4 of the resulting function
+     * @param <T5> generic parameter type 5 of the resulting function
+     * @param <R> the result type
+     * @param value the value to be returned
+     * @return a function always returning the given value
+     */
+    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> constant(R value) {
+        return (t1, t2, t3, t4, t5) -> value;
+    }
 
     /**
      * Creates a {@code Function5} based on
@@ -88,6 +109,41 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
      */
     static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> of(Function5<T1, T2, T3, T4, T5, R> methodReference) {
         return methodReference;
+    }
+
+    /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
+     *         if the function is defined for the given arguments, and {@code None} otherwise.
+     */
+    @SuppressWarnings("RedundantTypeArguments")
+    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, Option<R>> lift(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
+        return (t1, t2, t3, t4, t5) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5)).toOption();
+    }
+
+    /**
+     * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
+     *
+     * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
+     * @param <R> return type
+     * @param <T1> 1st argument
+     * @param <T2> 2nd argument
+     * @param <T3> 3rd argument
+     * @param <T4> 4th argument
+     * @param <T5> 5th argument
+     * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
+     *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
+     */
+    static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, Try<R>> liftTry(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> partialFunction) {
+        return (t1, t2, t3, t4, t5) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5));
     }
 
     /**
@@ -167,6 +223,15 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
     }
 
     /**
+     * Returns the number of function arguments.
+     * @return an int value >= 0
+     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
+     */
+    default int arity() {
+        return 5;
+    }
+
+    /**
      * Returns a curried version of this function.
      *
      * @return a curried function equivalent to this.
@@ -194,14 +259,13 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
     }
 
     /**
-     * Checks if this function is memoizing (= caching) computed values.
+     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     * <p>
+     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
      *
-     * @return true, if this function is memoizing, false otherwise
+     * @return a memoizing function equivalent to this.
      */
-    default boolean isMemoized() {
-        return this instanceof Memoized;
-    }
-
     default Function5<T1, T2, T3, T4, T5, R> memoized() {
         if (isMemoized()) {
             return this;
@@ -222,7 +286,14 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
         }
     }
 
-    interface Memoized { /* zero abstract method (ZAM) interface */ }
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
 
     /**
      * Returns a composed function that first applies this Function5 to the given argument and then applies
@@ -238,4 +309,13 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
         return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
     }
 
+}
+
+interface Function5Module {
+
+    // DEV-NOTE: we do not plan to expose this as public API
+    @SuppressWarnings("unchecked")
+    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+        throw (T) t;
+    }
 }

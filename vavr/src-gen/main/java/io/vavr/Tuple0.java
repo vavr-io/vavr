@@ -23,6 +23,8 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
+import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -33,7 +35,7 @@ import java.util.function.Supplier;
  *
  * @author Daniel Dietrich
  */
-public final class Tuple0 implements Comparable<Tuple0>, Serializable {
+public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -65,6 +67,11 @@ public final class Tuple0 implements Comparable<Tuple0>, Serializable {
     }
 
     @Override
+    public int arity() {
+        return 0;
+    }
+
+    @Override
     public int compareTo(Tuple0 that) {
         return 0;
     }
@@ -80,6 +87,11 @@ public final class Tuple0 implements Comparable<Tuple0>, Serializable {
     public <U> U apply(Supplier<? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.get();
+    }
+
+    @Override
+    public Seq<?> toSeq() {
+        return List.empty();
     }
 
     /**

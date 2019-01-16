@@ -19,6 +19,7 @@
  */
 package io.vavr.control;
 
+import io.vavr.*;
 import io.vavr.collection.Seq;
 import io.vavr.AbstractValueTest;
 import io.vavr.Function1;
@@ -29,6 +30,7 @@ import org.junit.Test;
 
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -258,44 +260,18 @@ public class OptionTest extends AbstractValueTest {
         Option.none().getOrElseThrow(() -> new RuntimeException("none"));
     }
 
-    // -- toOptional
+    // -- toJavaOptional
 
     @Test
-    public void shouldConvertNoneToOptional() {
+    public void shouldConvertNoneToJavaOptional() {
         final Option<Object> none = Option.none();
-        assertThat(none.toOptional()).isEqualTo(Optional.empty());
+        assertThat(none.toJavaOptional()).isEqualTo(Optional.empty());
     }
 
     @Test
-    public void shouldConvertSomeToOptional() {
+    public void shouldConvertSomeToJavaOptional() {
         final Option<Integer> some = Option.some(1);
-        assertThat(some.toOptional()).isEqualTo(Optional.of(1));
-    }
-    
-    // -- toTry
-
-    @Test
-    public void shouldConvertNonEmptyToTry() {
-        assertThat(of(1, 2, 3).toTry()).isEqualTo(Try.of(() -> 1));
-    }
-
-    @Test
-    public void shouldConvertEmptyToTry() {
-        final Try<?> actual = empty().toTry();
-        assertThat(actual.isFailure()).isTrue();
-        assertThat(actual.getCause()).isExactlyInstanceOf(NoSuchElementException.class);
-    }
-
-    @Test
-    public void shouldConvertNonEmptyToTryUsingExceptionSupplier() {
-        final Exception x = new Exception("test");
-        assertThat(of(1, 2, 3).toTry(() -> x)).isEqualTo(Try.of(() -> 1));
-    }
-
-    @Test
-    public void shouldConvertEmptyToTryUsingExceptionSupplier() {
-        final Exception x = new Exception("test");
-        assertThat(empty().toTry(() -> x)).isEqualTo(Try.failure(x));
+        assertThat(some.toJavaOptional()).isEqualTo(Optional.of(1));
     }
 
     // -- isDefined
@@ -353,24 +329,6 @@ public class OptionTest extends AbstractValueTest {
         } catch (RuntimeException exc) {
             Assert.fail("No exception should be thrown!");
         }
-    }
-
-    // -- onSuccess
-
-    @Test
-    public void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
-        final int[] actual = new int[] { -1 };
-        final Option<Integer> testee = Option.of(1).onSuccess(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(1);
-        assertThat(testee).isEqualTo(Option.of(1));
-    }
-
-    @Test
-    public void shouldNotConsumeAnythingOnPeekWhenValueIsNotDefined() {
-        final int[] actual = new int[] { -1 };
-        final Option<Integer> testee = Option.<Integer> none().onSuccess(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(-1);
-        assertThat(testee).isEqualTo(Option.none());
     }
 
     // -- filter
@@ -474,6 +432,58 @@ public class OptionTest extends AbstractValueTest {
         final int[] actual = new int[] { -1 };
         Option.<Integer> none().forEach(i -> actual[0] = i);
         assertThat(actual[0]).isEqualTo(-1);
+    }
+
+    // -- toEither
+
+    @Test
+    public void shouldMakeRightOnSomeToEither() {
+        assertThat(API.Some(5).toEither("bad")).isEqualTo(API.Right(5));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToEither() {
+        assertThat(API.None().toEither("bad")).isEqualTo(API.Left("bad"));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToEitherSupplier() {
+        assertThat(API.None().toEither(() -> "bad")).isEqualTo(API.Left("bad"));
+    }
+
+    // -- toValidation
+
+    @Test
+    public void shouldMakeValidOnSomeToValidation() {
+        assertThat(API.Some(5).toValidation("bad")).isEqualTo(API.Valid(5));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToValidation() {
+        assertThat(API.None().toValidation("bad")).isEqualTo(API.Invalid("bad"));
+    }
+
+    @Test
+    public void shouldMakeLeftOnNoneToValidationSupplier() {
+        assertThat(API.None().toValidation(() -> "bad")).isEqualTo(API.Invalid("bad"));
+    }
+
+    // -- peek
+
+    @Test
+    public void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
+        final int[] actual = new int[] { -1 };
+        final Option<Integer> testee = Option.of(1).peek(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(1);
+        assertThat(testee).isEqualTo(Option.of(1));
+    }
+
+    @Test
+    public void shouldNotConsumeAnythingOnPeekWhenValueIsNotDefined() {
+        final int[] actual = new int[] { -1 };
+        final Option<Integer> testee = Option.<Integer> none().peek(i -> actual[0] = i);
+        assertThat(actual[0]).isEqualTo(-1);
+        assertThat(testee).isEqualTo(Option.none());
     }
 
     // -- transform
@@ -609,6 +619,24 @@ public class OptionTest extends AbstractValueTest {
     public void shouldPreserveSingletonWhenDeserializingNone() {
         final Object none = Serializables.deserialize(Serializables.serialize(Option.none()));
         assertThat(none == Option.none()).isTrue();
+    }
+
+    // -- toCompletableFuture
+
+    @Test
+    public void shouldConvertSomeToCompletableFuture() {
+        final String some = "some";
+        final CompletableFuture<String> future = API.Option(some).toCompletableFuture();
+        assertThat(future.isDone());
+        assertThat(Try.of(future::get).get()).isEqualTo(some);
+    }
+
+    @Test
+    public void shouldConvertNoneToFailedCompletableFuture() {
+
+        final CompletableFuture<Object> future = API.None().toCompletableFuture();
+        assertThat(future.isDone());
+        assertThat(future.isCompletedExceptionally());
     }
 
     // -- spliterator

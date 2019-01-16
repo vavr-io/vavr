@@ -25,6 +25,9 @@ package io.vavr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.vavr.collection.List;
+import io.vavr.collection.Seq;
+import io.vavr.collection.Stream;
 import java.util.Comparator;
 import java.util.Objects;
 import org.junit.Test;
@@ -35,6 +38,12 @@ public class Tuple6Test {
     public void shouldCreateTuple() {
         final Tuple6<Object, Object, Object, Object, Object, Object> tuple = createTuple();
         assertThat(tuple).isNotNull();
+    }
+
+    @Test
+    public void shouldGetArity() {
+        final Tuple6<Object, Object, Object, Object, Object, Object> tuple = createTuple();
+        assertThat(tuple.arity()).isEqualTo(6);
     }
 
     @Test
@@ -112,6 +121,12 @@ public class Tuple6Test {
       assertThat(tuple._4).isEqualTo(4);
       assertThat(tuple._5).isEqualTo(5);
       assertThat(tuple._6).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldConvertToSeq() {
+        final Seq<?> actual = createIntTuple(1, 0, 0, 0, 0, 0).toSeq();
+        assertThat(actual).isEqualTo(List.of(1, 0, 0, 0, 0, 0));
     }
 
     @Test
@@ -199,6 +214,20 @@ public class Tuple6Test {
       final Function1<Object, Object> f6 = Function1.identity();
       final Tuple6<Object, Object, Object, Object, Object, Object> actual = tuple.map(f1, f2, f3, f4, f5, f6);
       assertThat(actual).isEqualTo(tuple);
+    }
+
+    @Test
+    public void shouldReturnTuple6OfSequence6() {
+      final Seq<Tuple6<Integer, Integer, Integer, Integer, Integer, Integer>> iterable = List.of(Tuple.of(2, 3, 4, 5, 6, 7), Tuple.of(4, 5, 6, 7, 8, 9), Tuple.of(6, 7, 8, 9, 10, 11), Tuple.of(8, 9, 10, 11, 12, 13), Tuple.of(10, 11, 12, 13, 14, 15), Tuple.of(12, 13, 14, 15, 16, 17));
+      final Tuple6<Seq<Integer>, Seq<Integer>, Seq<Integer>, Seq<Integer>, Seq<Integer>, Seq<Integer>> expected = Tuple.of(Stream.of(2, 4, 6, 8, 10, 12), Stream.of(3, 5, 7, 9, 11, 13), Stream.of(4, 6, 8, 10, 12, 14), Stream.of(5, 7, 9, 11, 13, 15), Stream.of(6, 8, 10, 12, 14, 16), Stream.of(7, 9, 11, 13, 15, 17));
+      assertThat(Tuple.sequence6(iterable)).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldReturnTuple6OfSequence1() {
+      final Seq<Tuple6<Integer, Integer, Integer, Integer, Integer, Integer>> iterable = List.of(Tuple.of(1, 2, 3, 4, 5, 6));
+      final Tuple6<Seq<Integer>, Seq<Integer>, Seq<Integer>, Seq<Integer>, Seq<Integer>, Seq<Integer>> expected = Tuple.of(Stream.of(1), Stream.of(2), Stream.of(3), Stream.of(4), Stream.of(5), Stream.of(6));
+      assertThat(Tuple.sequence6(iterable)).isEqualTo(expected);
     }
 
     @Test

@@ -25,6 +25,7 @@ package io.vavr;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
@@ -40,6 +41,51 @@ public class Function4Test {
         }
         final Type type = new Type();
         assertThat(Function4.of(type::methodReference)).isNotNull();
+    }
+
+    @Test
+    public void shouldLiftPartialFunction() {
+        assertThat(Function4.lift((o1, o2, o3, o4) -> { while(true); })).isNotNull();
+    }
+
+    @Test
+    public void shouldPartiallyApply() {
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        assertThat(f.apply(null)).isNotNull();
+        assertThat(f.apply(null, null)).isNotNull();
+        assertThat(f.apply(null, null, null)).isNotNull();
+    }
+
+    @Test
+    public void shouldGetArity() {
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        assertThat(f.arity()).isEqualTo(4);
+    }
+
+    @Test
+    public void shouldConstant() {
+        final Function4<Object, Object, Object, Object, Object> f = Function4.constant(6);
+        assertThat(f.apply(1, 2, 3, 4)).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldCurry() {
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        final Function1<Object, Function1<Object, Function1<Object, Function1<Object, Object>>>> curried = f.curried();
+        assertThat(curried).isNotNull();
+    }
+
+    @Test
+    public void shouldTuple() {
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        final Function1<Tuple4<Object, Object, Object, Object>, Object> tupled = f.tupled();
+        assertThat(tupled).isNotNull();
+    }
+
+    @Test
+    public void shouldReverse() {
+        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
+        assertThat(f.reversed()).isNotNull();
     }
 
     @Test
@@ -80,31 +126,20 @@ public class Function4Test {
     }
 
     @Test
-    public void shouldPartiallyApply() {
-        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.apply(null)).isNotNull();
-        assertThat(f.apply(null, null)).isNotNull();
-        assertThat(f.apply(null, null, null)).isNotNull();
-    }
+    public void shouldLiftTryPartialFunction() {
+        AtomicInteger integer = new AtomicInteger();
+        Function4<Integer, Integer, Integer, Integer, Integer> divByZero = (i1, i2, i3, i4) -> 10 / integer.get();
+        Function4<Integer, Integer, Integer, Integer, Try<Integer>> divByZeroTry = Function4.liftTry(divByZero);
 
-    @Test
-    public void shouldCurry() {
-        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        final Function1<Object, Function1<Object, Function1<Object, Function1<Object, Object>>>> curried = f.curried();
-        assertThat(curried).isNotNull();
-    }
+        Try<Integer> res = divByZeroTry.apply(0, 0, 0, 0);
+        assertThat(res.isFailure()).isTrue();
+        assertThat(res.getCause()).isNotNull();
+        assertThat(res.getCause().getMessage()).isEqualToIgnoringCase("/ by zero");
 
-    @Test
-    public void shouldTuple() {
-        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        final Function1<Tuple4<Object, Object, Object, Object>, Object> tupled = f.tupled();
-        assertThat(tupled).isNotNull();
-    }
-
-    @Test
-    public void shouldReverse() {
-        final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
-        assertThat(f.reversed()).isNotNull();
+        integer.incrementAndGet();
+        res = divByZeroTry.apply(1, 2, 3, 4);
+        assertThat(res.isSuccess()).isTrue();
+        assertThat(res.get()).isEqualTo(10);
     }
 
     private static final Function4<Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4) -> i1 <= 0 ? i1 : Function4Test.recurrent2.apply(i1 - 1, i2, i3, i4) + 1;
