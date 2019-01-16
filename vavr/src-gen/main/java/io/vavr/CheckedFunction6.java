@@ -27,6 +27,7 @@ import static io.vavr.CheckedFunction6Module.sneakyThrow;
 
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -45,7 +46,7 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends Lambda<R> {
+public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends Serializable {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -242,35 +243,77 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends Lambda<R> {
         return (T6 t6) -> apply(t1, t2, t3, t4, t5, t6);
     }
 
-    @Override
+    /**
+     * Returns the number of function arguments.
+     * @return an int value >= 0
+     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
+     */
     default int arity() {
         return 6;
     }
 
-    @Override
+    /**
+     * Returns a curried version of this function.
+     *
+     * @return a curried function equivalent to this.
+     */
     default Function1<T1, Function1<T2, Function1<T3, Function1<T4, Function1<T5, CheckedFunction1<T6, R>>>>>> curried() {
         return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> apply(t1, t2, t3, t4, t5, t6);
     }
 
-    @Override
+    /**
+     * Returns a tupled version of this function.
+     *
+     * @return a tupled function equivalent to this.
+     */
     default CheckedFunction1<Tuple6<T1, T2, T3, T4, T5, T6>, R> tupled() {
         return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6);
     }
 
-    @Override
+    /**
+     * Returns a reversed version of this function. This may be useful in a recursive context.
+     *
+     * @return a reversed function equivalent to this.
+     */
     default CheckedFunction6<T6, T5, T4, T3, T2, T1, R> reversed() {
         return (t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6);
     }
 
-    @Override
+    /**
+     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     * <p>
+     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+     *
+     * @return a memoizing function equivalent to this.
+     */
     default CheckedFunction6<T1, T2, T3, T4, T5, T6, R> memoized() {
         if (isMemoized()) {
             return this;
         } else {
             final Map<Tuple6<T1, T2, T3, T4, T5, T6>, R> cache = new HashMap<>();
-            return (CheckedFunction6<T1, T2, T3, T4, T5, T6, R> & Memoized) (t1, t2, t3, t4, t5, t6)
-                    -> Memoized.of(cache, Tuple.of(t1, t2, t3, t4, t5, t6), t -> Try.of(() -> apply(t1, t2, t3, t4, t5, t6)).get());
+            return (CheckedFunction6<T1, T2, T3, T4, T5, T6, R> & Memoized) (t1, t2, t3, t4, t5, t6) -> {
+                final Tuple6<T1, T2, T3, T4, T5, T6> key = Tuple.of(t1, t2, t3, t4, t5, t6);
+                synchronized (cache) {
+                    if (cache.containsKey(key)) {
+                        return cache.get(key);
+                    } else {
+                        final R value = tupled().apply(key);
+                        cache.put(key, value);
+                        return value;
+                    }
+                }
+            };
         }
+    }
+
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**

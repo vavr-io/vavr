@@ -27,6 +27,7 @@ import static io.vavr.CheckedFunction1Module.sneakyThrow;
 
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,7 +41,7 @@ import java.util.function.Function;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface CheckedFunction1<T1, R> extends Lambda<R> {
+public interface CheckedFunction1<T1, R> extends Serializable {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -157,35 +158,76 @@ public interface CheckedFunction1<T1, R> extends Lambda<R> {
      */
     R apply(T1 t1) throws Exception;
 
-    @Override
+    /**
+     * Returns the number of function arguments.
+     * @return an int value >= 0
+     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
+     */
     default int arity() {
         return 1;
     }
 
-    @Override
+    /**
+     * Returns a curried version of this function.
+     *
+     * @return a curried function equivalent to this.
+     */
     default CheckedFunction1<T1, R> curried() {
         return this;
     }
 
-    @Override
+    /**
+     * Returns a tupled version of this function.
+     *
+     * @return a tupled function equivalent to this.
+     */
     default CheckedFunction1<Tuple1<T1>, R> tupled() {
         return t -> apply(t._1);
     }
 
-    @Override
+    /**
+     * Returns a reversed version of this function. This may be useful in a recursive context.
+     *
+     * @return a reversed function equivalent to this.
+     */
     default CheckedFunction1<T1, R> reversed() {
         return this;
     }
 
-    @Override
+    /**
+     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     * <p>
+     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+     *
+     * @return a memoizing function equivalent to this.
+     */
     default CheckedFunction1<T1, R> memoized() {
         if (isMemoized()) {
             return this;
         } else {
-            final Map<Tuple1<T1>, R> cache = new HashMap<>();
-            return (CheckedFunction1<T1, R> & Memoized) (t1)
-                    -> Memoized.of(cache, Tuple.of(t1), t -> Try.of(() -> apply(t1)).get());
+            final Map<T1, R> cache = new HashMap<>();
+            return (CheckedFunction1<T1, R> & Memoized) (t1) -> {
+                synchronized (cache) {
+                    if (cache.containsKey(t1)) {
+                        return cache.get(t1);
+                    } else {
+                        final R value = apply(t1);
+                        cache.put(t1, value);
+                        return value;
+                    }
+                }
+            };
         }
+    }
+
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**

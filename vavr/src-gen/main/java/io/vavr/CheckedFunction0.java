@@ -27,6 +27,7 @@ import static io.vavr.CheckedFunction0Module.sneakyThrow;
 
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,7 +39,7 @@ import java.util.function.Supplier;
  * @author Daniel Dietrich
  */
 @FunctionalInterface
-public interface CheckedFunction0<R> extends Lambda<R> {
+public interface CheckedFunction0<R> extends Serializable {
 
     /**
      * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -140,33 +141,78 @@ public interface CheckedFunction0<R> extends Lambda<R> {
      */
     R apply() throws Exception;
 
-    @Override
+    /**
+     * Returns the number of function arguments.
+     * @return an int value >= 0
+     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
+     */
     default int arity() {
         return 0;
     }
 
-    @Override
+    /**
+     * Returns a curried version of this function.
+     *
+     * @return a curried function equivalent to this.
+     */
     default CheckedFunction0<R> curried() {
         return this;
     }
 
-    @Override
+    /**
+     * Returns a tupled version of this function.
+     *
+     * @return a tupled function equivalent to this.
+     */
     default CheckedFunction1<Tuple0, R> tupled() {
         return t -> apply();
     }
 
-    @Override
+    /**
+     * Returns a reversed version of this function. This may be useful in a recursive context.
+     *
+     * @return a reversed function equivalent to this.
+     */
     default CheckedFunction0<R> reversed() {
         return this;
     }
 
-    @Override
+    /**
+     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     * <p>
+     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+     *
+     * @return a memoizing function equivalent to this.
+     */
     default CheckedFunction0<R> memoized() {
         if (isMemoized()) {
             return this;
         } else {
-            return (CheckedFunction0<R> & Memoized) Lazy.of(() -> Try.of(this::apply).get())::get;
+            final Lazy<R> lazy = Lazy.of(() -> {
+              try {
+                return apply();
+              } catch (Exception x) {
+                throw new RuntimeException(x);
+              }
+            });
+            return (CheckedFunction0<R> & Memoized) () -> {
+              try {
+                return lazy.get();
+              } catch(RuntimeException x) {
+                throw (Exception) x.getCause();
+              }
+            };
         }
+    }
+
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
     }
 
     /**

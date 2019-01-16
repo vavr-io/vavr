@@ -1456,6 +1456,7 @@ def generateMainClasses(): Unit = {
 
         val Objects = im.getType("java.util.Objects")
         val Try = if (checked) im.getType("io.vavr.control.Try") else ""
+        val Serializable = im.getType("java.io.Serializable")
         val additionalExtends = (checked, i) match {
           case (false, 0) => ", " + im.getType("java.util.function.Supplier") + "<R>"
           case (false, 1) => ", " + im.getType("java.util.function.Function") + "<T1, R>"
@@ -1500,7 +1501,7 @@ def generateMainClasses(): Unit = {
            * @author Daniel Dietrich
            */
           @FunctionalInterface
-          public interface $className$fullGenerics extends Lambda<R>$additionalExtends {
+          public interface $className$fullGenerics extends $Serializable$additionalExtends {
 
               /$javadoc
                * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
@@ -1658,46 +1659,111 @@ def generateMainClasses(): Unit = {
                 }
               """)}
 
-              @Override
+              /**
+               * Returns the number of function arguments.
+               * @return an int value >= 0
+               * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
+               */
               default int arity() {
                   return $i;
               }
 
-              @Override
+              /**
+               * Returns a curried version of this function.
+               *
+               * @return a curried function equivalent to this.
+               */
               default ${curriedType(i, name)} curried() {
                   return ${if (i < 2) "this" else s"$curried -> apply($params)"};
               }
 
-              @Override
+              /**
+               * Returns a tupled version of this function.
+               *
+               * @return a tupled function equivalent to this.
+               */
               default ${name}1<Tuple$i$genericsTuple, R> tupled() {
                   return t -> apply($tupled);
               }
 
-              @Override
+              /**
+               * Returns a reversed version of this function. This may be useful in a recursive context.
+               *
+               * @return a reversed function equivalent to this.
+               */
               default $className<${genericsReversedFunction}R> reversed() {
                   return ${if (i < 2) "this" else s"($paramsReversed) -> apply($params)"};
               }
 
-              @Override
+              /**
+               * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+               * On subsequent calls given the same arguments the memoized value is returned.
+               * <p>
+               * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+               *
+               * @return a memoizing function equivalent to this.
+               */
               default $className$fullGenerics memoized() {
                   if (isMemoized()) {
                       return this;
                   } else {
-                      ${val mappingFunction = (checked, i) match {
-                          case (true, 0) => s"() -> $Try.of(this::apply).get()"
-                          case (true, _) => s"t -> $Try.of(() -> apply($params)).get()"
-                          case (false, 0) => s"this::apply"
-                          case (false, _) => s"tupled()"
-                        }
-                        if (i == 0) xs"""
-                          return ($className$fullGenerics & Memoized) Lazy.of($mappingFunction)::get;
-                        """ else xs"""
-                          final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
-                          return ($className$fullGenerics & Memoized) ($params)
-                                  -> Memoized.of(cache, Tuple.of($params), $mappingFunction);
-                        """
-                      }
+                      ${if (i == 0) xs"""
+	                        ${if (checked) xs"""
+	                            final Lazy<R> lazy = Lazy.of(() -> {
+	                              try {
+	                                return apply();
+	                              } catch (Exception x) {
+	                                throw new RuntimeException(x);
+	                              }
+	                            });
+	                            return (CheckedFunction0<R> & Memoized) () -> {
+	                              try {
+	                                return lazy.get();
+	                              } catch(RuntimeException x) {
+	                                throw (Exception) x.getCause();
+	                              }
+	                            };
+	                        """ else xs"""
+                              return ($className$fullGenerics & Memoized) Lazy.of(this)::get;
+	                        """}
+                      """ else if (i == 1) xs"""
+                        final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.HashMap")}<>();
+                        return ($className$fullGenerics & Memoized) ($params) -> {
+                            synchronized (cache) {
+                                if (cache.containsKey($params)) {
+                                    return cache.get($params);
+                                } else {
+                                    final R value = apply($params);
+                                    cache.put($params, value);
+                                    return value;
+                                }
+                            }
+                        };
+                      """ else xs"""
+                        final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
+                        return ($className$fullGenerics & Memoized) ($params) -> {
+                            final Tuple$i$genericsTuple key = Tuple.of($params);
+                            synchronized (cache) {
+                                if (cache.containsKey(key)) {
+                                    return cache.get(key);
+                                } else {
+                                    final R value = tupled().apply(key);
+                                    cache.put(key, value);
+                                    return value;
+                                }
+                            }
+                        };
+                      """}
                   }
+              }
+
+              /**
+               * Checks if this function is memoizing (= caching) computed values.
+               *
+               * @return true, if this function is memoizing, false otherwise
+               */
+              default boolean isMemoized() {
+                  return this instanceof Memoized;
               }
 
               ${(i == 1 && !checked).gen(xs"""
