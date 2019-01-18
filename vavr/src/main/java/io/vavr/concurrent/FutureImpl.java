@@ -19,7 +19,6 @@
  */
 package io.vavr.concurrent;
 
-import io.vavr.CheckedConsumer;
 import io.vavr.collection.Queue;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -28,7 +27,6 @@ import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 /**
  * <strong>INTERNAL API - This class is subject to change.</strong>
@@ -37,6 +35,7 @@ import java.util.function.Predicate;
  * @author Daniel Dietrich
  */
 // TODO: where to use UncaughtExceptionHandler?
+@SuppressWarnings("deprecation")
 final class FutureImpl<T> implements Future<T> {
 
     /**
@@ -111,7 +110,7 @@ final class FutureImpl<T> implements Future<T> {
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> of(Executor executor) {
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (tryComplete, updateThread) -> {});
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (complete, updateThread) -> {});
     }
 
     /**
@@ -123,21 +122,21 @@ final class FutureImpl<T> implements Future<T> {
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> of(Executor executor, Try<? extends T> value) {
-        return new FutureImpl<>(executor, Option.some(Try.narrow(value)), null, null, (tryComplete, updateThread) -> {});
+        return new FutureImpl<>(executor, Option.some(Try.narrow(value)), null, null, (complete, updateThread) -> {});
     }
 
     /**
      * Creates a {@code FutureImpl} that is eventually completed.
      * The given {@code computation} is <em>synchronously</em> executed, no thread is started.
      *
-     * @param executor    An {@link Executor} to run and control the computation and to perform the actions.
-     * @param computation A non-blocking computation
-     * @param <T>         value type of the Future
+     * @param executor An {@link Executor} to run and control the computation and to perform the actions.
+     * @param task     A non-blocking computation
+     * @param <T>      value type of the Future
      * @return a new {@code FutureImpl} instance
      */
-    static <T> FutureImpl<T> sync(Executor executor, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (tryComplete, updateThread) ->
-            computation.accept(tryComplete)
+    static <T> FutureImpl<T> sync(Executor executor, Task<? extends T> task) {
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (complete, updateThread) ->
+            task.run(complete::with)
         );
     }
 
@@ -145,20 +144,20 @@ final class FutureImpl<T> implements Future<T> {
      * Creates a {@code FutureImpl} that is eventually completed.
      * The given {@code computation} is <em>asynchronously</em> executed, a new thread is started.
      *
-     * @param executor    An {@link Executor} to run and control the computation and to perform the actions.
-     * @param computation A (possibly blocking) computation
-     * @param <T>         value type of the Future
+     * @param executor An {@link Executor} to run and control the computation and to perform the actions.
+     * @param task     A (possibly blocking) computation
+     * @param <T>      value type of the Future
      * @return a new {@code FutureImpl} instance
      */
-    static <T> FutureImpl<T> async(Executor executor, CheckedConsumer<Predicate<Try<? extends T>>> computation) {
+    static <T> FutureImpl<T> async(Executor executor, Task<? extends T> task) {
         // In a single-threaded context this Future may already have been completed during initialization.
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (tryComplete, updateThread) ->
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (complete, updateThread) ->
                 executor.execute(() -> {
                     updateThread.run();
                     try {
-                        computation.accept(tryComplete);
+                        task.run(complete::with);
                     } catch (Throwable x) {
-                        tryComplete.test(Try.failure(x));
+                        complete.with(Try.failure(x));
                     }
                 })
         );
@@ -364,7 +363,6 @@ final class FutureImpl<T> implements Future<T> {
                     actions = null;
                     waiters = null;
                 } else {
-                    // the job isn't set to null, see isCancelled()
                     actions = this.actions;
                     waiters = this.waiters;
                     this.value = Option.some(Try.narrow(value));
@@ -402,6 +400,6 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     private interface Computation<T> {
-        void execute(Predicate<Try<? extends T>> tryComplete, Runnable updateThread) throws Throwable;
+        void execute(Task.Complete<T> complete, Runnable updateThread) throws Throwable;
     }
 }

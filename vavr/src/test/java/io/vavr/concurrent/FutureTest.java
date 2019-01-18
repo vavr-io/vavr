@@ -42,7 +42,6 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import static io.vavr.concurrent.Concurrent.waitUntil;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -526,6 +525,7 @@ public class FutureTest extends AbstractValueTest {
 
     // -- andThen
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void shouldCompleteWithErrorIfFailAndThenFail() {
         final Future<Integer> future = Future.<Integer> of(zZz(new Error("fail!")))
@@ -533,6 +533,7 @@ public class FutureTest extends AbstractValueTest {
         assertFailed(future, Error.class);
     }
 
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Test
     public void shouldCompleteWithSuccessIfSuccessAndThenFail() {
         final Future<Integer> future = Future.of(zZz(42))
@@ -543,9 +544,7 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldCompleteWithSpecificOrderIfSuccessAndThenSuccess() {
         final int[] sideEffect = new int[] { 0 };
-        final Future<Void> future = Future.run(() -> {
-            Thread.sleep(250);
-        }).andThen(t -> sideEffect[0] = 42);
+        final Future<Void> future = Future.run(() -> Thread.sleep(250)).andThen(t -> sideEffect[0] = 42);
         assertThat(future.isCompleted()).isFalse();
         assertThat(sideEffect[0]).isEqualTo(0);
         future.await();
@@ -736,9 +735,9 @@ public class FutureTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldCancelJoinedFutureThatNeverCompletes() {
+    public void shouldCancelFutureThatNeverCompletes() {
         @SuppressWarnings("deprecation")
-        final Future<?> future = Future.join(tryComplete -> {
+        final Future<?> future = Future.run(complete -> {
             // we break our promise, the Future is never completed
         });
 
@@ -895,18 +894,18 @@ public class FutureTest extends AbstractValueTest {
     public void shouldRegisterCallbackBeforeFutureCompletes() {
 
         final AtomicBoolean ok = new AtomicBoolean(false);
-        final AtomicReference<Predicate<Try<? extends Boolean>>> computation = new AtomicReference<>(null);
+        final AtomicReference<Task.Complete<Boolean>> computation = new AtomicReference<>(null);
 
         // this computation never ends
         @SuppressWarnings("deprecation")
-        final Future<Boolean> future = Future.join(computation::set);
+        final Future<Boolean> future = Future.run(computation::set);
 
         // now we have time to register an onComplete handler
         future.onComplete(result -> result.forEach(ok::set));
 
         // now we complete the future...
         assertThat(future.isCompleted()).isFalse();
-        assertThat(computation.get().test(Try.success(true))).isTrue();
+        assertThat(computation.get().with(Try.success(true))).isTrue();
 
         // ...and wait for the result
         waitUntil(ok::get);
