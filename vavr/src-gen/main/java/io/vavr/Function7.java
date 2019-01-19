@@ -23,8 +23,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import static io.vavr.Function7Module.sneakyThrow;
-
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.io.Serializable;
@@ -352,13 +350,4 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
         return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
     }
 
-}
-
-interface Function7Module {
-
-    // DEV-NOTE: we do not plan to expose this as public API
-    @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
-        throw (T) t;
-    }
 }

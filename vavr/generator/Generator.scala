@@ -1497,7 +1497,9 @@ def generateMainClasses(): Unit = {
           case _ => s"$i arguments"
         }
 
-        im.getStatic(s"io.vavr.${className}Module.sneakyThrow")
+        if (checked) {
+          im.getStatic(s"io.vavr.${className}Module.sneakyThrow")
+        }
 
         xs"""
           /**
@@ -1882,14 +1884,16 @@ def generateMainClasses(): Unit = {
               """)}
           }
 
-          interface ${className}Module {
+          ${checked.gen(xs"""
+            interface ${className}Module {
 
-              // DEV-NOTE: we do not plan to expose this as public API
-              @SuppressWarnings("unchecked")
-              static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
-                  throw (T) t;
-              }
-          }
+                // DEV-NOTE: we do not plan to expose this as public API
+                @SuppressWarnings("unchecked")
+                static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+                    throw (T) t;
+                }
+            }
+          """)}
         """
       }
     })
