@@ -607,7 +607,7 @@ public class FutureTest extends AbstractValueTest {
         assertThat(returnedFuture).isSameAs(future);
         assertThat(future.isFailure()).isTrue();
         assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
-        assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 MILLISECONDS");
+        assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 milliseconds");
     }
     
     @Test
@@ -618,7 +618,7 @@ public class FutureTest extends AbstractValueTest {
         future.await(100, TimeUnit.MILLISECONDS);
         assertThat(future.isFailure()).isTrue();
         assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
-        assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 MILLISECONDS");
+        assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 milliseconds");
     }
 
     // -- failed

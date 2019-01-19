@@ -230,7 +230,7 @@ final class FutureImpl<T> implements Future<T> {
                             final long remainder = duration - delta;
                             LockSupport.parkNanos(remainder); // returns immediately if remainder <= 0
                             if (System.nanoTime() - start > duration) {
-                                tryComplete(Try.failure(new TimeoutException("timeout after " + timeout + " " + unit)));
+                                tryComplete(Try.failure(new TimeoutException("timeout after " + timeout + " " + unit.name().toLowerCase())));
                             }
                         } else {
                             LockSupport.park();
