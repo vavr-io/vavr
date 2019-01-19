@@ -192,6 +192,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     @Override
     IndexedSeq<T> intersperse(T element);
 
+    @Deprecated
+    @Override
+    default boolean isDefinedAt(Integer index) {
+        return 0 <= index && index < length();
+    }
+
     @Override
     default T last() {
         if (isEmpty()) {
