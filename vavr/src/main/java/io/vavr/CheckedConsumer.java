@@ -59,9 +59,9 @@ public interface CheckedConsumer<T> {
      * Performs side-effects.
      *
      * @param t a value of type {@code T}
-     * @throws Exception if an error occurs
+     * @throws Throwable if an error occurs
      */
-    void accept(T t) throws Exception;
+    void accept(T t) throws Throwable;
 
     /**
      * Returns a chained {@code CheckedConsumer} that first executes {@code this.accept(t)}

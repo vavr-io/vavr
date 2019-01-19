@@ -1464,7 +1464,6 @@ def generateMainClasses(): Unit = {
         val Serializable = im.getType("java.io.Serializable")
         val additionalExtends = (checked, i) match {
           case (false, 0) => ", " + im.getType("java.util.function.Supplier") + "<R>"
-          case (true, 0) => ", " + im.getType("java.util.concurrent.Callable") + "<R>"
           case (false, 1) => ", " + im.getType("java.util.function.Function") + "<T1, R>"
           case (false, 2) => ", " + im.getType("java.util.function.BiFunction") + "<T1, T2, R>"
           case _ => ""
@@ -1632,9 +1631,9 @@ def generateMainClasses(): Unit = {
                * Applies this function to ${arguments(i)} and returns the result.
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j argument $j")("\n")}
                * @return the result of function application
-               * ${checked.gen("@throws Exception if something goes wrong applying this function to the given arguments")}
+               * ${checked.gen("@throws Throwable if something goes wrong applying this function to the given arguments")}
                */
-              R apply($paramsDecl)${checked.gen(" throws Exception")};
+              R apply($paramsDecl)${checked.gen(" throws Throwable")};
 
               ${(1 until i).gen(j => {
                 val partialApplicationArgs = (1 to j).gen(k => s"T$k t$k")(", ")
@@ -1655,19 +1654,8 @@ def generateMainClasses(): Unit = {
                 """
               })("\n\n")}
 
-              ${(i == 0).gen(
-                if (checked) xs"""
-                  /$javadoc
-                   * Implementation of {@linkplain java.util.concurrent.Callable#call()}, just calls {@linkplain #apply()}.
-                   *
-                   * @return the result of {@code apply()}
-                   * @throws Exception if something goes wrong when calling this function
-                   */
-                  @Override
-                  default R call() throws Exception {
-                      return apply();
-                  }
-                """ else xs"""
+              ${(i == 0 && !checked).gen(
+                xs"""
                   /$javadoc
                    * Implementation of {@linkplain java.util.function.Supplier#get()}, just calls {@linkplain #apply()}.
                    *
@@ -1731,18 +1719,18 @@ def generateMainClasses(): Unit = {
                       ${if (i == 0) xs"""
 	                        ${if (checked) xs"""
 	                            final Lazy<R> lazy = Lazy.of(() -> {
-	                              try {
-	                                return apply();
-	                              } catch (Exception x) {
-	                                throw new RuntimeException(x);
-	                              }
+	                                try {
+	                                    return apply();
+	                                } catch (Throwable x) {
+                                      throw new RuntimeException(x);
+	                                }
 	                            });
 	                            return (CheckedFunction0<R> & Memoized) () -> {
-	                              try {
-	                                return lazy.get();
-	                              } catch(RuntimeException x) {
-	                                throw (Exception) x.getCause();
-	                              }
+	                                try {
+	                                    return lazy.get();
+	                                } catch(RuntimeException x) {
+	                                    throw x.getCause();
+	                                }
 	                            };
 	                        """ else xs"""
                               return ($className$fullGenerics & Memoized) Lazy.of(this)::get;
@@ -3077,15 +3065,8 @@ def generateTestClasses(): Unit = {
                 }
               """)}
 
-              ${(i == 0).gen(
-                if (checked) xs"""
-                  @$test
-                  public void shouldCallValue() throws Exception {
-                      final String s = "test";
-                      final ${name}0<String> callable = () -> s;
-                      assertThat(callable.call()).isEqualTo(s);
-                  }
-                """ else xs"""
+              ${(i == 0 && !checked).gen(
+                xs"""
                   @$test
                   public void shouldGetValue() {
                       final String s = "test";

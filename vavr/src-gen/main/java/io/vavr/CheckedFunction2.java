@@ -152,9 +152,9 @@ public interface CheckedFunction2<T1, T2, R> extends Serializable {
      * @param t1 argument 1
      * @param t2 argument 2
      * @return the result of function application
-     * @throws Exception if something goes wrong applying this function to the given arguments
+     * @throws Throwable if something goes wrong applying this function to the given arguments
      */
-    R apply(T1 t1, T2 t2) throws Exception;
+    R apply(T1 t1, T2 t2) throws Throwable;
 
     /**
      * Applies this function partially to one argument.

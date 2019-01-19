@@ -1264,14 +1264,14 @@ public class FutureTest extends AbstractValueTest {
     private static <T> Future<T> blocking(CheckedFunction0<? extends T> computation) {
         return Future.of(() -> {
             final AtomicReference<T> result = new AtomicReference<>(null);
-            final AtomicReference<Exception> errorRef = new AtomicReference<>(null);
+            final AtomicReference<Throwable> errorRef = new AtomicReference<>(null);
             ForkJoinPool.managedBlock(new ForkJoinPool.ManagedBlocker() {
                 boolean releasable = false;
                 @Override
                 public boolean block() {
                     try {
                         result.set(computation.apply());
-                    } catch(Exception x) {
+                    } catch(Throwable x) {
                         errorRef.set(x);
                     }
                     return releasable = true;
@@ -1281,7 +1281,7 @@ public class FutureTest extends AbstractValueTest {
                     return releasable;
                 }
             });
-            final Exception error = errorRef.get();
+            final Throwable error = errorRef.get();
             if (error != null) {
                 throw error;
             } else {
