@@ -53,9 +53,9 @@ public interface CheckedRunnable {
     /**
      * Performs side-effects.
      *
-     * @throws Exception if an error occurs
+     * @throws Throwable if an error occurs
      */
-    void run() throws Exception;
+    void run() throws Throwable;
 
     /**
      * Returns an unchecked {@link Runnable} that will <em>sneaky throw</em> if an exceptions occurs when running the unit of work.

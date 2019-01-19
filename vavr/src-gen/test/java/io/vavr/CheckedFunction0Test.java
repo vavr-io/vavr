@@ -51,13 +51,6 @@ public class CheckedFunction0Test {
     }
 
     @Test
-    public void shouldCallValue() throws Exception {
-        final String s = "test";
-        final CheckedFunction0<String> callable = () -> s;
-        assertThat(callable.call()).isEqualTo(s);
-    }
-
-    @Test
     public void shouldGetArity() {
         final CheckedFunction0<Object> f = () -> null;
         assertThat(f.arity()).isEqualTo(0);

@@ -899,7 +899,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldNotRecoverFailureWhenExceptionTypeIsntAssignable(){
-        final Exception error = new IllegalStateException(FAILURE);
+        final Throwable error = new IllegalStateException(FAILURE);
         assertThat(Try.of(() -> { throw error; }).recoverWith(Error.class, success()).getCause()).isSameAs(error);
     }
 
