@@ -1,4 +1,4 @@
 /**
- * The io.vavr package contains core types like {@linkplain io.vavr.Lambda}, {@linkplain io.vavr.Lazy} and {@linkplain io.vavr.Tuple}.
+ * Beside {@link io.vavr.API} the io.vavr package contains core types like (Checked)Functions and Tuples.
  */
 package io.vavr;

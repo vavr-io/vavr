@@ -243,7 +243,7 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends Serializable {
 
     /**
      * Returns the number of function arguments.
-     * @return an int value >= 0
+     * @return an int value &gt;= 0
      * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
      */
     default int arity() {

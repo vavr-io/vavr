@@ -1009,11 +1009,9 @@ public interface Try<T> extends Value<T>, Serializable {
      * Converts this {@code Try} to a {@link Validation}, converting the Throwable (if present)
      * to another object using passed {@link Function}.
      *
-     * <pre>
-     * <code>
+     * <pre>{@code
      * Validation<String, Integer> = Try.of(() -> 1/0).toValidation(Throwable::getMessage));
-     * </code>
-     * </pre>
+     * }</pre>
      *
      * @param <U> result type of the throwable mapper
      * @param throwableMapper  A transformation from throwable to desired invalid type of new {@code Validation}
