@@ -34,7 +34,6 @@ import java.util.function.Consumer;
  * @param <T> Result of the computation.
  * @author Daniel Dietrich
  */
-// TODO: where to use UncaughtExceptionHandler?
 @SuppressWarnings("deprecation")
 final class FutureImpl<T> implements Future<T> {
 
@@ -276,6 +275,11 @@ final class FutureImpl<T> implements Future<T> {
             synchronized (lock) {
                 if (!isCompleted()) {
                     this.thread = Thread.currentThread();
+                    try {
+                        this.thread.setUncaughtExceptionHandler((thread, x) -> handleUncaughtException(x));
+                    } catch (SecurityException x) {
+                        // we are not allowed to set the uncaught exception handler of the worker thread ¯\_(ツ)_/¯
+                    }
                 }
             }
         }
@@ -387,7 +391,7 @@ final class FutureImpl<T> implements Future<T> {
         try {
             executor.execute(() -> action.accept(value.get()));
         } catch (Throwable x) {
-            // ignored // TODO: tell UncaughtExceptionHandler?
+            handleUncaughtException(x);
         }
     }
 
@@ -395,8 +399,12 @@ final class FutureImpl<T> implements Future<T> {
         try {
             LockSupport.unpark(waiter);
         } catch (Throwable x) {
-            // ignored // TODO: tell UncaughtExceptionHandler?
+            handleUncaughtException(x);
         }
+    }
+
+    private void handleUncaughtException(Throwable x) {
+        tryComplete(Try.failure(x));
     }
 
     private interface Computation<T> {
