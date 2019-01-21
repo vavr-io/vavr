@@ -18,6 +18,8 @@
  */
 package io.vavr.collection;
 
+import io.vavr.control.Option;
+
 import java.util.NoSuchElementException;
 
 public interface Iterator<T> extends java.util.Iterator<T> {
@@ -46,6 +48,20 @@ public interface Iterator<T> extends java.util.Iterator<T> {
     static <T> Iterator<T> of(T element) {
         return new SingletonIterator<>(element);
     }
+
+    /**
+     * A safe alternative to {@link #next()} that is equivalent to
+     *
+     * <pre>{@code
+     * hasNext() ? Option.some(next()) : Option.none()
+     * }</pre>
+     *
+     * @return a new instance of {@link Option}
+     */
+    default Option<T> nextOption() {
+        return hasNext() ? Option.some(next()) : Option.none();
+    }
+
 }
 
 final class EmptyIterator implements Iterator<Object> {
@@ -61,7 +77,7 @@ final class EmptyIterator implements Iterator<Object> {
 
     @Override
     public Object next() {
-        throw new NoSuchElementException("EmptyIterator.next()");
+        throw new NoSuchElementException("next on EmptyIterator");
     }
 
     @Override

@@ -1,16 +1,56 @@
+/* ____  ______________  ________________________  __________
+ * \   \/   /      \   \/   /   __/   /      \   \/   /      \
+ *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
+ *
+ * Copyright 2019 Vavr, http://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package io.vavr.collection;
 
+import org.junit.jupiter.api.Test;
+
+import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.*;
+
 class TraversableTest {
+
+    // -- .to(Function)
+
+    @Test
+    void shouldThrowOnToWhenFromIterableIsNull() {
+        assertEquals(
+                "fromIterable is null",
+                assertThrows(NullPointerException.class, () -> new ToDummy<>().to(null)).getMessage()
+        );
+    }
+
+    @Test
+    void shouldConvertTo() {
+        assertSame(1, new ToDummy<>().to(ignored -> 1));
+    }
+
 }
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "ConstantConditions", "TypeParameterExplicitlyExtendsObject"})
 final class ShouldJustCompile {
 
     private ShouldJustCompile() {
         throw new Error("Should just compile.");
     }
 
-    <T> LinearSeq<T> toLinearSeq(Iterable<? extends T> iterable) {
+    private <T> LinearSeq<T> toLinearSeq(Iterable<? extends T> iterable) {
         return null;
     }
 
@@ -29,4 +69,132 @@ final class ShouldJustCompile {
         }
     }
 
+    void shouldConvertToInThePresenceOfVariance() {
+
+        class A {
+        }
+
+        class B extends A {
+        }
+
+        class C extends B {
+        }
+
+        final Traversable<Number> traversable = null;
+
+        // -- Number
+
+        {
+            final Function<Iterable<Number>, A> toA = ignored -> null;
+            final Function<Iterable<Number>, B> toB = ignored -> null;
+            final Function<Iterable<Number>, C> toC = ignored -> null;
+
+            final A a1 = traversable.to(toA);
+            final A a2 = traversable.to(toB);
+            final A a3 = traversable.to(toC);
+        }
+
+        {
+            final Function<Iterable<? extends Number>, A> toA = ignored -> null;
+            final Function<Iterable<? extends Number>, B> toB = ignored -> null;
+            final Function<Iterable<? extends Number>, C> toC = ignored -> null;
+
+            final A a1 = traversable.to(toA);
+            final A a2 = traversable.to(toB);
+            final A a3 = traversable.to(toC);
+        }
+
+        {
+            final Function<? super Iterable<? super Number>, ? extends A> toA = ignored -> null;
+            final Function<? super Iterable<Number>, ? extends B> toB = ignored -> null;
+            final Function<Iterable<? super Number>, ? extends C> toC = ignored -> null;
+
+            final A a1 = traversable.to(toA);
+            final A a2 = traversable.to(toB);
+            final A a3 = traversable.to(toC);
+        }
+
+        // -- Object
+
+        {
+            final Function<Iterable<Object>, A> toA = ignored -> null;
+            final Function<Iterable<Object>, B> toB = ignored -> null;
+            final Function<Iterable<Object>, C> toC = ignored -> null;
+
+            // final A a1 = traversable.to(toA);
+            // final A a2 = traversable.to(toB);
+            // final A a3 = traversable.to(toC);
+        }
+
+        {
+            final Function<Iterable<? extends Object>, A> toA = ignored -> null;
+            final Function<Iterable<? extends Object>, B> toB = ignored -> null;
+            final Function<Iterable<? extends Object>, C> toC = ignored -> null;
+
+            final A a1 = traversable.to(toA);
+            final A a2 = traversable.to(toB);
+            final A a3 = traversable.to(toC);
+        }
+
+        {
+            final Function<? super Iterable<? super Object>, ? extends A> toA = ignored -> null;
+            final Function<? super Iterable<Object>, ? extends B> toB = ignored -> null;
+            final Function<Iterable<? super Object>, ? extends C> toC = ignored -> null;
+
+            // final A a1 = traversable.to(toA);
+            // final A a2 = traversable.to(toB);
+            // final A a3 = traversable.to(toC);
+        }
+
+        // -- Integer
+
+        {
+            final Function<Iterable<Integer>, A> toA = ignored -> null;
+            final Function<Iterable<Integer>, B> toB = ignored -> null;
+            final Function<Iterable<Integer>, C> toC = ignored -> null;
+
+            // final A a1 = traversable.to(toA);
+            // final A a2 = traversable.to(toB);
+            // final A a3 = traversable.to(toC);
+        }
+
+        {
+            final Function<Iterable<? extends Integer>, A> toA = ignored -> null;
+            final Function<Iterable<? extends Integer>, B> toB = ignored -> null;
+            final Function<Iterable<? extends Integer>, C> toC = ignored -> null;
+
+            // final A a1 = traversable.to(toA);
+            // final A a2 = traversable.to(toB);
+            // final A a3 = traversable.to(toC);
+        }
+
+        {
+            final Function<? super Iterable<? super Integer>, ? extends A> toA = ignored -> null;
+            final Function<? super Iterable<Integer>, ? extends B> toB = ignored -> null;
+            final Function<Iterable<? super Integer>, ? extends C> toC = ignored -> null;
+
+            final A a1 = traversable.to(toA);
+            // final A a2 = traversable.to(toB);
+            final A a3 = traversable.to(toC);
+        }
+    }
+}
+
+// dummy impl, default `to(Function)` needed only
+final class ToDummy<T> implements Traversable<T> {
+
+    @Override
+    public <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public <U> Traversable<U> map(Function<? super T, ? extends U> mapper) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        throw new UnsupportedOperationException();
+    }
 }
