@@ -32,6 +32,7 @@ public interface CheckedSupplier<T> {
      * Gets a result.
      *
      * @return a result
+     * @throws Throwable if an error occurs when supplying the value
      */
     T get() throws Throwable;
 }
