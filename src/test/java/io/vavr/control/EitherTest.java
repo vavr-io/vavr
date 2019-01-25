@@ -617,7 +617,7 @@ class EitherTest {
         );
     }
 
-    // -- .orElse(Callable)
+    // -- .orElse(Supplier)
 
     @Test
     void shouldReturnSelfOnOrElseIfRight() {

@@ -36,7 +36,7 @@ class CheckedPredicateTest {
     // -- static .not(CheckedPredicate)
 
     @Test
-    void shouldApplyStaticNotToGivenPredicate() throws Exception {
+    void shouldApplyStaticNotToGivenPredicate() throws Throwable {
         assertFalse(CheckedPredicate.not(TRUE).test(null));
         assertTrue(CheckedPredicate.not(FALSE).test(null));
     }
@@ -66,7 +66,7 @@ class CheckedPredicateTest {
     // -- .and(CheckedPredicate)
 
     @Test
-    void shouldBehaveLikeLogicalAnd() throws Exception {
+    void shouldBehaveLikeLogicalAnd() throws Throwable {
         assertTrue(TRUE.and(TRUE).test(null));
         assertFalse(TRUE.and(FALSE).test(null));
         assertFalse(FALSE.and(TRUE).test(null));
@@ -86,7 +86,7 @@ class CheckedPredicateTest {
     }
 
     @Test
-    void shouldNotRethrowWhenFirstPredicateReturnsFalseSecondPredicateFailsUsingAnd() throws Exception {
+    void shouldNotRethrowWhenFirstPredicateReturnsFalseSecondPredicateFailsUsingAnd() throws Throwable {
         final CheckedPredicate<Object> p = ignored -> { throw ERROR; };
         assertFalse(FALSE.and(p).test(null));
     }
@@ -102,7 +102,7 @@ class CheckedPredicateTest {
     // -- .negate()
 
     @Test
-    void shouldBehaveLikeLogicalNegation() throws Exception {
+    void shouldBehaveLikeLogicalNegation() throws Throwable {
         assertFalse(TRUE.negate().test(null));
         assertTrue(FALSE.negate().test(null));
     }
@@ -116,7 +116,7 @@ class CheckedPredicateTest {
     // -- .or(CheckedPredicate)
 
     @Test
-    void shouldBehaveLikeLogicalOr() throws Exception {
+    void shouldBehaveLikeLogicalOr() throws Throwable {
         assertTrue(TRUE.or(TRUE).test(null));
         assertTrue(TRUE.or(FALSE).test(null));
         assertTrue(FALSE.or(TRUE).test(null));
@@ -136,7 +136,7 @@ class CheckedPredicateTest {
     }
 
     @Test
-    void shouldNotRethrowWhenFirstPredicateReturnsTrueAndSecondPredicateFailsUsingOr() throws Exception {
+    void shouldNotRethrowWhenFirstPredicateReturnsTrueAndSecondPredicateFailsUsingOr() throws Throwable {
         final CheckedPredicate<Object> p = ignored -> { throw ERROR; };
         assertTrue(TRUE.or(p).test(null));
     }

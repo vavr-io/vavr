@@ -40,7 +40,7 @@ class CheckedConsumerTest {
     // -- .andThen(CheckedConsumer)
 
     @Test
-    void shouldCallOneCheckedConsumerAndThenAnotherCheckedConsumer() throws Exception {
+    void shouldCallOneCheckedConsumerAndThenAnotherCheckedConsumer() throws Throwable {
         final List<String> list = new ArrayList<>();
         final CheckedConsumer<String> f1 = s -> list.add("before:" + s);
         final CheckedConsumer<String> f2 = s -> list.add("andThen:" + s);

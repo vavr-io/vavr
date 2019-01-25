@@ -40,7 +40,7 @@ class OptionTest {
     private static final Error ERROR = new Error();
     private static final AssertionError ASSERTION_ERROR = new AssertionError("unexpected");
 
-    // -- static .of(Callable)
+    // -- static .of(Supplier)
 
     @Test
     void shouldCreateNoneWhenCallingOptionOfNullValue() {

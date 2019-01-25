@@ -27,7 +27,7 @@ class CheckedFunctionTest {
     // -- static .identity()
 
     @Test
-    void shouldCreateIdentity() throws Exception {
+    void shouldCreateIdentity() throws Throwable {
         CheckedFunction<Object, Object> f = CheckedFunction.identity();
         assertNull(f.apply(null));
         assertEquals(1, f.apply(1));
@@ -36,7 +36,7 @@ class CheckedFunctionTest {
     // -- .andThen(CheckedFunction)
 
     @Test
-    void shouldApplyOneCheckedFunctionAndThenAnotherCheckedFunction() throws Exception {
+    void shouldApplyOneCheckedFunctionAndThenAnotherCheckedFunction() throws Throwable {
         final CheckedFunction<Integer, Boolean> before = i -> i % 2 == 0;
         final CheckedFunction<Boolean, String> after = Object::toString;
         final CheckedFunction<Integer, String> f = before.andThen(after);
@@ -86,7 +86,7 @@ class CheckedFunctionTest {
     // -- .compose(CheckedFunction)
 
     @Test
-    void shouldApplyOneCheckedFunctionComposedWithAnotherCheckedFunction() throws Exception {
+    void shouldApplyOneCheckedFunctionComposedWithAnotherCheckedFunction() throws Throwable {
         final CheckedFunction<Integer, Boolean> before = i -> i % 2 == 0;
         final CheckedFunction<Boolean, String> after = Object::toString;
         final CheckedFunction<Integer, String> f = after.compose(before);

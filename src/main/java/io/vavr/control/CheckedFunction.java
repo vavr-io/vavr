@@ -44,9 +44,9 @@ public interface CheckedFunction<T, R> {
      *
      * @param t argument of type {@code T}
      * @return the result of the function application
-     * @throws Exception if something goes wrong applying this function to the given argument
+     * @throws Throwable if something goes wrong applying this function to the given argument
      */
-    R apply(T t) throws Exception;
+    R apply(T t) throws Throwable;
 
     /**
      * Returns a composed function that first applies this to the given argument and then applies
