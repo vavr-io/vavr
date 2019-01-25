@@ -19,16 +19,19 @@
 package io.vavr.control;
 
 /**
- * A {@linkplain Runnable} which may throw.
+ * A function that takes no input, returns a value and may throw a {@link Throwable}.
+ * <p>
+ * The function is not required to return the same result each time it is called..
+ *
+ * @param <T> the type of supplied results
  */
 @FunctionalInterface
-public interface CheckedRunnable {
+public interface CheckedSupplier<T> {
 
     /**
-     * Performs side-effects.
+     * Gets a result.
      *
-     * @throws Throwable if an error occurs
+     * @return a result
      */
-    void run() throws Throwable;
-    
+    T get() throws Throwable;
 }

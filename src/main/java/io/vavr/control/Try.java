@@ -24,7 +24,6 @@ import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -51,8 +50,8 @@ import java.util.stream.Stream;
  *
  * <h2>Creation</h2>
  *
- * Try is intended to be used as value which contains the result of a computation. For that purpose, {@link #of(Callable)}
- * is called. See also {@link #success(Object)} and {@link #failure(Throwable)}.
+ * Try is intended to be used as value which contains the result of a computation. For that purpose,
+ * {@link #of(CheckedSupplier)} is called. See also {@link #success(Object)} and {@link #failure(Throwable)}.
  * <p>
  * However, some use {@code Try} as syntactic sugar for try-catch blocks that only perform side-effects. For that purpose,
  * {@link #run(CheckedRunnable)} is called. This variant does not contain a value but is still able to observe, handle
@@ -91,7 +90,7 @@ import java.util.stream.Stream;
  * <ul>
  * <li>{@link #failed()} - transforms a failure into a success</li>
  * <li>{@link #mapFailure(CheckedFunction)} - transforms the cause of a failure</li>
- * <li>{@link #orElse(Callable)} - performs another computation in the case of a failure</li>
+ * <li>{@link #orElse(CheckedSupplier)} - performs another computation in the case of a failure</li>
  * <li>{@link #recover(Class, CheckedFunction)} - recovers a specific failure by providing an alternate value</li>
  * <li>{@link #recoverWith(Class, CheckedFunction)} - recovers a specific failure by performing an alternate computation</li>
  * </ul>
@@ -150,18 +149,18 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
     private Try() {}
 
     /**
-     * Creates a Try of a Callable.
+     * Creates a Try of a {@link CheckedSupplier}.
      *
-     * @param callable A supplier that may throw a checked exception
+     * @param supplier A supplier that may throw a checked exception
      * @param <T>      Component type
-     * @return {@code Success(callable.call())} if no exception occurs, otherwise {@code Failure(cause)} if a
-     * non-fatal error occurs calling {@code callable.call()}.
+     * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(cause)} if a
+     * non-fatal error occurs calling {@code supplier.get()}.
      * @throws Error if the cause of the {@link Failure} is fatal, i.e. non-recoverable
      */
-    public static <T> Try<T> of(Callable<? extends T> callable) {
-        Objects.requireNonNull(callable, "callable is null");
+    public static <T> Try<T> of(CheckedSupplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         try {
-            return success(callable.call());
+            return success(supplier.get());
         } catch (Throwable t) {
             return failure(t);
         }
@@ -491,17 +490,17 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
     /**
      * Returns this {@code Try} in the case of a {@code Success}, otherwise {@code other.call()}.
      *
-     * @param callable a {@link Callable}
+     * @param supplier a {@link CheckedSupplier}
      * @return a {@code Try} instance
      */
     @SuppressWarnings("unchecked")
-    public Try<T> orElse(Callable<? extends Try<? extends T>> callable) {
-        Objects.requireNonNull(callable, "callable is null");
+    public Try<T> orElse(CheckedSupplier<? extends Try<? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
         if (isSuccess()) {
             return this;
         } else {
             try {
-                return (Try<T>) callable.call();
+                return (Try<T>) supplier.get();
             } catch (Throwable x) {
                 return failure(x);
             }

@@ -47,7 +47,7 @@ class TryTest {
         private static final long serialVersionUID = 1L;
     };
 
-    // -- static .of(Callable)
+    // -- static .of(CheckedSupplier)
 
     @Test
     void shouldCreateSuccessWhenCallingTryOfWithNullValue() {
@@ -55,25 +55,25 @@ class TryTest {
     }
 
     @Test
-    void shouldCreateSuccessWhenCallingTryOfCallable() {
+    void shouldCreateSuccessWhenCallingTryOfCheckedSupplier() {
         assertTrue(Try.of(() -> SUCCESS_VALUE).isSuccess());
     }
 
     @Test
-    void shouldCreateFailureWhenCallingTryOfCallable() {
+    void shouldCreateFailureWhenCallingTryOfCheckedSupplier() {
         assertTrue(Try.of(() -> { throw FAILURE_CAUSE; }).isFailure());
     }
 
     @Test
-    void shouldThrowNPEWhenCallingTryOfCallable() {
+    void shouldThrowNPEWhenCallingTryOfCheckedSupplier() {
         assertEquals(
-                "callable is null",
+                "supplier is null",
                 assertThrows(NullPointerException.class, () -> Try.of(null)).getMessage()
         );
     }
 
     @Test
-    void shouldRethrowLinkageErrorWhenCallingTryOfCallable() {
+    void shouldRethrowLinkageErrorWhenCallingTryOfCheckedSupplier() {
         assertSame(
                 LINKAGE_ERROR,
                 assertThrows(LINKAGE_ERROR.getClass(), () -> Try.of(() -> { throw LINKAGE_ERROR; }))
@@ -81,7 +81,7 @@ class TryTest {
     }
 
     @Test
-    void shouldRethrowThreadDeathWhenCallingTryOfCallable() {
+    void shouldRethrowThreadDeathWhenCallingTryOfCheckedSupplier() {
         assertSame(
                 THREAD_DEATH,
                 assertThrows(THREAD_DEATH.getClass(), () -> Try.of(() -> { throw THREAD_DEATH; }))
@@ -89,7 +89,7 @@ class TryTest {
     }
 
     @Test
-    void shouldRethrowVirtualMachoneErrorWhenCallingTryOfCallable() {
+    void shouldRethrowVirtualMachoneErrorWhenCallingTryOfCheckedSupplier() {
         assertSame(
                 VM_ERROR,
                 assertThrows(VM_ERROR.getClass(), () -> Try.of(() -> { throw VM_ERROR; }))
@@ -796,7 +796,7 @@ class TryTest {
         );
     }
 
-    // -- .orElse(Callable)
+    // -- .orElse(CheckedSupplier)
 
     @Test
     void shouldReturnSelfOnOrElseIfSuccess() {
@@ -816,7 +816,7 @@ class TryTest {
     @Test
     void shouldThrowNPEOnOrElseWithNullParameterIfSuccess() {
         assertEquals(
-                "callable is null",
+                "supplier is null",
                 assertThrows(NullPointerException.class, () -> SUCCESS.orElse(null)).getMessage()
 
         );
@@ -825,7 +825,7 @@ class TryTest {
     @Test
     void shouldThrowNPEOnOrElseWithNullParameterIfFailure() {
         assertEquals(
-                "callable is null",
+                "supplier is null",
                 assertThrows(NullPointerException.class, () -> FAILURE.orElse(null)).getMessage()
         );
     }

@@ -21,7 +21,8 @@ package io.vavr.control;
 import java.util.Objects;
 
 /**
- * A function that consumes an argument, returns nothing and may throw an {@link Exception}.
+ * A function that consumes an argument, returns nothing and may throw a {@link Throwable}.
+ * <p>
  * Such a function is expected to perform side-effects, i.e. altering the outer world.
  *
  * @param <T> the type of the consumed argument
@@ -35,9 +36,9 @@ public interface CheckedConsumer<T> {
      * Consumes the given argument {@code t} by performing an action.
      *
      * @param t the input argument
-     * @throws Exception if an error occurs when performing the action
+     * @throws Throwable if an error occurs when performing the action
      */
-    void accept(T t) throws Exception;
+    void accept(T t) throws Throwable;
 
     // -- .andThen(CheckedConsumer)
 
