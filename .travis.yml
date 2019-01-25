@@ -26,4 +26,4 @@ before_install: unset _JAVA_OPTIONS
 install: echo "Disabled Travis CI 'install' stage by default"
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- env $DEPLOY ./gradlew assemble uploadArtifacts
+- [[ -n $DEPLOY ]] && ./gradlew uploadArchives
