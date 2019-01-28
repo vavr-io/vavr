@@ -23,6 +23,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>vavr-match</artifactId>
             <version>${project.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>
