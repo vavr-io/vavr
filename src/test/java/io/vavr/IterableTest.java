@@ -26,7 +26,7 @@ import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class IterableTest {
+class IterableTest {
 
     // -- .to(Function)
 
@@ -45,7 +45,7 @@ public class IterableTest {
 
 }
 
-// dummy impl, default `to(Function)` needed only
+// dummy impl, default method Traversable#to(Function) needed only
 final class ToDummy<T> implements Traversable<T> {
 
     @Override
