@@ -1,8 +1,7 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.vavr/vavr/badge.png)](https://maven-badges.herokuapp.com/maven-central/io.vavr/vavr)
-[![Code Scene](https://img.shields.io/badge/codescene-analyzed-brightgreen.svg)](https://codescene.io/projects/981/jobs/latest-successful/results)
+(https://codescene.io/projects/981/jobs/latest-successful/results)
 [![Build Status](https://travis-ci.org/vavr-io/vavr.png)](https://travis-ci.org/vavr-io/vavr)
 [![codecov](https://codecov.io/gh/vavr-io/vavr/branch/master/graph/badge.svg)](https://codecov.io/gh/vavr-io/vavr)
-[![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/vavr-io/vavr)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.png)](https://gitter.im/vavr-io/vavr)
 
 # [Vavr](http://vavr.io/)
