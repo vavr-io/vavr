@@ -20,6 +20,9 @@ package io.vavr;
 
 import io.vavr.collection.Iterator;
 
+import java.util.Objects;
+import java.util.function.Function;
+
 /**
  * Extension of the well-known Java {@link java.lang.Iterable} in the sense that a rich
  * Vavr {@link io.vavr.collection.Iterator} is returned by {@link #iterator()}.
@@ -36,5 +39,11 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      */
     @Override
     Iterator<T> iterator();
+
+    // `Iterable<T>` must not have a generic type bound, see TraversableTest ShouldJustCompile
+    default <C> C to(Function<? super java.lang.Iterable<T>, C> fromIterable) {
+        Objects.requireNonNull(fromIterable, "fromIterable is null");
+        return fromIterable.apply(this);
+    }
 
 }
