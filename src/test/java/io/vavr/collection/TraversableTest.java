@@ -18,28 +18,9 @@
  */
 package io.vavr.collection;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class TraversableTest {
-
-    // -- .to(Function)
-
-    @Test
-    void shouldThrowOnToWhenFromIterableIsNull() {
-        assertEquals(
-                "fromIterable is null",
-                assertThrows(NullPointerException.class, () -> new ToDummy<>().to(null)).getMessage()
-        );
-    }
-
-    @Test
-    void shouldConvertTo() {
-        assertSame(1, new ToDummy<>().to(ignored -> 1));
-    }
 
 }
 
@@ -177,24 +158,5 @@ final class ShouldJustCompile {
             // final A a2 = traversable.to(toB);
             final A a3 = traversable.to(toC);
         }
-    }
-}
-
-// dummy impl, default `to(Function)` needed only
-final class ToDummy<T> implements Traversable<T> {
-
-    @Override
-    public <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public <U> Traversable<U> map(Function<? super T, ? extends U> mapper) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        throw new UnsupportedOperationException();
     }
 }

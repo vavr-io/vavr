@@ -18,7 +18,6 @@
  */
 package io.vavr.collection;
 
-import java.util.Objects;
 import java.util.function.Function;
 
 public interface Traversable<T> extends io.vavr.Iterable<T> {
@@ -26,11 +25,5 @@ public interface Traversable<T> extends io.vavr.Iterable<T> {
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
-
-    // `Iterable<T>` must not have a generic type bound, see TraversableTest ShouldJustCompile
-    default <C> C to(Function<? super Iterable<T>, C> fromIterable) {
-        Objects.requireNonNull(fromIterable, "fromIterable is null");
-        return fromIterable.apply(this);
-    }
 
 }
