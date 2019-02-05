@@ -3,7 +3,7 @@
 *.bak
 
 # -- Gradle
-.gradle
+.gradle/
 build/
 
 # -- Eclipse
