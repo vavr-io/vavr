@@ -86,7 +86,7 @@ public interface Iterator<T> extends java.util.Iterator<T> {
 
 }
 
-final class ArrayIterator<T> extends AbstractIterator<T> {
+final class ArrayIterator<T> implements Iterator<T> {
 
     private final T[] elements;
     private int index = 0;
@@ -112,7 +112,7 @@ final class ArrayIterator<T> extends AbstractIterator<T> {
 
     @Override
     public void forEachRemaining(Consumer<? super T> action) {
-        Objects.requireNonNull(action, ACTION_IS_NULL);
+        Objects.requireNonNull(action);
         while (index < elements.length) {
             action.accept(elements[index++]);
         }
@@ -124,7 +124,7 @@ final class ArrayIterator<T> extends AbstractIterator<T> {
     }
 }
 
-final class EmptyIterator extends AbstractIterator<Object> {
+final class EmptyIterator implements Iterator<Object> {
 
     static final EmptyIterator INSTANCE = new EmptyIterator();
 
@@ -142,7 +142,7 @@ final class EmptyIterator extends AbstractIterator<Object> {
 
     @Override
     public void forEachRemaining(Consumer<? super Object> action) {
-        Objects.requireNonNull(action, ACTION_IS_NULL);
+        Objects.requireNonNull(action);
     }
 
     @Override
@@ -151,7 +151,7 @@ final class EmptyIterator extends AbstractIterator<Object> {
     }
 }
 
-final class SingletonIterator<T> extends AbstractIterator<T> {
+final class SingletonIterator<T> implements Iterator<T> {
 
     private final T element;
     private boolean hasNext = true;
@@ -176,7 +176,7 @@ final class SingletonIterator<T> extends AbstractIterator<T> {
 
     @Override
     public void forEachRemaining(Consumer<? super T> action) {
-        Objects.requireNonNull(action, ACTION_IS_NULL);
+        Objects.requireNonNull(action);
         if (hasNext) {
             action.accept(element);
             hasNext = false;
@@ -187,9 +187,4 @@ final class SingletonIterator<T> extends AbstractIterator<T> {
     public String toString() {
         return "SingletonIterator";
     }
-}
-
-// Shrinks class file size of subclasses
-abstract class AbstractIterator<T> implements Iterator<T> {
-    static final String ACTION_IS_NULL = "action is null";
 }
