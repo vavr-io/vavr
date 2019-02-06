@@ -1,0 +1,11 @@
+Benchmark                                                                                                  Mode  Cnt   Score   Error  Units
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorNaiveFor1000Elements                                     avgt   25  20.630 ± 0.063  ns/op
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorNaiveForOneElement                                       avgt   25   3.429 ± 0.009  ns/op
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorTryCatchFor1000Elements                                  avgt   25  20.829 ± 2.839  ns/op
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorTryCatchForOneElement                                    avgt   25   3.431 ± 0.011  ns/op
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorTryCatchOptimizeExtendsAbstractIteratordFor1000Elements  avgt   25  21.244 ± 3.434  ns/op
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorTryCatchOptimizedExtendsAbstractIteratorForOneElement    avgt   25   3.436 ± 0.016  ns/op
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorTryCatchOptimizedFor1000Elements                         avgt   25  18.974 ± 0.033  ns/op
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorTryCatchOptimizedForOneElement                           avgt   25   3.434 ± 0.007  ns/op
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorWithLengthFor1000Elements                                avgt   25  20.662 ± 0.046  ns/op
+ArrayIteratorBenchmark.fullyIteratingArrayIteratorWithLengthForOneElement                                  avgt   25   3.434 ± 0.011  ns/op
