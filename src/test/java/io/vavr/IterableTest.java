@@ -28,6 +28,68 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class IterableTest {
 
+    // -- .exists(Predicate)
+
+    @Test
+    void shouldThrowOnExistsWithNullPredicate() {
+        final Iterable<Integer> testee = Iterator::empty;
+        assertEquals("predicate is null",
+                assertThrows(NullPointerException.class, () -> testee.forAll(null)).getMessage()
+        );
+    }
+
+    @Test
+    void shouldBeAwareOfExistingElementWhenSingleton() {
+        final Iterable<Integer> testee = () -> Iterator.of(1);
+        assertTrue(testee.exists(i -> i == 1));
+    }
+
+    @Test
+    void shouldBeAwareOfExistingElementWhenContainingMultipleElements() {
+        final Iterable<Integer> testee = () -> Iterator.of(1, 2);
+        assertTrue(testee.exists(i -> i == 2));
+    }
+
+    @Test
+    void shouldBeAwareOfNonExistingElementWhenEmpty() {
+        final Iterable<Integer> testee = Iterator::empty;
+        assertFalse(testee.exists(i -> i == -1));
+    }
+
+    @Test
+    void shouldBeAwareOfNonExistingElementWhenSingleton() {
+        final Iterable<Integer> testee = () -> Iterator.of(1);
+        assertFalse(testee.exists(i -> i == -1));
+    }
+
+    @Test
+    void shouldBeAwareOfNonExistingElementWhenContainingMultipleElememnts() {
+        final Iterable<Integer> testee = () -> Iterator.of(1, 2);
+        assertFalse(testee.exists(i -> i == -1));
+    }
+
+    // -- .forAll(Predicate)
+
+    @Test
+    void shouldThrowOnForAllWithNullPredicate() {
+        final Iterable<Integer> testee = Iterator::empty;
+        assertEquals("predicate is null",
+            assertThrows(NullPointerException.class, () -> testee.forAll(null)).getMessage()
+        );
+    }
+
+    @Test
+    void shouldBeAwareOfPropertyThatHoldsForAll() {
+        final Iterable<Integer> testee = () -> Iterator.of(0, 2);
+        assertTrue(testee.forAll(i -> i % 2 == 0));
+    }
+
+    @Test
+    void shouldBeAwareOfPropertyThatNotHoldsForAll() {
+        final Iterable<Integer> testee = () -> Iterator.of(1, 2);
+        assertFalse(testee.forAll(i -> i % 2 == 0));
+    }
+
     // -- .to(Function)
 
     @Test
@@ -62,4 +124,5 @@ final class ToDummy<T> implements Traversable<T> {
     public Iterator<T> iterator() {
         throw new UnsupportedOperationException();
     }
+
 }
