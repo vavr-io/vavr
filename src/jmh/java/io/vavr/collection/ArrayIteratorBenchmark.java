@@ -234,3 +234,5 @@ final class ArrayIteratorTryCatchOptimizedExtendsAbstractIterator<T> extends Abs
     }
 
 }
+
+abstract class AbstractIterator<T> implements Iterator<T> {}
