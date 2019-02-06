@@ -22,6 +22,7 @@ import io.vavr.control.Option;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public interface Iterator<T> extends java.util.Iterator<T> {
 
@@ -88,25 +89,33 @@ public interface Iterator<T> extends java.util.Iterator<T> {
 final class ArrayIterator<T> extends AbstractIterator<T> {
 
     private final T[] elements;
-    private final int length;
     private int index = 0;
 
     ArrayIterator(T[] elements) {
         this.elements = elements;
-        this.length = elements.length;
     }
 
     @Override
     public boolean hasNext() {
-        return index < length;
+        return index < elements.length;
     }
 
     @Override
     public T next() {
-        if (!hasNext()) {
+        try {
+            return elements[index++];
+        } catch(IndexOutOfBoundsException x) {
+            index--;
             throw new NoSuchElementException();
         }
-        return elements[index++];
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super T> action) {
+        Objects.requireNonNull(action, ACTION_IS_NULL);
+        while (index < elements.length) {
+            action.accept(elements[index++]);
+        }
     }
 
     @Override
@@ -129,6 +138,11 @@ final class EmptyIterator extends AbstractIterator<Object> {
     @Override
     public Object next() {
         throw new NoSuchElementException();
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super Object> action) {
+        Objects.requireNonNull(action, ACTION_IS_NULL);
     }
 
     @Override
@@ -161,10 +175,21 @@ final class SingletonIterator<T> extends AbstractIterator<T> {
     }
 
     @Override
+    public void forEachRemaining(Consumer<? super T> action) {
+        Objects.requireNonNull(action, ACTION_IS_NULL);
+        if (hasNext) {
+            action.accept(element);
+            hasNext = false;
+        }
+    }
+
+    @Override
     public String toString() {
         return "SingletonIterator";
     }
 }
 
 // Shrinks class file size of subclasses
-abstract class AbstractIterator<T> implements Iterator<T> {}
+abstract class AbstractIterator<T> implements Iterator<T> {
+    static final String ACTION_IS_NULL = "action is null";
+}
