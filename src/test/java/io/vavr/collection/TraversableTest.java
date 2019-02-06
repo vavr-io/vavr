@@ -18,9 +18,78 @@
  */
 package io.vavr.collection;
 
+import org.junit.jupiter.api.Test;
+
 import java.util.function.Function;
 
-class TraversableTest {
+import static org.junit.jupiter.api.Assertions.*;
+
+interface TraversableTest {
+
+    @SuppressWarnings("unchecked")
+    <T> Traversable<T> of(T... elements);
+
+    // -- .exists(Predicate)
+
+    @Test
+    default void shouldThrowOnExistsWithNullPredicate() {
+        final Traversable<Integer> testee = of();
+        assertEquals("predicate is null",
+                assertThrows(NullPointerException.class, () -> testee.forAll(null)).getMessage()
+        );
+    }
+
+    @Test
+    default void shouldBeAwareOfExistingElementWhenSingleton() {
+        final Traversable<Integer> testee = of(1);
+        assertTrue(testee.exists(i -> i == 1));
+    }
+
+    @Test
+    default void shouldBeAwareOfExistingElementWhenContainingMultipleElements() {
+        final Traversable<Integer> testee = of(1, 2);
+        assertTrue(testee.exists(i -> i == 2));
+    }
+
+    @Test
+    default void shouldBeAwareOfNonExistingElementWhenEmpty() {
+        final Traversable<Integer> testee = of();
+        assertFalse(testee.exists(i -> i == -1));
+    }
+
+    @Test
+    default void shouldBeAwareOfNonExistingElementWhenSingleton() {
+        final Traversable<Integer> testee = of(1);
+        assertFalse(testee.exists(i -> i == -1));
+    }
+
+    @Test
+    default void shouldBeAwareOfNonExistingElementWhenContainingMultipleElememnts() {
+        final Traversable<Integer> testee = of(1, 2);
+        assertFalse(testee.exists(i -> i == -1));
+    }
+
+    // -- .forAll(Predicate)
+
+    @Test
+    default void shouldThrowOnForAllWithNullPredicate() {
+        final Traversable<Integer> testee = of();
+        assertEquals("predicate is null",
+                assertThrows(NullPointerException.class, () -> testee.forAll(null)).getMessage()
+        );
+    }
+
+    @Test
+    default void shouldBeAwareOfPropertyThatHoldsForAll() {
+        final Traversable<Integer> testee = of(0, 2);
+        assertTrue(testee.forAll(i -> i % 2 == 0));
+    }
+
+    @Test
+    default void shouldBeAwareOfPropertyThatNotHoldsForAll() {
+        final Traversable<Integer> testee = of(1, 2);
+        assertFalse(testee.forAll(i -> i % 2 == 0));
+    }
 
 }
 
