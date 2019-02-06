@@ -4,11 +4,16 @@
  * - Build: `./gradlew check`
  *   | test reports: ./build/reports/tests/test/index.html
  *   | coverage reports: ./build/reports/jacoco/test/html/index.html
+ * 
+ * - Benchmarks: `./gradlew jmh`
+ *   | for configuration see https://github.com/melix/jmh-gradle-plugin
+ * 
  * - Release: `./gradlew release --info`
  *
  */
 
 plugins {
+    id "me.champeau.gradle.jmh" version "0.4.8"
     id "net.researchgate.release" version "2.8.0"
 }
 
@@ -18,6 +23,7 @@ apply plugin: 'jacoco'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
+ext.jmhVersion = '1.21'
 ext.junitVersion = '5.4.0-M1'
 
 repositories {
@@ -35,6 +41,8 @@ compileJava {
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:$junitVersion"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:$junitVersion"
+    jmh "org.openjdk.jmh:jmh-core:$jmhVersion"
+    jmh "org.openjdk.jmh:jmh-generator-annprocess:$jmhVersion"
 }
 
 test {

@@ -85,19 +85,20 @@ public interface Iterator<T> extends java.util.Iterator<T> {
 
 }
 
-
 final class ArrayIterator<T> extends AbstractIterator<T> {
 
     private final T[] elements;
+    private final int length;
     private int index = 0;
 
     ArrayIterator(T[] elements) {
         this.elements = elements;
+        this.length = elements.length;
     }
 
     @Override
     public boolean hasNext() {
-        return index < elements.length;
+        return index < length;
     }
 
     @Override
@@ -113,7 +114,6 @@ final class ArrayIterator<T> extends AbstractIterator<T> {
         return "ArrayIterator";
     }
 }
-
 
 final class EmptyIterator extends AbstractIterator<Object> {
 
