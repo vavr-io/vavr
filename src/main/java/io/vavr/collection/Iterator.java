@@ -21,6 +21,7 @@ package io.vavr.collection;
 import io.vavr.control.Option;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 public interface Iterator<T> extends java.util.Iterator<T> {
 
@@ -30,7 +31,7 @@ public interface Iterator<T> extends java.util.Iterator<T> {
      * A call to {@link #hasNext()} will always return {@code false}.
      * A call to {@link #next()} will always throw a {@link NoSuchElementException}.
      *
-     * @param <T> Component type
+     * @param <T> Element type
      * @return The empty {@code Iterator}
      */
     @SuppressWarnings("unchecked")
@@ -39,14 +40,34 @@ public interface Iterator<T> extends java.util.Iterator<T> {
     }
 
     /**
-     * Creates an Iterator which iterates over the given element.
+     * Creates an {@code Iterator} which iterates over the given element.
      *
      * @param element An element
-     * @param <T>     Type of the given element.
-     * @return A new Iterator
+     * @param <T>     Element type
+     * @return A new {@code Iterator}
      */
     static <T> Iterator<T> of(T element) {
         return new SingletonIterator<>(element);
+    }
+
+    /**
+     * Creates an {@code Iterator} which iterates over the given elements.
+     *
+     * <pre><{@code
+     * Iterator<Integer> iterator = Iterator.of(1, 2, 3);
+     * }</pre>
+     *
+     * @param elements Zero or more elements
+     * @param <T>      Element type
+     * @return The singleton instance of the empty {@code Iterator}, if {@code elements.length == 0},
+     *         otherwise a new {@code Iterator}.
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    static <T> Iterator<T> of(T... elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        return (elements.length == 0) ? empty() : new ArrayIterator<>(elements);
     }
 
     /**
@@ -64,7 +85,37 @@ public interface Iterator<T> extends java.util.Iterator<T> {
 
 }
 
-final class EmptyIterator implements Iterator<Object> {
+
+final class ArrayIterator<T> extends AbstractIterator<T> {
+
+    private final T[] elements;
+    private int index = 0;
+
+    ArrayIterator(T[] elements) {
+        this.elements = elements;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return index < elements.length;
+    }
+
+    @Override
+    public T next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        return elements[index++];
+    }
+
+    @Override
+    public String toString() {
+        return "ArrayIterator";
+    }
+}
+
+
+final class EmptyIterator extends AbstractIterator<Object> {
 
     static final EmptyIterator INSTANCE = new EmptyIterator();
 
@@ -77,7 +128,7 @@ final class EmptyIterator implements Iterator<Object> {
 
     @Override
     public Object next() {
-        throw new NoSuchElementException("next on EmptyIterator");
+        throw new NoSuchElementException();
     }
 
     @Override
@@ -86,7 +137,7 @@ final class EmptyIterator implements Iterator<Object> {
     }
 }
 
-final class SingletonIterator<T> implements Iterator<T> {
+final class SingletonIterator<T> extends AbstractIterator<T> {
 
     private final T element;
     private boolean hasNext = true;
@@ -102,8 +153,8 @@ final class SingletonIterator<T> implements Iterator<T> {
 
     @Override
     public T next() {
-        if (!hasNext) {
-            throw new NoSuchElementException("SingletonIterator.next()");
+        if (!hasNext()) {
+            throw new NoSuchElementException();
         }
         hasNext = false;
         return element;
@@ -114,3 +165,6 @@ final class SingletonIterator<T> implements Iterator<T> {
         return "SingletonIterator";
     }
 }
+
+// Shrinks class file size of subclasses
+abstract class AbstractIterator<T> implements Iterator<T> {}
