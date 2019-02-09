@@ -18,9 +18,40 @@
  */
 package io.vavr.collection;
 
+import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public interface Traversable<T> extends io.vavr.Iterable<T> {
+
+    /**
+     * Checks, if an element exists such that the predicate holds.
+     *
+     * @param predicate A Predicate
+     * @return true, if predicate holds for one or more elements, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default boolean exists(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        for (T t : this) {
+            if (predicate.test(t)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks, if the given predicate holds for all elements.
+     *
+     * @param predicate A Predicate
+     * @return true, if the predicate holds for all elements, false otherwise
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default boolean forAll(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return !exists(predicate.negate());
+    }
 
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
