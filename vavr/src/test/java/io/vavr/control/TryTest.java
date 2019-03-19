@@ -1241,10 +1241,15 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertListOfFailureToTryOfList() {
-        final Throwable t = new RuntimeException("failure");
-        final List<Try<String>> tries = Arrays.asList(Try.failure(t), Try.failure(t), Try.failure(t));
+        final Throwable t0 = new RuntimeException("failure1");
+        final Throwable t1 = new RuntimeException("failure2");
+        final Throwable t2 = new RuntimeException("failure3");
+        final List<Try<String>> tries = Arrays.asList(Try.failure(t0), Try.failure(t1), Try.failure(t2));
         final Try<Seq<String>> reducedTry = Try.sequence(tries);
         assertThat(reducedTry instanceof Try.Failure).isTrue();
+        assertThat(reducedTry.getCause()).isSameAs(t0);
+        assertThat(reducedTry.getCause().getSuppressed()[0]).isSameAs(t1);
+        assertThat(reducedTry.getCause().getSuppressed()[1]).isSameAs(t2);
     }
 
     @Test
@@ -1268,10 +1273,15 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldTraverseListOfFailureToTryOfList() {
-        final Throwable t = new RuntimeException("failure");
-        final List<Throwable> tries = Arrays.asList(t, t, t);
+        final Throwable t0 = new RuntimeException("failure1");
+        final Throwable t1 = new RuntimeException("failure2");
+        final Throwable t2 = new RuntimeException("failure3");
+        final List<Throwable> tries = Arrays.asList(t0, t1, t2);
         final Try<Seq<String>> reducedTry = Try.traverse(tries, Try::failure);
         assertThat(reducedTry instanceof Try.Failure).isTrue();
+        assertThat(reducedTry.getCause()).isSameAs(t0);
+        assertThat(reducedTry.getCause().getSuppressed()[0]).isSameAs(t1);
+        assertThat(reducedTry.getCause().getSuppressed()[1]).isSameAs(t2);
     }
 
     @Test
