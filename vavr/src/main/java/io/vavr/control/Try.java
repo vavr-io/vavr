@@ -29,6 +29,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -74,7 +75,7 @@ public interface Try<T> extends Value<T>, Serializable {
         try {
             return new Success<>(supplier.apply());
         } catch (Throwable t) {
-            return new Failure<>(t);
+            return new Failure<>(supplier, t);
         }
     }
 
@@ -118,7 +119,7 @@ public interface Try<T> extends Value<T>, Serializable {
             runnable.run();
             return new Success<>(null); // null represents the absence of an value, i.e. Void
         } catch (Throwable t) {
-            return new Failure<>(t);
+            return new Failure<>(() -> {runnable.run(); return null;}, t);
         }
     }
 
@@ -1069,6 +1070,54 @@ public interface Try<T> extends Value<T>, Serializable {
         }
     }
 
+    /**
+     * Returns {@code this}, if this is a Success, otherwise tries rerun original function.
+     * If next call will be success then {@code Success(supplier.apply())} will be returned.
+     * If after retryCount all call fail then {@code Failure} with last exception will be returned.
+     *
+     * @param exceptionType the exception type that allow retry
+     * @param retryCount how many times we should try rerun original function
+     * @param retrySleep how long wait before each try
+     * @param timeUnit TimeUnit for retrySleep param
+     * @return this {@code Try}, if this is a Success, or new result after retry finish.
+     */
+    <X extends Throwable> Try<T> retry(Class<X> exceptionType, int retryCount, long retrySleep, TimeUnit timeUnit);
+
+    /**
+     * Similar to {@link #retry(Class, int, long, TimeUnit)} but retry for all exception type.
+     *
+     * @param retryCount how many times we should try rerun original function
+     * @param retrySleep how long wait before each try
+     * @param timeUnit TimeUnit for retrySleep param
+     * @return this {@code Try}, if this is a Success, or new result after retry finish.
+     */
+    default <X extends Throwable> Try<T> retry(int retryCount, long retrySleep, TimeUnit timeUnit) {
+        return retry(Throwable.class, retryCount, retrySleep, timeUnit);
+    }
+
+    /**
+     * Similar to {@link #retry(Class, int, long, TimeUnit)} but don't wait between each call original function.
+     *
+     * @param exceptionType the exception type that allow retry
+     * @param retryCount how many times we should try rerun original function
+     * @return this {@code Try}, if this is a Success, or new result after retry finish.
+     */
+    default <X extends Throwable> Try<T> retry(Class<X> exceptionType, int retryCount) {
+        return retry(exceptionType, retryCount, 0, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Similar to {@link #retry(Class, int, long, TimeUnit)} but don't wait between each call original function
+     * and retry for all exception type
+     *
+     * @param retryCount how many times we should try rerun original function
+     * @return this {@code Try}, if this is a Success, or new result after retry finish.
+     */
+    default Try<T> retry(int retryCount) {
+        return retry(Throwable.class, retryCount, 0, TimeUnit.SECONDS);
+    }
+
+
     @Override
     boolean equals(Object o);
 
@@ -1143,6 +1192,11 @@ public interface Try<T> extends Value<T>, Serializable {
         public String toString() {
             return stringPrefix() + "(" + value + ")";
         }
+
+        @Override
+        public <X extends Throwable> Try<T> retry(Class<X> exceptionType, int retryCount, long retrySleep, TimeUnit timeUnit) {
+            return this;
+        }
     }
 
     /**
@@ -1156,6 +1210,7 @@ public interface Try<T> extends Value<T>, Serializable {
         private static final long serialVersionUID = 1L;
 
         private final Throwable cause;
+        private final CheckedFunction0<? extends T> supplier;
 
         /**
          * Constructs a Failure.
@@ -1164,12 +1219,17 @@ public interface Try<T> extends Value<T>, Serializable {
          * @throws NullPointerException if {@code cause} is null
          * @throws Throwable            if the given {@code cause} is fatal, i.e. non-recoverable
          */
-        private Failure(Throwable cause) {
+        private Failure(CheckedFunction0<? extends T> supplier, Throwable cause) {
             Objects.requireNonNull(cause, "cause is null");
             if (isFatal(cause)) {
                 sneakyThrow(cause);
             }
+            this.supplier = supplier;
             this.cause = cause;
+        }
+
+        private Failure(Throwable cause) {
+            this(null, cause);
         }
 
         @Override
@@ -1215,6 +1275,39 @@ public interface Try<T> extends Value<T>, Serializable {
         @Override
         public String toString() {
             return stringPrefix() + "(" + cause + ")";
+        }
+
+        @Override
+        public <X extends Throwable> Try<T> retry(Class<X> exceptionType, int retryCount, long retrySleep, TimeUnit timeUnit) {
+
+            if (supplier == null) {
+                return this;
+            }
+
+            if (!exceptionType.isAssignableFrom(cause.getClass())) {
+                return this;
+            }
+
+            Throwable lastThrowable = cause;
+
+            for (int i = 0; i < retryCount; i++) {
+                try {
+                    timeUnit.sleep(retrySleep);
+                    return new Success<>(supplier.apply());
+                } catch (Throwable throwable) {
+
+                    if (isFatal(throwable)) {
+                        sneakyThrow(throwable);
+                    }
+
+                    if (!exceptionType.isAssignableFrom(throwable.getClass())) {
+                        return failure(throwable);
+                    }
+
+                    lastThrowable = throwable;
+                }
+            }
+            return failure(lastThrowable);
         }
 
     }

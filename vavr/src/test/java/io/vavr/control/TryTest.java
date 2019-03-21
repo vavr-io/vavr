@@ -37,6 +37,7 @@ import java.lang.reflect.UndeclaredThrowableException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -1624,5 +1625,132 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
+    }
+
+    // -- retry
+
+
+    @Test
+    public void shouldDoNothingInRetryWithSuccess() {
+        final AtomicInteger count = new AtomicInteger();
+        Try.of(count::incrementAndGet)
+                .retry(10, 1, TimeUnit.SECONDS);
+
+        assertThat(count.get()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldDoNothingInRetryWithSuccessWithoutTimeout() {
+        final AtomicInteger count = new AtomicInteger();
+        Try.of(count::incrementAndGet).retry(10);
+
+        assertThat(count.get()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldDoRetryWithFailureOnOf() {
+
+        final AtomicInteger count = new AtomicInteger();
+
+        long startTime = System.currentTimeMillis();
+
+        Try.of(() -> {
+            count.incrementAndGet();
+            throw new Exception();
+        }).retry(1, 100, TimeUnit.MILLISECONDS);
+
+        assertThat(System.currentTimeMillis() - startTime).isGreaterThan(100);
+        assertThat(count.get()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldDoRetryWithFailureOnRunRunnable() {
+
+        long startTime = System.currentTimeMillis();
+
+        final AtomicInteger count = new AtomicInteger();
+        Try.runRunnable(() -> {
+                    count.incrementAndGet();
+                    throw new RuntimeException();
+                }
+        ).retry(1, 100, TimeUnit.MILLISECONDS);
+
+        assertThat(System.currentTimeMillis() - startTime).isGreaterThan(100);
+        assertThat(count.get()).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldDoNothingOnNextRetryCall() {
+
+        final AtomicInteger count = new AtomicInteger();
+
+        Try.of(() -> {
+            count.incrementAndGet();
+            throw new Exception();
+        }).retry(10).retry(10);
+
+        assertThat(count.get()).isEqualTo(11);
+    }
+
+    @Test
+    public void shouldCallRetryForSpecificException() {
+
+        final AtomicInteger count = new AtomicInteger();
+
+        Try.of(() -> {
+            count.incrementAndGet();
+            throw new IOException();
+        }).retry(IOException.class, 5);
+
+        assertThat(count.get()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldReturnFailureForMissException() {
+
+        final AtomicInteger count = new AtomicInteger();
+
+        Try<Object> aTry = Try.of(() -> {
+            count.incrementAndGet();
+            throw new IOException();
+        }).retry(ExecutionException.class, 5);
+
+        assertThat(count.get()).isEqualTo(1);
+        assertThat(aTry.isFailure());
+        assertThatThrownBy(aTry::get).isExactlyInstanceOf(IOException.class);
+    }
+
+    @Test
+    public void shouldReturnFailureForMissExceptionFromRetry() {
+
+        final AtomicInteger count = new AtomicInteger();
+
+        Try<Object> aTry = Try.of(() -> {
+            int i = count.incrementAndGet();
+            if (i>1) {
+                throw new IOException();
+            }
+            throw new ExecutionException(null);
+        }).retry(ExecutionException.class, 5);
+
+        assertThat(count.get()).isEqualTo(2);
+        assertThat(aTry.isFailure());
+        assertThatThrownBy(aTry::get).isExactlyInstanceOf(IOException.class);
+    }
+
+    @Test(expected = InterruptedException.class)
+    public void shouldThrowFatalExceptionFromRetry() {
+
+        final AtomicInteger count = new AtomicInteger();
+
+        Try.of(() -> {
+            int i = count.incrementAndGet();
+            if (i > 2) {
+                throw new InterruptedException();
+            }
+            throw new Exception();
+        }).retry(5);
+
+        assertThat(count.get()).isEqualTo(2);
     }
 }
