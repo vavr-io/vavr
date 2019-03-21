@@ -92,7 +92,7 @@ public class APITest {
 
     @Test
      public void shouldCallprintlnWithArguments() {
-        assertThat(captureStdOut(()->println("this", "and", "that"))).isEqualTo("this and that\n");
+        assertThat(captureStdOut(() -> println("this", "and", "that"))).isEqualTo("this and that\n");
      }
 
     //
