@@ -196,7 +196,7 @@ public final class API {
      * @param objs The list of <code>Object</code> to be printed
      */
     public static void println(Object ...objs) {
-        println(List.of(objs).map(Object::toString).collect(java.util.stream.Collectors.joining(" ")));
+        println(List.of(objs).map(String::valueOf).collect(java.util.stream.Collectors.joining(" ")));
     }
 
     //
