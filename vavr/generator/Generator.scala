@@ -99,7 +99,6 @@ def generateMainClasses(): Unit = {
       val BiFunctionType = im.getType("java.util.function.BiFunction")
       val PredicateType = im.getType("java.util.function.Predicate")
       val SupplierType = im.getType("java.util.function.Supplier")
-      // val CollectorsType = im.getType("java.util.stream.Collectors")
 
       val monadicTypesFor = List("Iterable", OptionType, FutureType, TryType, ListType)
 
@@ -2863,7 +2862,7 @@ def generateTestClasses(): Unit = {
 
           @$test
            public void shouldCallprintlnWithArguments() {
-              assertThat($captureStdOut(()->println("this", "and", "that"))).isEqualTo("this and that\\n");
+              assertThat($captureStdOut(() -> println("this", "and", "that"))).isEqualTo("this and that\\n");
            }
         """
       }
