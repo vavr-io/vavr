@@ -99,6 +99,7 @@ def generateMainClasses(): Unit = {
       val BiFunctionType = im.getType("java.util.function.BiFunction")
       val PredicateType = im.getType("java.util.function.Predicate")
       val SupplierType = im.getType("java.util.function.Supplier")
+      // val CollectorsType = im.getType("java.util.stream.Collectors")
 
       val monadicTypesFor = List("Iterable", OptionType, FutureType, TryType, ListType)
 
@@ -1346,6 +1347,16 @@ def generateMainClasses(): Unit = {
            */
           public static void println() {
               System.out.println();
+          }
+
+          /**
+           * Using the {@code System.out.println()} will print all the objects passed as argument
+           * separating them by a space character (' ').
+           *
+           * @param objs The list of <code>Object</code> to be printed
+           */
+          public static void println(Object ...objs) {
+              println($ListType.of(objs).map(Object::toString).collect(java.util.stream.Collectors.joining(" ")));
           }
         """
       }
@@ -2849,6 +2860,11 @@ def generateTestClasses(): Unit = {
           public void shouldCallprintln() {
               assertThat($captureStdOut(()->println())).isEqualTo("\\n");
           }
+
+          @$test
+           public void shouldCallprintlnWithArguments() {
+              assertThat($captureStdOut(()->println("this", "and", "that"))).isEqualTo("this and that\\n");
+           }
         """
       }
 
