@@ -90,6 +90,11 @@ public class APITest {
         assertThat(captureStdOut(()->println())).isEqualTo("\n");
     }
 
+    @Test
+     public void shouldCallprintlnWithArguments() {
+        assertThat(captureStdOut(() -> println("this", "and", "that"))).isEqualTo("this and that\n");
+     }
+
     //
     // Alias should return not null.
     // More specific test for each aliased class implemented in separate test class

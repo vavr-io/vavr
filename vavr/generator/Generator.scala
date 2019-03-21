@@ -1347,6 +1347,15 @@ def generateMainClasses(): Unit = {
           public static void println() {
               System.out.println();
           }
+
+          /**
+           * Prints the given objects as space ' ' separated string using {@code System.out.println()}.
+           *
+           * @param objs The objects to be printed
+           */
+          public static void println(Object ...objs) {
+              println($IteratorType.of(objs).map(String::valueOf).mkString(" "));
+          }
         """
       }
 
@@ -2849,6 +2858,11 @@ def generateTestClasses(): Unit = {
           public void shouldCallprintln() {
               assertThat($captureStdOut(()->println())).isEqualTo("\\n");
           }
+
+          @$test
+           public void shouldCallprintlnWithArguments() {
+              assertThat($captureStdOut(() -> println("this", "and", "that"))).isEqualTo("this and that\\n");
+           }
         """
       }
 

@@ -189,6 +189,15 @@ public final class API {
         System.out.println();
     }
 
+    /**
+     * Prints the given objects as space ' ' separated string using {@code System.out.println()}.
+     *
+     * @param objs The objects to be printed
+     */
+    public static void println(Object ...objs) {
+        println(Iterator.of(objs).map(String::valueOf).mkString(" "));
+    }
+
     //
     // Aliases for static factories
     //
