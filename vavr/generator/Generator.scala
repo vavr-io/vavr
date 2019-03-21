@@ -1356,7 +1356,7 @@ def generateMainClasses(): Unit = {
            * @param objs The list of <code>Object</code> to be printed
            */
           public static void println(Object ...objs) {
-              println($ListType.of(objs).map(Object::toString).collect(java.util.stream.Collectors.joining(" ")));
+              println($ListType.of(objs).map(String::valueOf).collect(java.util.stream.Collectors.joining(" ")));
           }
         """
       }
