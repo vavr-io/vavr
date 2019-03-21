@@ -189,6 +189,16 @@ public final class API {
         System.out.println();
     }
 
+    /**
+     * Using the {@code System.out.println()} will print all the objects passed as argument
+     * separating them by a space character (' ').
+     *
+     * @param objs The list of <code>Object</code> to be printed
+     */
+    public static void println(Object ...objs) {
+        println(List.of(objs).map(Object::toString).collect(java.util.stream.Collectors.joining(" ")));
+    }
+
     //
     // Aliases for static factories
     //
