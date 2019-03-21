@@ -1349,10 +1349,9 @@ def generateMainClasses(): Unit = {
           }
 
           /**
-           * Using the {@code System.out.println()} will print all the objects passed as argument
-           * separating them by a space character (' ').
+           * Prints the given objects as space ' ' separated string using {@code System.out.println()}.
            *
-           * @param objs The list of <code>Object</code> to be printed
+           * @param objs The objects to be printed
            */
           public static void println(Object ...objs) {
               println($ListType.of(objs).map(String::valueOf).collect(java.util.stream.Collectors.joining(" ")));
