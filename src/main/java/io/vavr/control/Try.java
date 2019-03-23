@@ -454,6 +454,35 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
     }
 
     /**
+     * Consumes the cause if this is a {@link Try.Failure} and the cause is instanceof the given {@code exceptionType}.
+     *
+     * <pre>{@code
+     * // (does not print anything)
+     * Try.success(1).onFailure(Error.class, System.out::println);
+     *
+     * // prints "java.lang.Error"
+     * Try.failure(new Error()).onFailure(Error.class, System.out::println);
+     *
+     * // (does not print anything)
+     * Try.failure(new Exception()).onFailure(Error.class, System.out::println);
+     * }</pre>
+     *
+     * @param <X>           Exception type
+     * @param exceptionType The specific exception type that should be handled
+     * @param action        An exception consumer
+     * @return this
+     * @throws NullPointerException if one of {@code exceptionType} or {@code action} is null
+     */
+    public <X extends Throwable> Try<T> onFailure(Class<X> exceptionType, Consumer<? super Throwable> action) {
+        Objects.requireNonNull(exceptionType, "exceptionType is null");
+        Objects.requireNonNull(action, "action is null");
+        if (isFailure() && exceptionType.isInstance(getCause())) {
+            action.accept(getCause());
+        }
+        return this;
+    }
+
+    /**
      * Consumes the cause if this is a {@link Try.Failure}.
      *
      * <pre>{@code
@@ -542,7 +571,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
      * @param exceptionType    The specific exception type that should be handled
      * @param recoveryFunction A recovery function taking an exception of type {@code X}
      * @return a {@code Try} instance
-     * @throws NullPointerException if {@code exception} is null or {@code recoveryFunction} is null
+     * @throws NullPointerException if {@code exceptionType} is null or {@code recoveryFunction} is null
      */
     @SuppressWarnings("unchecked")
     public <X extends Throwable> Try<T> recover(Class<X> exceptionType, CheckedFunction<? super X, ? extends T> recoveryFunction) {
@@ -607,9 +636,11 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
      * @param <X>           Exception type
      * @return              this instance, if this a {@code Success}
      * @throws X            if this is a {@code Failure} and the cause is instance of {@code X}
+     * @throws NullPointerException if the given {@code exceptionType} is null
      */
     @SuppressWarnings("unchecked")
     public <X extends Throwable> Try<T> rethrow(Class<X> exceptionType) throws X {
+        Objects.requireNonNull(exceptionType, "exceptionType is null");
         if (isFailure() && exceptionType.isInstance(getCause())) {
             throw (X) getCause();
         } else {
