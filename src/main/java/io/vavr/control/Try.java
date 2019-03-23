@@ -155,7 +155,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
      * @param <T>      Component type
      * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(cause)} if a
      * non-fatal error occurs calling {@code supplier.get()}.
-     * @throws Error if the cause of the {@link Failure} is fatal, i.e. non-recoverable
+     * @throws Error if the cause of the {@code Failure} is fatal, i.e. non-recoverable
      */
     public static <T> Try<T> of(CheckedSupplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
@@ -175,7 +175,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
      * @param runnable A checked runnable, i.e. a runnable that may throw a checked exception.
      * @return {@code Success(null)} if no exception occurs, otherwise {@code Failure(throwable)} if an exception occurs
      * calling {@code runnable.run()}.
-     * @throws Error if the cause of the {@link Failure} is fatal, i.e. non-recoverable
+     * @throws Error if the cause of the {@code Failure} is fatal, i.e. non-recoverable
      */
     public static Try<Void> run(CheckedRunnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
@@ -188,7 +188,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
     }
 
     /**
-     * Creates a {@link Success} that contains the given {@code value}. Shortcut for {@code new Success<>(value)}.
+     * Creates a {@code Success} that contains the given {@code value}.
      *
      * @param value A value.
      * @param <T>   Type of the given {@code value}.
@@ -199,7 +199,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
     }
 
     /**
-     * Creates a {@link Failure} that contains the given {@code exception}. Shortcut for {@code new Failure<>(exception)}.
+     * Creates a {@code Failure} that contains the given {@code exception}.
      *
      * @param exception An exception.
      * @param <T>       Component type of the {@code Try}.
@@ -305,16 +305,21 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
     /**
      * Gets the result of this Try if this is a {@code Success} or throws if this is a {@code Failure}.
      * <p>
-     * If this is a {@code Failure}, it will throw cause wrapped in a {@link NonFatalException}.
-     *
+     * If this is a {@code Failure} the cause is thrown using the following strategy:, it will <em>rethrow</em> the original cause if it is an {@link Error} or a {@link RuntimeException}.
+     * <ul>
+     *   <li>The original cause is <em>rethrown</em>, if it is an unchecked exception (namely an {@link Error} or a {@link RuntimeException}).</li>
+     *   <li>If the cause is a checked exception, it is <em>wrapped</em> in an unchecked {@link NonFatalException} and thrown.</li>
+     * </ul>
      * @return The computation result if this is a {@code Success}
-     * @throws NonFatalException if this is a {@link Failure}
+     * @throws Error if this is a {@code Failure} and the cause is an {@code Error}
+     * @throws RuntimeException if this is a {@code Failure} and the cause is a {@code RuntimeException}
+     * @throws NonFatalException if this is a {@code Failure} and the cause is a checked {@code Exception}
      * @deprecated Unsafe operation (but not marked for removal).
      *             Use {@link #fold(Function, Function)}, {@link #getOrElse(Object)}, {@link #getOrElseGet(Supplier)} or {@link #getOrElseThrow(Function)} instead.
      *             Other alternatives are {@link #onSuccess(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
      */
     @Deprecated
-    public abstract T get() throws NonFatalException;
+    public abstract T get() throws Error, RuntimeException;
 
     /**
      * Gets the cause if this is a Failure or throws if this is a Success.
@@ -388,10 +393,10 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
     }
 
     /**
-     * Runs the given checked function if this is a {@link Success},
+     * Runs the given checked function if this is a {@code Success},
      * passing the result of the current expression to it.
-     * If this expression is a {@link Failure} then it'll return a new
-     * {@link Failure} of type R with the original exception.
+     * If this expression is a {@code Failure} then it'll return a new
+     * {@code Failure} of type R with the original exception.
      * <p>
      * The main use case is chaining checked functions using method references:
      *
@@ -761,8 +766,16 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
         }
 
         @Override
-        public T get() throws NonFatalException {
-            throw new NonFatalException(cause);
+        public T get() throws Error, RuntimeException {
+            if (cause == null) {
+                throw new NullPointerException();
+            } else if (cause instanceof Error) {
+                throw (Error) cause;
+            } else if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            } else {
+                throw new NonFatalException(cause);
+            }
         }
 
         @Override
