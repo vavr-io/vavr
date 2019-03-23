@@ -545,7 +545,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
         Objects.requireNonNull(recoveryFunction, "recoveryFunction is null");
         if (isFailure()) {
             final Throwable cause = getCause();
-            if (exceptionType.isAssignableFrom(cause.getClass())) {
+            if (exceptionType.isInstance(cause)) {
                 return Try.of(() -> recoveryFunction.apply((X) cause));
             }
         }
@@ -584,7 +584,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
         Objects.requireNonNull(recoveryFunction, "recoveryFunction is null");
         if (isFailure()) {
             final Throwable cause = getCause();
-            if (exceptionType.isAssignableFrom(cause.getClass())) {
+            if (exceptionType.isInstance(cause)) {
                 try {
                     return (Try<T>) recoveryFunction.apply((X) cause);
                 } catch (Throwable t) {
@@ -593,6 +593,23 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
             }
         }
         return this;
+    }
+
+    /**
+     * Rethrows the underlying cause if this is a {@code Failure} and the cause is instance of the given {@code exceptionType}.
+     *
+     * @param exceptionType The specific exception type that should be handled
+     * @param <X>           Exception type
+     * @return              this instance, if this a {@code Success}
+     * @throws X            if this is a {@code Failure} and the cause is instance of {@code X}
+     */
+    @SuppressWarnings("unchecked")
+    public <X extends Throwable> Try<T> rethrow(Class<X> exceptionType) throws X {
+        if (isFailure() && exceptionType.isInstance(getCause())) {
+            throw (X) getCause();
+        } else {
+            return this;
+        }
     }
 
     /**

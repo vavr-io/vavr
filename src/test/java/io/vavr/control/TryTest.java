@@ -847,7 +847,7 @@ class TryTest {
     }
 
     @Test
-    void shouldRecoverWhenFailureIsAssignableFrom() {
+    void shouldRecoverWhenFailureIsInstanceOf() {
         assertEquals(SUCCESS, FAILURE.recover(Throwable.class, x -> SUCCESS_VALUE));
     }
 
@@ -901,12 +901,12 @@ class TryTest {
     }
 
     @Test
-    void shouldRecoverWithSuccessWhenFailureIsAssignableFrom() {
+    void shouldRecoverWithSuccessWhenFailureIsInstanceOf() {
         assertSame(SUCCESS, FAILURE.recoverWith(Throwable.class, x -> SUCCESS));
     }
 
     @Test
-    void shouldRecoverWithFailureWhenFailureIsAssignableFrom() {
+    void shouldRecoverWithFailureWhenFailureIsInstanceOf() {
         final Try<String> failure = Try.failure(ERROR);
         assertSame(failure, FAILURE.recoverWith(Throwable.class, x -> failure));
     }
@@ -956,6 +956,43 @@ class TryTest {
     @Test
     void shouldCaptureExceptionWhenRecoverWithFailure() {
         assertEquals(Try.failure(ERROR), FAILURE.recoverWith(Throwable.class, ignored -> { throw ERROR; }));
+    }
+
+    // -- .rethrow(Class)
+
+    @Test
+    void shouldNotRethrowWhenSuccess() throws Throwable {
+        final Try<String> testee = SUCCESS;
+        assertSame(testee, testee.rethrow(Throwable.class));
+    }
+
+    @Test
+    void shouldNotRethrowWhenFailureAndCauseIsNotInstanceOfExceptionType() {
+        final Try<String> testee = FAILURE;
+        assertSame(testee, testee.rethrow(NullPointerException.class));
+    }
+
+    @Test
+    void shouldRethrowWhenFailureAndCauseIsSameTypeAsExceptionType() {
+        assertThrows(FAILURE_CAUSE.getClass(), () -> FAILURE.rethrow(FAILURE_CAUSE.getClass()));
+    }
+
+    @Test
+    void shouldRethrowSameUncheckedExceptionWhenFailureAndCauseIsInstanceOfExceptionType() {
+        final Throwable err = new IllegalStateException();
+        assertSame(
+                err,
+            assertThrows(err.getClass(), () -> Try.failure(err).rethrow(Throwable.class))
+        );
+    }
+
+    @Test
+    void shouldRethrowSameCheckedExceptionWhenFailureAndCauseIsInstanceOfExceptionType() {
+        final Throwable err = new Exception();
+        assertSame(
+                err,
+                assertThrows(err.getClass(), () -> Try.failure(err).rethrow(Throwable.class))
+        );
     }
 
     // -- .stream()
