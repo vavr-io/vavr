@@ -792,6 +792,72 @@ class TryTest {
         );
     }
 
+    // -- .onFailure(Class, Consumer)
+
+    @Test
+    void shouldConsumeThrowableWhenCallingOnFailureGivenFailureAndMatchingExceptionType() {
+        final List<Throwable> sideEffect = new ArrayList<>();
+        FAILURE.onFailure(FAILURE_CAUSE.getClass(), sideEffect::add);
+        assertEquals(Collections.singletonList(FAILURE_CAUSE), sideEffect);
+    }
+
+    @Test
+    void shouldNotConsumeThrowableWhenCallingOnFailureGivenFailureAndNonMatchingExceptionType() {
+        final List<Throwable> sideEffect = new ArrayList<>();
+        FAILURE.onFailure(ERROR.getClass(), sideEffect::add);
+        assertEquals(Collections.emptyList(), sideEffect);
+    }
+
+    @Test
+    void shouldNotEvaluateConsumerWhenCallingOnFailureGivenFailureAndNonMatchingExceptionType() {
+        FAILURE.onFailure(ERROR.getClass(), ignored -> { throw ERROR; });
+    }
+
+    @Test
+    void shouldNotHandleUnexpectedExceptionWhenCallingOnFailureGivenFailureAndExceptionType() {
+        assertSame(
+                ERROR,
+                assertThrows(ERROR.getClass(), () -> FAILURE.onFailure(FAILURE_CAUSE.getClass(), ignored -> { throw ERROR; }))
+        );
+    }
+
+    @Test
+    void shouldDoNothingWhenCallingOnFailureGivenSuccessAndExceptionType() {
+        assertSame(SUCCESS, SUCCESS.onFailure(Throwable.class, x -> { throw ASSERTION_ERROR; }));
+    }
+
+    @Test
+    void shouldThrowNPEWhenCallingOnFailureWithNullExceptionTypeGivenFailureAndExceptionType() {
+        assertEquals(
+                "exceptionType is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.onFailure(null, ignored -> {})).getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowNPEWhenCallingOnFailureWithNullActionGivenFailureAndExceptionType() {
+        assertEquals(
+                "action is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.onFailure(ERROR.getClass(), null)).getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowNPEWhenCallingOnFailureWithNullExceptionTypeGivenSuccessAndExceptionType() {
+        assertEquals(
+                "exceptionType is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.onFailure(null, ignored -> {})).getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowNPEWhenCallingOnFailureWithNullActionGivenSuccessAndExceptionType() {
+        assertEquals(
+                "action is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.onFailure(ERROR.getClass(), null)).getMessage()
+        );
+    }
+
     // -- .onFailure(Consumer)
 
     @Test
@@ -1022,6 +1088,22 @@ class TryTest {
     }
 
     // -- .rethrow(Class)
+
+    @Test
+    void shouldThrowNPEIfExceptionTypeIsNullOnSuccess() {
+        assertEquals(
+                "exceptionType is null",
+                assertThrows(NullPointerException.class, () -> SUCCESS.rethrow(null)).getMessage()
+        );
+    }
+
+    @Test
+    void shouldThrowNPEIfExceptionTypeIsNullOnFailure() {
+        assertEquals(
+                "exceptionType is null",
+                assertThrows(NullPointerException.class, () -> FAILURE.rethrow(null)).getMessage()
+        );
+    }
 
     @Test
     void shouldNotRethrowWhenSuccess() throws Throwable {

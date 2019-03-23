@@ -5,6 +5,8 @@
  *   | test reports: ./build/reports/tests/test/index.html
  *   | coverage reports: ./build/reports/jacoco/test/html/index.html
  * 
+ * - Javadoc (linting): `./gradlew javadoc`
+ * 
  * - Benchmarks: `./gradlew jmh`
  *   | for configuration see https://github.com/melix/jmh-gradle-plugin
  * 

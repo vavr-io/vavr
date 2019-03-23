@@ -54,7 +54,7 @@ public interface Iterator<T> extends java.util.Iterator<T> {
     /**
      * Creates an {@code Iterator} which iterates over the given elements.
      *
-     * <pre><{@code
+     * <pre>{@code
      * Iterator<Integer> iterator = Iterator.of(1, 2, 3);
      * }</pre>
      *
