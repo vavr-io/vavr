@@ -123,6 +123,27 @@ class TryTest {
         assertEquals(success1.toString(), success2.toString());
     }
 
+    @Test
+    void shouldNotAlterInterruptedFlagWhenCreatingSuccessByCallingTryOf() {
+        assertFalse(Thread.currentThread().isInterrupted());
+        Try.of(() -> SUCCESS_VALUE);
+        assertFalse(Thread.currentThread().isInterrupted());
+    }
+
+    @Test
+    void shouldNotAlterInterruptedFlagWhenFailingWithNonInterruptedExceptionByCallingTryOf() {
+        assertFalse(Thread.currentThread().isInterrupted());
+        Try.of(() -> { throw ERROR; });
+        assertFalse(Thread.currentThread().isInterrupted());
+    }
+
+    @Test
+    void shouldAlterInterruptedFlagWhenFailingWithInterruptedExceptionByCallingTryOf() {
+        assertFalse(Thread.currentThread().isInterrupted());
+        Try.of(() -> { throw new InterruptedException(); });
+        assertTrue(Thread.currentThread().isInterrupted());
+    }
+
     // -- static .run(CheckedRunnable)
 
     @Test
@@ -167,6 +188,27 @@ class TryTest {
         );
     }
 
+    @Test
+    void shouldNotAlterInterruptedFlagWhenCreatingSuccessByCallingTryRun() {
+        assertFalse(Thread.currentThread().isInterrupted());
+        Try.run(() -> {});
+        assertFalse(Thread.currentThread().isInterrupted());
+    }
+
+    @Test
+    void shouldNotAlterInterruptedFlagWhenFailingWithNonInterruptedExceptionByCallingTryRun() {
+        assertFalse(Thread.currentThread().isInterrupted());
+        Try.run(() -> { throw ERROR; });
+        assertFalse(Thread.currentThread().isInterrupted());
+    }
+
+    @Test
+    void shouldAlterInterruptedFlagWhenFailingWithInterruptedExceptionByCallingTryRun() {
+        assertFalse(Thread.currentThread().isInterrupted());
+        Try.run(() -> { throw new InterruptedException(); });
+        assertTrue(Thread.currentThread().isInterrupted());
+    }
+
     // -- static .success(Object)
     
     @Test
@@ -191,6 +233,13 @@ class TryTest {
         assertEquals(Try.success(SUCCESS_VALUE), SUCCESS);
         assertEquals(31 + Objects.hashCode(SUCCESS_VALUE), SUCCESS.hashCode());
         assertEquals("Success(" + SUCCESS_VALUE + ")", SUCCESS.toString());
+    }
+
+    @Test
+    void shouldNotAlterInterruptedFlagWhenCreatingSuccess() {
+        assertFalse(Thread.currentThread().isInterrupted());
+        Try.success(SUCCESS_VALUE);
+        assertFalse(Thread.currentThread().isInterrupted());
     }
 
     // -- static .failure(Throwable)
@@ -238,6 +287,20 @@ class TryTest {
                 VM_ERROR,
                 assertThrows(VM_ERROR.getClass(), () -> Try.failure(VM_ERROR))
         );
+    }
+
+    @Test
+    void shouldNotAlterInterruptedFlagWhenCreatingFailureOfNonInterruptedException() {
+        assertFalse(Thread.currentThread().isInterrupted());
+        Try.failure(ERROR);
+        assertFalse(Thread.currentThread().isInterrupted());
+    }
+
+    @Test
+    void shouldNotAlterInterruptedFlagWhenCreatingFailureOfInterruptedException() {
+        assertFalse(Thread.currentThread().isInterrupted());
+        Try.failure(new InterruptedException());
+        assertFalse(Thread.currentThread().isInterrupted());
     }
 
     // -- .collect(Collector)
