@@ -160,28 +160,27 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, Serializable 
     
     /**
      * Gets the right value if this is a {@code Right} or throws if this is a {@code Left}.
+     * <p>
+     * <strong>Warning:</strong> Please note that this operation is considered unsafe.
+     * Alternatives are {@link #fold(Function, Function)}, {@link #getOrElse(Object)}, {@link #getOrElseGet(Function)}
+     * or {@link #getOrElseThrow(Function)}.
+     * Other alternatives are {@link #onRight(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
      *
      * @return the right value
      * @throws NoSuchElementException if this is a {@code Left}.
-     * @deprecated Unsafe operation (but not marked for removal).
-     *             Use {@link #fold(Function, Function)}, {@link #getOrElse(Object)}, {@link #getOrElseGet(Function)} or {@link #getOrElseThrow(Function)} instead.
-     *             Other alternatives are {@link #onRight(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
      */
-    @Deprecated
     public abstract R get();
 
     /**
      * Gets the left value if this is a {@code Left} or throws if this is a {@code Right}.
+     * <p>
+     * <strong>Warning:</strong> Please note that this operation is considered unsafe.
+     * Alternatives are {@link #fold(Function, Function)} or  {@link #onLeft(Consumer)}.
      *
      * @return The left value.
      * @throws NoSuchElementException if this is a {@code Right}.
-     * @deprecated Unsafe operation (but not marked for removal).
-     *             Use {@link #fold(Function, Function)} instead.
-     *             An alternative is {@link #onLeft(Consumer)}.
      */
-    @Deprecated
     public abstract L getLeft();
-
 
     /**
      * Gets the Right value or an alternate value, if the Either is a Left.

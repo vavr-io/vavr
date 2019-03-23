@@ -306,31 +306,33 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
      * Gets the result of this Try if this is a {@code Success} or throws if this is a {@code Failure}.
      * <p>
      * If this is a {@code Failure} the cause is thrown using the following strategy:, it will <em>rethrow</em> the original cause if it is an {@link Error} or a {@link RuntimeException}.
+     *
      * <ul>
      *   <li>The original cause is <em>rethrown</em>, if it is an unchecked exception (namely an {@link Error} or a {@link RuntimeException}).</li>
      *   <li>If the cause is a checked exception, it is <em>wrapped</em> in an unchecked {@link NonFatalException} and thrown.</li>
      * </ul>
+     *
+     * <strong>Warning:</strong> Please note that this operation is considered unsafe.
+     * Alternatives are {@link #fold(Function, Function)}, {@link #getOrElse(Object)}, {@link #getOrElseGet(Supplier)}
+     * or {@link #getOrElseThrow(Function)}.
+     * Other alternatives are {@link #onSuccess(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
+     *
      * @return The computation result if this is a {@code Success}
      * @throws Error if this is a {@code Failure} and the cause is an {@code Error}
      * @throws RuntimeException if this is a {@code Failure} and the cause is a {@code RuntimeException}
      * @throws NonFatalException if this is a {@code Failure} and the cause is a checked {@code Exception}
-     * @deprecated Unsafe operation (but not marked for removal).
-     *             Use {@link #fold(Function, Function)}, {@link #getOrElse(Object)}, {@link #getOrElseGet(Supplier)} or {@link #getOrElseThrow(Function)} instead.
-     *             Other alternatives are {@link #onSuccess(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
      */
-    @Deprecated
     public abstract T get() throws Error, RuntimeException;
 
     /**
      * Gets the cause if this is a Failure or throws if this is a Success.
+     * <p>
+     * <strong>Warning:</strong> Please note that this operation is considered unsafe.
+     * Alternatives are {@link #fold(Function, Function)} and {@link #onFailure(Consumer)}.
      *
      * @return The cause if this is a Failure
      * @throws UnsupportedOperationException if this is a Success
-     * @deprecated Unsafe operation (but not marked for removal).
-     *             Use {@link #fold(Function, Function)} instead.
-     *             An alternative is {@link #onFailure(Consumer)}.
      */
-    @Deprecated
     public abstract Throwable getCause() throws UnsupportedOperationException;
 
     /**

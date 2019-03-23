@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SuppressWarnings("deprecation")
 class EitherTest {
 
     // -- Testees
