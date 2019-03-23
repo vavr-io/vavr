@@ -150,6 +150,9 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
 
     /**
      * Creates a Try of a {@link CheckedSupplier}.
+     * <p>
+     * If the computation leads to a {@code Failure(cause)} and the underlying {@code cause} is an
+     * {@code InterruptedException}, this methods calls {@code Thread.currentThread().interrupt()}.
      *
      * @param supplier A supplier that may throw a checked exception
      * @param <T>      Component type
@@ -162,6 +165,9 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
         try {
             return success(supplier.get());
         } catch (Throwable t) {
+            if (t instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             return failure(t);
         }
     }
@@ -179,12 +185,10 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
      */
     public static Try<Void> run(CheckedRunnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
-        try {
+        return of(() -> {
             runnable.run();
-            return success(null); // null represents the absence of an value, i.e. Void
-        } catch (Throwable t) {
-            return failure(t);
-        }
+            return null; // null represents the absence of an value, i.e. Void
+        });
     }
 
     /**
