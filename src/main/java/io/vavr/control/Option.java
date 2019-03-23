@@ -198,14 +198,14 @@ public abstract class Option<T> implements io.vavr.Iterable<T>, Serializable {
 
     /**
      * Gets the value if this is a {@code Some} or throws if this is a {@code None}.
+     * <p>
+     * <strong>Warning:</strong> Please note that this operation is considered unsafe.
+     * Alternatives are {@link #getOrElse(Object)}, {@link #getOrElseGet(Supplier)} or {@link #getOrElseThrow(Supplier)}.
+     * Other alternatives are {@link #onDefined(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
      *
      * @return the value
      * @throws NoSuchElementException if this is a {@code None}.
-     * @deprecated Unsafe operation (but not marked for removal).
-     *             User {@link #getOrElse(Object)}, {@link #getOrElseGet(Supplier)} or {@link #getOrElseThrow(Supplier)} instead.
-     *             Other alternatives are {@link #onDefined(Consumer)}, {@link #forEach(Consumer)} or iteration using a for-loop.
      */
-    @Deprecated
     public abstract T get() throws NoSuchElementException;
 
     /**

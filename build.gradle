@@ -24,7 +24,7 @@ apply plugin: 'maven'
 apply plugin: 'signing'
 
 ext.jmhVersion = '1.21'
-ext.junitVersion = '5.4.0-M1'
+ext.junitVersion = '5.5.0-M1'
 
 repositories {
     mavenLocal()
