@@ -100,14 +100,8 @@ class TryTest {
     void shouldBeIndistinguishableWhenCreatingFailureWithOfFactoryOrWithFailureFactory() {
         final Try<String> failure1 = Try.of(() -> { throw FAILURE_CAUSE; });
         final Try<String> failure2 = Try.failure(FAILURE_CAUSE);
-        assertSame(
-                FAILURE_CAUSE,
-                assertThrows(NonFatalException.class, failure1::get).getCause()
-        );
-        assertSame(
-                FAILURE_CAUSE,
-                assertThrows(NonFatalException.class, failure2::get).getCause()
-        );
+        assertThrows(FAILURE_CAUSE.getClass(), failure1::get);
+        assertThrows(FAILURE_CAUSE.getClass(), failure2::get);
         assertSame(failure1.getCause(), failure2.getCause());
         assertEquals(failure1.isFailure(), failure2.isFailure());
         assertEquals(failure1.isSuccess(), failure2.isSuccess());
@@ -214,10 +208,7 @@ class TryTest {
 
     @Test
     void shouldVerifyBasicFailureProperties() {
-        assertSame(
-                FAILURE_CAUSE,
-                assertThrows(RuntimeException.class, FAILURE::get).getCause()
-        );
+        assertThrows(FAILURE_CAUSE.getClass(), FAILURE::get);
         assertSame(FAILURE_CAUSE, FAILURE.getCause());
         assertFalse(FAILURE.isSuccess());
         assertTrue(FAILURE.isFailure());
@@ -515,16 +506,35 @@ class TryTest {
     }
 
     @Test
-    void shouldThrowCauseWrappedInRuntimeExceptionWhenGetOnFailure() {
+    void shouldRethrowRuntimeExceptionWhenGetOnFailure() {
+        final Throwable cause = new RuntimeException();
         assertSame(
-                FAILURE_CAUSE,
-                assertThrows(NonFatalException.class, FAILURE::get).getCause()
+                cause,
+                assertThrows(RuntimeException.class, () -> Try.failure(cause).get())
         );
     }
 
     @Test
-    void shouldThrowNullCauseWrappedInRuntimeExceptionWhenGetOnFailure() {
-        assertNull(assertThrows(NonFatalException.class, () -> Try.failure(null).get()).getCause());
+    void shouldRethrowErrorWhenGetOnFailure() {
+        final Throwable cause = new Error();
+        assertSame(
+                cause,
+                assertThrows(Error.class, () -> Try.failure(cause).get())
+        );
+    }
+
+    @Test
+    void shouldThrowNonFatalExceptionWrapperWhenGetOnFailureAndCauseIsChecked() {
+        final Throwable cause = new Exception();
+        assertSame(
+                cause,
+                assertThrows(NonFatalException.class, () -> Try.failure(cause).get()).getCause()
+        );
+    }
+
+    @Test
+    void shouldThrowNullPointerExceptionWhenGetOnFailureAndCauseIsNull() {
+        assertThrows(NullPointerException.class, () -> Try.failure(null).get());
     }
 
     // -- .getCause()
