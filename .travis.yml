@@ -11,6 +11,7 @@ matrix:
   - jdk: oraclejdk9
   - jdk: openjdk10
   - jdk: openjdk11
+  - jdk: openjdk12
     env: DEPLOY=true
   - jdk: openjdk-ea
   allow_failures:
