@@ -201,7 +201,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
     /**
      * Creates a {@code Failure} that contains the given {@code exception}.
      *
-     * @param exception An exception.
+     * @param exception An exception. Please note that a null value is allowed but discouraged.
      * @param <T>       Component type of the {@code Try}.
      * @return A new {@code Failure}.
      * @throws Error if the given {@code exception} is fatal, i.e. non-recoverable
@@ -319,7 +319,8 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
      *
      * @return The computation result if this is a {@code Success}
      * @throws Error if this is a {@code Failure} and the cause is an {@code Error}
-     * @throws RuntimeException if this is a {@code Failure} and the cause is a {@code RuntimeException}
+     * @throws RuntimeException if this is a {@code Failure} and the cause is a {@code RuntimeException}.
+     *         If the cause is null, a {@code NullPointerException is thrown}.
      * @throws NonFatalException if this is a {@code Failure} and the cause is a checked {@code Exception}
      */
     public abstract T get() throws Error, RuntimeException;
@@ -330,7 +331,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
      * <strong>Warning:</strong> Please note that this operation is considered unsafe.
      * Alternatives are {@link #fold(Function, Function)} and {@link #onFailure(Consumer)}.
      *
-     * @return The cause if this is a Failure
+     * @return The (possibly null) cause if this is a Failure
      * @throws UnsupportedOperationException if this is a Success
      */
     public abstract Throwable getCause() throws UnsupportedOperationException;
