@@ -454,7 +454,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, Serializable {
     }
 
     /**
-     * Consumes the cause if this is a {@link Try.Failure} and the cause is instanceof the given {@code exceptionType}.
+     * Consumes the cause if this is a {@link Try.Failure} and the cause is instance of the given {@code exceptionType}.
      *
      * <pre>{@code
      * // (does not print anything)
