@@ -45,7 +45,7 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  *
  * @author Ruslan Sennov, Daniel Dietrich
  */
-public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable {
+public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable, Comparable<CharSeq> {
 
     private static final long serialVersionUID = 1L;
 
