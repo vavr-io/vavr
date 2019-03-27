@@ -123,6 +123,28 @@ public class CharSeqTest {
                 .hasMessage("test");
     }
 
+    // -- compareTo(Object)
+
+    @Test
+    public void shouldCastTheCharSeqIntoJavaLangComparable() {
+        assertThat(CharSeq.empty()).isInstanceOf(Comparable.class);
+    }
+
+    @Test
+    public void shouldCompareToWhenLessThan() {
+        assertThat(CharSeq.of("a").compareTo(CharSeq.of("b"))).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldCompareToWhenGreaterThan() {
+        assertThat(CharSeq.of("b").compareTo(CharSeq.of("a"))).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldCompareToWhenEqualsThan() {
+        assertThat(CharSeq.of("a").compareTo(CharSeq.of("a"))).isEqualTo(0);
+    }
+
     // -- exists
 
     @Test
@@ -4018,8 +4040,4 @@ public class CharSeqTest {
         CharSeq.empty().toShort(2);
     }
 
-    @Test
-    public void shouldCastTheCharSeqIntoJavaLangComparable() {
-        assertThat(CharSeq.empty()).isInstanceOf(Comparable.class);
-    }
 }
