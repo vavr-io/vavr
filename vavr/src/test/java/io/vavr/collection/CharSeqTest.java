@@ -791,7 +791,7 @@ public class CharSeqTest {
         final CharSeq t = CharSeq.of('1', '2', '3', '4');
         assertThat(t.filter(i -> true)).isSameAs(t);
     }
-    
+
     // -- reject
 
     @Test
@@ -1520,7 +1520,7 @@ public class CharSeqTest {
         final io.vavr.collection.List<Traversable<Character>> expected = io.vavr.collection.List.of(Vector.of('1', '1', '1'), Vector.of('2', '2'), Vector.of('3'), Vector.of('4'));
         assertThat(actual).isEqualTo(expected);
     }
-    
+
     // -- sliding(size)
 
     @Test(expected = IllegalArgumentException.class)
@@ -4016,5 +4016,10 @@ public class CharSeqTest {
     @Test(expected = NumberFormatException.class)
     public void shouldNotConvertToShortUsingRadixGivenEmptyCharSeq() {
         CharSeq.empty().toShort(2);
+    }
+
+    @Test
+    public void shouldCastTheCharSeqIntoJavaLangComparable() {
+        assertThat(CharSeq.empty()).isInstanceOf(Comparable.class);
     }
 }
