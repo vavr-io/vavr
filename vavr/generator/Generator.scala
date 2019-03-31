@@ -960,7 +960,13 @@ def generateMainClasses(): Unit = {
 
                   @Override
                   public boolean isDefinedAt(T obj) {
-                      return $Objects.equals(obj, prototype);
+                      if (obj == prototype) {
+                          return true;
+                      } else if (prototype != null && prototype.getClass().isInstance(obj)) {
+                          return $Objects.equals(obj, prototype);
+                      } else {
+                          return false;
+                      }
                   }
               };
           }
@@ -1205,7 +1211,7 @@ def generateMainClasses(): Unit = {
 
                           @Override
                           public boolean isDefinedAt(T obj) {
-                              return obj != null && type.isAssignableFrom(obj.getClass());
+                              return type.isInstance(obj);
                           }
                       };
                   }
@@ -1241,12 +1247,12 @@ def generateMainClasses(): Unit = {
                               @SuppressWarnings("unchecked")
                               @Override
                               public boolean isDefinedAt(T obj) {
-                                  if (obj == null || !type.isAssignableFrom(obj.getClass())) {
-                                      return false;
-                                  } else {
+                                  if (type.isInstance(obj)) {
                                       final $unapplyTupleType u = unapply.apply(obj);
                                       return
                                               ${(1 to i).gen(j => s"((Pattern<U$j, ?>) p$j).isDefinedAt(u._$j)")(" &&\n")};
+                                  } else {
+                                      return false;
                                   }
                               }
                           };
@@ -2597,6 +2603,8 @@ def generateTestClasses(): Unit = {
       val API = im.getType("io.vavr.API")
       val AssertionsExtensions = im.getType("io.vavr.AssertionsExtensions")
       val ListType = im.getType("io.vavr.collection.List")
+      val StreamType = im.getType("io.vavr.collection.Stream")
+      val SeqType = im.getType("io.vavr.collection.Seq")
       val MapType = im.getType("io.vavr.collection.Map")
       val OptionType = im.getType("io.vavr.control.Option")
       val FutureType = im.getType("io.vavr.concurrent.Future")
@@ -2955,6 +2963,19 @@ def generateTestClasses(): Unit = {
             @$test
             public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
                 assertThat(Case($$(ignored -> false), 1).isDefinedAt(null)).isFalse();
+            }
+
+            @$test
+            public void shouldPassIssue2401() {
+                final $SeqType<String> empty = $StreamType.empty();
+                try {
+                    final String matched = Match(empty).of(
+                            Case($$($ListType.empty()), ignored -> "list")
+                    );
+                    fail("expected MatchError");
+                } catch (MatchError err) {
+                    // ok!
+                }
             }
 
             // -- Match patterns

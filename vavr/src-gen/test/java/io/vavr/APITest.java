@@ -31,6 +31,8 @@ import static org.junit.Assert.fail;
 
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
+import io.vavr.collection.Seq;
+import io.vavr.collection.Stream;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -1399,6 +1401,19 @@ public class APITest {
     @Test
     public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
         assertThat(Case($(ignored -> false), 1).isDefinedAt(null)).isFalse();
+    }
+
+    @Test
+    public void shouldPassIssue2401() {
+        final Seq<String> empty = Stream.empty();
+        try {
+            final String matched = Match(empty).of(
+                    Case($(List.empty()), ignored -> "list")
+            );
+            fail("expected MatchError");
+        } catch (MatchError err) {
+            // ok!
+        }
     }
 
     // -- Match patterns
