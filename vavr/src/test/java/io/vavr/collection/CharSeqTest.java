@@ -123,6 +123,28 @@ public class CharSeqTest {
                 .hasMessage("test");
     }
 
+    // -- compareTo(Object)
+
+    @Test
+    public void shouldCastTheCharSeqIntoJavaLangComparable() {
+        assertThat(CharSeq.empty()).isInstanceOf(Comparable.class);
+    }
+
+    @Test
+    public void shouldCompareToWhenLessThan() {
+        assertThat(CharSeq.of("a").compareTo(CharSeq.of("b"))).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldCompareToWhenGreaterThan() {
+        assertThat(CharSeq.of("b").compareTo(CharSeq.of("a"))).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldCompareToWhenEqualsThan() {
+        assertThat(CharSeq.of("a").compareTo(CharSeq.of("a"))).isEqualTo(0);
+    }
+
     // -- exists
 
     @Test
@@ -791,7 +813,7 @@ public class CharSeqTest {
         final CharSeq t = CharSeq.of('1', '2', '3', '4');
         assertThat(t.filter(i -> true)).isSameAs(t);
     }
-    
+
     // -- reject
 
     @Test
@@ -1520,7 +1542,7 @@ public class CharSeqTest {
         final io.vavr.collection.List<Traversable<Character>> expected = io.vavr.collection.List.of(Vector.of('1', '1', '1'), Vector.of('2', '2'), Vector.of('3'), Vector.of('4'));
         assertThat(actual).isEqualTo(expected);
     }
-    
+
     // -- sliding(size)
 
     @Test(expected = IllegalArgumentException.class)
@@ -4017,4 +4039,5 @@ public class CharSeqTest {
     public void shouldNotConvertToShortUsingRadixGivenEmptyCharSeq() {
         CharSeq.empty().toShort(2);
     }
+
 }
