@@ -1068,6 +1068,15 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @Override
+    public Tuple2<K, V> last() {
+        if (isEmpty()) {
+            throw new NoSuchElementException("last of empty TreeMap");
+        } else {
+            return entries.max().get();
+        }
+    }
+
+    @Override
     public TreeMap<K, V> init() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty TreeMap");
