@@ -1041,7 +1041,11 @@ def generateMainClasses(): Unit = {
 
                   @Override
                   public boolean isDefinedAt(T obj) {
-                      return predicate.test(obj);
+                      try {
+                          return predicate.test(obj);
+                      } catch (ClassCastException x) {
+                          return false;
+                      }
                   }
               };
           }
@@ -2983,8 +2987,21 @@ def generateTestClasses(): Unit = {
             public void shouldPassIssue2401() {
                 final $SeqType<String> empty = $StreamType.empty();
                 try {
-                    final String matched = Match(empty).of(
+                    Match(empty).of(
                             Case($$($ListType.empty()), ignored -> "list")
+                    );
+                    fail("expected MatchError");
+                } catch (MatchError err) {
+                    // ok!
+                }
+            }
+
+            @$test
+            public void shouldCatchClassCastExceptionWhenPredicateHasDifferentType() {
+                try {
+                    final Object o = "";
+                    Match(o).of(
+                            Case($$((Integer i) -> true), "never")
                     );
                     fail("expected MatchError");
                 } catch (MatchError err) {
