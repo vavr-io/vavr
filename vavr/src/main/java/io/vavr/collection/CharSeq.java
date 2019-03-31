@@ -45,7 +45,7 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  *
  * @author Ruslan Sennov, Daniel Dietrich
  */
-public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable {
+public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable, Comparable<CharSeq> {
 
     private static final long serialVersionUID = 1L;
 
@@ -2356,7 +2356,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * </tr>
      * </table>
      * </blockquote>
-     * 
+     *
      * @param regex the delimiting regular expression
      * @return the Seq of strings computed by splitting this string around matches of the given regular expression
      * @throws PatternSyntaxException if the regular expression's syntax is invalid
@@ -2430,7 +2430,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * Pattern#split(CharSequence, int) split}(<i>str</i>,&nbsp;<i>n</i>)
      * </code>
      * </blockquote>
-     * 
+     *
      * @param regex the delimiting regular expression
      * @param limit the result threshold, as described above
      * @return the Seq of strings computed by splitting this string around matches of the given regular expression
