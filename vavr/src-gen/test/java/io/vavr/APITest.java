@@ -1422,7 +1422,7 @@ public class APITest {
     }
 
     @Test
-    public void shouldPassIssue2404() {
+    public void shouldCatchClassCastExceptionWhenPredicateHasDifferentType() {
         try {
             final Object o = "";
             Match(o).of(
