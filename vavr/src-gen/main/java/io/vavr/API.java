@@ -5060,7 +5060,11 @@ public final class API {
 
             @Override
             public boolean isDefinedAt(T obj) {
-                return predicate.test(obj);
+                try {
+                    return predicate.test(obj);
+                } catch (ClassCastException x) {
+                    return false;
+                }
             }
         };
     }
