@@ -1412,8 +1412,21 @@ public class APITest {
     public void shouldPassIssue2401() {
         final Seq<String> empty = Stream.empty();
         try {
-            final String matched = Match(empty).of(
+            Match(empty).of(
                     Case($(List.empty()), ignored -> "list")
+            );
+            fail("expected MatchError");
+        } catch (MatchError err) {
+            // ok!
+        }
+    }
+
+    @Test
+    public void shouldCatchClassCastExceptionWhenPredicateHasDifferentType() {
+        try {
+            final Object o = "";
+            Match(o).of(
+                    Case($((Integer i) -> true), "never")
             );
             fail("expected MatchError");
         } catch (MatchError err) {
