@@ -100,7 +100,7 @@ def generateMainClasses(): Unit = {
       val PredicateType = im.getType("java.util.function.Predicate")
       val SupplierType = im.getType("java.util.function.Supplier")
 
-      val monadicTypesFor = List("Iterable", OptionType, FutureType, TryType, ListType)
+      val monadicTypesFor = List("Iterable", OptionType, FutureType, TryType, EitherType, ListType)
 
       def genTraversableAliases(traversableType: String, returnType: String, name: String) = xs"""
         // -- $name
@@ -775,15 +775,15 @@ def generateMainClasses(): Unit = {
           ${monadicTypesFor.gen(mtype => (1 to N).gen(i => {
             val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
             val generics = (1 to i).gen(j => s"T$j")(", ")
-            val params = (1 to i).gen(j => s"$mtype<T$j> ts$j")(", ")
-            xs"""
+            val params = (1 to i).gen(j => s"${if(mtype == "Either") mtype + s"<L, T$j>" else mtype + s"<T$j>"} ts$j")(", ")
+          xs"""
               /$javadoc
                * Creates a {@code For}-comprehension of ${i.numerus(mtype)}.
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} $mtype")("\n")}
                ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} $mtype")("\n")}
                * @return a new {@code For}-comprehension of arity $i
                */
-              public static <$generics> $forClassName<$generics> For($params) {
+              public static <${if(mtype == "Either") "L, " else ""}$generics> $forClassName<${if(mtype == "Either") "L, " else ""}$generics> For($params) {
                   ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
                   return new $forClassName<>(${(1 to i).gen(j => s"ts$j")(", ")});
               }
@@ -805,11 +805,11 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * For-comprehension with ${i.numerus(mtype)}.
                */
-              public static class $forClassName<$generics> {
+              public static class $forClassName<${(if(mtype == "Either") "L, " else "") + generics}> {
 
-                  ${(1 to i).gen(j => xs"""private final $mtype<T$j> ts$j;""")("\n")}
+                  ${(1 to i).gen(j => xs"""private final $mtype<${(if(mtype == "Either") "L, " else "") + s"T$j"}> ts$j;""")("\n")}
 
-                  private $forClassName(${(1 to i).gen(j => s"$mtype<T$j> ts$j")(", ")}) {
+                  private $forClassName(${(1 to i).gen(j => s"$mtype<${(if(mtype == "Either") "L, " else "") + s"T$j"}> ts$j")(", ")}) {
                       ${(1 to i).gen(j => xs"""this.ts$j = ts$j;""")("\n")}
                   }
 
@@ -820,7 +820,7 @@ def generateMainClasses(): Unit = {
                    * @param <R> type of the resulting {@code $rtype} elements
                    * @return an {@code $rtype} of mapped results
                    */
-                  public <R> $rtype<R> yield($functionType<$args, ? extends R> f) {
+                  public <R> ${if(mtype == "Either") s"$rtype<L, R>" else s"$rtype<R>"} yield($functionType<$args, ? extends R> f) {
                       $Objects.requireNonNull(f, "f is null");
                       ${if (i == 1) xs"""
                         return ${cons("ts1")}.map(f);
@@ -837,7 +837,7 @@ def generateMainClasses(): Unit = {
                      *
                      * @return an {@code Iterator} of mapped results
                      */
-                    public $rtype<T1> yield() {
+                    public ${if(mtype == "Either") s"$rtype<L, T1>" else s"$rtype<T1>"} yield() {
                         return yield(Function.identity());
                     }
                   """)}
@@ -2624,10 +2624,11 @@ def generateTestClasses(): Unit = {
       val ExecutorsType = im.getType("java.util.concurrent.Executors")
       val ExecutorService = s"$ExecutorsType.newSingleThreadExecutor()"
       val TryType = im.getType("io.vavr.control.Try")
+      val EitherType = im.getType("io.vavr.control.Either")
       val JavaComparatorType = im.getType("java.util.Comparator")
 
       val monadicTypesFor = List(OptionType)
-      val monadicFunctionTypesFor = List(FutureType, TryType)
+      val monadicFunctionTypesFor = List(FutureType, TryType, EitherType)
 
       val d = "$"
 
@@ -2942,8 +2943,8 @@ def generateTestClasses(): Unit = {
             ${monadicFunctionTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
               @$test
               public void shouldIterateFor$mtype$i() {
-                  final $mtype<Integer> result = For(
-                      ${(1 to i).gen(j => s"$mtype.of(() -> $j)")(",\n")}
+                  final ${if(mtype == "Either") mtype + "<Object, Integer>" else mtype + "<Integer>"}result = For(
+                      ${(1 to i).gen(j => s"${if(mtype == "Either")  mtype + s".right($j)" else  mtype + s".of(() -> $j)"}")(",\n")}
                   ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
                   $assertThat(result.get()).isEqualTo(${(1 to i).sum});
               }
