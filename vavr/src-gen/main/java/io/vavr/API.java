@@ -4433,7 +4433,7 @@ public final class API {
          *
          * @param f a function that maps an element of the cross product to a result
          * @param <R> type of the resulting {@code Either} elements
-         * @return an {@code Try} of mapped results
+         * @return an {@code Either} of mapped results
          */
         public <R> Either<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
