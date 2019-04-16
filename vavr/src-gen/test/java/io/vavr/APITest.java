@@ -34,6 +34,7 @@ import io.vavr.collection.Map;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import io.vavr.concurrent.Future;
+import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.util.Arrays;
@@ -1192,7 +1193,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForFuture1() {
-        final Future<Integer> result = For(
+        final Future<Integer>result = For(
             Future.of(() -> 1)
         ).yield(i1 -> i1);
         assertThat(result.get()).isEqualTo(1);
@@ -1200,7 +1201,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForFuture2() {
-        final Future<Integer> result = For(
+        final Future<Integer>result = For(
             Future.of(() -> 1),
             Future.of(() -> 2)
         ).yield((i1, i2) -> i1 + i2);
@@ -1209,7 +1210,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForFuture3() {
-        final Future<Integer> result = For(
+        final Future<Integer>result = For(
             Future.of(() -> 1),
             Future.of(() -> 2),
             Future.of(() -> 3)
@@ -1219,7 +1220,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForFuture4() {
-        final Future<Integer> result = For(
+        final Future<Integer>result = For(
             Future.of(() -> 1),
             Future.of(() -> 2),
             Future.of(() -> 3),
@@ -1230,7 +1231,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForFuture5() {
-        final Future<Integer> result = For(
+        final Future<Integer>result = For(
             Future.of(() -> 1),
             Future.of(() -> 2),
             Future.of(() -> 3),
@@ -1242,7 +1243,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForFuture6() {
-        final Future<Integer> result = For(
+        final Future<Integer>result = For(
             Future.of(() -> 1),
             Future.of(() -> 2),
             Future.of(() -> 3),
@@ -1255,7 +1256,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForFuture7() {
-        final Future<Integer> result = For(
+        final Future<Integer>result = For(
             Future.of(() -> 1),
             Future.of(() -> 2),
             Future.of(() -> 3),
@@ -1269,7 +1270,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForFuture8() {
-        final Future<Integer> result = For(
+        final Future<Integer>result = For(
             Future.of(() -> 1),
             Future.of(() -> 2),
             Future.of(() -> 3),
@@ -1284,7 +1285,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForTry1() {
-        final Try<Integer> result = For(
+        final Try<Integer>result = For(
             Try.of(() -> 1)
         ).yield(i1 -> i1);
         assertThat(result.get()).isEqualTo(1);
@@ -1292,7 +1293,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForTry2() {
-        final Try<Integer> result = For(
+        final Try<Integer>result = For(
             Try.of(() -> 1),
             Try.of(() -> 2)
         ).yield((i1, i2) -> i1 + i2);
@@ -1301,7 +1302,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForTry3() {
-        final Try<Integer> result = For(
+        final Try<Integer>result = For(
             Try.of(() -> 1),
             Try.of(() -> 2),
             Try.of(() -> 3)
@@ -1311,7 +1312,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForTry4() {
-        final Try<Integer> result = For(
+        final Try<Integer>result = For(
             Try.of(() -> 1),
             Try.of(() -> 2),
             Try.of(() -> 3),
@@ -1322,7 +1323,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForTry5() {
-        final Try<Integer> result = For(
+        final Try<Integer>result = For(
             Try.of(() -> 1),
             Try.of(() -> 2),
             Try.of(() -> 3),
@@ -1334,7 +1335,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForTry6() {
-        final Try<Integer> result = For(
+        final Try<Integer>result = For(
             Try.of(() -> 1),
             Try.of(() -> 2),
             Try.of(() -> 3),
@@ -1347,7 +1348,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForTry7() {
-        final Try<Integer> result = For(
+        final Try<Integer>result = For(
             Try.of(() -> 1),
             Try.of(() -> 2),
             Try.of(() -> 3),
@@ -1361,7 +1362,7 @@ public class APITest {
 
     @Test
     public void shouldIterateForTry8() {
-        final Try<Integer> result = For(
+        final Try<Integer>result = For(
             Try.of(() -> 1),
             Try.of(() -> 2),
             Try.of(() -> 3),
@@ -1370,6 +1371,98 @@ public class APITest {
             Try.of(() -> 6),
             Try.of(() -> 7),
             Try.of(() -> 8)
+        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+        assertThat(result.get()).isEqualTo(36);
+    }
+
+    @Test
+    public void shouldIterateForEither1() {
+        final Either<Object, Integer>result = For(
+            Either.right(1)
+        ).yield(i1 -> i1);
+        assertThat(result.get()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldIterateForEither2() {
+        final Either<Object, Integer>result = For(
+            Either.right(1),
+            Either.right(2)
+        ).yield((i1, i2) -> i1 + i2);
+        assertThat(result.get()).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldIterateForEither3() {
+        final Either<Object, Integer>result = For(
+            Either.right(1),
+            Either.right(2),
+            Either.right(3)
+        ).yield((i1, i2, i3) -> i1 + i2 + i3);
+        assertThat(result.get()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldIterateForEither4() {
+        final Either<Object, Integer>result = For(
+            Either.right(1),
+            Either.right(2),
+            Either.right(3),
+            Either.right(4)
+        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+        assertThat(result.get()).isEqualTo(10);
+    }
+
+    @Test
+    public void shouldIterateForEither5() {
+        final Either<Object, Integer>result = For(
+            Either.right(1),
+            Either.right(2),
+            Either.right(3),
+            Either.right(4),
+            Either.right(5)
+        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+        assertThat(result.get()).isEqualTo(15);
+    }
+
+    @Test
+    public void shouldIterateForEither6() {
+        final Either<Object, Integer>result = For(
+            Either.right(1),
+            Either.right(2),
+            Either.right(3),
+            Either.right(4),
+            Either.right(5),
+            Either.right(6)
+        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+        assertThat(result.get()).isEqualTo(21);
+    }
+
+    @Test
+    public void shouldIterateForEither7() {
+        final Either<Object, Integer>result = For(
+            Either.right(1),
+            Either.right(2),
+            Either.right(3),
+            Either.right(4),
+            Either.right(5),
+            Either.right(6),
+            Either.right(7)
+        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+        assertThat(result.get()).isEqualTo(28);
+    }
+
+    @Test
+    public void shouldIterateForEither8() {
+        final Either<Object, Integer>result = For(
+            Either.right(1),
+            Either.right(2),
+            Either.right(3),
+            Either.right(4),
+            Either.right(5),
+            Either.right(6),
+            Either.right(7),
+            Either.right(8)
         ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
         assertThat(result.get()).isEqualTo(36);
     }
