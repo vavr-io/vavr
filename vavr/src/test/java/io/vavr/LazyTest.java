@@ -19,12 +19,15 @@
  */
 package io.vavr;
 
-import io.vavr.collection.Seq;
-import io.vavr.control.Try;
+import static io.vavr.collection.Iterator.range;
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Option;
+import io.vavr.control.Try;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -35,9 +38,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import static java.util.concurrent.CompletableFuture.runAsync;
-import static io.vavr.collection.Iterator.range;
 
 public class LazyTest extends AbstractValueTest {
 
@@ -165,6 +165,16 @@ public class LazyTest extends AbstractValueTest {
 
         assertThat(testee.filter(i -> i % 2 == 0)).isEqualTo(expectedPositive);
         assertThat(testee.filter(i -> i % 2 != 0)).isEqualTo(expectedNegative);
+    }
+
+    @Test
+    public void shouldFilterNotOverLazyValue() {
+        final Lazy<Integer> testee = Lazy.of(() -> 42);
+        final Option<Integer> expectedPositive = Option.some(42);
+        final Option<Integer> expectedNegative = Option.none();
+
+        assertThat(testee.filterNot(i -> i % 2 != 0)).isEqualTo(expectedPositive);
+        assertThat(testee.filterNot(i -> i % 2 == 0)).isEqualTo(expectedNegative);
     }
 
     @Test

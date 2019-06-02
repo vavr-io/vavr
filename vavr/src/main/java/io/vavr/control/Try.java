@@ -19,9 +19,13 @@
  */
 package io.vavr.control;
 
+import static io.vavr.API.Match;
+import static io.vavr.control.TryModule.isFatal;
+import static io.vavr.control.TryModule.sneakyThrow;
+
 import io.vavr.*;
-import io.vavr.collection.Seq;
 import io.vavr.collection.Iterator;
+import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 
 import java.io.Serializable;
@@ -33,10 +37,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-
-import static io.vavr.API.Match;
-import static io.vavr.control.TryModule.isFatal;
-import static io.vavr.control.TryModule.sneakyThrow;
 
 /**
  * The Try control gives us the ability write safe code without focusing on try-catch blocks in the presence of exceptions.
@@ -393,6 +393,46 @@ public interface Try<T> extends Value<T>, Serializable {
     default Try<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filterTry(predicate::test);
+    }
+
+    /**
+     * Contrary to filter, see {@link #filter(Predicate, Supplier)}.
+     *
+     * @param predicate         A predicate
+     * @param throwableSupplier A supplier of a throwable
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is null
+     */
+    default Try<T> filterNot(Predicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate(), throwableSupplier);
+    }
+
+
+    /**
+     * Contrary to filter, see {@link #filter(Predicate, Function)}.
+     *
+     * @param predicate A predicate
+     * @param errorProvider A function that provides some kind of Throwable for T
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} or {@code errorProvider} is null
+     */
+    default Try<T> filterNot(Predicate<? super T> predicate, Function<? super T, ? extends Throwable> errorProvider) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate(), errorProvider);
+    }
+
+
+    /**
+     * Contrary to filter, see {@link #filter(Predicate)}.
+     *
+     * @param predicate A predicate
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default Try<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
     }
 
     /**

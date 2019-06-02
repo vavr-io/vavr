@@ -1059,6 +1059,33 @@ public class TryTest extends AbstractValueTest {
         assertThat(identity.filter(s -> false, ignored -> new IllegalArgumentException())).isEqualTo(identity);
     }
 
+    // -- filterNot
+
+    @Test
+    public void shouldFilterNotOnMatchingPredicateOnFailure() {
+        final Try<String> failure = failure();
+        assertThat(failure.filterNot(s -> false)).isEqualTo(failure);
+    }
+
+    @Test
+    public void shouldFilterNotOnNonMatchingPredicateOnFailure() {
+        final Try<String> failure = failure();
+        assertThat(failure.filterNot(s -> true)).isEqualTo(failure);
+    }
+
+    @Test
+    public void shouldFilterNotWithExceptionOnFailure() {
+        final Try<String> failure = failure();
+        assertThat(failure.filterNot(this::filter)).isEqualTo(failure);
+    }
+
+    @Test
+    public void failureShouldThrowWhenFilterNotWithNullPredicate() {
+        assertThatThrownBy(() -> failure().filterNot(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("predicate is null");
+    }
+
     // -- flatMap
 
     @Test
@@ -1377,6 +1404,8 @@ public class TryTest extends AbstractValueTest {
         assertThat(success().toJavaOptional().get()).isEqualTo(OK);
     }
 
+    // -- filter
+
     @Test
     public void shouldFilterMatchingPredicateOnSuccess() {
         assertThat(success().filter(s -> true).get()).isEqualTo(OK);
@@ -1417,6 +1446,58 @@ public class TryTest extends AbstractValueTest {
             throw new RuntimeException("xxx");
         }).get();
     }
+
+    // -- filterNot
+
+    @Test
+    public void shouldFilterNotOnMatchingPredicateOnSuccess() {
+        assertThat(success().filterNot(s -> false).get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldFilterNotOnMatchingPredicateWithErrorProviderOnSuccess() {
+        assertThat(success().filterNot(s -> false, s -> new IllegalArgumentException(s)).get()).isEqualTo(OK);
+    }
+
+    @Test
+    public void shouldFilterNotOnNonMatchingPredicateOnSuccess() {
+        final Try<?> success = success().filterNot(s -> true);
+        assertThatThrownBy(success::get).isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    public void shouldFilterNotOnNonMatchingPredicateAndDefaultThrowableSupplierOnSuccess() {
+        assertThat(success().filterNot(s -> true).getCause())
+                .isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    public void shouldFilterNotOnNonMatchingPredicateAndCustomThrowableSupplierOnSuccess() {
+        assertThat(success().filterNot(s -> true, () -> new IllegalArgumentException()).getCause())
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    public void shouldUseErrorProviderWhenFilterNotOnNonMatchingPredicateOnSuccess() {
+        assertThat(success().filterNot(s -> true, str -> new IllegalArgumentException(str)).getCause())
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldFilterNotWithExceptionOnSuccess() {
+        success().filterNot(s -> {
+            throw new RuntimeException("xxx");
+        }).get();
+    }
+
+    @Test
+    public void successShouldThrowWhenFilterNotWithNullPredicate() {
+        assertThatThrownBy(() -> success().filterNot(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("predicate is null");
+    }
+
+    // -- flatMap
 
     @Test
     public void shouldFlatMapOnSuccess() {

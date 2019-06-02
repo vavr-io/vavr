@@ -19,19 +19,19 @@
  */
 package io.vavr.control;
 
+import static io.vavr.API.Left;
+import static io.vavr.API.Right;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import io.vavr.AbstractValueTest;
-import io.vavr.collection.Seq;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import org.junit.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Spliterator;
-
-import static io.vavr.API.Left;
-import static io.vavr.API.Right;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SuppressWarnings("deprecation")
 public class EitherTest extends AbstractValueTest {
@@ -112,7 +112,7 @@ public class EitherTest extends AbstractValueTest {
     public void shouldThrowWhenSequencingNull() {
         assertThatThrownBy(() -> Either.sequence(null))
                 .isInstanceOf(NullPointerException.class)
-                .withFailMessage("eithers is null");
+                .hasMessage("eithers is null");
     }
 
     @Test
@@ -153,7 +153,7 @@ public class EitherTest extends AbstractValueTest {
     public void shouldThrowWhenSequencingRightNull() {
         assertThatThrownBy(() -> Either.sequenceRight(null))
                 .isInstanceOf(NullPointerException.class)
-                .withFailMessage("eithers is null");
+                .hasMessage("eithers is null");
     }
 
     @Test
@@ -194,7 +194,7 @@ public class EitherTest extends AbstractValueTest {
     public void shouldThrowWhenTraversingNull() {
         assertThatThrownBy(() -> Either.traverse(null, null))
                 .isInstanceOf(NullPointerException.class)
-                .withFailMessage("eithers is null");
+                .hasMessage("values is null");
     }
 
     @Test
@@ -236,7 +236,7 @@ public class EitherTest extends AbstractValueTest {
     public void shouldThrowWhenTraversingRightNull() {
         assertThatThrownBy(() -> Either.traverseRight(null, null))
                 .isInstanceOf(NullPointerException.class)
-                .withFailMessage("eithers is null");
+                .hasMessage("values is null");
     }
 
     @Test
@@ -356,6 +356,29 @@ public class EitherTest extends AbstractValueTest {
         Either<String, Integer> either = Either.left("vavr");
         assertThat(either.filter(i -> true).get()).isSameAs(either);
         assertThat(either.filter(i -> false).get()).isSameAs(either);
+    }
+
+    // -- filterNot
+
+    @Test
+    public void shouldFilterNotRight() {
+        Either<String, Integer> either = Either.right(42);
+        assertThat(either.filterNot(i -> false).get()).isSameAs(either);
+        assertThat(either.filterNot(i -> true)).isSameAs(Option.none());
+    }
+
+    @Test
+    public void shouldFilterNotLeft() {
+        Either<String, Integer> either = Either.left("vavr");
+        assertThat(either.filterNot(i -> false).get()).isSameAs(either);
+        assertThat(either.filterNot(i -> true).get()).isSameAs(either);
+    }
+
+    @Test
+    public void shouldThrowWhenNullPredicate() {
+        assertThatThrownBy(() -> Either.left(42).filterNot(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("predicate is null");
     }
 
     // -- filterOrElse

@@ -140,8 +140,14 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     public Option<T> filter(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
         final T v = get();
         return predicate.test(v) ? Option.some(v) : Option.none();
+    }
+
+    public Option<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
     }
 
     /**

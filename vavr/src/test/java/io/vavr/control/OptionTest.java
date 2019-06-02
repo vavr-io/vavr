@@ -19,6 +19,8 @@
  */
 package io.vavr.control;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
 import io.vavr.*;
 import io.vavr.collection.Seq;
 import io.vavr.AbstractValueTest;
@@ -346,6 +348,30 @@ public class OptionTest extends AbstractValueTest {
     @Test
     public void shouldReturnNoneOnFilterWhenValueIsNotDefinedAndPredicateNotMatches() {
         assertThat(Option.<Integer> none().filter(i -> i == 1)).isEqualTo(Option.none());
+    }
+
+    // -- filterNot
+
+    @Test
+    public void shouldReturnSomeOnFilterNotWhenValueIsDefinedAndPredicateNotMatches() {
+        assertThat(Option.of(1).filterNot(i -> i == 2)).isEqualTo(Option.of(1));
+    }
+
+    @Test
+    public void shouldReturnNoneOnFilterNotWhenValuesIsDefinedAndPredicateMatches() {
+        assertThat(Option.of(1).filterNot(i -> i == 1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnNoneOnFilterNotWhenValueIsNotDefinedAndPredicateNotMatches() {
+        assertThat(Option.<Integer>none().filterNot(i -> i == 1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldThrowWhenFilterNotPredicateIsNull() {
+        assertThatThrownBy(() -> Option.of(1).filterNot(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("predicate is null");
     }
 
     // -- map
