@@ -30,10 +30,7 @@ import org.junit.runners.Parameterized;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
@@ -480,6 +477,31 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         final Pattern isDigits = Pattern.compile("^\\d+$");
         final Multimap<Integer, String> dst = src.filterValues(v -> isDigits.matcher(v).matches());
         assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(0, "5").put(1, "1").put(1, "6").put(2, "2").put(2, "7").put(3, "3").put(3, "8").put(4, "4").put(4, "9"));
+    }
+
+    // -- filterNot
+
+    @Test
+    public void biFilterNotShouldWork() {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Multimap<Integer, String> dst = src.filterNot((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "1").put(1, "b").put(2, "c").put(3, "3").put(3, "d").put(4, "e").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
+    }
+
+    @Test
+    public void keyFilterNotShouldWork() {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Multimap<Integer, String> dst = src.filterNotKeys(k -> k % 2 == 0);
+        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(1, "b").put(3, "3").put(3, "d").put(5, "5").put(5, "f").put(7, "7").put(7, "11").put(9, "9").put(9, "13"));
+    }
+
+    @Test
+    public void valueFilterNotShouldWork() {
+        final Multimap<Integer, String> src = mapTabulate(20, n -> Tuple.of(n % 10, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Multimap<Integer, String> dst = src.filterNotValues(v -> isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(0, "a").put(1, "b").put(2, "c").put(3, "d").put(4, "e").put(5, "f"));
     }
 
     // -- reject

@@ -20,12 +20,11 @@
 package io.vavr.collection;
 
 import io.vavr.PartialFunction;
-import io.vavr.Tuple3;
 import io.vavr.Tuple2;
+import io.vavr.Tuple3;
 import io.vavr.control.Option;
 
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 import java.util.function.*;
 
 /**
@@ -123,6 +122,10 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     @Override
     SortedSet<T> filter(Predicate<? super T> predicate);
 
+    @Override
+    SortedSet<T> filterNot(Predicate<? super T> predicate);
+
+    @Deprecated
     @Override
     SortedSet<T> reject(Predicate<? super T> predicate);
 

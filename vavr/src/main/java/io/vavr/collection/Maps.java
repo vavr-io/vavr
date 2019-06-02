@@ -245,24 +245,52 @@ final class Maps {
         }
     }
 
+    static <K, V, M extends Map<K, V>> M filterNot(M map, OfEntries<K, V, M> ofEntries,
+                                                Predicate<? super Tuple2<K, V>> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(map, ofEntries, predicate.negate());
+    }
+
+    static <K, V, M extends Map<K, V>> M filterNot(M map, OfEntries<K, V, M> ofEntries,
+                                                BiPredicate<? super K, ? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(map, ofEntries, predicate.negate());
+    }
+
+    static <K, V, M extends Map<K, V>> M filterNotKeys(M map, OfEntries<K, V, M> ofEntries,
+                                                    Predicate<? super K> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterKeys(map, ofEntries, predicate.negate());
+    }
+
+    static <K, V, M extends Map<K, V>> M filterNotValues(M map, OfEntries<K, V, M> ofEntries,
+                                                      Predicate<? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterValues(map, ofEntries, predicate.negate());
+    }
+
+    @Deprecated
     static <K, V, M extends Map<K, V>> M reject(M map, OfEntries<K, V, M> ofEntries,
             Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(map, ofEntries, predicate.negate());
     }
 
+    @Deprecated
     static <K, V, M extends Map<K, V>> M reject(M map, OfEntries<K, V, M> ofEntries,
             BiPredicate<? super K, ? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(map, ofEntries, predicate.negate());
     }
 
+    @Deprecated
     static <K, V, M extends Map<K, V>> M rejectKeys(M map, OfEntries<K, V, M> ofEntries,
             Predicate<? super K> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filterKeys(map, ofEntries, predicate.negate());
     }
 
+    @Deprecated
     static <K, V, M extends Map<K, V>> M rejectValues(M map, OfEntries<K, V, M> ofEntries,
             Predicate<? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

@@ -253,6 +253,14 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         }
     }
 
+
+    @Override
+    public M filterNot(Predicate<? super Tuple2<K, V>> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
+    @Deprecated
     @Override
     public M reject(Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -266,6 +274,13 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
+    public M filterNot(BiPredicate<? super K, ? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterNot(t -> predicate.test(t._1, t._2));
+    }
+
+    @Deprecated
+    @Override
     public M reject(BiPredicate<? super K, ? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reject(t -> predicate.test(t._1, t._2));
@@ -278,6 +293,13 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
+    public M filterNotKeys(Predicate<? super K> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterNot(t -> predicate.test(t._1));
+    }
+
+    @Deprecated
+    @Override
     public M rejectKeys(Predicate<? super K> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reject(t -> predicate.test(t._1));
@@ -289,6 +311,13 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         return filter(t -> predicate.test(t._2));
     }
 
+    @Override
+    public M filterNotValues(Predicate<? super V> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterNot(t -> predicate.test(t._2));
+    }
+
+    @Deprecated
     @Override
     public M rejectValues(Predicate<? super V> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

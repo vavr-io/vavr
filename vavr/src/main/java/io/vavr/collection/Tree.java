@@ -19,12 +19,10 @@
  */
 package io.vavr.collection;
 
-import io.vavr.PartialFunction;
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
-import io.vavr.Tuple3;
+import io.vavr.*;
 import io.vavr.collection.List.Nil;
-import io.vavr.collection.Tree.*;
+import io.vavr.collection.Tree.Empty;
+import io.vavr.collection.Tree.Node;
 import io.vavr.control.Option;
 
 import java.io.*;
@@ -33,7 +31,10 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 import static io.vavr.collection.Tree.Order.PRE_ORDER;
-import static io.vavr.collection.Tree.*;
+import static io.vavr.collection.Tree.empty;
+import static io.vavr.collection.Tree.of;
+import static io.vavr.collection.Tree.ofAll;
+import static io.vavr.collection.Tree.recurse;
 
 /**
  * A general Tree interface.
@@ -550,6 +551,17 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         }
     }
 
+    @Override
+    default Seq<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        if (isEmpty()) {
+            return Stream.empty();
+        } else {
+            return values().filterNot(predicate);
+        }
+    }
+
+    @Deprecated
     @Override
     default Seq<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

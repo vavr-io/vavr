@@ -19,10 +19,6 @@
  */
 package io.vavr.control;
 
-import static io.vavr.API.Left;
-import static io.vavr.API.Right;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import io.vavr.AbstractValueTest;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
@@ -32,6 +28,10 @@ import org.junit.Test;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Spliterator;
+
+import static io.vavr.API.Left;
+import static io.vavr.API.Right;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SuppressWarnings("deprecation")
 public class EitherTest extends AbstractValueTest {

@@ -19,10 +19,7 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Function1;
-import io.vavr.PartialFunction;
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
+import io.vavr.*;
 import io.vavr.control.Option;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
@@ -30,20 +27,17 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.*;
 import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
-import static java.util.Arrays.asList;
 import static io.vavr.API.Some;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
+import static java.util.Arrays.asList;
 
 public abstract class AbstractMapTest extends AbstractTraversableTest {
 
@@ -1272,8 +1266,34 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(dst).isEqualTo(emptyIntString().put(0, "0").put(1, "1").put(2, "2").put(3, "3").put(4, "4").put(5, "5").put(6, "6").put(7, "7").put(8, "8").put(9, "9"));
     }
 
+    // -- filterNot
+
+    @Test
+    public void biFilterNotShouldWork() {
+        final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Map<Integer, String> dst = src.filterNot((k, v) -> k % 2 == 0 && isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f").put(17, "11").put(19, "13"));
+    }
+
+    @Test
+    public void keyFilterNotShouldWork() {
+        final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
+        final Map<Integer, String> dst = src.filterNotKeys(k -> k % 2 == 0);
+        assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
+    }
+
+    @Test
+    public void valueFilterNotShouldWork() {
+        final Map<Integer, String> src = mapTabulate(15, n -> Tuple.of(n, Integer.toHexString(n)));
+        final Pattern isDigits = Pattern.compile("^\\d+$");
+        final Map<Integer, String> dst = src.filterNotValues(v -> isDigits.matcher(v).matches());
+        assertThat(dst).isEqualTo(emptyIntString().put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e"));
+    }
+
     // -- reject
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldBiRejectWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
@@ -1282,6 +1302,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(10, "a").put(11, "b").put(12, "c").put(13, "d").put(14, "e").put(15, "f").put(17, "11").put(19, "13"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldKeyRejectWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(20, n -> Tuple.of(n, Integer.toHexString(n)));
@@ -1289,6 +1310,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(dst).isEqualTo(emptyIntString().put(1, "1").put(3, "3").put(5, "5").put(7, "7").put(9, "9").put(11, "b").put(13, "d").put(15, "f").put(17, "11").put(19, "13"));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldValueRejectWork() throws Exception {
         final Map<Integer, String> src = mapTabulate(15, n -> Tuple.of(n, Integer.toHexString(n)));

@@ -19,10 +19,6 @@
  */
 package io.vavr.control;
 
-import static io.vavr.API.Match;
-import static io.vavr.control.TryModule.isFatal;
-import static io.vavr.control.TryModule.sneakyThrow;
-
 import io.vavr.*;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
@@ -33,10 +29,11 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.Callable;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
+
+import static io.vavr.API.Match;
+import static io.vavr.control.TryModule.isFatal;
+import static io.vavr.control.TryModule.sneakyThrow;
 
 /**
  * The Try control gives us the ability write safe code without focusing on try-catch blocks in the presence of exceptions.

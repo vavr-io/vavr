@@ -19,7 +19,6 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Tuple;
 import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
@@ -198,6 +197,16 @@ final class Collections {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    static <C extends Traversable<T>, T> C filterNot(C source, Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        if (source.isEmpty()) {
+            return source;
+        } else {
+            return (C) source.filter(predicate.negate());
+        }
+    }
+
     static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
         Objects.requireNonNull(classifier, "classifier is null");
         Objects.requireNonNull(mapper, "mapper is null");
@@ -294,6 +303,7 @@ final class Collections {
         }
     }
 
+    @Deprecated
     @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C reject(C source, Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

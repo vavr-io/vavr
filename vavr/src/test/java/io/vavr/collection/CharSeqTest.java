@@ -814,18 +814,39 @@ public class CharSeqTest {
         assertThat(t.filter(i -> true)).isSameAs(t);
     }
 
+    // -- filterNot
+
+    @Test
+    public void shouldFilterNotOnEmptyTraversable() {
+        assertThat(CharSeq.empty().filterNot(ignored -> true)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldFilterNotOnNonEmptyTraversable() {
+        assertThat(CharSeq.of('1', '2', '3', '4').filterNot(i -> i == '2' || i == '4')).isEqualTo(CharSeq.of('1', '3'));
+    }
+
+    @Test
+    public void shouldFilterNotOnNonEmptyTraversableNoneMatch() {
+        final CharSeq t = CharSeq.of('1', '2', '3', '4');
+        assertThat(t.filterNot(i -> false)).isSameAs(t);
+    }
+
     // -- reject
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRejectEmptyTraversable() {
         assertThat(CharSeq.empty().reject(ignored -> true)).isSameAs(CharSeq.empty());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRejectNonEmptyTraversable() {
         assertThat(CharSeq.of('1', '2', '3', '4').reject(i -> i == '2' || i == '4')).isEqualTo(CharSeq.of('1', '3'));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRejectNonEmptyTraversableNoneMatch() {
         final CharSeq t = CharSeq.of('1', '2', '3', '4');

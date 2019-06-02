@@ -598,6 +598,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public LinkedHashSet<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
+    @Deprecated
+    @Override
     public LinkedHashSet<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());

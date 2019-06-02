@@ -30,10 +30,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
@@ -585,7 +582,7 @@ public class IteratorTest extends AbstractTraversableTest {
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).dropUntil(e -> e == 3));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).dropWhile(e -> e == 1));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).filter(e -> e > 1));
-        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).reject(e -> e <= 1));
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).filterNot(e -> e <= 1));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).flatMap(e -> Iterator.of(e, e + 1)));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).grouped(2));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).intersperse(-1));

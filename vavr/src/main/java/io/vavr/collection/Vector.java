@@ -28,7 +28,6 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static io.vavr.collection.Collections.removeAll;
 import static io.vavr.collection.Collections.withSize;
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
@@ -721,6 +720,13 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return wrap(trie.filter(predicate));
     }
 
+    @Override
+    public Vector<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Collections.filterNot(this, predicate);
+    }
+
+    @Deprecated
     @Override
     public Vector<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

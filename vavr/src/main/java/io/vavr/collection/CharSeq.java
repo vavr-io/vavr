@@ -531,6 +531,13 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public CharSeq filterNot(Predicate<? super Character> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Collections.filterNot(this, predicate);
+    }
+
+    @Deprecated
+    @Override
     public CharSeq reject(Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Collections.reject(this, predicate);

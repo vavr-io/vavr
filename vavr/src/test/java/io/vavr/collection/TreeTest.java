@@ -882,6 +882,15 @@ public class TreeTest extends AbstractTraversableTest {
         // TODO: remove this overridden method with #1826
     }
 
+    // -- filterNot
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldReturnTheSameInstanceWhenFilterNotOnEmptyTraversable() {
+        // TODO: remove this overridden method with #1826
+    }
+
     // -- reject
 
     @Ignore

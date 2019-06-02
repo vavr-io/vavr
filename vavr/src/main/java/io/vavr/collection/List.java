@@ -885,6 +885,13 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
+    default List<T> filterNot(Predicate<? super T> predicate){
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Collections.filterNot(this, predicate);
+    }
+
+    @Deprecated
+    @Override
     default List<T> reject(Predicate<? super T> predicate){
         Objects.requireNonNull(predicate, "predicate is null");
         return Collections.reject(this, predicate);

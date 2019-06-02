@@ -19,13 +19,7 @@
  */
 package io.vavr;
 
-import static io.vavr.collection.Iterator.range;
-import static java.util.concurrent.CompletableFuture.runAsync;
-
-import io.vavr.collection.Iterator;
-import io.vavr.collection.List;
-import io.vavr.collection.Seq;
-import io.vavr.collection.Vector;
+import io.vavr.collection.*;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.junit.Test;
@@ -39,6 +33,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import static io.vavr.collection.Iterator.range;
+import static java.util.concurrent.CompletableFuture.runAsync;
+
 public class LazyTest extends AbstractValueTest {
 
     @SuppressWarnings("unchecked")
@@ -46,7 +43,7 @@ public class LazyTest extends AbstractValueTest {
     protected <T> Undefined<T> empty() {
         return (Undefined<T>) Undefined.INSTANCE;
     }
-    
+
     @Override
     protected <T> Lazy<T> of(T element) {
         return Lazy.of(() -> element);
@@ -57,12 +54,12 @@ public class LazyTest extends AbstractValueTest {
     protected final <T> Lazy<T> of(T... elements) {
         return of(elements[0]);
     }
-    
+
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
-    
+
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;

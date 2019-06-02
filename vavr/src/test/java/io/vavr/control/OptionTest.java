@@ -19,23 +19,18 @@
  */
 package io.vavr.control;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 import io.vavr.*;
 import io.vavr.collection.Seq;
-import io.vavr.AbstractValueTest;
-import io.vavr.Function1;
-import io.vavr.PartialFunction;
-import io.vavr.Serializables;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class OptionTest extends AbstractValueTest {
 

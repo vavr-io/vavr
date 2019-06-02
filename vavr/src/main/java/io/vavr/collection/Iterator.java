@@ -20,22 +20,18 @@
 package io.vavr.collection;
 
 import io.vavr.*;
-import io.vavr.collection.IteratorModule.ConcatIterator;
-import io.vavr.collection.IteratorModule.DistinctIterator;
-import io.vavr.collection.IteratorModule.GroupedIterator;
+import io.vavr.collection.IteratorModule.*;
 import io.vavr.control.Option;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.*;
 
+import static io.vavr.collection.IteratorModule.BigDecimalHelper.areEqual;
+import static io.vavr.collection.IteratorModule.BigDecimalHelper.asDecimal;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.math.RoundingMode.HALF_UP;
-import static io.vavr.collection.IteratorModule.BigDecimalHelper.areEqual;
-import static io.vavr.collection.IteratorModule.BigDecimalHelper.asDecimal;
-import static io.vavr.collection.IteratorModule.CachedIterator;
-import static io.vavr.collection.IteratorModule.EmptyIterator;
 
 /**
  * {@code io.vavr.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}
@@ -1496,6 +1492,19 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
+    /**
+     * Returns an Iterator that contains elements that not satisfy the given {@code predicate}.
+     *
+     * @param predicate A predicate
+     * @return A new Iterator
+     */
+    @Override
+    default Iterator<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
+    @Deprecated
     @Override
     default Iterator<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

@@ -565,6 +565,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public HashMap<K, V> filterNot(BiPredicate<? super K, ? super V> predicate) {
+        return Maps.filterNot(this, this::createFromEntries, predicate);
+    }
+
+    @Deprecated
+    @Override
     public HashMap<K, V> reject(BiPredicate<? super K, ? super V> predicate) {
         return Maps.reject(this, this::createFromEntries, predicate);
     }
@@ -574,6 +580,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return Maps.filter(this, this::createFromEntries, predicate);
     }
 
+    @Override
+    public HashMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate) {
+        return Maps.filterNot(this, this::createFromEntries, predicate);
+    }
+
+    @Deprecated
     @Override
     public HashMap<K, V> reject(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.reject(this, this::createFromEntries, predicate);
@@ -585,6 +597,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public HashMap<K, V> filterNotKeys(Predicate<? super K> predicate) {
+        return Maps.filterNotKeys(this, this::createFromEntries, predicate);
+    }
+
+    @Deprecated
+    @Override
     public HashMap<K, V> rejectKeys(Predicate<? super K> predicate) {
         return Maps.rejectKeys(this, this::createFromEntries, predicate);
     }
@@ -594,6 +612,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return Maps.filterValues(this, this::createFromEntries, predicate);
     }
 
+    @Override
+    public HashMap<K, V> filterNotValues(Predicate<? super V> predicate) {
+        return Maps.filterNotValues(this, this::createFromEntries, predicate);
+    }
+
+    @Deprecated
     @Override
     public HashMap<K, V> rejectValues(Predicate<? super V> predicate) {
         return Maps.rejectValues(this, this::createFromEntries, predicate);
