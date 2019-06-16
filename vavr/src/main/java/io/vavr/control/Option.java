@@ -367,6 +367,17 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Returns {@code Some(value)} if this is a {@code Some}} and the value violates the given predicate.
+     * Otherwise {@code None} is returned.
+     * @param predicate A predicate which is used to test against an optional value
+     * @return {@code Some(value)} or {@code None} as specified
+     */
+    default Option<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return isEmpty() || predicate.test(get()) ? none() : this;
+    }
+
+    /**
      * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
      *
      * @param mapper A mapper

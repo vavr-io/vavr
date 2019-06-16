@@ -449,6 +449,19 @@ public interface Either<L, R> extends Value<R>, Serializable {
     }
 
     /**
+     * Filters this right-biased {@code Either} by testing for failure of a predicate.
+     * <p>
+     *
+     * @param predicate A predicate to fail
+     * @return a new {@code Option} instance
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default Option<Either<L, R>> filterNot(Predicate<? super R> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return isLeft() || predicate.negate().test(get()) ? Option.some(this) : Option.none();
+    }
+
+    /**
      * Filters this right-biased {@code Either} by testing a predicate.
      * If the {@code Either} is a {@code Right} and the predicate doesn't match, the
      * {@code Either} will be turned into a {@code Left} with contents computed by applying

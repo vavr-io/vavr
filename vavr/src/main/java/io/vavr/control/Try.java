@@ -369,6 +369,21 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Shortcut for {@code filterTry(predicate::test, throwableSupplier)}, see
+     * {@link #filterTry(CheckedPredicate, Supplier)}}.
+     *
+     * @param predicate         A predicate that should fail
+     * @param throwableSupplier A supplier of a throwable
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is null
+     */
+    default Try<T> filterNot(Predicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        Objects.requireNonNull(throwableSupplier, "throwableSupplier is null");
+        return filterTry(t -> predicate.negate().test(t), throwableSupplier);
+    }
+
+    /**
      * Shortcut for {@code filterTry(predicate::test, errorProvider::apply)}, see
      * {@link #filterTry(CheckedPredicate, CheckedFunction1)}}.
      *
@@ -384,6 +399,21 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Shortcut for {@code filterTry(predicate::test, errorProvider::apply)}, see
+     * {@link #filterTry(CheckedPredicate, CheckedFunction1)}}.
+     *
+     * @param predicate A predicate that should fail
+     * @param errorProvider A function that provides some kind of Throwable for T
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} or {@code errorProvider} is null
+     */
+    default Try<T> filterNot(Predicate<? super T> predicate, Function<? super T, ? extends Throwable> errorProvider) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        Objects.requireNonNull(errorProvider, "errorProvider is null");
+        return filterTry(t -> predicate.negate().test(t), errorProvider::apply);
+    }
+
+    /**
      * Shortcut for {@code filterTry(predicate::test)}, see {@link #filterTry(CheckedPredicate)}}.
      *
      * @param predicate A predicate
@@ -393,6 +423,18 @@ public interface Try<T> extends Value<T>, Serializable {
     default Try<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filterTry(predicate::test);
+    }
+
+    /**
+     * Shortcut for {@code filterTry(predicate::test)}, see {@link #filterTry(CheckedPredicate)}}.
+     *
+     * @param predicate A predicate that should fail
+     * @return a {@code Try} instance
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    default Try<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filterTry(t -> predicate.negate().test(t));
     }
 
     /**

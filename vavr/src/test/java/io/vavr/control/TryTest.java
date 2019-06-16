@@ -1059,6 +1059,39 @@ public class TryTest extends AbstractValueTest {
         assertThat(identity.filter(s -> false, ignored -> new IllegalArgumentException())).isEqualTo(identity);
     }
 
+    // -- filterNot
+
+    @Test
+    public void shouldFilterNotMatchingPredicateOnFailure() {
+        final Try<String> actual = failure();
+        assertThat(actual.filterNot(s -> false)).isEqualTo(actual);
+    }
+
+    @Test
+    public void shouldFilterNotNonMatchingPredicateOnFailure() {
+        final Try<String> actual = failure();
+        assertThat(actual.filterNot(s -> true)).isEqualTo(actual);
+    }
+
+    @Test
+    public void shouldFilterNotWithExceptionOnFailure() {
+        final Try<String> actual = failure();
+        assertThat(actual.filterNot(this::filter)).isEqualTo(actual);
+    }
+
+    @Test
+    public void shouldReturnIdentityWhenFilterNotOnFailure() {
+        final Try<String> identity = failure();
+        assertThat(identity.filterNot(s -> false)).isEqualTo(identity);
+    }
+
+    @Test
+    public void shouldReturnIdentityWhenFilterNotWithErrorProviderOnFailure() {
+        final Try<String> identity = failure();
+        assertThat(identity.filterNot(s -> true, ignored -> new IllegalArgumentException())).isEqualTo(identity);
+    }
+
+
     // -- flatMap
 
     @Test

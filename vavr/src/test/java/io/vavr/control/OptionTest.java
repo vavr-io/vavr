@@ -348,6 +348,23 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.<Integer> none().filter(i -> i == 1)).isEqualTo(Option.none());
     }
 
+    // -- filterNot
+
+    @Test
+    public void shouldReturnNoneOnFilterWhenValueIsDefinedAndNotPredicateMatches() {
+        assertThat(Option.of(1).filterNot(i -> i == 1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnSomeOnFilterWhenValueIsDefinedAndNotPredicateNotMatches() {
+        assertThat(Option.of(1).filterNot(i -> i == 2)).isEqualTo((Option.of(1)));
+    }
+
+    @Test
+    public void shouldReturnNoneOnFilterWhenValueIsNotDefinedAndNotPredicateNotMatches() {
+        assertThat(Option.<Integer> none().filterNot(i -> i == 1)).isEqualTo(Option.none());
+    }
+
     // -- map
 
     @Test
