@@ -188,7 +188,7 @@ public class MatchTest {
 
     @Test
     public void shouldComputeUpperBoundOfReturnValue() {
-        final Number num = Match(3).of(
+        final Number num = Match(3).<Number> of(
                 Case($(is(1)), 1),
                 Case($(is(2)), 2.0),
                 Case($(), i -> new BigDecimal("" + i))
