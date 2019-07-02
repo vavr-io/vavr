@@ -20,6 +20,7 @@ package io.vavr;
 
 import io.vavr.collection.*;
 import io.vavr.control.Either;
+import io.vavr.control.LenientValidation;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
 import io.vavr.collection.Array;
@@ -112,7 +113,7 @@ public abstract class AbstractValueTest {
     public void shouldGetNonEmpty() {
         assertThat(of(1).get()).isEqualTo(1);
     }
-    
+
     // -- getOrElse(T)
 
     @Test
@@ -1001,7 +1002,8 @@ public abstract class AbstractValueTest {
                         instanceOf(Option.class),
                         instanceOf(Try.class),
                         instanceOf(Traversable.class),
-                        instanceOf(Validation.class)
+                        instanceOf(Validation.class),
+                        instanceOf(LenientValidation.class)
                 )), true)
         );
         assertThat(actual).isEqualTo(expected);
