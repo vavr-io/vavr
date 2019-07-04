@@ -722,8 +722,41 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(empty.filter(v -> true)).isSameAs(empty);
     }
 
+    // -- filterNot
+
+    @Test
+    public void shouldFilterNotTheExistingElements() {
+        assertThat(of(1, 2, 3).filterNot(i -> i == 1)).isEqualTo(of(2, 3));
+        assertThat(of(1, 2, 3).filterNot(i -> i == 2)).isEqualTo(of(1, 3));
+        assertThat(of(1, 2, 3).filterNot(i -> i == 3)).isEqualTo(of(1, 2));
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(of(1, 2, 3).filterNot(ignore -> false)).isEqualTo(of(1, 2, 3));
+        } else {
+            final Traversable<Integer> t = of(1, 2, 3);
+            assertThat(t.filterNot(ignore -> false)).isSameAs(t);
+        }
+    }
+
+    @Test
+    public void shouldFilterNotTheNonExistingElements() {
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(this.<Integer> empty().filterNot(i -> i == 0)).isEqualTo(empty());
+            assertThat(of(1, 2, 3).filterNot(i -> i > 0)).isEqualTo(empty());
+        } else {
+            assertThat(this.<Integer> empty().filterNot(i -> i == 0)).isSameAs(empty());
+            assertThat(of(1, 2, 3).filterNot(i -> i > 0)).isSameAs(empty());
+        }
+    }
+
+    @Test
+    public void shouldReturnTheSameInstanceWhenFilterNotOnEmptyTraversable() {
+        final Traversable<?> empty = empty();
+        assertThat(empty.filterNot(v -> true)).isSameAs(empty);
+    }
+
     // -- reject
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRejectExistingElements() {
         assertThat(of(1, 2, 3).reject(i -> i == 1)).isEqualTo(of(2, 3));
@@ -737,6 +770,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldRejectNonExistingElements() {
         if (useIsEqualToInsteadOfIsSameAs()) {
@@ -748,6 +782,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void shouldReturnSameInstanceWhenRejectingEmptyTraversable() {
         final Traversable<?> empty = empty();

@@ -389,6 +389,10 @@ public interface BitSet<T> extends SortedSet<T> {
     BitSet<T> filter(Predicate<? super T> predicate);
 
     @Override
+    BitSet<T> filterNot(Predicate<? super T> predicate);
+
+    @Deprecated
+    @Override
     BitSet<T> reject(Predicate<? super T> predicate);
 
     @Override
@@ -826,6 +830,14 @@ interface BitSetModule {
             return (bitSet.length() == length()) ? this : bitSet;
         }
 
+        @Override
+        public BitSet<T> filterNot(Predicate<? super T> predicate) {
+            Objects.requireNonNull(predicate, "predicate is null");
+            final BitSet<T> bitSet = createFromAll(iterator().filterNot(predicate));
+            return (bitSet.length() == length()) ? this : bitSet;
+        }
+
+        @Deprecated
         @Override
         public BitSet<T> reject(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");

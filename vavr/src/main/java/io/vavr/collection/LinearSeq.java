@@ -21,8 +21,8 @@ package io.vavr.collection;
 
 import io.vavr.PartialFunction;
 import io.vavr.Tuple;
-import io.vavr.control.Option;
 import io.vavr.Tuple2;
+import io.vavr.control.Option;
 
 import java.util.Comparator;
 import java.util.Objects;
@@ -128,6 +128,10 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     LinearSeq<T> filter(Predicate<? super T> predicate);
 
+    @Override
+    LinearSeq<T> filterNot(Predicate<? super T> predicate);
+
+    @Deprecated
     @Override
     LinearSeq<T> reject(Predicate<? super T> predicate);
 

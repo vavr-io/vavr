@@ -120,6 +120,12 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
     @Override
     public abstract Q dropWhile(Predicate<? super T> predicate);
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Q filterNot(Predicate<? super T> predicate) {
+        return Collections.filterNot((Q) this, predicate);
+    }
+
     /**
      * Dual of {@linkplain #tail()}, returning all elements except the last.
      *
@@ -171,6 +177,7 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
     }
 
     @SuppressWarnings("unchecked")
+    @Deprecated
     @Override
     public Q reject(Predicate<? super T> predicate) {
         return Collections.reject((Q) this, predicate);

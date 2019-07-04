@@ -19,12 +19,9 @@
  */
 package io.vavr;
 
-import io.vavr.collection.Seq;
-import io.vavr.control.Try;
-import io.vavr.collection.Iterator;
-import io.vavr.collection.List;
-import io.vavr.collection.Vector;
+import io.vavr.collection.*;
 import io.vavr.control.Option;
+import io.vavr.control.Try;
 import org.junit.Test;
 
 import java.io.Serializable;
@@ -36,8 +33,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static java.util.concurrent.CompletableFuture.runAsync;
 import static io.vavr.collection.Iterator.range;
+import static java.util.concurrent.CompletableFuture.runAsync;
 
 public class LazyTest extends AbstractValueTest {
 
@@ -46,7 +43,7 @@ public class LazyTest extends AbstractValueTest {
     protected <T> Undefined<T> empty() {
         return (Undefined<T>) Undefined.INSTANCE;
     }
-    
+
     @Override
     protected <T> Lazy<T> of(T element) {
         return Lazy.of(() -> element);
@@ -57,12 +54,12 @@ public class LazyTest extends AbstractValueTest {
     protected final <T> Lazy<T> of(T... elements) {
         return of(elements[0]);
     }
-    
+
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
-    
+
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
@@ -165,6 +162,16 @@ public class LazyTest extends AbstractValueTest {
 
         assertThat(testee.filter(i -> i % 2 == 0)).isEqualTo(expectedPositive);
         assertThat(testee.filter(i -> i % 2 != 0)).isEqualTo(expectedNegative);
+    }
+
+    @Test
+    public void shouldFilterNotOverLazyValue() {
+        final Lazy<Integer> testee = Lazy.of(() -> 42);
+        final Option<Integer> expectedPositive = Option.some(42);
+        final Option<Integer> expectedNegative = Option.none();
+
+        assertThat(testee.filterNot(i -> i % 2 != 0)).isEqualTo(expectedPositive);
+        assertThat(testee.filterNot(i -> i % 2 == 0)).isEqualTo(expectedNegative);
     }
 
     @Test

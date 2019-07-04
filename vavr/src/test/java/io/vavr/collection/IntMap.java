@@ -150,6 +150,12 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public IntMap<T> filterNot(Predicate<? super T> predicate) {
+        return unit(original.filterNot(p -> predicate.test(p._2)));
+    }
+
+    @Deprecated
+    @Override
     public IntMap<T> reject(Predicate<? super T> predicate) {
         return unit(original.reject(p -> predicate.test(p._2)));
     }

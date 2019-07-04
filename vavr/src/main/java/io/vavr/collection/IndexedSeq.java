@@ -152,6 +152,10 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> filter(Predicate<? super T> predicate);
 
     @Override
+    IndexedSeq<T> filterNot(Predicate<? super T> predicate);
+
+    @Deprecated
+    @Override
     IndexedSeq<T> reject(Predicate<? super T> predicate);
 
     @Override

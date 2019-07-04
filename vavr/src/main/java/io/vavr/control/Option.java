@@ -20,7 +20,6 @@
 package io.vavr.control;
 
 import io.vavr.PartialFunction;
-import io.vavr.Tuple;
 import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
@@ -364,6 +363,18 @@ public interface Option<T> extends Value<T>, Serializable {
     default Option<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isEmpty() || predicate.test(get()) ? this : none();
+    }
+
+    /**
+     * Returns {@code Some(value)} if this is a {@code Some} and the value not satisfies the given predicate.
+     * Otherwise {@code None} is returned.
+     *
+     * @param predicate A predicate which is used to test an optional value
+     * @return {@code Some(value)} or {@code None} as specified
+     */
+    default Option<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
     }
 
     /**

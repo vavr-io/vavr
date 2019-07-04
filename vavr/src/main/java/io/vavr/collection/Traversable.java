@@ -106,7 +106,7 @@ import java.util.stream.DoubleStream;
  * <li>{@link #dropUntil(Predicate)}</li>
  * <li>{@link #dropWhile(Predicate)}</li>
  * <li>{@link #filter(Predicate)}</li>
- * <li>{@link #reject(Predicate)}</li>
+ * <li>{@link #filterNot(Predicate)}</li>
  * <li>{@link #find(Predicate)}</li>
  * <li>{@link #findLast(Predicate)}</li>
  * <li>{@link #groupBy(Function)}</li>
@@ -440,6 +440,23 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new traversable
      * @throws NullPointerException if {@code predicate} is null
      */
+    default Traversable<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return filter(predicate.negate());
+    }
+
+    /**
+     * Returns a new traversable consisting of all elements which do not satisfy the given predicate.
+     * <p>
+     * The default implementation is equivalent to
+     * <pre>{@code filter(predicate.negate()}</pre>
+     *
+     * @deprecated Please use {@link #filterNot(Predicate)}
+     * @param predicate A predicate
+     * @return a new traversable
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    @Deprecated
     default Traversable<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());

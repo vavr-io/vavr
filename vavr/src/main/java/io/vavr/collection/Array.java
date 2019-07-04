@@ -649,7 +649,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     public <R> Array<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
-    
+
     @Override
     public boolean hasDefiniteSize() {
         return true;
@@ -805,6 +805,13 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         }
     }
 
+    @Override
+    public Array<T> filterNot(Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        return Collections.filterNot(this, predicate);
+    }
+
+    @Deprecated
     @Override
     public Array<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
