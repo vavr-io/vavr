@@ -158,6 +158,17 @@ public class MatchTest {
         assertThat(_case.isDefinedAt(new Object())).isFalse();
     }
 
+    @Test(/* #2419 */)
+    public void shouldPatternMatchForGivenPredicate() {
+        final List<Integer> list = List(1, 2, 3);
+        final Predicate<Number> p = n -> n.intValue() > 0;
+        final boolean actual = Match(list).of(
+                Case($(anyOf(p)), true),
+                Case($(), false)
+        );
+        assertThat(actual).isEqualTo(false);
+    }
+
     // -- multiple cases
 
     // i match {
