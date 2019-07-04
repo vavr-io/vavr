@@ -2134,7 +2134,8 @@ interface IteratorModule {
         private final Iterator<? extends T> that;
         private io.vavr.collection.Set<U> known;
         private final Function<? super T, ? extends U> keyExtractor;
-        private T next = null;
+        private boolean nextDefined = false;
+        private T next;
 
         DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {
             this.that = that;
@@ -2144,22 +2145,27 @@ interface IteratorModule {
 
         @Override
         public boolean hasNext() {
-            while (next == null && that.hasNext()) {
+            return nextDefined || searchNext();
+        }
+
+        private boolean searchNext() {
+            while (that.hasNext()) {
                 final T elem = that.next();
                 final U key = keyExtractor.apply(elem);
                 if (!known.contains(key)) {
                     known = known.add(key);
+                    nextDefined = true;
                     next = elem;
+                    return true;
                 }
             }
-            return next != null;
+            return false;
         }
 
         @Override
         public T getNext() {
-            final T result = next;
-            next = null;
-            return result;
+            nextDefined = false;
+            return next;
         }
     }
 
