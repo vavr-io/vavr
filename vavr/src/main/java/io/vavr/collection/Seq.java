@@ -25,6 +25,7 @@ import io.vavr.control.Option;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.*;
 
 /**
@@ -891,6 +892,16 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a sequence with the same elements as the current sequence in a random order.
      */
     Seq<T> shuffle();
+
+    /**
+     * Randomize the order of the elements in the current sequence using the given source
+     * of randomness.
+     *
+     * @param random A random number generator
+     *
+     * @return a sequence with the same elements as the current sequence in a random order.
+     */
+    Seq<T> shuffle(Random random);
 
     /**
      * Returns a Seq that is a <em>slice</em> of this. The slice begins with the element at the specified

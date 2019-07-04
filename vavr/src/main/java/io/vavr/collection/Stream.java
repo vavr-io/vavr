@@ -1451,6 +1451,11 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> shuffle(Random random) {
+        return io.vavr.collection.Collections.shuffle(this, random, Stream::ofAll);
+    }
+
+    @Override
     default Stream<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || isEmpty()) {
             return empty();

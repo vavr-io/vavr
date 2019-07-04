@@ -959,6 +959,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public CharSeq shuffle(Random random) {
+        return io.vavr.collection.Collections.shuffle(this, random, CharSeq::ofAll);
+    }
+
+    @Override
     public CharSeq slice(int beginIndex, int endIndex) {
         final int from = beginIndex < 0 ? 0 : beginIndex;
         final int to = endIndex > length() ? length() : endIndex;

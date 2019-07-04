@@ -426,6 +426,16 @@ final class Collections {
         return ofAll.apply(list);
     }
 
+    static <T, S extends Seq<T>> S shuffle(S source, Random random, Function<? super Iterable<T>, S> ofAll) {
+        if (source.length() <= 1) {
+            return source;
+        }
+
+        final java.util.List<T> list = source.toJavaList();
+        java.util.Collections.shuffle(list, random);
+        return ofAll.apply(list);
+    }
+
     static void subSequenceRangeCheck(int beginIndex, int endIndex, int length) {
         if (beginIndex < 0 || endIndex > length) {
             throw new IndexOutOfBoundsException("subSequence(" + beginIndex + ", " + endIndex + "), length = " + length);

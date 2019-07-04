@@ -1529,6 +1529,25 @@ public class CharSeqTest {
         assertThat(shuffled.indexOf(4)).isEqualTo(-1);
     }
 
+    @Test
+    public void shouldShuffleEmptyDeterministic() {
+        assertThat(CharSeq.empty().shuffle(new Random(514662720L)).isEmpty());
+    }
+
+    @Test
+    public void shouldShuffleHaveSameLengthDeterministic() {
+        final CharSeq actual = CharSeq.of('1', '2', '3');
+        assertThat(actual.shuffle(new Random(514662720L)).size()).isEqualTo(actual.size());
+    }
+
+    @Test
+    public void shouldShuffleHaveSameElementsDeterministic() {
+        final CharSeq actual = CharSeq.of('1', '2', '3');
+        final CharSeq shuffled = actual.shuffle(new Random(514662720L));
+        assertThat(shuffled.containsAll(actual)).isTrue();
+        assertThat(shuffled.indexOf(4)).isEqualTo(-1);
+    }
+
     // -- slideBy(classifier)
 
     @Test

@@ -1130,6 +1130,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
+    public Queue<T> shuffle(Random random) {
+        return io.vavr.collection.Collections.shuffle(this, random, Queue::ofAll);
+    }
+
+    @Override
     public Queue<T> slice(int beginIndex, int endIndex) {
         return ofAll(toList().slice(beginIndex, endIndex));
     }

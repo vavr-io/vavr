@@ -27,6 +27,7 @@ import io.vavr.control.Option;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.*;
 
 /**
@@ -336,6 +337,9 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     IndexedSeq<T> shuffle();
+
+    @Override
+    IndexedSeq<T> shuffle(Random random);
 
     @Override
     IndexedSeq<T> slice(int beginIndex, int endIndex);
