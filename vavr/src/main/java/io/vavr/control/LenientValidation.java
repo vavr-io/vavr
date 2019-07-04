@@ -74,6 +74,17 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     }
 
     /**
+     * Converts this into a strict {@code Validation} that either holds errors or a value.
+     *
+     * @return A {@code Valid} if this holds a value and there are no errors, otherwise an {@code Invalid} with the errors
+     */
+    public Validation<Seq<E>, T> strict() {
+        return hasErrors()
+                ? Validation.invalid(errors)
+                : value.toValidation(List.empty());
+    }
+
+    /**
      * Reduces many {@code LenientValidation} instances into a single {@code LenientValidation} by transforming an
      * {@code Iterable<LenientValidation<? extends E, ? extends T>>} into a {@code LenientValidation<E, Seq<T>>}.
      *

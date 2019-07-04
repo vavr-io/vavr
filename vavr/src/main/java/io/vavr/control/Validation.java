@@ -131,7 +131,6 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         return t.isSuccess() ? valid(t.get()) : invalid(t.getCause());
     }
 
-
     /**
      * Reduces many {@code Validation} instances into a single {@code Validation} by transforming an
      * {@code Iterable<Validation<? extends T>>} into a {@code Validation<Seq<T>>}.
@@ -456,6 +455,18 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      */
     default Either<E, T> toEither() {
         return isValid() ? Either.right(get()) : Either.left(getError());
+    }
+
+    /**
+     * Converts this into a {@code LenientValidation} that holds both errors and an optional value.
+     *
+     * @return An instance of {@code LenientValidation}
+     */
+    default LenientValidation<E, T> lenient() {
+        return LenientValidation.of(
+              List.of(getError()),
+              Option.of(getOrNull())
+        );
     }
 
     @Override
