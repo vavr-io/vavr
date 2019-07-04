@@ -2164,8 +2164,10 @@ interface IteratorModule {
 
         @Override
         public T getNext() {
+            final T result = next;
             nextDefined = false;
-            return next;
+            next = null;
+            return result;
         }
     }
 
