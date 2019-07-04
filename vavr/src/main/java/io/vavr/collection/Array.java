@@ -1215,6 +1215,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<T> shuffle(Random random) {
+        return io.vavr.collection.Collections.shuffle(this, random, Array::ofAll);
+    }
+
+    @Override
     public Array<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return empty();

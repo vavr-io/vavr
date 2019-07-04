@@ -1416,6 +1416,11 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
+    default List<T> shuffle(Random random) {
+        return Collections.shuffle(this, random, List::ofAll);
+    }
+
+    @Override
     default List<T> slice(int beginIndex, int endIndex) {
         if (beginIndex >= endIndex || beginIndex >= length() || isEmpty()) {
             return empty();

@@ -1076,6 +1076,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Vector<T> shuffle(Random random) {
+        return io.vavr.collection.Collections.shuffle(this, random, Vector::ofAll);
+    }
+
+    @Override
     public Vector<T> slice(int beginIndex, int endIndex) {
         if ((beginIndex >= endIndex) || (beginIndex >= size()) || isEmpty()) {
             return empty();

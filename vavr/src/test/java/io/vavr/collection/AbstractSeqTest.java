@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -1584,6 +1585,25 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldShuffleHaveSameElements() {
         final Seq<Integer> shuffled = of(1, 2, 3).shuffle();
+        assertThat(shuffled.indexOf(1)).isNotEqualTo(-1);
+        assertThat(shuffled.indexOf(2)).isNotEqualTo(-1);
+        assertThat(shuffled.indexOf(3)).isNotEqualTo(-1);
+        assertThat(shuffled.indexOf(4)).isEqualTo(-1);
+    }
+
+    @Test
+    public void shouldShuffleEmptyDeterministic() {
+        assertThat(empty().shuffle(new Random(514662720L)).isEmpty());
+    }
+
+    @Test
+    public void shouldShuffleHaveSameLengthDeterministic() {
+        assertThat(of(1, 2, 3).shuffle(new Random(514662720L)).size()).isEqualTo(of(1, 2, 3).size());
+    }
+
+    @Test
+    public void shouldShuffleHaveSameElementsDeterministic() {
+        final Seq<Integer> shuffled = of(1, 2, 3).shuffle(new Random(514662720L));
         assertThat(shuffled.indexOf(1)).isNotEqualTo(-1);
         assertThat(shuffled.indexOf(2)).isNotEqualTo(-1);
         assertThat(shuffled.indexOf(3)).isNotEqualTo(-1);

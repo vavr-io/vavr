@@ -26,6 +26,7 @@ import io.vavr.control.Option;
 
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Random;
 import java.util.function.*;
 
 /**
@@ -286,6 +287,9 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     LinearSeq<T> shuffle();
+
+    @Override
+    LinearSeq<T> shuffle(Random random);
 
     @Override
     LinearSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
