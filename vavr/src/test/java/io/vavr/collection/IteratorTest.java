@@ -464,6 +464,28 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(Iterator.iterate(new OptionSupplier(1, 4)).take(50000).reduce((i, j) -> i + j)).isEqualTo(6);
     }
 
+    // -- distinct
+
+    @Test
+    public void shouldStayEmptyOnDistinct() {
+        assertThat(empty().distinct().toList()).isSameAs(List.empty());
+    }
+
+    @Test(/* #2425 */)
+    public void shouldNotEatNullOnDistinct() {
+        assertThat(of((String) null).distinct().toList()).isEqualTo(List.of((String) null));
+    }
+
+    @Test
+    public void shouldKeepDistinctElementsOnDistinct() {
+        assertThat(of(1, 2, 3).distinct().toList()).isEqualTo(List.of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldRemoveDuplicatesOnDistinct() {
+        assertThat(of(1, 2, 1, 3, 3).distinct().toList()).isEqualTo(List.of(1, 2, 3));
+    }
+
     // -- groupBy
 
     @Override
