@@ -205,8 +205,9 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldNarrowIterator() {
         final Iterator<Double> doubles = of(1.0d);
-        final Iterator<Number> numbers = narrow(doubles);
-        final int actual = numbers.concat(Iterator.of(new BigDecimal("2.0"))).sum().intValue();
+        Iterator<Number> numbers = narrow(doubles);
+        numbers = numbers.concat(Iterator.of(new BigDecimal("2.0")));
+        final int actual = numbers.sum().intValue();
         assertThat(actual).isEqualTo(3);
     }
 
@@ -290,6 +291,25 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test
     public void shouldConcatToConcatIterator() {
         assertThat(concat(List.of(1, 2)).concat(List.of(3).iterator())).isEqualTo(Iterator.of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldTraverseElementsOfConcatIteratorHavingEmptyIterator() {
+        Iterator<Integer> iterator = concat(List.of(1), List.empty(), List.of(2));
+        assertThat(iterator.next()).isEqualTo(1);
+        assertThat(iterator.next()).isEqualTo(2);
+        assertThat(iterator.hasNext()).isFalse();
+    }
+
+    @Test
+    public void shouldConcatToConcatIteratorAfterAllElementsWereRead() {
+        Iterator<Integer> iterator = concat(List.of(1), List.of(2));
+        assertThat(iterator.toList()).isEqualTo(List.of(1, 2));
+        assertThat(iterator.hasNext()).isFalse();
+        iterator = iterator.concat(List.of(3).iterator());
+        assertThat(iterator.hasNext()).isTrue();
+        assertThat(iterator.toList()).isEqualTo(List.of(3));
+        assertThat(iterator.hasNext()).isFalse();
     }
 
     // -- fill(int, Supplier)
