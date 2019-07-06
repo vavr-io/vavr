@@ -72,11 +72,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (iterables.length == 0) {
             return empty();
         } else {
-            ConcatIterator<T> res = new ConcatIterator<>();
-            for (Iterable<? extends T> iterable : iterables) {
-                res.append(iterable.iterator());
-            }
-            return res;
+            return new ConcatIterator<>(of(iterables).map(Iterable::iterator));
         }
     }
 
@@ -89,14 +85,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static <T> Iterator<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
         Objects.requireNonNull(iterables, "iterables is null");
-        if (!iterables.iterator().hasNext()) {
+        final Iterator<Iterator<T>> iterators = ofAll(iterables).map(Iterator::ofAll);
+        if (!iterators.hasNext()) {
             return empty();
         } else {
-            ConcatIterator<T> res = new ConcatIterator<>();
-            for (Iterable<? extends T> iterable : iterables) {
-                res.append(iterable.iterator());
-            }
-            return res;
+            return new ConcatIterator<>(iterators);
         }
     }
 
@@ -2051,81 +2044,68 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
 interface IteratorModule {
 
-    // inspired by Scala's ConcatIterator
-    final class ConcatIterator<T> extends AbstractIterator<T> {
+    final class ConcatIterator<T> implements Iterator<T> {
 
-        private static class Cell<T> {
+        private static final class Iterators<T> {
 
-            Iterator<T> it;
-            Cell<T> next;
+            private final java.util.Iterator<T> head;
+            private Iterators<T> tail;
 
-            static <T> Cell<T> of(Iterator<T> it) {
-                Cell<T> cell = new Cell<>();
-                cell.it = it;
-                return cell;
-            }
-
-            Cell<T> append(Iterator<T> it) {
-                Cell<T> cell = of(it);
-                next = cell;
-                return cell;
+            @SuppressWarnings("unchecked")
+            Iterators(java.util.Iterator<? extends T> head) {
+                this.head = (java.util.Iterator<T>) head;
             }
         }
 
-        private Iterator<T> curr;
+        private Iterators<T> curr;
+        private Iterators<T> last;
+        private boolean nextCalculated = false;
 
-        private Cell<T> tail;
-        private Cell<T> last;
-
-        private boolean hasNextCalculated;
-
-        void append(java.util.Iterator<? extends T> that) {
-            final Iterator<T> it = Iterator.ofAll(that);
-            if (tail == null) {
-                tail = last = Cell.of(it);
-            } else {
-                last = last.append(it);
+        ConcatIterator(java.util.Iterator<? extends java.util.Iterator<? extends T>> iterators) {
+            this.curr = this.last = iterators.hasNext() ? new Iterators<>(iterators.next()) : null;
+            while (iterators.hasNext()) {
+                this.last = this.last.tail = new Iterators<>(iterators.next());
             }
-        }
-
-        @Override
-        public Iterator<T> concat(java.util.Iterator<? extends T> that) {
-            append(that);
-            return this;
         }
 
         @Override
         public boolean hasNext() {
-            if (hasNextCalculated) {
+            if (nextCalculated) {
                 return curr != null;
-            }
-            hasNextCalculated = true;
-            while(true) {
-                if (curr != null) {
-                    if (curr.hasNext()) {
+            } else {
+                nextCalculated = true;
+                while (true) {
+                    if (curr.head.hasNext()) {
                         return true;
                     } else {
-                        curr = null;
+                        curr = curr.tail;
+                        if (curr == null) {
+                            last = null; // release reference
+                            return false;
+                        }
                     }
-                }
-                if (tail == null) {
-                    return false;
-                }
-                curr = tail.it;
-                tail = tail.next;
-                while (curr instanceof ConcatIterator) {
-                    ConcatIterator<T> it = (ConcatIterator<T>) curr;
-                    curr = it.curr;
-                    it.last.next = tail;
-                    tail = it.tail;
                 }
             }
         }
 
         @Override
-        public T getNext() {
-            hasNextCalculated = false;
-            return curr.next();
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            nextCalculated = false;
+            return curr.head.next();
+        }
+
+        @Override
+        public Iterator<T> concat(java.util.Iterator<? extends T> that) {
+            if (curr == null) {
+                nextCalculated = false;
+                curr = last = new Iterators<>(that);
+            } else {
+                last = last.tail = new Iterators<>(that);
+            }
+            return this;
         }
     }
 
