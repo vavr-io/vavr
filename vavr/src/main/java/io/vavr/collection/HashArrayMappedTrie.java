@@ -25,6 +25,7 @@ import io.vavr.collection.HashArrayMappedTrieModule.EmptyNode;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 import static java.lang.Integer.bitCount;
@@ -77,7 +78,7 @@ interface HashArrayMappedTrieModule {
         PUT, REMOVE
     }
 
-    class LeafNodeIterator<K, V> extends AbstractIterator<LeafNode<K, V>> {
+    class LeafNodeIterator<K, V> implements Iterator<LeafNode<K, V>> {
 
         // buckets levels + leaf level = (Integer.SIZE / AbstractNode.SIZE + 1) + 1
         private final static int MAX_LEVELS = Integer.SIZE / AbstractNode.SIZE + 2;
@@ -101,7 +102,10 @@ interface HashArrayMappedTrieModule {
 
         @SuppressWarnings("unchecked")
         @Override
-        protected LeafNode<K, V> getNext() {
+        public LeafNode<K, V> next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
             Object node = nodes[level];
             while (!(node instanceof LeafNode)) {
                 node = findNextLeaf();
@@ -537,7 +541,7 @@ interface HashArrayMappedTrieModule {
 
         @Override
         public Iterator<LeafNode<K, V>> nodes() {
-            return new AbstractIterator<LeafNode<K, V>>() {
+            return new Iterator<LeafNode<K, V>>() {
                 LeafNode<K, V> node = LeafList.this;
 
                 @Override
@@ -546,7 +550,10 @@ interface HashArrayMappedTrieModule {
                 }
 
                 @Override
-                public LeafNode<K, V> getNext() {
+                public LeafNode<K, V> next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final LeafNode<K, V> result = node;
                     if (node instanceof LeafSingleton) {
                         node = null;

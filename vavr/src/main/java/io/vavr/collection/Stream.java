@@ -1759,24 +1759,27 @@ public interface Stream<T> extends LinearSeq<T> {
             return this;
         } else {
             final Stream<T> that = this;
-            return Stream.ofAll(new AbstractIterator<T>() {
+            return Stream.ofAll(new Iterator<T>() {
 
                 Stream<T> stream = that;
                 T last = null;
 
                 @Override
-                protected T getNext() {
+                public boolean hasNext() {
+                    return true;
+                }
+
+                @Override
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     if (stream.isEmpty()) {
                         stream = Stream.iterate(nextFunction.apply(last), nextFunction);
                     }
                     last = stream.head();
                     stream = stream.tail();
                     return last;
-                }
-
-                @Override
-                public boolean hasNext() {
-                    return true;
                 }
             });
         }
@@ -2131,7 +2134,7 @@ interface StreamModule {
         }
     }
 
-    final class StreamIterator<T> extends AbstractIterator<T> {
+    final class StreamIterator<T> implements Iterator<T> {
 
         private Supplier<Stream<T>> current;
 
@@ -2145,7 +2148,10 @@ interface StreamModule {
         }
 
         @Override
-        public T getNext() {
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
             final Stream<T> stream = current.get();
             // DEV-NOTE: we make the stream even more lazy because the next head must not be evaluated on hasNext()
             current = stream::tail;

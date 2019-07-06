@@ -38,6 +38,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static io.vavr.collection.Iterator.*;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class IteratorTest extends AbstractTraversableTest {
 
@@ -198,6 +199,21 @@ public class IteratorTest extends AbstractTraversableTest {
     @Test(expected = NoSuchElementException.class)
     public void shouldFailOfEmptyArgList() {
         of().next();
+    }
+
+    // -- static .empty()
+
+    @Test
+    public void shouldCreateEmptyIterator() {
+        assertThat(Iterator.empty() instanceof Iterator).isTrue();
+    }
+
+    // -- static .of()
+
+    @Test
+    public void shouldCreateIteratorOfOneElement() {
+        final Iterator<Object> iterator = Iterator.of(1);
+        assertThat(iterator).isNotNull();
     }
 
     // -- static narrow()
@@ -569,6 +585,23 @@ public class IteratorTest extends AbstractTraversableTest {
     // -- hasNext
 
     @Test
+    public void shouldNotHaveNextWhenEmpty() {
+        assertThat(Iterator.empty().hasNext()).isFalse();
+    }
+
+    @Test
+    public void shouldHaveNextWhenIteratorOfOneElementAndNextWasNotCalled() {
+        assertThat(Iterator.of(1).hasNext()).isTrue();
+    }
+
+    @Test
+    public void shouldNotHaveNextWhenIteratorOfOneElementAndNextWasCalled() {
+        final Iterator<Object> iterator = Iterator.of(1);
+        iterator.next();
+        assertThat(iterator.hasNext()).isFalse();
+    }
+
+    @Test
     public void multipleHasNext() {
         multipleHasNext(() -> Iterator.of(1));
         multipleHasNext(() -> Iterator.of(1, 2, 3));
@@ -669,7 +702,51 @@ public class IteratorTest extends AbstractTraversableTest {
         }
     }
 
-    // -- unfoldRight
+    // -- next()
+
+    @Test
+    public void shouldThrowOnNextWhenEmpty() {
+        assertThatThrownBy(Iterator.empty()::next).isInstanceOf(NoSuchElementException.class);
+    }
+
+    @Test
+    public void shouldReturnValueOnNextWhenIteratorOfOneElementAndNextWasNotCalled() {
+        final Iterator<Object> iterator = Iterator.of(1);
+        assertThat(iterator.next()).isSameAs(1);
+    }
+
+    @Test
+    public void shouldThrowOnNextWhenIteratorOfOneElementAndNextWasCalled() {
+        final Iterator<Object> iterator = Iterator.of(1);
+        iterator.next();
+        assertThatThrownBy(iterator::next).isInstanceOf(NoSuchElementException.class);
+    }
+
+    // -- nextOption()
+
+    @Test
+    public void shouldReturnNoneOnNextOptionWhenEmpty() {
+        assertThat(Iterator.empty().nextOption()).isSameAs(Option.none());
+    }
+
+    @Test
+    public void shouldReturnSomeOnNextOptionWhenIteratorOfOneElement() {
+        assertThat(Iterator.of(1).nextOption()).isEqualTo(Option.some(1));
+    }
+
+    // -- .toString()
+
+    @Test
+    public void shouldBeReliableToStringWhenEmpty() {
+        assertThat(Iterator.empty().toString()).isEqualTo("EmptyIterator");
+    }
+
+    @Test
+    public void shouldBeReliableToStringWhenIteratorOfOneElement() {
+        assertThat(Iterator.of(1).toString()).isEqualTo("SingletonIterator");
+    }
+
+    // -- unfoldRight()
 
     @Test
     public void shouldUnfoldRightToEmpty() {
@@ -716,13 +793,13 @@ public class IteratorTest extends AbstractTraversableTest {
     // -- class initialization (see #1773)
 
     @Test(timeout = 5_000)
-    public void shouldNotDeadlockOnConcurrentClassInitialization() throws InterruptedException {
+    public void shouldNotDeadlockOnConcurrentClassInitialization() {
         final ExecutorService executorService = Executors.newFixedThreadPool(2);
-        executorService.execute(new ClassInitializer("io.vavr.collection.Iterator"));
-        executorService.execute(new ClassInitializer("io.vavr.collection.AbstractIterator"));
+        executorService.execute(new ClassInitializer("io.vavr.collection.Seq"));
+        executorService.execute(new ClassInitializer("io.vavr.collection.List"));
         executorService.shutdown();
-        // try to access Vavr Iterator and it will hang
-        Iterator.empty().iterator();
+        // try to access Vavr List and it will hang
+        List.empty().forEach(System.out::println);
     }
 
     static class ClassInitializer implements Runnable {
@@ -768,7 +845,7 @@ public class IteratorTest extends AbstractTraversableTest {
         // Iterator equality undefined
     }
 
-    // -- hashCode
+    // -- hashCode()
 
     @Ignore
     @Override
@@ -791,7 +868,7 @@ public class IteratorTest extends AbstractTraversableTest {
         // a hashCode impl would enforce evaluation which is not wanted
     }
 
-    // -- isLazy
+    // -- isLazy()
 
     @Override
     @Test
@@ -800,7 +877,7 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(of(1).isLazy()).isTrue();
     }
 
-    // -- take
+    // -- take()
 
     @Ignore
     @Override
@@ -809,7 +886,7 @@ public class IteratorTest extends AbstractTraversableTest {
         // take consumes the Iterator
     }
 
-    // -- takeRight
+    // -- takeRight()
 
     @Ignore
     @Override
@@ -818,7 +895,7 @@ public class IteratorTest extends AbstractTraversableTest {
         // takeRight consumes the Iterator
     }
 
-    // -- toString
+    // -- toString()
 
     @Ignore
     @Override
@@ -827,7 +904,21 @@ public class IteratorTest extends AbstractTraversableTest {
         // iterators are intermediate objects and should not have an equals, hashCode or toString
     }
 
-    // -- spliterator
+    @Ignore
+    @Override
+    @Test
+    public void shouldConformEmptyStringRepresentation() {
+        // used for Traversables, not for Iterators
+    }
+
+    @Ignore
+    @Override
+    @Test
+    public void shouldConformNonEmptyStringRepresentation() {
+        // used for Traversables, not for Iterators
+    }
+
+    // -- spliterator()
 
     @Test
     public void shouldHaveOrderedSpliterator() {
