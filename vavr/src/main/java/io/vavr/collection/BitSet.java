@@ -973,7 +973,7 @@ interface BitSetModule {
         }
     }
 
-    class BitSetIterator<T> extends AbstractIterator<T> {
+    class BitSetIterator<T> implements Iterator<T> {
 
         private final AbstractBitSet<T> bitSet;
 
@@ -987,13 +987,6 @@ interface BitSetModule {
         }
 
         @Override
-        protected T getNext() {
-            final int pos = Long.numberOfTrailingZeros(element);
-            element &= ~(1L << pos);
-            return bitSet.fromInt.apply(pos + (index << ADDRESS_BITS_PER_WORD));
-        }
-
-        @Override
         public boolean hasNext() {
             if (element == 0) {
                 while (element == 0 && index < bitSet.getWordsNum() - 1) {
@@ -1003,6 +996,16 @@ interface BitSetModule {
             } else {
                 return true;
             }
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            final int pos = Long.numberOfTrailingZeros(element);
+            element &= ~(1L << pos);
+            return bitSet.fromInt.apply(pos + (index << ADDRESS_BITS_PER_WORD));
         }
     }
 

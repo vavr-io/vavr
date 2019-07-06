@@ -20,15 +20,14 @@
 package io.vavr.collection;
 
 import io.vavr.*;
-import io.vavr.collection.IteratorModule.*;
 import io.vavr.control.Option;
 
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.*;
 
-import static io.vavr.collection.IteratorModule.BigDecimalHelper.areEqual;
-import static io.vavr.collection.IteratorModule.BigDecimalHelper.asDecimal;
+import static io.vavr.collection.BigDecimalHelper.areEqual;
+import static io.vavr.collection.BigDecimalHelper.asDecimal;
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
 import static java.math.RoundingMode.HALF_UP;
@@ -94,10 +93,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Returns the empty Iterator.
+     * Returns the singleton instance of the empty {@code Iterator}.
+     * <p>
+     * A call to {@link #hasNext()} will always return {@code false}.
+     * A call to {@link #next()} will always throw a {@link NoSuchElementException}.
      *
-     * @param <T> Component type
-     * @return The empty Iterator
+     * @param <T> Element type
+     * @return The empty {@code Iterator}
      */
     @SuppressWarnings("unchecked")
     static <T> Iterator<T> empty() {
@@ -119,58 +121,34 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Creates an Iterator which traverses one element.
+     * Creates an {@code Iterator} which iterates over the given element.
      *
      * @param element An element
-     * @param <T>     Component type.
-     * @return A new Iterator
+     * @param <T>     Element type
+     * @return A new {@code Iterator}
      */
     static <T> Iterator<T> of(T element) {
-        return new AbstractIterator<T>() {
-
-            boolean hasNext = true;
-
-            @Override
-            public boolean hasNext() {
-                return hasNext;
-            }
-
-            @Override
-            public T getNext() {
-                hasNext = false;
-                return element;
-            }
-        };
+        return new SingletonIterator<>(element);
     }
 
     /**
-     * Creates an Iterator which traverses the given elements.
+     * Creates an {@code Iterator} which iterates over the given elements.
+     *
+     * <pre>{@code
+     * Iterator<Integer> iterator = Iterator.of(1, 2, 3);
+     * }</pre>
      *
      * @param elements Zero or more elements
-     * @param <T>      Component type
-     * @return A new Iterator
+     * @param <T>      Element type
+     * @return The singleton instance of the empty {@code Iterator}, if {@code elements.length == 0},
+     *         otherwise a new {@code Iterator}.
+     * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     static <T> Iterator<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements.length == 0) {
-            return empty();
-        } else {
-            return new AbstractIterator<T>() {
-
-                int index = 0;
-
-                @Override
-                public boolean hasNext() {
-                    return index < elements.length;
-                }
-
-                @Override
-                public T getNext() {
-                    return elements[index++];
-                }
-            };
-        }
+        return (elements.length == 0) ? empty() : new ArrayIterator<>(elements);
     }
 
     /**
@@ -205,7 +183,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (iterator instanceof Iterator) {
             return (Iterator<T>) iterator;
         } else {
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
 
                 @Override
                 public boolean hasNext() {
@@ -213,7 +191,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     return iterator.next();
                 }
             };
@@ -229,7 +210,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Boolean> ofAll(boolean... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Boolean>() {
+        return new Iterator<Boolean>() {
             int i = 0;
 
             @Override
@@ -238,7 +219,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Boolean getNext() {
+            public Boolean next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return elements[i++];
             }
         };
@@ -253,7 +237,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Byte> ofAll(byte... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Byte>() {
+        return new Iterator<Byte>() {
             int i = 0;
 
             @Override
@@ -262,7 +246,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Byte getNext() {
+            public Byte next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return elements[i++];
             }
         };
@@ -277,7 +264,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Character> ofAll(char... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Character>() {
+        return new Iterator<Character>() {
             int i = 0;
 
             @Override
@@ -286,7 +273,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Character getNext() {
+            public Character next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return elements[i++];
             }
         };
@@ -301,7 +291,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Double> ofAll(double... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Double>() {
+        return new Iterator<Double>() {
             int i = 0;
 
             @Override
@@ -310,7 +300,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Double getNext() {
+            public Double next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return elements[i++];
             }
         };
@@ -325,7 +318,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Float> ofAll(float... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Float>() {
+        return new Iterator<Float>() {
             int i = 0;
 
             @Override
@@ -334,7 +327,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Float getNext() {
+            public Float next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return elements[i++];
             }
         };
@@ -349,7 +345,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Integer> ofAll(int... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Integer>() {
+        return new Iterator<Integer>() {
             int i = 0;
 
             @Override
@@ -358,7 +354,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Integer getNext() {
+            public Integer next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return elements[i++];
             }
         };
@@ -373,7 +372,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Long> ofAll(long... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Long>() {
+        return new Iterator<Long>() {
             int i = 0;
 
             @Override
@@ -382,7 +381,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Long getNext() {
+            public Long next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return elements[i++];
             }
         };
@@ -397,7 +399,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static Iterator<Short> ofAll(short... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return new AbstractIterator<Short>() {
+        return new Iterator<Short>() {
             int i = 0;
 
             @Override
@@ -406,7 +408,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Short getNext() {
+            public Short next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return elements[i++];
             }
         };
@@ -509,7 +514,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             if (step.signum() > 0) {
-                return new AbstractIterator<BigDecimal>() {
+                return new Iterator<BigDecimal>() {
                     BigDecimal i = from;
 
                     @Override
@@ -518,14 +523,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                     }
 
                     @Override
-                    public BigDecimal getNext() {
+                    public BigDecimal next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
                         final BigDecimal next = this.i;
                         this.i = next.add(step);
                         return next;
                     }
                 };
             } else {
-                return new AbstractIterator<BigDecimal>() {
+                return new Iterator<BigDecimal>() {
                     BigDecimal i = from;
 
                     @Override
@@ -534,7 +542,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                     }
 
                     @Override
-                    public BigDecimal getNext() {
+                    public BigDecimal next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
                         final BigDecimal next = this.i;
                         this.i = next.add(step);
                         return next;
@@ -737,7 +748,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final int end = toInclusive - step;
             if (step > 0) {
-                return new AbstractIterator<Integer>() {
+                return new Iterator<Integer>() {
                     int i = from - step;
 
                     @Override
@@ -746,12 +757,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                     }
 
                     @Override
-                    public Integer getNext() {
+                    public Integer next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
                         return i += step;
                     }
                 };
             } else {
-                return new AbstractIterator<Integer>() {
+                return new Iterator<Integer>() {
                     int i = from - step;
 
                     @Override
@@ -760,7 +774,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                     }
 
                     @Override
-                    public Integer getNext() {
+                    public Integer next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
                         return i += step;
                     }
                 };
@@ -818,7 +835,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final long end = toInclusive - step;
             if (step > 0) {
-                return new AbstractIterator<Long>() {
+                return new Iterator<Long>() {
                     long i = from - step;
 
                     @Override
@@ -827,12 +844,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                     }
 
                     @Override
-                    public Long getNext() {
+                    public Long next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
                         return i += step;
                     }
                 };
             } else {
-                return new AbstractIterator<Long>() {
+                return new Iterator<Long>() {
                     long i = from - step;
 
                     @Override
@@ -841,7 +861,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                     }
 
                     @Override
-                    public Long getNext() {
+                    public Long next() {
+                        if (!hasNext()) {
+                            throw new NoSuchElementException();
+                        }
                         return i += step;
                     }
                 };
@@ -859,7 +882,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a new {@code Iterator} of int values starting from {@code from}
      */
     static Iterator<Integer> from(int value) {
-        return new AbstractIterator<Integer>() {
+        return new Iterator<Integer>() {
             private int next = value;
 
             @Override
@@ -868,7 +891,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Integer getNext() {
+            public Integer next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return next++;
             }
         };
@@ -884,7 +910,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a new {@code Iterator} of int values starting from {@code from}
      */
     static Iterator<Integer> from(int value, int step) {
-        return new AbstractIterator<Integer>() {
+        return new Iterator<Integer>() {
             private int next = value;
 
             @Override
@@ -893,7 +919,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Integer getNext() {
+            public Integer next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 final int result = next;
                 next += step;
                 return result;
@@ -910,7 +939,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a new {@code Iterator} of long values starting from {@code from}
      */
     static Iterator<Long> from(long value) {
-        return new AbstractIterator<Long>() {
+        return new Iterator<Long>() {
             private long next = value;
 
             @Override
@@ -919,7 +948,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Long getNext() {
+            public Long next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return next++;
             }
         };
@@ -935,7 +967,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return a new {@code Iterator} of long values starting from {@code from}
      */
     static Iterator<Long> from(long value, long step) {
-        return new AbstractIterator<Long>() {
+        return new Iterator<Long>() {
             private long next = value;
 
             @Override
@@ -944,7 +976,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public Long getNext() {
+            public Long next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 final long result = next;
                 next += step;
                 return result;
@@ -961,14 +996,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static <T> Iterator<T> continually(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return new AbstractIterator<T>() {
+        return new Iterator<T>() {
             @Override
             public boolean hasNext() {
                 return true;
             }
 
             @Override
-            public T getNext() {
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return supplier.get();
             }
         };
@@ -985,7 +1023,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static <T> Iterator<T> iterate(Supplier<? extends Option<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
-        return new AbstractIterator<T>() {
+        return new Iterator<T>() {
             Option<? extends T> nextOption;
 
             @Override
@@ -997,7 +1035,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public T getNext() {
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 final T next =  nextOption.get();
                 nextOption = null;
                 return next;
@@ -1016,7 +1057,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static <T> Iterator<T> iterate(T seed, Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
-        return new AbstractIterator<T>() {
+        return new Iterator<T>() {
             Function<? super T, ? extends T> nextFunc = s -> {
                 nextFunc = f;
                 return seed;
@@ -1029,7 +1070,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public T getNext() {
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 current = nextFunc.apply(current);
                 return current;
             }
@@ -1044,14 +1088,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return A new Iterator containing infinite {@code t}'s.
      */
     static <T> Iterator<T> continually(T t) {
-        return new AbstractIterator<T>() {
+        return new Iterator<T>() {
             @Override
             public boolean hasNext() {
                 return true;
             }
 
             @Override
-            public T getNext() {
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return t;
             }
         };
@@ -1088,7 +1135,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
 
                 boolean insertElement = false;
 
@@ -1098,7 +1145,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     if (insertElement) {
                         insertElement = false;
                         return element;
@@ -1138,14 +1188,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else {
             final Iterator<T> it1 = this;
             final java.util.Iterator<? extends U> it2 = that.iterator();
-            return new AbstractIterator<R>() {
+            return new Iterator<R>() {
                 @Override
                 public boolean hasNext() {
                     return it1.hasNext() && it2.hasNext();
                 }
 
                 @Override
-                public R getNext() {
+                public R next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     return mapper.apply(it1.next(), it2.next());
                 }
             };
@@ -1160,14 +1213,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> thisIt = this;
-            return new AbstractIterator<Tuple2<T, U>>() {
+            return new Iterator<Tuple2<T, U>>() {
                 @Override
                 public boolean hasNext() {
                     return thisIt.hasNext() || thatIt.hasNext();
                 }
 
                 @Override
-                public Tuple2<T, U> getNext() {
+                public Tuple2<T, U> next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final T v1 = thisIt.hasNext() ? thisIt.next() : thisElem;
                     final U v2 = thatIt.hasNext() ? thatIt.next() : thatElem;
                     return Tuple.of(v1, v2);
@@ -1188,7 +1244,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> it1 = this;
-            return new AbstractIterator<U>() {
+            return new Iterator<U>() {
                 private int index = 0;
 
                 @Override
@@ -1197,7 +1253,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public U getNext() {
+                public U next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     return mapper.apply(it1.next(), index++);
                 }
             };
@@ -1315,7 +1374,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     static <T, U> Iterator<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         Objects.requireNonNull(f, "the unfold iterating function is null");
-        return new AbstractIterator<U>() {
+        return new Iterator<U>() {
             private Option<Tuple2<? extends U, ? extends T>> nextVal = f.apply(seed);
 
             @Override
@@ -1324,7 +1383,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             }
 
             @Override
-            public U getNext() {
+            public U next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 final U result = nextVal.get()._1;
                 nextVal = f.apply(nextVal.get()._2);
                 return result;
@@ -1377,7 +1439,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
 
                 long count = n;
 
@@ -1391,7 +1453,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     return that.next();
                 }
             };
@@ -1406,7 +1471,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
                 private io.vavr.collection.Queue<T> queue = io.vavr.collection.Queue.empty();
 
                 @Override
@@ -1418,7 +1483,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final Tuple2<T, io.vavr.collection.Queue<T>> t = queue.append(that.next()).dequeue();
                     queue = t._2;
                     return t._1;
@@ -1460,7 +1528,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
 
                 Option<T> next = Option.none();
 
@@ -1476,7 +1544,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final T result = next.get();
                     next = Option.none();
                     return result;
@@ -1531,7 +1602,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<U>() {
+            return new Iterator<U>() {
 
                 final Iterator<? extends T> inputs = that;
                 java.util.Iterator<? extends U> current = java.util.Collections.emptyIterator();
@@ -1546,7 +1617,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public U getNext() {
+                public U next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     return current.next();
                 }
             };
@@ -1665,7 +1739,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<U>() {
+            return new Iterator<U>() {
 
                 @Override
                 public boolean hasNext() {
@@ -1673,11 +1747,27 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public U getNext() {
+                public U next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     return mapper.apply(that.next());
                 }
             };
         }
+    }
+
+    /**
+     * A safe alternative to {@link #next()} that is equivalent to
+     *
+     * <pre>{@code
+     * hasNext() ? Option.some(next()) : Option.none()
+     * }</pre>
+     *
+     * @return a new instance of {@link Option}
+     */
+    default Option<T> nextOption() {
+        return hasNext() ? Option.some(next()) : Option.none();
     }
 
     @Override
@@ -1710,14 +1800,17 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
                 @Override
                 public boolean hasNext() {
                     return that.hasNext();
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final T next = that.next();
                     action.accept(next);
                     return next;
@@ -1757,7 +1850,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
                 boolean isFirst = true;
 
                 @Override
@@ -1766,7 +1859,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final T elem = that.next();
                     if (isFirst && Objects.equals(currentElement, elem)) {
                         isFirst = false;
@@ -1785,7 +1881,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
 
                 @Override
                 public boolean hasNext() {
@@ -1793,7 +1889,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final T elem = that.next();
                     if (Objects.equals(currentElement, elem)) {
                         return newElement;
@@ -1822,7 +1921,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return of(zero);
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<U>() {
+            return new Iterator<U>() {
 
                 boolean isFirst = true;
                 U acc = zero;
@@ -1833,7 +1932,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public U getNext() {
+                public U next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     if (isFirst) {
                         isFirst = false;
                         return acc;
@@ -1864,7 +1966,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final CachedIterator<T> source = new CachedIterator<>(this);
-            return new AbstractIterator<Seq<T>>() {
+            return new Iterator<Seq<T>>() {
                 private Stream<T> next = null;
 
                 @Override
@@ -1873,7 +1975,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                         final Object key = classifier.apply(source.touch());
                         final java.util.List<T> acc = new ArrayList<>();
                         while (source.hasNext() && key.equals(classifier.apply(source.touch()))) {
-                            acc.add(source.getNext());
+                            acc.add(source.next());
                         }
                         next = Stream.ofAll(acc);
                     }
@@ -1881,7 +1983,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public Stream<T> getNext() {
+                public Stream<T> next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final Stream<T> result = next;
                     next = null;
                     return result;
@@ -1948,7 +2053,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
 
                 long count = n;
 
@@ -1958,7 +2063,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     count--;
                     return that.next();
                 }
@@ -1972,7 +2080,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
                 private io.vavr.collection.Queue<T> queue = io.vavr.collection.Queue.empty();
 
                 @Override
@@ -1987,7 +2095,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final Tuple2<T, io.vavr.collection.Queue<T>> t = queue.dequeue();
                     queue = t._2;
                     return t._1;
@@ -2009,7 +2120,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return empty();
         } else {
             final Iterator<T> that = this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
 
                 private T next;
                 private boolean cached = false;
@@ -2033,7 +2144,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     cached = false;
                     return next;
                 }
@@ -2042,281 +2156,386 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 }
 
-interface IteratorModule {
+final class ArrayIterator<T> implements Iterator<T> {
 
-    final class ConcatIterator<T> implements Iterator<T> {
+    private final T[] elements;
+    private int index = 0;
 
-        private static final class Iterators<T> {
+    ArrayIterator(T[] elements) {
+        this.elements = elements;
+    }
 
-            private final java.util.Iterator<T> head;
-            private Iterators<T> tail;
+    @Override
+    public boolean hasNext() {
+        return index < elements.length;
+    }
 
-            @SuppressWarnings("unchecked")
-            Iterators(java.util.Iterator<? extends T> head) {
-                this.head = (java.util.Iterator<T>) head;
-            }
-        }
-
-        private Iterators<T> curr;
-        private Iterators<T> last;
-        private boolean nextCalculated = false;
-
-        ConcatIterator(java.util.Iterator<? extends java.util.Iterator<? extends T>> iterators) {
-            this.curr = this.last = iterators.hasNext() ? new Iterators<>(iterators.next()) : null;
-            while (iterators.hasNext()) {
-                this.last = this.last.tail = new Iterators<>(iterators.next());
-            }
-        }
-
-        @Override
-        public boolean hasNext() {
-            if (nextCalculated) {
-                return curr != null;
-            } else {
-                nextCalculated = true;
-                while (true) {
-                    if (curr.head.hasNext()) {
-                        return true;
-                    } else {
-                        curr = curr.tail;
-                        if (curr == null) {
-                            last = null; // release reference
-                            return false;
-                        }
-                    }
-                }
-            }
-        }
-
-        @Override
-        public T next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            nextCalculated = false;
-            return curr.head.next();
-        }
-
-        @Override
-        public Iterator<T> concat(java.util.Iterator<? extends T> that) {
-            if (curr == null) {
-                nextCalculated = false;
-                curr = last = new Iterators<>(that);
-            } else {
-                last = last.tail = new Iterators<>(that);
-            }
-            return this;
+    @Override
+    public T next() {
+        try {
+            return elements[index++];
+        } catch(IndexOutOfBoundsException x) {
+            index--;
+            throw new NoSuchElementException();
         }
     }
 
-    final class DistinctIterator<T, U> extends AbstractIterator<T> {
-
-        private final Iterator<? extends T> that;
-        private io.vavr.collection.Set<U> known;
-        private final Function<? super T, ? extends U> keyExtractor;
-        private boolean nextDefined = false;
-        private T next;
-
-        DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {
-            this.that = that;
-            this.known = set;
-            this.keyExtractor = keyExtractor;
+    @Override
+    public void forEachRemaining(Consumer<? super T> action) {
+        Objects.requireNonNull(action);
+        while (index < elements.length) {
+            action.accept(elements[index++]);
         }
+    }
 
-        @Override
-        public boolean hasNext() {
-            return nextDefined || searchNext();
+    @Override
+    public String toString() {
+        return "ArrayIterator";
+    }
+}
+
+final class CachedIterator<T> implements Iterator<T> {
+
+    private final Iterator<T> that;
+
+    private T next;
+    private boolean cached = false;
+
+    CachedIterator(Iterator<T> that) {
+        this.that = that;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return cached || that.hasNext();
+    }
+
+    @Override
+    public T next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
         }
-
-        private boolean searchNext() {
-            while (that.hasNext()) {
-                final T elem = that.next();
-                final U key = keyExtractor.apply(elem);
-                if (!known.contains(key)) {
-                    known = known.add(key);
-                    nextDefined = true;
-                    next = elem;
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        @Override
-        public T getNext() {
-            final T result = next;
-            nextDefined = false;
+        if (cached) {
+            T result = next;
             next = null;
+            cached = false;
             return result;
+        } else {
+            return that.next();
         }
     }
 
-    final class EmptyIterator implements Iterator<Object> {
+    T touch() {
+        next = next();
+        cached = true;
+        return next;
+    }
 
-        static final EmptyIterator INSTANCE = new EmptyIterator();
+    @Override
+    public String toString() {
+        return "CachedIterator";
+    }
+}
 
-        @Override
-        public boolean hasNext() { return false; }
+final class ConcatIterator<T> implements Iterator<T> {
 
-        @Override
-        public Object next() { throw new NoSuchElementException(stringPrefix() + ".next()"); }
+    private static final class Iterators<T> {
 
-        @Override
-        public String stringPrefix() {
-            return "EmptyIterator";
-        }
+        private final java.util.Iterator<T> head;
+        private Iterators<T> tail;
 
-        @Override
-        public String toString() {
-            return stringPrefix() + "()";
+        @SuppressWarnings("unchecked")
+        Iterators(java.util.Iterator<? extends T> head) {
+            this.head = (java.util.Iterator<T>) head;
         }
     }
 
-    final class GroupedIterator<T> implements Iterator<Seq<T>> {
+    private Iterators<T> curr;
+    private Iterators<T> last;
+    private boolean nextCalculated = false;
 
-        private final Iterator<T> that;
-        private final int size;
-        private final int step;
-        private final int gap;
-        private final int preserve;
-
-        private Object[] buffer;
-
-        GroupedIterator(Iterator<T> that, int size, int step) {
-            if (size < 1 || step < 1) {
-                throw new IllegalArgumentException("size (" + size + ") and step (" + step + ") must both be positive");
-            }
-            this.that = that;
-            this.size = size;
-            this.step = step;
-            this.gap = Math.max(step - size, 0);
-            this.preserve = Math.max(size - step, 0);
-            this.buffer = take(that, new Object[size], 0, size);
-        }
-
-        @Override
-        public boolean hasNext() {
-            return buffer.length > 0;
-        }
-
-        @Override
-        public Seq<T> next() {
-            if (buffer.length == 0) {
-                throw new NoSuchElementException();
-            }
-            final Object[] result = buffer;
-            if (that.hasNext()) {
-                buffer = new Object[size];
-                if (preserve > 0) {
-                    System.arraycopy(result, step, buffer, 0, preserve);
-                }
-                if (gap > 0) {
-                    drop(that, gap);
-                    buffer = take(that, buffer, preserve, size);
-                } else {
-                    buffer = take(that, buffer, preserve, step);
-                }
-            } else {
-                buffer = new Object[0];
-            }
-            return Array.wrap(result);
-        }
-
-        private static void drop(Iterator<?> source, int count) {
-            for (int i = 0; i < count && source.hasNext(); i++) {
-                source.next();
-            }
-        }
-
-        private static Object[] take(Iterator<?> source, Object[] target, int offset, int count) {
-            int i = offset;
-            while (i < count + offset && source.hasNext()) {
-                target[i] = source.next();
-                i++;
-            }
-            if (i < target.length) {
-                final Object[] result = new Object[i];
-                System.arraycopy(target, 0, result, 0, i);
-                return result;
-            } else {
-                return target;
-            }
+    ConcatIterator(java.util.Iterator<? extends java.util.Iterator<? extends T>> iterators) {
+        this.curr = this.last = iterators.hasNext() ? new Iterators<>(iterators.next()) : null;
+        while (iterators.hasNext()) {
+            this.last = this.last.tail = new Iterators<>(iterators.next());
         }
     }
 
-    final class CachedIterator<T> extends AbstractIterator<T> {
-
-        private final Iterator<T> that;
-
-        private T next;
-        private boolean cached = false;
-
-        CachedIterator(Iterator<T> that) {
-            this.that = that;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return cached || that.hasNext();
-        }
-
-        @Override
-        public T getNext() {
-            if (cached) {
-                T result = next;
-                next = null;
-                cached = false;
-                return result;
-            } else {
-                return that.next();
-            }
-        }
-
-        T touch() {
-            next = next();
-            cached = true;
-            return next;
-        }
-    }
-
-    final class BigDecimalHelper {
-
-        @GwtIncompatible("Math::nextDown is not implemented")
-        private static final Lazy<BigDecimal> INFINITY_DISTANCE = Lazy.of(() -> {
-            final BigDecimal two = BigDecimal.valueOf(2);
-            final BigDecimal supremum = BigDecimal.valueOf(Math.nextDown(Double.POSITIVE_INFINITY));
-            BigDecimal lowerBound = supremum;
-            BigDecimal upperBound = two.pow(Double.MAX_EXPONENT + 1);
+    @Override
+    public boolean hasNext() {
+        if (nextCalculated) {
+            return curr != null;
+        } else {
+            nextCalculated = true;
             while (true) {
-                final BigDecimal magicValue = lowerBound.add(upperBound).divide(two, HALF_UP);
-                if (Double.isInfinite(magicValue.doubleValue())) {
-                    if (areEqual(magicValue, upperBound)) {
-                        return magicValue.subtract(supremum);
-                    }
-                    upperBound = magicValue;
+                if (curr.head.hasNext()) {
+                    return true;
                 } else {
-                    lowerBound = magicValue;
+                    curr = curr.tail;
+                    if (curr == null) {
+                        last = null; // release reference
+                        return false;
+                    }
                 }
             }
-        });
-
-        /* scale-independent equality */
-        static boolean areEqual(BigDecimal from, BigDecimal toExclusive) {
-            return from.compareTo(toExclusive) == 0;
         }
+    }
 
-        /* parse infinite values also */
-        @GwtIncompatible("Math::nextUp is not implemented")
-        static BigDecimal asDecimal(double number) {
-            if (number == NEGATIVE_INFINITY) {
-                final BigDecimal result = BigDecimal.valueOf(Math.nextUp(NEGATIVE_INFINITY));
-                return result.subtract(INFINITY_DISTANCE.get());
-            } else if (number == POSITIVE_INFINITY) {
-                final BigDecimal result = BigDecimal.valueOf(Math.nextDown(POSITIVE_INFINITY));
-                return result.add(INFINITY_DISTANCE.get());
-            } else {
-                return BigDecimal.valueOf(number);
+    @Override
+    public T next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        nextCalculated = false;
+        return curr.head.next();
+    }
+
+    @Override
+    public Iterator<T> concat(java.util.Iterator<? extends T> that) {
+        if (curr == null) {
+            nextCalculated = false;
+            curr = last = new Iterators<>(that);
+        } else {
+            last = last.tail = new Iterators<>(that);
+        }
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        return "ConcatIterator";
+    }
+}
+
+final class DistinctIterator<T, U> implements Iterator<T> {
+
+    private final Iterator<? extends T> that;
+    private io.vavr.collection.Set<U> known;
+    private final Function<? super T, ? extends U> keyExtractor;
+    private boolean nextDefined = false;
+    private T next;
+
+    DistinctIterator(Iterator<? extends T> that, Set<U> set, Function<? super T, ? extends U> keyExtractor) {
+        this.that = that;
+        this.known = set;
+        this.keyExtractor = keyExtractor;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return nextDefined || searchNext();
+    }
+
+    private boolean searchNext() {
+        while (that.hasNext()) {
+            final T elem = that.next();
+            final U key = keyExtractor.apply(elem);
+            if (!known.contains(key)) {
+                known = known.add(key);
+                nextDefined = true;
+                next = elem;
+                return true;
             }
+        }
+        return false;
+    }
+
+    @Override
+    public T next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        final T result = next;
+        nextDefined = false;
+        next = null;
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "DistinctIterator";
+    }
+}
+
+final class EmptyIterator implements Iterator<Object> {
+
+    static final EmptyIterator INSTANCE = new EmptyIterator();
+
+    private EmptyIterator() {}
+
+    @Override
+    public boolean hasNext() {
+        return false;
+    }
+
+    @Override
+    public Object next() {
+        throw new NoSuchElementException();
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super Object> action) {
+        Objects.requireNonNull(action);
+    }
+
+    @Override
+    public String toString() {
+        return "EmptyIterator";
+    }
+}
+
+final class GroupedIterator<T> implements Iterator<Seq<T>> {
+
+    private final Iterator<T> that;
+    private final int size;
+    private final int step;
+    private final int gap;
+    private final int preserve;
+
+    private Object[] buffer;
+
+    GroupedIterator(Iterator<T> that, int size, int step) {
+        if (size < 1 || step < 1) {
+            throw new IllegalArgumentException("size (" + size + ") and step (" + step + ") must both be positive");
+        }
+        this.that = that;
+        this.size = size;
+        this.step = step;
+        this.gap = Math.max(step - size, 0);
+        this.preserve = Math.max(size - step, 0);
+        this.buffer = take(that, new Object[size], 0, size);
+    }
+
+    @Override
+    public boolean hasNext() {
+        return buffer.length > 0;
+    }
+
+    @Override
+    public Seq<T> next() {
+        if (buffer.length == 0) {
+            throw new NoSuchElementException();
+        }
+        final Object[] result = buffer;
+        if (that.hasNext()) {
+            buffer = new Object[size];
+            if (preserve > 0) {
+                System.arraycopy(result, step, buffer, 0, preserve);
+            }
+            if (gap > 0) {
+                drop(that, gap);
+                buffer = take(that, buffer, preserve, size);
+            } else {
+                buffer = take(that, buffer, preserve, step);
+            }
+        } else {
+            buffer = new Object[0];
+        }
+        return Array.wrap(result);
+    }
+
+    @Override
+    public String toString() {
+        return "GroupedIterator";
+    }
+
+    private static void drop(Iterator<?> source, int count) {
+        for (int i = 0; i < count && source.hasNext(); i++) {
+            source.next();
+        }
+    }
+
+    private static Object[] take(Iterator<?> source, Object[] target, int offset, int count) {
+        int i = offset;
+        while (i < count + offset && source.hasNext()) {
+            target[i] = source.next();
+            i++;
+        }
+        if (i < target.length) {
+            final Object[] result = new Object[i];
+            System.arraycopy(target, 0, result, 0, i);
+            return result;
+        } else {
+            return target;
+        }
+    }
+}
+
+final class SingletonIterator<T> implements Iterator<T> {
+
+    private final T element;
+    private boolean hasNext = true;
+
+    SingletonIterator(T element) {
+        this.element = element;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return hasNext;
+    }
+
+    @Override
+    public T next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        hasNext = false;
+        return element;
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super T> action) {
+        Objects.requireNonNull(action);
+        if (hasNext) {
+            action.accept(element);
+            hasNext = false;
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "SingletonIterator";
+    }
+}
+
+final class BigDecimalHelper {
+
+    @GwtIncompatible("Math::nextDown is not implemented")
+    private static final Lazy<BigDecimal> INFINITY_DISTANCE = Lazy.of(() -> {
+        final BigDecimal two = BigDecimal.valueOf(2);
+        final BigDecimal supremum = BigDecimal.valueOf(Math.nextDown(Double.POSITIVE_INFINITY));
+        BigDecimal lowerBound = supremum;
+        BigDecimal upperBound = two.pow(Double.MAX_EXPONENT + 1);
+        while (true) {
+            final BigDecimal magicValue = lowerBound.add(upperBound).divide(two, HALF_UP);
+            if (Double.isInfinite(magicValue.doubleValue())) {
+                if (areEqual(magicValue, upperBound)) {
+                    return magicValue.subtract(supremum);
+                }
+                upperBound = magicValue;
+            } else {
+                lowerBound = magicValue;
+            }
+        }
+    });
+
+    /* scale-independent equality */
+    static boolean areEqual(BigDecimal from, BigDecimal toExclusive) {
+        return from.compareTo(toExclusive) == 0;
+    }
+
+    /* parse infinite values also */
+    @GwtIncompatible("Math::nextUp is not implemented")
+    static BigDecimal asDecimal(double number) {
+        if (number == NEGATIVE_INFINITY) {
+            final BigDecimal result = BigDecimal.valueOf(Math.nextUp(NEGATIVE_INFINITY));
+            return result.subtract(INFINITY_DISTANCE.get());
+        } else if (number == POSITIVE_INFINITY) {
+            final BigDecimal result = BigDecimal.valueOf(Math.nextDown(POSITIVE_INFINITY));
+            return result.add(INFINITY_DISTANCE.get());
+        } else {
+            return BigDecimal.valueOf(number);
         }
     }
 }

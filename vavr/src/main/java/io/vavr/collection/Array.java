@@ -683,7 +683,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public Iterator<T> iterator() {
-        return new AbstractIterator<T>() {
+        return new Iterator<T>() {
             private int index = 0;
 
             @Override
@@ -692,7 +692,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             }
 
             @Override
-            public T getNext() {
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 return (T) delegate[index++];
             }
         };

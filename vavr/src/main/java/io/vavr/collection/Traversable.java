@@ -772,7 +772,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     @Override
     default Iterator<T> iterator() {
         final Traversable<T> that = this;
-        return new AbstractIterator<T>() {
+        return new Iterator<T>() {
 
             Traversable<T> traversable = that;
 
@@ -782,7 +782,10 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             }
 
             @Override
-            public T getNext() {
+            public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException();
+                }
                 final T result = traversable.head();
                 traversable = traversable.tail();
                 return result;

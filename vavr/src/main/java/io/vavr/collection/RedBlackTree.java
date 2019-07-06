@@ -280,7 +280,7 @@ interface RedBlackTree<T> extends Iterable<T> {
             return Iterator.empty();
         } else {
             final Node<T> that = (Node<T>) this;
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
 
                 List<Node<T>> stack = pushLeftChildren(List.empty(), that);
 
@@ -290,7 +290,10 @@ interface RedBlackTree<T> extends Iterable<T> {
                 }
 
                 @Override
-                public T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     final Tuple2<Node<T>, ? extends List<Node<T>>> result = stack.pop2();
                     final Node<T> node = result._1;
                     stack = node.right.isEmpty() ? result._2 : pushLeftChildren(result._2, (Node<T>) node.right);

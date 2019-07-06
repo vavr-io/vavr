@@ -449,7 +449,7 @@ final class Collections {
         if (n <= 0) {
             return Iterator.empty();
         } else {
-            return new AbstractIterator<T>() {
+            return new Iterator<T>() {
 
                 int i = 0;
 
@@ -459,7 +459,10 @@ final class Collections {
                 }
 
                 @Override
-                protected T getNext() {
+                public T next() {
+                    if (!hasNext()) {
+                        throw new NoSuchElementException();
+                    }
                     return f.apply(i++);
                 }
             };
