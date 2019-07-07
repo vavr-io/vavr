@@ -21,6 +21,7 @@ package io.vavr.collection.euler;
 
 import io.vavr.API;
 import io.vavr.Tuple;
+import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 import org.junit.Test;
@@ -68,15 +69,16 @@ public class Euler27Test {
     }
 
     private static int productOfCoefficientsWithMostConsecutivePrimes(int coefficientsLowerBound, int coefficientsUpperBound) {
-        final List<Integer> coefficients = List.rangeClosed(coefficientsLowerBound, coefficientsUpperBound);
-        return API.For(coefficients, coefficients).yield(Tuple::of)
+        final Iterable<Integer> coefficients = List.rangeClosed(coefficientsLowerBound, coefficientsUpperBound);
+        return API.For(coefficients, coefficients)
+                .yield(Tuple::of)
                 .map(c -> Tuple.of(c._1, c._2, numberOfConsecutivePrimesProducedByFormulaWithCoefficients(c._1, c._2)))
                 .fold(Tuple.of(0, 0, -1), (n, m) -> n._3 >= m._3 ? n : m)
                 .apply((a, b, p) -> a * b);
     }
 
     private static int numberOfConsecutivePrimesProducedByFormulaWithCoefficients(int a, int b) {
-        return Stream.from(0L)
+        return Iterator.from(0L)
                 .map(n -> (long) Math.pow(n, 2) + a * n + b)
                 .takeWhile(Utils.MEMOIZED_IS_PRIME::apply)
                 .length();
