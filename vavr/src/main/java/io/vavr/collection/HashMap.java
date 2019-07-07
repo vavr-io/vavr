@@ -34,8 +34,6 @@ import java.util.stream.Collector;
 /**
  * An immutable {@code HashMap} implementation based on a
  * <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
- *
- * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  */
 public final class HashMap<K, V> implements Map<K, V>, Serializable {
 

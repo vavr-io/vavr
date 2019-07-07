@@ -34,7 +34,6 @@ import java.util.stream.Collector;
  * An immutable {@code HashSet} implementation that has predictable (insertion-order) iteration.
  *
  * @param <T> Component type
- * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  */
 public final class LinkedHashSet<T> implements Set<T>, Serializable {
 

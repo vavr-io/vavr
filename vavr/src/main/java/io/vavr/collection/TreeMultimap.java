@@ -37,7 +37,6 @@ import java.util.stream.Collector;
  *
  * @param <K> Key type
  * @param <V> Value type
- * @author Ruslan Sennov
  */
 public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultimap<K, V>> implements Serializable, SortedMultimap<K, V> {
 

@@ -80,7 +80,6 @@ import java.util.function.*;
  * </ul>
  *
  * @param <T> Component type
- * @author Daniel Dietrich, Ruslan Sennov
  */
 public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializable {
 

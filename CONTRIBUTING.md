@@ -84,44 +84,42 @@ We organize our classes and interfaces in the following way:
    2. non-static API
    3. adjusted return types
 * The methods of each of these sections are alphabetically ordered. 
-
-```java
-/**
- * Description of this class.
- * 
- * <ul>
- * <li>{@link #containsKey(Object)}}</li>
- * <li>{@link ...}</li>
- * </ul>
- * 
- * @author ...
- */
-public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
+    ```java
+    /**
+     * Description of this class.
+     * 
+     * <ul>
+     * <li>{@link #containsKey(Object)}}</li>
+     * <li>{@link ...}</li>
+     * </ul>
+     */
+    public interface Map<K, V> extends Traversable<Tuple2<K, V>> {
+        
+        // -- static API
+        
+        static <K, V> Tuple2<K, V> entry(K key, V value) { ... }
+        
+        ...
+        
+        // -- non-static API
     
-    // -- static API
+        @Override
+        default boolean contains(Tuple2<K, V> element) { ... }
+        
+        boolean containsKey(K key);
+        
+        ...
+        
+        // -- Adjusted return types
     
-    static <K, V> Tuple2<K, V> entry(K key, V value) { ... }
-    
-    ...
-    
-    // -- non-static API
-
-    @Override
-    default boolean contains(Tuple2<K, V> element) { ... }
-    
-    boolean containsKey(K key);
-    
-    ...
-    
-    // -- Adjusted return types
-
-    @Override
-    Map<K, V> distinct();
-    
-    ...
-    
-}
-```
+        @Override
+        Map<K, V> distinct();
+        
+        ...
+        
+    }
+    ```
+* We do not include `@author` javadoc tags because they are redundant. Look up the git file history instead, e.g. on GitHub.
 
 ### Unit tests
 

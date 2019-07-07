@@ -39,7 +39,6 @@ import java.util.function.Function;
  * @param <T3> argument 3 of the function
  * @param <T4> argument 4 of the function
  * @param <R> return type of the function
- * @author Daniel Dietrich
  */
 @FunctionalInterface
 public interface Function4<T1, T2, T3, T4, R> extends Serializable {

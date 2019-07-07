@@ -36,7 +36,6 @@ import java.util.function.Function;
  * @param <T1> type of the 1st element
  * @param <T2> type of the 2nd element
  * @param <T3> type of the 3rd element
- * @author Daniel Dietrich
  */
 public final class Tuple3<T1, T2, T3> implements Tuple, Comparable<Tuple3<T1, T2, T3>>, Serializable {
 

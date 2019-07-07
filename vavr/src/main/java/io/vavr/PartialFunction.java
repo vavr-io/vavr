@@ -34,7 +34,6 @@ import java.util.function.Function;
  *
  * @param <T> type of the function input, called <em>domain</em> of the function
  * @param <R> type of the function output, called <em>codomain</em> of the function
- * @author Daniel Dietrich
  */
 public interface PartialFunction<T, R> extends Function1<T, R> {
 

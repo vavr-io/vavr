@@ -27,8 +27,6 @@ import static java.util.stream.Collectors.joining;
 
 /**
  * A <em>stateful</em> ImportManager which generates an import section of a Java class file.
- *
- * @author Daniel Dietrich
  */
 class ImportManager {
 

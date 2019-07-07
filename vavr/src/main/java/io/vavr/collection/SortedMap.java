@@ -31,7 +31,6 @@ import java.util.function.*;
  *
  * @param <K> Key type
  * @param <V> Value type
- * @author Daniel Dietrich
  */
 public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
 

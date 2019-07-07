@@ -27,8 +27,6 @@ import java.util.function.Predicate;
 
 /**
  * Defines general-purpose predicates which are particularly useful when working with {@link API.Match}.
- *
- * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public final class Predicates {
 

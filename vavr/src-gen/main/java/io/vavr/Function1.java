@@ -37,7 +37,6 @@ import java.util.function.Predicate;
  *
  * @param <T1> argument 1 of the function
  * @param <R> return type of the function
- * @author Daniel Dietrich
  */
 @FunctionalInterface
 public interface Function1<T1, R> extends Serializable, Function<T1, R> {

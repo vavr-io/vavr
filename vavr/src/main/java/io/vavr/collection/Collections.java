@@ -29,8 +29,6 @@ import java.util.stream.Collector;
 
 /**
  * Internal class, containing helpers.
- *
- * @author Daniel Dietrich
  */
 final class Collections {
 

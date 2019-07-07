@@ -71,7 +71,6 @@ import java.util.function.Supplier;
  *
  * @param <E> value type in the case of invalid
  * @param <T> value type in the case of valid
- * @author Eric Nelson
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
  */
 public interface Validation<E, T> extends Value<T>, Serializable {

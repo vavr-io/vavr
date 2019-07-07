@@ -45,7 +45,6 @@ import java.util.function.Function;
  * @param <T7> argument 7 of the function
  * @param <T8> argument 8 of the function
  * @param <R> return type of the function
- * @author Daniel Dietrich
  */
 @FunctionalInterface
 public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Serializable {

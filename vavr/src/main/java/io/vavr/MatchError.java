@@ -23,8 +23,6 @@ import java.util.NoSuchElementException;
 
 /**
  * A {@link API.Match} throws a MatchError if no case matches the applied object.
- *
- * @author Daniel Dietrich
  */
 public class MatchError extends NoSuchElementException {
 

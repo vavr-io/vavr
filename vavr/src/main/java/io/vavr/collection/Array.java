@@ -37,7 +37,6 @@ import static java.util.Arrays.sort;
  * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
  *
  * @param <T> Component type
- * @author Ruslan Sennov, Daniel Dietrich
  */
 public final class Array<T> implements IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;

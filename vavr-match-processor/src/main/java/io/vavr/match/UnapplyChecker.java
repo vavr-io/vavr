@@ -32,8 +32,6 @@ import static javax.lang.model.element.Modifier.*;
 
 /**
  * Checks if an {@link javax.lang.model.element.ExecutableElement} is a valid {@code @Unapply} method.
- *
- * @author Daniel Dietrich
  */
 class UnapplyChecker {
 

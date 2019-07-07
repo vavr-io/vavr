@@ -28,9 +28,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-/**
- * @author Pap Lőrinc, Daniel Dietrich
- */
 abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traversable<T> {
 
     /**

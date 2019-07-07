@@ -36,7 +36,6 @@ import java.util.function.BiFunction;
  * </code></pre>
  *
  * @param <T> Component type of this foldable
- * @author Daniel Dietrich
  * @deprecated Marked for removal. Methods moved to io.vavr.collection.Traverable.
  */
 @Deprecated

@@ -24,8 +24,6 @@ import java.util.Comparator;
 
 /**
  * INTERNAL: Common {@code Comparator} related functions (not intended to be public).
- *
- * @author Daniel Dietrich
  */
 final class Comparators {
 

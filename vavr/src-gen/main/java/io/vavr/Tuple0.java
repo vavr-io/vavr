@@ -33,7 +33,6 @@ import java.util.function.Supplier;
 /**
  * A tuple of no elements which can be seen as cartesian product of no components.
  *
- * @author Daniel Dietrich
  */
 public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
 

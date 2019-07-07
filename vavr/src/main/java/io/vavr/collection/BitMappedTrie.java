@@ -39,8 +39,6 @@ import static io.vavr.collection.NodeModifier.IDENTITY;
  * `Prepend` is done similarly, but an offset is needed, because adding a new top node (where the current root would be the last node of the new root)
  * shifts the indices by half of the current tree's full size. The `offset` shifts them back to the correct index.
  * `Slice` is done by trimming the path from the root and discarding any `leading`/`trailing` values in effectively constant time (without memory leak, as in `Java`/`Clojure`).
- *
- * @author Pap Lőrinc
  */
 final class BitMappedTrie<T> implements Serializable {
 

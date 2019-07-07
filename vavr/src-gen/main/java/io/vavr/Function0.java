@@ -34,7 +34,6 @@ import java.util.function.Supplier;
  * Represents a function with no arguments.
  *
  * @param <R> return type of the function
- * @author Daniel Dietrich
  */
 @FunctionalInterface
 public interface Function0<R> extends Serializable, Supplier<R> {

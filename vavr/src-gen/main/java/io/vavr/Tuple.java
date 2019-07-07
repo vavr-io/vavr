@@ -30,8 +30,6 @@ import java.util.Objects;
 
 /**
  * The base interface of all tuples.
- *
- * @author Daniel Dietrich
  */
 public interface Tuple {
 

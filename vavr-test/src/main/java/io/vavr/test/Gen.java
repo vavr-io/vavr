@@ -45,7 +45,6 @@ import java.util.function.Predicate;
  * This will ignore the size hint of Arbitrary.
  *
  * @param <T> type of generated objects
- * @author Daniel Dietrich
  * @see Arbitrary
  */
 @FunctionalInterface

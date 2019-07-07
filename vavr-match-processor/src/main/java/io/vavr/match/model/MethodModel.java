@@ -30,8 +30,6 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * Representation of a method.
- *
- * @author Daniel Dietrich
  */
 public class MethodModel {
 

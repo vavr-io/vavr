@@ -9,7 +9,6 @@ import java.util.Objects;
  * Utility that allows to compute hashcodes without var-arg conversion into arrays for common
  * types of vavr.
  *
- * @author Sebastian Zarnekow
  * @deprecated Will be removed from public API
  */
 @Deprecated

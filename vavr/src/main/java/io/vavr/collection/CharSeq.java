@@ -42,8 +42,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * <strong>Note:</strong>Because CharSeq represents a sequence of primitive characters (i.e. a String),
  * it breaks the Liskov Substitution Principle in the way, that the CharSeq cannot contain {@code null} elements.
  * In future version of Java, CharSeq should extend IndexedSeq&lt;char&gt; instead.
- *
- * @author Ruslan Sennov, Daniel Dietrich
  */
 public final class CharSeq implements CharSequence, IndexedSeq<Character>, Serializable, Comparable<CharSeq> {
 

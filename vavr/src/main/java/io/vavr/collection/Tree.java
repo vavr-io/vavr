@@ -40,7 +40,6 @@ import static io.vavr.collection.Tree.recurse;
  * A general Tree interface.
  *
  * @param <T> component type of this Tree
- * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public interface Tree<T> extends Traversable<T>, Serializable {
 

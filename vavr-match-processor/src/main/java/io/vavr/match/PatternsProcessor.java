@@ -51,8 +51,6 @@ import static java.util.stream.Collectors.toList;
  * we need to provide the compiler arg {@code -Xlint:-processing}.
  * <p>
  * See <a href="https://bugs.openjdk.java.net/browse/JDK-6999068">JDK-6999068 bug</a>.
- *
- * @author Daniel Dietrich
  */
 // See Difference between Element, Type and Mirror: http://stackoverflow.com/a/2127320/1110815
 public class PatternsProcessor extends AbstractProcessor {

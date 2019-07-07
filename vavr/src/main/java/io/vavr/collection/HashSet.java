@@ -34,7 +34,6 @@ import java.util.stream.Collector;
  * An immutable {@code HashSet} implementation.
  *
  * @param <T> Component type
- * @author Ruslan Sennov, Patryk Najda, Daniel Dietrich
  */
 public final class HashSet<T> implements Set<T>, Serializable {
 

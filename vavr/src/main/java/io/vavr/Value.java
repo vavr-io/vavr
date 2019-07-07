@@ -172,7 +172,6 @@ import static io.vavr.API.*;
  * <strong>Please note:</strong> flatMap signatures are manifold and have to be declared by subclasses of Value.
  *
  * @param <T> The type of the wrapped value.
- * @author Daniel Dietrich
  */
 public interface Value<T> extends Iterable<T> {
 

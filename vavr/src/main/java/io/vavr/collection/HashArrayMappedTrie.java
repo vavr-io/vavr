@@ -35,8 +35,6 @@ import static io.vavr.collection.HashArrayMappedTrieModule.Action.REMOVE;
 
 /**
  * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
- *
- * @author Ruslan Sennov
  */
 interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
 

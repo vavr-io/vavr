@@ -29,8 +29,6 @@ import static javax.lang.model.type.TypeKind.TYPEVAR;
 
 /**
  * Representation of a generic type parameter.
- *
- * @author Daniel Dietrich
  */
 public class TypeParameterModel {
 

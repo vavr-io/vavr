@@ -36,7 +36,6 @@ import java.util.stream.Collector;
  *
  * @param <K> Key type
  * @param <V> Value type
- * @author Ruslan Sennov
  */
 public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V>> implements Serializable {
 

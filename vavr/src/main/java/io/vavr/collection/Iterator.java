@@ -52,7 +52,6 @@ import static java.math.RoundingMode.HALF_UP;
  * itself.
  *
  * @param <T> Component type
- * @author Daniel Dietrich
  */
 // DEV-NOTE: we prefer returning empty() over this if !hasNext() == true in order to free memory.
 public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {

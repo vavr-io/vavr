@@ -37,8 +37,6 @@ import java.util.Objects;
  * Please note that a {@code Satisfied} property check may be {@code Exhausted}, if the property is an implication
  * and no sample could be found that satisfied the pre-condition. In this case the post-condition is satisfied by
  * definition (see <a href="http://en.wikipedia.org/wiki/Principle_of_explosion">ex falso quodlibet</a>).
- *
- * @author Daniel Dietrich
  */
 public interface CheckResult {
 
