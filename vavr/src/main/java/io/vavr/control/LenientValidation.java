@@ -275,12 +275,12 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
         );
     }
 
-    public <U> LenientValidation<E, U> flatMapTry(CheckedFunction1<? super T, LenientValidation<E, U>> f, Function0<? extends E> errorProvider) {
+    public <U> LenientValidation<E, U> flatMapTry(CheckedFunction1<? super T, LenientValidation<E, U>> f, Function1<Throwable, ? extends E> errorProvider) {
         Objects.requireNonNull(f, "f is null");
         Objects.requireNonNull(errorProvider, "errorProvider is null");
         return flatMap(value ->
             Try.of(() -> f.apply(value))
-                .getOrElseGet(ex -> invalid(List.of(errorProvider.apply())))
+                .getOrElseGet(ex -> invalid(List.of(errorProvider.apply(ex))))
         );
     }
 

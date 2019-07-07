@@ -174,6 +174,22 @@ public class LenientValidationTest extends AbstractValueTest {
             .isEqualTo(List.of("error-1", "error-2"));
     }
 
+    // - flatMapTry
+
+    @Test
+    public void shouldHaveExceptionAsErrorWhenFlatMapTryWithException() {
+        LenientValidation<String, Integer> valid = LenientValidation.valid(42);
+        assertThat(valid.flatMapTry(v -> { throw new RuntimeException("error"); }, Throwable::getMessage))
+            .isEqualTo(LenientValidation.invalid(List.of("error")));
+    }
+
+    @Test
+    public void shouldBehaveLikeFlatMapWhenFlatMapTryWithoutException() {
+        LenientValidation<String, Integer> invalid = LenientValidation.invalid(List.of("error-1"));
+        assertThat(invalid.flatMapTry(v -> LenientValidation.invalid(List.of("error-2")), Throwable::getMessage).getErrors())
+                .isEqualTo(List.of("error-1"));
+    }
+
     // -- orElse
 
     @Test
