@@ -153,6 +153,7 @@ import java.util.stream.DoubleStream;
  * @param <T> Component type
  * @author Daniel Dietrich and others
  */
+@SuppressWarnings("deprecation")
 public interface Traversable<T> extends Foldable<T>, Value<T> {
 
     /**
@@ -502,18 +503,88 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      */
     <U> Traversable<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
+    /**
+     * Folds this elements using the given associative binary operator, starting with {@code zero} and
+     * successively calling {@code combine}. The order in which the elements are combined is
+     * non-deterministic.
+     * <p>
+     * The methods {@code fold}, {@code foldLeft} and {@code foldRight} differ in how the elements are combined:
+     *
+     * <ul>
+     * <li>{@link #foldLeft(Object, BiFunction)} associates to the left</li>
+     * <li>{@link #foldRight(Object, BiFunction)} associates to the right</li>
+     * <li>
+     * {@code fold} takes an associative combine operation because the traversal of elements is
+     * unordered/non-deterministic. The associativity guarantees that in each case the result will
+     * be the same, it does not matter in which order the elements are combined. Generally binary
+     * operators aren't associative, i.e. the result may differ if elements are combined in a different
+     * order.
+     * <p>
+     * We say that this Traversable and the associative combine operation form a
+     * <a href="https://en.wikipedia.org/wiki/Monoid" target="_blank">Monoid</a>.
+     * </li>
+     * </ul>
+     *
+     * Example:
+     *
+     * <pre> {@code
+     * // = 6
+     * Set(1, 2, 3).fold(0, (a, b) -> a + b);
+     * } </pre>
+     *
+     * @param zero    A zero element to start with.
+     * @param combine A function which combines elements.
+     * @return a folded value
+     * @throws NullPointerException if {@code combine} is null
+     */
+    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> combine) {
+        Objects.requireNonNull(combine, "combine is null");
+        return foldLeft(zero, combine);
+    }
+
+    /**
+     * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}.
+     * <p>
+     * Example:
+     *
+     * <pre> {@code
+     * // = "cba!"
+     * List("a", "b", "c").foldLeft("!", (xs, x) -> x + xs)
+     * } </pre>
+     *
+     * @param <U>     the type to fold over
+     * @param zero    A zero element to start with.
+     * @param combine A function which combines elements.
+     * @return a folded value
+     * @throws NullPointerException if {@code combine} is null
+     */
     @Override
-    default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
+    default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine) {
+        Objects.requireNonNull(combine, "combine is null");
         U xs = zero;
         for (T x : this) {
-            xs = f.apply(xs, x);
+            xs = combine.apply(xs, x);
         }
         return xs;
     }
 
-    @Override
-    <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f);
+    /**
+     * Folds this elements from the right, starting with {@code zero} and successively calling {@code combine}.
+     * <p>
+     * Example:
+     *
+     * <pre> {@code
+     * // = "!cba"
+     * List("a", "b", "c").foldRight("!", (x, xs) -> xs + x)
+     * } </pre>
+     *
+     * @param <U>     the type of the folded value
+     * @param zero    A zero element to start with.
+     * @param combine A function which combines elements.
+     * @return a folded value
+     * @throws NullPointerException if {@code combine} is null
+     */
+    <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine);
 
     /**
      * Performs an action on each element. In contrast to {@link #forEach(Consumer)},
@@ -1145,6 +1216,33 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
+     * The order of element iteration is undetermined.
+     *
+     * @param op A BiFunction of type T
+     * @return the reduced value.
+     * @throws NoSuchElementException if this is empty
+     * @throws NullPointerException   if {@code op} is null
+     */
+    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        return reduceLeft(op);
+    }
+
+    /**
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op}.
+     * The order of element iteration is undetermined.
+     *
+     * @param op A BiFunction of type T
+     * @return Some of reduced value or None if the Foldable is empty.
+     * @throws NullPointerException if {@code op} is null
+     */
+    default Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op) {
+        Objects.requireNonNull(op, "op is null");
+        return reduceLeftOption(op);
+    }
+
+    /**
      * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
      *
      * @param op A BiFunction of type T
@@ -1152,20 +1250,20 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    @Override
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return iterator().reduceLeft(op);
     }
 
     /**
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the left.
+     * <br>
      * Shortcut for {@code isEmpty() ? Option.none() : Option.some(reduceLeft(op))}.
      *
      * @param op A BiFunction of type T
-     * @return a reduced value
+     * @return Some of reduced value or None if the Traversable is empty.
      * @throws NullPointerException if {@code op} is null
      */
-    @Override
     default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return isEmpty() ? Option.none() : Option.some(reduceLeft(op));
@@ -1179,7 +1277,6 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
@@ -1190,13 +1287,14 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     /**
+     * Accumulates the elements of this Traversable by successively calling the given operation {@code op} from the right.
+     * <br>
      * Shortcut for {@code isEmpty() ? Option.none() : Option.some(reduceRight(op))}.
      *
      * @param op An operation of type T
-     * @return a reduced value
+     * @return Some of reduced value or None.
      * @throws NullPointerException if {@code op} is null
      */
-    @Override
     default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return isEmpty() ? Option.none() : Option.some(reduceRight(op));
