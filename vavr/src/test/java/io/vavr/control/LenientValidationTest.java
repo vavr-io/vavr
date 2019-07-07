@@ -204,4 +204,12 @@ public class LenientValidationTest extends AbstractValueTest {
         assertThat(invalid.orElse("ok").getValue()).isEqualTo(Option.of("ok"));
     }
 
+    // -- toString
+
+    @Test
+    public void shouldReturnCorrectStringForToString() {
+        assertThat(LenientValidation.fromNullable(List.of("error"), "test").toString())
+                .isEqualTo("LenientValidation(List(error), Some(test))");
+    }
+
 }
