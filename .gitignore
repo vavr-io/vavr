@@ -1,31 +1,27 @@
-# -- Maven
-target
-*.versionsBackup
+# -- Mac OS
+.DS_Store
+*.bak
 
 # -- Gradle
-.gradle
-build
+.gradle/
+build/
 
 # -- Eclipse
 .classpath
 .project
 .settings
-bin
+bin/
 
 # -- IntelliJ IDEA
-.idea
+.idea/
+out/
 *.iml
 
 # -- Visual Studio Code
-.vscode
-
-# -- Mac OS
-.DS_Store
-*.log
-
-# -- Java
-hs_err_pid*
-*.class
+.vscode/
 
 # -- Emacs
 .#*
+
+# -- VAVR build files
+generator/bin/

@@ -1,0 +1,190 @@
+/*
+ * Some Gradle tasks we use:
+ *
+ * - Build: `./gradlew check`
+ *   | test reports: ./build/reports/tests/test/index.html
+ *   | coverage reports: ./build/reports/jacoco/test/html/index.html
+ * 
+ * - Javadoc (linting): `./gradlew javadoc`
+ * 
+ * - Release: `./gradlew release --info`
+ */
+plugins {
+    id "net.researchgate.release" version "2.8.1"
+}
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+ext.ammoniteScalaVersion = '2.12' // Currently, generator/Generator.sc does not build with Scala 2.13
+ext.ammoniteVersion = '1.6.9'
+ext.assertjVersion = '3.11.1'
+ext.junitVersion = '4.13-beta-3'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+allprojects {
+    group = 'io.vavr'
+    version = '1.0.0-SNAPSHOT'
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/main/java', 'src-gen/main/java']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java', 'src-gen/test/java']
+        }
+    }
+}
+
+task generateSources() {
+    delete 'src-gen'
+    def targetDir = file("generator/bin")
+    if (!targetDir.exists()) {
+        targetDir.mkdirs()
+    }
+    def targetFile = new File(targetDir, "amm-${ammoniteScalaVersion}-${ammoniteVersion}.jar")
+    if (!targetFile.exists()) {
+        def sourceUrl = "https://github.com/lihaoyi/Ammonite/releases/download/${ammoniteVersion}/${ammoniteScalaVersion}-${ammoniteVersion}"
+        ant.get(src: sourceUrl, dest: targetFile)
+    }
+    javaexec {
+        main = "-jar"
+        args = [targetFile, "generator/Generator.sc"]
+    }
+}
+
+compileJava {
+    dependsOn 'generateSources'
+    sourceCompatibility = 8
+    targetCompatibility = 8
+    options.encoding = 'UTF-8'
+    options.compilerArgs = [ '-Xlint:all', '-Werror' ]
+}
+
+dependencies {
+    testCompile "junit:junit:$junitVersion"
+    testCompile "org.assertj:assertj-core:$assertjVersion"
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true
+    }
+}
+
+check.dependsOn jacocoTestReport
+
+jar {
+    manifest {
+        attributes('Automatic-Module-Name': 'io.vavr')
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+task testSourcesJar(type: Jar) {
+    from sourceSets.test.allSource
+    classifier = 'test-sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+artifacts {
+    archives javadocJar, sourcesJar, testSourcesJar
+}
+
+// Requirements:
+//
+// - Get public key ID `gpg --list-keys --keyid-format SHORT`
+// - Export key `gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg`
+// - Add the following properties to ~/.gradle/gradle.properties
+//      signing.keyId=0ABCDEF
+//      signing.password=password
+//      signing.secretKeyRingFile=/absolute/path/to/.gnupg/secring.gpg
+//
+signing {
+    required { !version.endsWith("-SNAPSHOT") }
+    sign configurations.archives
+}
+
+// Requirements:
+//
+// - Add the following properties to ~/.gradle/gradle.properties
+//     ossrhUsername=<username>
+//     ossrhPassword=<password>
+//
+uploadArchives {
+    repositories {
+        mavenDeployer {
+
+            def sonatypeUser = project.hasProperty('ossrhUsername') ? ossrhUsername : ''
+            def sonatypePass = project.hasProperty('ossrhPassword') ? ossrhPassword : ''
+
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: sonatypeUser, password: sonatypePass)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: sonatypeUser, password: sonatypePass)
+            }
+
+            // Generate Sonatype conform .pom for Bintray Maven-sync, see https://central.sonatype.org/pages/requirements.html
+            pom.project {
+                name = project.name
+                description = "Vavr is an object-functional library for Java 8+"
+                url = 'https://www.vavr.io'
+                inceptionYear '2014'
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        name = 'Daniel Dietrich'
+                        email = 'cafebab3@gmail.com'
+                        organization = 'Vavr'
+                        organizationUrl = 'https://github.com/vavr-io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                    developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                    url = 'https://github.com/vavr-io/vavr/tree/master'
+                }
+            }
+        }
+    }
+}
+
+release {
+    buildTasks = ['build']
+    tagTemplate = '$name-$version'
+    git {
+        requireBranch = ''
+        pushToRemote = 'origin'
+        pushToCurrentBranch = true
+    }
+}
+
+afterReleaseBuild.dependsOn uploadArchives
