@@ -31,18 +31,18 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     private final Seq<E> errors;
     private final Option<T> value;
 
-    private LenientValidation(Seq<E> errors, Option<T> value) {
+    private LenientValidation(Iterable<E> errors, Option<T> value) {
         Objects.requireNonNull(errors, "errors is null");
         Objects.requireNonNull(value, "value is null");
-        this.errors = errors;
+        this.errors = List.ofAll(errors);
         this.value = value;
     }
 
-    public static <E, T> LenientValidation<E, T> of(Seq<E> errors, Option<T> value) {
+    public static <E, T> LenientValidation<E, T> of(Iterable<E> errors, Option<T> value) {
         return new LenientValidation<>(errors, value);
     }
 
-    public static <E, T> LenientValidation<E, T> fromNullable(Seq<E> errors, T value) {
+    public static <E, T> LenientValidation<E, T> fromNullable(Iterable<E> errors, T value) {
         return new LenientValidation<>(errors, Option.of(value));
     }
 
@@ -50,7 +50,7 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
         return of(List.empty(), Option.some(value));
     }
 
-    public static <E, T> LenientValidation<E, T> invalid(Seq<E> errors) {
+    public static <E, T> LenientValidation<E, T> invalid(Iterable<E> errors) {
         return fromNullable(errors, null);
     }
 
