@@ -32,6 +32,10 @@ cache:
 
 before_install: unset _JAVA_OPTIONS
 
+script:
+- ./gradlew check
+- if [ -n "$(git status -su src-gen)" ]; then exit 1; fi
+
 after_success:
 - bash <(curl -s https://codecov.io/bash)
 - if [[ -n $DEPLOY ]]; then ./gradlew uploadArchives; fi
