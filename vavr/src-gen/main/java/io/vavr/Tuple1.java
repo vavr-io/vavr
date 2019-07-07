@@ -34,7 +34,6 @@ import java.util.function.Function;
  * A tuple of one element which can be seen as cartesian product of one component.
  *
  * @param <T1> type of the 1st element
- * @author Daniel Dietrich
  */
 public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializable {
 

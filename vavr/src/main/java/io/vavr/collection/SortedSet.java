@@ -40,7 +40,6 @@ import java.util.function.*;
  * </ul>
  *
  * @param <T> Component type
- * @author Daniel Dietrich
  */
 public interface SortedSet<T> extends Set<T>, Ordered<T> {
 

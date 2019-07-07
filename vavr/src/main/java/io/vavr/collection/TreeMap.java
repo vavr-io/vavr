@@ -36,7 +36,6 @@ import java.util.stream.Collector;
  *
  * @param <K> Key type
  * @param <V> Value type
- * @author Daniel Dietrich
  */
 // DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
 public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {

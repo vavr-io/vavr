@@ -35,7 +35,6 @@ import java.util.function.*;
  * Efficient {@code head()}, {@code tail()}, and {@code isEmpty()} methods are characteristic for linear sequences.
  *
  * @param <T> component type
- * @author Daniel Dietrich
  */
 public interface LinearSeq<T> extends Seq<T> {
 

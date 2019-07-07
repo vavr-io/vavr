@@ -32,7 +32,6 @@ import java.util.function.Consumer;
  * <strong>INTERNAL API - This class is subject to change.</strong>
  *
  * @param <T> Result of the computation.
- * @author Daniel Dietrich
  */
 @SuppressWarnings("deprecation")
 final class FutureImpl<T> implements Future<T> {

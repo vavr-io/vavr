@@ -39,7 +39,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * The implementation is based on a `bit-mapped trie`, a very wide and shallow tree (i.e. depth ≤ 6).
  *
  * @param <T> Component type of the Vector.
- * @author Ruslan Sennov, Pap Lőrinc
  */
 public final class Vector<T> implements IndexedSeq<T>, Serializable {
     private static final long serialVersionUID = 1L;

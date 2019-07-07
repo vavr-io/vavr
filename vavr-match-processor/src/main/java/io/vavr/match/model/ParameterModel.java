@@ -25,8 +25,6 @@ import javax.lang.model.util.Elements;
 
 /**
  * Representation of a method parameter.
- *
- * @author Daniel Dietrich
  */
 public class ParameterModel {
 

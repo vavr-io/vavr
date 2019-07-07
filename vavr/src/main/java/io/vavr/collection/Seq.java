@@ -111,7 +111,6 @@ import java.util.function.*;
  * </ul>
  *
  * @param <T> Component type
- * @author Daniel Dietrich
  */
 public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Serializable {
 

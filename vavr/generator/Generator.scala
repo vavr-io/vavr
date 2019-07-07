@@ -1426,7 +1426,6 @@ def generateMainClasses(): Unit = {
          *
          * As with all Vavr Values, the result of a For-comprehension can be converted
          * to standard Java library and Vavr types.
-         * @author Daniel Dietrich
          */
         public final class API {
 
@@ -1524,7 +1523,6 @@ def generateMainClasses(): Unit = {
            * Represents a function with ${arguments(i)}.
            ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the function")("\n")}
            * @param <R> return type of the function
-           * @author Daniel Dietrich
            */
           @FunctionalInterface
           public interface $className$fullGenerics extends $Serializable$additionalExtends {
@@ -1952,7 +1950,6 @@ def generateMainClasses(): Unit = {
         /**
          * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
-         * @author Daniel Dietrich
          */
         public final class $className$generics implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
 
@@ -2334,8 +2331,6 @@ def generateMainClasses(): Unit = {
       xs"""
         /**
          * The base interface of all tuples.
-         *
-         * @author Daniel Dietrich
          */
         public interface Tuple {
 
@@ -2420,8 +2415,6 @@ def generateMainClasses(): Unit = {
 
       /**
        * Helper to replace reflective array access.
-       *
-       * @author Pap Lőrinc
        */
       interface ArrayType<T> {
           @SuppressWarnings("unchecked")

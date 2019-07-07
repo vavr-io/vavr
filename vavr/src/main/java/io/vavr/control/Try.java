@@ -52,7 +52,6 @@ import static io.vavr.control.TryModule.sneakyThrow;
  * <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/reflection/proxy.html">Dynamic Proxy Classes</a>.
  *
  * @param <T> Value type in the case of success.
- * @author Daniel Dietrich
  */
 public interface Try<T> extends Value<T>, Serializable {
 
@@ -1119,7 +1118,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * A succeeded Try.
      *
      * @param <T> component type of this Success
-     * @author Daniel Dietrich
      */
     final class Success<T> implements Try<T>, Serializable {
 
@@ -1186,7 +1184,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * A failed Try.
      *
      * @param <T> component type of this Failure
-     * @author Daniel Dietrich
      */
     final class Failure<T> implements Try<T>, Serializable {
 

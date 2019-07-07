@@ -38,7 +38,6 @@ import java.util.function.Function;
  *
  * @param <T1> type of the 1st element
  * @param <T2> type of the 2nd element
- * @author Daniel Dietrich
  */
 public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, Serializable {
 

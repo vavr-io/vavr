@@ -123,7 +123,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
  *
  * @param <T> Component type of the List
- * @author Daniel Dietrich
  */
 public interface List<T> extends LinearSeq<T> {
 

@@ -110,7 +110,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 34 ff.). Cambridge, 2003.
  *
  * @param <T> component type of this Stream
- * @author Daniel Dietrich, Jörgen Andersson, Ruslan Sennov
  */
 public interface Stream<T> extends LinearSeq<T> {
 

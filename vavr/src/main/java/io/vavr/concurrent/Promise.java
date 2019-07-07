@@ -73,8 +73,7 @@ import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
  * <li>{@link #trySuccess(Object)}</li>
  * </ul>
  *
- * @param <T> The result type of the underlying {@code Future}.
- * @author Daniel Dietrich
+ * @param <T> The result type of the underlying {@code Future}
  */
 public interface Promise<T> {
 
@@ -327,7 +326,6 @@ public interface Promise<T> {
  * Internal {@code Promise} implementation.
  *
  * @param <T> result type
- * @author Daniel Dietrich
  */
 final class PromiseImpl<T> implements Promise<T> {
 

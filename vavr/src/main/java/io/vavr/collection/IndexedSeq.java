@@ -36,7 +36,6 @@ import java.util.function.*;
  * Efficient random access is characteristic for indexed sequences.
  *
  * @param <T> component type
- * @author Daniel Dietrich
  */
 public interface IndexedSeq<T> extends Seq<T> {
 

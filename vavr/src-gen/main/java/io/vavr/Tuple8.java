@@ -41,7 +41,6 @@ import java.util.function.Function;
  * @param <T6> type of the 6th element
  * @param <T7> type of the 7th element
  * @param <T8> type of the 8th element
- * @author Daniel Dietrich
  */
 public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comparable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>, Serializable {
 

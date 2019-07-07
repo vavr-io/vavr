@@ -29,8 +29,6 @@ import java.util.Collection;
 
 /**
  * Helper to replace reflective array access.
- *
- * @author Pap Lőrinc
  */
 interface ArrayType<T> {
     @SuppressWarnings("unchecked")

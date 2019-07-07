@@ -46,7 +46,6 @@ import java.util.function.Supplier;
  * href="http://www.scala-lang.org/api/current/#scala.Option">Scala</a>.
  *
  * @param <T> The type of the optional value.
- * @author Daniel Dietrich
  */
 public interface Option<T> extends Value<T>, Serializable {
 
@@ -463,7 +462,6 @@ public interface Option<T> extends Value<T>, Serializable {
      * {@link Option#of(Object)} is sufficient.
      *
      * @param <T> The type of the optional value.
-     * @author Daniel Dietrich
      */
     final class Some<T> implements Option<T>, Serializable {
 
@@ -515,7 +513,6 @@ public interface Option<T> extends Value<T>, Serializable {
      * None is a singleton representation of the undefined {@link Option}.
      *
      * @param <T> The type of the optional value.
-     * @author Daniel Dietrich
      */
     final class None<T> implements Option<T>, Serializable {
 

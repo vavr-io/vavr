@@ -29,8 +29,6 @@ import java.util.function.Supplier;
  * <p>
  * This helper class provides methods that return views on Java collections.
  * The view creation and back conversion take O(1).
- *
- * @author Daniel Dietrich
  */
 class JavaConverters {
 

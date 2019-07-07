@@ -38,7 +38,6 @@ import java.util.function.Function;
  * @param <T3> type of the 3rd element
  * @param <T4> type of the 4th element
  * @param <T5> type of the 5th element
- * @author Daniel Dietrich
  */
 public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Comparable<Tuple5<T1, T2, T3, T4, T5>>, Serializable {
 

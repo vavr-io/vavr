@@ -25,8 +25,6 @@ import java.util.function.Supplier;
 
 /**
  * Interface for checkable properties, allowing composition via {@linkplain #and(Checkable)} and {@linkplain #or(Checkable)}.
- *
- * @author Daniel Dietrich
  */
 @FunctionalInterface
 public interface Checkable {

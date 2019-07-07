@@ -31,8 +31,6 @@ import static io.vavr.API.Tuple;
 
 /**
  * INTERNAL: Common {@code Map} functions (not intended to be public).
- *
- * @author Ruslan Sennov, Daniel Dietrich
  */
 final class Maps {
 

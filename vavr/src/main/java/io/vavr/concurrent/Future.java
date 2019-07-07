@@ -51,7 +51,6 @@ import java.util.function.*;
  * Future are performed with the failed result.
  *
  * @param <T> Type of the computation result.
- * @author Daniel Dietrich
  */
 @SuppressWarnings("deprecation")
 public interface Future<T> extends Value<T> {

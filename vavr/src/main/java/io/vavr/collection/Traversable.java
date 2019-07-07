@@ -151,7 +151,6 @@ import java.util.stream.DoubleStream;
  * </ul>
  *
  * @param <T> Component type
- * @author Daniel Dietrich and others
  */
 @SuppressWarnings("deprecation")
 public interface Traversable<T> extends Foldable<T>, Value<T> {

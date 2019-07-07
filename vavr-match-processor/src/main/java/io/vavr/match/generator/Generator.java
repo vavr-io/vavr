@@ -35,8 +35,6 @@ import static java.util.stream.Collectors.toList;
 
 /**
  * Code generator for structural pattern matching patterns.
- *
- * @author Daniel Dietrich
  */
 public class Generator {
 

@@ -44,7 +44,6 @@ import static io.vavr.collection.RedBlackTree.Color.RED;
  * </ul>
  *
  * @param <T> Component type
- * @author Daniel Dietrich
  */
 interface RedBlackTree<T> extends Iterable<T> {
 

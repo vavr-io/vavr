@@ -29,8 +29,6 @@ import static org.assertj.core.api.Assertions.fail;
 
 /**
  * Small utility that allows to test code which write to standard error or standard out.
- *
- * @author Sebastian Zarnekow
  */
 public class OutputTester {
 

@@ -25,7 +25,6 @@ import java.util.Comparator;
  * An ordered collection interface.
  *
  * @param <T> Component type
- * @author Ruslan Sennov, Daniel Dietrich
  */
 public interface Ordered<T> {
 
