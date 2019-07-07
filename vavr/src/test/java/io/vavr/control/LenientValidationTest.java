@@ -227,4 +227,18 @@ public class LenientValidationTest extends AbstractValueTest {
                 .isEqualTo(invalid);
     }
 
+    // -- mapError
+
+    @Test
+    public void shouldMapErrorOnValid() {
+        assertThat(LenientValidation.valid(5).mapError(x -> 2))
+                .isEqualTo(LenientValidation.valid(5));
+    }
+
+    @Test
+    public void shouldMapErrorOnInvalid() {
+        assertThat(LenientValidation.invalid(List.of(2, 4)).mapError(x -> x + 1))
+                .isEqualTo(LenientValidation.invalid(List.of(3, 5)));
+    }
+
 }
