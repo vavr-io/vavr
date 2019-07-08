@@ -49,18 +49,18 @@ sourceSets {
 
 task generateSources() {
     delete 'src-gen'
-    def targetDir = file("generator/bin")
-    if (!targetDir.exists()) {
-        targetDir.mkdirs()
+    def ammoniteDir = file("generator/bin")
+    if (!ammoniteDir.exists()) {
+        ammoniteDir.mkdirs()
     }
-    def targetFile = new File(targetDir, "amm-${ammoniteScalaVersion}-${ammoniteVersion}.jar")
-    if (!targetFile.exists()) {
-        def sourceUrl = "https://github.com/lihaoyi/Ammonite/releases/download/${ammoniteVersion}/${ammoniteScalaVersion}-${ammoniteVersion}"
-        ant.get(src: sourceUrl, dest: targetFile)
+    def ammoniteJar = new File(ammoniteDir, "amm-${ammoniteScalaVersion}-${ammoniteVersion}.jar")
+    if (!ammoniteJar.exists()) {
+        def ammoniteReleaseUrl = "https://github.com/lihaoyi/Ammonite/releases/download/${ammoniteVersion}/${ammoniteScalaVersion}-${ammoniteVersion}"
+        ant.get(src: ammoniteReleaseUrl, dest: ammoniteJar)
     }
     javaexec {
         main = "-jar"
-        args = [targetFile, "generator/Generator.sc"]
+        args = [ammoniteJar, "generator/Generator.sc"]
     }
 }
 
