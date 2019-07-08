@@ -18,8 +18,10 @@ matrix:
   - jdk: openjdk11
   - jdk: openjdk12
     env: DEPLOY=true
+  - jdk: openjdk-13
   - jdk: openjdk-ea
   allow_failures:
+  - jdk: openjdk-13
   - jdk: openjdk-ea
 
 before_cache:
