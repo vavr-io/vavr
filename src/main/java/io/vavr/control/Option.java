@@ -390,7 +390,7 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.
+     * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, otherwise returns a {@code None}.
      *
      * @param mapper A value mapper
      * @param <U>    The new value type
