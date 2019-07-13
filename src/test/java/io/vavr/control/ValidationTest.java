@@ -19,7 +19,6 @@
 package io.vavr.control;
 
 import io.vavr.AbstractValueTest;
-import io.vavr.Value;
 import io.vavr.collection.CharSeq;
 import io.vavr.collection.Seq;
 import io.vavr.collection.List;
@@ -48,7 +47,7 @@ public class ValidationTest extends AbstractValueTest {
 
     @SafeVarargs
     @Override
-    protected final <T> Value<T> of(T... elements) {
+    protected final <T> Validation<Object, T> of(T... elements) {
         return Validation.valid(elements[0]);
     }
 

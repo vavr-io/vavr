@@ -18,13 +18,11 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Function1;
-import io.vavr.PartialFunction;
-import io.vavr.Tuple3;
-import io.vavr.Tuple2;
+import io.vavr.*;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.Comparator;
 import java.util.function.*;
 
@@ -80,6 +78,7 @@ import java.util.function.*;
  *
  * @param <T> Component type
  */
+@SuppressWarnings("deprecation")
 public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializable {
 
     long serialVersionUID = 1L;

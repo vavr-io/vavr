@@ -18,10 +18,10 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
+import io.vavr.*;
 import io.vavr.control.Option;
 
+import java.lang.Iterable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;

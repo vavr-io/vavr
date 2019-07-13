@@ -21,9 +21,12 @@ package io.vavr.collection;
 import io.vavr.*;
 import io.vavr.control.Option;
 
+import java.lang.Iterable;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.Collector;
+import java.util.stream.StreamSupport;
 
 import static io.vavr.collection.BigDecimalHelper.areEqual;
 import static io.vavr.collection.BigDecimalHelper.asDecimal;
@@ -150,7 +153,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * Creates an Iterator based on the given Iterable. This is a convenience method for
+     * Creates a {@link io.vavr.collection.Iterator} based on the given {@link Iterable}. This is a convenience method for
      * {@code Iterator.ofAll(iterable.iterator()}.
      *
      * @param iterable A {@link Iterable}
@@ -1268,7 +1271,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(this.map(unzipper));
+            final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(() -> map(unzipper));
             return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
         }
     }
@@ -1280,7 +1283,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty(), empty());
         } else {
-            final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> source = Stream.ofAll(this.map(unzipper));
+            final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> source = Stream.ofAll(map(unzipper));
             return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator(), source.map(t -> (T3) t._3).iterator());
         }
     }
@@ -1587,12 +1590,13 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     /**
-     * FlatMaps the elements of this Iterator to Iterables, which are iterated in the order of occurrence.
+     * Maps the elements of this Iterator to Iterables and concats their iterators.
      *
      * @param mapper A mapper
-     * @param <U>    Component type
-     * @return A new Iterable
+     * @param <U>    Component type of the resulting Iterator
+     * @return A new Iterator
      */
+    // DEV-NOTE: the shorter implementation `concat(map(mapper))` does not perform well
     @Override
     default <U> Iterator<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");

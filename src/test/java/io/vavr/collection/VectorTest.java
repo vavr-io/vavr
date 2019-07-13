@@ -19,7 +19,6 @@
 package io.vavr.collection;
 
 import io.vavr.Serializables;
-import io.vavr.Value;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
 import org.junit.Test;
@@ -340,7 +339,7 @@ public class VectorTest extends AbstractIndexedSeqTest {
 
     @Test
     public void shouldReturnSelfOnConvertToVector() {
-        final Value<Integer> value = of(1, 2, 3);
+        final Vector<Integer> value = of(1, 2, 3);
         assertThat(value.toVector()).isSameAs(value);
     }
 }

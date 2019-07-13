@@ -3,7 +3,6 @@ package io.vavr.collection;
 import io.vavr.Function1;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
-import io.vavr.Value;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
@@ -18,8 +17,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
@@ -509,7 +506,7 @@ public class BitSetTest extends AbstractSortedSetTest {
     @Override
     @Test
     public void shouldConvertToSortedSetWithoutComparatorOnComparable() {
-        final Value<Integer> value = BitSet.of(3, 7, 1, 15, 0);
+        final BitSet<Integer> value = BitSet.of(3, 7, 1, 15, 0);
         final Set<Integer> set = value.toSortedSet();
         if (value.isSingleValued()) {
             assertThat(set).isEqualTo(TreeSet.of(3));
@@ -523,7 +520,7 @@ public class BitSetTest extends AbstractSortedSetTest {
     @Test
     @Override
     public void shouldConvertToPriorityQueueUsingImplicitComparator() {
-        final Value<Integer> value = BitSet.of(1, 3, 2);
+        final BitSet<Integer> value = BitSet.of(1, 3, 2);
         final PriorityQueue<Integer> queue = value.toPriorityQueue();
         if (value.isSingleValued()) {
             assertThat(queue).isEqualTo(PriorityQueue.of(1));
@@ -536,7 +533,7 @@ public class BitSetTest extends AbstractSortedSetTest {
     @Override
     public void shouldConvertToPriorityQueueUsingExplicitComparator() {
         final Comparator<Integer> comparator = Comparator.naturalOrder();
-        final Value<Integer> value = BitSet.of(1, 3, 2);
+        final BitSet<Integer> value = BitSet.of(1, 3, 2);
         final PriorityQueue<Integer> queue = value.toPriorityQueue(comparator);
         if (value.isSingleValued()) {
             assertThat(queue).isEqualTo(PriorityQueue.of(comparator, 1));

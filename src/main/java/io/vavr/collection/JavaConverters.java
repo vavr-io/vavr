@@ -98,6 +98,7 @@ class JavaConverters {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @GwtIncompatible("reflection is not supported")
     static class ListView<T, C extends Seq<T>> extends HasDelegate<C> implements java.util.List<T> {
 

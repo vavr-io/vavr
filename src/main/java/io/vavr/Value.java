@@ -37,7 +37,6 @@ import io.vavr.collection.Stream;
 import io.vavr.collection.TreeMap;
 import io.vavr.collection.TreeSet;
 import io.vavr.collection.Vector;
-import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
@@ -45,6 +44,7 @@ import io.vavr.control.Validation;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.lang.Iterable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.*;
@@ -171,13 +171,15 @@ import static io.vavr.API.*;
  * <strong>Please note:</strong> flatMap signatures are manifold and have to be declared by subclasses of Value.
  *
  * @param <T> The type of the wrapped value.
+ * @deprecated Superseded by io.vavr.Iterable
  */
+@Deprecated
 public interface Value<T> extends Iterable<T> {
 
     /**
      * Narrows a widened {@code Value<? extends T>} to {@code Value<T>}
      * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * types are covariant.
      *
      * @param value A {@code Value}.
      * @param <T>   Component type of the {@code Value}.
@@ -1514,6 +1516,7 @@ public interface Value<T> extends Iterable<T> {
 
 }
 
+@SuppressWarnings("deprecation")
 interface ValueModule {
     
     static <T, R extends Traversable<T>> R toTraversable(

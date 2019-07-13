@@ -22,6 +22,7 @@ import io.vavr.*;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.*;
 import java.util.function.*;
 
@@ -85,6 +86,7 @@ import java.util.function.*;
  * @param <K> Key type
  * @param <V> Value type
  */
+@SuppressWarnings("deprecation")
 public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, Traversable<V>>, Serializable {
 
     long serialVersionUID = 1L;

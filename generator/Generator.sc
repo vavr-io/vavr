@@ -57,6 +57,7 @@ def generateMainClasses(): Unit = {
 
     def genAPI(im: ImportManager, packageName: String, className: String): String = {
 
+      val IterableType = im.getType("java.lang.Iterable")
       val OptionType = im.getType("io.vavr.control.Option")
       val IteratorType = im.getType("io.vavr.collection.Iterator")
       val EitherType = im.getType("io.vavr.control.Either")
@@ -96,7 +97,7 @@ def generateMainClasses(): Unit = {
       val PredicateType = im.getType("java.util.function.Predicate")
       val SupplierType = im.getType("java.util.function.Supplier")
 
-      val monadicTypesFor = List("Iterable", OptionType, FutureType, TryType, EitherType, ListType)
+      val monadicTypesFor = List(IterableType, OptionType, FutureType, TryType, EitherType, ListType)
 
       def genTraversableAliases(traversableType: String, returnType: String, name: String) = xs"""
         // -- $name
@@ -758,18 +759,18 @@ def generateMainClasses(): Unit = {
            *             .yield(reply -&gt; person + ", " + tweet + ", " + reply)));
            * </code></pre>
            *
-           * @param ts An iterable
-           * @param f A function {@code T -> Iterable<U>}
+           * @param ts A {@link $IterableType}
+           * @param f A function {@code T -> $IterableType<U>}
            * @param <T> element type of {@code ts}
            * @param <U> component type of the resulting {@code Iterator}
            * @return A new Iterator
            */
-          public static <T, U> $IteratorType<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
+          public static <T, U> $IteratorType<U> For($IterableType<T> ts, Function<? super T, ? extends $IterableType<U>> f) {
               return $IteratorType.ofAll(ts).flatMap(f);
           }
 
           ${monadicTypesFor.gen(mtype => (1 to N).gen(i => {
-            val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
+            val forClassName = if (mtype.endsWith("Iterable")) { s"For$i" } else { s"For$i$mtype" }
             val generics = (1 to i).gen(j => s"T$j")(", ")
             val params = (1 to i).gen(j => s"${if(mtype == "Either") mtype + s"<L, T$j>" else mtype + s"<T$j>"} ts$j")(", ")
           xs"""
@@ -788,9 +789,9 @@ def generateMainClasses(): Unit = {
           })("\n\n"))("\n\n")}
 
            ${monadicTypesFor.gen(mtype => (1 to N).gen(i => {
-            val rtype = if (mtype == "Iterable") { IteratorType } else { mtype }
-            val cons: String => String = if (mtype == "Iterable") { m => s"$IteratorType.ofAll($m)" } else { m => m }
-            val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
+            val rtype = if (mtype.endsWith("Iterable")) { IteratorType } else { mtype }
+            val cons: String => String = if (mtype.endsWith("Iterable")) { m => s"$IteratorType.ofAll($m)" } else { m => m }
+            val forClassName = if (mtype.endsWith("Iterable")) { s"For$i" } else { s"For$i$mtype" }
             val generics = (1 to i).gen(j => s"T$j")(", ")
             val functionType = i match {
               case 1 => FunctionType
@@ -2242,6 +2243,7 @@ def generateMainClasses(): Unit = {
      */
     def genBaseTuple(im: ImportManager, packageName: String, className: String): String = {
 
+      val IterableType = im.getType("java.lang.Iterable")
       val Map = im.getType("java.util.Map")
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("io.vavr.collection.Seq")
@@ -2314,10 +2316,10 @@ def generateMainClasses(): Unit = {
              * Turns a sequence of {@code Tuple$i} into a Tuple$i of {@code Seq}${(i > 1).gen("s")}.
              *
              ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type")("\n")}
-             * @param tuples an {@code Iterable} of tuples
+             * @param tuples a {@link $IterableType} of tuples
              * @return a tuple of ${i.numerus(s"{@link $Seq}")}.
              */
-            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
+            static <$generics> Tuple$i<$seqs> sequence$i($IterableType<? extends Tuple$i<$widenedGenerics>> tuples) {
                 $Objects.requireNonNull(tuples, "tuples is null");
                 final Stream<Tuple$i<$widenedGenerics>> s = $Stream.ofAll(tuples);
                 return new Tuple$i<>(${(1 to i).gen(j => s"s.map(Tuple$i::_$j)")(s", ")});
@@ -2395,6 +2397,7 @@ def generateMainClasses(): Unit = {
    */
   def genArrayTypes(): Unit = {
 
+    val IterableType = "java.lang.Iterable"
     val types = ListMap(
       "boolean" -> "Boolean",
       "byte" -> "Byte",
@@ -2505,7 +2508,7 @@ def generateMainClasses(): Unit = {
               return result;
           }
 
-          /** Store the content of an iterable in an array */
+          /** Store the content of an iterator in an array */
           static Object[] asArray(java.util.Iterator<?> it, int length) {
               final Object[] array = new Object[length];
               for (int i = 0; i < length; i++) {
@@ -2515,7 +2518,7 @@ def generateMainClasses(): Unit = {
           }
 
           @SuppressWarnings("unchecked")
-          static <T> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
+          static <T> T asPrimitives(Class<?> primitiveClass, $IterableType<?> values) {
               final Object[] array = Array.ofAll(values).toJavaArray();
               final ArrayType<T> type = of((Class<T>) primitiveClass);
               final Object results = type.newInstance(array.length);
@@ -2720,6 +2723,9 @@ def generateTestClasses(): Unit = {
       }
 
       def genAliasesTests(im: ImportManager, packageName: String, className: String): String = {
+
+        val IterableType = im.getType("java.lang.Iterable")
+
         xs"""
           ${(0 to N).gen(i => {
             val params = (1 to i).gen(j => s"v$j")(", ")
@@ -2785,11 +2791,11 @@ def generateTestClasses(): Unit = {
 
           ${genSimpleAliasTest("Invalid", "new Error()")}
 
-          ${genMediumAliasTest("Char", "(Iterable<Character>) CharSeq", "'1'")}
+          ${genMediumAliasTest("Char", s"($IterableType<Character>) CharSeq", "'1'")}
 
-          ${genMediumAliasTest("CharArray", "(Iterable<Character>) CharSeq", "'1', '2', '3'")}
+          ${genMediumAliasTest("CharArray", s"($IterableType<Character>) CharSeq", "'1', '2', '3'")}
 
-          ${genMediumAliasTest("CharSeq", "(Iterable<Character>) CharSeq", "\"123\"")}
+          ${genMediumAliasTest("CharSeq", s"($IterableType<Character>) CharSeq", "\"123\"")}
 
           ${genTraversableTests("Array")}
           ${genTraversableTests("Vector")}
@@ -3943,8 +3949,6 @@ object Generator {
    * // val c = "C"
    * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
    * }}}
-   *
-   * @param iterable An Interable
    */
   implicit class IterableExtensions(iterable: Iterable[Any]) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =

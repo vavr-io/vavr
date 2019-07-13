@@ -18,19 +18,16 @@
  */
 package io.vavr.collection;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Ignore;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 import java.util.Spliterator;
 
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.reverseOrder;
 import static io.vavr.TestComparators.toStringComparator;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public abstract class AbstractSortedSetTest extends AbstractSetTest {
 

@@ -31,6 +31,7 @@ import org.assertj.core.api.*;
 import org.junit.Test;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.*;
 import java.util.Collections;
 import java.util.function.Function;

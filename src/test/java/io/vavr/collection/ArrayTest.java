@@ -18,11 +18,11 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Value;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
 import org.junit.Test;
 
+import java.lang.Iterable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
@@ -283,7 +283,7 @@ public class ArrayTest extends AbstractIndexedSeqTest {
 
     @Test
     public void shouldReturnSelfOnConvertToArray() {
-        Value<Integer> value = of(1, 2, 3);
+        Array<Integer> value = of(1, 2, 3);
         assertThat(value.toArray()).isSameAs(value);
     }
 }

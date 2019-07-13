@@ -23,6 +23,7 @@ import io.vavr.collection.ArrayModule.Combinations;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
