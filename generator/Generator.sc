@@ -1,9 +1,8 @@
-/*  __    __  __  __    __  ___
- * \  \  /  /    \  \  /  /  __/
- *  \  \/  /  /\  \  \/  /  /
- *   \____/__/  \__\____/__/
+/* ____  ______________  ________________________  __________
+ * \   \/   /      \   \/   /   __/   /      \   \/   /      \
+ *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
- * Copyright 2014-2019 Vavr, http://vavr.io
+ * Copyright 2019 Vavr, http://vavr.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -3726,12 +3725,11 @@ def generateTestClasses(): Unit = {
  */
 def genVavrFile(packageName: String, className: String, baseDir: String = TARGET_MAIN)(gen: (ImportManager, String, String) => String, knownSimpleClassNames: List[String] = List()) =
   genJavaFile(baseDir, packageName, className)(xraw"""
-    /*  __    __  __  __    __  ___
-     * \  \  /  /    \  \  /  /  __/
-     *  \  \/  /  /\  \  \/  /  /
-     *   \____/__/  \__\____/__/
+    /* ____  ______________  ________________________  __________
+     * \   \/   /      \   \/   /   __/   /      \   \/   /      \
+     *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
      *
-     * Copyright 2014-2019 Vavr, http://vavr.io
+     * Copyright 2019 Vavr, http://vavr.io
      *
      * Licensed under the Apache License, Version 2.0 (the "License");
      * you may not use this file except in compliance with the License.
