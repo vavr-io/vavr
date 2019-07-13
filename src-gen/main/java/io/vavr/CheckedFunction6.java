@@ -1,9 +1,8 @@
-/*  __    __  __  __    __  ___
- * \  \  /  /    \  \  /  /  __/
- *  \  \/  /  /\  \  \/  /  /
- *   \____/__/  \__\____/__/
+/* ____  ______________  ________________________  __________
+ * \   \/   /      \   \/   /   __/   /      \   \/   /      \
+ *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
- * Copyright 2014-2019 Vavr, http://vavr.io
+ * Copyright 2019 Vavr, http://vavr.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
