@@ -18,17 +18,17 @@
  */
 package io.vavr.collection;
 
-import io.vavr.PartialFunction;
-import io.vavr.Tuple2;
-import io.vavr.Tuple3;
-import io.vavr.Value;
+import io.vavr.*;
 import io.vavr.control.Option;
 
+import java.lang.Iterable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
 import java.util.function.*;
+import java.util.stream.Collector;
 import java.util.stream.DoubleStream;
+import java.util.stream.StreamSupport;
 
 /**
  * An interface for inherently recursive, multi-valued data structures. The order of elements is determined by
@@ -152,7 +152,7 @@ import java.util.stream.DoubleStream;
  * @param <T> Component type
  */
 @SuppressWarnings("deprecation")
-public interface Traversable<T> extends Foldable<T>, Value<T> {
+public interface Traversable<T> extends io.vavr.Iterable<T>, Foldable<T>, io.vavr.Value<T> {
 
     /**
      * Narrows a widened {@code Traversable<? extends T>} to {@code Traversable<T>}

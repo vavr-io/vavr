@@ -21,6 +21,7 @@ package io.vavr.collection;
 import io.vavr.Tuple2;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;

@@ -1,6 +1,5 @@
 package io.vavr.collection;
 
-import io.vavr.Value;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -242,7 +241,7 @@ public class LinkedHashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldReturnSelfOnConvertToLinkedSet() {
-        final Value<Integer> value = of(1, 2, 3);
+        final LinkedHashSet<Integer> value = of(1, 2, 3);
         assertThat(value.toLinkedSet()).isSameAs(value);
     }
 

@@ -18,16 +18,14 @@
  */
 package io.vavr.collection;
 
-import io.vavr.PartialFunction;
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
-import io.vavr.Tuple3;
+import io.vavr.*;
 import io.vavr.collection.List.Nil;
 import io.vavr.collection.ListModule.Combinations;
 import io.vavr.collection.ListModule.SplitAt;
 import io.vavr.control.Option;
 
 import java.io.*;
+import java.lang.Iterable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
@@ -1143,7 +1141,7 @@ public interface List<T> extends LinearSeq<T> {
         } else {
             final List<T> tail = tail();
             if (tail.isEmpty()) {
-                return of(this);
+                return List.of(this);
             } else {
                 final List<List<T>> zero = Nil.instance();
                 return distinct().foldLeft(zero, (xs, x) -> {

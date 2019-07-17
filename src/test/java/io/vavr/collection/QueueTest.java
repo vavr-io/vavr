@@ -18,7 +18,6 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Value;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
@@ -416,7 +415,7 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldReturnSelfOnConvertToQueue() {
-        final Value<Integer> value = of(1, 2, 3);
+        final Queue<Integer> value = of(1, 2, 3);
         assertThat(value.toQueue()).isSameAs(value);
     }
 

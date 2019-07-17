@@ -19,7 +19,6 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
-import io.vavr.Value;
 import io.vavr.Tuple2;
 import org.assertj.core.api.*;
 import org.junit.Test;
@@ -475,7 +474,7 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldReturnSelfOnConvertToSet() {
-        final Value<Integer> value = of(1, 2, 3);
+        final HashSet<Integer> value = of(1, 2, 3);
         assertThat(value.toSet()).isSameAs(value);
     }
 

@@ -26,6 +26,7 @@ import io.vavr.control.Option;
 import io.vavr.control.Try;
 import io.vavr.collection.List;
 
+import java.lang.Iterable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.*;
@@ -52,7 +53,7 @@ import java.util.function.*;
  * @param <T> Type of the computation result.
  */
 @SuppressWarnings("deprecation")
-public interface Future<T> extends Value<T> {
+public interface Future<T> extends io.vavr.Iterable<T>, Value<T> {
 
     /**
      * The default executor service is {@link ForkJoinPool#commonPool()}.

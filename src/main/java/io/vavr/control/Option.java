@@ -19,12 +19,12 @@
 package io.vavr.control;
 
 import io.vavr.PartialFunction;
-import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -46,7 +46,8 @@ import java.util.function.Supplier;
  *
  * @param <T> The type of the optional value.
  */
-public interface Option<T> extends Value<T>, Serializable {
+@SuppressWarnings("deprecation")
+public interface Option<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializable {
 
     long serialVersionUID = 1L;
 

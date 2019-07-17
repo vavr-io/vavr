@@ -123,7 +123,7 @@ interface ArrayType<T> {
         return result;
     }
 
-    /** Store the content of an iterable in an array */
+    /** Store the content of an iterator in an array */
     static Object[] asArray(java.util.Iterator<?> it, int length) {
         final Object[] array = new Object[length];
         for (int i = 0; i < length; i++) {
@@ -133,7 +133,7 @@ interface ArrayType<T> {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
+    static <T> T asPrimitives(Class<?> primitiveClass, java.lang.Iterable<?> values) {
         final Object[] array = Array.ofAll(values).toJavaArray();
         final ArrayType<T> type = of((Class<T>) primitiveClass);
         final Object results = type.newInstance(array.length);

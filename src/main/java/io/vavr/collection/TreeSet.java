@@ -22,6 +22,7 @@ import io.vavr.*;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
@@ -35,6 +36,7 @@ import java.util.stream.Collector;
  * @param <T> Component type
  */
 // DEV-NOTE: it is not possible to create an EMPTY TreeSet without a Comparator type in scope
+@SuppressWarnings("deprecation")
 public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     private static final long serialVersionUID = 1L;

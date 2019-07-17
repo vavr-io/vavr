@@ -20,22 +20,10 @@
 // CHECKSTYLE:OFF
 package io.vavr;
 
-import io.vavr.API.Match.Pattern;
-import io.vavr.API.Match.Pattern0;
-import io.vavr.API.Match.Pattern1;
-import io.vavr.API.Match.Pattern2;
-import io.vavr.API.Match.Pattern3;
-import io.vavr.API.Match.Pattern4;
-import io.vavr.API.Match.Pattern5;
-import io.vavr.API.Match.Pattern6;
-import io.vavr.API.Match.Pattern7;
-import io.vavr.API.Match.Pattern8;
+import io.vavr.API.Match.*;
 import io.vavr.collection.List;
 import io.vavr.concurrent.Future;
-import io.vavr.control.Either;
-import io.vavr.control.Option;
-import io.vavr.control.Try;
-import io.vavr.control.Validation;
+import io.vavr.control.*;
 
 /**
  * @deprecated Will be removed in the next major version, along with VAVR's pattern matching, in favor of Java's native pattern matching.

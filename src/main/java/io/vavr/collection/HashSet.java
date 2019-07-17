@@ -22,6 +22,7 @@ import io.vavr.*;
 import io.vavr.control.Option;
 
 import java.io.*;
+import java.lang.Iterable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
@@ -34,6 +35,7 @@ import java.util.stream.Collector;
  *
  * @param <T> Component type
  */
+@SuppressWarnings("deprecation")
 public final class HashSet<T> implements Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;

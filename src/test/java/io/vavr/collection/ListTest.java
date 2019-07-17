@@ -20,7 +20,6 @@ package io.vavr.collection;
 
 import io.vavr.Serializables;
 import io.vavr.Tuple;
-import io.vavr.Value;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
 import org.junit.Test;
@@ -419,7 +418,7 @@ public class ListTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldReturnSelfOnConvertToList() {
-        final Value<Integer> value = of(1, 2, 3);
+        final List<Integer> value = of(1, 2, 3);
         assertThat(value.toList()).isSameAs(value);
     }
 

@@ -18,12 +18,12 @@
  */
 package io.vavr.control;
 
-import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -55,7 +55,8 @@ import java.util.function.Supplier;
  * @param <L> The type of the Left value of an Either.
  * @param <R> The type of the Right value of an Either.
  */
-public interface Either<L, R> extends Value<R>, Serializable {
+@SuppressWarnings("deprecation")
+public interface Either<L, R> extends io.vavr.Iterable<R>, io.vavr.Value<R>, Serializable {
 
     long serialVersionUID = 1L;
 
@@ -602,7 +603,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
     @Deprecated
-    final class LeftProjection<L, R> implements Value<L> {
+    final class LeftProjection<L, R> implements io.vavr.Value<L> {
 
         private final Either<L, R> either;
 
@@ -857,7 +858,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
     @Deprecated
-    final class RightProjection<L, R> implements Value<R> {
+    final class RightProjection<L, R> implements io.vavr.Value<R> {
 
         private final Either<L, R> either;
 

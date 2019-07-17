@@ -24,6 +24,7 @@ import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 
 import java.io.Serializable;
+import java.lang.Iterable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -72,7 +73,8 @@ import java.util.function.Supplier;
  * @param <T> value type in the case of valid
  * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
  */
-public interface Validation<E, T> extends Value<T>, Serializable {
+@SuppressWarnings("deprecation")
+public interface Validation<E, T> extends io.vavr.Iterable<T>, Value<T>, Serializable {
 
     long serialVersionUID = 1L;
 
