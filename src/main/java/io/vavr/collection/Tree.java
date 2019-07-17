@@ -19,9 +19,6 @@
 package io.vavr.collection;
 
 import io.vavr.*;
-import io.vavr.collection.List.Nil;
-import io.vavr.collection.Tree.Empty;
-import io.vavr.collection.Tree.Node;
 import io.vavr.control.Option;
 
 import java.io.*;
@@ -31,19 +28,19 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 import static io.vavr.collection.Tree.Order.PRE_ORDER;
-import static io.vavr.collection.Tree.empty;
-import static io.vavr.collection.Tree.of;
-import static io.vavr.collection.Tree.ofAll;
-import static io.vavr.collection.Tree.recurse;
 
 /**
  * A general Tree interface.
  *
  * @param <T> component type of this Tree
  */
-public interface Tree<T> extends Traversable<T>, Serializable {
+public abstract class Tree<T> implements Traversable<T>, Serializable {
 
-    long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+
+    // sealed
+    private Tree() {
+    }
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
@@ -52,7 +49,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @param <T> Component type of the Tree.
      * @return A io.vavr.collection.Tree Collector.
      */
-    static <T> Collector<T, ArrayList<T>, Tree<T>> collector() {
+    public static <T> Collector<T, ArrayList<T>, Tree<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -69,7 +66,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @param <T> Type of tree values.
      * @return The empty tree.
      */
-    static <T> Empty<T> empty() {
+    public static <T> Empty<T> empty() {
         return Empty.instance();
     }
 
@@ -83,7 +80,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return the given {@code tree} instance as narrowed type {@code Tree<T>}.
      */
     @SuppressWarnings("unchecked")
-    static <T> Tree<T> narrow(Tree<? extends T> tree) {
+    public static <T> Tree<T> narrow(Tree<? extends T> tree) {
         return (Tree<T>) tree;
     }
 
@@ -94,7 +91,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @param <T>   Value type
      * @return A new Node instance.
      */
-    static <T> Node<T> of(T value) {
+    public static <T> Node<T> of(T value) {
         return new Node<>(value, io.vavr.collection.List.empty());
     }
 
@@ -108,7 +105,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Node<T> of(T value, Node<T>... children) {
+    public static <T> Node<T> of(T value, Node<T>... children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, io.vavr.collection.List.of(children));
     }
@@ -121,7 +118,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @param <T>      Value type
      * @return A new Node instance.
      */
-    static <T> Node<T> of(T value, Iterable<Node<T>> children) {
+    public static <T> Node<T> of(T value, Iterable<Node<T>> children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, io.vavr.collection.List.ofAll(children));
     }
@@ -136,7 +133,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Tree<T> of(T... values) {
+    public static <T> Tree<T> of(T... values) {
         Objects.requireNonNull(values, "values is null");
         final io.vavr.collection.List<T> list = io.vavr.collection.List.of(values);
         return list.isEmpty() ? Empty.instance() : new Node<>(list.head(), list.tail().map(Tree::of));
@@ -154,7 +151,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    static <T> Tree<T> ofAll(Iterable<? extends T> iterable) {
+    public static <T> Tree<T> ofAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Tree) {
             return (Tree<T>) iterable;
@@ -171,7 +168,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @param <T>        Component type of the Stream.
      * @return A Tree containing the given elements in the same order.
      */
-    static <T> Tree<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+    public static <T> Tree<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(io.vavr.collection.Iterator.ofAll(javaStream.iterator()));
     }
@@ -186,7 +183,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return A Tree consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    public static <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Tree::of);
     }
@@ -200,7 +197,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return A Tree of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    static <T> Tree<T> fill(int n, Supplier<? extends T> s) {
+    public static <T> Tree<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Tree::of);
     }
@@ -213,7 +210,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @param element The element
      * @return A Tree of size {@code n}, where each element is the given {@code element}.
      */
-    static <T> Tree<T> fill(int n, T element) {
+    public static <T> Tree<T> fill(int n, T element) {
         return io.vavr.collection.Collections.fillObject(n, element, empty(), Tree::of);
     }
 
@@ -242,7 +239,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return a new, non-empty {@code Tree} instance
      * @throws NullPointerException if {@code descend} is null
      */
-    static <T> Node<T> recurse(T seed, Function<? super T, ? extends Iterable<? extends T>> descend) {
+    public static <T> Node<T> recurse(T seed, Function<? super T, ? extends Iterable<? extends T>> descend) {
         Objects.requireNonNull(descend, "descend is null");
         return Tree.of(seed, Stream.of(seed).flatMap(descend).map(children -> recurse(children, descend)));
     }
@@ -272,7 +269,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return a new, maybe empty {@code List} instance with non-empty {@code Tree} instances
      * @throws NullPointerException if {@code source}, {@code idMapper} or {@code parentMapper} is null
      */
-    static <T, ID> List<Node<T>> build(Iterable<? extends T> source, Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
+    public static <T, ID> List<Node<T>> build(Iterable<? extends T> source, Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
         Objects.requireNonNull(source, "source is null");
         Objects.requireNonNull(source, "idMapper is null");
         Objects.requireNonNull(source, "parentMapper is null");
@@ -286,8 +283,8 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default <R> Tree<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        return ofAll(iterator().<R> collect(partialFunction));
+    public final <R> Tree<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        return ofAll(iterator().<R>collect(partialFunction));
     }
 
     /**
@@ -296,14 +293,14 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return The value of this tree.
      * @throws java.lang.UnsupportedOperationException if this tree is empty
      */
-    T getValue();
+    public abstract T getValue();
 
     /**
      * Returns the children of this tree.
      *
      * @return the tree's children
      */
-    io.vavr.collection.List<Node<T>> getChildren();
+    public abstract io.vavr.collection.List<Node<T>> getChildren();
 
     /**
      * Checks if this Tree is a leaf. A tree is a leaf if it is a Node with no children.
@@ -311,7 +308,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return true if this tree is a leaf, false otherwise.
      */
-    boolean isLeaf();
+    public abstract boolean isLeaf();
 
     /**
      * Checks if this Tree is a branch. A Tree is a branch if it is a Node which has children.
@@ -319,7 +316,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return true if this tree is a branch, false otherwise.
      */
-    default boolean isBranch() {
+    public final boolean isBranch() {
         return !(isEmpty() || isLeaf());
     }
 
@@ -329,12 +326,12 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return false
      */
     @Override
-    default boolean isAsync() {
+    public final boolean isAsync() {
         return false;
     }
 
     @Override
-    default boolean isDistinct() {
+    public final boolean isDistinct() {
         return false;
     }
 
@@ -344,12 +341,12 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return false
      */
     @Override
-    default boolean isLazy() {
+    public final boolean isLazy() {
         return false;
     }
 
     @Override
-    default boolean isSequential() {
+    public final boolean isSequential() {
         return true;
     }
 
@@ -359,7 +356,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @param order A traversal order
      * @return A new Iterator
      */
-    default io.vavr.collection.Iterator<T> iterator(Order order) {
+    public final io.vavr.collection.Iterator<T> iterator(Order order) {
         return values(order).iterator();
     }
 
@@ -368,7 +365,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return This {@code Tree} as Lisp-string, i.e. represented as list of lists.
      */
-    String toLispString();
+    public abstract String toLispString();
 
     /**
      * Transforms this {@code Tree}.
@@ -378,7 +375,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Tree<T>, ? extends U> f) {
+    public final <U> U transform(Function<? super Tree<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
@@ -388,7 +385,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return A sequence of nodes.
      */
-    default Seq<Node<T>> traverse() {
+    public final Seq<Node<T>> traverse() {
         return traverse(PRE_ORDER);
     }
 
@@ -399,7 +396,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return A sequence of nodes.
      * @throws java.lang.NullPointerException if order is null
      */
-    default Seq<Node<T>> traverse(Order order) {
+    public final Seq<Node<T>> traverse(Order order) {
         Objects.requireNonNull(order, "order is null");
         if (isEmpty()) {
             return Stream.empty();
@@ -407,13 +404,13 @@ public interface Tree<T> extends Traversable<T>, Serializable {
             final Node<T> node = (Node<T>) this;
             switch (order) {
                 case PRE_ORDER:
-                    return TreeModule.traversePreOrder(node);
+                    return Tree.traversePreOrder(node);
                 case IN_ORDER:
-                    return TreeModule.traverseInOrder(node);
+                    return Tree.traverseInOrder(node);
                 case POST_ORDER:
-                    return TreeModule.traversePostOrder(node);
+                    return Tree.traversePostOrder(node);
                 case LEVEL_ORDER:
-                    return TreeModule.traverseLevelOrder(node);
+                    return Tree.traverseLevelOrder(node);
                 default:
                     throw new IllegalStateException("Unknown order: " + order.name());
             }
@@ -426,7 +423,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return A sequence of the tree values.
      */
-    default Seq<T> values() {
+    public final Seq<T> values() {
         return traverse(PRE_ORDER).map(Node::getValue);
     }
 
@@ -438,7 +435,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return A sequence of the tree values.
      * @throws java.lang.NullPointerException if order is null
      */
-    default Seq<T> values(Order order) {
+    public final Seq<T> values(Order order) {
         return traverse(order).map(Node::getValue);
     }
 
@@ -447,7 +444,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return The number of branches of this tree.
      */
-    default int branchCount() {
+    public final int branchCount() {
         if (isEmpty() || isLeaf()) {
             return 0;
         } else {
@@ -460,7 +457,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return The number of leaves of this tree.
      */
-    default int leafCount() {
+    public final int leafCount() {
         if (isEmpty()) {
             return 0;
         } else if (isLeaf()) {
@@ -475,19 +472,19 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *
      * @return The number of nodes of this tree.
      */
-    default int nodeCount() {
+    public final int nodeCount() {
         return length();
     }
 
     // -- Methods inherited from Traversable
 
     @Override
-    default Seq<T> distinct() {
+    public final Seq<T> distinct() {
         return values().distinct();
     }
 
     @Override
-    default Seq<T> distinctBy(Comparator<? super T> comparator) {
+    public final Seq<T> distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
             return Stream.empty();
@@ -497,7 +494,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default <U> Seq<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+    public final <U> Seq<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         if (isEmpty()) {
             return Stream.empty();
@@ -507,7 +504,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Seq<T> drop(int n) {
+    public final Seq<T> drop(int n) {
         if (n >= length()) {
             return Stream.empty();
         } else {
@@ -516,7 +513,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Seq<T> dropRight(int n) {
+    public final Seq<T> dropRight(int n) {
         if (n >= length()) {
             return Stream.empty();
         } else {
@@ -525,13 +522,13 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Seq<T> dropUntil(Predicate<? super T> predicate) {
+    public final Seq<T> dropUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
-    default Seq<T> dropWhile(Predicate<? super T> predicate) {
+    public final Seq<T> dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Stream.empty();
@@ -541,7 +538,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Seq<T> filter(Predicate<? super T> predicate) {
+    public final Seq<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Stream.empty();
@@ -551,7 +548,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Seq<T> filterNot(Predicate<? super T> predicate) {
+    public final Seq<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Stream.empty();
@@ -562,7 +559,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
 
     @Deprecated
     @Override
-    default Seq<T> reject(Predicate<? super T> predicate) {
+    public final Seq<T> reject(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Stream.empty();
@@ -572,13 +569,13 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public final <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Empty.instance() : TreeModule.flatMap((Node<T>) this, mapper);
+        return isEmpty() ? Empty.instance() : Tree.flatMap((Node<T>) this, mapper);
     }
 
     @Override
-    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+    public final <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return zero;
@@ -589,22 +586,22 @@ public interface Tree<T> extends Traversable<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <C> Map<C, Seq<T>> groupBy(Function<? super T, ? extends C> classifier) {
+    public final <C> Map<C, Seq<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(values(), classifier, Stream::ofAll);
     }
 
     @Override
-    default io.vavr.collection.Iterator<Seq<T>> grouped(int size) {
+    public final io.vavr.collection.Iterator<Seq<T>> grouped(int size) {
         return sliding(size, size);
     }
 
     @Override
-    default boolean hasDefiniteSize() {
+    public final boolean hasDefiniteSize() {
         return true;
     }
 
     @Override
-    default T head() {
+    public final T head() {
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty tree");
         } else {
@@ -613,7 +610,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Seq<T> init() {
+    public final Seq<T> init() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("init of empty tree");
         } else {
@@ -622,39 +619,39 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Option<Seq<T>> initOption() {
+    public final Option<Seq<T>> initOption() {
         return isEmpty() ? Option.none() : Option.some(init());
     }
 
     @Override
-    default boolean isTraversableAgain() {
+    public final boolean isTraversableAgain() {
         return true;
     }
 
     @Override
-    default io.vavr.collection.Iterator<T> iterator() {
+    public final io.vavr.collection.Iterator<T> iterator() {
         return values().iterator();
     }
 
     @Override
-    default <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
+    public final <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return isEmpty() ? Empty.instance() : TreeModule.map((Node<T>) this, mapper);
+        return isEmpty() ? Empty.instance() : Tree.map((Node<T>) this, mapper);
     }
 
     @Override
-    default Tree<T> orElse(Iterable<? extends T> other) {
+    public final Tree<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }
 
     @Override
-    default Tree<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+    public final Tree<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    default Tuple2<Seq<T>, Seq<T>> partition(Predicate<? super T> predicate) {
+    public final Tuple2<Seq<T>, Seq<T>> partition(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Tuple.of(Stream.empty(), Stream.empty());
@@ -664,7 +661,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Tree<T> peek(Consumer<? super T> action) {
+    public final Tree<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
@@ -673,58 +670,58 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Tree<T> replace(T currentElement, T newElement) {
+    public final Tree<T> replace(T currentElement, T newElement) {
         if (isEmpty()) {
             return Empty.instance();
         } else {
-            return TreeModule.replace((Node<T>) this, currentElement, newElement);
+            return Tree.replace((Node<T>) this, currentElement, newElement);
         }
     }
 
     @Override
-    default Tree<T> replaceAll(T currentElement, T newElement) {
+    public final Tree<T> replaceAll(T currentElement, T newElement) {
         return map(t -> Objects.equals(t, currentElement) ? newElement : t);
     }
 
     @Override
-    default Seq<T> retainAll(Iterable<? extends T> elements) {
+    public final Seq<T> retainAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         return values().retainAll(elements);
     }
 
     @Override
-    default Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+    public final Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+    public final <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, io.vavr.collection.Iterator::toStream);
     }
 
     @Override
-    default <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+    public final <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, io.vavr.collection.Iterator::toStream);
     }
 
     @Override
-    default io.vavr.collection.Iterator<Seq<T>> slideBy(Function<? super T, ?> classifier) {
+    public final io.vavr.collection.Iterator<Seq<T>> slideBy(Function<? super T, ?> classifier) {
         return iterator().slideBy(classifier);
     }
 
     @Override
-    default io.vavr.collection.Iterator<Seq<T>> sliding(int size) {
+    public final io.vavr.collection.Iterator<Seq<T>> sliding(int size) {
         return sliding(size, 1);
     }
 
     @Override
-    default io.vavr.collection.Iterator<Seq<T>> sliding(int size, int step) {
+    public final io.vavr.collection.Iterator<Seq<T>> sliding(int size, int step) {
         return iterator().sliding(size, step);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    default Tuple2<Seq<T>, Seq<T>> span(Predicate<? super T> predicate) {
+    public final Tuple2<Seq<T>, Seq<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Tuple.of(Stream.empty(), Stream.empty());
@@ -734,12 +731,12 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default String stringPrefix() {
+    public final String stringPrefix() {
         return "Tree";
     }
 
     @Override
-    default Seq<T> tail() {
+    public final Seq<T> tail() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty tree");
         } else {
@@ -748,12 +745,12 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Option<Seq<T>> tailOption() {
+    public final Option<Seq<T>> tailOption() {
         return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override
-    default Seq<T> take(int n) {
+    public final Seq<T> take(int n) {
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -762,7 +759,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Seq<T> takeRight(int n) {
+    public final Seq<T> takeRight(int n) {
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -771,65 +768,65 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Seq<T> takeUntil(Predicate<? super T> predicate) {
+    public final Seq<T> takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return values().takeUntil(predicate);
     }
 
     @Override
-    default Seq<T> takeWhile(Predicate<? super T> predicate) {
+    public final Seq<T> takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return values().takeWhile(predicate);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    default <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(
+    public final <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (isEmpty()) {
             return Tuple.of(Empty.instance(), Empty.instance());
         } else {
-            return (Tuple2<Tree<T1>, Tree<T2>>) (Object) TreeModule.unzip((Node<T>) this, unzipper);
+            return (Tuple2<Tree<T1>, Tree<T2>>) (Object) Tree.unzip((Node<T>) this, unzipper);
         }
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    default <T1, T2, T3> Tuple3<Tree<T1>, Tree<T2>, Tree<T3>> unzip3(
+    public final <T1, T2, T3> Tuple3<Tree<T1>, Tree<T2>, Tree<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (isEmpty()) {
             return Tuple.of(Empty.instance(), Empty.instance(), Empty.instance());
         } else {
-            return (Tuple3<Tree<T1>, Tree<T2>, Tree<T3>>) (Object) TreeModule.unzip3((Node<T>) this, unzipper);
+            return (Tuple3<Tree<T1>, Tree<T2>, Tree<T3>>) (Object) Tree.unzip3((Node<T>) this, unzipper);
         }
     }
 
     @Override
-    default <U> Tree<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+    public final <U> Tree<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    default <U, R> Tree<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    public final <U, R> Tree<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Empty.instance();
         } else {
-            return TreeModule.zip((Node<T>) this, that.iterator(), mapper);
+            return Tree.zip((Node<T>) this, that.iterator(), mapper);
         }
     }
 
     @Override
-    default <U> Tree<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
+    public final <U> Tree<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
-            return io.vavr.collection.Iterator.<U> ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
+            return io.vavr.collection.Iterator.<U>ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
         } else {
             final java.util.Iterator<? extends U> thatIter = that.iterator();
-            final Tree<Tuple2<T, U>> tree = TreeModule.zipAll((Node<T>) this, thatIter, thatElem);
+            final Tree<Tuple2<T, U>> tree = Tree.zipAll((Node<T>) this, thatIter, thatElem);
             if (thatIter.hasNext()) {
                 final Iterable<Node<Tuple2<T, U>>> remainder = io.vavr.collection.Iterator
                         .ofAll(thatIter)
@@ -842,38 +839,31 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Tree<Tuple2<T, Integer>> zipWithIndex() {
+    public final Tree<Tuple2<T, Integer>> zipWithIndex() {
         return zipWithIndex(Tuple::of);
     }
 
     @Override
-    default <U> Tree<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    public final <U> Tree<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return zipWith(io.vavr.collection.Iterator.from(0), mapper);
     }
-
-    @Override
-    boolean equals(Object o);
-
-    @Override
-    int hashCode();
-
-    @Override
-    String toString();
 
     /**
      * Creates a neat 2-dimensional drawing of a tree. Unicode characters are used to draw node junctions.
      *
      * @return A nice string representation of the tree.
      */
-    String draw();
+    public abstract String draw();
 
     /**
      * Represents a tree node.
      *
      * @param <T> value type
+     * @deprecated will be removed from the public API
      */
-    final class Node<T> implements Tree<T>, Serializable {
+    @Deprecated
+    public static final class Node<T> extends Tree<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -1085,8 +1075,10 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * The empty tree. Use Tree.empty() to create an instance.
      *
      * @param <T> type of the tree's values
+     * @deprecated will be removed from the public API
      */
-    final class Empty<T> implements Tree<T>, Serializable {
+    @Deprecated
+    public static final class Empty<T> extends Tree<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -1103,7 +1095,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
 
         @Override
         public io.vavr.collection.List<Node<T>> getChildren() {
-            return Nil.instance();
+            return List.empty();
         }
 
         @Override
@@ -1152,7 +1144,9 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         }
 
         @Override
-        public String draw() { return "▣"; }
+        public String draw() {
+            return "▣";
+        }
 
         // -- Serializable implementation
 
@@ -1192,7 +1186,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * </ul>
      */
     // see http://programmers.stackexchange.com/questions/138766/in-order-traversal-of-m-way-trees
-    enum Order {
+    public enum Order {
 
         /**
          * 1 2 4 7 5 3 6 8 9 (= depth-first)
@@ -1214,17 +1208,9 @@ public interface Tree<T> extends Traversable<T>, Serializable {
          */
         LEVEL_ORDER
     }
-}
-
-/**
- * Because the empty tree {@code Empty} cannot be a child of an existing tree, method implementations distinguish between the
- * empty and non-empty case. Because the structure of trees is recursive, often we have commands in the form of module
- * classes with one static method.
- */
-interface TreeModule {
 
     @SuppressWarnings("unchecked")
-    static <T, U> Tree<U> flatMap(Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    private static <T, U> Tree<U> flatMap(Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
         final Tree<U> mapped = ofAll(mapper.apply(node.getValue()));
         if (mapped.isEmpty()) {
             return empty();
@@ -1237,7 +1223,7 @@ interface TreeModule {
         }
     }
 
-    static <T, U> Node<U> map(Node<T> node, Function<? super T, ? extends U> mapper) {
+    private static <T, U> Node<U> map(Node<T> node, Function<? super T, ? extends U> mapper) {
         final U value = mapper.apply(node.getValue());
         final io.vavr.collection.List<Node<U>> children = node.getChildren().map(child -> map(child, mapper));
         return new Node<>(value, children);
@@ -1246,7 +1232,7 @@ interface TreeModule {
     // Idea:
     // Traverse (depth-first) until a match is found, then stop and rebuild relevant parts of the tree.
     // If not found, return the same tree instance.
-    static <T> Node<T> replace(Node<T> node, T currentElement, T newElement) {
+    private static <T> Node<T> replace(Node<T> node, T currentElement, T newElement) {
         if (Objects.equals(node.getValue(), currentElement)) {
             return new Node<>(newElement, node.getChildren());
         } else {
@@ -1262,32 +1248,32 @@ interface TreeModule {
         }
     }
 
-    static <T> Stream<Node<T>> traversePreOrder(Node<T> node) {
+    private static <T> Stream<Node<T>> traversePreOrder(Node<T> node) {
         return node.getChildren().foldLeft(Stream.of(node),
                 (acc, child) -> acc.appendAll(traversePreOrder(child)));
     }
 
-    static <T> Stream<Node<T>> traverseInOrder(Node<T> node) {
+    private static <T> Stream<Node<T>> traverseInOrder(Node<T> node) {
         if (node.isLeaf()) {
             return Stream.of(node);
         } else {
             final io.vavr.collection.List<Node<T>> children = node.getChildren();
             return children
                     .tail()
-                    .foldLeft(Stream.<Node<T>> empty(), (acc, child) -> acc.appendAll(traverseInOrder(child)))
+                    .foldLeft(Stream.<Node<T>>empty(), (acc, child) -> acc.appendAll(traverseInOrder(child)))
                     .prepend(node)
                     .prependAll(traverseInOrder(children.head()));
         }
     }
 
-    static <T> Stream<Node<T>> traversePostOrder(Node<T> node) {
+    private static <T> Stream<Node<T>> traversePostOrder(Node<T> node) {
         return node
                 .getChildren()
-                .foldLeft(Stream.<Node<T>> empty(), (acc, child) -> acc.appendAll(traversePostOrder(child)))
+                .foldLeft(Stream.<Node<T>>empty(), (acc, child) -> acc.appendAll(traversePostOrder(child)))
                 .append(node);
     }
 
-    static <T> Stream<Node<T>> traverseLevelOrder(Node<T> node) {
+    private static <T> Stream<Node<T>> traverseLevelOrder(Node<T> node) {
         Stream<Node<T>> result = Stream.empty();
         final java.util.Queue<Node<T>> queue = new java.util.LinkedList<>();
         queue.add(node);
@@ -1299,8 +1285,8 @@ interface TreeModule {
         return result.reverse();
     }
 
-    static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> unzip(Node<T> node,
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    private static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> unzip(Node<T> node,
+                                                                Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         final Tuple2<? extends T1, ? extends T2> value = unzipper.apply(node.getValue());
         final io.vavr.collection.List<Tuple2<Node<T1>, Node<T2>>> children = node
                 .getChildren()
@@ -1310,8 +1296,8 @@ interface TreeModule {
         return Tuple.of(node1, node2);
     }
 
-    static <T, T1, T2, T3> Tuple3<Node<T1>, Node<T2>, Node<T3>> unzip3(Node<T> node,
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    private static <T, T1, T2, T3> Tuple3<Node<T1>, Node<T2>, Node<T3>> unzip3(Node<T> node,
+                                                                               Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
         final io.vavr.collection.List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
                 .map(child -> unzip3(child, unzipper));
@@ -1322,7 +1308,7 @@ interface TreeModule {
     }
 
     @SuppressWarnings("unchecked")
-    static <T, U, R> Tree<R> zip(Node<T> node, java.util.Iterator<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    private static <T, U, R> Tree<R> zip(Node<T> node, java.util.Iterator<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         if (!that.hasNext()) {
             return Empty.instance();
         } else {
@@ -1336,7 +1322,7 @@ interface TreeModule {
     }
 
     @SuppressWarnings("unchecked")
-    static <T, U> Tree<Tuple2<T, U>> zipAll(Node<T> node, java.util.Iterator<? extends U> that, U thatElem) {
+    private static <T, U> Tree<Tuple2<T, U>> zipAll(Node<T> node, java.util.Iterator<? extends U> that, U thatElem) {
         if (!that.hasNext()) {
             return node.map(value -> Tuple.of(value, thatElem));
         } else {

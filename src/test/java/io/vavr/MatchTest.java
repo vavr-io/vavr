@@ -160,10 +160,10 @@ public class MatchTest {
         final List<Integer> list = List(1, 2, 3);
         final Predicate<Number> p = n -> n.intValue() > 0;
         final boolean actual = Match(list).of(
-                Case($(anyOf(p)), true),
+                Case($(l -> l.exists(anyOf(p))), true),
                 Case($(), false)
         );
-        assertThat(actual).isEqualTo(false);
+        assertThat(actual).isTrue();
     }
 
     // -- multiple cases
