@@ -54,9 +54,13 @@ import static io.vavr.control.TryModule.sneakyThrow;
  * @param <T> Value type in the case of success.
  */
 @SuppressWarnings("deprecation")
-public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializable {
+public abstract class Try<T> implements io.vavr.Iterable<T>, io.vavr.Value<T>, Serializable {
 
-    long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+
+    // sealed
+    private Try() {
+    }
 
     /**
      * Creates a Try of a CheckedFunction0.
@@ -66,7 +70,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return {@code Success(supplier.apply())} if no exception occurs, otherwise {@code Failure(throwable)} if an
      * exception occurs calling {@code supplier.apply()}.
      */
-    static <T> Try<T> of(CheckedFunction0<? extends T> supplier) {
+    public static <T> Try<T> of(CheckedFunction0<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         try {
             return new Success<>(supplier.apply());
@@ -84,7 +88,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(throwable)} if an
      * exception occurs calling {@code supplier.get()}.
      */
-    static <T> Try<T> ofSupplier(Supplier<? extends T> supplier) {
+    public static <T> Try<T> ofSupplier(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return of(supplier::get);
     }
@@ -97,7 +101,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return {@code Success(callable.call())} if no exception occurs, otherwise {@code Failure(throwable)} if an
      * exception occurs calling {@code callable.call()}.
      */
-    static <T> Try<T> ofCallable(Callable<? extends T> callable) {
+    public static <T> Try<T> ofCallable(Callable<? extends T> callable) {
         Objects.requireNonNull(callable, "callable is null");
         return of(callable::call);
     }
@@ -109,7 +113,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return {@code Success(null)} if no exception occurs, otherwise {@code Failure(throwable)} if an exception occurs
      * calling {@code runnable.run()}.
      */
-    static Try<Void> run(CheckedRunnable runnable) {
+    public static Try<Void> run(CheckedRunnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
         try {
             runnable.run();
@@ -126,7 +130,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return {@code Success(null)} if no exception occurs, otherwise {@code Failure(throwable)} if an exception occurs
      * calling {@code runnable.run()}.
      */
-    static Try<Void> runRunnable(Runnable runnable) {
+    public static Try<Void> runRunnable(Runnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
         return run(runnable::run);
     }
@@ -141,7 +145,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return A {@code Try} of a {@link Seq} of results
      * @throws NullPointerException if {@code values} is null
      */
-    static <T> Try<Seq<T>> sequence(Iterable<? extends Try<? extends T>> values) {
+    public static <T> Try<Seq<T>> sequence(Iterable<? extends Try<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
         Vector<T> vector = Vector.empty();
         for (Try<? extends T> value : values) {
@@ -165,7 +169,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return A {@code Try} of a {@link Seq} of results.
      * @throws NullPointerException if values or f is null.
      */
-    static <T, U> Try<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Try<? extends U>> mapper) {
+    public static <T, U> Try<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Try<? extends U>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
@@ -178,7 +182,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T>   Type of the given {@code value}.
      * @return A new {@code Success}.
      */
-    static <T> Try<T> success(T value) {
+    public static <T> Try<T> success(T value) {
         return new Success<>(value);
     }
 
@@ -189,7 +193,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T>       Component type of the {@code Try}.
      * @return A new {@code Failure}.
      */
-    static <T> Try<T> failure(Throwable exception) {
+    public static <T> Try<T> failure(Throwable exception) {
         return new Failure<>(exception);
     }
 
@@ -203,7 +207,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return the given {@code t} instance as narrowed type {@code Try<T>}.
      */
     @SuppressWarnings("unchecked")
-    static <T> Try<T> narrow(Try<? extends T> t) {
+    public static <T> Try<T> narrow(Try<? extends T> t) {
         return (Try<T>) t;
     }
 
@@ -215,7 +219,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * {@code Failure} of the consumption.
      * @throws NullPointerException if {@code consumer} is null
      */
-    default Try<T> andThen(Consumer<? super T> consumer) {
+    public final Try<T> andThen(Consumer<? super T> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
         return andThenTry(consumer::accept);
     }
@@ -238,7 +242,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * {@code Failure} of the consumption.
      * @throws NullPointerException if {@code consumer} is null
      */
-    default Try<T> andThenTry(CheckedConsumer<? super T> consumer) {
+    public final Try<T> andThenTry(CheckedConsumer<? super T> consumer) {
         Objects.requireNonNull(consumer, "consumer is null");
         if (isFailure()) {
             return this;
@@ -260,7 +264,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * {@code Failure} of the run.
      * @throws NullPointerException if {@code runnable} is null
      */
-    default Try<T> andThen(Runnable runnable) {
+    public final Try<T> andThen(Runnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
         return andThenTry(runnable::run);
     }
@@ -297,7 +301,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * {@code Failure} of the run.
      * @throws NullPointerException if {@code runnable} is null
      */
-    default Try<T> andThenTry(CheckedRunnable runnable) {
+    public final Try<T> andThenTry(CheckedRunnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
         if (isFailure()) {
             return this;
@@ -331,7 +335,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @throws NullPointerException if {@code partialFunction} is null
      */
     @SuppressWarnings("unchecked")
-    default <R> Try<R> collect(PartialFunction<? super T, ? extends R> partialFunction){
+    public final <R> Try<R> collect(PartialFunction<? super T, ? extends R> partialFunction){
         Objects.requireNonNull(partialFunction, "partialFunction is null");
         return filter(partialFunction::isDefinedAt).map(partialFunction::apply);
     }
@@ -342,7 +346,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      *
      * @return a new Try
      */
-    default Try<Throwable> failed() {
+    public final Try<Throwable> failed() {
         if (isFailure()) {
             return new Success<>(getCause());
         } else {
@@ -359,7 +363,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is null
      */
-    default Try<T> filter(Predicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
+    public final Try<T> filter(Predicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(throwableSupplier, "throwableSupplier is null");
         return filterTry(predicate::test, throwableSupplier);
@@ -374,7 +378,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} or {@code errorProvider} is null
      */
-    default Try<T> filter(Predicate<? super T> predicate, Function<? super T, ? extends Throwable> errorProvider) {
+    public final Try<T> filter(Predicate<? super T> predicate, Function<? super T, ? extends Throwable> errorProvider) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(errorProvider, "errorProvider is null");
         return filterTry(predicate::test, errorProvider::apply);
@@ -387,7 +391,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Try<T> filter(Predicate<? super T> predicate) {
+    public final Try<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filterTry(predicate::test);
     }
@@ -400,7 +404,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is null
      */
-    default Try<T> filterNot(Predicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
+    public final Try<T> filterNot(Predicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate(), throwableSupplier);
     }
@@ -414,7 +418,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} or {@code errorProvider} is null
      */
-    default Try<T> filterNot(Predicate<? super T> predicate, Function<? super T, ? extends Throwable> errorProvider) {
+    public final Try<T> filterNot(Predicate<? super T> predicate, Function<? super T, ? extends Throwable> errorProvider) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate(), errorProvider);
     }
@@ -427,7 +431,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Try<T> filterNot(Predicate<? super T> predicate) {
+    public final Try<T> filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
@@ -444,7 +448,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} or {@code throwableSupplier} is null
      */
-    default Try<T> filterTry(CheckedPredicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
+    public final Try<T> filterTry(CheckedPredicate<? super T> predicate, Supplier<? extends Throwable> throwableSupplier) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(throwableSupplier, "throwableSupplier is null");
 
@@ -475,7 +479,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} or {@code errorProvider} is null
      */
-    default Try<T> filterTry(CheckedPredicate<? super T> predicate, CheckedFunction1<? super T, ? extends Throwable> errorProvider) {
+    public final Try<T> filterTry(CheckedPredicate<? super T> predicate, CheckedFunction1<? super T, ? extends Throwable> errorProvider) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(errorProvider, "errorProvider is null");
         return flatMapTry(t -> predicate.test(t) ? this : failure(errorProvider.apply(t)));
@@ -491,7 +495,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try} instance
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Try<T> filterTry(CheckedPredicate<? super T> predicate) {
+    public final Try<T> filterTry(CheckedPredicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filterTry(predicate, () -> new NoSuchElementException("Predicate does not hold for " + get()));
     }
@@ -504,7 +508,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try}
      * @throws NullPointerException if {@code mapper} is null
      */
-    default <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
+    public final <U> Try<U> flatMap(Function<? super T, ? extends Try<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return flatMapTry((CheckedFunction1<T, Try<? extends U>>) mapper::apply);
     }
@@ -518,7 +522,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> flatMapTry(CheckedFunction1<? super T, ? extends Try<? extends U>> mapper) {
+    public final <U> Try<U> flatMapTry(CheckedFunction1<? super T, ? extends Try<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isFailure()) {
             return (Failure<U>) this;
@@ -541,7 +545,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return The result of this {@code Try}.
      */
     @Override
-    T get();
+    public abstract T get();
 
     /**
      * Gets the cause if this is a Failure or throws if this is a Success.
@@ -549,7 +553,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return The cause if this is a Failure
      * @throws UnsupportedOperationException if this is a Success
      */
-    Throwable getCause();
+    public abstract Throwable getCause();
 
     /**
      * A {@code Try}'s value is computed synchronously.
@@ -557,7 +561,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return false
      */
     @Override
-    default boolean isAsync() {
+    public final boolean isAsync() {
         return false;
     }
 
@@ -567,14 +571,14 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return true if this is a Failure, returns false if this is a Success.
      */
     @Override
-    boolean isEmpty();
+    public abstract boolean isEmpty();
 
     /**
      * Checks if this is a Failure.
      *
      * @return true, if this is a Failure, otherwise false, if this is a Success
      */
-    boolean isFailure();
+    public abstract boolean isFailure();
 
     /**
      * A {@code Try}'s value is computed eagerly.
@@ -582,7 +586,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return false
      */
     @Override
-    default boolean isLazy() {
+    public final boolean isLazy() {
         return false;
     }
 
@@ -592,7 +596,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return {@code true}
      */
     @Override
-    default boolean isSingleValued() {
+    public final boolean isSingleValued() {
         return true;
     }
 
@@ -601,10 +605,10 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      *
      * @return true, if this is a Success, otherwise false, if this is a Failure
      */
-    boolean isSuccess();
+    public abstract boolean isSuccess();
 
     @Override
-    default Iterator<T> iterator() {
+    public final Iterator<T> iterator() {
         return isSuccess() ? Iterator.of(get()) : Iterator.empty();
     }
 
@@ -617,7 +621,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @throws NullPointerException if {@code mapper} is null
      */
     @Override
-    default <U> Try<U> map(Function<? super T, ? extends U> mapper) {
+    public final <U> Try<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return mapTry(mapper::apply);
     }
@@ -632,7 +636,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      */
     @GwtIncompatible
     @SuppressWarnings({ "unchecked", "varargs" })
-    default Try<T> mapFailure(Match.Case<? extends Throwable, ? extends Throwable>... cases) {
+    public final Try<T> mapFailure(Match.Case<? extends Throwable, ? extends Throwable>... cases) {
         if (isSuccess()) {
             return this;
         } else {
@@ -662,7 +666,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
-    default <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
+    public final <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isFailure()) {
             return (Failure<U>) this;
@@ -690,7 +694,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return this
      * @throws NullPointerException if {@code action} is null
      */
-    default Try<T> onFailure(Consumer<? super Throwable> action) {
+    public final Try<T> onFailure(Consumer<? super Throwable> action) {
         Objects.requireNonNull(action, "action is null");
         if (isFailure()) {
             action.accept(getCause());
@@ -719,7 +723,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      */
     @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> onFailure(Class<X> exceptionType, Consumer<? super X> action) {
+    public final <X extends Throwable> Try<T> onFailure(Class<X> exceptionType, Consumer<? super X> action) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(action, "action is null");
         if (isFailure() && exceptionType.isAssignableFrom(getCause().getClass())) {
@@ -743,7 +747,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return this
      * @throws NullPointerException if {@code action} is null
      */
-    default Try<T> onSuccess(Consumer<? super T> action) {
+    public final Try<T> onSuccess(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (isSuccess()) {
             action.accept(get());
@@ -752,18 +756,18 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
     }
 
     @SuppressWarnings("unchecked")
-    default Try<T> orElse(Try<? extends T> other) {
+    public final Try<T> orElse(Try<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return isSuccess() ? this : (Try<T>) other;
     }
 
     @SuppressWarnings("unchecked")
-    default Try<T> orElse(Supplier<? extends Try<? extends T>> supplier) {
+    public final Try<T> orElse(Supplier<? extends Try<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isSuccess() ? this : (Try<T>) supplier.get();
     }
 
-    default T getOrElseGet(Function<? super Throwable, ? extends T> other) {
+    public final T getOrElseGet(Function<? super Throwable, ? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         if (isFailure()) {
             return other.apply(getCause());
@@ -772,14 +776,14 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
         }
     }
 
-    default void orElseRun(Consumer<? super Throwable> action) {
+    public final void orElseRun(Consumer<? super Throwable> action) {
         Objects.requireNonNull(action, "action is null");
         if (isFailure()) {
             action.accept(getCause());
         }
     }
 
-    default <X extends Throwable> T getOrElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
+    public final <X extends Throwable> T getOrElseThrow(Function<? super Throwable, X> exceptionProvider) throws X {
         Objects.requireNonNull(exceptionProvider, "exceptionProvider is null");
         if (isFailure()) {
             throw exceptionProvider.apply(getCause());
@@ -796,7 +800,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <X>         type of the folded value
      * @return A value of type X
      */
-    default <X> X fold(Function<? super Throwable, ? extends X> ifFail, Function<? super T, ? extends X> f) {
+    public final <X> X fold(Function<? super Throwable, ? extends X> ifFail, Function<? super T, ? extends X> f) {
         if (isFailure()) {
             return ifFail.apply(getCause());
         } else {
@@ -812,7 +816,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @throws NullPointerException if {@code action} is null
      */
     @Override
-    default Try<T> peek(Consumer<? super T> action) {
+    public final Try<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (isSuccess()) {
             action.accept(get());
@@ -846,7 +850,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      */
     @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> recover(Class<X> exceptionType, Function<? super X, ? extends T> f) {
+    public final <X extends Throwable> Try<T> recover(Class<X> exceptionType, Function<? super X, ? extends T> f) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
@@ -885,7 +889,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      */
     @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType, Function<? super X, Try<? extends T>> f){
+    public final <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType, Function<? super X, Try<? extends T>> f){
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(f, "f is null");
         if(isFailure()){
@@ -925,7 +929,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @throws NullPointerException if {@code exceptionType} or {@code recovered} is null
      */
     @GwtIncompatible
-    default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType,  Try<? extends T> recovered){
+    public final <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType,  Try<? extends T> recovered){
         Objects.requireNonNull(exceptionType, "exeptionType is null");
         Objects.requireNonNull(recovered, "recovered is null");
         return (isFailure() && exceptionType.isAssignableFrom(getCause().getClass()))
@@ -957,7 +961,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @throws NullPointerException if {@code exception} is null
      */
     @GwtIncompatible
-    default <X extends Throwable> Try<T> recover(Class<X> exceptionType, T value) {
+    public final <X extends Throwable> Try<T> recover(Class<X> exceptionType, T value) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         return (isFailure() && exceptionType.isAssignableFrom(getCause().getClass()))
                ? Try.success(value)
@@ -980,7 +984,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return a {@code Try}
      * @throws NullPointerException if {@code f} is null
      */
-    default Try<T> recover(Function<? super Throwable, ? extends T> f) {
+    public final Try<T> recover(Function<? super Throwable, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             return Try.of(() -> f.apply(getCause()));
@@ -1007,7 +1011,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @throws NullPointerException if {@code f} is null
      */
     @SuppressWarnings("unchecked")
-    default Try<T> recoverWith(Function<? super Throwable, ? extends Try<? extends T>> f) {
+    public final Try<T> recoverWith(Function<? super Throwable, ? extends Try<? extends T>> f) {
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
             try {
@@ -1025,7 +1029,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      *
      * @return A new {@code Either}
      */
-    default Either<Throwable, T> toEither() {
+    public final Either<Throwable, T> toEither() {
         if (isFailure()) {
             return Either.left(getCause());
         } else {
@@ -1038,7 +1042,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      *
      * @return A new {@code Validation}
      */
-    default Validation<Throwable, T> toValidation() {
+    public final Validation<Throwable, T> toValidation() {
         return toValidation(Function.identity());
     }
 
@@ -1055,7 +1059,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return A new {@code Validation}
      * @throws NullPointerException if the given {@code throwableMapper} is null.
      */
-    default <U> Validation<U, T> toValidation(Function<? super Throwable, ? extends U> throwableMapper) {
+    public final <U> Validation<U, T> toValidation(Function<? super Throwable, ? extends U> throwableMapper) {
         Objects.requireNonNull(throwableMapper, "throwableMapper is null");
         if (isFailure()) {
             return Validation.invalid(throwableMapper.apply(getCause()));
@@ -1072,7 +1076,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Try<T>, ? extends U> f) {
+    public final <U> U transform(Function<? super Try<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
@@ -1084,7 +1088,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return this {@code Try}.
      * @throws NullPointerException if {@code runnable} is null
      */
-    default Try<T> andFinally(Runnable runnable) {
+    public final Try<T> andFinally(Runnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
         return andFinallyTry(runnable::run);
     }
@@ -1096,7 +1100,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @return this {@code Try}.
      * @throws NullPointerException if {@code runnable} is null
      */
-    default Try<T> andFinallyTry(CheckedRunnable runnable) {
+    public final Try<T> andFinallyTry(CheckedRunnable runnable) {
         Objects.requireNonNull(runnable, "runnable is null");
         try {
             runnable.run();
@@ -1106,21 +1110,14 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
         }
     }
 
-    @Override
-    boolean equals(Object o);
-
-    @Override
-    int hashCode();
-
-    @Override
-    String toString();
-
     /**
      * A succeeded Try.
      *
      * @param <T> component type of this Success
+     * @deprecated will be removed from the public API
      */
-    final class Success<T> implements Try<T>, Serializable {
+    @Deprecated
+    public static final class Success<T> extends Try<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -1185,8 +1182,10 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * A failed Try.
      *
      * @param <T> component type of this Failure
+     * @deprecated will be removed from the public API
      */
-    final class Failure<T> implements Try<T>, Serializable {
+    @Deprecated
+    public static final class Failure<T> extends Try<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -1263,7 +1262,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T1> Type of the 1st resource.
      * @return a new {@link WithResources1} instance.
      */
-    static <T1 extends AutoCloseable> WithResources1<T1> withResources(CheckedFunction0<? extends T1> t1Supplier) {
+    public static <T1 extends AutoCloseable> WithResources1<T1> withResources(CheckedFunction0<? extends T1> t1Supplier) {
         return new WithResources1<>(t1Supplier);
     }
 
@@ -1276,7 +1275,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T2> Type of the 2nd resource.
      * @return a new {@link WithResources2} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable> WithResources2<T1, T2> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier) {
+    public static <T1 extends AutoCloseable, T2 extends AutoCloseable> WithResources2<T1, T2> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier) {
         return new WithResources2<>(t1Supplier, t2Supplier);
     }
 
@@ -1291,7 +1290,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T3> Type of the 3rd resource.
      * @return a new {@link WithResources3} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> WithResources3<T1, T2, T3> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier) {
+    public static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> WithResources3<T1, T2, T3> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier) {
         return new WithResources3<>(t1Supplier, t2Supplier, t3Supplier);
     }
 
@@ -1308,7 +1307,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T4> Type of the 4th resource.
      * @return a new {@link WithResources4} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> WithResources4<T1, T2, T3, T4> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier) {
+    public static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> WithResources4<T1, T2, T3, T4> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier) {
         return new WithResources4<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier);
     }
 
@@ -1327,7 +1326,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T5> Type of the 5th resource.
      * @return a new {@link WithResources5} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> WithResources5<T1, T2, T3, T4, T5> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier) {
+    public static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> WithResources5<T1, T2, T3, T4, T5> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier) {
         return new WithResources5<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier);
     }
 
@@ -1348,7 +1347,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T6> Type of the 6th resource.
      * @return a new {@link WithResources6} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> WithResources6<T1, T2, T3, T4, T5, T6> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier) {
+    public static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> WithResources6<T1, T2, T3, T4, T5, T6> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier) {
         return new WithResources6<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier);
     }
 
@@ -1371,7 +1370,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T7> Type of the 7th resource.
      * @return a new {@link WithResources7} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> WithResources7<T1, T2, T3, T4, T5, T6, T7> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier) {
+    public static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> WithResources7<T1, T2, T3, T4, T5, T6, T7> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier) {
         return new WithResources7<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier, t7Supplier);
     }
 
@@ -1396,7 +1395,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T8> Type of the 8th resource.
      * @return a new {@link WithResources8} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> WithResources8<T1, T2, T3, T4, T5, T6, T7, T8> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier, CheckedFunction0<? extends T8> t8Supplier) {
+    public static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> WithResources8<T1, T2, T3, T4, T5, T6, T7, T8> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier, CheckedFunction0<? extends T8> t8Supplier) {
         return new WithResources8<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier, t7Supplier, t8Supplier);
     }
 
@@ -1405,7 +1404,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      *
      * @param <T1> Type of the 1st resource.
      */
-    final class WithResources1<T1 extends AutoCloseable> {
+    public static final class WithResources1<T1 extends AutoCloseable> {
 
         private final CheckedFunction0<? extends T1> t1Supplier;
 
@@ -1436,7 +1435,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T1> Type of the 1st resource.
      * @param <T2> Type of the 2nd resource.
      */
-    final class WithResources2<T1 extends AutoCloseable, T2 extends AutoCloseable> {
+    public static final class WithResources2<T1 extends AutoCloseable, T2 extends AutoCloseable> {
 
         private final CheckedFunction0<? extends T1> t1Supplier;
         private final CheckedFunction0<? extends T2> t2Supplier;
@@ -1470,7 +1469,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T2> Type of the 2nd resource.
      * @param <T3> Type of the 3rd resource.
      */
-    final class WithResources3<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> {
+    public static final class WithResources3<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> {
 
         private final CheckedFunction0<? extends T1> t1Supplier;
         private final CheckedFunction0<? extends T2> t2Supplier;
@@ -1507,7 +1506,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T3> Type of the 3rd resource.
      * @param <T4> Type of the 4th resource.
      */
-    final class WithResources4<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> {
+    public static final class WithResources4<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> {
 
         private final CheckedFunction0<? extends T1> t1Supplier;
         private final CheckedFunction0<? extends T2> t2Supplier;
@@ -1547,7 +1546,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T4> Type of the 4th resource.
      * @param <T5> Type of the 5th resource.
      */
-    final class WithResources5<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> {
+    public static final class WithResources5<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> {
 
         private final CheckedFunction0<? extends T1> t1Supplier;
         private final CheckedFunction0<? extends T2> t2Supplier;
@@ -1590,7 +1589,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T5> Type of the 5th resource.
      * @param <T6> Type of the 6th resource.
      */
-    final class WithResources6<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> {
+    public static final class WithResources6<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> {
 
         private final CheckedFunction0<? extends T1> t1Supplier;
         private final CheckedFunction0<? extends T2> t2Supplier;
@@ -1636,7 +1635,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T6> Type of the 6th resource.
      * @param <T7> Type of the 7th resource.
      */
-    final class WithResources7<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> {
+    public static final class WithResources7<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> {
 
         private final CheckedFunction0<? extends T1> t1Supplier;
         private final CheckedFunction0<? extends T2> t2Supplier;
@@ -1685,7 +1684,7 @@ public interface Try<T> extends io.vavr.Iterable<T>, io.vavr.Value<T>, Serializa
      * @param <T7> Type of the 7th resource.
      * @param <T8> Type of the 8th resource.
      */
-    final class WithResources8<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> {
+    public static final class WithResources8<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> {
 
         private final CheckedFunction0<? extends T1> t1Supplier;
         private final CheckedFunction0<? extends T2> t2Supplier;

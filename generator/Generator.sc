@@ -463,11 +463,10 @@ def generateMainClasses(): Unit = {
            * @param <L>   Type of left value.
            * @param <R>   Type of right value.
            * @param right The value.
-           * @return A new {@link $EitherType.Right} instance.
+           * @return A new {@link $EitherType} instance.
            */
-          @SuppressWarnings("unchecked")
-          public static <L, R> $EitherType.Right<L, R> Right(R right) {
-              return ($EitherType.Right<L, R>) $EitherType.right(right);
+          public static <L, R> $EitherType<L, R> Right(R right) {
+              return $EitherType.right(right);
           }
 
           /$javadoc
@@ -476,11 +475,10 @@ def generateMainClasses(): Unit = {
            * @param <L>  Type of left value.
            * @param <R>  Type of right value.
            * @param left The value.
-           * @return A new {@link $EitherType.Left} instance.
+           * @return A new {@link $EitherType} instance.
            */
-          @SuppressWarnings("unchecked")
-          public static <L, R> $EitherType.Left<L, R> Left(L left) {
-              return ($EitherType.Left<L, R>) $EitherType.left(left);
+          public static <L, R> $EitherType<L, R> Left(L left) {
+              return $EitherType.left(left);
           }
 
           // -- Future
@@ -565,22 +563,20 @@ def generateMainClasses(): Unit = {
            *
            * @param <T>   type of the value
            * @param value A value
-           * @return {@link $OptionType.Some}
+           * @return {@link $OptionType}
            */
-          @SuppressWarnings("unchecked")
-          public static <T> $OptionType.Some<T> Some(T value) {
-              return ($OptionType.Some<T>) $OptionType.some(value);
+          public static <T> $OptionType<T> Some(T value) {
+              return $OptionType.some(value);
           }
 
           /$javadoc
            * Alias for {@link $OptionType#none()}
            *
            * @param <T> component type
-           * @return the singleton instance of {@link $OptionType.None}
+           * @return the singleton instance of {@link $OptionType}
            */
-          @SuppressWarnings("unchecked")
-          public static <T> $OptionType.None<T> None() {
-              return ($OptionType.None<T>) $OptionType.none();
+          public static <T> $OptionType<T> None() {
+              return $OptionType.none();
           }
 
           // -- Try
@@ -602,11 +598,10 @@ def generateMainClasses(): Unit = {
            *
            * @param <T>   Type of the given {@code value}.
            * @param value A value.
-           * @return A new {@link $TryType.Success}.
+           * @return A new {@link $TryType}.
            */
-          @SuppressWarnings("unchecked")
-          public static <T> $TryType.Success<T> Success(T value) {
-              return ($TryType.Success<T>) $TryType.success(value);
+          public static <T> $TryType<T> Success(T value) {
+              return $TryType.success(value);
           }
 
           /$javadoc
@@ -614,11 +609,10 @@ def generateMainClasses(): Unit = {
            *
            * @param <T>       Component type of the {@code Try}.
            * @param exception An exception.
-           * @return A new {@link $TryType.Failure}.
+           * @return A new {@link $TryType}.
            */
-          @SuppressWarnings("unchecked")
-          public static <T> $TryType.Failure<T> Failure(Throwable exception) {
-              return ($TryType.Failure<T>) $TryType.failure(exception);
+          public static <T> $TryType<T> Failure(Throwable exception) {
+              return $TryType.failure(exception);
           }
 
           // -- Validation
@@ -629,12 +623,11 @@ def generateMainClasses(): Unit = {
            * @param <E>   type of the error
            * @param <T>   type of the given {@code value}
            * @param value A value
-           * @return {@link $ValidationType.Valid}
+           * @return {@link $ValidationType}
            * @throws NullPointerException if value is null
            */
-          @SuppressWarnings("unchecked")
-          public static <E, T> $ValidationType.Valid<E, T> Valid(T value) {
-              return ($ValidationType.Valid<E, T>) $ValidationType.valid(value);
+          public static <E, T> $ValidationType<E, T> Valid(T value) {
+              return $ValidationType.valid(value);
           }
 
           /$javadoc
@@ -643,12 +636,11 @@ def generateMainClasses(): Unit = {
            * @param <E>   type of the given {@code error}
            * @param <T>   type of the value
            * @param error An error
-           * @return {@link $ValidationType.Invalid}
+           * @return {@link $ValidationType}
            * @throws NullPointerException if error is null
            */
-          @SuppressWarnings("unchecked")
-          public static <E, T> $ValidationType.Invalid<E, T> Invalid(E error) {
-              return ($ValidationType.Invalid<E, T>) $ValidationType.invalid(error);
+          public static <E, T> $ValidationType<E, T> Invalid(E error) {
+              return $ValidationType.invalid(error);
           }
 
           // -- CharSeq

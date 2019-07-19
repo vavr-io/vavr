@@ -791,11 +791,10 @@ public final class API {
      * @param <L>   Type of left value.
      * @param <R>   Type of right value.
      * @param right The value.
-     * @return A new {@link Either.Right} instance.
+     * @return A new {@link Either} instance.
      */
-    @SuppressWarnings("unchecked")
-    public static <L, R> Either.Right<L, R> Right(R right) {
-        return (Either.Right<L, R>) Either.right(right);
+    public static <L, R> Either<L, R> Right(R right) {
+        return Either.right(right);
     }
 
     /**
@@ -804,11 +803,10 @@ public final class API {
      * @param <L>  Type of left value.
      * @param <R>  Type of right value.
      * @param left The value.
-     * @return A new {@link Either.Left} instance.
+     * @return A new {@link Either} instance.
      */
-    @SuppressWarnings("unchecked")
-    public static <L, R> Either.Left<L, R> Left(L left) {
-        return (Either.Left<L, R>) Either.left(left);
+    public static <L, R> Either<L, R> Left(L left) {
+        return Either.left(left);
     }
 
     // -- Future
@@ -893,22 +891,20 @@ public final class API {
      *
      * @param <T>   type of the value
      * @param value A value
-     * @return {@link Option.Some}
+     * @return {@link Option}
      */
-    @SuppressWarnings("unchecked")
-    public static <T> Option.Some<T> Some(T value) {
-        return (Option.Some<T>) Option.some(value);
+    public static <T> Option<T> Some(T value) {
+        return Option.some(value);
     }
 
     /**
      * Alias for {@link Option#none()}
      *
      * @param <T> component type
-     * @return the singleton instance of {@link Option.None}
+     * @return the singleton instance of {@link Option}
      */
-    @SuppressWarnings("unchecked")
-    public static <T> Option.None<T> None() {
-        return (Option.None<T>) Option.none();
+    public static <T> Option<T> None() {
+        return Option.none();
     }
 
     // -- Try
@@ -930,11 +926,10 @@ public final class API {
      *
      * @param <T>   Type of the given {@code value}.
      * @param value A value.
-     * @return A new {@link Try.Success}.
+     * @return A new {@link Try}.
      */
-    @SuppressWarnings("unchecked")
-    public static <T> Try.Success<T> Success(T value) {
-        return (Try.Success<T>) Try.success(value);
+    public static <T> Try<T> Success(T value) {
+        return Try.success(value);
     }
 
     /**
@@ -942,11 +937,10 @@ public final class API {
      *
      * @param <T>       Component type of the {@code Try}.
      * @param exception An exception.
-     * @return A new {@link Try.Failure}.
+     * @return A new {@link Try}.
      */
-    @SuppressWarnings("unchecked")
-    public static <T> Try.Failure<T> Failure(Throwable exception) {
-        return (Try.Failure<T>) Try.failure(exception);
+    public static <T> Try<T> Failure(Throwable exception) {
+        return Try.failure(exception);
     }
 
     // -- Validation
@@ -957,12 +951,11 @@ public final class API {
      * @param <E>   type of the error
      * @param <T>   type of the given {@code value}
      * @param value A value
-     * @return {@link Validation.Valid}
+     * @return {@link Validation}
      * @throws NullPointerException if value is null
      */
-    @SuppressWarnings("unchecked")
-    public static <E, T> Validation.Valid<E, T> Valid(T value) {
-        return (Validation.Valid<E, T>) Validation.valid(value);
+    public static <E, T> Validation<E, T> Valid(T value) {
+        return Validation.valid(value);
     }
 
     /**
@@ -971,12 +964,11 @@ public final class API {
      * @param <E>   type of the given {@code error}
      * @param <T>   type of the value
      * @param error An error
-     * @return {@link Validation.Invalid}
+     * @return {@link Validation}
      * @throws NullPointerException if error is null
      */
-    @SuppressWarnings("unchecked")
-    public static <E, T> Validation.Invalid<E, T> Invalid(E error) {
-        return (Validation.Invalid<E, T>) Validation.invalid(error);
+    public static <E, T> Validation<E, T> Invalid(E error) {
+        return Validation.invalid(error);
     }
 
     // -- CharSeq
