@@ -1524,7 +1524,7 @@ public class CharSeqTest {
     public void shouldShuffleHaveSameElements() {
         final CharSeq actual = CharSeq.of('1', '2', '3');
         final CharSeq shuffled = actual.shuffle();
-        assertThat(shuffled.containsAll(actual)).isTrue();
+        assertThat(shuffled).containsOnlyOnce('1', '2', '3');
         assertThat(shuffled.indexOf(4)).isEqualTo(-1);
     }
 
@@ -1543,7 +1543,7 @@ public class CharSeqTest {
     public void shouldShuffleHaveSameElementsDeterministic() {
         final CharSeq actual = CharSeq.of('1', '2', '3');
         final CharSeq shuffled = actual.shuffle(new Random(514662720L));
-        assertThat(shuffled.containsAll(actual)).isTrue();
+        assertThat(shuffled).containsExactly('2', '3', '1');
         assertThat(shuffled.indexOf(4)).isEqualTo(-1);
     }
 

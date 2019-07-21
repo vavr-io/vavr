@@ -1584,9 +1584,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldShuffleHaveSameElements() {
         final Seq<Integer> shuffled = of(1, 2, 3).shuffle();
-        assertThat(shuffled.indexOf(1)).isNotEqualTo(-1);
-        assertThat(shuffled.indexOf(2)).isNotEqualTo(-1);
-        assertThat(shuffled.indexOf(3)).isNotEqualTo(-1);
+        assertThat(shuffled).containsOnlyOnce(1, 2, 3);
         assertThat(shuffled.indexOf(4)).isEqualTo(-1);
     }
 
@@ -1603,9 +1601,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldShuffleHaveSameElementsDeterministic() {
         final Seq<Integer> shuffled = of(1, 2, 3).shuffle(new Random(514662720L));
-        assertThat(shuffled.indexOf(1)).isNotEqualTo(-1);
-        assertThat(shuffled.indexOf(2)).isNotEqualTo(-1);
-        assertThat(shuffled.indexOf(3)).isNotEqualTo(-1);
+        assertThat(shuffled).containsExactly(2, 3, 1);
         assertThat(shuffled.indexOf(4)).isEqualTo(-1);
     }
 
