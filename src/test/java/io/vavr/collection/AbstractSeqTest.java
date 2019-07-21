@@ -1694,7 +1694,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     // -- higher order update
 
     @Test
-    public void shouldUpdateViaFunction() throws Exception {
+    public void shouldUpdateViaFunction() {
         final Seq<Character> actual = ofAll("hello".toCharArray()).update(0, Character::toUpperCase);
         final Seq<Character> expected = ofAll("Hello".toCharArray());
         assertThat(actual).isEqualTo(expected);

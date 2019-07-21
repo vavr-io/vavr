@@ -599,7 +599,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
-        final Comparator<Character> comparator = (s1, s2) -> (s1 - s2);
+        final Comparator<Character> comparator = Comparator.comparingInt(s -> s);
         assertThat(CharSeq.of('1', '2', '3', '3', '4', '5').distinctBy(comparator))
                 .isEqualTo(CharSeq.of('1', '2', '3', '4', '5'));
     }
@@ -776,7 +776,7 @@ public class CharSeqTest {
     @Test
     public void shouldFillTheCharSeqCallingTheSupplierInTheRightOrder() {
         final java.util.LinkedList<Character> chars = new java.util.LinkedList<>(asList('0', '1'));
-        final CharSeq actual = CharSeq.fill(2, () -> chars.remove());
+        final CharSeq actual = CharSeq.fill(2, chars::remove);
         assertThat(actual).isEqualTo(CharSeq.of('0', '1'));
     }
 
@@ -2174,16 +2174,6 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // helpers
-
-    static PrintStream failingPrintStream() {
-        return new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                throw new IOException();
-            }
-        });
-    }
     // -- append
 
     @Test
@@ -3135,7 +3125,7 @@ public class CharSeqTest {
     // -- higher order update
 
     @Test
-    public void shouldUpdateViaFunction() throws Exception {
+    public void shouldUpdateViaFunction() {
         final Seq<Character> actual = CharSeq.of("hello").update(0, Character::toUpperCase);
         final Seq<Character> expected = CharSeq.of("Hello");
         assertThat(actual).isEqualTo(expected);
