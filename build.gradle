@@ -29,11 +29,6 @@ repositories {
     mavenCentral()
 }
 
-allprojects {
-    group = 'io.vavr'
-    version = '1.0.0-SNAPSHOT'
-}
-
 sourceSets {
     main {
         java {
