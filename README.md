@@ -21,27 +21,16 @@ To stay up to date please follow the [blog](http://blog.vavr.io).
 
 See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc/io.vavr/vavr).
 
-### Useful Maven Goals
+### Gradle tasks:
 
-* Executing tests: `mvn clean test`
-* Executing doclint: `mvn javadoc:javadoc`
-* Executing code coverage report: `mvn -P ci clean test jacoco:report`
-* Create -javadoc.jar: `mvn javadoc:jar`
-* Create -source.jar: `mvn source:jar`
-* Update version properties: `mvn versions:update-properties`
-* Check for new plugin version: `mvn versions:display-plugin-updates`
-
-### Benchmarks
-
-Currently, only basic microbenchmarks are available. To run:
-
-```bash
-mvn clean test -P benchmark -pl vavr-benchmark
-```
+* Build: `./gradlew check`
+  * test reports: `./build/reports/tests/test/index.html`
+  * coverage reports: `./build/reports/jacoco/test/html/index.html`
+* Javadoc (linting): `./gradlew javadoc`
 
 ### Contributing
 
-A small number of users have reported problems building Vavr. Read "How to Contribute" (CONTRIBUTING.md) for details.
+A small number of users have reported problems building Vavr. Read our [contribution guide](./CONTRIBUTING.md) for details.
 
 ---
 
