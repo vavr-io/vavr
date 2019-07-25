@@ -866,7 +866,7 @@ public interface Traversable<T> extends io.vavr.Iterable<T>, Foldable<T>, io.vav
      * Dual of {@linkplain #head()}, returning the last element.
      *
      * @return the last element.
-     * @throws NoSuchElementException is this is empty
+     * @throws NoSuchElementException if this is empty
      */
     T last();
 
