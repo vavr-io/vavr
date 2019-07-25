@@ -67,6 +67,11 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
     /**
      * Constructs a {@link Right}
      *
+     * <pre>{@code
+     * // Creates Either instance initiated with right value 1
+     * Either<?, Integer> either = Either.right(1);
+     * }</pre>
+     *
      * @param right The value.
      * @param <L>   Type of left value.
      * @param <R>   Type of right value.
@@ -78,6 +83,11 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
 
     /**
      * Constructs a {@link Left}
+     *
+     * <pre>{@code
+     * // Creates Either instance initiated with left value "error message"
+     * Either<String, ?> either = Either.left("error message");
+     * }</pre>
      *
      * @param left The value.
      * @param <L>  Type of left value.
@@ -92,6 +102,15 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * Narrows a widened {@code Either<? extends L, ? extends R>} to {@code Either<L, R>}
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
+     * <pre>{@code
+     *
+     * // It's ok, Integer inherits from Number
+     * Either<?, Number> answer = Either.right(42);
+     *
+     * // RuntimeException is an Exception
+     * Either<Exception, ?> failed = Either.left(new RuntimeException("Vogon poetry recital"));
+     *
+     * }</pre>
      *
      * @param either A {@code Either}.
      * @param <L>    Type of left value.
@@ -106,6 +125,14 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
     /**
      * Returns the left value.
      *
+     * <pre>{@code
+     * //prints "error"
+     * System.out.println(Either.left("error").getLeft());
+     *
+     * //throws NoSuchElementException
+     * System.out.println(Either.right(42).getLeft());
+     * }</pre>
+     *
      * @return The left value.
      * @throws NoSuchElementException if this is a {@code Right}.
      */
@@ -114,12 +141,28 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
     /**
      * Returns whether this Either is a Left.
      *
+     * <pre>{@code
+     * //prints "true"
+     * System.out.println(Either.left("error").isLeft());
+     *
+     * //prints "false"
+     * System.out.println(Either.right(42).isLeft());
+     * }</pre>
+     *
      * @return true, if this is a Left, false otherwise
      */
     public abstract boolean isLeft();
 
     /**
      * Returns whether this Either is a Right.
+     *
+     * <pre>{@code
+     * //prints "true"
+     * System.out.println(Either.right(42).isRight());
+     *
+     * //prints "false"
+     * System.out.println(Either.left("error").isRight());
+     * }</pre>
      *
      * @return true, if this is a Right, false otherwise
      */
