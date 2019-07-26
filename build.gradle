@@ -64,7 +64,7 @@ compileJava {
     sourceCompatibility = 8
     targetCompatibility = 8
     options.encoding = 'UTF-8'
-    options.compilerArgs = [ '-Xlint:all', '-Werror' ]
+    options.compilerArgs = [ '-Werror', '-Xlint:all', '-Xlint:-deprecation' ]
 }
 
 dependencies {
