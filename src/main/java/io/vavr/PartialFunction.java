@@ -33,8 +33,9 @@ import java.util.function.Function;
  *
  * @param <T> type of the function input, called <em>domain</em> of the function
  * @param <R> type of the function output, called <em>codomain</em> of the function
+ * @deprecated Will be removed in the next major version, along with VAVR's pattern matching, in favor of Java's native pattern matching.
  */
-@SuppressWarnings("deprecation")
+@Deprecated
 public interface PartialFunction<T, R> extends Function1<T, R> {
 
     /**

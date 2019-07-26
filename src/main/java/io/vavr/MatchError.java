@@ -22,7 +22,9 @@ import java.util.NoSuchElementException;
 
 /**
  * A {@link API.Match} throws a MatchError if no case matches the applied object.
+ * @deprecated Will be removed in the next major version, along with VAVR's pattern matching, in favor of Java's native pattern matching.
  */
+@Deprecated
 public class MatchError extends NoSuchElementException {
 
     private static final long serialVersionUID = 1L;
