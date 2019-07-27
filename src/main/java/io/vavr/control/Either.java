@@ -294,6 +294,18 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * transforming an {@code Iterable<? extends T>} into a {@code Either<Seq<U>>}.
      * <p>
      *
+     * <pre>{@code
+     * Function<Integer, Either<Exception, Double>> validatingMapper =
+     *         i -> i < 0 ? Either.left(new Exception("invalid value")) :
+     *                         Either.right(Math.sqrt(i));
+     *
+     * //prints "Right(Vector(2.0, 0.0, 3.0))"
+     * System.out.println(Either.traverse(Seq(4, 0, 9), validatingMapper));
+     *
+     * //prints "Left(Vector(java.lang.Exception: invalid value))"
+     * System.out.println(Either.traverse(Seq(4, 0, -12), validatingMapper));
+     * }</pre>
+     *
      * @param values   An {@code Iterable} of values.
      * @param mapper   A mapper of values to Eithers
      * @param <L>      The mapped left value type.
