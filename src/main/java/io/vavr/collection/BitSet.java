@@ -581,6 +581,19 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
         return toJavaSet(ignore -> new java.util.TreeSet<>(comparator()));
     }
 
+    /**
+     * Transforms this {@code BitSet}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public final <U> U transform(Function<? super BitSet<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     public final BitSet<T> union(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");

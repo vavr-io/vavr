@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Spliterator;
+import java.util.function.Function;
 
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
@@ -185,6 +186,25 @@ public class EitherTest extends AbstractValueTest {
         final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
         final Either<Integer, Seq<String>> expected = Either.left(1);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- transform
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullTransformFunction() {
+        Either.right(1).transform(null);
+    }
+
+    @Test
+    public void shouldApplyTransformFunctionToRight() {
+        final Either<?, Integer> either = Either.right(1);
+        final Function<Either<?, Integer>, String> f = e -> e.get().toString().concat("-transformed");
+        assertThat(either.transform(f)).isEqualTo("1-transformed");
+    }
+
+    @Test
+    public void shouldHandleTransformOnLeft() {
+        assertThat(Either.left(0).<String> transform(self -> self.isEmpty() ? "ok" : "failed")).isEqualTo("ok");
     }
 
     // -- traverse

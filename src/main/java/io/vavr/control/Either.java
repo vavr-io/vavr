@@ -390,6 +390,19 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
     }
 
     /**
+     * Transforms this {@code Either}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public final <U> U transform(Function<? super Either<L, R>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
+    /**
      * Gets the Right value or an alternate value, if the projected Either is a Left.
      *
      * @param other a function which converts a Left value to an alternative Right value

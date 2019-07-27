@@ -27,6 +27,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Spliterator;
+import java.util.function.Function;
 
 public class ValidationTest extends AbstractValueTest {
 
@@ -677,5 +678,24 @@ public class ValidationTest extends AbstractValueTest {
     @Test
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
+    }
+
+    // -- transform
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnNullTransformFunction() {
+        Validation.valid(1).transform(null);
+    }
+
+    @Test
+    public void shouldApplyTransformFunctionToRight() {
+        final Validation<?, Integer> validation = Validation.valid(1);
+        final Function<Validation<?, Integer>, String> f = v -> v.get().toString().concat("-transformed");
+        assertThat(validation.transform(f)).isEqualTo("1-transformed");
+    }
+
+    @Test
+    public void shouldHandleTransformOnLeft() {
+        assertThat(Validation.invalid(0).<String> transform(self -> self.isEmpty() ? "ok" : "failed")).isEqualTo("ok");
     }
 }

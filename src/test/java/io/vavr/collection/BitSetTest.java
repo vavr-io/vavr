@@ -542,6 +542,14 @@ public class BitSetTest extends AbstractSortedSetTest {
         }
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
     // -- head, init, last, tail
 
     @Test
