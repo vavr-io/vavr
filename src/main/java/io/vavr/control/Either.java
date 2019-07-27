@@ -192,6 +192,18 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
 
     /**
      * Maps either the left or the right side of this disjunction.
+     * <pre>{@code
+     *
+     * Either<?, AtomicInteger> success = Either.right(new AtomicInteger(42));
+     *
+     * //prints "Right(42)"
+     * System.out.println(success.bimap(Function1.identity(), AtomicInteger::get));
+     *
+     * Either<Exception, ?> failure = Either.left(new Exception("error"));
+     *
+     * //prints "Left(error)"
+     * System.out.println(failure.bimap(Exception::getMessage, Function1.identity()));
+     * }</pre>
      *
      * @param leftMapper  maps the left value if this is a Left
      * @param rightMapper maps the right value if this is a Right
