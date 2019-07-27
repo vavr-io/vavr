@@ -126,10 +126,10 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * Returns the left value.
      *
      * <pre>{@code
-     * //prints "error"
+     * // prints "error"
      * System.out.println(Either.left("error").getLeft());
      *
-     * //throws NoSuchElementException
+     * // throws NoSuchElementException
      * System.out.println(Either.right(42).getLeft());
      * }</pre>
      *
@@ -142,10 +142,10 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * Returns whether this Either is a Left.
      *
      * <pre>{@code
-     * //prints "true"
+     * // prints "true"
      * System.out.println(Either.left("error").isLeft());
      *
-     * //prints "false"
+     * // prints "false"
      * System.out.println(Either.right(42).isLeft());
      * }</pre>
      *
@@ -157,10 +157,10 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * Returns whether this Either is a Right.
      *
      * <pre>{@code
-     * //prints "true"
+     * // prints "true"
      * System.out.println(Either.right(42).isRight());
      *
-     * //prints "false"
+     * // prints "false"
      * System.out.println(Either.left("error").isRight());
      * }</pre>
      *
@@ -194,14 +194,14 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * Maps either the left or the right side of this disjunction.
      *
      * <pre>{@code
-     *Either<?, AtomicInteger> success = Either.right(new AtomicInteger(42));
+     * Either<?, AtomicInteger> success = Either.right(new AtomicInteger(42));
      *
-     * //prints "Right(42)"
+     * // prints "Right(42)"
      * System.out.println(success.bimap(Function1.identity(), AtomicInteger::get));
      *
      * Either<Exception, ?> failure = Either.left(new Exception("error"));
      *
-     * //prints "Left(error)"
+     * // prints "Left(error)"
      * System.out.println(failure.bimap(Exception::getMessage, Function1.identity()));
      * }</pre>
      *
@@ -227,12 +227,12 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * <pre>{@code
      * Either<Exception, Integer> success = Either.right(3);
      *
-     * //prints "Users updated: 3"
+     * // prints "Users updated: 3"
      * System.out.println(success.fold(Exception::getMessage, count -> "Users updated: " + count));
      *
      * Either<Exception, Integer> failure = Either.left(new Exception("Failed to update users"));
      *
-     * //prints "Failed to update users"
+     * // prints "Failed to update users"
      * System.out.println(failure.fold(Exception::getMessage, count -> "Users updated: " + count));
      * }</pre>
      *
@@ -299,10 +299,10 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      *         i -> i < 0 ? Either.left(new Exception("invalid value")) :
      *                         Either.right(Math.sqrt(i));
      *
-     * //prints "Right(Vector(2.0, 0.0, 3.0))"
+     * // prints "Right(Vector(2.0, 0.0, 3.0))"
      * System.out.println(Either.traverse(Seq(4, 0, 9), validatingMapper));
      *
-     * //prints "Left(Vector(java.lang.Exception: invalid value))"
+     * // prints "Left(Vector(java.lang.Exception: invalid value))"
      * System.out.println(Either.traverse(Seq(4, 0, -12), validatingMapper));
      * }</pre>
      *
