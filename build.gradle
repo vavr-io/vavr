@@ -61,6 +61,9 @@ task generateSources() {
 
 compileJava {
     dependsOn 'generateSources'
+}
+
+tasks.withType(JavaCompile) {
     sourceCompatibility = 8
     targetCompatibility = 8
     options.encoding = 'UTF-8'
