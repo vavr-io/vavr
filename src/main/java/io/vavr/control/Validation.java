@@ -392,7 +392,7 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Validation<? super Exception, ?> validation5 = Validation.valid("vavr5");
      * Validation<? super Exception, ?> validation6 = Validation.valid("vavr6");
      * Validation<? super Exception, ?> validation7 = Validation.valid("vavr7");
-     * validation1.combine(validation2, validation3, validation4, validation5, validation6,validation7);
+     * validation1.combine(validation2, validation3, validation4, validation5, validation6, validation7);
      * // throws NullPointerException if one of the validation is null.
      * }</pre>
      * @param <E>         type of error
@@ -436,7 +436,7 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Validation<? super Exception, ?> validation6 = Validation.valid("vavr6");
      * Validation<? super Exception, ?> validation7 = Validation.valid("vavr7");
      * Validation<? super Exception, ?> validation8 = Validation.valid("vavr8");
-     * validation1.combine(validation2, validation3, validation4, validation5, validation6,validation7, validation8);
+     * validation1.combine(validation2, validation3, validation4, validation5, validation6, validation7, validation8);
      * // throws NullPointerException if one of the validation is null.
      * }</pre>
      * @param <E>         type of error
