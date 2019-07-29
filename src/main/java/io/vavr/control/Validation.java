@@ -114,9 +114,9 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * // validates the either type if either is right then validation
      * // contains right value otherwise throws NoSuchElementException
      * // Creates Validation instance with the value "vavr"
-     * Validation<?,String> validation = Validation.fromEither(Either.right("vavr"));
+     * Validation<?, String> validation = Validation.fromEither(Either.right("vavr"));
      * // throws NoSuchElementException
-     * Validation<String,?> validation = Validation.fromEither(Either.left("vavr"));
+     * Validation<String, ?> validation = Validation.fromEither(Either.left("vavr"));
      * }</pre>
      *
      * @param either An {@code Either}
@@ -136,9 +136,9 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * // validates the Try types if Try is success then validation will contain the
      * // success value otherwise throws NoSuchElementException.
      * // Creates Validation instance with the value "vavr"
-     * Validation<? super Exception,?> validation = Validation.fromTry(Try.success("vavr"));
+     * Validation<? super Exception, ?> validation = Validation.fromTry(Try.success("vavr"));
      * // throws NoSuchElementException
-     * Validation<? super Exception,?> validation = Validation.fromTry(Try.failure(new Throwable("Bad")));
+     * Validation<? super Exception, ?> validation = Validation.fromTry(Try.failure(new Throwable("Bad")));
      * }</pre>
      * @param t      A {@code Try}
      * @param <T>    type of the valid value
@@ -158,7 +158,7 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * // creates a sequence of validation from list of validations or throws NullPointerException
      * // when validations are null.
      * // following code results in sequence of List.of(1, 2))
-     * Validation.sequence(List.of(Validation.valid(1),Validation.valid(2)));
+     * Validation.sequence(List.of(Validation.valid(1), Validation.valid(2)));
      * // throws NullPointerException
      * Validation.sequence(null);
      * }</pre>
@@ -188,7 +188,7 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * transforming an {@code Iterable<? extends T>} into a {@code Validation<Seq<U>>}.
      * <pre>{@code
      * // following code transforms each element into a sequence of validation. Validation.valid(List.of(1, 2));
-     * Validation<?,?> validation = Validation.traverse(List.of(1, 2), t -> Validation.valid(t));
+     * Validation<?, ?> validation = Validation.traverse(List.of(1, 2), t -> Validation.valid(t));
      * // throws NullPointerException when values and mapper are null
      * Validation.traverse(null,null);
      * }</pre>
@@ -230,8 +230,8 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Combines two {@code Validation}s into a {@link Builder}.
      * <pre>{@code
      * // following code joins two validations into one which result in Validation.Builder2
-     * Validation<? super Exception,?> validation1 = Validation.valid("vavr1");
-     * Validation<? super Exception,?> validation2 = Validation.valid("vavr2");
+     * Validation<? super Exception, ?> validation1 = Validation.valid("vavr1");
+     * Validation<? super Exception, ?> validation2 = Validation.valid("vavr2");
      * validation1.combine(validation2);
      * // throws NullPointerException if one of the validation is null.
      * }</pre>
@@ -253,10 +253,10 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Combines three {@code Validation}s into a {@link Builder3}.
      * <pre>{@code
      * // following code joins three validations into one which result in Validation.Builder3
-     * Validation<? super Exception,?> validation1 = Validation.valid("vavr1");
-     * Validation<? super Exception,?> validation2 = Validation.valid("vavr2");
-     * Validation<? super Exception,?> validation3 = Validation.valid("vavr3");
-     * validation1.combine(validation2,validation3);
+     * Validation<? super Exception, ?> validation1 = Validation.valid("vavr1");
+     * Validation<? super Exception, ?> validation2 = Validation.valid("vavr2");
+     * Validation<? super Exception, ?> validation3 = Validation.valid("vavr3");
+     * validation1.combine(validation2, validation3);
      * // throws NullPointerException if one of the validation is null.
      * }</pre>
      * @param <E>         type of error
@@ -280,11 +280,11 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Combines four {@code Validation}s into a {@link Builder4}.
      * <pre>{@code
      * // following code joins four validations into one which result in Validation.Builder4
-     * Validation<? super Exception,?> validation1 = Validation.valid("vavr1");
-     * Validation<? super Exception,?> validation2 = Validation.valid("vavr2");
-     * Validation<? super Exception,?> validation3 = Validation.valid("vavr3");
-     * Validation<? super Exception,?> validation4 = Validation.valid("vavr4");
-     * validation1.combine(validation2,validation3,validation4);
+     * Validation<? super Exception, ?> validation1 = Validation.valid("vavr1");
+     * Validation<? super Exception, ?> validation2 = Validation.valid("vavr2");
+     * Validation<? super Exception, ?> validation3 = Validation.valid("vavr3");
+     * Validation<? super Exception, ?> validation4 = Validation.valid("vavr4");
+     * validation1.combine(validation2, validation3, validation4);
      * // throws NullPointerException if one of the validation is null.
      * }</pre>
      * @param <E>         type of error
@@ -309,14 +309,14 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
 
     /**
      * Combines five {@code Validation}s into a {@link Builder5}.
-     * <pre>{@code
+     * <pre>{@codeValidation.sequence(List.of(Validation.valid(1), Validation.valid(2)))
      * // following code joins five validations into one which result in Validation.Builder5
-     * Validation<? super Exception,?> validation1 = Validation.valid("vavr1");
-     * Validation<? super Exception,?> validation2 = Validation.valid("vavr2");
-     * Validation<? super Exception,?> validation3 = Validation.valid("vavr3");
-     * Validation<? super Exception,?> validation4 = Validation.valid("vavr4");
-     * Validation<? super Exception,?> validation5 = Validation.valid("vavr5");
-     * validation1.combine(validation2,validation3,validation4,validation5);
+     * Validation<? super Exception, ?> validation1 = Validation.valid("vavr1");
+     * Validation<? super Exception, ?> validation2 = Validation.valid("vavr2");
+     * Validation<? super Exception, ?> validation3 = Validation.valid("vavr3");
+     * Validation<? super Exception, ?> validation4 = Validation.valid("vavr4");
+     * Validation<? super Exception, ?> validation5 = Validation.valid("vavr5");
+     * validation1.combine(validation2, validation3, validation4, validation5);
      * // throws NullPointerException if one of the validation is null.
      * }</pre>
      * @param <E>         type of error
@@ -346,13 +346,13 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Combines six {@code Validation}s into a {@link Builder6}.
      * <pre>{@code
      * // following code joins six validations into one which result in Validation.Builder6
-     * Validation<? super Exception,?> validation1 = Validation.valid("vavr1");
-     * Validation<? super Exception,?> validation2 = Validation.valid("vavr2");
-     * Validation<? super Exception,?> validation3 = Validation.valid("vavr3");
-     * Validation<? super Exception,?> validation4 = Validation.valid("vavr4");
-     * Validation<? super Exception,?> validation5 = Validation.valid("vavr5");
-     * Validation<? super Exception,?> validation6 = Validation.valid("vavr6");
-     * validation1.combine(validation2,validation3,validation4,validation5,validation6);
+     * Validation<? super Exception, ?> validation1 = Validation.valid("vavr1");
+     * Validation<? super Exception, ?> validation2 = Validation.valid("vavr2");
+     * Validation<? super Exception, ?> validation3 = Validation.valid("vavr3");
+     * Validation<? super Exception, ?> validation4 = Validation.valid("vavr4");
+     * Validation<? super Exception, ?> validation5 = Validation.valid("vavr5");
+     * Validation<? super Exception, ?> validation6 = Validation.valid("vavr6");
+     * validation1.combine(validation2, validation3, validation4, validation5, validation6);
      * // throws NullPointerException if one of the validation is null.
      * }</pre>
      * @param <E>         type of error
@@ -385,14 +385,14 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Combines seven {@code Validation}s into a {@link Builder7}.
      * <pre>{@code
      * // following code joins seven validations into one which result in Validation.Builder7
-     * Validation<? super Exception,?> validation1 = Validation.valid("vavr1");
-     * Validation<? super Exception,?> validation2 = Validation.valid("vavr2");
-     * Validation<? super Exception,?> validation3 = Validation.valid("vavr3");
-     * Validation<? super Exception,?> validation4 = Validation.valid("vavr4");
-     * Validation<? super Exception,?> validation5 = Validation.valid("vavr5");
-     * Validation<? super Exception,?> validation6 = Validation.valid("vavr6");
-     * Validation<? super Exception,?> validation7 = Validation.valid("vavr7");
-     * validation1.combine(validation2,validation3,validation4,validation5,validation6,validation7);
+     * Validation<? super Exception, ?> validation1 = Validation.valid("vavr1");
+     * Validation<? super Exception, ?> validation2 = Validation.valid("vavr2");
+     * Validation<? super Exception, ?> validation3 = Validation.valid("vavr3");
+     * Validation<? super Exception, ?> validation4 = Validation.valid("vavr4");
+     * Validation<? super Exception, ?> validation5 = Validation.valid("vavr5");
+     * Validation<? super Exception, ?> validation6 = Validation.valid("vavr6");
+     * Validation<? super Exception, ?> validation7 = Validation.valid("vavr7");
+     * validation1.combine(validation2, validation3, validation4, validation5, validation6,validation7);
      * // throws NullPointerException if one of the validation is null.
      * }</pre>
      * @param <E>         type of error
@@ -428,15 +428,15 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Combines eight {@code Validation}s into a {@link Builder8}.
      * <pre>{@code
      * // following code joins eight validations into one which result in Validation.Builder8
-     * Validation<? super Exception,?> validation1 = Validation.valid("vavr1");
-     * Validation<? super Exception,?> validation2 = Validation.valid("vavr2");
-     * Validation<? super Exception,?> validation3 = Validation.valid("vavr3");
-     * Validation<? super Exception,?> validation4 = Validation.valid("vavr4");
-     * Validation<? super Exception,?> validation5 = Validation.valid("vavr5");
-     * Validation<? super Exception,?> validation6 = Validation.valid("vavr6");
-     * Validation<? super Exception,?> validation7 = Validation.valid("vavr7");
-     * Validation<? super Exception,?> validation8 = Validation.valid("vavr8");
-     * validation1.combine(validation2,validation3,validation4,validation5,validation6,validation7,validation8);
+     * Validation<? super Exception, ?> validation1 = Validation.valid("vavr1");
+     * Validation<? super Exception, ?> validation2 = Validation.valid("vavr2");
+     * Validation<? super Exception, ?> validation3 = Validation.valid("vavr3");
+     * Validation<? super Exception, ?> validation4 = Validation.valid("vavr4");
+     * Validation<? super Exception, ?> validation5 = Validation.valid("vavr5");
+     * Validation<? super Exception, ?> validation6 = Validation.valid("vavr6");
+     * Validation<? super Exception, ?> validation7 = Validation.valid("vavr7");
+     * Validation<? super Exception, ?> validation8 = Validation.valid("vavr8");
+     * validation1.combine(validation2, validation3, validation4, validation5, validation6,validation7, validation8);
      * // throws NullPointerException if one of the validation is null.
      * }</pre>
      * @param <E>         type of error
@@ -489,9 +489,9 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Returns this {@code Validation} if it is valid, otherwise return the alternative.
      * <pre>{@code
      * // following code return an alternative validation("vavr") when there is an error in first validation
-     * Validation<? super Exception,?> errorInValidation = Validation.invalid(Error.class);
-     * Validation<? super Exception,?> alternativeValidation = Validation.valid("vavr");
-     * Validation<? super Exception,?> validation = errorInValidation.orElse(alternativeValidation);
+     * Validation<? super Exception, ?> errorInValidation = Validation.invalid(Error.class);
+     * Validation<? super Exception, ?> alternativeValidation = Validation.valid("vavr");
+     * Validation<? super Exception, ?> validation = errorInValidation.orElse(alternativeValidation);
      * }</pre>
      * @param other An alternative {@code Validation}
      * @return this {@code Validation} if it is valid, otherwise return the alternative.
@@ -506,8 +506,8 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Returns this {@code Validation} if it is valid, otherwise return the result of evaluating supplier.
      * <pre>{@code
      * // following code return an alternative Supplier validation("vavr") when there is an error in first validation
-     * Validation<? super Exception,?> errorInValidation = Validation.invalid(Error.class);
-     * Validation<? super Exception,?> validation = errorInValidation.orElse(() -> Validation.valid("vavr"));
+     * Validation<? super Exception, ?> errorInValidation = Validation.invalid(Error.class);
+     * Validation<? super Exception, ?> validation = errorInValidation.orElse(() -> Validation.valid("vavr"));
      * }</pre>
      * @param supplier An alternative {@code Validation} supplier
      * @return this {@code Validation} if it is valid, otherwise return the result of evaluating supplier.
@@ -536,8 +536,8 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Gets the value if it is a Valid or an value calculated from the error.
      * <pre>{@code
      * // following code applies a function if the validation contains invalid data.
-     * Validation<? super Exception,?> validation =  Validation.invalid(1);
-     * Function<Integer,Integer> function = number -> number + 1;
+     * Validation<? super Exception, ?> validation =  Validation.invalid(1);
+     * Function<Integer, Integer> function = number -> number + 1;
      * validation.getOrElseGet(function);
      * // otherwise if the validation contains valid then it returns valid data.
      * }</pre>
@@ -566,8 +566,8 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * Converts this Validation to an {@link Either}.
      * <pre>{@code
      * // following code converts validations of valid type to Either right type.
-     * Validation<? super Exception,?> validation =  Validation.valid(1);
-     * Either<?super Exception,?> either = validation.toEither();
+     * Validation<? super Exception, ?> validation =  Validation.valid(1);
+     * Either<?super Exception, ?> either = validation.toEither();
      * // otherwise if the validation contains invalid then it returns Either left type.
      * }</pre>
      * @return {@code Either.right(get())} if this is valid, otherwise {@code Either.left(getError())}.
