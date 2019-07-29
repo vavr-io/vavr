@@ -567,7 +567,7 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
      * <pre>{@code
      * // following code converts validations of valid type to Either right type.
      * Validation<? super Exception, ?> validation =  Validation.valid(1);
-     * Either<?super Exception, ?> either = validation.toEither();
+     * Either<? super Exception, ?> either = validation.toEither();
      * // otherwise if the validation contains invalid then it returns Either left type.
      * }</pre>
      * @return {@code Either.right(get())} if this is valid, otherwise {@code Either.left(getError())}.
