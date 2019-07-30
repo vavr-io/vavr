@@ -63,8 +63,8 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * <pre>
  * <code>
  * // factory methods
- * List.empty()                        // = List.of() = Nil.instance()
- * List.of(x)                          // = new Cons&lt;&gt;(x, Nil.instance())
+ * List.empty()                        // = List.of()
+ * List.of(x)                          // e.g. List.of(1)
  * List.of(Object...)                  // e.g. List.of(1, 2, 3)
  * List.ofAll(Iterable)                // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
  * List.ofAll(&lt;primitive array&gt;) // e.g. List.of(new int[] {1, 2, 3}) = 1, 2, 3
@@ -145,10 +145,9 @@ public abstract class List<T> implements LinearSeq<T> {
     }
 
     /**
-     * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
+     * Returns the single instance of Nil.
      * <p>
      * Note: this method intentionally returns type {@code List} and not {@code Nil}. This comes handy when folding.
-     * If you explicitly need type {@code Nil} use {@linkplain Nil#instance()}.
      *
      * @param <T> Component type of Nil, determined by type inference in the particular context.
      * @return The empty list.
@@ -207,12 +206,9 @@ public abstract class List<T> implements LinearSeq<T> {
 
     /**
      * Creates a List of the given elements.
-     * <pre>
-     * <code>
-     *   List.of(1, 2, 3, 4)
-     * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))
-     * </code>
+     * <pre>{@code
+     * List.of(1, 2, 3, 4)
+     * }
      * </pre>
      *
      * @param <T>      Component type of the List.
