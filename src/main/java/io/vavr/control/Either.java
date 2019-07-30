@@ -461,15 +461,13 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
     /**
      * Maps the value of this Either if it is a Right, performs no operation if this is a Left.
      *
-     * <pre><code>
-     * import static io.vavr.API.*;
-     *
+     * <pre>{@code
      * // = Right("A")
-     * Right("a").map(String::toUpperCase);
+     * Either.right("a").map(String::toUpperCase);
      *
      * // = Left(1)
-     * Left(1).map(String::toUpperCase);
-     * </code></pre>
+     * Either.left(1).map(String::toUpperCase);
+     * }</pre>
      *
      * @param mapper A mapper
      * @param <U>    Component type of the mapped right value
@@ -491,13 +489,11 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * Maps the value of this Either if it is a Left, performs no operation if this is a Right.
      *
      * <pre>{@code
-     * import static io.vavr.API.*;
-     *
      * // = Left(2)
-     * Left(1).mapLeft(i -> i + 1);
+     * Either.left(1).mapLeft(i -> i + 1);
      *
      * // = Right("a")
-     * Right("a").mapLeft(i -> i + 1);
+     * Either.right("a").mapLeft(i -> i + 1);
      * }</pre>
      *
      * @param leftMapper A mapper
@@ -550,13 +546,11 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * the filterVal function to the {@code Either} value.
      *
      * <pre>{@code
-     * import static io.vavr.API.*;
-     *
      * // = Left("bad: a")
-     * Right("a").filterOrElse(i -> false, val -> "bad: " + val);
+     * Either.right("a").filterOrElse(i -> false, val -> "bad: " + val);
      *
      * // = Right("a")
-     * Right("a").filterOrElse(i -> true, val -> "bad: " + val);
+     * Either.right("a").filterOrElse(i -> true, val -> "bad: " + val);
      * }</pre>
      *
      * @param predicate A predicate
