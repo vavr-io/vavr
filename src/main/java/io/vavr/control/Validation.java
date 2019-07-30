@@ -184,6 +184,19 @@ public abstract class Validation<E, T> implements io.vavr.Iterable<T>, Value<T>,
     }
 
     /**
+     * Transforms this {@code Validation}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public final <U> U transform(Function<? super Validation<E, T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
+    /**
      * Maps the values of an iterable to a sequence of mapped values into a single {@code Validation} by
      * transforming an {@code Iterable<? extends T>} into a {@code Validation<Seq<U>>}.
      * <pre>{@code

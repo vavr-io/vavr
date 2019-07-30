@@ -307,6 +307,19 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         return results.reverse();
     }
 
+    /**
+     * Transforms this {@code PriorityQueue}.
+     *
+     * @param f   A transformation
+     * @param <U> Type of transformation result
+     * @return An instance of type {@code U}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public final <U> U transform(Function<? super PriorityQueue<T>, ? extends U> f) {
+        Objects.requireNonNull(f, "f is null");
+        return f.apply(this);
+    }
+
     @Override
     public PriorityQueue<T> distinct() {
         return distinctBy(comparator);

@@ -280,6 +280,14 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         assertThat(queue.toPriorityQueue()).isSameAs(queue);
     }
 
+    // -- transform()
+
+    @Test
+    public void shouldTransform() {
+        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
+        assertThat(transformed).isEqualTo("42");
+    }
+
     // -- property based tests
 
     @Test
