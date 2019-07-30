@@ -363,6 +363,16 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
     /**
      * Maps the values of an iterable to a sequence of mapped values into a single {@code Either} by
      * transforming an {@code Iterable<? extends T>} into a {@code Either<Seq<U>>}.
+     *
+     * <pre>{@code
+     * Iterable<String> values = List.of("a", "b", "c");
+     * // prints Right(Vector(a, b, c))
+     * System.out.println(Either.traverseRight(values, Either::right));
+     *
+     * // prints Left(a)
+     * System.out.println(Either.traverseRight(values, Either::left));
+     * }</pre>
+     *
      * <p>
      *
      * @param values   An {@code Iterable} of values.
@@ -1013,6 +1023,13 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
         /**
          * Gets the Right value or an alternate value, if the projected Either is a Left.
          *
+         * <pre>{@code
+         * // prints 42
+         * System.out.println(Either.right(42).getOrElseGet(l -> 2));
+         * // prints 0
+         * System.out.println(Either.left(42).getOrElseGet(l -> 0));
+         * }</pre>
+         *
          * @param other a function which converts a Left value to an alternative Right value
          * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
          * {@code other} by applying the Left value.
@@ -1025,6 +1042,14 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
         /**
          * Runs an action in the case this is a projection on a Left value.
          *
+         * <pre>{@code
+         *
+         * // nothing is printed
+         * Either.right(42).orElseRun(System.out::println);
+         *
+         * // prints "error message"
+         * Either.left("error message").orElseRun(System.out::println);
+         * }</pre>
          * @param action an action which consumes a Left value
          */
         public void orElseRun(Consumer<? super L> action) {
@@ -1034,6 +1059,14 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
 
         /**
          * Gets the Right value or throws, if the projected Either is a Left.
+         *
+         * <pre>{@code
+         * // prints "42"
+         * System.out.println(Either.<String, Integer> right(42).getOrElseThrow(s -> new RuntimeException(s)));
+         *
+         * // throws RuntimeException("error message")
+         * Either.left("error message").getOrElseThrow(s -> new RuntimeException(s));
+         * }</pre>
          *
          * @param <X>               a throwable type
          * @param exceptionFunction a function which creates an exception based on a Left value
