@@ -176,7 +176,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, io.vavr.Value<T>, S
     }
 
     /**
-     * Creates a {@link Success} that contains the given {@code value}. Shortcut for {@code new Success<>(value)}.
+     * Creates a {@link Success} that contains the given {@code value}.
      *
      * @param value A value.
      * @param <T>   Type of the given {@code value}.
@@ -187,7 +187,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, io.vavr.Value<T>, S
     }
 
     /**
-     * Creates a {@link Failure} that contains the given {@code exception}. Shortcut for {@code new Failure<>(exception)}.
+     * Creates a {@link Failure} that contains the given {@code exception}.
      *
      * @param exception An exception.
      * @param <T>       Component type of the {@code Try}.
@@ -678,7 +678,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, io.vavr.Value<T>, S
             }
         }
     }
-    
+
     /**
      * Consumes the cause if this is a {@link Try.Failure}.
      *
@@ -714,7 +714,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, io.vavr.Value<T>, S
      *    .onFailure(RuntimeException.class, x -> System.out.println("Runtime exception"))
      *    .onFailure(Error.class, x -> System.out.println("Error"));
      * }</pre>
-     * 
+     *
      * @param exceptionType the exception type that is handled
      * @param action an excpetion consumer
      * @param <X> the exception type that should be handled
@@ -879,7 +879,7 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, io.vavr.Value<T>, S
      * // = Failure(java.lang.ArithmeticException: / by zero)
      * Try.of(() -> 1/0).recoverWith(Error.class, x -> Try.success(Integer.MAX_VALUE));
      * }</pre>
-     * 
+     *
      * @param <X>           Exception type
      * @param exceptionType The specific exception type that should be handled
      * @param f             A recovery function taking an exception of type {@code X} and returning Try as a result of recovery.
