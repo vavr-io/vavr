@@ -25,6 +25,7 @@ import io.vavr.collection.CharSeq;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Spliterator;
 import org.junit.Test;
@@ -57,6 +58,22 @@ public class LenientValidationTest extends AbstractValueTest {
     @Override
     protected int getPeekNonNilPerformingAnAction() {
         return 1;
+    }
+
+    // -- LenientValidation.of
+
+    @Test
+    public void shouldCreateValidLenientValidation() {
+        LenientValidation<Integer, String> validation = LenientValidation.of(Arrays.asList(1, 2), Option.some("ok"));
+        assertThat(validation.getErrors()).isEqualTo(List.of(1, 2));
+        assertThat(validation.getValue()).isEqualTo(Option.some("ok"));
+    }
+
+    @Test
+    public void shouldCreateInvalidLenientValidation() {
+        LenientValidation<Integer, String> validation = LenientValidation.of(Arrays.asList(1, 2), Option.none());
+        assertThat(validation.getErrors()).isEqualTo(List.of(1, 2));
+        assertThat(validation.getValue()).isEqualTo(Option.none());
     }
 
     // -- LenientValidation.valid
@@ -136,7 +153,7 @@ public class LenientValidationTest extends AbstractValueTest {
             .isEqualTo(LenientValidation.fromNullable(List.of("error-1", "error0", "error-2", "error-1"), List.of(1, 2)));
     }
 
-    // -- filter
+    // -- LenientValidation.filter
 
     @Test
     public void shouldFilterValid() {
@@ -152,7 +169,7 @@ public class LenientValidationTest extends AbstractValueTest {
         assertThat(invalid.filter(i -> false)).isEqualTo(invalid);
     }
 
-    // -- flatMap
+    // -- LenientValidation.flatMap
 
     @Test
     public void shouldFlatMapValidsCorrectly() {
@@ -219,7 +236,6 @@ public class LenientValidationTest extends AbstractValueTest {
         );
         assertThat(result).isEqualTo("Errors: error-1 error-2 , Value: ok");
     }
-
 
     @Test
     public void shouldFoldEmptyToString() {
