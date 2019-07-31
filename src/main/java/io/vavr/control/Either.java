@@ -102,14 +102,13 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * Narrows a widened {@code Either<? extends L, ? extends R>} to {@code Either<L, R>}
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
-     * <pre>{@code
      *
+     * <pre>{@code
      * // It's ok, Integer inherits from Number
      * Either<?, Number> answer = Either.right(42);
      *
      * // RuntimeException is an Exception
      * Either<Exception, ?> failed = Either.left(new RuntimeException("Vogon poetry recital"));
-     *
      * }</pre>
      *
      * @param either A {@code Either}.
@@ -292,7 +291,6 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
     /**
      * Maps the values of an iterable to a sequence of mapped values into a single {@code Either} by
      * transforming an {@code Iterable<? extends T>} into a {@code Either<Seq<U>>}.
-     * <p>
      *
      * <pre>{@code
      * Function<Integer, Either<Exception, Double>> validatingMapper =
@@ -372,8 +370,6 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
      * // prints Left(a)
      * System.out.println(Either.traverseRight(values, Either::left));
      * }</pre>
-     *
-     * <p>
      *
      * @param values   An {@code Iterable} of values.
      * @param mapper   A mapper of values to Eithers
@@ -1056,13 +1052,13 @@ public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value
          * Runs an action in the case this is a projection on a Left value.
          *
          * <pre>{@code
-         *
          * // nothing is printed
          * Either.right(42).orElseRun(System.out::println);
          *
          * // prints "error message"
          * Either.left("error message").orElseRun(System.out::println);
          * }</pre>
+         *
          * @param action an action which consumes a Left value
          */
         public void orElseRun(Consumer<? super L> action) {

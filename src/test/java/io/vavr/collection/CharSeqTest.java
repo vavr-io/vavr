@@ -2681,7 +2681,7 @@ public class CharSeqTest {
 
     @Test
     public void shouldThrowWhenInsertingAllIterableContainingNull() {
-        assertThatThrownBy(() -> CharSeq.empty().insertAll(0, Arrays.asList(null,null))).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> CharSeq.empty().insertAll(0, Arrays.asList(null, null))).isInstanceOf(NullPointerException.class);
     }
 
     // -- intersperse

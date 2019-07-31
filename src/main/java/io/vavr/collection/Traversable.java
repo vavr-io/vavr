@@ -433,6 +433,7 @@ public interface Traversable<T> extends io.vavr.Iterable<T>, Foldable<T>, io.vav
      * Returns a new traversable consisting of all elements which do not satisfy the given predicate.
      * <p>
      * The default implementation is equivalent to
+     *
      * <pre>{@code filter(predicate.negate()}</pre>
      *
      * @param predicate A predicate
@@ -448,6 +449,7 @@ public interface Traversable<T> extends io.vavr.Iterable<T>, Foldable<T>, io.vav
      * Returns a new traversable consisting of all elements which do not satisfy the given predicate.
      * <p>
      * The default implementation is equivalent to
+     *
      * <pre>{@code filter(predicate.negate()}</pre>
      *
      * @deprecated Please use {@link #filterNot(Predicate)}
@@ -719,7 +721,8 @@ public interface Traversable<T> extends io.vavr.Iterable<T>, Foldable<T>, io.vav
      * e.g. when using a List as HashMap key, we might want to cache the hash code.
      * This can be achieved by simply using a wrapper class, which is not included in Vavr but could be implemented like this:
      *
-     * <pre>{@code public final class Hashed<K> {
+     * <pre>{@code
+     * public final class Hashed<K> {
      *
      *     private final K key;
      *     private final Lazy<Integer> hashCode;
@@ -754,7 +757,8 @@ public interface Traversable<T> extends io.vavr.Iterable<T>, Foldable<T>, io.vav
      *     public String toString() {
      *         return "Hashed(" + (key == null ? "null" : key.toString()) + ")";
      *     }
-     * }}</pre>
+     * }
+     * }</pre>
      *
      * @return The hash code of this collection
      */
@@ -1420,6 +1424,7 @@ public interface Traversable<T> extends io.vavr.Iterable<T>, Foldable<T>, io.vav
      * first element of the next window.
      * <p>
      * Examples:
+     *
      * <pre>{@code
      * [].slideBy(Function.identity()) = []
      * [1,2,3,4,4,5].slideBy(Function.identity()) = [[1],[2],[3],[4,4],[5]]

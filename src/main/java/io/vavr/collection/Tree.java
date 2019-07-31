@@ -224,6 +224,7 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * </ol>
      * <p>
      * Example:
+     *
      * <pre>{@code
      * // = (1 (2 4 5) 3)
      * Tree.recurse(1, i ->

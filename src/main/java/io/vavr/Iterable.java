@@ -42,6 +42,7 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      * A generic conversion function.
      * <p>
      * Example:
+     *
      * <pre>{@code
      * List<Integer> list = Option.some(1).to(List::ofAll);
      * }</pre>
