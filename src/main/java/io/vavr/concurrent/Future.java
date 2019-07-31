@@ -515,7 +515,8 @@ public interface Future<T> extends io.vavr.Iterable<T>, Value<T> {
      *     return Future.run(complete -> {
      *         nameFuture.onComplete(name -> complete.test("Hi " + name));
      *     });
-     * }}</pre>
+     * }
+     * }</pre>
      *
      * The computation receives a {@link Predicate}, named {@code complete} by convention,
      * that takes a result of type {@code Try<T>} and returns a boolean that states whether the
@@ -553,7 +554,8 @@ public interface Future<T> extends io.vavr.Iterable<T>, Value<T> {
      *     return Future.run(complete -> {
      *         nameFuture.onComplete(name -> complete.with("Hi " + name));
      *     });
-     * }}</pre>
+     * }
+     * }</pre>
      *
      * The computation receives a {@link Predicate}, named {@code complete} by convention,
      * that takes a result of type {@code Try<T>} and returns a boolean that states whether the

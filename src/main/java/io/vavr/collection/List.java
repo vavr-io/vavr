@@ -206,10 +206,10 @@ public abstract class List<T> implements LinearSeq<T> {
 
     /**
      * Creates a List of the given elements.
+     *
      * <pre>{@code
      * List.of(1, 2, 3, 4)
-     * }
-     * </pre>
+     * }</pre>
      *
      * @param <T>      Component type of the List.
      * @param elements Zero or more elements.

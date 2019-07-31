@@ -328,7 +328,6 @@ public abstract class Try<T> implements io.vavr.Iterable<T>, io.vavr.Value<T>, S
      * R newValue = partialFunction.apply(value)
      * }</pre>
      *
-     *
      * @param partialFunction A function that is not necessarily defined on value of this try.
      * @param <R> The new value type
      * @return A new {@code Try} instance containing value of type {@code R}
