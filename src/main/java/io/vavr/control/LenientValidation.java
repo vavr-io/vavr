@@ -49,7 +49,7 @@ import java.util.function.Supplier;
  * While a {@code Validation} can either be a {@code Valid} or an {@code Invalid}, an instance of {@code LenientValidation}
  * can contain errors and a value at the same time.
  * This is especially helpful in situations where you want to validate a sequence of values. While the validation of a single value
- * might fail, it can still be reasonable to continue with all the values of the sequence that where successfully validated.
+ * might fail, it can still be reasonable to continue with all the values of the sequence that were successfully validated.
  *
  * <pre>
  * <code>
