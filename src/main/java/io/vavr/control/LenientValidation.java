@@ -181,7 +181,7 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
      * the invalid part
      * @param <E> error type
      * @param <T> value type
-     * @return
+     * @return A {@code LenientValidation} instance
      */
     public static <E, T> LenientValidation<E, T> fromMultiErrorValidation(Validation<Seq<E>, T> validation) {
         Objects.requireNonNull(validation, "validation is null");
@@ -199,7 +199,7 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
      * @param validation A {@code Validation} instance
      * @param <E> error type
      * @param <T> value type
-     * @return
+     * @return A {@code LenientValidation} instance
      */
     public static <E, T> LenientValidation<E, T> fromValidation(Validation<E, T> validation) {
         Objects.requireNonNull(validation, "validation is null");
@@ -512,7 +512,7 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
      *
      * @param f
      * @param <U>
-     * @return
+     * @return A {@code LenientValidation} instance
      */
     public <U> LenientValidation<E, U> flatMap(Function1<? super T, LenientValidation<E, U>> f) {
         Objects.requireNonNull(f, "f is null");
@@ -535,7 +535,7 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
      * @param f
      * @param errorProvider
      * @param <U>
-     * @return
+     * @return A {@code LenientValidation} instance
      */
     public <U> LenientValidation<E, U> flatMapTry(
         CheckedFunction1<? super T, LenientValidation<E, U>> f,
