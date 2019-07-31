@@ -429,4 +429,18 @@ public class LenientValidationTest extends AbstractValueTest {
             .isEqualTo(LenientValidation.invalid(List.of(3, 5)));
     }
 
+    // -- LenientValidation.flatMapError
+
+    @Test
+    public void shouldFlatMapErrorOnValid() {
+        assertThat(LenientValidation.valid(5).flatMapError(List::of))
+            .isEqualTo(LenientValidation.valid(5));
+    }
+
+    @Test
+    public void shouldFlatMapErrorOnInvalid() {
+        assertThat(LenientValidation.invalid(List.of(1, 3)).flatMapError(x -> List.of(x, x * 2)))
+            .isEqualTo(LenientValidation.invalid(List.of(1, 2, 3, 6)));
+    }
+
 }
