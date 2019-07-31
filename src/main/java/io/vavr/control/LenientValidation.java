@@ -45,12 +45,54 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * <p>
+ * A lenient variant of the {@code Validation} class.
+ * While a {@code Validation} can either be a {@code Valid} or an {@code Invalid}, an instance of {@code LenientValidation}
+ * can contain errors and a value at the same time.
+ * This is especially helpful in situations where you want to validate a sequence of values. While the validation of a single value
+ * might fail, it can still be reasonable to continue with all the values of the sequence that where successfully validated.
  *
- * 
- * </p>
- * @param <E> data type for errors
- * @param <T> data type for the value
+ * <pre>
+ * <code>
+ * <b>LenientValidation construction:</b>
+ *
+ * <i>Fully valid instance:</i>
+ * LenientValidation&lt;String,Integer&gt; valid = LenientValidation.valid(5);
+ *
+ * <i>Fully invalid instance:</i>
+ * LenientValidation&lt;String,Integer&gt; invalid = LenientValidation.invalid(List.of("error1","error2"));
+ *
+ * <i>Partially invalid instance:</i>
+ * LenientValidation&lt;String,Integer&gt; partiallyValid = LenientValidation.of(List.of("error1","error2"), Option.some(5));
+ *
+ * <b>LenientValidation combination:</b>
+ *
+ * LenientValidation&lt;String,String&gt; valid1 = LenientValidation.valid("John");
+ * LenientValidation&lt;String,Integer&gt; valid2 = LenientValidation.valid(5);
+ * Function2&lt;String,Integer,Person&gt; f = ...;
+ *
+ * LenientValidation&lt;String&gt;,Person&gt; result = LenientValidation.combine(valid1, valid2).ap(f);
+ * // Results in a fully valid Person instance
+ *
+ * <b>LenientValidation sequencing:</b>
+ *
+ * LenientValidation&lt;String,Integer&gt; valid1 = LenientValidation.valid(2);
+ * LenientValidation&lt;String,Integer&gt; valid2 = LenientValidation.valid(3);
+ * LenientValidation&lt;String,Integer&gt; valid3 = LenientValidation.invalid(List.of("error"));
+ *
+ * LenientValidation&lt;String&gt;,List&lt;Integer&gt;&gt; result = LenientValidation.sequence(List.of(valid1, valid2, valid3));
+ * // Results in the value [2, 3] together with the occurred error ["error"]
+ *
+ * <b>LenientValidation traversing:</b>
+ *
+ * LenientValidation&lt;String&gt;,List&lt;Integer&gt;&gt; result =
+ *   LenientValidation.traverse(List.of(1, 2, 3, 4), i -> i % 2 == 0 ? LenientValidation.valid(i) : LenientValidation.invalid("odd number " + i));
+ * // Results in the value [2, 4] together with the occurred errors ["odd number 1", "odd number 3"]
+ *
+ * </code>
+ * </pre>
+ *
+ * @param <E> error type
+ * @param <T> value type
  */
 public final class LenientValidation<E, T> implements Value<T>, Serializable {
 
