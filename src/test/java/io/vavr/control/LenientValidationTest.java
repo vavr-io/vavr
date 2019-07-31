@@ -22,14 +22,10 @@ package io.vavr.control;
 import io.vavr.AbstractValueTest;
 import io.vavr.Function1;
 import io.vavr.Value;
-import io.vavr.collection.CharSeq;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Traversable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.Spliterator;
 import org.junit.Test;
 
 public class LenientValidationTest extends AbstractValueTest {
