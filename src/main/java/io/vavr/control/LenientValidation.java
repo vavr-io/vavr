@@ -81,8 +81,8 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
      */
     public Validation<Seq<E>, T> strict() {
         return hasErrors()
-                ? Validation.invalid(errors)
-                : value.toValidation(List.empty());
+            ? Validation.invalid(errors)
+            : value.toValidation(List.empty());
     }
 
     /**
@@ -304,6 +304,22 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
         );
     }
 
+    /**
+     * Flatmaps the errors of this {@code LenientValidation}, producing multiple errors for each of the errors of this {@code LenientValidation}.
+     *
+     * @param <U> type of the error resulting from the mapping
+     * @param f   a function that maps an error to an iterable of new errors
+     * @return an instance of {@code LenientValidation} with the errors flatmapped
+     * @throws NullPointerException if mapping operation f is null
+     */
+    public <U> LenientValidation<U, T> flatMapError(Function1<E, ? extends Iterable<U>> f) {
+        Objects.requireNonNull(f, "f is null");
+        return of(
+            getErrors().flatMap(f),
+            getValue()
+        );
+    }
+
     public <U> LenientValidation<E, U> ap(LenientValidation<E, ? extends Function<? super T, ? extends U>> validation) {
         Objects.requireNonNull(validation, "validation is null");
         return of(
@@ -352,7 +368,10 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
         );
     }
 
-    public <U> LenientValidation<E, U> flatMapTry(CheckedFunction1<? super T, LenientValidation<E, U>> f, Function1<Throwable, ? extends E> errorProvider) {
+    public <U> LenientValidation<E, U> flatMapTry(
+        CheckedFunction1<? super T, LenientValidation<E, U>> f,
+        Function1<Throwable, ? extends E> errorProvider)
+    {
         Objects.requireNonNull(f, "f is null");
         Objects.requireNonNull(errorProvider, "errorProvider is null");
         return flatMap(value ->
@@ -402,7 +421,10 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
      * @return an instance of {@code LenientValidation}
      * @throws NullPointerException if errorMapper or valueMapper is null
      */
-    public <E2, T2> LenientValidation<E2, T2> bimap(Function<? super Seq<? super E>, Seq<E2>> errorMapper, Function<Option<? super T>, Option<T2>> valueMapper) {
+    public <E2, T2> LenientValidation<E2, T2> bimap(
+        Function<? super Seq<? super E>, Seq<E2>> errorMapper,
+        Function<Option<? super T>, Option<T2>> valueMapper)
+    {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return of(errorMapper.apply(errors), valueMapper.apply(value));
@@ -419,7 +441,8 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     public <U1, U2, U> U fold(
         Function<? super Seq<? super E>, U1> errorMapper,
         Function<? super Option<? super T>, U2> valueMapper,
-        Function2<? super U1, ? super U2, U> combiner) {
+        Function2<? super U1, ? super U2, U> combiner)
+    {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         Objects.requireNonNull(combiner, "combiner is null");
