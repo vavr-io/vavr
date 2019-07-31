@@ -115,6 +115,20 @@ public class LenientValidationTest extends AbstractValueTest {
         assertThat(LenientValidation.empty()).isEqualTo(LenientValidation.of(List.empty(), Option.none()));
     }
 
+    // -- LenientValidation.fromMultiErrorValidation
+
+    @Test
+    public void shouldCreateFromValidMultiErrorValidation() {
+        assertThat(LenientValidation.fromMultiErrorValidation(Validation.valid("ok")))
+            .isEqualTo(LenientValidation.valid("ok"));
+    }
+
+    @Test
+    public void shouldCreateFromInvalidMultiErrorValidation() {
+        assertThat(LenientValidation.fromMultiErrorValidation(Validation.invalid(List.of("error-1", "error-2"))))
+            .isEqualTo(LenientValidation.invalid(List.of("error-1", "error-2")));
+    }
+
     // -- LenientValidation.fromValidation
 
     @Test
