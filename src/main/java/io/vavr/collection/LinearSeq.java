@@ -60,11 +60,9 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     LinearSeq<T> appendAll(Iterable<? extends T> elements);
 
-    @GwtIncompatible
     @Override
     LinearSeq<T> asJava(Consumer<? super java.util.List<T>> action);
 
-    @GwtIncompatible
     @Override
     LinearSeq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
 

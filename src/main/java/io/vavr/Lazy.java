@@ -125,7 +125,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * @param <T>      type of the lazy value
      * @return A new instance of T
      */
-    @GwtIncompatible("reflection is not supported")
     @SuppressWarnings("unchecked")
     public static <T> T val(Supplier<? extends T> supplier, Class<T> type) {
         Objects.requireNonNull(supplier, "supplier is null");
@@ -266,7 +265,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * @param s An object serialization stream.
      * @throws java.io.IOException If an error occurs writing to the stream.
      */
-    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private void writeObject(ObjectOutputStream s) throws IOException {
         get(); // evaluates the lazy value if it isn't evaluated yet!
         s.defaultWriteObject();

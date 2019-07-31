@@ -505,7 +505,6 @@ public abstract class Stream<T> implements LinearSeq<T> {
         return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
-    @GwtIncompatible
     public static Stream<Double> rangeBy(double from, double toExclusive, double step) {
         return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -610,7 +609,6 @@ public abstract class Stream<T> implements LinearSeq<T> {
         return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
-    @GwtIncompatible
     public static Stream<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return Stream.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
@@ -852,25 +850,21 @@ public abstract class Stream<T> implements LinearSeq<T> {
         return isEmpty() ? this : new AppendSelf<>((Cons<T>) this, mapper).stream();
     }
 
-    @GwtIncompatible
     @Override
     public final java.util.List<T> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public final Stream<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public final java.util.List<T> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public final Stream<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
@@ -1959,12 +1953,10 @@ public abstract class Stream<T> implements LinearSeq<T> {
             return tail.get();
         }
 
-        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private Object writeReplace() {
             return new SerializationProxy<>(this);
         }
 
-        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
         }
@@ -2008,12 +2000,10 @@ public abstract class Stream<T> implements LinearSeq<T> {
             }
         }
 
-        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private Object writeReplace() {
             return new SerializationProxy<>(this);
         }
 
-        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
         }
@@ -2027,7 +2017,6 @@ public abstract class Stream<T> implements LinearSeq<T> {
      */
     // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
     // classes. Also, it may not be compatible with circular object graphs.
-    @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private static final class SerializationProxy<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;

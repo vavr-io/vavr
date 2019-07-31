@@ -327,7 +327,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
-    @GwtIncompatible
     public static Queue<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -432,7 +431,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
-    @GwtIncompatible
     public static Queue<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
@@ -673,25 +671,21 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         return enqueueAll(elements);
     }
 
-    @GwtIncompatible
     @Override
     public java.util.List<T> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public Queue<T> asJava(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public java.util.List<T> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public Queue<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
