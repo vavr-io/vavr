@@ -76,6 +76,22 @@ public class LenientValidationTest extends AbstractValueTest {
         assertThat(validation.getValue()).isEqualTo(Option.none());
     }
 
+    // -- LenientValidation.fromNullable
+
+    @Test
+    public void shouldCreateValidLenientValidationFromNullable() {
+        LenientValidation<Integer, String> validation = LenientValidation.fromNullable(Arrays.asList(1, 2), "ok");
+        assertThat(validation.getErrors()).isEqualTo(List.of(1, 2));
+        assertThat(validation.getValue()).isEqualTo(Option.some("ok"));
+    }
+
+    @Test
+    public void shouldCreateInvalidLenientValidationFromNullable() {
+        LenientValidation<Integer, String> validation = LenientValidation.fromNullable(Arrays.asList(1, 2), null);
+        assertThat(validation.getErrors()).isEqualTo(List.of(1, 2));
+        assertThat(validation.getValue()).isEqualTo(Option.none());
+    }
+
     // -- LenientValidation.valid
 
     @Test
