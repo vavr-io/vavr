@@ -194,6 +194,18 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(either.getLeft()).isEqualTo("vavr");
     }
 
+    // -- lenient
+
+    @Test
+    public void shouldConvertToValidLenientValidation() {
+        assertThat(Validation.valid(42).lenient()).isEqualTo(LenientValidation.valid(42));
+    }
+
+    @Test
+    public void shouldConvertToInvalidLenientValidation() {
+        assertThat(Validation.invalid("error").lenient()).isEqualTo(LenientValidation.invalid(List.of("error")));
+    }
+
     // -- filter
 
     @Test
