@@ -385,6 +385,15 @@ public class LenientValidationTest extends AbstractValueTest {
         assertThat(LenientValidation.of(List.of("error-1"), Option.some("ok")).toEither()).isEqualTo(Either.right("ok"));
     }
 
+    // -- LenientValidation.bimap
+
+    @Test
+    public void shouldBimapErrorsAndValue() {
+        LenientValidation<String, String> validation = LenientValidation.of(List.of("error-1", "error-2"), Option.some("ok"));
+        assertThat(validation.bimap(errors -> errors.map(e -> "Error: " + e), maybeValue -> maybeValue.map(v -> "Value: " + v)))
+            .isEqualTo(LenientValidation.of(List.of("Error: error-1", "Error: error-2"), Option.some("Value: ok")));
+    }
+
     // -- fold
 
     @Test
