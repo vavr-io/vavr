@@ -85,7 +85,7 @@ import java.util.function.Supplier;
  * <b>LenientValidation traversing:</b>
  *
  * LenientValidation&lt;String&gt;,List&lt;Integer&gt;&gt; result =
- *   LenientValidation.traverse(List.of(1, 2, 3, 4), i -> i % 2 == 0 ? LenientValidation.valid(i) : LenientValidation.invalid("odd number " + i));
+ *   LenientValidation.traverse(List.of(1, 2, 3, 4), i -&gt; i % 2 == 0 ? LenientValidation.valid(i) : LenientValidation.invalid("odd number " + i));
  * // Results in the value [2, 4] together with the occurred errors ["odd number 1", "odd number 3"]
  *
  * </code>
@@ -506,12 +506,12 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     }
 
     /**
-     * Map function f on our value and build a new {@code LenientValidation} based
+     * Map function f on the value and build a new {@code LenientValidation} based
      * on the resulting {@code LenientValidation}, the errors obtained (if exists)
-     * are appended on this, the value is taken from the returned {@code LenientValidation}
+     * are appended on this, the value is taken from the returned {@code LenientValidation}.
      *
-     * @param f
-     * @param <U>
+     * @param f The function to flatMap with
+     * @param <U> The new value type
      * @return A {@code LenientValidation} instance
      */
     public <U> LenientValidation<E, U> flatMap(Function1<? super T, LenientValidation<E, U>> f) {
@@ -529,12 +529,13 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
 
     /**
      * Map a checked function f over our value and return a new {@code LenientValidation}
-     * built using the result of the application, in case exceptions are throwed,
+     * built using the result of the application, in case exceptions are thrown,
      * the errorProvider function is called on the exception to return an {@code invalid()}
-     * LenientValidation
-     * @param f
-     * @param errorProvider
-     * @param <U>
+     * LenientValidation.
+     *
+     * @param f The checked function to flatMap with
+     * @param errorProvider A function to convert an occurred exception to an error
+     * @param <U> The new value type
      * @return A {@code LenientValidation} instance
      */
     public <U> LenientValidation<E, U> flatMapTry(
@@ -604,6 +605,9 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
      *
      * @param errorMapper an error mapper
      * @param valueMapper a value mapper
+     * @param combiner a function combining the intermediary results from the errorMapper and valueMapper
+     * @param <U1> the intermediary result type of mapping the errors
+     * @param <U2> the intermediary result type of mapping the value
      * @param <U> the fold result type
      * @return A single value resulting from folding this
      */
