@@ -70,7 +70,7 @@ import java.util.function.Supplier;
  * LenientValidation&lt;String,Integer&gt; valid2 = LenientValidation.valid(5);
  * Function2&lt;String,Integer,Person&gt; f = ...;
  *
- * LenientValidation&lt;String&gt;,Person&gt; result = LenientValidation.combine(valid1, valid2).ap(f);
+ * LenientValidation&lt;String,Person&gt; result = LenientValidation.combine(valid1, valid2).ap(f);
  * // Results in a fully valid Person instance
  *
  * <b>LenientValidation sequencing:</b>
@@ -79,12 +79,12 @@ import java.util.function.Supplier;
  * LenientValidation&lt;String,Integer&gt; valid2 = LenientValidation.valid(3);
  * LenientValidation&lt;String,Integer&gt; valid3 = LenientValidation.invalid(List.of("error"));
  *
- * LenientValidation&lt;String&gt;,List&lt;Integer&gt;&gt; result = LenientValidation.sequence(List.of(valid1, valid2, valid3));
+ * LenientValidation&lt;String,List&lt;Integer&gt;&gt; result = LenientValidation.sequence(List.of(valid1, valid2, valid3));
  * // Results in the value [2, 3] together with the occurred error ["error"]
  *
  * <b>LenientValidation traversing:</b>
  *
- * LenientValidation&lt;String&gt;,List&lt;Integer&gt;&gt; result =
+ * LenientValidation&lt;String,List&lt;Integer&gt;&gt; result =
  *   LenientValidation.traverse(List.of(1, 2, 3, 4), i -&gt; i % 2 == 0 ? LenientValidation.valid(i) : LenientValidation.invalid("odd number " + i));
  * // Results in the value [2, 4] together with the occurred errors ["odd number 1", "odd number 3"]
  *
