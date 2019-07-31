@@ -25,6 +25,7 @@ import io.vavr.Value;
 import io.vavr.collection.CharSeq;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
@@ -394,7 +395,7 @@ public class LenientValidationTest extends AbstractValueTest {
             .isEqualTo(LenientValidation.of(List.of("Error: error-1", "Error: error-2"), Option.some("Value: ok")));
     }
 
-    // -- fold
+    // -- LenientValidation.fold
 
     @Test
     public void shouldFoldToString() {
@@ -416,6 +417,20 @@ public class LenientValidationTest extends AbstractValueTest {
             (errorStr, valueStr) -> "Errors: " + errorStr + ", Value: " + valueStr
         );
         assertThat(result).isEqualTo("Errors: , Value: No value");
+    }
+
+    // -- LenientValidation.getOrElseGet
+
+    @Test
+    public void shouldGetValueOfPartiallyValid() {
+        assertThat(LenientValidation.of(List.of("error-1"), Option.some("ok")).getOrElseGet(errors -> "error"))
+            .isEqualTo("ok");
+    }
+
+    @Test
+    public void shouldGetAlternativeValueOfInvalid() {
+        assertThat(LenientValidation.of(List.of("error-1"), Option.none()).getOrElseGet(Traversable::head))
+            .isEqualTo("error-1");
     }
 
     // -- toString
