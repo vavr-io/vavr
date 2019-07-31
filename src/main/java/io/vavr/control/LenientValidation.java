@@ -44,6 +44,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+/**
+ * <p>
+ *
+ * 
+ * </p>
+ * @param <E> data type for errors
+ * @param <T> data type for the value
+ */
 public final class LenientValidation<E, T> implements Value<T>, Serializable {
 
     public static final long serialVersionUID = 1L;
@@ -58,26 +66,81 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
         this.value = value;
     }
 
+    /**
+     * Builds a {@code LenientValidation} of a collection of errors and an
+     * optional value
+     * @param errors The collection of errors
+     * @param value The option value
+     * @param <E> error type
+     * @param <T> value type
+     * @return A {@code LenientValidation} instance
+     */
     public static <E, T> LenientValidation<E, T> of(Iterable<E> errors, Option<T> value) {
         return new LenientValidation<>(errors, value);
     }
 
+    /**
+     * Builds a {@code LenientValidation} of a collection of errors and an
+     * nullable value
+     * @param errors The collection of errors
+     * @param value The nullable value
+     * @param <E> error type
+     * @param <T> value type
+     * @return A {@code LenientValidation} instance
+     */
     public static <E, T> LenientValidation<E, T> fromNullable(Iterable<E> errors, T value) {
         return new LenientValidation<>(errors, Option.of(value));
     }
 
+    /**
+     * Builds a {@code LenientValidation} with an empty list of errors and an
+     * option based on value
+     * @param value The value used to create an option
+     * @param <E> error type
+     * @param <T> value type
+     * @return A {@code LenientValidation} instance
+     */
     public static <E, T> LenientValidation<E, T> valid(T value) {
         return of(List.empty(), Option.some(value));
     }
 
+    /**
+     * Builds a {@code LenientValidation} based on errors with {@code Option.none()} as
+     * value.
+     * @param errors The collection of errors
+     * @param <E> error type
+     * @param <T> value type
+     * @return A {@code LenientValidation} instance
+     */
     public static <E, T> LenientValidation<E, T> invalid(Iterable<E> errors) {
         return fromNullable(errors, null);
     }
-
+    /**
+     * Builds a {@code LenientValidation} that consist of an empty list of
+     * error, and {@code Option.none()} as value
+     *
+     * @param <E> error type
+     * @param <T> value type
+     * @return A {@code LenientValidation} instance
+     */
     public static <E, T> LenientValidation<E, T> empty() {
         return fromNullable(List.empty(), null);
     }
 
+    /**
+     * Builds a {@code LenientValidation} from a {@code Validation} instance,
+     * where the invalid type is a sequence. The new {@code LenientValidation}
+     * instance will have as value the valid part of {@code Validation} if the
+     * validation is Valid together with an empty list of errors; otherwise
+     * will have null(None) as value and the invalid part of the validation
+     * as errors.
+     *
+     * @param validation A {@code Validation} instance with a sequence type for
+     * the invalid part
+     * @param <E> error type
+     * @param <T> value type
+     * @return
+     */
     public static <E, T> LenientValidation<E, T> fromMultiErrorValidation(Validation<Seq<E>, T> validation) {
         Objects.requireNonNull(validation, "validation is null");
         return fromNullable(
@@ -85,7 +148,17 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
             validation.getOrElse((T) null)
         );
     }
-
+    /**
+     * Builds a {@code LenientValidation} from a {@code Validation} instance,
+     * where the invalid part is used to build the errors, and the value is
+     * the result of apply {@code Validation.getOrElse()} of the validation
+     * instance.
+     *
+     * @param validation A {@code Validation} instance
+     * @param <E> error type
+     * @param <T> value type
+     * @return
+     */
     public static <E, T> LenientValidation<E, T> fromValidation(Validation<E, T> validation) {
         Objects.requireNonNull(validation, "validation is null");
         return fromMultiErrorValidation(
@@ -94,9 +167,11 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     }
 
     /**
-     * Converts this into a strict {@code Validation} that either holds errors or a value.
+     * Converts this into a strict {@code Validation} that either holds
+     * errors or a value.
      *
-     * @return A {@code Valid} if this holds a value and there are no errors, otherwise an {@code Invalid} with the errors
+     * @return A {@code Valid} if this holds a value and there are no errors,
+     * otherwise an {@code Invalid} with the errors
      */
     public Validation<Seq<E>, T> strict() {
         return hasErrors()
@@ -148,9 +223,10 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code LenientValidation<? extends E, ? extends T>} to {@code LenientValidation<E, T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a widened {@code LenientValidation<? extends E, ? extends T>}
+     * to {@code LenientValidation<E, T>}
+     * by performing a type-safe cast. This is eligible because immutable or
+     * read-only collections are covariant.
      *
      * @param validation A {@code LenientValidation}.
      * @param <E>        type of error
@@ -324,7 +400,8 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     }
 
     /**
-     * Flatmaps the errors of this {@code LenientValidation}, producing multiple errors for each of the errors of this {@code LenientValidation}.
+     * Flatmaps the errors of this {@code LenientValidation}, producing multiple
+     * errors for each of the errors of this {@code LenientValidation}
      *
      * @param <U> type of the error resulting from the mapping
      * @param f   a function that maps an error to an iterable of new errors
@@ -339,6 +416,15 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
         );
     }
 
+    /**
+     * Use a  {@code LenientValidation} and this to create a new instance.
+     * The errors from the other are appended into our errors, the resulting value
+     * is obtained by the mapping the other value (which is a function) over the
+     * our value
+     * @param validation a {@code LenientValidation} instance
+     * @param <U> data type returned by the value part of the other {@code LenientValidation}
+     * @return A new {@code LenientValidation} instance
+     */
     public <U> LenientValidation<E, U> ap(LenientValidation<E, ? extends Function<? super T, ? extends U>> validation) {
         Objects.requireNonNull(validation, "validation is null");
         return of(
@@ -348,8 +434,10 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     }
 
     /**
-     * Combines two {@code LenientValidation}s to form a {@link Builder2}, which can then be used to perform further
-     * combines, or apply a function to it in order to transform the {@link Builder2} into a {@code LenientValidation}.
+     * Combines two {@code LenientValidation}s to form a {@link Builder2},
+     * which can then be used to perform further
+     * combines, or apply a function to it in order to transform the
+     * {@link Builder2} into a {@code LenientValidation}.
      *
      * @param <U>        type of value
      * @param validation the {@code LenientValidation} object to combine this with
@@ -363,7 +451,8 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
      * Filters the value of this with the predicate.
      *
      * @param predicate a predicate that decides if the value of this is valid
-     * @return an instance of {@code LenientValidation} with the same errors as this and the value of this if the predicate evaluates to true
+     * @return an instance of {@code LenientValidation} with the same errors as
+     * this and the value of this if the predicate evaluates to true
      * @throws NullPointerException if predicate is null
      */
     public LenientValidation<E, T> filter(Predicate<? super T> predicate) {
@@ -374,6 +463,15 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
         );
     }
 
+    /**
+     * Map function f on our value and build a new {@code LenientValidation} based
+     * on the resulting {@code LenientValidation}, the errors obtained (if exists)
+     * are appended on this, the value is taken from the returned {@code LenientValidation}
+     *
+     * @param f
+     * @param <U>
+     * @return
+     */
     public <U> LenientValidation<E, U> flatMap(Function1<? super T, LenientValidation<E, U>> f) {
         Objects.requireNonNull(f, "f is null");
         Option<LenientValidation<E, U>> validation = value.map(f);
@@ -387,6 +485,16 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
         );
     }
 
+    /**
+     * Map a checked function f over our value and return a new {@code LenientValidation}
+     * built using the result of the application, in case exceptions are throwed,
+     * the errorProvider function is called on the exception to return an {@code invalid()}
+     * LenientValidation
+     * @param f
+     * @param errorProvider
+     * @param <U>
+     * @return
+     */
     public <U> LenientValidation<E, U> flatMapTry(
         CheckedFunction1<? super T, LenientValidation<E, U>> f,
         Function1<Throwable, ? extends E> errorProvider)
@@ -499,7 +607,7 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     }
 
     /**
-     * Creates a {@code LenientValidation} of an {@code Try}.
+     * Creates a {@code LenientValidation} of a {@code Try}.
      *
      * @param t A {@code Try}
      * @param <T> type of the valid value
