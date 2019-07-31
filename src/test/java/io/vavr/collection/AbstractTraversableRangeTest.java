@@ -210,9 +210,13 @@ public abstract class AbstractTraversableRangeTest extends AbstractTraversableTe
         assertThat(rangeClosedBy(1, 6, 2)).isEqualTo(of(1, 3, 5));
         assertThat(rangeClosedBy(Integer.MAX_VALUE - 2, Integer.MAX_VALUE, 3)).isEqualTo(of(Integer.MAX_VALUE - 2));
         assertThat(rangeClosedBy(Integer.MAX_VALUE - 3, Integer.MAX_VALUE, 3)).isEqualTo(of(Integer.MAX_VALUE - 3, Integer.MAX_VALUE));
+        assertThat(rangeClosedBy(Integer.MIN_VALUE, Integer.MIN_VALUE + 2, 1)).isEqualTo(of(Integer.MIN_VALUE, Integer.MIN_VALUE + 1, Integer.MIN_VALUE + 2));
+        assertThat(rangeClosedBy(Integer.MIN_VALUE, Integer.MIN_VALUE + 2, 3)).isEqualTo(of(Integer.MIN_VALUE));
         assertThat(rangeClosedBy(3, 1, -1)).isEqualTo(of(3, 2, 1));
         assertThat(rangeClosedBy(5, 1, -2)).isEqualTo(of(5, 3, 1));
         assertThat(rangeClosedBy(5, 0, -2)).isEqualTo(of(5, 3, 1));
+        assertThat(rangeClosedBy(Integer.MAX_VALUE, Integer.MAX_VALUE - 2, -1)).isEqualTo(of(Integer.MAX_VALUE, Integer.MAX_VALUE - 1, Integer.MAX_VALUE - 2));
+        assertThat(rangeClosedBy(Integer.MAX_VALUE, Integer.MAX_VALUE - 2, -3)).isEqualTo(of(Integer.MAX_VALUE));
         assertThat(rangeClosedBy(Integer.MIN_VALUE + 2, Integer.MIN_VALUE, -3)).isEqualTo(of(Integer.MIN_VALUE + 2));
         assertThat(rangeClosedBy(Integer.MIN_VALUE + 3, Integer.MIN_VALUE, -3)).isEqualTo(of(Integer.MIN_VALUE + 3, Integer.MIN_VALUE));
 
@@ -415,10 +419,14 @@ public abstract class AbstractTraversableRangeTest extends AbstractTraversableTe
         assertThat(rangeBy(1, 4, 2)).isEqualTo(of(1, 3));
         assertThat(rangeBy(3, 1, -1)).isEqualTo(of(3, 2));
         assertThat(rangeBy(4, 1, -2)).isEqualTo(of(4, 2));
+        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE - 3, -1)).isEqualTo(of(Integer.MAX_VALUE, Integer.MAX_VALUE - 1, Integer.MAX_VALUE - 2));
+        assertThat(rangeBy(Integer.MAX_VALUE, Integer.MAX_VALUE - 3, -3)).isEqualTo(of(Integer.MAX_VALUE));
         assertThat(rangeBy(Integer.MAX_VALUE - 3, Integer.MAX_VALUE, 3)).isEqualTo(of(Integer.MAX_VALUE - 3));
         assertThat(rangeBy(Integer.MAX_VALUE - 4, Integer.MAX_VALUE, 3)).isEqualTo(of(Integer.MAX_VALUE - 4, Integer.MAX_VALUE - 1));
         assertThat(rangeBy(Integer.MIN_VALUE + 3, Integer.MIN_VALUE, -3)).isEqualTo(of(Integer.MIN_VALUE + 3));
         assertThat(rangeBy(Integer.MIN_VALUE + 4, Integer.MIN_VALUE, -3)).isEqualTo(of(Integer.MIN_VALUE + 4, Integer.MIN_VALUE + 1));
+        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE + 3, 1)).isEqualTo(of(Integer.MIN_VALUE, Integer.MIN_VALUE + 1, Integer.MIN_VALUE + 2));
+        assertThat(rangeBy(Integer.MIN_VALUE, Integer.MIN_VALUE + 3, 3)).isEqualTo(of(Integer.MIN_VALUE));
 
         // long
         assertThat(rangeBy(1L, 3L, 1L)).isEqualTo(of(1L, 2L));

@@ -742,14 +742,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         } else if (Integer.signum(step) == Integer.signum(from - toInclusive)) {
             return empty();
         } else {
-            final int end = toInclusive - step;
             if (step > 0) {
                 return new Iterator<Integer>() {
-                    int i = from - step;
+                    int next = from;
+                    boolean overflow = false;
 
                     @Override
                     public boolean hasNext() {
-                        return i <= end;
+                        return !overflow && next <= toInclusive;
                     }
 
                     @Override
@@ -757,16 +757,21 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                         if (!hasNext()) {
                             throw new NoSuchElementException();
                         }
-                        return i += step;
+                        int curr = next;
+                        int r = curr + step;
+                        overflow = ((curr ^ r) & (step ^ r)) < 0;
+                        next = r;
+                        return curr;
                     }
                 };
             } else {
                 return new Iterator<Integer>() {
-                    int i = from - step;
+                    int next = from;
+                    boolean overflow = false;
 
                     @Override
                     public boolean hasNext() {
-                        return i >= end;
+                        return !overflow && next >= toInclusive;
                     }
 
                     @Override
@@ -774,7 +779,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                         if (!hasNext()) {
                             throw new NoSuchElementException();
                         }
-                        return i += step;
+                        int curr = next;
+                        int r = curr + step;
+                        overflow = ((curr ^ r) & (step ^ r)) < 0;
+                        next = r;
+                        return curr;
                     }
                 };
             }
@@ -1644,7 +1653,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default Iterator<Seq<T>> grouped(int size) {
         return new GroupedIterator<>(this, size, size);
     }
-    
+
     @Override
     default boolean hasDefiniteSize() {
         return false;
@@ -2001,7 +2010,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     default Iterator<Seq<T>> sliding(int size, int step) {
         return new GroupedIterator<>(this, size, step);
     }
-    
+
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> span(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
