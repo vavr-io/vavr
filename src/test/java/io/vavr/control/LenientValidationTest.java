@@ -73,7 +73,6 @@ public class LenientValidationTest extends AbstractValueTest {
         assertThat(LenientValidation.invalid(List.of("error")).hasErrors()).isTrue();
     }
 
-
     // -- LenientValidation.narrow
 
     @Test
@@ -93,8 +92,8 @@ public class LenientValidationTest extends AbstractValueTest {
     @Test
     public void shouldCreateValidWhenSequencingValids() {
         final LenientValidation<String, Seq<Integer>> actual = LenientValidation.sequence(List.of(
-                LenientValidation.valid(1),
-                LenientValidation.valid(2)
+            LenientValidation.valid(1),
+            LenientValidation.valid(2)
         ));
         assertThat(actual).isEqualTo(LenientValidation.valid(List.of(1, 2)));
     }
@@ -102,12 +101,13 @@ public class LenientValidationTest extends AbstractValueTest {
     @Test
     public void shouldCreateInstanceWithAllErrorsAndAllValidsWhenSequencing() {
         final LenientValidation<String, Seq<Integer>> actual = LenientValidation.sequence(List.of(
-                LenientValidation.valid(1),
-                LenientValidation.invalid(List.of("error1", "error2")),
-                LenientValidation.valid(2),
-                LenientValidation.invalid(List.of("error3", "error4"))
+            LenientValidation.valid(1),
+            LenientValidation.invalid(List.of("error1", "error2")),
+            LenientValidation.valid(2),
+            LenientValidation.invalid(List.of("error3", "error4"))
         ));
-        assertThat(actual).isEqualTo(LenientValidation.fromNullable(List.of("error1", "error2", "error3", "error4"), List.of(1, 2)));
+        assertThat(actual)
+            .isEqualTo(LenientValidation.fromNullable(List.of("error1", "error2", "error3", "error4"), List.of(1, 2)));
     }
 
     // -- LenientValidation.traverse
@@ -131,8 +131,9 @@ public class LenientValidationTest extends AbstractValueTest {
                 List.of(1, -1, 2, -2),
                 x -> x >= 0
                     ? LenientValidation.valid(x)
-                    : LenientValidation.invalid(List.of("error" + x, "error" + (x+1))));
-        assertThat(actual).isEqualTo(LenientValidation.fromNullable(List.of("error-1", "error0", "error-2", "error-1"), List.of(1, 2)));
+                    : LenientValidation.invalid(List.of("error" + x, "error" + (x + 1))));
+        assertThat(actual)
+            .isEqualTo(LenientValidation.fromNullable(List.of("error-1", "error0", "error-2", "error-1"), List.of(1, 2)));
     }
 
     // -- filter
@@ -179,7 +180,9 @@ public class LenientValidationTest extends AbstractValueTest {
     @Test
     public void shouldHaveExceptionAsErrorWhenFlatMapTryWithException() {
         LenientValidation<String, Integer> valid = LenientValidation.valid(42);
-        assertThat(valid.flatMapTry(v -> { throw new RuntimeException("error"); }, Throwable::getMessage))
+        assertThat(valid.flatMapTry(v -> {
+            throw new RuntimeException("error");
+        }, Throwable::getMessage))
             .isEqualTo(LenientValidation.invalid(List.of("error")));
     }
 
@@ -187,7 +190,7 @@ public class LenientValidationTest extends AbstractValueTest {
     public void shouldBehaveLikeFlatMapWhenFlatMapTryWithoutException() {
         LenientValidation<String, Integer> invalid = LenientValidation.invalid(List.of("error-1"));
         assertThat(invalid.flatMapTry(v -> LenientValidation.invalid(List.of("error-2")), Throwable::getMessage).getErrors())
-                .isEqualTo(List.of("error-1"));
+            .isEqualTo(List.of("error-1"));
     }
 
     // -- orElse
@@ -204,12 +207,37 @@ public class LenientValidationTest extends AbstractValueTest {
         assertThat(invalid.orElse("ok").getValue()).isEqualTo(Option.of("ok"));
     }
 
+    // -- fold
+
+    @Test
+    public void shouldFoldToString() {
+        LenientValidation<Integer, String> validation = LenientValidation.of(List.of(1, 2), Option.some("ok"));
+        String result = validation.fold(
+            errors -> errors.foldLeft("", (acc, value) -> acc + "error-" + value + " "),
+            maybeValue -> maybeValue.fold(() -> "No value", value -> value),
+            (errorStr, valueStr) -> "Errors: " + errorStr + ", Value: " + valueStr
+        );
+        assertThat(result).isEqualTo("Errors: error-1 error-2 , Value: ok");
+    }
+
+
+    @Test
+    public void shouldFoldEmptyToString() {
+        LenientValidation<Integer, String> validation = LenientValidation.of(List.of(), Option.none());
+        String result = validation.fold(
+            errors -> errors.foldLeft("", (acc, value) -> acc + "error-" + value + " "),
+            maybeValue -> maybeValue.fold(() -> "No value", value -> value),
+            (errorStr, valueStr) -> "Errors: " + errorStr + ", Value: " + valueStr
+        );
+        assertThat(result).isEqualTo("Errors: , Value: No value");
+    }
+
     // -- toString
 
     @Test
     public void shouldReturnCorrectStringForToString() {
         assertThat(LenientValidation.fromNullable(List.of("error"), "test").toString())
-                .isEqualTo("LenientValidation(List(error), Some(test))");
+            .isEqualTo("LenientValidation(List(error), Some(test))");
     }
 
     // -- map
@@ -217,14 +245,14 @@ public class LenientValidationTest extends AbstractValueTest {
     @Test
     public void shouldMapValid() {
         assertThat(LenientValidation.fromNullable(List.of("error"), 4).map(i -> i + 3))
-                .isEqualTo(LenientValidation.fromNullable(List.of("error"), 7));
+            .isEqualTo(LenientValidation.fromNullable(List.of("error"), 7));
     }
 
     @Test
     public void shouldMapInvalid() {
         LenientValidation<String, Integer> invalid = LenientValidation.invalid(List.of("error"));
         assertThat(invalid.map(i -> i + 3))
-                .isEqualTo(invalid);
+            .isEqualTo(invalid);
     }
 
     // -- mapError
@@ -232,13 +260,13 @@ public class LenientValidationTest extends AbstractValueTest {
     @Test
     public void shouldMapErrorOnValid() {
         assertThat(LenientValidation.valid(5).mapError(x -> 2))
-                .isEqualTo(LenientValidation.valid(5));
+            .isEqualTo(LenientValidation.valid(5));
     }
 
     @Test
     public void shouldMapErrorOnInvalid() {
         assertThat(LenientValidation.invalid(List.of(2, 4)).mapError(x -> x + 1))
-                .isEqualTo(LenientValidation.invalid(List.of(3, 5)));
+            .isEqualTo(LenientValidation.invalid(List.of(3, 5)));
     }
 
 }
