@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public final class LenientValidation<E, T> implements Value<T>, Serializable {
 
@@ -175,6 +176,82 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
         return new Builder4<>(validation1, validation2, validation3, validation4);
     }
 
+    public static <E, T1, T2, T3, T4, T5> Builder5<E, T1, T2, T3, T4, T5> combine(
+        LenientValidation<E, T1> validation1,
+        LenientValidation<E, T2> validation2,
+        LenientValidation<E, T3> validation3,
+        LenientValidation<E, T4> validation4,
+        LenientValidation<E, T5> validation5)
+    {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        Objects.requireNonNull(validation4, "validation4 is null");
+        Objects.requireNonNull(validation5, "validation5 is null");
+        return new Builder5<>(validation1, validation2, validation3, validation4, validation5);
+    }
+
+    public static <E, T1, T2, T3, T4, T5, T6> Builder6<E, T1, T2, T3, T4, T5, T6> combine(
+        LenientValidation<E, T1> validation1,
+        LenientValidation<E, T2> validation2,
+        LenientValidation<E, T3> validation3,
+        LenientValidation<E, T4> validation4,
+        LenientValidation<E, T5> validation5,
+        LenientValidation<E, T6> validation6)
+    {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        Objects.requireNonNull(validation4, "validation4 is null");
+        Objects.requireNonNull(validation5, "validation5 is null");
+        Objects.requireNonNull(validation6, "validation6 is null");
+        return new Builder6<>(validation1, validation2, validation3, validation4,
+            validation5, validation6);
+    }
+
+    public static <E, T1, T2, T3, T4, T5, T6, T7> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(
+        LenientValidation<E, T1> validation1,
+        LenientValidation<E, T2> validation2,
+        LenientValidation<E, T3> validation3,
+        LenientValidation<E, T4> validation4,
+        LenientValidation<E, T5> validation5,
+        LenientValidation<E, T6> validation6,
+        LenientValidation<E, T7> validation7)
+    {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        Objects.requireNonNull(validation4, "validation4 is null");
+        Objects.requireNonNull(validation5, "validation5 is null");
+        Objects.requireNonNull(validation6, "validation6 is null");
+        Objects.requireNonNull(validation7, "validation7 is null");
+        return new Builder7<>(validation1, validation2, validation3, validation4,
+            validation5, validation6, validation7);
+    }
+
+    public static <E, T1, T2, T3, T4, T5, T6, T7, T8> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(
+        LenientValidation<E, T1> validation1,
+        LenientValidation<E, T2> validation2,
+        LenientValidation<E, T3> validation3,
+        LenientValidation<E, T4> validation4,
+        LenientValidation<E, T5> validation5,
+        LenientValidation<E, T6> validation6,
+        LenientValidation<E, T7> validation7,
+        LenientValidation<E, T8> validation8)
+    {
+        Objects.requireNonNull(validation1, "validation1 is null");
+        Objects.requireNonNull(validation2, "validation2 is null");
+        Objects.requireNonNull(validation3, "validation3 is null");
+        Objects.requireNonNull(validation4, "validation4 is null");
+        Objects.requireNonNull(validation5, "validation5 is null");
+        Objects.requireNonNull(validation6, "validation6 is null");
+        Objects.requireNonNull(validation7, "validation7 is null");
+        Objects.requireNonNull(validation8, "validation8 is null");
+        return new Builder8<>(validation1, validation2, validation3, validation4,
+            validation5, validation6, validation7, validation8);
+    }
+
+
     /**
      * Gets a {@code Seq} of errors of this
      *
@@ -292,6 +369,104 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
      */
     public LenientValidation<E, T> orElse(T defaultValue) {
         return fromNullable(errors, value.getOrElse(defaultValue));
+    }
+
+    /**
+     * Defines a default for the value of this.
+     *
+     * @param supplier A Supplier which produces the default value
+     * @return An instance of {@code LenientValidation} with the same errors and the default value if this is empty
+     */
+    public LenientValidation<E, T> orElse(Supplier<? extends T> supplier) {
+        return fromNullable(errors, value.getOrElse(supplier.get()));
+    }
+
+    /**
+     * Converts this {@code LenientValidation} to an {@link Either}.
+     *
+     * @return {@code Either.right(get())} if this is valid, otherwise {@code Either.left(getError())}.
+     */
+    public Either<? super Seq<? extends E>, T> toEither() {
+        return isValid() ? Either.right(get()) : Either.left(getErrors());
+    }
+
+    /**
+     * Whereas map only performs a mapping on the value of a {@code LenientValidation},
+     * and mapError performs a mapping on the errors of a {@code LenientValidation},
+     * bimap allows to provide mapping actions for both.
+     *
+     * @param <E2>        type of the mapping result for the error
+     * @param <T2>        type of the mapping result for the value
+     * @param errorMapper the error mapping operation
+     * @param valueMapper the value mapping operation
+     * @return an instance of {@code LenientValidation}
+     * @throws NullPointerException if errorMapper or valueMapper is null
+     */
+    public <E2, T2> LenientValidation<E2, T2> bimap(Function<? super Seq<? super E>, Seq<E2>> errorMapper, Function<Option<? super T>, Option<T2>> valueMapper) {
+        Objects.requireNonNull(errorMapper, "errorMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        return of(errorMapper.apply(errors), valueMapper.apply(value));
+    }
+
+    /**
+     * Folds this into a single value.
+     *
+     * @param errorMapper an error mapper
+     * @param valueMapper a value mapper
+     * @param <U> the fold result type
+     * @return A single value resulting from folding this
+     */
+    public <U1, U2, U> U fold(
+        Function<? super Seq<? super E>, U1> errorMapper,
+        Function<? super Option<? super T>, U2> valueMapper,
+        Function2<? super U1, ? super U2, U> combiner) {
+        Objects.requireNonNull(errorMapper, "errorMapper is null");
+        Objects.requireNonNull(valueMapper, "valueMapper is null");
+        Objects.requireNonNull(combiner, "combiner is null");
+        return combiner.apply(errorMapper.apply(errors), valueMapper.apply(value));
+    }
+
+    /**
+     * Gets the value if it is a Valid or a value calculated from the errors.
+     *
+     * @param other a function which converts a sequence of errors to an alternative value
+     * @return the value, if the underlying {@code LenientValidation} is valid, or else the alternative value
+     * provided by {@code other} by applying the errors.
+     */
+    public T getOrElseGet(Function<? super Seq<? super E>, ? extends T> other) {
+        Objects.requireNonNull(other, "other is null");
+        if (isValid()) {
+            return get();
+        } else {
+            return other.apply(getErrors());
+        }
+    }
+
+    /**
+     * Creates a {@code LenientValidation} of an {@code Either}.
+     *
+     * @param either An {@code Either}
+     * @param <E> error type
+     * @param <T> value type
+     * @return An instance of {@code LenientValidation} containing a value if either is a Right, otherwise a singleton list with Left.
+     * @throws NullPointerException if either is null
+     */
+    public static <E, T> LenientValidation<E, T> fromEither(Either<E, T> either) {
+        Objects.requireNonNull(either, "either is null");
+        return either.isRight() ? valid(either.get()) : invalid(List.of(either.getLeft()));
+    }
+
+    /**
+     * Creates a {@code LenientValidation} of an {@code Try}.
+     *
+     * @param t A {@code Try}
+     * @param <T> type of the valid value
+     * @return An instance of {@code LenientValidation} containing a value if t is a Success, otherwise a singleton list with the exception.
+     * @throws NullPointerException if {@code t} is null
+     */
+    public static <T> LenientValidation<Throwable, T> fromTry(Try<? extends T> t) {
+        Objects.requireNonNull(t, "t is null");
+        return t.isSuccess() ? valid(t.get()) : invalid(List.of(t.getCause()));
     }
 
     @Override
