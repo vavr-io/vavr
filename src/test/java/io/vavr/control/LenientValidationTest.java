@@ -208,6 +208,23 @@ public class LenientValidationTest extends AbstractValueTest {
         assertThat(LenientValidation.of(List.of("error"), Option.some("ok")).hasErrors()).isTrue();
     }
 
+    // -- LenientValidation.isValid
+
+    @Test
+    public void shouldValidBeValid() {
+        assertThat(LenientValidation.valid("ok").isValid()).isTrue();
+    }
+
+    @Test
+    public void shouldInvalidBeNotValid() {
+        assertThat(LenientValidation.invalid(List.of("error")).isValid()).isFalse();
+    }
+
+    @Test
+    public void shouldPartiallyValidBeValid() {
+        assertThat(LenientValidation.of(List.of("error"), Option.some("ok")).isValid()).isTrue();
+    }
+
     // -- LenientValidation.ap
 
     @Test
