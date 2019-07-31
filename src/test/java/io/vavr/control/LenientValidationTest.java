@@ -20,6 +20,7 @@
 package io.vavr.control;
 
 import io.vavr.AbstractValueTest;
+import io.vavr.Function1;
 import io.vavr.Value;
 import io.vavr.collection.CharSeq;
 import io.vavr.collection.List;
@@ -154,6 +155,53 @@ public class LenientValidationTest extends AbstractValueTest {
         LenientValidation<String, Integer> validation = LenientValidation.valid(42);
         LenientValidation<CharSequence, Number> narrow = LenientValidation.narrow(validation);
         assertThat(narrow.get()).isEqualTo(42);
+    }
+
+    // -- LenientValidation.combine
+
+    @Test
+    public void shouldCombine2Valids() {
+        assertThat(LenientValidation.combine(
+            LenientValidation.valid(1),
+            LenientValidation.valid(2)
+        ).ap(Integer::sum))
+            .isEqualTo(LenientValidation.valid(3));
+    }
+
+    @Test
+    public void shouldFailCombine2WithInvalid() {
+        assertThat(LenientValidation.combine(
+            LenientValidation.valid(1),
+            LenientValidation.<String, Integer>invalid(List.of("error"))
+        ).ap(Integer::sum))
+            .isEqualTo(LenientValidation.invalid(List.of("error")));
+    }
+
+    @Test
+    public void shouldFailCombine2Invalids() {
+        assertThat(LenientValidation.combine(
+            LenientValidation.<String, Integer>invalid(List.of("error-1")),
+            LenientValidation.<String, Integer>invalid(List.of("error-2"))
+        ).ap(Integer::sum))
+            .isEqualTo(LenientValidation.invalid(List.of("error-1", "error-2")));
+    }
+
+    // -- LenientValidation.ap
+
+    @Test
+    public void shouldApValids() {
+        LenientValidation<String, Integer> valid = LenientValidation.valid(42);
+        LenientValidation<String, Function1<Integer, String>> function = LenientValidation.valid(Object::toString);
+        assertThat(valid.ap(function)).isEqualTo(LenientValidation.valid("42"));
+    }
+
+    @Test
+    public void shouldApContainAllErrors() {
+        LenientValidation<String, Integer> valid = LenientValidation.of(List.of("error-value"), Option.some(42));
+        LenientValidation<String, Function1<Integer, String>> function =
+            LenientValidation.of(List.of("error-function"), Option.some(Object::toString));
+        assertThat(valid.ap(function))
+            .isEqualTo(LenientValidation.of(List.of("error-function", "error-value"), Option.some("42")));
     }
 
     // -- LenientValidation.sequence

@@ -323,7 +323,7 @@ public final class LenientValidation<E, T> implements Value<T>, Serializable {
     public <U> LenientValidation<E, U> ap(LenientValidation<E, ? extends Function<? super T, ? extends U>> validation) {
         Objects.requireNonNull(validation, "validation is null");
         return of(
-            validation.getErrors().prependAll(errors),
+            errors.prependAll(validation.getErrors()),
             validation.getValue().flatMap(value::map)
         );
     }
