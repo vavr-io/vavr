@@ -433,6 +433,18 @@ public class LenientValidationTest extends AbstractValueTest {
             .isEqualTo("error-1");
     }
 
+    // -- LenientValidation.fromEither
+
+    @Test
+    public void shouldCreateValidFromRight() {
+        assertThat(LenientValidation.fromEither(Either.right("ok"))).isEqualTo(LenientValidation.valid("ok"));
+    }
+
+    @Test
+    public void shouldCreateInvalidFromLeft() {
+        assertThat(LenientValidation.fromEither(Either.left("error"))).isEqualTo(LenientValidation.invalid(List.of("error")));
+    }
+
     // -- toString
 
     @Test
