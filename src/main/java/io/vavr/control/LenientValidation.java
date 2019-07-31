@@ -79,7 +79,7 @@ import java.util.function.Supplier;
  * LenientValidation&lt;String,Integer&gt; valid2 = LenientValidation.valid(3);
  * LenientValidation&lt;String,Integer&gt; valid3 = LenientValidation.invalid(List.of("error"));
  *
- * LenientValidation&lt;String,List&lt;Integer&gt;&gt; result = LenientValidation.sequence(List.of(valid1, valid2, valid3));
+ * LenientValidation&lt;String,Seq&lt;Integer&gt;&gt; result = LenientValidation.sequence(List.of(valid1, valid2, valid3));
  * // Results in the value [2, 3] together with the occurred error ["error"]
  *
  * <b>LenientValidation traversing:</b>
