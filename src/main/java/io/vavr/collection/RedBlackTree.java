@@ -24,7 +24,6 @@ import io.vavr.collection.RedBlackTreeModule.Node;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
-import java.lang.Iterable;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;

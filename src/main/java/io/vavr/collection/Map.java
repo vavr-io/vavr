@@ -22,7 +22,6 @@ import io.vavr.*;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
-import java.lang.Iterable;
 import java.util.*;
 import java.util.function.*;
 

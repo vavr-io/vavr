@@ -22,7 +22,6 @@ import io.vavr.*;
 import io.vavr.control.Option;
 
 import java.io.*;
-import java.lang.Iterable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;

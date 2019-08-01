@@ -22,7 +22,6 @@ import io.vavr.Tuple2;
 import io.vavr.control.Option;
 import org.junit.Test;
 
-import java.lang.Iterable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;

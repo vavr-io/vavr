@@ -21,7 +21,6 @@ package io.vavr.collection;
 import io.vavr.*;
 import io.vavr.control.Option;
 
-import java.lang.Iterable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;

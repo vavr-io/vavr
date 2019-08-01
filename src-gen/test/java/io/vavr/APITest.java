@@ -36,7 +36,6 @@ import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import java.lang.Iterable;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.Executors;

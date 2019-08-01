@@ -23,7 +23,6 @@ import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 
 import java.io.Serializable;
-import java.lang.Iterable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -56,7 +55,7 @@ import java.util.function.Supplier;
  * @param <R> The type of the Right value of an Either.
  */
 @SuppressWarnings("deprecation")
-public abstract class Either<L, R> implements io.vavr.Iterable<R>, io.vavr.Value<R>, Serializable {
+public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

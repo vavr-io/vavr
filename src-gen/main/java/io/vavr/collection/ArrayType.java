@@ -133,7 +133,7 @@ interface ArrayType<T> {
     }
 
     @SuppressWarnings("unchecked")
-    static <T> T asPrimitives(Class<?> primitiveClass, java.lang.Iterable<?> values) {
+    static <T> T asPrimitives(Class<?> primitiveClass, Iterable<?> values) {
         final Object[] array = Array.ofAll(values).toJavaArray();
         final ArrayType<T> type = of((Class<T>) primitiveClass);
         final Object results = type.newInstance(array.length);

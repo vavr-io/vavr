@@ -26,7 +26,6 @@ package io.vavr;
 
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
-import java.lang.Iterable;
 import java.util.Map;
 import java.util.Objects;
 
@@ -503,7 +502,7 @@ public interface Tuple {
      * Turns a sequence of {@code Tuple1} into a Tuple1 of {@code Seq}.
      *
      * @param <T1> 1st component type
-     * @param tuples a {@link Iterable} of tuples
+     * @param tuples an {@link Iterable} of tuples
      * @return a tuple of one {@link Seq}.
      */
     static <T1> Tuple1<Seq<T1>> sequence1(Iterable<? extends Tuple1<? extends T1>> tuples) {
@@ -517,7 +516,7 @@ public interface Tuple {
      *
      * @param <T1> 1st component type
      * @param <T2> 2nd component type
-     * @param tuples a {@link Iterable} of tuples
+     * @param tuples an {@link Iterable} of tuples
      * @return a tuple of two {@link Seq}s.
      */
     static <T1, T2> Tuple2<Seq<T1>, Seq<T2>> sequence2(Iterable<? extends Tuple2<? extends T1, ? extends T2>> tuples) {
@@ -532,7 +531,7 @@ public interface Tuple {
      * @param <T1> 1st component type
      * @param <T2> 2nd component type
      * @param <T3> 3rd component type
-     * @param tuples a {@link Iterable} of tuples
+     * @param tuples an {@link Iterable} of tuples
      * @return a tuple of three {@link Seq}s.
      */
     static <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> sequence3(Iterable<? extends Tuple3<? extends T1, ? extends T2, ? extends T3>> tuples) {
@@ -548,7 +547,7 @@ public interface Tuple {
      * @param <T2> 2nd component type
      * @param <T3> 3rd component type
      * @param <T4> 4th component type
-     * @param tuples a {@link Iterable} of tuples
+     * @param tuples an {@link Iterable} of tuples
      * @return a tuple of 4 {@link Seq}s.
      */
     static <T1, T2, T3, T4> Tuple4<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>> sequence4(Iterable<? extends Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4>> tuples) {
@@ -565,7 +564,7 @@ public interface Tuple {
      * @param <T3> 3rd component type
      * @param <T4> 4th component type
      * @param <T5> 5th component type
-     * @param tuples a {@link Iterable} of tuples
+     * @param tuples an {@link Iterable} of tuples
      * @return a tuple of 5 {@link Seq}s.
      */
     static <T1, T2, T3, T4, T5> Tuple5<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>> sequence5(Iterable<? extends Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5>> tuples) {
@@ -583,7 +582,7 @@ public interface Tuple {
      * @param <T4> 4th component type
      * @param <T5> 5th component type
      * @param <T6> 6th component type
-     * @param tuples a {@link Iterable} of tuples
+     * @param tuples an {@link Iterable} of tuples
      * @return a tuple of 6 {@link Seq}s.
      */
     static <T1, T2, T3, T4, T5, T6> Tuple6<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>> sequence6(Iterable<? extends Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6>> tuples) {
@@ -602,7 +601,7 @@ public interface Tuple {
      * @param <T5> 5th component type
      * @param <T6> 6th component type
      * @param <T7> 7th component type
-     * @param tuples a {@link Iterable} of tuples
+     * @param tuples an {@link Iterable} of tuples
      * @return a tuple of 7 {@link Seq}s.
      */
     static <T1, T2, T3, T4, T5, T6, T7> Tuple7<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>> sequence7(Iterable<? extends Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7>> tuples) {
@@ -622,7 +621,7 @@ public interface Tuple {
      * @param <T6> 6th component type
      * @param <T7> 7th component type
      * @param <T8> 8th component type
-     * @param tuples a {@link Iterable} of tuples
+     * @param tuples an {@link Iterable} of tuples
      * @return a tuple of 8 {@link Seq}s.
      */
     static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>, Seq<T8>> sequence8(Iterable<? extends Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8>> tuples) {
