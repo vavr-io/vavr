@@ -387,6 +387,11 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
     /**
      * Transforms this {@code Either}.
      *
+     * <pre>{@code
+     * // prints "Anwser is 42"
+     * System.out.println(Either.right(42).<String> transform(e -> "Anwser is " + e.get()));
+     * }</pre>
+     *
      * @param f   A transformation
      * @param <U> Type of transformation result
      * @return An instance of type {@code U}
@@ -399,6 +404,14 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
 
     /**
      * Gets the Right value or an alternate value, if the projected Either is a Left.
+     *
+     * <pre>{@code
+     * // prints "42"
+     * System.out.println(Either.right(42).getOrElseGet(l -> -1));
+     *
+     * // prints "13"
+     * System.out.println(Either.left("error message").getOrElseGet(String::length));
+     * }</pre>
      *
      * @param other a function which converts a Left value to an alternative Right value
      * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
@@ -416,6 +429,11 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
     /**
      * Runs an action in the case this is a projection on a Left value.
      *
+     * <pre>{@code
+     * // prints "no value found"
+     * Either.left("no value found").orElseRun(System.out::println);
+     * }</pre>
+     *
      * @param action an action which consumes a Left value
      */
     public final void orElseRun(Consumer<? super L> action) {
@@ -427,6 +445,15 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
 
     /**
      * Gets the Right value or throws, if the projected Either is a Left.
+     *
+     * <pre>{@code
+     * Function<String, RuntimeException> exceptionFunction = RuntimeException::new;
+     * //prints "42"
+     * System.out.println(Either.<String, Integer>right(42).getOrElseThrow(exceptionFunction));
+     *
+     * // throws RuntimeException("no value found")
+     * Either.left("no value found").getOrElseThrow(exceptionFunction);
+     * }</pre>
      *
      * @param <X>               a throwable type
      * @param exceptionFunction a function which creates an exception based on a Left value
