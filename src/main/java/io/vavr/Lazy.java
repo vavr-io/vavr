@@ -52,9 +52,12 @@ import java.util.function.Supplier;
  * Example of creating a <em>real</em> lazy value (works only with interfaces):
  *
  * <pre><code>final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);</code></pre>
+ *
+ * @deprecated Marked for removal. Java isn't a lazy evaluated language. This implementation is ineffective because it is a wrapper. It does not scale well.
  */
 // DEV-NOTE: No flatMap and orElse because this more like a Functor than a Monad.
 //           It represents a value rather than capturing a specific state.
+@Deprecated
 @SuppressWarnings("deprecation")
 public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
 
