@@ -24,7 +24,6 @@ import io.vavr.collection.HashArrayMappedTrieModule.EmptyNode;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
-import java.lang.Iterable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 

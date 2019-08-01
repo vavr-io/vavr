@@ -23,7 +23,6 @@ import io.vavr.control.Option;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
 
-import java.lang.Iterable;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;

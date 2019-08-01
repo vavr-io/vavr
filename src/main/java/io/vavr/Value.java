@@ -44,7 +44,6 @@ import io.vavr.control.Validation;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
-import java.lang.Iterable;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.*;
@@ -171,7 +170,7 @@ import static io.vavr.API.*;
  * <strong>Please note:</strong> flatMap signatures are manifold and have to be declared by subclasses of Value.
  *
  * @param <T> The type of the wrapped value.
- * @deprecated Superseded by io.vavr.Iterable
+ * @deprecated Marked for removal
  */
 @Deprecated
 public interface Value<T> extends Iterable<T> {

@@ -24,7 +24,6 @@ import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 
 import java.io.Serializable;
-import java.lang.Iterable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
@@ -47,7 +46,7 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  */
 @SuppressWarnings("deprecation")
-public abstract class Option<T> implements io.vavr.Iterable<T>, io.vavr.Value<T>, Serializable {
+public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

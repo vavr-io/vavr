@@ -21,7 +21,6 @@ package io.vavr.collection;
 import io.vavr.*;
 import io.vavr.control.Option;
 
-import java.lang.Iterable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.Random;

@@ -24,7 +24,6 @@ import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 
 import java.io.Serializable;
-import java.lang.Iterable;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -54,7 +53,7 @@ import static io.vavr.control.TryModule.sneakyThrow;
  * @param <T> Value type in the case of success.
  */
 @SuppressWarnings("deprecation")
-public abstract class Try<T> implements io.vavr.Iterable<T>, io.vavr.Value<T>, Serializable {
+public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 

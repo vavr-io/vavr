@@ -2,7 +2,6 @@ package linter;
 
 import io.vavr.CheckedFunction1;
 import io.vavr.Function0;
-import io.vavr.Iterable;
 import io.vavr.collection.List;
 import org.junit.*;
 import org.junit.rules.TestRule;

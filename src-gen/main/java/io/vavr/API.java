@@ -31,7 +31,6 @@ import io.vavr.control.Option;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
 import java.io.PrintStream;
-import java.lang.Iterable;
 import java.util.Comparator;
 import java.util.Formatter;
 import java.util.Objects;

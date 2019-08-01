@@ -24,7 +24,6 @@ import io.vavr.control.Option;
 
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.lang.Iterable;
 import java.nio.charset.Charset;
 import java.util.*;
 import java.util.function.*;
