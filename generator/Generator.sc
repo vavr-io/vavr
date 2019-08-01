@@ -1272,7 +1272,9 @@ def generateMainClasses(): Unit = {
            * @return Nothing - this methods always throws.
            * @throws NotImplementedError when this methods is called
            * @see NotImplementedError#NotImplementedError()
+           * @deprecated marked for removal
            */
+          @Deprecated
           public static <T> T TODO() {
               throw new NotImplementedError();
           }
@@ -1295,7 +1297,9 @@ def generateMainClasses(): Unit = {
            * @return Nothing - this methods always throws.
            * @throws NotImplementedError when this methods is called
            * @see NotImplementedError#NotImplementedError(String)
+           * @deprecated marked for removal
            */
+          @Deprecated
           public static <T> T TODO(String msg) {
               throw new NotImplementedError(msg);
           }
