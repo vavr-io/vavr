@@ -22,7 +22,9 @@ package io.vavr;
  * This exception is temporarily used during development in order to indicate that an implementation is missing.
  * <p>
  * The idiomatic way is to use one of {@link API#TODO()} and {@link API#TODO(String)}.
+ * @deprecated marked for removal
  */
+@Deprecated
 public class NotImplementedError extends Error {
 
     private static final long serialVersionUID = 1L;
