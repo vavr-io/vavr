@@ -42,4 +42,4 @@ script:
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- if [[ -n $DEPLOY ]]; then ./gradlew uploadArchives -PossrhUsername=${ossrhUsername} -PossrhPassword=${ossrhPassword}; fi
+- if [[ -n $DEPLOY ]] && [ "$TRAVIS_REPO_SLUG" == "vavr-io/vavr" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then ./gradlew uploadArchives -PossrhUsername="$ossrhUsername" -PossrhPassword="$ossrhPassword"; fi
