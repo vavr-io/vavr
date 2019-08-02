@@ -83,12 +83,6 @@ jacocoTestReport {
 
 check.dependsOn jacocoTestReport
 
-jar {
-    manifest {
-        attributes('Automatic-Module-Name': 'io.vavr')
-    }
-}
-
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
