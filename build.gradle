@@ -127,13 +127,15 @@ signing {
 // - Add the following properties to ~/.gradle/gradle.properties
 //     ossrhUsername=<username>
 //     ossrhPassword=<password>
+// - Or pass the credentials as command line parameters
+//     ./gradlew uploadArchives -PossrhUsername=<my-username> -PossrhPassword=<my-password>
 //
 uploadArchives {
     repositories {
         mavenDeployer {
 
-            def sonatypeUser = project.hasProperty('ossrhUsername') ? ossrhUsername : ''
-            def sonatypePass = project.hasProperty('ossrhPassword') ? ossrhPassword : ''
+            def sonatypeUser = findProperty("ossrhUsername")
+            def sonatypePass = findProperty("ossrhPassword")
 
             beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
 

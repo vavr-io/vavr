@@ -7,7 +7,9 @@ install: echo "Disabled Travis CI 'install' stage by default"
 
 env:
   global:
+  - # ossrhUsername
   - secure: GwuNkNkV6QUnThmV+ZsiPuR+M50sVN+7qT+Ca9qRiXAhbUJpV0kcQz+NSV/gDE9UmsdzKfPzsSaKPjtIbKN9gFzFsOCd99TXGD1n3Kkya//Pw1ziDOtZFI9EMjO/8qPIEIR+Cfk7niqpyET/ypC7aklxv8raiCVrPDXJ8TJWsYM=
+  - # ossrhPassword
   - secure: i+gbt9z+eCnGV1TadNWPrkOgxmeTYUvfkQYOvVQ01cqkTeNL5YKoWx3cpoidEvx4Bj00XkNqXXvMEBViEgnVlA4Xqm8n/05WcVr6uJ/HFq1hkBTiVl5LJEvXH4NBVoEZJTY4h9B7ulMHqvhM9U/vTBYbjK+L+9OC6B+U/IJe2Ho=
 
 matrix:
@@ -40,4 +42,4 @@ script:
 
 after_success:
 - bash <(curl -s https://codecov.io/bash)
-- if [[ -n $DEPLOY ]]; then ./gradlew uploadArchives; fi
+- if [[ -n $DEPLOY ]]; then ./gradlew uploadArchives -PossrhUsername=${ossrhUsername} -PossrhPassword=${ossrhPassword}; fi
