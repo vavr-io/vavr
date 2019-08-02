@@ -34,10 +34,12 @@ cache:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
 
-before_install: unset _JAVA_OPTIONS
+before_install:
+- export GRADLE_JAVA_HOME="$JAVA_HOME"
+- unset _JAVA_OPTIONS
 
 script:
-- ./gradlew check
+- ./gradlew check --info -Dorg.gradle.java.home="$GRADLE_JAVA_HOME"
 - if [ -n "$(git status -su src-gen)" ]; then exit 1; fi
 
 after_success:
