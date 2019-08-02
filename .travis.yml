@@ -18,8 +18,8 @@ matrix:
   - jdk: oraclejdk9
   - jdk: openjdk10
   - jdk: openjdk11
-  - jdk: openjdk12
     env: DEPLOY=true
+  - jdk: openjdk12
   - jdk: openjdk-13
   - jdk: openjdk-ea
   allow_failures:
@@ -41,5 +41,5 @@ script:
 - if [ -n "$(git status -su src-gen)" ]; then exit 1; fi
 
 after_success:
-- bash <(curl -s https://codecov.io/bash)
+- if [[ -n $DEPLOY ]]; then bash <(curl -s https://codecov.io/bash); fi
 - if [[ -n $DEPLOY ]] && [ "$TRAVIS_REPO_SLUG" == "vavr-io/vavr" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ] && [ "$TRAVIS_BRANCH" == "master" ]; then ./gradlew uploadArchives -PossrhUsername="$ossrhUsername" -PossrhPassword="$ossrhPassword"; fi
