@@ -21,7 +21,9 @@ package io.vavr;
 import io.vavr.collection.Iterator;
 
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.ObjIntConsumer;
 
 /**
  * Extension of the well-known Java {@link java.lang.Iterable} in the sense that a rich
@@ -39,6 +41,27 @@ public interface Iterable<T> extends java.lang.Iterable<T> {
      */
     @Override
     Iterator<T> iterator();
+
+    /**
+     * Performs an action on each element. In contrast to {@link #forEach(Consumer)},
+     * additionally the element's index is passed to the given {@code action}.
+     * <p>
+     * Please note that subsequent calls to {@code forEachWithIndex} might lead to different iteration orders,
+     * depending on the underlying {@code Iterable} implementation.
+     * <p>
+     * Please also note that {@code forEachWithIndex} might loop infinitely,
+     * depending on the underlying {@code Iterable} implementation.
+     *
+     * @param action A {@link ObjIntConsumer}
+     * @throws NullPointerException if {@code action} is null
+     */
+    default void forEachWithIndex(ObjIntConsumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+        int index = 0;
+        for (T t : this) {
+            action.accept(t, index++);
+        }
+    }
 
     // `Iterable<T>` must not have a generic type bound, see TraversableTest ShouldJustCompile
     default <C> C to(Function<? super java.lang.Iterable<T>, C> fromIterable) {
