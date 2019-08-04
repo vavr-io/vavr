@@ -597,9 +597,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             throw new IllegalArgumentException("step cannot be 0");
         }
         if (step > 0) {
-            return new IncrementalIntRangeIterator(from, toExclusive, step, false);
+            return new RangeIntForwardIterator(from, toExclusive, step, false);
         } else {
-            return new DecrementalIntRangeIterator(from, toExclusive, step, false);
+            return new RangeIntBackwardIterator(from, toExclusive, step, false);
         }
     }
 
@@ -644,8 +644,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Long> rangeBy(long from, long toExclusive, long step) {
-        final long toInclusive = toExclusive - (step > 0 ? 1 : -1);
-        return rangeClosedBy(from, toInclusive, step);
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        }
+        if (step > 0) {
+            return new RangeLongForwardIterator(from, toExclusive, step, false);
+        } else {
+            return new RangeLongBackwardIterator(from, toExclusive, step, false);
+        }
     }
 
     /**
@@ -745,9 +751,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             throw new IllegalArgumentException("step cannot be 0");
         }
         if (step > 0) {
-            return new IncrementalIntRangeIterator(from, toInclusive, step, true);
+            return new RangeIntForwardIterator(from, toInclusive, step, true);
         } else {
-            return new DecrementalIntRangeIterator(from, toInclusive, step, true);
+            return new RangeIntBackwardIterator(from, toInclusive, step, true);
         }
     }
 
@@ -794,48 +800,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Long> rangeClosedBy(long from, long toInclusive, long step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return of(from);
-        } else if (Long.signum(step) == Long.signum(from - toInclusive)) {
-            return empty();
+        }
+        if (step > 0) {
+            return new RangeLongForwardIterator(from, toInclusive, step, true);
         } else {
-            final long end = toInclusive - step;
-            if (step > 0) {
-                return new Iterator<Long>() {
-                    long i = from - step;
-
-                    @Override
-                    public boolean hasNext() {
-                        return i <= end;
-                    }
-
-                    @Override
-                    public Long next() {
-                        if (!hasNext()) {
-                            throw new NoSuchElementException();
-                        }
-                        return i += step;
-                    }
-                };
-            } else {
-                return new Iterator<Long>() {
-                    long i = from - step;
-
-                    @Override
-                    public boolean hasNext() {
-                        return i >= end;
-                    }
-
-                    @Override
-                    public Long next() {
-                        if (!hasNext()) {
-                            throw new NoSuchElementException();
-                        }
-                        return i += step;
-                    }
-                };
-
-            }
+            return new RangeLongBackwardIterator(from, toInclusive, step, true);
         }
     }
 
@@ -2466,7 +2435,7 @@ final class SingletonIterator<T> implements Iterator<T> {
     }
 }
 
-final class IncrementalIntRangeIterator implements Iterator<Integer> {
+final class RangeIntForwardIterator implements Iterator<Integer> {
 
     private final int start;
 
@@ -2480,7 +2449,7 @@ final class IncrementalIntRangeIterator implements Iterator<Integer> {
 
     private boolean overflow;
 
-    IncrementalIntRangeIterator(int start, int end, int step, boolean inclusive) {
+    RangeIntForwardIterator(int start, int end, int step, boolean inclusive) {
         this.start = start;
         this.next = start;
         this.end = end;
@@ -2513,7 +2482,7 @@ final class IncrementalIntRangeIterator implements Iterator<Integer> {
     }
 }
 
-final class DecrementalIntRangeIterator implements Iterator<Integer> {
+final class RangeIntBackwardIterator implements Iterator<Integer> {
 
     private final int start;
 
@@ -2527,7 +2496,7 @@ final class DecrementalIntRangeIterator implements Iterator<Integer> {
 
     private boolean overflow;
 
-    DecrementalIntRangeIterator(int start, int end, int step, boolean inclusive) {
+    RangeIntBackwardIterator(int start, int end, int step, boolean inclusive) {
         this.start = start;
         this.next = start;
         this.end = end;
@@ -2554,6 +2523,100 @@ final class DecrementalIntRangeIterator implements Iterator<Integer> {
         }
         int curr = next;
         int r = curr + step;
+        overflow = ((curr ^ r) & (step ^ r)) < 0;
+        next = r;
+        return curr;
+    }
+}
+
+final class RangeLongForwardIterator implements Iterator<Long> {
+
+    private final long start;
+
+    private final long end;
+
+    private final long step;
+
+    private final boolean inclusive;
+
+    private long next;
+
+    private boolean overflow;
+
+    RangeLongForwardIterator(long start, long end, long step, boolean inclusive) {
+        this.start = start;
+        this.next = start;
+        this.end = end;
+        this.step = step;
+        this.inclusive = inclusive;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (start > end) {
+            return false;
+        }
+        if (inclusive) {
+            return !overflow && next <= end;
+        } else {
+            return !overflow && next < end;
+        }
+    }
+
+    @Override
+    public Long next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        long curr = next;
+        long r = curr + step;
+        overflow = ((curr ^ r) & (step ^ r)) < 0;
+        next = r;
+        return curr;
+    }
+}
+
+final class RangeLongBackwardIterator implements Iterator<Long> {
+
+    private final long start;
+
+    private final long end;
+
+    private final long step;
+
+    private final boolean inclusive;
+
+    private long next;
+
+    private boolean overflow;
+
+    RangeLongBackwardIterator(long start, long end, long step, boolean inclusive) {
+        this.start = start;
+        this.next = start;
+        this.end = end;
+        this.step = step;
+        this.inclusive = inclusive;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (start < end) {
+            return false;
+        }
+        if (inclusive) {
+            return !overflow && next >= end;
+        } else {
+            return !overflow && next > end;
+        }
+    }
+
+    @Override
+    public Long next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        long curr = next;
+        long r = curr + step;
         overflow = ((curr ^ r) & (step ^ r)) < 0;
         next = r;
         return curr;
