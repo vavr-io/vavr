@@ -105,8 +105,8 @@ abstract class AbstractRangeIterator implements Iterator<Integer> {
         if (!hasNext()) {
             throw new NoSuchElementException();
         }
-        int curr = next;
-        int r = curr + step;
+        final int curr = next;
+        final int r = curr + step;
         overflow = ((curr ^ r) & (step ^ r)) < 0;
         next = r;
         return curr;
