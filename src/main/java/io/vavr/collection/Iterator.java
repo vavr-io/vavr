@@ -593,8 +593,14 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Iterator<Integer> rangeBy(int from, int toExclusive, int step) {
-        final int toInclusive = toExclusive - (step > 0 ? 1 : -1);
-        return rangeClosedBy(from, toInclusive, step);
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        }
+        if (step > 0) {
+            return new IncrementalIntRangeIterator(from, toExclusive, step, false);
+        } else {
+            return new DecrementalIntRangeIterator(from, toExclusive, step, false);
+        }
     }
 
     /**
@@ -737,56 +743,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static Iterator<Integer> rangeClosedBy(int from, int toInclusive, int step) {
         if (step == 0) {
             throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return of(from);
-        } else if (Integer.signum(step) == Integer.signum(from - toInclusive)) {
-            return empty();
+        }
+        if (step > 0) {
+            return new IncrementalIntRangeIterator(from, toInclusive, step, true);
         } else {
-            if (step > 0) {
-                return new Iterator<Integer>() {
-                    int next = from;
-                    boolean overflow = false;
-
-                    @Override
-                    public boolean hasNext() {
-                        return !overflow && next <= toInclusive;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        if (!hasNext()) {
-                            throw new NoSuchElementException();
-                        }
-                        int curr = next;
-                        int r = curr + step;
-                        overflow = ((curr ^ r) & (step ^ r)) < 0;
-                        next = r;
-                        return curr;
-                    }
-                };
-            } else {
-                return new Iterator<Integer>() {
-                    int next = from;
-                    boolean overflow = false;
-
-                    @Override
-                    public boolean hasNext() {
-                        return !overflow && next >= toInclusive;
-                    }
-
-                    @Override
-                    public Integer next() {
-                        if (!hasNext()) {
-                            throw new NoSuchElementException();
-                        }
-                        int curr = next;
-                        int r = curr + step;
-                        overflow = ((curr ^ r) & (step ^ r)) < 0;
-                        next = r;
-                        return curr;
-                    }
-                };
-            }
+            return new DecrementalIntRangeIterator(from, toInclusive, step, true);
         }
     }
 
@@ -2502,6 +2463,100 @@ final class SingletonIterator<T> implements Iterator<T> {
     @Override
     public String toString() {
         return "SingletonIterator";
+    }
+}
+
+final class IncrementalIntRangeIterator implements Iterator<Integer> {
+
+    private final int start;
+
+    private final int end;
+
+    private final int step;
+
+    private final boolean inclusive;
+
+    private int next;
+
+    private boolean overflow;
+
+    IncrementalIntRangeIterator(int start, int end, int step, boolean inclusive) {
+        this.start = start;
+        this.next = start;
+        this.end = end;
+        this.step = step;
+        this.inclusive = inclusive;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (start > end) {
+            return false;
+        }
+        if (inclusive) {
+            return !overflow && next <= end;
+        } else {
+            return !overflow && next < end;
+        }
+    }
+
+    @Override
+    public Integer next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        int curr = next;
+        int r = curr + step;
+        overflow = ((curr ^ r) & (step ^ r)) < 0;
+        next = r;
+        return curr;
+    }
+}
+
+final class DecrementalIntRangeIterator implements Iterator<Integer> {
+
+    private final int start;
+
+    private final int end;
+
+    private final int step;
+
+    private final boolean inclusive;
+
+    private int next;
+
+    private boolean overflow;
+
+    DecrementalIntRangeIterator(int start, int end, int step, boolean inclusive) {
+        this.start = start;
+        this.next = start;
+        this.end = end;
+        this.step = step;
+        this.inclusive = inclusive;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if (start < end) {
+            return false;
+        }
+        if (inclusive) {
+            return !overflow && next >= end;
+        } else {
+            return !overflow && next > end;
+        }
+    }
+
+    @Override
+    public Integer next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
+        int curr = next;
+        int r = curr + step;
+        overflow = ((curr ^ r) & (step ^ r)) < 0;
+        next = r;
+        return curr;
     }
 }
 
