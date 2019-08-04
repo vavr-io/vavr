@@ -2494,7 +2494,7 @@ final class RangeIntBackwardIterator implements Iterator<Integer> {
 
     private int next;
 
-    private boolean overflow;
+    private boolean underflow;
 
     RangeIntBackwardIterator(int start, int end, int step, boolean inclusive) {
         this.start = start;
@@ -2510,9 +2510,9 @@ final class RangeIntBackwardIterator implements Iterator<Integer> {
             return false;
         }
         if (inclusive) {
-            return !overflow && next >= end;
+            return !underflow && next >= end;
         } else {
-            return !overflow && next > end;
+            return !underflow && next > end;
         }
     }
 
@@ -2523,7 +2523,7 @@ final class RangeIntBackwardIterator implements Iterator<Integer> {
         }
         int curr = next;
         int r = curr + step;
-        overflow = ((curr ^ r) & (step ^ r)) < 0;
+        underflow = ((curr ^ r) & (step ^ r)) < 0;
         next = r;
         return curr;
     }
@@ -2588,7 +2588,7 @@ final class RangeLongBackwardIterator implements Iterator<Long> {
 
     private long next;
 
-    private boolean overflow;
+    private boolean underflow;
 
     RangeLongBackwardIterator(long start, long end, long step, boolean inclusive) {
         this.start = start;
@@ -2604,9 +2604,9 @@ final class RangeLongBackwardIterator implements Iterator<Long> {
             return false;
         }
         if (inclusive) {
-            return !overflow && next >= end;
+            return !underflow && next >= end;
         } else {
-            return !overflow && next > end;
+            return !underflow && next > end;
         }
     }
 
@@ -2617,7 +2617,7 @@ final class RangeLongBackwardIterator implements Iterator<Long> {
         }
         long curr = next;
         long r = curr + step;
-        overflow = ((curr ^ r) & (step ^ r)) < 0;
+        underflow = ((curr ^ r) & (step ^ r)) < 0;
         next = r;
         return curr;
     }
