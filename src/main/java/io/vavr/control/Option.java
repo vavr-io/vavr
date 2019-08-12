@@ -56,6 +56,14 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     /**
      * Creates a new {@code Option} of a given value.
      *
+     * <pre>{@code
+     * // Creates Some(3), an Option which contains the value 3
+     * Option<Integer> option = Option.of(3);
+     *
+     * // Creates None, the empty Option
+     * Option<Integer> none = Option.of(null);
+     * }</pre>
+     *
      * @param value A value
      * @param <T>   type of the value
      * @return {@code Some(value)} if value is not {@code null}, {@code None} otherwise
@@ -69,6 +77,17 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * {@code Iterable<Option<? extends T>>} into a {@code Option<Seq<T>>}. If any of
      * the Options are {@link Option.None}, then this returns {@link Option.None}.
      *
+     * <pre>{@code
+     * Seq<Option<Integer>> seq = Vector.of(Option.of(1), Option.of(2), Option.of(3));
+     *
+     * // Creates Some(Seq(1, 2, 3))
+     * Option<Seq<Integer>> option = Option.sequence(seq);
+     *
+     * Seq<Option<Integer>> seq = Vector.of(Option.of(1), Option.none());
+     *
+     * // Creates None since some elements in the Iterable are None
+     * Option<Seq<Integer>> option = Option.sequence(seq);
+     * }</pre>
      * @param values An {@code Iterable} of {@code Option}s
      * @param <T>    type of the Options
      * @return An {@code Option} of a {@link Seq} of results
@@ -89,7 +108,21 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     /**
      * Maps the values of an iterable to a sequence of mapped values into a single {@code Option} by
      * transforming an {@code Iterable<? extends T>} into a {@code Option<Seq<U>>}.
-     * <p>
+     *
+     * <pre>{@code
+     * Function<Integer, Option<String>> mapper = i -> {
+     *      if (i <= 0) {
+     *          return Option.none();
+     *      }
+     *      return Option.of("a" = i.toString());
+     * }
+     *
+     * // Creates Some(Seq("a1", "a2", "a3"))
+     * Option<Seq<String>> option = traverse(Vector.of(1, 2, 3), mapper);
+     *
+     * // Creates None
+     * Option<Seq<Integer>> none = traverse(Vector.of(-1, 0, 1), mapper);
+     * }</pre>
      *
      * @param values   An {@code Iterable} of values.
      * @param mapper   A mapper of values to Options
@@ -108,12 +141,14 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Creates a new {@code Some} of a given value.
      * <p>
      * The only difference to {@link Option#of(Object)} is, when called with argument {@code null}.
-     * <pre>
-     * <code>
-     * Option.of(null);   // = None
-     * Option.some(null); // = Some(null)
-     * </code>
-     * </pre>
+     *
+     * <pre>{@code
+     * // Creates Some(3)
+     * Option.some(3);
+     *
+     * // Creates Some(null)
+     * Option.some(null);
+     * }</pre>
      *
      * @param value A value
      * @param <T>   type of the value
@@ -125,6 +160,11 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * Returns the single instance of {@code None}
+     *
+     * <pre>{@code
+     * // Creates None
+     * Option<String> none = Option.none();
+     * }</pre>
      *
      * @param <T> component type
      * @return the single instance of {@code None}
@@ -140,6 +180,12 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
+     * <pre>{@code
+     * Option<Integer> option = Option.of(3);
+     * // Narrow to an Option of Number
+     * Option<Number> narrowed = Option.narrow(option);
+     * }</pre>
+     *
      * @param option A {@code Option}.
      * @param <T>    Component type of the {@code Option}.
      * @return the given {@code option} instance as narrowed type {@code Option<T>}.
@@ -151,6 +197,16 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * Creates {@code Some} of suppliers value if condition is true, or {@code None} in other case
+     *
+     * <pre>{@code
+     * Supplier<String> supplier = () -> "supplied";
+     *
+     * // Creates Some("supplied")
+     * Option<String> supplied = Option.when(true, supplier);
+     *
+     * // Creates None
+     * Option<String> none = Option.when(false, supplier);
+     * }</pre>
      *
      * @param <T>       type of the optional value
      * @param condition A boolean value
@@ -166,6 +222,14 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     /**
      * Creates {@code Some} of value if condition is true, or {@code None} in other case
      *
+     * <pre>{@code
+     * // Creates Some(5)
+     * Option<Integer> option = Option.when(true, 5);
+     *
+     * // Creates None
+     * Option<Integer> none = Option.when(false, 5);
+     * }</pre>
+     *
      * @param <T>       type of the optional value
      * @param condition A boolean value
      * @param value     An optional value, may be {@code null}
@@ -177,6 +241,18 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * Wraps a Java Optional to a new Option
+     *
+     * <pre>{@code
+     * Optional<String> optional = Optional.ofNullable("value");
+     *
+     * // Make a Some("value") from an Optional
+     * Option<String> option = Option.ofOptional(optional);
+     *
+     * Optional<String> empty = Optional.empty();
+     *
+     * // Make a None from an empty Optional
+     * Option<String> none = Option.ofOptional(empty);
+     * }</pre>
      *
      * @param optional a given optional to wrap in {@code Option}
      * @param <T>      type of the value
@@ -215,6 +291,14 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     /**
      * Returns true, if this is {@code None}, otherwise false, if this is {@code Some}.
      *
+     * <pre>{@code
+     * // Prints "false"
+     * System.out.println(Option.of(10).isEmpty());
+     *
+     * // Prints "true"
+     * System.out.println(Option.none().isEmpty());
+     * }</pre>
+     *
      * @return true, if this {@code Option} is empty, false otherwise
      */
     @Override
@@ -222,6 +306,16 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * Runs a Java Runnable passed as parameter if this {@code Option} is empty.
+     *
+     * <pre>{@code
+     * Runnable print = () -> System.out.println("Option is empty");
+     *
+     * // Prints nothing
+     * Option.of("value").onEmpty(print);
+     *
+     * // Prints "Option is empty"
+     * Option.none().onEmpty(print);
+     * }</pre>
      *
      * @param action a given Runnable to be run
      * @return this {@code Option}
@@ -237,6 +331,14 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     /**
      * An {@code Option}'s value is computed synchronously.
      *
+     * <pre>{@code
+     * // Prints "false"
+     * System.out.println(Option.of(1).isAsync());
+     *
+     * // Prints "false"
+     * System.out.println(Option.none().isAsync());
+     * }</pre>
+     *
      * @return false
      */
     @Override
@@ -249,6 +351,17 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <p>
      * Please note that it is possible to create {@code new Some(null)}, which is defined.
      *
+     * <pre>{@code
+     * // Prints "true"
+     * System.out.println(Option.of(10).isDefined());
+     *
+     * // Prints "false"
+     * System.out.println(Option.none().isDefined());
+     *
+     * // Prints "true
+     * System.out.println(Option.of(null).isDefined());
+     * }</pre>
+     *
      * @return true, if this {@code Option} has a defined value, false otherwise
      */
     public final boolean isDefined() {
@@ -257,6 +370,14 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * An {@code Option}'s value is computed eagerly.
+     *
+     * <pre>{@code
+     * // Prints "false"
+     * System.out.println(Option.of(3.14).isLazy());
+     *
+     * // Prints "false"
+     * System.out.println(Option.none().isLazy());
+     * }</pre>
      *
      * @return false
      */
@@ -267,6 +388,14 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * An {@code Option} is single-valued.
+     *
+     * <pre>{@code
+     * // Prints "true"
+     * System.out.println(Option.of("value").isSingleValued());
+     *
+     * // Prints "true"
+     * System.out.println(Option.none().isSingleValued());
+     * }</pre>
      *
      * @return {@code true}
      */
