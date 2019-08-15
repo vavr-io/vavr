@@ -483,6 +483,50 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
         }
     }
 
+    /**
+     * Calls recoverFunction if the projected Either is a Left, performs no operation if this is a Right. This is
+     * similar to {@code getOrElseGet} where the fallback method also returns an Either.
+     *
+     * <pre>{@code
+     * Either<Integer, String> tryGetString() { return Either.left(1); }
+     *
+     * Either<Integer, String> tryGetStringAnotherWay(Integer lvalue) { return Either.right("yo " + lvalue); }
+     *
+     * = Right("yo 1")
+     * tryGetString().recover(this::tryGetStringAnotherWay);
+     * }</pre>
+     *
+     * @param recoverFunction a function which accepts a Left value and returns an Either
+     * @return an {@code Either<L, R>} instance
+     */
+    public final Either<L, R> recover(Function<L, Either<L, R>> recoverFunction) {
+        if (isLeft()) {
+            return recoverFunction.apply(getLeft());
+        } else {
+            return this;
+        }
+    }
+
+    /**
+     * Calls recoverSupplier if the projected Either is a Left, performs no operation if this is a Right. This is
+     * similar to {@code getOrElseGet} where the fallback method also returns an Either.
+     *
+     * <pre>{@code
+     * Either<Integer, String> tryGetString() { return Either.left(1); }
+     *
+     * Either<Integer, String> tryGetStringAnotherWay() { return Either.right("yo"); }
+     *
+     * = Right("yo")
+     * tryGetString().recover(this::tryGetStringAnotherWay);
+     * }</pre>
+     *
+     * @param recoverSupplier a {@code Supplier} which returns an Either
+     * @return an {@code Either<L, R>} instance
+     */
+    public final Either<L, R> recover(Supplier<Either<L, R>> recoverSupplier) {
+        return this.recover(l -> recoverSupplier.get());
+    }
+
     // -- Adjusted return types of Monad methods
 
     /**

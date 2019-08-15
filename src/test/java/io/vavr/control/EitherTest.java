@@ -319,6 +319,34 @@ public class EitherTest extends AbstractValueTest {
         assertThat(Either.right(1).swap()).isEqualTo(Either.left(1));
     }
 
+    // -- recover
+
+    @Test
+    public void shouldRecoverLeftToRight() {
+        assertThat(Either.left(1).recover(() -> Either.right(2))).isEqualTo(Either.right(2));
+    }
+
+    @Test
+    public void shouldRecoverLeftToLeft() {
+        assertThat(Either.left(1).recover(() -> Either.left(2))).isEqualTo(Either.left(2));
+    }
+
+    @Test
+    public void shouldRecoverLeftToRightWithLValue() {
+        assertThat(Either.left(1).recover(lvalue -> Either.right(lvalue + 1))).isEqualTo(Either.right(2));
+    }
+
+    @Test
+    public void shouldRecoverLeftToLeftWithLValue() {
+        assertThat(Either.left(1).recover(lvalue -> Either.left(lvalue + 1))).isEqualTo(Either.left(2));
+    }
+
+    @Test
+    public void shouldRecoverRightNoOp() {
+        final Either<String, String> value = Either.<String, String>right("R").recover(() -> Either.left("L"));
+        assertThat(value).isEqualTo(Either.right("R"));
+    }
+
     // -- Either.narrow
 
     @Test
