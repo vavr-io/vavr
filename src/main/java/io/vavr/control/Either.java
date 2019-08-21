@@ -448,7 +448,7 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
      *
      * <pre>{@code
      * Function<String, RuntimeException> exceptionFunction = RuntimeException::new;
-     * //prints "42"
+     * // prints "42"
      * System.out.println(Either.<String, Integer>right(42).getOrElseThrow(exceptionFunction));
      *
      * // throws RuntimeException("no value found")
@@ -473,6 +473,14 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
     /**
      * Converts a {@code Left} to a {@code Right} vice versa by wrapping the value in a new type.
      *
+     * <pre>{@code
+     * // prints "Right(42)"
+     * System.out.println(Either.left(42).swap());
+     *
+     * // prints "Left(message)"
+     * System.out.println(Either.right("message").swap());
+     * }</pre>
+     *
      * @return a new {@code Either}
      */
     public final Either<R, L> swap() {
@@ -487,6 +495,14 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
 
     /**
      * FlatMaps this right-biased Either.
+     *
+     * <pre>{@code
+     * // prints "Right(42)"
+     * System.out.println(Either.right(21).flatMap(v -> Either.right(v * 2)));
+     *
+     * // prints "Left(error message)"
+     * System.out.println(Either.left("error message").flatMap(Either::right));
+     * }</pre>
      *
      * @param mapper A mapper
      * @param <U>    Component type of the mapped right value
@@ -1353,3 +1369,4 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
         }
     }
 }
+
