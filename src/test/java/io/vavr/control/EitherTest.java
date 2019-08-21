@@ -319,6 +319,39 @@ public class EitherTest extends AbstractValueTest {
         assertThat(Either.right(1).swap()).isEqualTo(Either.left(1));
     }
 
+    // -- recover
+
+    @Test
+    public void shouldRecoverWithLeftToRightEither() {
+        assertThat(Either.left(1).recoverWith(lvalue -> Either.right(lvalue + 1))).isEqualTo(Either.right(2));
+    }
+
+    @Test
+    public void shouldRecoverWithLeftToLeftEither() {
+        assertThat(Either.left(1).recoverWith(lvalue -> Either.left(lvalue + 1))).isEqualTo(Either.left(2));
+    }
+
+    @Test
+    public void shouldRecoverWithRight() {
+        final Either<String, String> value = Either.<String, String>right("R").recoverWith(lvalue -> Either.left("L"));
+        assertThat(value).isEqualTo(Either.right("R"));
+    }
+
+    @Test
+    public void shouldRecoverLeft() {
+        assertThat(Either.left(1).recover(lvalue -> "R")).isEqualTo(Either.right("R"));
+    }
+
+    @Test
+    public void shouldRecoverRightWithoutInvokingRecovery() {
+        // Recover function should not be invoked, so hardcode it to fail
+        Function<Object, String> recoveryFunction = $ -> {
+            throw new RuntimeException("Lazy recovery function should not be invoked for a Right!");
+        };
+
+        assertThat(Either.right("R").recover(recoveryFunction)).isEqualTo(Either.right("R"));
+    }
+
     // -- Either.narrow
 
     @Test
