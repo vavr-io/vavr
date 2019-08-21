@@ -484,7 +484,7 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
     }
 
     /**
-     * Calls recoverFunction if the projected Either is a Left, performs no operation if this is a Right. This is
+     * Calls recoveryFunction if the projected Either is a Left, performs no operation if this is a Right. This is
      * similar to {@code getOrElseGet} where the fallback method also returns an Either.
      *
      * <pre>{@code
@@ -496,19 +496,21 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
      * tryGetString().recover(this::tryGetStringAnotherWay);
      * }</pre>
      *
-     * @param recoverFunction a function which accepts a Left value and returns an Either
+     * @param recoveryFunction a function which accepts a Left value and returns an Either
      * @return an {@code Either<L, R>} instance
      */
-    public final Either<L, R> recover(Function<L, Either<L, R>> recoverFunction) {
+    @SuppressWarnings("unchecked")
+    public final Either<L, R> recoverWith(Function<? super L, ? extends Either<? extends L, ? extends R>> recoveryFunction) {
+        Objects.requireNonNull(recoveryFunction, "recoveryFunction is null");
         if (isLeft()) {
-            return recoverFunction.apply(getLeft());
+            return (Either<L, R>) recoveryFunction.apply(getLeft());
         } else {
             return this;
         }
     }
 
     /**
-     * Calls recoverSupplier if the projected Either is a Left, performs no operation if this is a Right. This is
+     * Calls recoverySupplier if the projected Either is a Left, performs no operation if this is a Right. This is
      * similar to {@code getOrElseGet} where the fallback method also returns an Either.
      *
      * <pre>{@code
@@ -520,11 +522,12 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
      * tryGetString().recover(this::tryGetStringAnotherWay);
      * }</pre>
      *
-     * @param recoverSupplier a {@code Supplier} which returns an Either
+     * @param recoverySupplier a {@code Supplier} which returns an Either
      * @return an {@code Either<L, R>} instance
      */
-    public final Either<L, R> recover(Supplier<Either<L, R>> recoverSupplier) {
-        return this.recover(l -> recoverSupplier.get());
+    public final Either<L, R> recoverWith(Supplier<? extends Either<? extends L, ? extends R>> recoverySupplier) {
+        Objects.requireNonNull(recoverySupplier, "recoverySupplier is null");
+        return this.recoverWith(l -> recoverySupplier.get());
     }
 
     // -- Adjusted return types of Monad methods
