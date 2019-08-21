@@ -485,7 +485,7 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
 
     /**
      * Calls recoveryFunction if the projected Either is a Left, performs no operation if this is a Right. This is
-     * similar to {@code getOrElseGet} where the fallback method also returns an Either.
+     * similar to {@code getOrElseGet}, but where the fallback method also returns an Either.
      *
      * <pre>{@code
      * Either<Integer, String> tryGetString() { return Either.left(1); }
@@ -498,6 +498,7 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
      *
      * @param recoveryFunction a function which accepts a Left value and returns an Either
      * @return an {@code Either<L, R>} instance
+     * @throws NullPointerException if the given {@code recoveryFunction} is null
      */
     @SuppressWarnings("unchecked")
     public final Either<L, R> recoverWith(Function<? super L, ? extends Either<? extends L, ? extends R>> recoveryFunction) {
@@ -510,24 +511,29 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
     }
 
     /**
-     * Calls recoverySupplier if the projected Either is a Left, performs no operation if this is a Right. This is
-     * similar to {@code getOrElseGet} where the fallback method also returns an Either.
+     * Calls {@code recoveryFunction} if the projected Either is a Left, or returns {@code this} if Right. The result
+     * of {@code recoveryFunction} will be projected as a Right.
      *
      * <pre>{@code
      * Either<Integer, String> tryGetString() { return Either.left(1); }
      *
-     * Either<Integer, String> tryGetStringAnotherWay() { return Either.right("yo"); }
+     * String getStringAnotherWay() { return "yo"; }
      *
      * = Right("yo")
-     * tryGetString().recover(this::tryGetStringAnotherWay);
+     * tryGetString().recover(this::getStringAnotherWay);
      * }</pre>
      *
-     * @param recoverySupplier a {@code Supplier} which returns an Either
+     * @param recoveryFunction a function which accepts a Left value and returns a Right value
      * @return an {@code Either<L, R>} instance
+     * @throws NullPointerException if the given {@code recoveryFunction} is null
      */
-    public final Either<L, R> recoverWith(Supplier<? extends Either<? extends L, ? extends R>> recoverySupplier) {
-        Objects.requireNonNull(recoverySupplier, "recoverySupplier is null");
-        return this.recoverWith(l -> recoverySupplier.get());
+    public final Either<L, R> recover(Function<? super L, ? extends R> recoveryFunction) {
+        Objects.requireNonNull(recoveryFunction, "recoveryFunction is null");
+        if (isLeft()) {
+            return Either.right(recoveryFunction.apply(getLeft()));
+        } else {
+            return this;
+        }
     }
 
     // -- Adjusted return types of Monad methods
