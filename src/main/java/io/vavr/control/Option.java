@@ -407,6 +407,14 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     /**
      * Gets the value if this is a {@code Some} or throws if this is a {@code None}.
      *
+     * <pre>{@code
+     * // Prints "57"
+     * System.out.println(Option.of(57).get());
+     *
+     * // Throws a NoSuchElementException
+     * Option.none().get();
+     * }</pre>
+     *
      * @return the value
      * @throws NoSuchElementException if this is a {@code None}.
      */
@@ -417,6 +425,14 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Returns the value if this is a {@code Some} or the {@code other} value if this is a {@code None}.
      * <p>
      * Please note, that the other value is eagerly evaluated.
+     *
+     * <pre>{@code
+     * // Prints "Hello"
+     * System.out.println(Option.of("Hello").getOrElse("World"));
+     *
+     * // Prints "World"
+     * Option.none().getOrElse("World");
+     * }</pre>
      *
      * @param other An alternative value
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
@@ -429,6 +445,19 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     /**
      * Returns this {@code Option} if it is nonempty, otherwise return the alternative.
      *
+     * <pre>{@code
+     * Option<String> other = Option.of("Other");
+     *
+     * // Creates Some("Hello World")
+     * Option.of("Hello World").orElse(other);
+     *
+     * // Creates Some("Other")
+     * Option.none().orElse(other);
+     *
+     * // Creates None
+     * Option.none().orElse(Option.none())
+     * }</pre>
+     *
      * @param other An alternative {@code Option}
      * @return this {@code Option} if it is nonempty, otherwise return the alternative.
      */
@@ -440,6 +469,19 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * Returns this {@code Option} if it is nonempty, otherwise return the result of evaluating supplier.
+     *
+     * <pre>{@code
+     * Supplier<Option<Integer>> supplier = () -> Option.of(5);
+     *
+     * // Creates Some(2)
+     * Option.of(2).orElse(supplier);
+     *
+     * // Creates Some(5)
+     * Option.none().orElse(supplier);
+     *
+     * // Creates None
+     * Option.none().orElse(() -> Option.none())
+     * }</pre>
      *
      * @param supplier An alternative {@code Option} supplier
      * @return this {@code Option} if it is nonempty, otherwise return the result of evaluating supplier.
@@ -456,6 +498,16 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <p>
      * Please note, that the other value is lazily evaluated.
      *
+     * <pre>{@code
+     * Supplier<Option<Double>> supplier = () -> 5.342;
+     *
+     * // Creates Some(1.2)
+     * Option.of(1.2).getOrElse(supplier);
+     *
+     * // Creates None
+     * Option.none().getOrElse(supplier);
+     * }</pre>
+     *
      * @param supplier An alternative value supplier
      * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
      */
@@ -467,6 +519,16 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * Returns the value if this is a {@code Some}, otherwise throws an exception.
+     *
+     * <pre>{@code
+     * Supplier<RuntimeException> supplier = () -> new RuntimeException();
+     *
+     * // Creates Some(12)
+     * Option.of(12).getOrElseThrow(supplier);
+     *
+     * // Throws RuntimeException
+     * Option.none().getOrElseThrow(supplier);
+     * }</pre>
      *
      * @param exceptionSupplier An exception supplier
      * @param <X>               A throwable
@@ -487,6 +549,19 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Returns {@code Some(value)} if this is a {@code Some} and the value satisfies the given predicate.
      * Otherwise {@code None} is returned.
      *
+     * <pre>{@code
+     * Predicate<Integer> isLessThanTen = i -> i < 10;
+     *
+     * // Creates Some(8)
+     * Option.some(8).filter(isLessThanTen);
+     *
+     * // Creates None
+     * Option.some(12).filter(isLessThanTen);
+     *
+     * // Creates None
+     * Option.none().filter(isLessThanTen);
+     * }</pre>
+     *
      * @param predicate A predicate which is used to test an optional value
      * @return {@code Some(value)} or {@code None} as specified
      */
@@ -499,6 +574,19 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Returns {@code Some(value)} if this is a {@code Some} and the value not satisfies the given predicate.
      * Otherwise {@code None} is returned.
      *
+     * <pre>{@code
+     * Predicate<Integer> isEven = i -> (i & 1) == 0;
+     *
+     * // Creates Some(5)
+     * Option.some(5).filterNot(isEven);
+     *
+     * // Creates None
+     * Option.some(12).filterNot(isEven);
+     *
+     * // Creates None
+     * Option.none().filterNot(isEven);
+     * }</pre>
+     *
      * @param predicate A predicate which is used to test an optional value
      * @return {@code Some(value)} or {@code None} as specified
      */
@@ -509,6 +597,19 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
+     *
+     * <pre>{@code
+     * Function<Integer, Option<Integer>> mapper = i -> i < 10 ? Option.of(i * 2) : Option.none();
+     *
+     * // Creates Some(14)
+     * Option.of(7).flatMap(mapper);
+     *
+     * // Creates None
+     * Option.of(11).flatMap(mapper);
+     *
+     * // Creates None
+     * Option.none().flatMap(mapper);
+     * }</pre>
      *
      * @param mapper A mapper
      * @param <U>    Component type of the resulting Option
@@ -523,6 +624,16 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     /**
      * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, otherwise returns a {@code None}.
      *
+     * <pre>{@code
+     * Function<String, String> mapper = s -> s + " World!";
+     *
+     * // Creates Some("Hello World!")
+     * Option.of("Hello").map(mapper);
+     *
+     * // Creates None
+     * Option.none().map(mapper);
+     * }</pre>
+     *
      * @param mapper A value mapper
      * @param <U>    The new value type
      * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
@@ -536,6 +647,17 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     /**
      * Folds either the {@code None} or the {@code Some} side of the Option value.
      *
+     * <pre>{@code
+     * Supplier<Double> ifNone = () -> 3.14;
+     * Function<String, Double> mapper = s -> Double.valueOf(s) + 0.98;
+     *
+     * // Creates Some(4.98)
+     * Option.of("4").fold(ifNone, mapper);
+     *
+     * // Creates Some(3.14)
+     * Option.none().fold(ifNone, mapper);
+     * }</pre>
+     *
      * @param ifNone  maps the left value if this is a None
      * @param f maps the value if this is a Some
      * @param <U>         type of the folded value
@@ -547,6 +669,16 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * Applies an action to this value, if this option is defined, otherwise does nothing.
+     *
+     * <pre>{@code
+     * Consumer<Integer> print = i -> System.out.println(i);
+     *
+     * // Prints 5 and creates Some(8)
+     * Option.of(5).peek(print).map(i -> i + 3);
+     *
+     * // Does not print anything
+     * Option.none().peek(print);
+     * }</pre>
      *
      * @param action An action which can be applied to an optional value
      * @return this {@code Option}
@@ -562,6 +694,16 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
 
     /**
      * Transforms this {@code Option}.
+     *
+     * <pre>{@code
+     * Function<Option<Integer>, String> f = o -> o.getOrElse(3).toString().concat("-transformed"));
+     *
+     * // Prints "1-transformed"
+     * System.out.println(Option.of(1).transform(f));
+     *
+     * // Prints "3-transformed"
+     * System.out.println(Option.none().transform(f));
+     * }</pre>
      *
      * @param f   A transformation
      * @param <U> Type of transformation result
