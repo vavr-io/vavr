@@ -453,9 +453,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      *
      * // Creates Some("Other")
      * Option.none().orElse(other);
-     *
-     * // Creates None
-     * Option.none().orElse(Option.none())
      * }</pre>
      *
      * @param other An alternative {@code Option}
@@ -478,9 +475,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      *
      * // Creates Some(5)
      * Option.none().orElse(supplier);
-     *
-     * // Creates None
-     * Option.none().orElse(() -> Option.none())
      * }</pre>
      *
      * @param supplier An alternative {@code Option} supplier
@@ -499,7 +493,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Please note, that the other value is lazily evaluated.
      *
      * <pre>{@code
-     * Supplier<Option<Double>> supplier = () -> 5.342;
+     * Supplier<Double> supplier = () -> 5.342;
      *
      * // Creates Some(1.2)
      * Option.of(1.2).getOrElse(supplier);
@@ -559,7 +553,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Option.some(12).filter(isLessThanTen);
      *
      * // Creates None
-     * Option.none().filter(isLessThanTen);
+     * Option.<Integer>none().filter(isLessThanTen);
      * }</pre>
      *
      * @param predicate A predicate which is used to test an optional value
@@ -584,7 +578,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Option.some(12).filterNot(isEven);
      *
      * // Creates None
-     * Option.none().filterNot(isEven);
+     * Option.<Integer>none().filterNot(isEven);
      * }</pre>
      *
      * @param predicate A predicate which is used to test an optional value
@@ -608,7 +602,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Option.of(11).flatMap(mapper);
      *
      * // Creates None
-     * Option.none().flatMap(mapper);
+     * Option.<Integer>none().flatMap(mapper);
      * }</pre>
      *
      * @param mapper A mapper
@@ -631,7 +625,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Option.of("Hello").map(mapper);
      *
      * // Creates None
-     * Option.none().map(mapper);
+     * Option.<String>none().map(mapper);
      * }</pre>
      *
      * @param mapper A value mapper
@@ -655,7 +649,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Option.of("4").fold(ifNone, mapper);
      *
      * // Creates Some(3.14)
-     * Option.none().fold(ifNone, mapper);
+     * Option.<String>none().fold(ifNone, mapper);
      * }</pre>
      *
      * @param ifNone  maps the left value if this is a None
@@ -677,7 +671,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Option.of(5).peek(print).map(i -> i + 3);
      *
      * // Does not print anything
-     * Option.none().peek(print);
+     * Option.<Integer>none().peek(print);
      * }</pre>
      *
      * @param action An action which can be applied to an optional value
@@ -702,7 +696,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * System.out.println(Option.of(1).transform(f));
      *
      * // Prints "3-transformed"
-     * System.out.println(Option.none().transform(f));
+     * System.out.println(Option.<Integer>none().transform(f));
      * }</pre>
      *
      * @param f   A transformation
