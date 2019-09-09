@@ -64,6 +64,14 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     /**
      * Creates a Try of a CheckedFunction0.
      *
+     * <pre>{@code
+     * // Returns Success(String)
+     * Try.of(() -> Class.forName("java.lang.String"));
+     *
+     * // Returns Failure(ClassNotFoundException)
+     * Try.of(() -> Class.forName("not a class"));
+     * }</pre>
+     *
      * @param supplier A checked supplier
      * @param <T>      Component type
      * @return {@code Success(supplier.apply())} if no exception occurs, otherwise {@code Failure(throwable)} if an
@@ -82,6 +90,14 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     /**
      * Creates a Try of a Supplier.
      *
+     * <pre>{@code
+     * // Returns Success(123)
+     * Try.ofSupplier(() -> Integer.parseInt("123"));
+     *
+     * // Returns Failure(NumberFormatException)
+     * Try.ofSupplier(() -> Integer.parseInt("not a number"));
+     * }</pre>
+     *
      * @param supplier A supplier
      * @param <T>      Component type
      * @return {@code Success(supplier.get())} if no exception occurs, otherwise {@code Failure(throwable)} if an
@@ -95,6 +111,16 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     /**
      * Creates a Try of a Callable.
      *
+     * <pre>{@code
+     * // Returns Success("hello")
+     * Try.ofCallable(() -> "hello");
+     *
+     * // Returns Failure(Exception)
+     * Try.ofCallable(() -> {
+     *   throw new Exception("An unknown error occurred.");
+     * });
+     * }</pre>
+     *
      * @param callable A callable
      * @param <T>      Component type
      * @return {@code Success(callable.call())} if no exception occurs, otherwise {@code Failure(throwable)} if an
@@ -107,6 +133,16 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
 
     /**
      * Creates a Try of a CheckedRunnable.
+     *
+     * <pre>{@code
+     * // Returns Success(null)
+     * Try.run(() -> doSomeAction());
+     *
+     * // Returns Failure(Exception)
+     * Try.run(() -> {
+     *   throw new Exception("An unknown error occurred.");
+     * });
+     * }</pre>
      *
      * @param runnable A checked runnable
      * @return {@code Success(null)} if no exception occurs, otherwise {@code Failure(throwable)} if an exception occurs
@@ -125,6 +161,16 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     /**
      * Creates a Try of a Runnable.
      *
+     * <pre>{@code
+     * // Returns Success(null)
+     * Try.runRunnable(() -> doSomeAction());
+     *
+     * // Returns Failure(RuntimeException)
+     * Try.runRunnable(() -> {
+     *   throw new RuntimeException("An unknown error occurred.");
+     * });
+     * }</pre>
+     *
      * @param runnable A runnable
      * @return {@code Success(null)} if no exception occurs, otherwise {@code Failure(throwable)} if an exception occurs
      * calling {@code runnable.run()}.
@@ -138,6 +184,18 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
      * Reduces many {@code Try}s into a single {@code Try} by transforming an
      * {@code Iterable<Try<? extends T>>} into a {@code Try<Seq<T>>}. If any of
      * the {@code Try}s are {@link Try.Failure}, then this returns a {@link Try.Failure}.
+     *
+     * <pre>{@code
+     * Try<String> first = Try.success("hello");
+     * Try<String> second = Try.success("world");
+     * Try<String> third = Try.failure(new Exception());
+     *
+     * // Returns Success(Vector("hello", "world"))
+     * Try<Seq<String>> success = Try.sequence(Arrays.asList(first, second));
+     *
+     * // Returns Failure(Exception)
+     * Try<Seq<String>> failure = Try.sequence(Arrays.asList(first, second, third));
+     * }</pre>
      *
      * @param values An {@link Iterable} of {@code Try}s
      * @param <T>    type of the Trys
@@ -161,6 +219,16 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
      * transforming an {@code Iterable<? extends T>} into a {@code Try<Seq<U>>}.
      * <p>
      *
+     * <pre>{@code
+     * Function<String, Try<Integer>> mapper = number -> Try.of(() -> Integer.parseInt(number));
+     *
+     * // Returns Success(Vector(123, 456))
+     * Try<Seq<Integer>> success = Try.traverse(Arrays.asList("123", "456"), mapper);
+     *
+     * // Returns Failure(NumberFormatException)
+     * Try<Seq<Integer>> failure = Try.traverse(Arrays.asList("not", "a number"), mapper);
+     * }</pre>
+     *
      * @param values   An {@code Iterable} of values.
      * @param mapper   A mapper of values to Trys
      * @param <T>      The type of the given values.
@@ -177,6 +245,11 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     /**
      * Creates a {@link Success} that contains the given {@code value}.
      *
+     * <pre>{@code
+     * // Returns Success(123)
+     * Try<Integer> success = Try.success(123);
+     * }</pre>
+     *
      * @param value A value.
      * @param <T>   Type of the given {@code value}.
      * @return A new {@code Success}.
@@ -187,6 +260,11 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
 
     /**
      * Creates a {@link Failure} that contains the given {@code exception}.
+     *
+     * <pre>{@code
+     * // Returns Failure(NumberFormatException)
+     * Try<Integer> failure = Try.failure(new NumberFormatException());
+     * }</pre>
      *
      * @param exception An exception.
      * @param <T>       Component type of the {@code Try}.
@@ -200,6 +278,12 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
      * Narrows a widened {@code Try<? extends T>} to {@code Try<T>}
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
+     *
+     * <pre>{@code
+     * // Returns Success(123)
+     * Try<Integer> number = Try.success(123);
+     * Try<Number> numberNumber = Try.narrow(number);
+     * }</pre>
      *
      * @param t   A {@code Try}.
      * @param <T> Component type of the {@code Try}.
