@@ -49,20 +49,20 @@ public class CheckedPredicateTest {
 
     @Test
     public void shouldApplyAnUncheckedFunctionThatDoesNotThrow() {
-        final Predicate<Object> preciate = CheckedPredicate.of(obj -> true).unchecked();
+        final Predicate<Object> predicate = CheckedPredicate.of(obj -> true).unchecked();
         try {
-            preciate.test(null);
+            predicate.test(null);
         } catch(Throwable x) {
-            Assert.fail("Did not excepect an exception but received: " + x.getMessage());
+            Assert.fail("Did not expect an exception but received: " + x.getMessage());
         }
     }
 
     @Test
     public void shouldApplyAnUncheckedFunctionThatThrows() {
-        final Predicate<Object> preciate = CheckedPredicate.of(obj -> { throw new Error(); }).unchecked();
+        final Predicate<Object> predicate = CheckedPredicate.of(obj -> { throw new Error(); }).unchecked();
         try {
-            preciate.test(null);
-            Assert.fail("Did excepect an exception.");
+            predicate.test(null);
+            Assert.fail("Did expect an exception.");
         } catch(Error x) {
             // ok!
         }

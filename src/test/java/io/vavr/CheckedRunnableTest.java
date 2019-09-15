@@ -50,7 +50,7 @@ public class CheckedRunnableTest {
         try {
             runnable.run();
         } catch(Throwable x) {
-            Assert.fail("Did not excepect an exception but received: " + x.getMessage());
+            Assert.fail("Did not expect an exception but received: " + x.getMessage());
         }
     }
 
@@ -59,7 +59,7 @@ public class CheckedRunnableTest {
         final Runnable runnable = CheckedRunnable.of(() -> { throw new Error(); }).unchecked();
         try {
             runnable.run();
-            Assert.fail("Did excepect an exception.");
+            Assert.fail("Did expect an exception.");
         } catch(Error x) {
             // ok!
         }

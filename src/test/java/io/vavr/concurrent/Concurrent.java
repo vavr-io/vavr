@@ -81,7 +81,7 @@ final class Concurrent {
     static void gracefullyFinishThreads() throws TimeoutException {
         final boolean isQuiescent = ForkJoinPool.commonPool().awaitQuiescence(1L, TimeUnit.MINUTES);
         if (isQuiescent) {
-            System.out.println("ForkJoinPool.commonPool() is quiecent");
+            System.out.println("ForkJoinPool.commonPool() is quiescent");
         } else {
             throw new TimeoutException("Timeout while waiting for running threads in ForkJoinPool.commonPool() to finish.");
         }
