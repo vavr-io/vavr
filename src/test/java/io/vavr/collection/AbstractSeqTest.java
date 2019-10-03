@@ -541,6 +541,38 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).get(2)).isEqualTo(3);
     }
 
+    // -- getOption
+
+    @Test()
+    public void shouldReturnNoneWhenGetOptionWithNegativeIndexOnNil() {
+        assertThat(empty().getOption(-1)).isEqualTo(Option.none());
+    }
+
+    @Test()
+    public void shouldReturnNoneWhenGetOptionWithNegativeIndexOnNonNil() {
+        assertThat(of(1).getOption(-1)).isEqualTo(Option.none());
+    }
+
+    @Test()
+    public void shouldReturnNoneWhenGetOptionOnNil() {
+        assertThat(empty().getOption(0)).isEqualTo(Option.none());
+    }
+
+    @Test()
+    public void shouldReturnNoneWhenGetOptionWithTooBigIndexOnNonNil() {
+        assertThat(of(1).getOption(1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldGetOptionFirstElementAsSome() {
+        assertThat(of(1, 2, 3).getOption(0)).isEqualTo(Option.some(1));
+    }
+
+    @Test
+    public void shouldGetOptionLastElementAsSome() {
+        assertThat(of(1, 2, 3).getOption(2)).isEqualTo(Option.some(3));
+    }
+
     // -- indexOf
 
     @Test

@@ -63,6 +63,7 @@ import java.util.function.*;
  *
  * <ul>
  * <li>{@link #get(int)}</li>
+ * <li>{@link #getOption(int)}</li>
  * <li>{@link #indexOf(Object)}</li>
  * <li>{@link #indexOf(Object, int)}</li>
  * <li>{@link #lastIndexOf(Object)}</li>
@@ -358,6 +359,20 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
     T get(int index);
+
+	/**
+	 * Returns the element at the specified index, if it exists, as an {@code Option}.
+	 *
+	 * @param index an index
+	 * @return {@code Some(element)} or {@code None} if no element exists at that index.
+	 */
+	default Option<T> getOption(int index) {
+		try {
+			return Option.some(get(index));
+		} catch (IndexOutOfBoundsException ex) {
+			return Option.none();
+		}
+	}
 
     /**
      * Returns the index of the first occurrence of the given element or -1 if this does not contain the given element.
