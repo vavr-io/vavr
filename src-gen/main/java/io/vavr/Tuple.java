@@ -257,9 +257,7 @@ public interface Tuple {
      * @return the same result as {@link Objects#hash(Object...)}
      */
     static int hash(Object o1, Object o2, Object o3) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
+        int result = hash(o1, o2);
         result = 31 * result + hash(o3);
         return result;
     }
@@ -274,10 +272,7 @@ public interface Tuple {
      * @return the same result as {@link Objects#hash(Object...)}
      */
     static int hash(Object o1, Object o2, Object o3, Object o4) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
+        int result = hash(o1, o2, o3);
         result = 31 * result + hash(o4);
         return result;
     }
@@ -293,11 +288,7 @@ public interface Tuple {
      * @return the same result as {@link Objects#hash(Object...)}
      */
     static int hash(Object o1, Object o2, Object o3, Object o4, Object o5) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        result = 31 * result + hash(o4);
+        int result = hash(o1, o2, o3, o4);
         result = 31 * result + hash(o5);
         return result;
     }
@@ -314,12 +305,7 @@ public interface Tuple {
      * @return the same result as {@link Objects#hash(Object...)}
      */
     static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        result = 31 * result + hash(o4);
-        result = 31 * result + hash(o5);
+        int result = hash(o1, o2, o3, o4, o5);
         result = 31 * result + hash(o6);
         return result;
     }
@@ -337,13 +323,7 @@ public interface Tuple {
      * @return the same result as {@link Objects#hash(Object...)}
      */
     static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        result = 31 * result + hash(o4);
-        result = 31 * result + hash(o5);
-        result = 31 * result + hash(o6);
+        int result = hash(o1, o2, o3, o4, o5, o6);
         result = 31 * result + hash(o7);
         return result;
     }
@@ -362,14 +342,7 @@ public interface Tuple {
      * @return the same result as {@link Objects#hash(Object...)}
      */
     static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        result = 31 * result + hash(o4);
-        result = 31 * result + hash(o5);
-        result = 31 * result + hash(o6);
-        result = 31 * result + hash(o7);
+        int result = hash(o1, o2, o3, o4, o5, o6, o7);
         result = 31 * result + hash(o8);
         return result;
     }
