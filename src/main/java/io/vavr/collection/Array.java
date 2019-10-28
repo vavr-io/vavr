@@ -80,6 +80,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.
      *
+     * <pre>{@code
+     * Array<Double> doubles = Array.of(1.0d, 2.0d);
+     * Array<Number> numbers = Array.narrow(doubles); // = Array(1.0d, 2.0d)
+     * }</pre>
+     *
      * @param array An {@code Array}.
      * @param <T>   Component type of the {@code Array}.
      * @return the given {@code array} instance as narrowed type {@code Array<T>}.
@@ -92,6 +97,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     /**
      * Returns a singleton {@code Array}, i.e. a {@code Array} of one element.
      *
+     * <pre>{@code
+     * Array<Double> doubles = Array.of(1.0d); // = Array(1.0d)
+     * Array<Integer> ints = Array.of(10);     // = Array(10)
+     * }</pre>
+     *
      * @param element An element.
      * @param <T>     The component type
      * @return A new Array instance containing the given element
@@ -102,6 +112,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     /**
      * Creates an Array of the given elements.
+     *
+     * <pre>{@code
+     * Array<Integer> ints = Array.of(1, 2, 3); // = Array(1, 2, 3)
+     * Array<Double> doubles = Array.of(1.0d, 2.0d, 3.0d); // = Array(1.0, 2.0, 3.0)
+     * }</pre>
      *
      * @param <T>      Component type of the Array.
      * @param elements Zero or more elements.
@@ -121,6 +136,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * The resulting Array has the same iteration order as the given iterable of elements
      * if the iteration order of the elements is stable.
      *
+     * <pre>{@code
+     * List<Integer> integers = List.of(1, 2, 3);
+     * Array<Integer> ints = Array.ofAll(integers); // = Array(1, 2, 3)
+     * }</pre>
+     *
      * @param <T>      Component type of the Array.
      * @param elements An Iterable of elements.
      * @return An Array containing the given elements in the same order.
@@ -137,6 +157,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     /**
      * Creates an Array that contains the elements of the given {@link java.util.stream.Stream}.
      *
+     * <pre>{@code
+     * List<Integer> integers = List.of(1, 2, 3);
+     * Array<Integer> ints = Array.ofAll(integers.toJavaStream()); // = Array(1, 2, 3)
+     * }</pre>
+     *
      * @param javaStream A {@link java.util.stream.Stream}
      * @param <T>        Component type of the Stream.
      * @return An Array containing the given elements in the same order.
@@ -148,6 +173,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     /**
      * Creates an Array from boolean values.
+     *
+     * <pre>{@code
+     * Array<Boolean> booleans = Array.ofAll(true, false); // = Array(true, false)
+     * }</pre>
      *
      * @param elements boolean values
      * @return A new Array of Boolean values
@@ -161,6 +190,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     /**
      * Creates an Array from byte values.
      *
+     * <pre>{@code
+     * Array<Byte> bytes = Array.ofAll((byte)1, (byte)2); // = Array(1, 2)
+     * }</pre>
+     *
      * @param elements byte values
      * @return A new Array of Byte values
      * @throws NullPointerException if elements is null
@@ -172,6 +205,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     /**
      * Creates an Array from char values.
+     *
+     * <pre>{@code
+     * Array<Character> characters = Array.ofAll('a', 'e', 'i', 'o', 'u'); // = Array(a, e, i, o, u)
+     * }</pre>
      *
      * @param elements char values
      * @return A new Array of Character values
@@ -185,6 +222,9 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     /**
      * Creates an Array from double values.
      *
+     * <pre>{@code
+     * Array<Double> doubles = Array.ofAll(1d, 2d); // = Array(1.0, 2.0)
+     * }</pre>
      * @param elements double values
      * @return A new Array of Double values
      * @throws NullPointerException if elements is null
@@ -196,6 +236,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     /**
      * Creates an Array from float values.
+     *
+     * <pre>{@code
+     * Array<Float> floats = Array.ofAll(1.1f, 2.2f); // = Array(1.1, 2.2)
+     * }</pre>
      *
      * @param elements float values
      * @return A new Array of Float values
@@ -209,6 +253,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     /**
      * Creates an Array from int values.
      *
+     * <pre>{@code
+     * Array<Integer> ints = Array.ofAll(1, 2); // = Array(1, 2)
+     * }</pre>
+     *
      * @param elements int values
      * @return A new Array of Integer values
      * @throws NullPointerException if elements is null
@@ -220,6 +268,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     /**
      * Creates an Array from long values.
+     *
+     * <pre>{@code
+     * Array<Long> longValues = Array.ofAll(1L, 2L); // = Array(1, 2)
+     * }</pre>
      *
      * @param elements long values
      * @return A new Array of Long values
@@ -233,6 +285,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     /**
      * Creates an Array from short values.
      *
+     * <pre>{@code
+     * Array<Short> shortValues = Array.ofAll((short)1, (short)2); // = Array(1, 2)
+     * }</pre>
+     *
      * @param elements short values
      * @return A new Array of Short values
      * @throws NullPointerException if elements is null
@@ -245,6 +301,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     /**
      * Returns an Array containing {@code n} values of a given Function {@code f}
      * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * <pre>{@code
+     * Array<Integer> values = Array.tabulate(5, i -> 2 * i); // = Array(0, 2, 4, 6, 8)
+     * }</pre>
      *
      * @param <T> Component type of the Array
      * @param n   The number of elements in the Array
@@ -273,6 +333,10 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     /**
      * Returns an Array containing {@code n} times the given {@code element}
+     *
+     * <pre>{@code
+     * Array<Integer> values = Array.fill(5, 20); // = Array(20, 20, 20, 20, 20)
+     * }</pre>
      *
      * @param <T>     Component type of the Array
      * @param n       The number of elements in the Array
