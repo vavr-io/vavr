@@ -20,13 +20,13 @@ package io.vavr.collection;
 
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
-import org.junit.Test;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
 
 public class ArrayTest extends AbstractIndexedSeqTest {
 
@@ -212,6 +212,15 @@ public class ArrayTest extends AbstractIndexedSeqTest {
         final Array<Number> numbers = Array.narrow(doubles);
         final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
         assertThat(actual).isEqualTo(3);
+    }
+
+    // -- get()
+
+    @Test
+    public void shouldThrowExceptionWhenGetIndexEqualToLength() {
+        final Array<Integer> array = of(1);
+        Assertions.assertThatThrownBy(() -> array.get(1))
+            .isInstanceOf(IndexOutOfBoundsException.class).hasMessage("get(1)");
     }
 
     // -- transform()
