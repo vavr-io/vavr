@@ -483,7 +483,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Add the given element to this set, replacing existing one if it is already contained.
+     * Add the given element to this set, doing nothing if it is already contained.
      * <p>
      * Note that this method has a worst-case linear complexity.
      *
