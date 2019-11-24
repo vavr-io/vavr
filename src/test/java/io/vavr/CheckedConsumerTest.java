@@ -110,7 +110,7 @@ public class CheckedConsumerTest {
         try {
             consumer.accept(null);
         } catch(Throwable x) {
-            Assert.fail("Did not excepect an exception but received: " + x.getMessage());
+            Assert.fail("Did not expect an exception but received: " + x.getMessage());
         }
     }
 
@@ -119,7 +119,7 @@ public class CheckedConsumerTest {
         final Consumer<Object> consumer = CheckedConsumer.of(obj -> { throw new Error(); }).unchecked();
         try {
             consumer.accept(null);
-            Assert.fail("Did excepect an exception.");
+            Assert.fail("Did expect an exception.");
         } catch(Error x) {
             // ok!
         }
