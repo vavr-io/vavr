@@ -22,13 +22,12 @@ package io.vavr.collection;
 import io.vavr.Serializables;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.collection.JavaConverters.ChangePolicy;
+import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
@@ -68,11 +67,26 @@ public class CharSeqTest {
         return new StringAssert(actual) {};
     }
 
-    // -- ofAll
+    // -- static ofAll
 
     @Test
     public void shouldThrowWhenCreatingCharSeqFromIterableThatContainsNull() {
         assertThatThrownBy(() -> CharSeq.ofAll(Arrays.asList('1', null))).isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfCharSeq() {
+        final CharSeq source = CharSeq.ofAll(Arrays.asList('a', 'b', 'c'));
+        final CharSeq target = CharSeq.ofAll(source);
+        assertThat(target).isSameAs(source);
+    }
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+        final ListView<Character, CharSeq> source = JavaConverters
+                .asJava(CharSeq.ofAll(asList('a', 'b', 'c')), ChangePolicy.IMMUTABLE);
+        final CharSeq target = CharSeq.ofAll(source);
+        assertThat(target).isSameAs(source.getDelegate());
     }
 
     // -- asJavaMutable*
@@ -2135,16 +2149,6 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // helpers
-
-    static PrintStream failingPrintStream() {
-        return new PrintStream(new OutputStream() {
-            @Override
-            public void write(int b) throws IOException {
-                throw new IOException();
-            }
-        });
-    }
     // -- append
 
     @Test

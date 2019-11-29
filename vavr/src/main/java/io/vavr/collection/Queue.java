@@ -28,6 +28,7 @@ import java.util.stream.Collector;
 
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
+import static io.vavr.collection.JavaConverters.ListView;
 
 /**
  * An immutable {@code Queue} stores elements allowing a first-in-first-out (FIFO) retrieval.
@@ -162,6 +163,9 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Queue) {
             return (Queue<T>) elements;
+        } else if (elements instanceof ListView
+                && ((ListView<T, ?>) elements).getDelegate() instanceof Queue) {
+            return (Queue<T>) ((ListView<T, ?>) elements).getDelegate();
         } else if (!elements.iterator().hasNext()) {
             return empty();
         } else if (elements instanceof io.vavr.collection.List) {
@@ -702,7 +706,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     public <R> Queue<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
-    
+
     @Override
     public Queue<Queue<T>> combinations() {
         return ofAll(toList().combinations().map(Queue::ofAll));
