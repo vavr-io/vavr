@@ -92,11 +92,6 @@ public class TupleTest {
         assertThat(Tuple0.instance().apply(() -> 1) == 1).isTrue();
     }
 
-    @Test
-    public void shouldCompareTuple0() {
-        assertThat(Tuple0.instance().compareTo(Tuple0.instance())).isEqualTo(0);
-    }
-
     // -- Tuple1
 
     @Test
@@ -190,15 +185,6 @@ public class TupleTest {
     @Test
     public void shouldTuple2EqualTuple2() {
         assertThat(tuple2().equals(tuple2())).isTrue();
-    }
-
-    @Test
-    public void shouldCompareTuple2() {
-        assertThat(Tuple.of(1, 1).compareTo(Tuple.of(1, 1))).isEqualTo(0);
-        assertThat(Tuple.of(2, 1).compareTo(Tuple.of(1, 1))).isEqualTo(1);
-        assertThat(Tuple.of(1, 2).compareTo(Tuple.of(1, 1))).isEqualTo(1);
-        assertThat(Tuple.of(1, 1).compareTo(Tuple.of(2, 1))).isEqualTo(-1);
-        assertThat(Tuple.of(1, 1).compareTo(Tuple.of(1, 2))).isEqualTo(-1);
     }
 
     @Test
