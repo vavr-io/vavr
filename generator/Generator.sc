@@ -2261,9 +2261,7 @@ def generateMainClasses(): Unit = {
                 s"return $Objects.hashCode(o1);"
               } else {
                 xs"""
-                  int result = 1;
-                  ${(1 to i).gen(j => s"result = 31 * result + hash(o$j);")("\n")}
-                  return result;
+                  return Objects.hash(${(1 to i).gen(j => s"o$j")(", ")});
                 """
               }}
           }
