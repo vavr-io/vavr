@@ -1454,7 +1454,7 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * [1,2,3,4,5].sliding(2,3) = [[1,2],[4,5]]
      * [1,2,3,4,5].sliding(2,4) = [[1,2],[5]]
      * [1,2,3,4,5].sliding(2,5) = [[1,2]]
-     * [1,2,3,4].sliding(5,3) = [[1,2,3,4],[4]]
+     * [1,2,3,4].sliding(5,3) = [[1,2,3,4]]
      * </code>
      * </pre>
      *
