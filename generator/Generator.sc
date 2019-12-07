@@ -2195,7 +2195,7 @@ def generateMainClasses(): Unit = {
 
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else s"""Tuple.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else s"""Objects.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override

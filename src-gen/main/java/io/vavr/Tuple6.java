@@ -496,7 +496,7 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
 
     @Override
     public int hashCode() {
-        return Tuple.hash(_1, _2, _3, _4, _5, _6);
+        return Objects.hash(_1, _2, _3, _4, _5, _6);
     }
 
     @Override
