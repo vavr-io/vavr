@@ -2255,7 +2255,10 @@ def generateMainClasses(): Unit = {
            * Return the order-dependent hash of the ${i.numerus("given value")}.
            ${(0 to i).gen(j => if (j == 0) "*" else s"* @param o$j the ${j.ordinal} value to hash")("\n")}
            * @return the same result as {@link $Objects#${if (i == 1) "hashCode(Object)" else "hash(Object...)"}}
+           *
+           * @deprecated use {@link Objects#hash} instead
            */
+          @Deprecated
           static int hash($paramsDecl) {
               ${if (i == 1) {
                 s"return $Objects.hashCode(o1);"
