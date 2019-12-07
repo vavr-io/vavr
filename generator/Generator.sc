@@ -2195,7 +2195,7 @@ def generateMainClasses(): Unit = {
 
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else s"""Tuple.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else if (i == 1) "Objects.hashCode(_1)" else s"""Objects.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override
@@ -2255,15 +2255,16 @@ def generateMainClasses(): Unit = {
            * Return the order-dependent hash of the ${i.numerus("given value")}.
            ${(0 to i).gen(j => if (j == 0) "*" else s"* @param o$j the ${j.ordinal} value to hash")("\n")}
            * @return the same result as {@link $Objects#${if (i == 1) "hashCode(Object)" else "hash(Object...)"}}
+           *
+           * @deprecated use {@link Objects#hash} instead
            */
+          @Deprecated
           static int hash($paramsDecl) {
               ${if (i == 1) {
                 s"return $Objects.hashCode(o1);"
               } else {
                 xs"""
-                  int result = 1;
-                  ${(1 to i).gen(j => s"result = 31 * result + hash(o$j);")("\n")}
-                  return result;
+                  return Objects.hash(${(1 to i).gen(j => s"o$j")(", ")});
                 """
               }}
           }

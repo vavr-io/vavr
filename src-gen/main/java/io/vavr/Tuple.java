@@ -229,7 +229,10 @@ public interface Tuple {
      *
      * @param o1 the 1st value to hash
      * @return the same result as {@link Objects#hashCode(Object)}
+     *
+     * @deprecated use {@link Objects#hash} instead
      */
+    @Deprecated
     static int hash(Object o1) {
         return Objects.hashCode(o1);
     }
@@ -240,12 +243,12 @@ public interface Tuple {
      * @param o1 the 1st value to hash
      * @param o2 the 2nd value to hash
      * @return the same result as {@link Objects#hash(Object...)}
+     *
+     * @deprecated use {@link Objects#hash} instead
      */
+    @Deprecated
     static int hash(Object o1, Object o2) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        return result;
+        return Objects.hash(o1, o2);
     }
 
     /**
@@ -255,13 +258,12 @@ public interface Tuple {
      * @param o2 the 2nd value to hash
      * @param o3 the 3rd value to hash
      * @return the same result as {@link Objects#hash(Object...)}
+     *
+     * @deprecated use {@link Objects#hash} instead
      */
+    @Deprecated
     static int hash(Object o1, Object o2, Object o3) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        return result;
+        return Objects.hash(o1, o2, o3);
     }
 
     /**
@@ -272,14 +274,12 @@ public interface Tuple {
      * @param o3 the 3rd value to hash
      * @param o4 the 4th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
+     *
+     * @deprecated use {@link Objects#hash} instead
      */
+    @Deprecated
     static int hash(Object o1, Object o2, Object o3, Object o4) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        result = 31 * result + hash(o4);
-        return result;
+        return Objects.hash(o1, o2, o3, o4);
     }
 
     /**
@@ -291,15 +291,12 @@ public interface Tuple {
      * @param o4 the 4th value to hash
      * @param o5 the 5th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
+     *
+     * @deprecated use {@link Objects#hash} instead
      */
+    @Deprecated
     static int hash(Object o1, Object o2, Object o3, Object o4, Object o5) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        result = 31 * result + hash(o4);
-        result = 31 * result + hash(o5);
-        return result;
+        return Objects.hash(o1, o2, o3, o4, o5);
     }
 
     /**
@@ -312,16 +309,12 @@ public interface Tuple {
      * @param o5 the 5th value to hash
      * @param o6 the 6th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
+     *
+     * @deprecated use {@link Objects#hash} instead
      */
+    @Deprecated
     static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        result = 31 * result + hash(o4);
-        result = 31 * result + hash(o5);
-        result = 31 * result + hash(o6);
-        return result;
+        return Objects.hash(o1, o2, o3, o4, o5, o6);
     }
 
     /**
@@ -335,17 +328,12 @@ public interface Tuple {
      * @param o6 the 6th value to hash
      * @param o7 the 7th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
+     *
+     * @deprecated use {@link Objects#hash} instead
      */
+    @Deprecated
     static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        result = 31 * result + hash(o4);
-        result = 31 * result + hash(o5);
-        result = 31 * result + hash(o6);
-        result = 31 * result + hash(o7);
-        return result;
+        return Objects.hash(o1, o2, o3, o4, o5, o6, o7);
     }
 
     /**
@@ -360,18 +348,12 @@ public interface Tuple {
      * @param o7 the 7th value to hash
      * @param o8 the 8th value to hash
      * @return the same result as {@link Objects#hash(Object...)}
+     *
+     * @deprecated use {@link Objects#hash} instead
      */
+    @Deprecated
     static int hash(Object o1, Object o2, Object o3, Object o4, Object o5, Object o6, Object o7, Object o8) {
-        int result = 1;
-        result = 31 * result + hash(o1);
-        result = 31 * result + hash(o2);
-        result = 31 * result + hash(o3);
-        result = 31 * result + hash(o4);
-        result = 31 * result + hash(o5);
-        result = 31 * result + hash(o6);
-        result = 31 * result + hash(o7);
-        result = 31 * result + hash(o8);
-        return result;
+        return Objects.hash(o1, o2, o3, o4, o5, o6, o7, o8);
     }
 
     /**

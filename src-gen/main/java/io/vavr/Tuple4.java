@@ -417,7 +417,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
 
     @Override
     public int hashCode() {
-        return Tuple.hash(_1, _2, _3, _4);
+        return Objects.hash(_1, _2, _3, _4);
     }
 
     @Override

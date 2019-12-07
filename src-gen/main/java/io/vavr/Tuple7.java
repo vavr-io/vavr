@@ -537,7 +537,7 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Comparab
 
     @Override
     public int hashCode() {
-        return Tuple.hash(_1, _2, _3, _4, _5, _6, _7);
+        return Objects.hash(_1, _2, _3, _4, _5, _6, _7);
     }
 
     @Override
