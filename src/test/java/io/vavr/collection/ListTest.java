@@ -215,7 +215,7 @@ public class ListTest extends AbstractLinearSeqTest {
         assertThat(actual).isEqualTo(3);
     }
 
-    // -- ofAll(NavigableSet)
+    // -- static ofAll
 
     @Test
     public void shouldAcceptNavigableSet() {
@@ -223,6 +223,21 @@ public class ListTest extends AbstractLinearSeqTest {
         javaSet.add(2);
         javaSet.add(1);
         assertThat(List.ofAll(javaSet)).isEqualTo(List.of(1, 2));
+    }
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfList() {
+        final List<Integer> source = ofAll(1, 2, 3);
+        final List<Integer> target = List.ofAll(source);
+        assertThat(target).isSameAs(source);
+    }
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+        final JavaConverters.ListView<Integer, List<Integer>> source = JavaConverters
+                .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
+        final List<Integer> target = List.ofAll(source);
+        assertThat(target).isSameAs(source.getDelegate());
     }
 
     // -- peek

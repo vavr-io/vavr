@@ -19,14 +19,17 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple2;
+import io.vavr.collection.JavaConverters.ChangePolicy;
+import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
+import org.assertj.core.api.Assertions;
+import org.junit.Test;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
 
 public class ArrayTest extends AbstractIndexedSeqTest {
 
@@ -212,6 +215,23 @@ public class ArrayTest extends AbstractIndexedSeqTest {
         final Array<Number> numbers = Array.narrow(doubles);
         final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
         assertThat(actual).isEqualTo(3);
+    }
+
+    // -- static ofAll
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfArray() {
+        final Array<Integer> source = ofAll(1, 2, 3);
+        final Array<Integer> target = Array.ofAll(source);
+        assertThat(target).isSameAs(source);
+    }
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+        final ListView<Integer, Array<Integer>> source = JavaConverters
+                .asJava(ofAll(1, 2, 3), ChangePolicy.IMMUTABLE);
+        final Array<Integer> target = Array.ofAll(source);
+        assertThat(target).isSameAs(source.getDelegate());
     }
 
     // -- get()

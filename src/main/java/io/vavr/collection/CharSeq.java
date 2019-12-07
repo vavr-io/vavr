@@ -20,6 +20,7 @@ package io.vavr.collection;
 
 import io.vavr.*;
 import io.vavr.collection.CharSeqModule.Combinations;
+import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
@@ -129,6 +130,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A string containing the given elements in the same order.
      * @throws NullPointerException if {@code elements} is null or {@code elements} contains null
      */
+    @SuppressWarnings("unchecked")
     public static CharSeq ofAll(Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (Collections.isEmpty(elements)){
@@ -136,6 +138,10 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
         if (elements instanceof CharSeq) {
             return (CharSeq) elements;
+        }
+        if (elements instanceof ListView
+                && ((ListView<Character, ?>) elements).getDelegate() instanceof CharSeq) {
+            return (CharSeq) ((ListView<Character, ?>) elements).getDelegate();
         }
         final StringBuilder sb = new StringBuilder();
         for (char character : elements) {

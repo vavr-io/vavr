@@ -19,6 +19,7 @@
 package io.vavr.collection;
 
 import io.vavr.*;
+import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.collection.VectorModule.Combinations;
 import io.vavr.control.Option;
 
@@ -180,11 +181,15 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @SuppressWarnings("unchecked")
     public static <T> Vector<T> ofAll(Iterable<? extends T> iterable) {
         Objects.requireNonNull(iterable, "iterable is null");
-        if (iterable instanceof Traversable && io.vavr.collection.Collections.isEmpty(iterable)){
+        if (iterable instanceof Traversable && io.vavr.collection.Collections.isEmpty(iterable)) {
             return empty();
         }
         if (iterable instanceof Vector) {
             return (Vector<T>) iterable;
+        }
+        if (iterable instanceof ListView
+                && ((ListView<T, ?>) iterable).getDelegate() instanceof Vector) {
+            return (Vector<T>) ((ListView<T, ?>) iterable).getDelegate();
         }
         final Object[] values = withSize(iterable).toArray();
         return ofAll(BitMappedTrie.ofAll(values));
@@ -642,7 +647,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public Vector<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
     }
-    
+
     @Override
     public <R> Vector<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));

@@ -28,6 +28,7 @@ import java.util.stream.Collector;
 
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
+import static io.vavr.collection.JavaConverters.ListView;
 
 /**
  * An immutable {@code Stream} is lazy sequence of elements which may be infinitely long.
@@ -383,6 +384,9 @@ public abstract class Stream<T> implements LinearSeq<T> {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Stream) {
             return (Stream<T>) elements;
+        } else if (elements instanceof ListView
+                && ((ListView<T, ?>) elements).getDelegate() instanceof Stream) {
+            return (Stream<T>) ((ListView<T, ?>) elements).getDelegate();
         } else {
             return StreamFactory.create(elements.iterator());
         }
@@ -873,7 +877,7 @@ public abstract class Stream<T> implements LinearSeq<T> {
     public final <R> Stream<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
-    
+
     @Override
     public final Stream<Stream<T>> combinations() {
         return Stream.rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
