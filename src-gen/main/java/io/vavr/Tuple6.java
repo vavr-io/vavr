@@ -41,7 +41,7 @@ import java.util.function.Function;
  * @param <T5> type of the 5th element
  * @param <T6> type of the 6th element
  */
-public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<Tuple6<T1, T2, T3, T4, T5, T6>>, Serializable {
+public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -173,11 +173,6 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Comparable<T
     @Override
     public int arity() {
         return 6;
-    }
-
-    @Override
-    public int compareTo(Tuple6<T1, T2, T3, T4, T5, T6> that) {
-        return Tuple6.compareTo(this, that);
     }
 
     /**

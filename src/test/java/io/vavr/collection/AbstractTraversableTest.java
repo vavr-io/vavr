@@ -2468,8 +2468,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldZipWithNonNilsOfSameSize() {
-        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipWith(of("a", "b", "c"), Tuple::of);
-        final Traversable<Tuple2<Integer, String>> expected = of(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        final Traversable<String> actual = of(1, 2, 3).zipWith(of("a", "b", "c"), (integer, s) -> integer + s);
+        final Traversable<String> expected = of("1a", "2b", "3c");
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -2547,8 +2547,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     @SuppressWarnings("unchecked")
     public void shouldZipNonNilWithIndexWithMapper() {
-        final Traversable<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex(Tuple::of);
-        final Traversable<Tuple2<String, Integer>> expected = of(Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        final Traversable<String> actual = of("a", "b", "c").zipWithIndex((s, idx) -> s + idx);
+        final Traversable<String> expected = of("a0", "b1", "c2");
         assertThat(actual).isEqualTo(expected);
     }
 

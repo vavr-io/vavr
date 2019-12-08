@@ -96,53 +96,6 @@ public class Tuple4Test {
         assertThat(actual).isEqualTo(List.of(1, 0, 0, 0));
     }
 
-    @Test
-    public void shouldCompareEqual() {
-        final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
-        assertThat(t0.compareTo(t0)).isZero();
-        assertThat(intTupleComparator.compare(t0, t0)).isZero();
-    }
-
-    @Test
-    public void shouldCompare1stArg() {
-        final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
-        final Tuple4<Integer, Integer, Integer, Integer> t1 = createIntTuple(1, 0, 0, 0);
-        assertThat(t0.compareTo(t1)).isNegative();
-        assertThat(t1.compareTo(t0)).isPositive();
-        assertThat(intTupleComparator.compare(t0, t1)).isNegative();
-        assertThat(intTupleComparator.compare(t1, t0)).isPositive();
-    }
-
-    @Test
-    public void shouldCompare2ndArg() {
-        final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
-        final Tuple4<Integer, Integer, Integer, Integer> t2 = createIntTuple(0, 1, 0, 0);
-        assertThat(t0.compareTo(t2)).isNegative();
-        assertThat(t2.compareTo(t0)).isPositive();
-        assertThat(intTupleComparator.compare(t0, t2)).isNegative();
-        assertThat(intTupleComparator.compare(t2, t0)).isPositive();
-    }
-
-    @Test
-    public void shouldCompare3rdArg() {
-        final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
-        final Tuple4<Integer, Integer, Integer, Integer> t3 = createIntTuple(0, 0, 1, 0);
-        assertThat(t0.compareTo(t3)).isNegative();
-        assertThat(t3.compareTo(t0)).isPositive();
-        assertThat(intTupleComparator.compare(t0, t3)).isNegative();
-        assertThat(intTupleComparator.compare(t3, t0)).isPositive();
-    }
-
-    @Test
-    public void shouldCompare4thArg() {
-        final Tuple4<Integer, Integer, Integer, Integer> t0 = createIntTuple(0, 0, 0, 0);
-        final Tuple4<Integer, Integer, Integer, Integer> t4 = createIntTuple(0, 0, 0, 1);
-        assertThat(t0.compareTo(t4)).isNegative();
-        assertThat(t4.compareTo(t0)).isPositive();
-        assertThat(intTupleComparator.compare(t0, t4)).isNegative();
-        assertThat(intTupleComparator.compare(t4, t0)).isPositive();
-    }
-
 
     @Test
     public void shouldMap() {

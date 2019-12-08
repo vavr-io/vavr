@@ -19,6 +19,7 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -28,6 +29,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.Comparators.naturalComparator;
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toList;
 import static io.vavr.TestComparators.toStringComparator;
@@ -42,28 +44,28 @@ public class PriorityQueueTest extends AbstractTraversableTest {
 
     @Override
     protected <T> PriorityQueue<T> empty() {
-        return PriorityQueue.empty(Comparators.naturalComparator());
+        return PriorityQueue.empty(naturalComparator());
     }
 
     @Override
     protected <T> PriorityQueue<T> of(T element) {
-        return PriorityQueue.ofAll(Comparators.naturalComparator(), io.vavr.collection.List.of(element));
+        return PriorityQueue.ofAll(naturalComparator(), io.vavr.collection.List.of(element));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     protected final <T> PriorityQueue<T> of(T... elements) {
-        return PriorityQueue.ofAll(Comparators.naturalComparator(), io.vavr.collection.List.of(elements));
+        return PriorityQueue.ofAll(naturalComparator(), io.vavr.collection.List.of(elements));
     }
 
     @Override
     protected <T> PriorityQueue<T> ofAll(Iterable<? extends T> elements) {
-        return PriorityQueue.ofAll(Comparators.naturalComparator(), elements);
+        return PriorityQueue.ofAll(naturalComparator(), elements);
     }
 
     @Override
     protected <T extends Comparable<? super T>> Traversable<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
-        return PriorityQueue.ofAll(Comparators.naturalComparator(), javaStream);
+        return PriorityQueue.ofAll(naturalComparator(), javaStream);
     }
 
     @Override
@@ -137,7 +139,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
 
     private static Comparator<Integer> composedComparator() {
         final Comparator<Integer> bitCountComparator = comparingInt(Integer::bitCount);
-        return bitCountComparator.thenComparing(Comparators.naturalComparator());
+        return bitCountComparator.thenComparing(naturalComparator());
     }
 
     @Test
@@ -183,6 +185,75 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         final int actual = numbers.enqueue(new BigDecimal("2.0")).sum().intValue();
         assertThat(actual).isEqualTo(3);
     }
+
+    // -- zip
+
+    @Override
+    @Test
+    public void shouldZipNonNilsOfSameSize() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = PriorityQueue.of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipNonNilsIfThisIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = PriorityQueue.of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipNonNilWithIndex() {
+        final Traversable<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<String, Integer>> expected = PriorityQueue.of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipNonNilsIfThatIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = PriorityQueue.of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- zipAll
+
+    @Override
+    @Test
+    public void shouldZipAllNonNilsIfThisIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = PriorityQueue.of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipAllNonNilsIfThatIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = PriorityQueue.of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipAllNonNilsOfSameSize() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = PriorityQueue.of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+
 
     // -- fill(int, Supplier)
 

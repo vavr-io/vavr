@@ -1932,7 +1932,7 @@ def generateMainClasses(): Unit = {
          * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
          */
-        public final class $className$generics implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
+        public final class $className$generics implements Tuple, ${im.getType("java.io.Serializable")} {
 
             private static final long serialVersionUID = 1L;
 
@@ -2015,15 +2015,6 @@ def generateMainClasses(): Unit = {
             @Override
             public int arity() {
                 return $i;
-            }
-
-            @Override
-            public int compareTo($className$generics that) {
-                ${if (i == 0) xs"""
-                  return 0;
-                """ else xs"""
-                  return $className.compareTo(this, that);
-                """}
             }
 
             ${(1 to i).gen(j => xs"""
@@ -3535,25 +3526,6 @@ def generateTestClasses(): Unit = {
                   final $seq<?> actual = createIntTuple(${genArgsForComparing(i, 1)}).toSeq();
                   $assertThat(actual).isEqualTo($list.of(${genArgsForComparing(i, 1)}));
               }
-
-              @$test
-              public void shouldCompareEqual() {
-                  final Tuple$i$intGenerics t0 = createIntTuple(${genArgsForComparing(i, 0)});
-                  $assertThat(t0.compareTo(t0)).isZero();
-                  $assertThat(intTupleComparator.compare(t0, t0)).isZero();
-              }
-
-              ${(1 to i).gen(j => xs"""
-                @$test
-                public void shouldCompare${j.ordinal}Arg() {
-                    final Tuple$i$intGenerics t0 = createIntTuple(${genArgsForComparing(i, 0)});
-                    final Tuple$i$intGenerics t$j = createIntTuple(${genArgsForComparing(i, j)});
-                    $assertThat(t0.compareTo(t$j)).isNegative();
-                    $assertThat(t$j.compareTo(t0)).isPositive();
-                    $assertThat(intTupleComparator.compare(t0, t$j)).isNegative();
-                    $assertThat(intTupleComparator.compare(t$j, t0)).isPositive();
-                }
-              """)("\n\n")}
 
               ${(i == 2).gen(xs"""
                 @$test

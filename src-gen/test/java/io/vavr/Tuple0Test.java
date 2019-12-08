@@ -51,13 +51,6 @@ public class Tuple0Test {
         assertThat(actual).isEqualTo(List.of());
     }
 
-    @Test
-    public void shouldCompareEqual() {
-        final Tuple0 t0 = createIntTuple();
-        assertThat(t0.compareTo(t0)).isZero();
-        assertThat(intTupleComparator.compare(t0, t0)).isZero();
-    }
-
 
     @Test
     public void shouldApplyTuple() {
