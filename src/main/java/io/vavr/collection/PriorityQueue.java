@@ -613,7 +613,8 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public <U> PriorityQueue<Tuple2<T, U>> zip(Iterable<? extends U> that) {
-        return zipWith(that, Tuple::of);
+        Objects.requireNonNull(that, "that is null");
+        return ofAll(Tuple2.comparator(comparator(), Comparators.naturalComparator()), iterator().zipWith(that, Tuple::of));
     }
 
     @Override
