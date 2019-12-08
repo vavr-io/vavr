@@ -58,7 +58,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link Array}.
      *
      * @param <T> Component type of the Array.
-     * @return A {@link Array} Collector.
+     * @return a {@code Collector} which collects all the input elements into a
+     * {@link io.vavr.collection.Array}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, Array<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;

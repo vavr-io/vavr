@@ -75,7 +75,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * {@link java.util.stream.Stream#collect(Collector)} to obtain a {@link Vector}.
      *
      * @param <T> Component type of the Vector.
-     * @return A io.vavr.collection.List Collector.
+     * @return a {@code Collector} which collects all the input elements into a
+     * {@link io.vavr.collection.Vector}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, Vector<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;

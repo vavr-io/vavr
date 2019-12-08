@@ -63,7 +63,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link CharSeq}.
      *
-     * @return A {@code CharSeq} Collector.
+     * @return a {@code Collector} which collects all the input elements into a
+     * {@link io.vavr.collection.CharSeq}, in encounter order
      */
     public static Collector<Character, ArrayList<Character>, CharSeq> collector() {
         final Supplier<ArrayList<Character>> supplier = ArrayList::new;
