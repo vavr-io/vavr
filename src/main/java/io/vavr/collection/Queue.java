@@ -84,7 +84,8 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * .
      *
      * @param <T> Component type of the Queue.
-     * @return A io.vavr.collection.Queue Collector.
+     * @return a {@code Collector} which collects all the input elements into a
+     * {@link io.vavr.collection.Queue}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, Queue<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
