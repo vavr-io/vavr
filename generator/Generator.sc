@@ -3527,25 +3527,6 @@ def generateTestClasses(): Unit = {
                   $assertThat(actual).isEqualTo($list.of(${genArgsForComparing(i, 1)}));
               }
 
-              @$test
-              public void shouldCompareEqual() {
-                  final Tuple$i$intGenerics t0 = createIntTuple(${genArgsForComparing(i, 0)});
-                  $assertThat(t0.compareTo(t0)).isZero();
-                  $assertThat(intTupleComparator.compare(t0, t0)).isZero();
-              }
-
-              ${(1 to i).gen(j => xs"""
-                @$test
-                public void shouldCompare${j.ordinal}Arg() {
-                    final Tuple$i$intGenerics t0 = createIntTuple(${genArgsForComparing(i, 0)});
-                    final Tuple$i$intGenerics t$j = createIntTuple(${genArgsForComparing(i, j)});
-                    $assertThat(t0.compareTo(t$j)).isNegative();
-                    $assertThat(t$j.compareTo(t0)).isPositive();
-                    $assertThat(intTupleComparator.compare(t0, t$j)).isNegative();
-                    $assertThat(intTupleComparator.compare(t$j, t0)).isPositive();
-                }
-              """)("\n\n")}
-
               ${(i == 2).gen(xs"""
                 @$test
                 public void shouldSwap() {

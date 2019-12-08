@@ -63,23 +63,6 @@ public class Tuple1Test {
         assertThat(actual).isEqualTo(List.of(1));
     }
 
-    @Test
-    public void shouldCompareEqual() {
-        final Tuple1<Integer> t0 = createIntTuple(0);
-        assertThat(t0.compareTo(t0)).isZero();
-        assertThat(intTupleComparator.compare(t0, t0)).isZero();
-    }
-
-    @Test
-    public void shouldCompare1stArg() {
-        final Tuple1<Integer> t0 = createIntTuple(0);
-        final Tuple1<Integer> t1 = createIntTuple(1);
-        assertThat(t0.compareTo(t1)).isNegative();
-        assertThat(t1.compareTo(t0)).isPositive();
-        assertThat(intTupleComparator.compare(t0, t1)).isNegative();
-        assertThat(intTupleComparator.compare(t1, t0)).isPositive();
-    }
-
 
     @Test
     public void shouldMap() {
