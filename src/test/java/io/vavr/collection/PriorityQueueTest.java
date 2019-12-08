@@ -191,7 +191,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
     @Override
     @Test
     public void shouldZipNonNilsOfSameSize() {
-        final Traversable<Tuple2<Integer, String>> actual = PriorityQueue.of(1, 2, 3).zip(of("a", "b", "c"));
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
         @SuppressWarnings("unchecked")
         final Traversable<Tuple2<Integer, String>> expected = PriorityQueue.of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
         assertThat(actual).isEqualTo(expected);
