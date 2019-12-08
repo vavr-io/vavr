@@ -121,7 +121,8 @@ public abstract class Stream<T> implements LinearSeq<T> {
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link Stream}.
      *
      * @param <T> Component type of the Stream.
-     * @return A io.vavr.collection.Stream Collector.
+     * @return a {@code Collector} which collects all the input elements into a
+     * {@link io.vavr.collection.Stream}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, Stream<T>> collector() {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
