@@ -18,6 +18,8 @@
  */
 package io.vavr.collection;
 
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -28,6 +30,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.Comparators.naturalComparator;
 import static java.util.Comparator.nullsFirst;
 import static io.vavr.TestComparators.toStringComparator;
 
@@ -35,17 +38,17 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     protected <T> Collector<T, ArrayList<T>, ? extends TreeSet<T>> collector() {
-        return TreeSet.collector(Comparators.naturalComparator());
+        return TreeSet.collector(naturalComparator());
     }
 
     @Override
     protected <T> TreeSet<T> empty() {
-        return TreeSet.empty(Comparators.naturalComparator());
+        return TreeSet.empty(naturalComparator());
     }
 
     @Override
     protected <T> TreeSet<T> emptyWithNull() {
-        return TreeSet.empty(nullsFirst(Comparators.naturalComparator()));
+        return TreeSet.empty(nullsFirst(naturalComparator()));
     }
 
     @Override
@@ -55,7 +58,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     protected <T> TreeSet<T> of(T element) {
-        return TreeSet.of(Comparators.naturalComparator(), element);
+        return TreeSet.of(naturalComparator(), element);
     }
 
     @Override
@@ -74,12 +77,12 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @SafeVarargs
     @SuppressWarnings("varargs")
     protected final <T> TreeSet<T> of(T... elements) {
-        return TreeSet.<T> of(Comparators.naturalComparator(), elements);
+        return TreeSet.<T> of(naturalComparator(), elements);
     }
 
     @Override
     protected <T> TreeSet<T> ofAll(Iterable<? extends T> elements) {
-        return TreeSet.ofAll(Comparators.naturalComparator(), elements);
+        return TreeSet.ofAll(naturalComparator(), elements);
     }
 
     @Override
@@ -129,12 +132,12 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     protected <T> TreeSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        return TreeSet.tabulate(Comparators.naturalComparator(), n, f);
+        return TreeSet.tabulate(naturalComparator(), n, f);
     }
 
     @Override
     protected <T> TreeSet<T> fill(int n, Supplier<? extends T> s) {
-        return TreeSet.fill(Comparators.naturalComparator(), n, s);
+        return TreeSet.fill(naturalComparator(), n, s);
     }
 
     @Override
@@ -236,7 +239,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Test
     public void shouldConstructEmptySetWithExplicitComparator() {
-        final TreeSet<Integer> ts = TreeSet.<Integer> of(Comparators.naturalComparator()
+        final TreeSet<Integer> ts = TreeSet.<Integer> of(naturalComparator()
             .reversed())
             .addAll(Array.ofAll(1, 2, 3));
         assertThat(ts.toArray()).isEqualTo(Array.of(3, 2, 1));
@@ -251,7 +254,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Test
     public void shouldConstructStreamFromNonEmptyJavaStream() {
-        final TreeSet<Integer> actual = TreeSet.ofAll(Comparators.naturalComparator(), java.util.stream.Stream.of(1, 2, 3));
+        final TreeSet<Integer> actual = TreeSet.ofAll(naturalComparator(), java.util.stream.Stream.of(1, 2, 3));
         final TreeSet<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -288,12 +291,73 @@ public class TreeSetTest extends AbstractSortedSetTest {
         final List<Integer> expected = List.of(3, 2, 1);
         assertThat(actual).isEqualTo(expected);
     }
+
+    // -- zip
+
+    @Override
+    @Test
+    public void shouldZipNonNilWithIndex() {
+        final Traversable<Tuple2<String, Integer>> actual = of("a", "b", "c").zipWithIndex();
+        final Traversable<Tuple2<String, Integer>> expected = of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of("a", 0), Tuple.of("b", 1), Tuple.of("c", 2));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipNonNilsOfSameSize() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b", "c"));
+        @SuppressWarnings("unchecked")
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipNonNilsIfThatIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zip(of("a", "b"));
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipNonNilsIfThisIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zip(of("a", "b", "c"));
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    // -- zipAll
+
+    @Override
+    @Test
+    public void shouldZipAllNonNilsOfSameSize() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b", "c"), 9, "z");
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipAllNonNilsIfThisIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2).zipAll(of("a", "b", "c"), 9, "z");
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(9, "c"));
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Override
+    @Test
+    public void shouldZipAllNonNilsIfThatIsSmaller() {
+        final Traversable<Tuple2<Integer, String>> actual = of(1, 2, 3).zipAll(of("a", "b"), 9, "z");
+        final Traversable<Tuple2<Integer, String>> expected = of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
+        assertThat(actual).isEqualTo(expected);
+    }
     
     // -- removeAll
     
     @Test
     public void shouldKeepComparatorOnRemoveAll() {
-        final TreeSet<Integer> ts = TreeSet.of(Comparators.naturalComparator()
+        final TreeSet<Integer> ts = TreeSet.of(naturalComparator()
             .reversed(), 1, 2, 3)
             .removeAll(Array.ofAll(1, 2, 3))
             .addAll(Array.ofAll(4, 5, 6));
@@ -373,7 +437,7 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Test
     public void shouldPreserveComparatorOnConvertToSortedSetWithoutDistinctComparator() {
-        final TreeSet<Integer> value = TreeSet.of(Comparators.naturalComparator().reversed(), 1, 2, 3);
+        final TreeSet<Integer> value = TreeSet.of(naturalComparator().reversed(), 1, 2, 3);
         assertThat(value.toSortedSet().mkString(",")).isEqualTo("3,2,1");
     }
 

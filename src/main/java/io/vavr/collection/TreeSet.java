@@ -996,7 +996,9 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
-        return zipWith(that, Tuple::of);
+        Objects.requireNonNull(that, "that is null");
+        final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(tree.comparator(), Comparators.naturalComparator());
+        return TreeSet.ofAll(tuple2Comparator, iterator().zipWith(that, Tuple::of));
     }
 
     @Override
