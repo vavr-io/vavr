@@ -35,7 +35,7 @@ import java.util.function.Supplier;
  * A tuple of no elements which can be seen as cartesian product of no components.
  *
  */
-public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
+public final class Tuple0 implements Tuple, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -70,11 +70,6 @@ public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
 
     @Override
     public int arity() {
-        return 0;
-    }
-
-    @Override
-    public int compareTo(Tuple0 that) {
         return 0;
     }
 

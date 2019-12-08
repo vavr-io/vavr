@@ -40,7 +40,7 @@ import java.util.function.Function;
  * @param <T1> type of the 1st element
  * @param <T2> type of the 2nd element
  */
-public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, Serializable {
+public final class Tuple2<T1, T2> implements Tuple, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -104,11 +104,6 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
     @Override
     public int arity() {
         return 2;
-    }
-
-    @Override
-    public int compareTo(Tuple2<T1, T2> that) {
-        return Tuple2.compareTo(this, that);
     }
 
     /**

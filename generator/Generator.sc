@@ -1932,7 +1932,7 @@ def generateMainClasses(): Unit = {
          * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
          ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
          */
-        public final class $className$generics implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
+        public final class $className$generics implements Tuple, ${im.getType("java.io.Serializable")} {
 
             private static final long serialVersionUID = 1L;
 
@@ -2015,15 +2015,6 @@ def generateMainClasses(): Unit = {
             @Override
             public int arity() {
                 return $i;
-            }
-
-            @Override
-            public int compareTo($className$generics that) {
-                ${if (i == 0) xs"""
-                  return 0;
-                """ else xs"""
-                  return $className.compareTo(this, that);
-                """}
             }
 
             ${(1 to i).gen(j => xs"""
