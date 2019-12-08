@@ -446,7 +446,7 @@ interface LinearSeqModule {
                 return Collections.isEmpty(slice) ? 0 : -1;
             } else if (Collections.isEmpty(slice)) {
                 final int len = source.length();
-                return len < end ? len : end;
+                return Math.min(len, end);
             }
             int index = 0;
             int result = -1;
