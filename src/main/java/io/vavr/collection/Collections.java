@@ -165,6 +165,16 @@ final class Collections {
         return tabulate(n, ignored -> supplier.get());
     }
 
+    static <T, R> Collector<T, ArrayList<T>, R> seqCollector(Function<ArrayList<T>, R> finisher) {
+        final Supplier<ArrayList<T>> supplier = ArrayList::new;
+        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
+        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
+            left.addAll(right);
+            return left;
+        };
+        return Collector.of(supplier, accumulator, combiner, finisher);
+    }
+
     static <T> Iterator<T> fillObject(int n, T element) {
         if (n <= 0) {
             return Iterator.empty();

@@ -67,14 +67,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * {@link io.vavr.collection.CharSeq}, in encounter order
      */
     public static Collector<Character, ArrayList<Character>, CharSeq> collector() {
-        final Supplier<ArrayList<Character>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<Character>, Character> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<Character>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<Character>, CharSeq> finisher = CharSeq::ofAll;
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.seqCollector(CharSeq::ofAll);
     }
 
     /**

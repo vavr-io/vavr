@@ -79,14 +79,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * {@link io.vavr.collection.Vector}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, Vector<T>> collector() {
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<T>, Vector<T>> finisher = Vector::ofAll;
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.seqCollector(Vector::ofAll);
     }
 
     /**
