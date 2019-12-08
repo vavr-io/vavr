@@ -124,14 +124,7 @@ public abstract class Stream<T> implements LinearSeq<T> {
      * @return A io.vavr.collection.Stream Collector.
      */
     public static <T> Collector<T, ArrayList<T>, Stream<T>> collector() {
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<T>, Stream<T>> finisher = Stream::ofAll;
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.seqCollector(Stream::ofAll);
     }
 
     /**
