@@ -755,7 +755,10 @@ def generateMainClasses(): Unit = {
            * @param <T> element type of {@code ts}
            * @param <U> component type of the resulting {@code Iterator}
            * @return A new Iterator
+           *
+           * @deprecated to be replaced with revised JDK13-compliant API
            */
+          @Deprecated
           public static <T, U> $IteratorType<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
               return $IteratorType.ofAll(ts).flatMap(f);
           }
@@ -771,7 +774,10 @@ def generateMainClasses(): Unit = {
                ${(mtype == "Either").gen("@param <L> left component type of the given Either types")}
                ${(1 to i).gen(j => s"* @param <T$j> right component type of the ${j.ordinal} $mtype")("\n")}
                * @return a new {@code For}-comprehension of arity $i
+               *
+               * @deprecated to be replaced with revised JDK13-compliant API
                */
+              @Deprecated
               public static <${if(mtype == "Either") "L, " else ""}$generics> $forClassName<${if(mtype == "Either") "L, " else ""}$generics> For($params) {
                   ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
                   return new $forClassName<>(${(1 to i).gen(j => s"ts$j")(", ")});
@@ -793,7 +799,10 @@ def generateMainClasses(): Unit = {
             xs"""
               /$javadoc
                * For-comprehension with ${i.numerus(mtype)}.
+               *
+               * @deprecated to be replaced with revised JDK13-compliant API
                */
+              @Deprecated
               public static class $forClassName<${(if(mtype == "Either") "L, " else "") + generics}> {
 
                   ${(1 to i).gen(j => xs"""private final $mtype<${(if(mtype == "Either") "L, " else "") + s"T$j"}> ts$j;""")("\n")}
@@ -808,7 +817,10 @@ def generateMainClasses(): Unit = {
                    * @param f a function that maps an element of the cross product to a result
                    * @param <R> type of the resulting {@code $rtype} elements
                    * @return an {@code $rtype} of mapped results
+                   *
+                   * @deprecated to be replaced with revised JDK13-compliant API
                    */
+                  @Deprecated
                   public <R> ${if(mtype == "Either") s"$rtype<L, R>" else s"$rtype<R>"} yield($functionType<$args, ? extends R> f) {
                       $Objects.requireNonNull(f, "f is null");
                       ${if (i == 1) xs"""
@@ -825,7 +837,10 @@ def generateMainClasses(): Unit = {
                      * A shortcut for {@code yield(Function.identity())}.
                      *
                      * @return an {@code Iterator} of mapped results
+                     *
+                     * @deprecated to be replaced with revised JDK13-compliant API
                      */
+                    @Deprecated
                     public ${if(mtype == "Either") s"$rtype<L, T1>" else s"$rtype<T1>"} yield() {
                         return yield(Function.identity());
                     }
