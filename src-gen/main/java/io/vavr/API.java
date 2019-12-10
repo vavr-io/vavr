@@ -3629,7 +3629,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Iterator<R> yield(Function<? super T1, ? extends R> f) {
@@ -3673,7 +3673,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Iterator<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -3710,7 +3710,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Iterator<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -3750,7 +3750,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Iterator<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -3793,7 +3793,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Iterator<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -3839,7 +3839,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Iterator<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -3888,7 +3888,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Iterator<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -3940,7 +3940,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Iterator<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -3979,7 +3979,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Option<R> yield(Function<? super T1, ? extends R> f) {
@@ -4023,7 +4023,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Option<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -4060,7 +4060,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Option<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -4100,7 +4100,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Option<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -4143,7 +4143,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Option<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -4189,7 +4189,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Option<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -4238,7 +4238,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Option<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -4290,7 +4290,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Option<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -4329,7 +4329,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Future<R> yield(Function<? super T1, ? extends R> f) {
@@ -4373,7 +4373,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Future<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -4410,7 +4410,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Future<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -4450,7 +4450,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Future<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -4493,7 +4493,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Future<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -4539,7 +4539,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Future<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -4588,7 +4588,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Future<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -4640,7 +4640,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Future<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -4679,7 +4679,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Try<R> yield(Function<? super T1, ? extends R> f) {
@@ -4723,7 +4723,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Try<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -4760,7 +4760,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Try<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -4800,7 +4800,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Try<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -4843,7 +4843,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Try<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -4889,7 +4889,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Try<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -4938,7 +4938,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Try<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -4990,7 +4990,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Try<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -5029,7 +5029,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Either<L, R> yield(Function<? super T1, ? extends R> f) {
@@ -5073,7 +5073,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Either<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -5110,7 +5110,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Either<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -5150,7 +5150,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Either<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -5193,7 +5193,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Either<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -5239,7 +5239,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Either<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -5288,7 +5288,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Either<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -5340,7 +5340,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> Either<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
@@ -5379,7 +5379,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> List<R> yield(Function<? super T1, ? extends R> f) {
@@ -5423,7 +5423,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> List<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
@@ -5460,7 +5460,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> List<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
@@ -5500,7 +5500,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> List<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
@@ -5543,7 +5543,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> List<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
@@ -5589,7 +5589,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> List<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
@@ -5638,7 +5638,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> List<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
@@ -5690,7 +5690,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public <R> List<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {

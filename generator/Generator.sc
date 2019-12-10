@@ -818,7 +818,7 @@ def generateMainClasses(): Unit = {
                    * @param <R> type of the resulting {@code $rtype} elements
                    * @return an {@code $rtype} of mapped results
                    *
-                   * @deprecated marked for removal
+                   * @deprecated to be replaced with revised JDK13-compliant API
                    */
                   @Deprecated
                   public <R> ${if(mtype == "Either") s"$rtype<L, R>" else s"$rtype<R>"} yield($functionType<$args, ? extends R> f) {
