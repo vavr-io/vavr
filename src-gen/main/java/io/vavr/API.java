@@ -2329,7 +2329,7 @@ public final class API {
      * @param <U> component type of the resulting {@code Iterator}
      * @return A new Iterator
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T, U> Iterator<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
@@ -2344,7 +2344,7 @@ public final class API {
      * @param <T1> right component type of the 1st Iterable
      * @return a new {@code For}-comprehension of arity 1
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1> For1<T1> For(Iterable<T1> ts1) {
@@ -2362,7 +2362,7 @@ public final class API {
      * @param <T2> right component type of the 2nd Iterable
      * @return a new {@code For}-comprehension of arity 2
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2> For2<T1, T2> For(Iterable<T1> ts1, Iterable<T2> ts2) {
@@ -2383,7 +2383,7 @@ public final class API {
      * @param <T3> right component type of the 3rd Iterable
      * @return a new {@code For}-comprehension of arity 3
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3> For3<T1, T2, T3> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3) {
@@ -2407,7 +2407,7 @@ public final class API {
      * @param <T4> right component type of the 4th Iterable
      * @return a new {@code For}-comprehension of arity 4
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4> For4<T1, T2, T3, T4> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4) {
@@ -2434,7 +2434,7 @@ public final class API {
      * @param <T5> right component type of the 5th Iterable
      * @return a new {@code For}-comprehension of arity 5
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5> For5<T1, T2, T3, T4, T5> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5) {
@@ -2464,7 +2464,7 @@ public final class API {
      * @param <T6> right component type of the 6th Iterable
      * @return a new {@code For}-comprehension of arity 6
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6> For6<T1, T2, T3, T4, T5, T6> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6) {
@@ -2497,7 +2497,7 @@ public final class API {
      * @param <T7> right component type of the 7th Iterable
      * @return a new {@code For}-comprehension of arity 7
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7> For7<T1, T2, T3, T4, T5, T6, T7> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7) {
@@ -2533,7 +2533,7 @@ public final class API {
      * @param <T8> right component type of the 8th Iterable
      * @return a new {@code For}-comprehension of arity 8
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7, T8> For8<T1, T2, T3, T4, T5, T6, T7, T8> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7, Iterable<T8> ts8) {
@@ -2556,7 +2556,7 @@ public final class API {
      * @param <T1> right component type of the 1st Option
      * @return a new {@code For}-comprehension of arity 1
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1> For1Option<T1> For(Option<T1> ts1) {
@@ -2574,7 +2574,7 @@ public final class API {
      * @param <T2> right component type of the 2nd Option
      * @return a new {@code For}-comprehension of arity 2
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2> For2Option<T1, T2> For(Option<T1> ts1, Option<T2> ts2) {
@@ -2595,7 +2595,7 @@ public final class API {
      * @param <T3> right component type of the 3rd Option
      * @return a new {@code For}-comprehension of arity 3
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3> For3Option<T1, T2, T3> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3) {
@@ -2619,7 +2619,7 @@ public final class API {
      * @param <T4> right component type of the 4th Option
      * @return a new {@code For}-comprehension of arity 4
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4> For4Option<T1, T2, T3, T4> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4) {
@@ -2646,7 +2646,7 @@ public final class API {
      * @param <T5> right component type of the 5th Option
      * @return a new {@code For}-comprehension of arity 5
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5> For5Option<T1, T2, T3, T4, T5> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4, Option<T5> ts5) {
@@ -2676,7 +2676,7 @@ public final class API {
      * @param <T6> right component type of the 6th Option
      * @return a new {@code For}-comprehension of arity 6
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6> For6Option<T1, T2, T3, T4, T5, T6> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4, Option<T5> ts5, Option<T6> ts6) {
@@ -2709,7 +2709,7 @@ public final class API {
      * @param <T7> right component type of the 7th Option
      * @return a new {@code For}-comprehension of arity 7
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7> For7Option<T1, T2, T3, T4, T5, T6, T7> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4, Option<T5> ts5, Option<T6> ts6, Option<T7> ts7) {
@@ -2745,7 +2745,7 @@ public final class API {
      * @param <T8> right component type of the 8th Option
      * @return a new {@code For}-comprehension of arity 8
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7, T8> For8Option<T1, T2, T3, T4, T5, T6, T7, T8> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4, Option<T5> ts5, Option<T6> ts6, Option<T7> ts7, Option<T8> ts8) {
@@ -2768,7 +2768,7 @@ public final class API {
      * @param <T1> right component type of the 1st Future
      * @return a new {@code For}-comprehension of arity 1
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1> For1Future<T1> For(Future<T1> ts1) {
@@ -2786,7 +2786,7 @@ public final class API {
      * @param <T2> right component type of the 2nd Future
      * @return a new {@code For}-comprehension of arity 2
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2> For2Future<T1, T2> For(Future<T1> ts1, Future<T2> ts2) {
@@ -2807,7 +2807,7 @@ public final class API {
      * @param <T3> right component type of the 3rd Future
      * @return a new {@code For}-comprehension of arity 3
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3> For3Future<T1, T2, T3> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3) {
@@ -2831,7 +2831,7 @@ public final class API {
      * @param <T4> right component type of the 4th Future
      * @return a new {@code For}-comprehension of arity 4
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4> For4Future<T1, T2, T3, T4> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4) {
@@ -2858,7 +2858,7 @@ public final class API {
      * @param <T5> right component type of the 5th Future
      * @return a new {@code For}-comprehension of arity 5
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5> For5Future<T1, T2, T3, T4, T5> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4, Future<T5> ts5) {
@@ -2888,7 +2888,7 @@ public final class API {
      * @param <T6> right component type of the 6th Future
      * @return a new {@code For}-comprehension of arity 6
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6> For6Future<T1, T2, T3, T4, T5, T6> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4, Future<T5> ts5, Future<T6> ts6) {
@@ -2921,7 +2921,7 @@ public final class API {
      * @param <T7> right component type of the 7th Future
      * @return a new {@code For}-comprehension of arity 7
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7> For7Future<T1, T2, T3, T4, T5, T6, T7> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4, Future<T5> ts5, Future<T6> ts6, Future<T7> ts7) {
@@ -2957,7 +2957,7 @@ public final class API {
      * @param <T8> right component type of the 8th Future
      * @return a new {@code For}-comprehension of arity 8
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7, T8> For8Future<T1, T2, T3, T4, T5, T6, T7, T8> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4, Future<T5> ts5, Future<T6> ts6, Future<T7> ts7, Future<T8> ts8) {
@@ -2980,7 +2980,7 @@ public final class API {
      * @param <T1> right component type of the 1st Try
      * @return a new {@code For}-comprehension of arity 1
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1> For1Try<T1> For(Try<T1> ts1) {
@@ -2998,7 +2998,7 @@ public final class API {
      * @param <T2> right component type of the 2nd Try
      * @return a new {@code For}-comprehension of arity 2
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2> For2Try<T1, T2> For(Try<T1> ts1, Try<T2> ts2) {
@@ -3019,7 +3019,7 @@ public final class API {
      * @param <T3> right component type of the 3rd Try
      * @return a new {@code For}-comprehension of arity 3
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3> For3Try<T1, T2, T3> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3) {
@@ -3043,7 +3043,7 @@ public final class API {
      * @param <T4> right component type of the 4th Try
      * @return a new {@code For}-comprehension of arity 4
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4> For4Try<T1, T2, T3, T4> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4) {
@@ -3070,7 +3070,7 @@ public final class API {
      * @param <T5> right component type of the 5th Try
      * @return a new {@code For}-comprehension of arity 5
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5> For5Try<T1, T2, T3, T4, T5> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4, Try<T5> ts5) {
@@ -3100,7 +3100,7 @@ public final class API {
      * @param <T6> right component type of the 6th Try
      * @return a new {@code For}-comprehension of arity 6
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6> For6Try<T1, T2, T3, T4, T5, T6> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4, Try<T5> ts5, Try<T6> ts6) {
@@ -3133,7 +3133,7 @@ public final class API {
      * @param <T7> right component type of the 7th Try
      * @return a new {@code For}-comprehension of arity 7
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7> For7Try<T1, T2, T3, T4, T5, T6, T7> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4, Try<T5> ts5, Try<T6> ts6, Try<T7> ts7) {
@@ -3169,7 +3169,7 @@ public final class API {
      * @param <T8> right component type of the 8th Try
      * @return a new {@code For}-comprehension of arity 8
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7, T8> For8Try<T1, T2, T3, T4, T5, T6, T7, T8> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4, Try<T5> ts5, Try<T6> ts6, Try<T7> ts7, Try<T8> ts8) {
@@ -3192,7 +3192,7 @@ public final class API {
      * @param <T1> right component type of the 1st Either
      * @return a new {@code For}-comprehension of arity 1
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <L, T1> For1Either<L, T1> For(Either<L, T1> ts1) {
@@ -3210,7 +3210,7 @@ public final class API {
      * @param <T2> right component type of the 2nd Either
      * @return a new {@code For}-comprehension of arity 2
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <L, T1, T2> For2Either<L, T1, T2> For(Either<L, T1> ts1, Either<L, T2> ts2) {
@@ -3231,7 +3231,7 @@ public final class API {
      * @param <T3> right component type of the 3rd Either
      * @return a new {@code For}-comprehension of arity 3
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <L, T1, T2, T3> For3Either<L, T1, T2, T3> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3) {
@@ -3255,7 +3255,7 @@ public final class API {
      * @param <T4> right component type of the 4th Either
      * @return a new {@code For}-comprehension of arity 4
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <L, T1, T2, T3, T4> For4Either<L, T1, T2, T3, T4> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4) {
@@ -3282,7 +3282,7 @@ public final class API {
      * @param <T5> right component type of the 5th Either
      * @return a new {@code For}-comprehension of arity 5
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <L, T1, T2, T3, T4, T5> For5Either<L, T1, T2, T3, T4, T5> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5) {
@@ -3312,7 +3312,7 @@ public final class API {
      * @param <T6> right component type of the 6th Either
      * @return a new {@code For}-comprehension of arity 6
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <L, T1, T2, T3, T4, T5, T6> For6Either<L, T1, T2, T3, T4, T5, T6> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6) {
@@ -3345,7 +3345,7 @@ public final class API {
      * @param <T7> right component type of the 7th Either
      * @return a new {@code For}-comprehension of arity 7
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <L, T1, T2, T3, T4, T5, T6, T7> For7Either<L, T1, T2, T3, T4, T5, T6, T7> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6, Either<L, T7> ts7) {
@@ -3381,7 +3381,7 @@ public final class API {
      * @param <T8> right component type of the 8th Either
      * @return a new {@code For}-comprehension of arity 8
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <L, T1, T2, T3, T4, T5, T6, T7, T8> For8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6, Either<L, T7> ts7, Either<L, T8> ts8) {
@@ -3404,7 +3404,7 @@ public final class API {
      * @param <T1> right component type of the 1st List
      * @return a new {@code For}-comprehension of arity 1
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1> For1List<T1> For(List<T1> ts1) {
@@ -3422,7 +3422,7 @@ public final class API {
      * @param <T2> right component type of the 2nd List
      * @return a new {@code For}-comprehension of arity 2
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2> For2List<T1, T2> For(List<T1> ts1, List<T2> ts2) {
@@ -3443,7 +3443,7 @@ public final class API {
      * @param <T3> right component type of the 3rd List
      * @return a new {@code For}-comprehension of arity 3
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3> For3List<T1, T2, T3> For(List<T1> ts1, List<T2> ts2, List<T3> ts3) {
@@ -3467,7 +3467,7 @@ public final class API {
      * @param <T4> right component type of the 4th List
      * @return a new {@code For}-comprehension of arity 4
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4> For4List<T1, T2, T3, T4> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4) {
@@ -3494,7 +3494,7 @@ public final class API {
      * @param <T5> right component type of the 5th List
      * @return a new {@code For}-comprehension of arity 5
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5> For5List<T1, T2, T3, T4, T5> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4, List<T5> ts5) {
@@ -3524,7 +3524,7 @@ public final class API {
      * @param <T6> right component type of the 6th List
      * @return a new {@code For}-comprehension of arity 6
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6> For6List<T1, T2, T3, T4, T5, T6> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4, List<T5> ts5, List<T6> ts6) {
@@ -3557,7 +3557,7 @@ public final class API {
      * @param <T7> right component type of the 7th List
      * @return a new {@code For}-comprehension of arity 7
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7> For7List<T1, T2, T3, T4, T5, T6, T7> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4, List<T5> ts5, List<T6> ts6, List<T7> ts7) {
@@ -3593,7 +3593,7 @@ public final class API {
      * @param <T8> right component type of the 8th List
      * @return a new {@code For}-comprehension of arity 8
      *
-     * @deprecated marked for removal
+     * @deprecated to be replaced with revised JDK13-compliant API
      */
     @Deprecated
     public static <T1, T2, T3, T4, T5, T6, T7, T8> For8List<T1, T2, T3, T4, T5, T6, T7, T8> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4, List<T5> ts5, List<T6> ts6, List<T7> ts7, List<T8> ts8) {
@@ -3611,7 +3611,7 @@ public final class API {
      /**
       * For-comprehension with one Iterable.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For1<T1> {
@@ -3643,7 +3643,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           *
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public Iterator<T1> yield() {
@@ -3654,7 +3654,7 @@ public final class API {
      /**
       * For-comprehension with two Iterables.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For2<T1, T2> {
@@ -3689,7 +3689,7 @@ public final class API {
      /**
       * For-comprehension with three Iterables.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For3<T1, T2, T3> {
@@ -3727,7 +3727,7 @@ public final class API {
      /**
       * For-comprehension with 4 Iterables.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For4<T1, T2, T3, T4> {
@@ -3768,7 +3768,7 @@ public final class API {
      /**
       * For-comprehension with 5 Iterables.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For5<T1, T2, T3, T4, T5> {
@@ -3812,7 +3812,7 @@ public final class API {
      /**
       * For-comprehension with 6 Iterables.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For6<T1, T2, T3, T4, T5, T6> {
@@ -3859,7 +3859,7 @@ public final class API {
      /**
       * For-comprehension with 7 Iterables.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For7<T1, T2, T3, T4, T5, T6, T7> {
@@ -3909,7 +3909,7 @@ public final class API {
      /**
       * For-comprehension with 8 Iterables.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For8<T1, T2, T3, T4, T5, T6, T7, T8> {
@@ -3962,7 +3962,7 @@ public final class API {
      /**
       * For-comprehension with one Option.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For1Option<T1> {
@@ -3994,7 +3994,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           *
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public Option<T1> yield() {
@@ -4005,7 +4005,7 @@ public final class API {
      /**
       * For-comprehension with two Options.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For2Option<T1, T2> {
@@ -4040,7 +4040,7 @@ public final class API {
      /**
       * For-comprehension with three Options.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For3Option<T1, T2, T3> {
@@ -4078,7 +4078,7 @@ public final class API {
      /**
       * For-comprehension with 4 Options.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For4Option<T1, T2, T3, T4> {
@@ -4119,7 +4119,7 @@ public final class API {
      /**
       * For-comprehension with 5 Options.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For5Option<T1, T2, T3, T4, T5> {
@@ -4163,7 +4163,7 @@ public final class API {
      /**
       * For-comprehension with 6 Options.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For6Option<T1, T2, T3, T4, T5, T6> {
@@ -4210,7 +4210,7 @@ public final class API {
      /**
       * For-comprehension with 7 Options.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For7Option<T1, T2, T3, T4, T5, T6, T7> {
@@ -4260,7 +4260,7 @@ public final class API {
      /**
       * For-comprehension with 8 Options.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For8Option<T1, T2, T3, T4, T5, T6, T7, T8> {
@@ -4313,7 +4313,7 @@ public final class API {
      /**
       * For-comprehension with one Future.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For1Future<T1> {
@@ -4345,7 +4345,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           *
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public Future<T1> yield() {
@@ -4356,7 +4356,7 @@ public final class API {
      /**
       * For-comprehension with two Futures.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For2Future<T1, T2> {
@@ -4391,7 +4391,7 @@ public final class API {
      /**
       * For-comprehension with three Futures.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For3Future<T1, T2, T3> {
@@ -4429,7 +4429,7 @@ public final class API {
      /**
       * For-comprehension with 4 Futures.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For4Future<T1, T2, T3, T4> {
@@ -4470,7 +4470,7 @@ public final class API {
      /**
       * For-comprehension with 5 Futures.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For5Future<T1, T2, T3, T4, T5> {
@@ -4514,7 +4514,7 @@ public final class API {
      /**
       * For-comprehension with 6 Futures.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For6Future<T1, T2, T3, T4, T5, T6> {
@@ -4561,7 +4561,7 @@ public final class API {
      /**
       * For-comprehension with 7 Futures.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For7Future<T1, T2, T3, T4, T5, T6, T7> {
@@ -4611,7 +4611,7 @@ public final class API {
      /**
       * For-comprehension with 8 Futures.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For8Future<T1, T2, T3, T4, T5, T6, T7, T8> {
@@ -4664,7 +4664,7 @@ public final class API {
      /**
       * For-comprehension with one Try.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For1Try<T1> {
@@ -4696,7 +4696,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           *
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public Try<T1> yield() {
@@ -4707,7 +4707,7 @@ public final class API {
      /**
       * For-comprehension with two Trys.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For2Try<T1, T2> {
@@ -4742,7 +4742,7 @@ public final class API {
      /**
       * For-comprehension with three Trys.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For3Try<T1, T2, T3> {
@@ -4780,7 +4780,7 @@ public final class API {
      /**
       * For-comprehension with 4 Trys.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For4Try<T1, T2, T3, T4> {
@@ -4821,7 +4821,7 @@ public final class API {
      /**
       * For-comprehension with 5 Trys.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For5Try<T1, T2, T3, T4, T5> {
@@ -4865,7 +4865,7 @@ public final class API {
      /**
       * For-comprehension with 6 Trys.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For6Try<T1, T2, T3, T4, T5, T6> {
@@ -4912,7 +4912,7 @@ public final class API {
      /**
       * For-comprehension with 7 Trys.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For7Try<T1, T2, T3, T4, T5, T6, T7> {
@@ -4962,7 +4962,7 @@ public final class API {
      /**
       * For-comprehension with 8 Trys.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For8Try<T1, T2, T3, T4, T5, T6, T7, T8> {
@@ -5015,7 +5015,7 @@ public final class API {
      /**
       * For-comprehension with one Either.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For1Either<L, T1> {
@@ -5047,7 +5047,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           *
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public Either<L, T1> yield() {
@@ -5058,7 +5058,7 @@ public final class API {
      /**
       * For-comprehension with two Eithers.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For2Either<L, T1, T2> {
@@ -5093,7 +5093,7 @@ public final class API {
      /**
       * For-comprehension with three Eithers.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For3Either<L, T1, T2, T3> {
@@ -5131,7 +5131,7 @@ public final class API {
      /**
       * For-comprehension with 4 Eithers.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For4Either<L, T1, T2, T3, T4> {
@@ -5172,7 +5172,7 @@ public final class API {
      /**
       * For-comprehension with 5 Eithers.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For5Either<L, T1, T2, T3, T4, T5> {
@@ -5216,7 +5216,7 @@ public final class API {
      /**
       * For-comprehension with 6 Eithers.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For6Either<L, T1, T2, T3, T4, T5, T6> {
@@ -5263,7 +5263,7 @@ public final class API {
      /**
       * For-comprehension with 7 Eithers.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For7Either<L, T1, T2, T3, T4, T5, T6, T7> {
@@ -5313,7 +5313,7 @@ public final class API {
      /**
       * For-comprehension with 8 Eithers.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> {
@@ -5366,7 +5366,7 @@ public final class API {
      /**
       * For-comprehension with one List.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For1List<T1> {
@@ -5398,7 +5398,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           *
           *
-          * @deprecated marked for removal
+          * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
          public List<T1> yield() {
@@ -5409,7 +5409,7 @@ public final class API {
      /**
       * For-comprehension with two Lists.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For2List<T1, T2> {
@@ -5444,7 +5444,7 @@ public final class API {
      /**
       * For-comprehension with three Lists.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For3List<T1, T2, T3> {
@@ -5482,7 +5482,7 @@ public final class API {
      /**
       * For-comprehension with 4 Lists.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For4List<T1, T2, T3, T4> {
@@ -5523,7 +5523,7 @@ public final class API {
      /**
       * For-comprehension with 5 Lists.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For5List<T1, T2, T3, T4, T5> {
@@ -5567,7 +5567,7 @@ public final class API {
      /**
       * For-comprehension with 6 Lists.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For6List<T1, T2, T3, T4, T5, T6> {
@@ -5614,7 +5614,7 @@ public final class API {
      /**
       * For-comprehension with 7 Lists.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For7List<T1, T2, T3, T4, T5, T6, T7> {
@@ -5664,7 +5664,7 @@ public final class API {
      /**
       * For-comprehension with 8 Lists.
       *
-      * @deprecated marked for removal
+      * @deprecated to be replaced with revised JDK13-compliant API
       */
      @Deprecated
      public static class For8List<T1, T2, T3, T4, T5, T6, T7, T8> {

@@ -756,7 +756,7 @@ def generateMainClasses(): Unit = {
            * @param <U> component type of the resulting {@code Iterator}
            * @return A new Iterator
            *
-           * @deprecated marked for removal
+           * @deprecated to be replaced with revised JDK13-compliant API
            */
           @Deprecated
           public static <T, U> $IteratorType<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
@@ -775,7 +775,7 @@ def generateMainClasses(): Unit = {
                ${(1 to i).gen(j => s"* @param <T$j> right component type of the ${j.ordinal} $mtype")("\n")}
                * @return a new {@code For}-comprehension of arity $i
                *
-               * @deprecated marked for removal
+               * @deprecated to be replaced with revised JDK13-compliant API
                */
               @Deprecated
               public static <${if(mtype == "Either") "L, " else ""}$generics> $forClassName<${if(mtype == "Either") "L, " else ""}$generics> For($params) {
@@ -800,7 +800,7 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * For-comprehension with ${i.numerus(mtype)}.
                *
-               * @deprecated marked for removal
+               * @deprecated to be replaced with revised JDK13-compliant API
                */
               @Deprecated
               public static class $forClassName<${(if(mtype == "Either") "L, " else "") + generics}> {
@@ -839,7 +839,7 @@ def generateMainClasses(): Unit = {
                      * @return an {@code Iterator} of mapped results
                      *
                      *
-                     * @deprecated marked for removal
+                     * @deprecated to be replaced with revised JDK13-compliant API
                      */
                     @Deprecated
                     public ${if(mtype == "Either") s"$rtype<L, T1>" else s"$rtype<T1>"} yield() {
