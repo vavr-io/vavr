@@ -838,7 +838,6 @@ def generateMainClasses(): Unit = {
                      *
                      * @return an {@code Iterator} of mapped results
                      *
-                     *
                      * @deprecated to be replaced with revised JDK13-compliant API
                      */
                     @Deprecated

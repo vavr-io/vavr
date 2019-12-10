@@ -3642,7 +3642,6 @@ public final class API {
           *
           * @return an {@code Iterator} of mapped results
           *
-          *
           * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
@@ -3992,7 +3991,6 @@ public final class API {
           * A shortcut for {@code yield(Function.identity())}.
           *
           * @return an {@code Iterator} of mapped results
-          *
           *
           * @deprecated to be replaced with revised JDK13-compliant API
           */
@@ -4344,7 +4342,6 @@ public final class API {
           *
           * @return an {@code Iterator} of mapped results
           *
-          *
           * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
@@ -4694,7 +4691,6 @@ public final class API {
           * A shortcut for {@code yield(Function.identity())}.
           *
           * @return an {@code Iterator} of mapped results
-          *
           *
           * @deprecated to be replaced with revised JDK13-compliant API
           */
@@ -5046,7 +5042,6 @@ public final class API {
           *
           * @return an {@code Iterator} of mapped results
           *
-          *
           * @deprecated to be replaced with revised JDK13-compliant API
           */
          @Deprecated
@@ -5396,7 +5391,6 @@ public final class API {
           * A shortcut for {@code yield(Function.identity())}.
           *
           * @return an {@code Iterator} of mapped results
-          *
           *
           * @deprecated to be replaced with revised JDK13-compliant API
           */
