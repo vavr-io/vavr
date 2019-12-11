@@ -796,14 +796,18 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
     @Override
     public final Either<L, R> peek(Consumer<? super R> action) {
         Objects.requireNonNull(action, "action is null");
-
-        return peek(l -> {}, action);
+        if (isRight()) {
+            action.accept(get());
+        }
+        return this;
     }
 
     public final Either<L, R> peekLeft(Consumer<? super L> action) {
         Objects.requireNonNull(action, "action is null");
-
-        return peek(action, r -> {});
+        if (isLeft()) {
+            action.accept(getLeft());
+        }
+        return this;
     }
 
     /**
