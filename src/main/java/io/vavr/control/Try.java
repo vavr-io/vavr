@@ -695,6 +695,26 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     }
 
     /**
+     * If this is a Failure use the {@code mapFailure} to generate a new Try, from the Throwable error, which could be Success or Failure.
+     * If this is a Success it behaves as {@link Try#map(Function)}.
+     *
+     * @param mapFailure A recovery function taking a Throwable
+     * @param mapSuccess A mapping function taking the current value
+     * @param <U> The new component type
+     * @return
+     */
+    public final <U> Try<U> map(Function<? super Throwable, ? extends U> mapFailure, Function<? super T, ? extends U> mapSuccess) {
+        Objects.requireNonNull(mapFailure, "mapFailure is null");
+        Objects.requireNonNull(mapSuccess, "mapSuccess is null");
+
+        if (isFailure()) {
+            return Try.of(() -> mapFailure.apply(getCause()));
+        } else {
+            return map(mapSuccess);
+        }
+    }
+
+    /**
      * Shortcut for {@code mapTry(mapper::apply)}, see {@link #mapTry(CheckedFunction1)}.
      *
      * @param <U>    The new component type
@@ -886,6 +906,26 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
         } else {
             return f.apply(get());
         }
+    }
+
+    /**
+     * Applies the {@code successAction} to the value if this is a Success or applies the {@code failureAction} to the cause of failure.
+     *
+     * @param failureAction A Consumer for the Failure case
+     * @param successAction A Consumer for the Success case
+     * @return this {@code Try}
+     */
+    public final Try<T> peek(Consumer<? super Throwable> failureAction, Consumer<? super T> successAction) {
+        Objects.requireNonNull(failureAction, "action is null");
+        Objects.requireNonNull(successAction, "action is null");
+
+        if (isFailure()) {
+            failureAction.accept(getCause());
+        } else {
+            successAction.accept(get());
+        }
+
+        return this;
     }
 
     /**
