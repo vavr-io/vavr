@@ -673,6 +673,19 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
         }
     }
 
+    /**
+     * Shortcut for {@link Validation#bimap(Function, Function)}.
+     *
+     * @param errorMapper the invalid mapping operation
+     * @param valueMapper the valid mapping operation
+     * @param <E1> type of the mapping result if this is an invalid
+     * @param <T2> the valid mapping operation
+     * @return an instance of Validation&lt;U,R&gt;
+     */
+    public final <E1, T2> Validation<E1, T2> map(Function<? super E, ? extends E1> errorMapper, Function<? super T, ? extends T2> valueMapper) {
+        return bimap(errorMapper, valueMapper);
+    }
+
     @Override
     public final <U> Validation<E, U> map(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
@@ -777,8 +790,30 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
         return isInvalid() ? (Validation<E, U>) this : (Validation<E, U>) mapper.apply(get());
     }
 
+    /**
+     * Applies the {@code validAction} to the value if this is valid otherwise applies the {@code invalidAction} to the cause of error.
+     *
+     * @param invalidAction A Consumer for the Failure case
+     * @param validAction A Consumer for the Success case
+     * @return this {@code Validation}
+     */
+    public final Validation<E, T> peek(Consumer<? super E> invalidAction, Consumer<? super T> validAction) {
+        Objects.requireNonNull(invalidAction, "invalidAction is null");
+        Objects.requireNonNull(validAction, "validAction is null");
+
+        if(isInvalid()) {
+            invalidAction.accept(getError());
+        } else {
+            validAction.accept(get());
+        }
+
+        return this;
+    }
+
     @Override
     public final Validation<E, T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+
         if (isValid()) {
             action.accept(get());
         }
