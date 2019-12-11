@@ -85,17 +85,17 @@ check.dependsOn jacocoTestReport
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
-    classifier = 'sources'
+    archiveClassifier = 'sources'
 }
 
 task testSourcesJar(type: Jar) {
     from sourceSets.test.allSource
-    classifier = 'test-sources'
+    archiveClassifier = 'test-sources'
 }
 
 task javadocJar(type: Jar) {
     from javadoc
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
 }
 
 artifacts {
