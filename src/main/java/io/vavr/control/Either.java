@@ -573,6 +573,31 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
     }
 
     /**
+     * Maps either the left, or the right side of this disjunction.
+     *
+     * <pre>{@code
+     * Either<?, AtomicInteger> success = Either.right(new AtomicInteger(42));
+     *
+     * // prints "Right(42)"
+     * System.out.println(success.map(Function1.identity(), AtomicInteger::get));
+     *
+     * Either<Exception, ?> failure = Either.left(new Exception("error"));
+     *
+     * // prints "Left(error)"
+     * System.out.println(failure.map(Exception::getMessage, Function1.identity()));
+     * }</pre>
+     *
+     * @param leftMapper  maps the left value if this is a Left
+     * @param rightMapper maps the right value if this is a Right
+     * @param <X>         The new left type of the resulting Either
+     * @param <Y>         The new right type of the resulting Either
+     * @return A new Either instance
+     */
+    public final <X, Y> Either<X, Y> map(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
+        return bimap(leftMapper, rightMapper);
+    }
+
+    /**
      * Maps the value of this Either if it is a Right, performs no operation if this is a Left.
      *
      * <pre>{@code
@@ -747,21 +772,38 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
         }
     }
 
+    /**
+     * Performs the given {@code leftAction} on the left element if this is Left.
+     * Performs the given {@code rightAction} on the right element if this is Right.
+     *
+     * @param leftAction The action that will be performed on the left element
+     * @param rightAction The action that will be performed on the right element
+     * @return this instance
+     */
+    public final Either<L, R> peek(Consumer<? super L> leftAction, Consumer<? super R> rightAction) {
+        Objects.requireNonNull(leftAction, "leftAction is null");
+        Objects.requireNonNull(rightAction, "rightAction is null");
+
+        if (isLeft()) {
+            leftAction.accept(getLeft());
+        } else { // this isRight() by definition
+            rightAction.accept(get());
+        }
+
+        return this;
+    }
+
     @Override
     public final Either<L, R> peek(Consumer<? super R> action) {
         Objects.requireNonNull(action, "action is null");
-        if (isRight()) {
-            action.accept(get());
-        }
-        return this;
+
+        return peek(l -> {}, action);
     }
 
     public final Either<L, R> peekLeft(Consumer<? super L> action) {
         Objects.requireNonNull(action, "action is null");
-        if (isLeft()) {
-            action.accept(getLeft());
-        }
-        return this;
+
+        return peek(action, r -> {});
     }
 
     /**
@@ -793,6 +835,10 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
 
         public <L2, R2> LeftProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
             return either.<L2, R2> bimap(leftMapper, rightMapper).left();
+        }
+
+        public <L2, R2> LeftProjection<L2, R2> map(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
+            return bimap(leftMapper, rightMapper);
         }
 
         /**
@@ -1048,6 +1094,10 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
 
         public <L2, R2> RightProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
             return either.<L2, R2> bimap(leftMapper, rightMapper).right();
+        }
+
+        public <L2, R2> RightProjection<L2, R2> map(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
+            return bimap(leftMapper, rightMapper);
         }
 
         /**
