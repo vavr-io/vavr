@@ -2090,6 +2090,15 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             };
         }
     }
+
+    /**
+     * Converts this to a {@link Seq}.
+     *
+     * @return A new {@link Seq}.
+     */
+    default Seq<T> toSeq() {
+        return toList();
+    }
 }
 
 final class ArrayIterator<T> implements Iterator<T> {

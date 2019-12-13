@@ -745,6 +745,19 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(Iterator.of(1).toString()).isEqualTo("SingletonIterator");
     }
 
+    // -- toSeq
+
+    @Test
+    public void shouldConvertToEmptySeq() {
+        assertThat(Iterator.<Integer>of().toSeq()).isEmpty();
+    }
+
+
+    @Test
+    public void shouldConvertToSeq() {
+        assertThat(Iterator.of(1,2,3).toSeq()).containsExactly(1, 2, 3);
+    }
+
     // -- unfoldRight()
 
     @Test
