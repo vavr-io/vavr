@@ -679,7 +679,7 @@ public interface Value<T> extends Iterable<T> {
             componentType = (Class<T>) boxedType;
         }
         final java.util.List<T> list = toJavaList();
-        return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, list.size()));
+        return list.toArray((T[]) java.lang.reflect.Array.newInstance(componentType, 0));
     }
 
     /**
@@ -707,7 +707,7 @@ public interface Value<T> extends Iterable<T> {
      */
     default T[] toJavaArray(IntFunction<T[]> arrayFactory) {
         java.util.List<T> javaList = toJavaList();
-        return javaList.toArray(arrayFactory.apply(javaList.size()));
+        return javaList.toArray(arrayFactory.apply(0));
     }
 
     /**
