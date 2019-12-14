@@ -104,7 +104,7 @@ public interface CheckedFunction0<R> extends Serializable {
      */
     @SuppressWarnings("RedundantTypeArguments")
     static <R> Function0<Option<R>> lift(CheckedFunction0<? extends R> partialFunction) {
-        return () -> Try.<R>of(partialFunction::apply).toOption();
+        return () -> Try.<R>of(partialFunction).toOption();
     }
 
     /**
@@ -116,7 +116,7 @@ public interface CheckedFunction0<R> extends Serializable {
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
     static <R> Function0<Try<R>> liftTry(CheckedFunction0<? extends R> partialFunction) {
-        return () -> Try.of(partialFunction::apply);
+        return () -> Try.of(partialFunction);
     }
 
     /**
