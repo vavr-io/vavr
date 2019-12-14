@@ -1,0 +1,10 @@
+template: |
+  ## Info
+  // ...
+
+  ## Committers
+  🎉 MANY THANKS TO ALL COMMITTERS! 🎉
+  $CONTRIBUTORS
+
+  ## Changes
+  $CHANGES
