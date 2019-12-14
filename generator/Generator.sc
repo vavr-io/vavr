@@ -1609,7 +1609,7 @@ def generateMainClasses(): Unit = {
               static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsTryReturnType liftTry($fullGenericsType partialFunction) {
                   ${
                     val func = "partialFunction"
-                    val supplier = if (!checked && i == 0) s"$func::get" else if (checked && i == 0) func else s"() -> partialFunction.apply($params)"
+                    val supplier = if (!checked && i == 0) s"$func::get" else if (checked && i == 0) func else s"() -> $func.apply($params)"
                     val lambdaArgs = if (i == 1) params else s"($params)"
                     xs"""
                       return $lambdaArgs -> ${im.getType("io.vavr.control.Try")}.of($supplier);
