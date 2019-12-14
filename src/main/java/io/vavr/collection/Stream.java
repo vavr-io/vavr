@@ -1242,8 +1242,8 @@ public abstract class Stream<T> implements LinearSeq<T> {
 
     @Override
     public final Stream<T> patch(int from, Iterable<? extends T> that, int replaced) {
-        from = from < 0 ? 0 : from;
-        replaced = replaced < 0 ? 0 : replaced;
+        from = Math.max(from, 0);
+        replaced = Math.max(replaced, 0);
         Stream<T> result = take(from).appendAll(that);
         from += replaced;
         result = result.appendAll(drop(from));
