@@ -1044,7 +1044,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @Override
     default <R> Iterator<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        return filter(partialFunction::isDefinedAt).map(partialFunction::apply);
+        return filter(partialFunction::isDefinedAt).map(partialFunction);
     }
 
     // DEV-NOTE: cannot use arg Iterable, it would be ambiguous

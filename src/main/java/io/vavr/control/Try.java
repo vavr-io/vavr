@@ -419,7 +419,7 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     @SuppressWarnings("unchecked")
     public final <R> Try<R> collect(PartialFunction<? super T, ? extends R> partialFunction){
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        return filter(partialFunction::isDefinedAt).map(partialFunction::apply);
+        return filter(partialFunction::isDefinedAt).map(partialFunction);
     }
 
     /**

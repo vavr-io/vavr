@@ -285,7 +285,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     public final <R> Option<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
-        return flatMap(partialFunction.lift()::apply);
+        return flatMap(partialFunction.lift());
     }
 
     /**
