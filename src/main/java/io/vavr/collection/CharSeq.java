@@ -698,7 +698,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public CharSeq patch(int from, Iterable<? extends Character> that, int replaced) {
         from = from < 0 ? 0 : from > length() ? length() : from;
-        replaced = replaced < 0 ? 0 : replaced;
+        replaced = Math.max(replaced, 0);
         final StringBuilder sb = new StringBuilder(back.substring(0, from));
         for (char character : that) {
             sb.append(character);
@@ -958,7 +958,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @Override
     public CharSeq slice(int beginIndex, int endIndex) {
-        final int from = beginIndex < 0 ? 0 : beginIndex;
+        final int from = Math.max(beginIndex, 0);
         final int to = endIndex > length() ? length() : endIndex;
         if (from >= to) {
             return EMPTY;
