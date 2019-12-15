@@ -176,6 +176,9 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
     }
 
     public static BitSet<Integer> ofAll(Iterable<Integer> values) {
+        if (values instanceof BitSet) {
+            return (BitSet<Integer>) values;
+        }
         return Builder.DEFAULT.ofAll(values);
     }
 
