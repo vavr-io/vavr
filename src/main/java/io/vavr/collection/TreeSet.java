@@ -69,7 +69,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static <T> Collector<T, ArrayList<T>, TreeSet<T>> collector(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return Collections.seqCollector(list -> TreeSet.ofAll(comparator, list));
+        return Collections.arrayListAccumulatingCollector(list -> TreeSet.ofAll(comparator, list));
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> empty() {

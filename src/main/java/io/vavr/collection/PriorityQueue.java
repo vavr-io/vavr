@@ -176,7 +176,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @return A {@code PriorityQueue<T>} Collector.
      */
     public static <T> Collector<T, ArrayList<T>, PriorityQueue<T>> collector() {
-        return Collections.seqCollector(values -> ofAll(Comparators.naturalComparator(), values));
+        return Collections.arrayListAccumulatingCollector(values -> ofAll(Comparators.naturalComparator(), values));
     }
 
     /**

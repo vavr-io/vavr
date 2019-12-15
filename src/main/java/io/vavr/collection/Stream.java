@@ -125,7 +125,7 @@ public abstract class Stream<T> implements LinearSeq<T> {
      * {@link io.vavr.collection.Stream}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, Stream<T>> collector() {
-        return Collections.seqCollector(Stream::ofAll);
+        return Collections.arrayListAccumulatingCollector(Stream::ofAll);
     }
 
     /**

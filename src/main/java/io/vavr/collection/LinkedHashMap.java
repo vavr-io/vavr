@@ -94,7 +94,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
             Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        return Collections.seqCollector(arr -> LinkedHashMap.ofEntries(Iterator.ofAll(arr)
+        return Collections.arrayListAccumulatingCollector(arr -> LinkedHashMap.ofEntries(Iterator.ofAll(arr)
           .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
 

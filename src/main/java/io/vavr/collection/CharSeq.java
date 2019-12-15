@@ -67,7 +67,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * {@link io.vavr.collection.CharSeq}, in encounter order
      */
     public static Collector<Character, ArrayList<Character>, CharSeq> collector() {
-        return Collections.seqCollector(CharSeq::ofAll);
+        return Collections.arrayListAccumulatingCollector(CharSeq::ofAll);
     }
 
     /**

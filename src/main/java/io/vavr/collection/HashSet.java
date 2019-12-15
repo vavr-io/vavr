@@ -60,7 +60,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A io.vavr.collection.HashSet Collector.
      */
     public static <T> Collector<T, ArrayList<T>, HashSet<T>> collector() {
-        return Collections.seqCollector(HashSet::ofAll);
+        return Collections.arrayListAccumulatingCollector(HashSet::ofAll);
     }
 
     /**
