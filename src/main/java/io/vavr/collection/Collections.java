@@ -236,7 +236,7 @@ final class Collections {
 
     // hashes the elements regardless of their order
     static int hashUnordered(Iterable<?> iterable) {
-        return hash(iterable, (acc, hash) -> acc + hash);
+        return hash(iterable, Integer::sum);
     }
 
     private static int hash(Iterable<?> iterable, IntBinaryOperator accumulator) {
