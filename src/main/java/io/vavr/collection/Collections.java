@@ -176,11 +176,7 @@ final class Collections {
     }
 
     static <T> Iterator<T> fillObject(int n, T element) {
-        if (n <= 0) {
-            return Iterator.empty();
-        } else {
-            return Iterator.continually(element).take(n);
-        }
+        return n <= 0 ? Iterator.empty() : Iterator.continually(element).take(n);
     }
 
     static <C extends Traversable<T>, T> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
