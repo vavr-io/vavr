@@ -18,15 +18,23 @@
  */
 package io.vavr.collection;
 
-import io.vavr.*;
-import io.vavr.collection.PriorityQueueBase.*;
+import io.vavr.PartialFunction;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
+import io.vavr.Tuple3;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.function.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
-
-import static io.vavr.collection.PriorityQueueBase.*;
 
 /**
  * A PriorityQueue.
@@ -661,9 +669,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     public Comparator<T> comparator() {
         return (Comparator<T>) comparator;
     }
-}
 
-final class PriorityQueueBase {
 
     /**
      * fun deleteMin [] = raise EMPTY
@@ -751,8 +757,8 @@ final class PriorityQueueBase {
      **/
     private static <T> Seq<Node<T>> uniqify(Comparator<? super T> comparator, Seq<Node<T>> forest) {
         return forest.isEmpty()
-               ? forest
-               : ins(comparator, forest.head(), forest.tail());
+          ? forest
+          : ins(comparator, forest.head(), forest.tail());
     }
 
     /**
@@ -827,8 +833,8 @@ final class PriorityQueueBase {
          */
         Node<T> link(Comparator<? super T> comparator, Node<T> tree) {
             return comparator.compare(this.root, tree.root) <= 0
-                   ? of(this.root, this.rank + 1, tree.appendTo(this.children))
-                   : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
+              ? of(this.root, this.rank + 1, tree.appendTo(this.children))
+              : of(tree.root, tree.rank + 1, this.appendTo(tree.children));
         }
 
         /*
@@ -851,5 +857,4 @@ final class PriorityQueueBase {
             return forest.prepend(this);
         }
     }
-
 }
