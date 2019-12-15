@@ -95,15 +95,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
             Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<T>, HashMap<K, V>> finisher = arr -> HashMap.ofEntries(Iterator.ofAll(arr)
-                .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t))));
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.seqCollector(arr -> HashMap.ofEntries(Iterator.ofAll(arr)
+                .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
 
     @SuppressWarnings("unchecked")

@@ -64,14 +64,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A io.vavr.collection.LinkedHashSet Collector.
      */
     public static <T> Collector<T, ArrayList<T>, LinkedHashSet<T>> collector() {
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<T>, LinkedHashSet<T>> finisher = LinkedHashSet::ofAll;
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.seqCollector(LinkedHashSet::ofAll);
     }
 
     /**

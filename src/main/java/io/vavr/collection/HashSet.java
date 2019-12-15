@@ -60,14 +60,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A io.vavr.collection.HashSet Collector.
      */
     public static <T> Collector<T, ArrayList<T>, HashSet<T>> collector() {
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<T>, HashSet<T>> finisher = HashSet::ofAll;
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.seqCollector(HashSet::ofAll);
     }
 
     /**
