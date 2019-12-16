@@ -165,7 +165,7 @@ final class Collections {
         return tabulate(n, ignored -> supplier.get());
     }
 
-    static <T, R> Collector<T, ArrayList<T>, R> seqCollector(Function<ArrayList<T>, R> finisher) {
+    static <T, R> Collector<T, ArrayList<T>, R> arrayListAccumulatingCollector(Function<ArrayList<T>, R> finisher) {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -176,11 +176,7 @@ final class Collections {
     }
 
     static <T> Iterator<T> fillObject(int n, T element) {
-        if (n <= 0) {
-            return Iterator.empty();
-        } else {
-            return Iterator.continually(element).take(n);
-        }
+        return n <= 0 ? Iterator.empty() : Iterator.continually(element).take(n);
     }
 
     static <C extends Traversable<T>, T> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
@@ -240,7 +236,7 @@ final class Collections {
 
     // hashes the elements regardless of their order
     static int hashUnordered(Iterable<?> iterable) {
-        return hash(iterable, (acc, hash) -> acc + hash);
+        return hash(iterable, Integer::sum);
     }
 
     private static int hash(Iterable<?> iterable, IntBinaryOperator accumulator) {

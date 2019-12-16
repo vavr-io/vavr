@@ -1455,28 +1455,14 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     // -- internal factory methods
 
     private static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> createCollector(EntryComparator<K, V> entryComparator) {
-        final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<Tuple2<K, V>>, TreeMap<K, V>> finisher = list -> createTreeMap(entryComparator, list);
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.arrayListAccumulatingCollector(list -> createTreeMap(entryComparator, list));
     }
 
     private static <K, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> createCollector(
             EntryComparator<K, V> entryComparator,
             Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<T>, TreeMap<K, V>> finisher = arr -> createTreeMap(entryComparator, Iterator.ofAll(arr)
-                .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t))));
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.arrayListAccumulatingCollector(arr -> createTreeMap(entryComparator, Iterator.ofAll(arr)
+                .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
 
     @SuppressWarnings("unchecked")

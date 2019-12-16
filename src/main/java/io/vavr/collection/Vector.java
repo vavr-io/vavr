@@ -79,7 +79,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * {@link io.vavr.collection.Vector}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, Vector<T>> collector() {
-        return Collections.seqCollector(Vector::ofAll);
+        return Collections.arrayListAccumulatingCollector(Vector::ofAll);
     }
 
     /**

@@ -88,7 +88,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * {@link io.vavr.collection.Queue}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, Queue<T>> collector() {
-        return Collections.seqCollector(Queue::ofAll);
+        return Collections.arrayListAccumulatingCollector(Queue::ofAll);
     }
 
     /**

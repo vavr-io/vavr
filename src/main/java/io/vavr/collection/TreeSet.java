@@ -69,14 +69,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      */
     public static <T> Collector<T, ArrayList<T>, TreeSet<T>> collector(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<T>, TreeSet<T>> finisher = list -> TreeSet.ofAll(comparator, list);
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.arrayListAccumulatingCollector(list -> TreeSet.ofAll(comparator, list));
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> empty() {
