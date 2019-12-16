@@ -1,0 +1,12 @@
+name-template: v$NEXT_PATCH_VERSION
+tag-template: v$NEXT_PATCH_VERSION
+template: |
+  ## Info
+  // ...
+
+  ## Committers
+  🎉 MANY THANKS TO ALL COMMITTERS! 🎉
+  $CONTRIBUTORS
+
+  ## Changes
+  $CHANGES
