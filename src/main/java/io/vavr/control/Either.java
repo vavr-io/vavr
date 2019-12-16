@@ -573,31 +573,6 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
     }
 
     /**
-     * Maps either the left, or the right side of this disjunction.
-     *
-     * <pre>{@code
-     * Either<?, AtomicInteger> success = Either.right(new AtomicInteger(42));
-     *
-     * // prints "Right(42)"
-     * System.out.println(success.map(Function1.identity(), AtomicInteger::get));
-     *
-     * Either<Exception, ?> failure = Either.left(new Exception("error"));
-     *
-     * // prints "Left(error)"
-     * System.out.println(failure.map(Exception::getMessage, Function1.identity()));
-     * }</pre>
-     *
-     * @param leftMapper  maps the left value if this is a Left
-     * @param rightMapper maps the right value if this is a Right
-     * @param <X>         The new left type of the resulting Either
-     * @param <Y>         The new right type of the resulting Either
-     * @return A new Either instance
-     */
-    public final <X, Y> Either<X, Y> map(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
-        return bimap(leftMapper, rightMapper);
-    }
-
-    /**
      * Maps the value of this Either if it is a Right, performs no operation if this is a Left.
      *
      * <pre>{@code

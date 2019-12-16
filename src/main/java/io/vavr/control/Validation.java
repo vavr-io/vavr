@@ -673,19 +673,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
         }
     }
 
-    /**
-     * Shortcut for {@link Validation#bimap(Function, Function)}.
-     *
-     * @param errorMapper the invalid mapping operation
-     * @param valueMapper the valid mapping operation
-     * @param <E1> type of the mapping result if this is an invalid
-     * @param <T2> the valid mapping operation
-     * @return an instance of Validation&lt;U,R&gt;
-     */
-    public final <E1, T2> Validation<E1, T2> map(Function<? super E, ? extends E1> errorMapper, Function<? super T, ? extends T2> valueMapper) {
-        return bimap(errorMapper, valueMapper);
-    }
-
     @Override
     public final <U> Validation<E, U> map(Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");

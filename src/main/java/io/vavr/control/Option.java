@@ -616,29 +616,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     }
 
     /**
-     * If this is Some, uses the {@code mapper} to map the value and wraps it in a new {@code Some},
-     * otherwise it invokes the {@code supplier} and return the result of its evaluation.
-     *
-     * <pre>{@code
-     * Function<String, String> mapper = s -> s + " World!";
-     * Supplier<Option<String>> supplier = () -> Option.of("Hello Supplier!");
-     * // Creates Some("Hello World!")
-     * Option.of("Hello").map(supplier, mapper);
-     *
-     * // Creates Some("Hello Supplier!")
-     * Option.<String>none().map(supplier, mapper);
-     * }</pre>
-     * @param supplier An alternative {@code Option} supplier
-     * @param mapper A value mapper
-     * @param <U> The new value type
-     * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise the {@code Option} evaluated by the supplier
-     */
-    @SuppressWarnings("unchecked")
-    public final <U> Option<U> map(Supplier<? extends Option<? extends U>> supplier, Function<? super T, ? extends U> mapper) {
-        return isEmpty() ? (Option<U>) supplier.get() : map(mapper);
-    }
-
-    /**
      * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, otherwise returns a {@code None}.
      *
      * <pre>{@code

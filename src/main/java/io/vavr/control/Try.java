@@ -695,26 +695,6 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     }
 
     /**
-     * If this is a Failure use the {@code mapFailure} to generate a new Try, from the Throwable error, which could be Success or Failure.
-     * If this is a Success it behaves as {@link Try#map(Function)}.
-     *
-     * @param mapFailure A recovery function taking a Throwable
-     * @param mapSuccess A mapping function taking the current value
-     * @param <U> The new component type
-     * @return
-     */
-    public final <U> Try<U> map(Function<? super Throwable, ? extends U> mapFailure, Function<? super T, ? extends U> mapSuccess) {
-        Objects.requireNonNull(mapFailure, "mapFailure is null");
-        Objects.requireNonNull(mapSuccess, "mapSuccess is null");
-
-        if (isFailure()) {
-            return Try.of(() -> mapFailure.apply(getCause()));
-        } else {
-            return map(mapSuccess);
-        }
-    }
-
-    /**
      * Shortcut for {@code mapTry(mapper::apply)}, see {@link #mapTry(CheckedFunction1)}.
      *
      * @param <U>    The new component type
