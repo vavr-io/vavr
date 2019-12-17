@@ -217,7 +217,6 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     /**
      * Maps the values of an iterable to a sequence of mapped values into a single {@code Try} by
      * transforming an {@code Iterable<? extends T>} into a {@code Try<Seq<U>>}.
-     * <p>
      *
      * <pre>{@code
      * Function<String, Try<Integer>> mapper = number -> Try.of(() -> Integer.parseInt(number));
