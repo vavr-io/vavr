@@ -2,10 +2,9 @@
  * Some Gradle tasks we use:
  *
  * - Build: `./gradlew check`
- *   | test reports: ./build/reports/tests/test/index.html
- *   | coverage reports: ./build/reports/jacoco/test/html/index.html
- * 
- * - Javadoc (linting): `./gradlew javadoc`
+ *   -> test reports: ./build/reports/tests/test/index.html
+ *   -> coverage reports: ./build/reports/jacoco/test/html/index.html
+ *   -> javadoc: `./build/docs/javadoc`
  * 
  * - Release: `./gradlew release --info`
  */
@@ -81,7 +80,10 @@ jacocoTestReport {
     }
 }
 
-check.dependsOn jacocoTestReport
+check {
+    dependsOn jacocoTestReport
+    dependsOn javadoc
+}
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
