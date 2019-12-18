@@ -816,10 +816,6 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
             return either.<L2, R2> bimap(leftMapper, rightMapper).left();
         }
 
-        public <L2, R2> LeftProjection<L2, R2> map(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
-            return bimap(leftMapper, rightMapper);
-        }
-
         /**
          * A {@code LeftProjection}'s value is computed synchronously.
          *
@@ -1073,10 +1069,6 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
 
         public <L2, R2> RightProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
             return either.<L2, R2> bimap(leftMapper, rightMapper).right();
-        }
-
-        public <L2, R2> RightProjection<L2, R2> map(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
-            return bimap(leftMapper, rightMapper);
         }
 
         /**
