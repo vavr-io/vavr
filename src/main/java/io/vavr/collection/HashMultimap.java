@@ -466,7 +466,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @return A {@link HashMultimap} Collector.
          */
         public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, Multimap<K, V2>> collector() {
-            return Collections.arrayListAccumulatingCollector(this::ofEntries);
+            return Collections.toListAndThen(this::ofEntries);
         }
     }
 

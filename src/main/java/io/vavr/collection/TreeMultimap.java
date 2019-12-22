@@ -893,7 +893,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          */
         public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> collector(Comparator<? super K> keyComparator) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
-            return Collections.arrayListAccumulatingCollector(list -> ofEntries(keyComparator, list));
+            return Collections.toListAndThen(list -> ofEntries(keyComparator, list));
         }
     }
 

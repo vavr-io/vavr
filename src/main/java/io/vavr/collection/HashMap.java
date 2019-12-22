@@ -55,7 +55,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A {@link HashMap} Collector.
      */
     public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, HashMap<K, V>> collector() {
-        return Collections.arrayListAccumulatingCollector(HashMap::ofEntries);
+        return Collections.toListAndThen(HashMap::ofEntries);
     }
 
     /**

@@ -54,7 +54,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @return A {@link LinkedHashMap} Collector.
      */
     public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, LinkedHashMap<K, V>> collector() {
-        return Collections.arrayListAccumulatingCollector(LinkedHashMap::ofEntries);
+        return Collections.toListAndThen(LinkedHashMap::ofEntries);
     }
 
     /**
