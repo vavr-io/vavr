@@ -54,14 +54,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @return A {@link LinkedHashMap} Collector.
      */
     public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, LinkedHashMap<K, V>> collector() {
-        final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<Tuple2<K, V>>, LinkedHashMap<K, V>> finisher = LinkedHashMap::ofEntries;
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.arrayListAccumulatingCollector(LinkedHashMap::ofEntries);
     }
 
     /**

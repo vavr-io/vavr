@@ -55,14 +55,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A {@link HashMap} Collector.
      */
     public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, HashMap<K, V>> collector() {
-        final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
-        };
-        final Function<ArrayList<Tuple2<K, V>>, HashMap<K, V>> finisher = HashMap::ofEntries;
-        return Collector.of(supplier, accumulator, combiner, finisher);
+        return Collections.arrayListAccumulatingCollector(HashMap::ofEntries);
     }
 
     /**

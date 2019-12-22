@@ -466,13 +466,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @return A {@link HashMultimap} Collector.
          */
         public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, Multimap<K, V2>> collector() {
-            final Supplier<ArrayList<Tuple2<K, V2>>> supplier = ArrayList::new;
-            final BiConsumer<ArrayList<Tuple2<K, V2>>, Tuple2<K, V2>> accumulator = ArrayList::add;
-            final BinaryOperator<ArrayList<Tuple2<K, V2>>> combiner = (left, right) -> {
-                left.addAll(right);
-                return left;
-            };
-            return Collector.of(supplier, accumulator, combiner, this::ofEntries);
+            return Collections.arrayListAccumulatingCollector(this::ofEntries);
         }
     }
 
