@@ -64,7 +64,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A io.vavr.collection.LinkedHashSet Collector.
      */
     public static <T> Collector<T, ArrayList<T>, LinkedHashSet<T>> collector() {
-        return Collections.arrayListAccumulatingCollector(LinkedHashSet::ofAll);
+        return Collections.toListAndThen(LinkedHashSet::ofAll);
     }
 
     /**

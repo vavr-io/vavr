@@ -135,7 +135,7 @@ public abstract class List<T> implements LinearSeq<T> {
      * {@link io.vavr.collection.List}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, List<T>> collector() {
-        return Collections.arrayListAccumulatingCollector(List::ofAll);
+        return Collections.toListAndThen(List::ofAll);
     }
 
     /**

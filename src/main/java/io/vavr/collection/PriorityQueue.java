@@ -28,9 +28,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -184,7 +182,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @return A {@code PriorityQueue<T>} Collector.
      */
     public static <T> Collector<T, ArrayList<T>, PriorityQueue<T>> collector() {
-        return Collections.arrayListAccumulatingCollector(values -> ofAll(Comparators.naturalComparator(), values));
+        return Collections.toListAndThen(values -> ofAll(Comparators.naturalComparator(), values));
     }
 
     /**
