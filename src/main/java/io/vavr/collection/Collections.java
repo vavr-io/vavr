@@ -165,7 +165,7 @@ final class Collections {
         return tabulate(n, ignored -> supplier.get());
     }
 
-    static <T, R> Collector<T, ArrayList<T>, R> arrayListAccumulatingCollector(Function<ArrayList<T>, R> finisher) {
+    static <T, R> Collector<T, ArrayList<T>, R> toListAndThen(Function<ArrayList<T>, R> finisher) {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {

@@ -893,14 +893,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          */
         public <K, V2 extends V> Collector<Tuple2<K, V2>, ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> collector(Comparator<? super K> keyComparator) {
             Objects.requireNonNull(keyComparator, "keyComparator is null");
-            final Supplier<ArrayList<Tuple2<K, V2>>> supplier = ArrayList::new;
-            final BiConsumer<ArrayList<Tuple2<K, V2>>, Tuple2<K, V2>> accumulator = ArrayList::add;
-            final BinaryOperator<ArrayList<Tuple2<K, V2>>> combiner = (left, right) -> {
-                left.addAll(right);
-                return left;
-            };
-            final Function<ArrayList<Tuple2<K, V2>>, TreeMultimap<K, V2>> finisher = list -> ofEntries(keyComparator, list);
-            return Collector.of(supplier, accumulator, combiner, finisher);
+            return Collections.toListAndThen(list -> ofEntries(keyComparator, list));
         }
     }
 

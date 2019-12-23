@@ -62,7 +62,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * {@link io.vavr.collection.Array}, in encounter order
      */
     public static <T> Collector<T, ArrayList<T>, Array<T>> collector() {
-        return Collections.arrayListAccumulatingCollector(Array::ofAll);
+        return Collections.toListAndThen(Array::ofAll);
     }
 
     @SuppressWarnings("unchecked")

@@ -49,7 +49,7 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * @return A io.vavr.collection.Tree Collector.
      */
     public static <T> Collector<T, ArrayList<T>, Tree<T>> collector() {
-        return Collections.arrayListAccumulatingCollector(Tree::ofAll);
+        return Collections.toListAndThen(Tree::ofAll);
     }
 
     /**

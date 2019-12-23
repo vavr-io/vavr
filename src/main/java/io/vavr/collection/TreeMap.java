@@ -1455,13 +1455,13 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     // -- internal factory methods
 
     private static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, TreeMap<K, V>> createCollector(EntryComparator<K, V> entryComparator) {
-        return Collections.arrayListAccumulatingCollector(list -> createTreeMap(entryComparator, list));
+        return Collections.toListAndThen(list -> createTreeMap(entryComparator, list));
     }
 
     private static <K, V, T> Collector<T, ArrayList<T>, TreeMap<K, V>> createCollector(
             EntryComparator<K, V> entryComparator,
             Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        return Collections.arrayListAccumulatingCollector(arr -> createTreeMap(entryComparator, Iterator.ofAll(arr)
+        return Collections.toListAndThen(arr -> createTreeMap(entryComparator, Iterator.ofAll(arr)
                 .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
 
