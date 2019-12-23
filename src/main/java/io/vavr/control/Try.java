@@ -888,6 +888,26 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     }
 
     /**
+     * Applies the {@code successAction} to the value if this is a Success or applies the {@code failureAction} to the cause of failure.
+     *
+     * @param failureAction A Consumer for the Failure case
+     * @param successAction A Consumer for the Success case
+     * @return this {@code Try}
+     */
+    public final Try<T> peek(Consumer<? super Throwable> failureAction, Consumer<? super T> successAction) {
+        Objects.requireNonNull(failureAction, "action is null");
+        Objects.requireNonNull(successAction, "action is null");
+
+        if (isFailure()) {
+            failureAction.accept(getCause());
+        } else {
+            successAction.accept(get());
+        }
+
+        return this;
+    }
+
+    /**
      * Applies the action to the value of a Success or does nothing in the case of a Failure.
      *
      * @param action A Consumer

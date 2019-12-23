@@ -777,8 +777,30 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
         return isInvalid() ? (Validation<E, U>) this : (Validation<E, U>) mapper.apply(get());
     }
 
+    /**
+     * Applies the {@code validAction} to the value if this is valid otherwise applies the {@code invalidAction} to the cause of error.
+     *
+     * @param invalidAction A Consumer for the Failure case
+     * @param validAction A Consumer for the Success case
+     * @return this {@code Validation}
+     */
+    public final Validation<E, T> peek(Consumer<? super E> invalidAction, Consumer<? super T> validAction) {
+        Objects.requireNonNull(invalidAction, "invalidAction is null");
+        Objects.requireNonNull(validAction, "validAction is null");
+
+        if(isInvalid()) {
+            invalidAction.accept(getError());
+        } else {
+            validAction.accept(get());
+        }
+
+        return this;
+    }
+
     @Override
     public final Validation<E, T> peek(Consumer<? super T> action) {
+        Objects.requireNonNull(action, "action is null");
+
         if (isValid()) {
             action.accept(get());
         }

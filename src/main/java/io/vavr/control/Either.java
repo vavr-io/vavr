@@ -747,6 +747,27 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
         }
     }
 
+    /**
+     * Performs the given {@code leftAction} on the left element if this is Left.
+     * Performs the given {@code rightAction} on the right element if this is Right.
+     *
+     * @param leftAction The action that will be performed on the left element
+     * @param rightAction The action that will be performed on the right element
+     * @return this instance
+     */
+    public final Either<L, R> peek(Consumer<? super L> leftAction, Consumer<? super R> rightAction) {
+        Objects.requireNonNull(leftAction, "leftAction is null");
+        Objects.requireNonNull(rightAction, "rightAction is null");
+
+        if (isLeft()) {
+            leftAction.accept(getLeft());
+        } else { // this isRight() by definition
+            rightAction.accept(get());
+        }
+
+        return this;
+    }
+
     @Override
     public final Either<L, R> peek(Consumer<? super R> action) {
         Objects.requireNonNull(action, "action is null");
