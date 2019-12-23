@@ -79,7 +79,7 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @deprecated Will be removed in Vavr 1.0. Use {@link #DEFAULT_EXECUTOR instead}.
      */
     @Deprecated
-    // See https://zeroturnaround.com/rebellabs/fixedthreadpool-cachedthreadpool-or-forkjoinpool-picking-correct-java-executors-for-background-tasks
+    // See https://www.jrebel.com/blog/using-java-executors
     ExecutorService DEFAULT_EXECUTOR_SERVICE = ForkJoinPool.commonPool();
 
     /**
@@ -105,7 +105,7 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      *
      * @see ForkJoinPool#awaitQuiescence(long, TimeUnit)
      */
-    // See https://zeroturnaround.com/rebellabs/fixedthreadpool-cachedthreadpool-or-forkjoinpool-picking-correct-java-executors-for-background-tasks
+    // See https://www.jrebel.com/blog/using-java-executors
     Executor DEFAULT_EXECUTOR = DEFAULT_EXECUTOR_SERVICE;
 
     /**
