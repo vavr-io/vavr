@@ -769,7 +769,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <U> Set<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return tree.isEmpty() ? HashSet.empty() : HashSet.ofAll(this).map(mapper);
+        return isEmpty() ? HashSet.empty() : HashSet.ofAll(this).map(mapper);
     }
 
     /**

@@ -492,7 +492,7 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
     @Override
     public final <U> Set<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return this.isEmpty() ? HashSet.empty() : HashSet.ofAll(this).map(mapper);
+        return isEmpty() ? HashSet.empty() : HashSet.ofAll(this).map(mapper);
     }
 
     @Override
