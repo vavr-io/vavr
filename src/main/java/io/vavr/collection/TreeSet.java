@@ -643,8 +643,9 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public <U> TreeSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return flatMap(Comparators.naturalComparator(), mapper);
+    public <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return isEmpty() ? HashSet.empty() : HashSet.ofAll(this).flatMap(mapper);
     }
 
     @Override
@@ -766,8 +767,9 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public <U> TreeSet<U> map(Function<? super T, ? extends U> mapper) {
-        return map(Comparators.naturalComparator(), mapper);
+    public <U> Set<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return isEmpty() ? HashSet.empty() : HashSet.ofAll(this).map(mapper);
     }
 
     /**

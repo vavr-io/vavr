@@ -20,6 +20,7 @@ import java.util.stream.Collector;
 import static java.util.stream.Collectors.toList;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 public class BitSetTest extends AbstractSortedSetTest {
 
@@ -540,6 +541,20 @@ public class BitSetTest extends AbstractSortedSetTest {
         } else {
             assertThat(queue).isEqualTo(PriorityQueue.of(comparator, 1, 2, 3));
         }
+    }
+
+    // -- map()
+
+    @Test
+    public void shouldMapElementsToUncomparableType() {
+        assertThatCode(() -> of(1, 2, 3).map(i -> new Object())).doesNotThrowAnyException();
+    }
+
+    // -- flatMap()
+
+    @Test
+    public void shouldFlatMapToUncomparableType() {
+        assertThatCode(() -> of(1, 2, 3).flatMap(i -> HashSet.of(new Object()))).doesNotThrowAnyException();
     }
 
     // -- transform()

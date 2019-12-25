@@ -30,9 +30,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static io.vavr.TestComparators.toStringComparator;
 import static io.vavr.collection.Comparators.naturalComparator;
 import static java.util.Comparator.nullsFirst;
-import static io.vavr.TestComparators.toStringComparator;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 public class TreeSetTest extends AbstractSortedSetTest {
 
@@ -439,6 +440,20 @@ public class TreeSetTest extends AbstractSortedSetTest {
     public void shouldPreserveComparatorOnConvertToSortedSetWithoutDistinctComparator() {
         final TreeSet<Integer> value = TreeSet.of(naturalComparator().reversed(), 1, 2, 3);
         assertThat(value.toSortedSet().mkString(",")).isEqualTo("3,2,1");
+    }
+
+    // -- map()
+
+    @Test
+    public void shouldMapElementsToUncomparableType() {
+        assertThatCode(() -> of(1, 2, 3).map(i -> new Object())).doesNotThrowAnyException();
+    }
+
+    // -- flatMap()
+
+    @Test
+    public void shouldFlatMapToUncomparableType() {
+        assertThatCode(() -> of(1, 2, 3).flatMap(i -> HashSet.of(new Object()))).doesNotThrowAnyException();
     }
 
     // -- transform()

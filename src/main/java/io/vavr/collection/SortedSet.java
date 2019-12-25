@@ -126,7 +126,7 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     SortedSet<T> reject(Predicate<? super T> predicate);
 
     @Override
-    <U> SortedSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
     <C> Map<C, ? extends SortedSet<T>> groupBy(Function<? super T, ? extends C> classifier);
@@ -149,7 +149,7 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     }
 
     @Override
-    <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
+    <U> Set<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
     SortedSet<T> orElse(Iterable<? extends T> other);
