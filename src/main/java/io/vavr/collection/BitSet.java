@@ -401,8 +401,9 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public final <U> SortedSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return flatMap(Comparators.naturalComparator(), mapper);
+    public final <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return HashSet.ofAll(this).flatMap(mapper);
     }
 
     @Override
@@ -489,8 +490,9 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public final <U> SortedSet<U> map(Function<? super T, ? extends U> mapper) {
-        return map(Comparators.naturalComparator(), mapper);
+    public final <U> Set<U> map(Function<? super T, ? extends U> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+        return HashSet.ofAll(this).map(mapper);
     }
 
     @Override
