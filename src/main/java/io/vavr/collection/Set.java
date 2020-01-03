@@ -164,6 +164,15 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> removeAll(Iterable<? extends T> elements);
 
     /**
+     * Reverse the order of all given elements in this set, if present.
+     *
+     * @return A new set consisting of the elements in reverse order of this set
+     */
+    default Set<T> reverse() {
+        throw new UnsupportedOperationException("Operation not supported");
+    }
+
+    /**
      * Converts this Vavr {@code Set} to a {@code java.util.Set} while preserving characteristics
      * like insertion order ({@code LinkedHashSet}) and sort order ({@code SortedSet}).
      *

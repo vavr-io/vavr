@@ -229,6 +229,15 @@ public class LinkedHashSetTest extends AbstractSetTest {
         assertThat(actual).isSameAs(set);
     }
 
+    @Test
+    public void shouldReverseLinkedHashSet() {
+        final LinkedHashSet<Integer> actual = LinkedHashSet.ofAll(1, 2, 3);
+        final LinkedHashSet<Integer> notExpected = actual.reverse();
+        final LinkedHashSet<Integer> expected = notExpected.reverse();
+        assertThat(actual).isNotEqualTo(notExpected);
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- transform
 
     @Test

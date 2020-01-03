@@ -22,10 +22,7 @@ import io.vavr.*;
 import io.vavr.control.Option;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
@@ -796,6 +793,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     @Override
     public LinkedHashSet<T> retainAll(Iterable<? extends T> elements) {
         return Collections.retainAll(this, elements);
+    }
+
+    @Override
+    public LinkedHashSet<T> reverse() {
+        return Collections.reverseIterator(this).collect(collector());
     }
 
     @Override

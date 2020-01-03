@@ -293,6 +293,15 @@ public class TreeSetTest extends AbstractSortedSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    @Test
+    public void shouldReverseTreeSet() {
+        final TreeSet<Integer> actual = TreeSet.ofAll(1, 2, 3);
+        final TreeSet<Integer> notExpected = actual.reverse();
+        final TreeSet<Integer> expected = notExpected.reverse();
+        assertThat(actual).isNotEqualTo(notExpected);
+        assertThat(actual).isEqualTo(expected);
+    }
+
     // -- zip
 
     @Override
