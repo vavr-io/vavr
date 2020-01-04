@@ -1090,7 +1090,9 @@ public abstract class List<T> implements LinearSeq<T> {
      *
      * @return the first element
      * @throws java.util.NoSuchElementException if this List is empty
+     * @deprecated use head() instead
      */
+    @Deprecated
     public final T peek() {
         if (isEmpty()) {
             throw new NoSuchElementException("peek of empty list");
@@ -1102,9 +1104,11 @@ public abstract class List<T> implements LinearSeq<T> {
      * Returns the head element without modifying the List.
      *
      * @return {@code None} if this List is empty, otherwise a {@code Some} containing the head element
+     * @deprecated use headOption() instead
      */
+    @Deprecated
     public final Option<T> peekOption() {
-        return isEmpty() ? Option.none() : Option.some(head());
+        return headOption();
     }
 
     /**
@@ -1145,7 +1149,9 @@ public abstract class List<T> implements LinearSeq<T> {
      *
      * @return the elements of this List without the head element
      * @throws java.util.NoSuchElementException if this List is empty
+     * @deprecated use tail() instead
      */
+    @Deprecated
     public final List<T> pop() {
         if (isEmpty()) {
             throw new NoSuchElementException("pop of empty list");
@@ -1157,9 +1163,11 @@ public abstract class List<T> implements LinearSeq<T> {
      * Removes the head element from this List.
      *
      * @return {@code None} if this List is empty, otherwise a {@code Some} containing the elements of this List without the head element
+     * @deprecated use tailOption() instead
      */
+    @Deprecated
     public final Option<List<T>> popOption() {
-        return isEmpty() ? Option.none() : Option.some(pop());
+        return tailOption();
     }
 
     /**
@@ -1167,7 +1175,9 @@ public abstract class List<T> implements LinearSeq<T> {
      *
      * @return a tuple containing the head element and the remaining elements of this List
      * @throws java.util.NoSuchElementException if this List is empty
+     * @deprecated use Tuple.of(list.head(), list.tail()) instead
      */
+    @Deprecated
     public final Tuple2<T, List<T>> pop2() {
         if (isEmpty()) {
             throw new NoSuchElementException("pop2 of empty list");
@@ -1179,9 +1189,11 @@ public abstract class List<T> implements LinearSeq<T> {
      * Removes the head element from this List.
      *
      * @return {@code None} if this List is empty, otherwise {@code Some} {@code Tuple} containing the head element and the remaining elements of this List
+     * @deprecated use list.isEmpty() ? Option.none() : Option.some(Tuple.of(list.head(), list.tail())) instead
      */
+    @Deprecated
     public final Option<Tuple2<T, List<T>>> pop2Option() {
-        return isEmpty() ? Option.none() : Option.some(Tuple.of(head(), pop()));
+        return Option.when(nonEmpty(), this::pop2);
     }
 
     @Override
@@ -1200,9 +1212,11 @@ public abstract class List<T> implements LinearSeq<T> {
      *
      * @param element The new element
      * @return a new {@code List} instance, containing the new element on top of this List
+     * @deprecated use prepend(T) instead
      */
+    @Deprecated
     public final List<T> push(T element) {
-        return new Cons<>(element, this);
+        return prepend(element);
     }
 
     /**
@@ -1212,7 +1226,9 @@ public abstract class List<T> implements LinearSeq<T> {
      * @param elements Elements, may be empty
      * @return a new {@code List} instance, containing the new elements on top of this List
      * @throws NullPointerException if elements is null
+     * @deprecated use prependAll(List.of(elements).reverse()) instead
      */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public final List<T> push(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -1230,7 +1246,9 @@ public abstract class List<T> implements LinearSeq<T> {
      * @param elements An Iterable of elements, may be empty
      * @return a new {@code List} instance, containing the new elements on top of this List
      * @throws NullPointerException if elements is null
+     * @deprecated use prependAll(List.of(elements).reverse()) instead
      */
+    @Deprecated
     public final List<T> pushAll(Iterable<T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         List<T> result = this;

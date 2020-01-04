@@ -36,7 +36,9 @@ import java.util.stream.Collector;
 
 /**
  * A PriorityQueue.
+ * @deprecated marked for removal from vavr core lib, might be moved to an extended collections module
  */
+@Deprecated
 public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T> {
 
     private static final long serialVersionUID = 1L;

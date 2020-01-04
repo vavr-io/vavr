@@ -36,7 +36,9 @@ import java.util.stream.Collector;
  *
  * @param <K> Key type
  * @param <V> Value type
+ * @deprecated marked for removal from vavr core lib, might be moved to an extended collections module
  */
+@Deprecated
 public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultimap<K, V>> implements Serializable, SortedMultimap<K, V> {
 
     private static final long serialVersionUID = 1L;

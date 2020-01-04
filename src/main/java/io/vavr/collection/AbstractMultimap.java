@@ -35,7 +35,9 @@ import static io.vavr.API.Tuple;
  * @param <K> Key type
  * @param <V> Value type
  * @param <M> Multimap type
+ * @deprecated marked for removal from vavr core lib, might be moved to an extended collections module
  */
+@Deprecated
 abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
 
     private static final long serialVersionUID = 1L;

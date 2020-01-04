@@ -31,8 +31,9 @@ import java.util.stream.Collector;
 
 /**
  * An immutable {@code BitSet} implementation.
+ * @deprecated marked for removal from vavr core lib, might be moved to an extended collections module
  */
-@SuppressWarnings("deprecation")
+@Deprecated
 public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
     private static final long serialVersionUID = 1L;

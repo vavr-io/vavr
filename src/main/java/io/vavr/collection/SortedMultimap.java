@@ -30,7 +30,9 @@ import java.util.function.*;
  *
  * @param <K> Key type
  * @param <V> Value type
+ * @deprecated marked for removal from vavr core lib, might be moved to an extended collections module
  */
+@Deprecated
 public interface SortedMultimap<K, V> extends Multimap<K, V>, Ordered<K> {
 
     long serialVersionUID = 1L;
