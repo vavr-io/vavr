@@ -1172,16 +1172,6 @@ public abstract class Stream<T> implements LinearSeq<T> {
     }
 
     /**
-     * A {@code Stream} is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public final boolean isAsync() {
-        return false;
-    }
-
-    /**
      * A {@code Stream} is computed lazily.
      *
      * @return true
@@ -1789,9 +1779,7 @@ public abstract class Stream<T> implements LinearSeq<T> {
      * This is a singleton, i.e. not Cloneable.
      *
      * @param <T> Component type of the Stream.
-     * @deprecated will be removed from the public API
      */
-    @Deprecated
     public static final class Empty<T> extends Stream<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -1878,9 +1866,7 @@ public abstract class Stream<T> implements LinearSeq<T> {
      * Non-empty {@code Stream}, consisting of a {@code head}, and {@code tail}.
      *
      * @param <T> Component type of the Stream.
-     * @deprecated will be removed from the public API
      */
-    @Deprecated
     public static abstract class Cons<T> extends Stream<T> {
 
         private static final long serialVersionUID = 1L;
@@ -2167,6 +2153,11 @@ public abstract class Stream<T> implements LinearSeq<T> {
         }
 
         @Override
+        public String stringPrefix() {
+            return "StreamIterator";
+        }
+
+        @Override
         public boolean hasNext() {
             return !current.get().isEmpty();
         }
@@ -2192,6 +2183,11 @@ public abstract class Stream<T> implements LinearSeq<T> {
         FlatMapIterator(Iterator<? extends T> inputs, Function<? super T, ? extends Iterable<? extends U>> mapper) {
             this.inputs = inputs;
             this.mapper = mapper;
+        }
+
+        @Override
+        public String stringPrefix() {
+            return "FlatMapIterator";
         }
 
         @Override

@@ -430,16 +430,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
         return isEmpty() ? Option.none() : Option.some(init());
     }
 
-    /**
-     * An {@code BitSet}'s value is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public final boolean isAsync() {
-        return false;
-    }
-
     @Override
     public final boolean isTraversableAgain() {
         return true;
@@ -473,11 +463,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
             action.accept(head());
         }
         return this;
-    }
-
-    @Override
-    public final String stringPrefix() {
-        return "BitSet";
     }
 
     @Override
@@ -957,6 +942,11 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
         }
 
         @Override
+        public String stringPrefix() {
+            return "BitSet";
+        }
+
+        @Override
         public String toString() {
             return mkString(stringPrefix() + "(", ", ", ")");
         }
@@ -1005,6 +995,11 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
             final int pos = Long.numberOfTrailingZeros(element);
             element &= ~(1L << pos);
             return bitSet.fromInt.apply(pos + (index << ADDRESS_BITS_PER_WORD));
+        }
+
+        @Override
+        public String stringPrefix() {
+            return "BitSetIterator";
         }
     }
 

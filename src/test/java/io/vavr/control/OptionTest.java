@@ -24,7 +24,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -54,11 +53,6 @@ public class OptionTest extends AbstractValueTest {
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return true;
-    }
-
-    @Override
-    protected int getPeekNonNilPerformingAnAction() {
-        return 1;
     }
 
     // -- Option
@@ -220,18 +214,6 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.none().orElse(() -> opt)).isSameAs(opt);
     }
 
-    // -- orNull
-
-    @Test
-    public void shouldReturnValueOnOrNullIfValueIsDefined() {
-        assertThat(Option.of("v").orNull()).isEqualTo("v");
-    }
-
-    @Test
-    public void shouldReturnValueOnOrNullIfValueIsEmpty() {
-        assertThat(Option.none().orNull()).isNull();
-    }
-
     // -- getOrElse
 
     @Test
@@ -297,13 +279,23 @@ public class OptionTest extends AbstractValueTest {
     // -- isEmpty
 
     @Test
-    public void shouldBeEmptyOnIsEmptyWhenValueIsEmpty() {
+    public void isEmpty_is_true_when_called_on_None() {
         assertThat(Option.none().isEmpty()).isTrue();
     }
 
     @Test
-    public void shouldBePresentOnIsEmptyWhenValue() {
+    public void isEmpty_is_false_when_called_on_Option_of_one() {
         assertThat(Option.of(1).isEmpty()).isFalse();
+    }
+
+    @Test
+    public void isEmpty_is_true_when_called_on_Option_of_null() {
+        assertThat(Option.of(null).isEmpty()).isTrue();
+    }
+
+    @Test
+    public void isEmpty_is_false_when_called_on_Some_of_null() {
+        assertThat(Option.some(null).isEmpty()).isFalse();
     }
 
     // -- onEmpty
@@ -416,40 +408,6 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.of(1).flatMap(i -> option)).isEqualTo(Option.none());
     }
 
-    // -- exists
-
-    @Test
-    public void shouldBeAwareOfPropertyThatHoldsExistsOfSome() {
-        assertThat(Option.some(1).exists(i -> i == 1)).isTrue();
-    }
-
-    @Test
-    public void shouldBeAwareOfPropertyThatNotHoldsExistsOfSome() {
-        assertThat(Option.some(1).exists(i -> i == 2)).isFalse();
-    }
-
-    @Test
-    public void shouldNotHoldPropertyExistsOfNone() {
-        assertThat(Option.none().exists(e -> true)).isFalse();
-    }
-
-    // -- forall
-
-    @Test
-    public void shouldBeAwareOfPropertyThatHoldsForAllOfSome() {
-        assertThat(Option.some(1).forAll(i -> i == 1)).isTrue();
-    }
-
-    @Test
-    public void shouldBeAwareOfPropertyThatNotHoldsForAllOfSome() {
-        assertThat(Option.some(1).forAll(i -> i == 2)).isFalse();
-    }
-
-    @Test // a property holds for all elements of no elements
-    public void shouldNotHoldPropertyForAllOfNone() {
-        assertThat(Option.none().forAll(e -> true)).isTrue();
-    }
-
     // -- forEach
 
     @Test
@@ -470,52 +428,17 @@ public class OptionTest extends AbstractValueTest {
 
     @Test
     public void shouldMakeRightOnSomeToEither() {
-        assertThat(API.Some(5).toEither("bad")).isEqualTo(API.Right(5));
+        assertThat(API.Some(5).toEither("")).isEqualTo(API.Right(5));
     }
 
     @Test
     public void shouldMakeLeftOnNoneToEither() {
-        assertThat(API.None().toEither("bad")).isEqualTo(API.Left("bad"));
+        assertThat(API.None().toEither("")).isEqualTo(API.Left(""));
     }
 
     @Test
     public void shouldMakeLeftOnNoneToEitherSupplier() {
-        assertThat(API.None().toEither(() -> "bad")).isEqualTo(API.Left("bad"));
-    }
-
-    // -- toValidation
-
-    @Test
-    public void shouldMakeValidOnSomeToValidation() {
-        assertThat(API.Some(5).toValidation("bad")).isEqualTo(API.Valid(5));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToValidation() {
-        assertThat(API.None().toValidation("bad")).isEqualTo(API.Invalid("bad"));
-    }
-
-    @Test
-    public void shouldMakeLeftOnNoneToValidationSupplier() {
-        assertThat(API.None().toValidation(() -> "bad")).isEqualTo(API.Invalid("bad"));
-    }
-
-    // -- peek
-
-    @Test
-    public void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
-        final int[] actual = new int[] { -1 };
-        final Option<Integer> testee = Option.of(1).peek(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(1);
-        assertThat(testee).isEqualTo(Option.of(1));
-    }
-
-    @Test
-    public void shouldNotConsumeAnythingOnPeekWhenValueIsNotDefined() {
-        final int[] actual = new int[] { -1 };
-        final Option<Integer> testee = Option.<Integer> none().peek(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(-1);
-        assertThat(testee).isEqualTo(Option.none());
+        assertThat(API.None().toEither(() -> "")).isEqualTo(API.Left(""));
     }
 
     // -- transform
@@ -657,24 +580,6 @@ public class OptionTest extends AbstractValueTest {
     public void shouldPreserveSingletonWhenDeserializingNone() {
         final Object none = Serializables.deserialize(Serializables.serialize(Option.none()));
         assertThat(none == Option.none()).isTrue();
-    }
-
-    // -- toCompletableFuture
-
-    @Test
-    public void shouldConvertSomeToCompletableFuture() {
-        final String some = "some";
-        final CompletableFuture<String> future = API.Option(some).toCompletableFuture();
-        assertThat(future.isDone());
-        assertThat(Try.of(future::get).get()).isEqualTo(some);
-    }
-
-    @Test
-    public void shouldConvertNoneToFailedCompletableFuture() {
-
-        final CompletableFuture<Object> future = API.None().toCompletableFuture();
-        assertThat(future.isDone());
-        assertThat(future.isCompletedExceptionally());
     }
 
     // -- spliterator

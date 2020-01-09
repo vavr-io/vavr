@@ -59,11 +59,6 @@ public class LazyTest extends AbstractValueTest {
         return false;
     }
 
-    @Override
-    protected int getPeekNonNilPerformingAnAction() {
-        return 1;
-    }
-
     // -- static narrow
 
     @Test
@@ -104,15 +99,6 @@ public class LazyTest extends AbstractValueTest {
         final Iterator<Integer> iterator = Lazy.of(() -> 1).iterator();
         assertThat(iterator.next()).isEqualTo(1);
         assertThat(iterator.hasNext()).isFalse();
-    }
-
-    // -- peek
-
-    @Test
-    public void shouldPeek() {
-        final Lazy<Integer> lazy = Lazy.of(() -> 1);
-        final Lazy<Integer> peek = lazy.peek(v -> assertThat(v).isEqualTo(1));
-        assertThat(peek).isSameAs(lazy);
     }
 
     // -- sequence(Iterable)
@@ -181,16 +167,6 @@ public class LazyTest extends AbstractValueTest {
         final Integer actual = testee.transform(lazy -> lazy.get() / 2);
 
         assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldNotBeEmpty() {
-        assertThat(Lazy.of(Option::none).isEmpty()).isFalse();
-    }
-
-    @Test
-    public void shouldContainASingleValue() {
-        assertThat(Lazy.of(Option::none).isSingleValued()).isTrue();
     }
 
     // -- val(Supplier, Class) -- Proxy
@@ -374,17 +350,6 @@ public class LazyTest extends AbstractValueTest {
         assertThat(Lazy.of(() -> 1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
     }
 
-    // === OVERRIDDEN
-
-    // -- isLazy
-
-    @Override
-    @Test
-    public void shouldVerifyLazyProperty() {
-        assertThat(empty().isLazy()).isTrue();
-        assertThat(of(1).isLazy()).isTrue();
-    }
-
 }
 
 /**
@@ -405,50 +370,17 @@ final class Undefined<T> implements Value<T>, Serializable {
     private Undefined() {
     }
 
-    @Override
     public T get() {
         throw new NoSuchElementException();
     }
 
-    @Override
-    public boolean isAsync() {
-        return prototype.isAsync();
-    }
-
-    @Override
     public boolean isEmpty() {
         return true;
     }
 
     @Override
-    public boolean isLazy() {
-        return prototype.isLazy();
-    }
-
-    @Override
-    public boolean isSingleValued() {
-        return prototype.isSingleValued();
-    }
-
-    @Override
-    public Value<T> peek(Consumer<? super T> action) {
-        return this;
-    }
-
-    @Override
-    public String stringPrefix() {
-        return null;
-    }
-
-    @Override
     public Iterator<T> iterator() {
         return Iterator.empty();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public <U> Value<U> map(Function<? super T, ? extends U> mapper) {
-        return (Value<U>) this;
     }
 
     @Override
