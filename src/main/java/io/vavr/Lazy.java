@@ -29,7 +29,8 @@ import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -52,7 +53,7 @@ import java.util.function.Supplier;
  *
  * <pre><code>final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);</code></pre>
  *
- * @deprecated Marked for removal. Java isn't a lazy evaluated language. This implementation is ineffective because it is a wrapper. It does not scale well.
+ * @deprecated Marked for removal from public API.
  */
 // DEV-NOTE: No flatMap and orElse because this more like a Functor than a Monad.
 //           It represents a value rather than capturing a specific state.
@@ -171,21 +172,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * A {@code Lazy}'s value is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-    /**
      * Checks, if this lazy value is evaluated.
      * <p>
      * Note: A value is internally evaluated (once) by calling {@link #get()}.
@@ -197,35 +183,19 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
         return supplier == null;
     }
 
-    /**
-     * A {@code Lazy}'s value is computed lazily.
-     *
-     * @return true
-     */
-    @Override
-    public boolean isLazy() {
-        return true;
-    }
-
-    @Override
-    public boolean isSingleValued() {
-        return true;
-    }
-
     @Override
     public Iterator<T> iterator() {
         return Iterator.of(get());
     }
 
-    @Override
     public <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
         return Lazy.of(() -> mapper.apply(get()));
     }
 
     @Override
-    public Lazy<T> peek(Consumer<? super T> action) {
-        action.accept(get());
-        return this;
+    public final Spliterator<T> spliterator() {
+        return Spliterators.spliterator(iterator(), 1,
+                Spliterator.IMMUTABLE | Spliterator.ORDERED | Spliterator.SIZED | Spliterator.SUBSIZED);
     }
 
     /**
@@ -242,11 +212,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     @Override
-    public String stringPrefix() {
-        return "Lazy";
-    }
-
-    @Override
     public boolean equals(Object o) {
         return (o == this) || (o instanceof Lazy && Objects.equals(((Lazy<?>) o).get(), get()));
     }
@@ -258,7 +223,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
 
     @Override
     public String toString() {
-        return stringPrefix() + "(" + (!isEvaluated() ? "?" : value) + ")";
+        return "Lazy(" + (!isEvaluated() ? "?" : value) + ")";
     }
 
     /**
