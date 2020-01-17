@@ -126,6 +126,15 @@ public final class Tuple2<T1, T2> implements Tuple, Serializable {
     }
 
     /**
+     * Remove the 1st value from this tuple.
+     *
+     * @return a copy of this tuple with the 1st value element removed.
+     */
+    public Tuple1<T2> remove1() {
+        return Tuple.of(_2);
+    }
+
+    /**
      * Getter of the 2nd element of this tuple.
      *
      * @return the 2nd element of this Tuple.
@@ -142,6 +151,15 @@ public final class Tuple2<T1, T2> implements Tuple, Serializable {
      */
     public Tuple2<T1, T2> update2(T2 value) {
         return new Tuple2<>(_1, value);
+    }
+
+    /**
+     * Remove the 2nd value from this tuple.
+     *
+     * @return a copy of this tuple with the 2nd value element removed.
+     */
+    public Tuple1<T1> remove2() {
+        return Tuple.of(_1);
     }
 
     /**

@@ -58,6 +58,12 @@ public class Tuple1Test {
     }
 
     @Test
+    public void shouldRemove1() {
+      final Tuple0 tuple = createIntTuple(1).remove1();
+
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1).toSeq();
         assertThat(actual).isEqualTo(List.of(1));

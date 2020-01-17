@@ -2052,6 +2052,19 @@ def generateMainClasses(): Unit = {
               public $className$generics update$j(T$j value) {
                   return new $className<>(${(1 until j).gen(k => s"_$k")(", ")}${(j > 1).gen(", ")}value${(j < i).gen(", ")}${((j + 1) to i).gen(k => s"_$k")(", ")});
               }
+
+              /$javadoc
+               * Remove the ${j.ordinal} value from this tuple.
+               *
+               * @return a copy of this tuple with the ${j.ordinal} value element removed.
+               */
+              public Tuple${i-1}${if (i != 1) "<" else ""}${(1 to i).filterNot(_ == j).gen(j => s"T$j")(", ")}${if (i != 1) ">" else ""} remove$j() {
+                  ${if (i == 1)
+                      "return Tuple.empty();"
+                  else
+                      s"return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).filterNot(_ == j).gen(k => s"_$k")(", ")});"
+                  }
+              }
             """)("\n\n")}
 
             ${(i == 2).gen(xs"""
@@ -3534,6 +3547,15 @@ def generateTestClasses(): Unit = {
                   public void shouldUpdate$j() {
                     final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j")(", ")}).update$j(42);
                     ${(1 to i).gen(k => s"$assertThat(tuple._$k).isEqualTo(${if (j == k) 42 else k});\n")}
+                  }
+                """)("\n\n")}
+
+              ${(1 to i).gen(j =>
+                xs"""
+                  @$test
+                  public void shouldRemove$j() {
+                    final Tuple${i-1}${if (i != 1) "<" else ""}${(1 to i-1).gen(j => s"Integer")(", ")}${if (i != 1) ">" else ""} tuple = createIntTuple(${(1 to i).gen(j => s"$j")(", ")}).remove$j();
+                    ${(1 to i-1).gen(k => s"$assertThat(tuple._$k).isEqualTo(${if (k < j) k else k + 1});\n")}
                   }
                 """)("\n\n")}
 

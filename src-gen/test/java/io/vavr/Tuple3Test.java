@@ -78,6 +78,27 @@ public class Tuple3Test {
     }
 
     @Test
+    public void shouldRemove1() {
+      final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2, 3).remove1();
+      assertThat(tuple._1).isEqualTo(2);
+      assertThat(tuple._2).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldRemove2() {
+      final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2, 3).remove2();
+      assertThat(tuple._1).isEqualTo(1);
+      assertThat(tuple._2).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldRemove3() {
+      final Tuple2<Integer, Integer> tuple = createIntTuple(1, 2, 3).remove3();
+      assertThat(tuple._1).isEqualTo(1);
+      assertThat(tuple._2).isEqualTo(2);
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1, 0, 0).toSeq();
         assertThat(actual).isEqualTo(List.of(1, 0, 0));
