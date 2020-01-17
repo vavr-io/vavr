@@ -123,6 +123,66 @@ public class Tuple6Test {
     }
 
     @Test
+    public void shouldRemove1() {
+      final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).remove1();
+      assertThat(tuple._1).isEqualTo(2);
+      assertThat(tuple._2).isEqualTo(3);
+      assertThat(tuple._3).isEqualTo(4);
+      assertThat(tuple._4).isEqualTo(5);
+      assertThat(tuple._5).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldRemove2() {
+      final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).remove2();
+      assertThat(tuple._1).isEqualTo(1);
+      assertThat(tuple._2).isEqualTo(3);
+      assertThat(tuple._3).isEqualTo(4);
+      assertThat(tuple._4).isEqualTo(5);
+      assertThat(tuple._5).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldRemove3() {
+      final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).remove3();
+      assertThat(tuple._1).isEqualTo(1);
+      assertThat(tuple._2).isEqualTo(2);
+      assertThat(tuple._3).isEqualTo(4);
+      assertThat(tuple._4).isEqualTo(5);
+      assertThat(tuple._5).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldRemove4() {
+      final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).remove4();
+      assertThat(tuple._1).isEqualTo(1);
+      assertThat(tuple._2).isEqualTo(2);
+      assertThat(tuple._3).isEqualTo(3);
+      assertThat(tuple._4).isEqualTo(5);
+      assertThat(tuple._5).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldRemove5() {
+      final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).remove5();
+      assertThat(tuple._1).isEqualTo(1);
+      assertThat(tuple._2).isEqualTo(2);
+      assertThat(tuple._3).isEqualTo(3);
+      assertThat(tuple._4).isEqualTo(4);
+      assertThat(tuple._5).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldRemove6() {
+      final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4, 5, 6).remove6();
+      assertThat(tuple._1).isEqualTo(1);
+      assertThat(tuple._2).isEqualTo(2);
+      assertThat(tuple._3).isEqualTo(3);
+      assertThat(tuple._4).isEqualTo(4);
+      assertThat(tuple._5).isEqualTo(5);
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1, 0, 0, 0, 0, 0).toSeq();
         assertThat(actual).isEqualTo(List.of(1, 0, 0, 0, 0, 0));

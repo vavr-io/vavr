@@ -104,6 +104,15 @@ public final class Tuple1<T1> implements Tuple, Serializable {
         return new Tuple1<>(value);
     }
 
+    /**
+     * Remove the 1st value from this tuple.
+     *
+     * @return a copy of this tuple with the 1st value element removed.
+     */
+    public Tuple0 remove1() {
+        return Tuple.empty();
+    }
+
 
     /**
      * Maps the components of this tuple using a mapper function.

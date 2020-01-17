@@ -213,6 +213,15 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializ
     }
 
     /**
+     * Remove the 1st value from this tuple.
+     *
+     * @return a copy of this tuple with the 1st value element removed.
+     */
+    public Tuple6<T2, T3, T4, T5, T6, T7> remove1() {
+        return Tuple.of(_2, _3, _4, _5, _6, _7);
+    }
+
+    /**
      * Getter of the 2nd element of this tuple.
      *
      * @return the 2nd element of this Tuple.
@@ -229,6 +238,15 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializ
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update2(T2 value) {
         return new Tuple7<>(_1, value, _3, _4, _5, _6, _7);
+    }
+
+    /**
+     * Remove the 2nd value from this tuple.
+     *
+     * @return a copy of this tuple with the 2nd value element removed.
+     */
+    public Tuple6<T1, T3, T4, T5, T6, T7> remove2() {
+        return Tuple.of(_1, _3, _4, _5, _6, _7);
     }
 
     /**
@@ -251,6 +269,15 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializ
     }
 
     /**
+     * Remove the 3rd value from this tuple.
+     *
+     * @return a copy of this tuple with the 3rd value element removed.
+     */
+    public Tuple6<T1, T2, T4, T5, T6, T7> remove3() {
+        return Tuple.of(_1, _2, _4, _5, _6, _7);
+    }
+
+    /**
      * Getter of the 4th element of this tuple.
      *
      * @return the 4th element of this Tuple.
@@ -267,6 +294,15 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializ
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update4(T4 value) {
         return new Tuple7<>(_1, _2, _3, value, _5, _6, _7);
+    }
+
+    /**
+     * Remove the 4th value from this tuple.
+     *
+     * @return a copy of this tuple with the 4th value element removed.
+     */
+    public Tuple6<T1, T2, T3, T5, T6, T7> remove4() {
+        return Tuple.of(_1, _2, _3, _5, _6, _7);
     }
 
     /**
@@ -289,6 +325,15 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializ
     }
 
     /**
+     * Remove the 5th value from this tuple.
+     *
+     * @return a copy of this tuple with the 5th value element removed.
+     */
+    public Tuple6<T1, T2, T3, T4, T6, T7> remove5() {
+        return Tuple.of(_1, _2, _3, _4, _6, _7);
+    }
+
+    /**
      * Getter of the 6th element of this tuple.
      *
      * @return the 6th element of this Tuple.
@@ -308,6 +353,15 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializ
     }
 
     /**
+     * Remove the 6th value from this tuple.
+     *
+     * @return a copy of this tuple with the 6th value element removed.
+     */
+    public Tuple6<T1, T2, T3, T4, T5, T7> remove6() {
+        return Tuple.of(_1, _2, _3, _4, _5, _7);
+    }
+
+    /**
      * Getter of the 7th element of this tuple.
      *
      * @return the 7th element of this Tuple.
@@ -324,6 +378,15 @@ public final class Tuple7<T1, T2, T3, T4, T5, T6, T7> implements Tuple, Serializ
      */
     public Tuple7<T1, T2, T3, T4, T5, T6, T7> update7(T7 value) {
         return new Tuple7<>(_1, _2, _3, _4, _5, _6, value);
+    }
+
+    /**
+     * Remove the 7th value from this tuple.
+     *
+     * @return a copy of this tuple with the 7th value element removed.
+     */
+    public Tuple6<T1, T2, T3, T4, T5, T6> remove7() {
+        return Tuple.of(_1, _2, _3, _4, _5, _6);
     }
 
 

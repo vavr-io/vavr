@@ -69,6 +69,18 @@ public class Tuple2Test {
     }
 
     @Test
+    public void shouldRemove1() {
+      final Tuple1<Integer> tuple = createIntTuple(1, 2).remove1();
+      assertThat(tuple._1).isEqualTo(2);
+    }
+
+    @Test
+    public void shouldRemove2() {
+      final Tuple1<Integer> tuple = createIntTuple(1, 2).remove2();
+      assertThat(tuple._1).isEqualTo(1);
+    }
+
+    @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple(1, 0).toSeq();
         assertThat(actual).isEqualTo(List.of(1, 0));
