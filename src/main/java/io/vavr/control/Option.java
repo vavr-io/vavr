@@ -57,10 +57,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Creates a new {@code Option} of a given value.
      *
      * <pre>{@code
-     * // Creates Some(3), an Option which contains the value 3
+     * // = Some(3), an Option which contains the value 3
      * Option<Integer> option = Option.of(3);
      *
-     * // Creates None, the empty Option
+     * // = None, the empty Option
      * Option<Integer> none = Option.of(null);
      * }</pre>
      *
@@ -80,12 +80,12 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <pre>{@code
      * Seq<Option<Integer>> seq = Vector.of(Option.of(1), Option.of(2), Option.of(3));
      *
-     * // Creates Some(Seq(1, 2, 3))
+     * // = Some(Seq(1, 2, 3))
      * Option<Seq<Integer>> option = Option.sequence(seq);
      *
      * Seq<Option<Integer>> seq = Vector.of(Option.of(1), Option.none());
      *
-     * // Creates None since some elements in the Iterable are None
+     * // = None since some elements in the Iterable are None
      * Option<Seq<Integer>> option = Option.sequence(seq);
      * }</pre>
      * @param values An {@code Iterable} of {@code Option}s
@@ -117,10 +117,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      *      return Option.of("a" = i.toString());
      * }
      *
-     * // Creates Some(Seq("a1", "a2", "a3"))
+     * // = Some(Seq("a1", "a2", "a3"))
      * Option<Seq<String>> option = traverse(Vector.of(1, 2, 3), mapper);
      *
-     * // Creates None
+     * // = None
      * Option<Seq<Integer>> none = traverse(Vector.of(-1, 0, 1), mapper);
      * }</pre>
      *
@@ -143,10 +143,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * The only difference to {@link Option#of(Object)} is, when called with argument {@code null}.
      *
      * <pre>{@code
-     * // Creates Some(3)
+     * // = Some(3)
      * Option.some(3);
      *
-     * // Creates Some(null)
+     * // = Some(null)
      * Option.some(null);
      * }</pre>
      *
@@ -162,7 +162,7 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Returns the single instance of {@code None}
      *
      * <pre>{@code
-     * // Creates None
+     * // = None
      * Option<String> none = Option.none();
      * }</pre>
      *
@@ -201,10 +201,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <pre>{@code
      * Supplier<String> supplier = () -> "supplied";
      *
-     * // Creates Some("supplied")
+     * // = Some("supplied")
      * Option<String> supplied = Option.when(true, supplier);
      *
-     * // Creates None
+     * // = None
      * Option<String> none = Option.when(false, supplier);
      * }</pre>
      *
@@ -223,10 +223,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Creates {@code Some} of value if condition is true, or {@code None} in other case
      *
      * <pre>{@code
-     * // Creates Some(5)
+     * // = Some(5)
      * Option<Integer> option = Option.when(true, 5);
      *
-     * // Creates None
+     * // = None
      * Option<Integer> none = Option.when(false, 5);
      * }</pre>
      *
@@ -448,10 +448,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <pre>{@code
      * Option<String> other = Option.of("Other");
      *
-     * // Creates Some("Hello World")
+     * // = Some("Hello World")
      * Option.of("Hello World").orElse(other);
      *
-     * // Creates Some("Other")
+     * // = Some("Other")
      * Option.none().orElse(other);
      * }</pre>
      *
@@ -470,10 +470,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <pre>{@code
      * Supplier<Option<Integer>> supplier = () -> Option.of(5);
      *
-     * // Creates Some(2)
+     * // = Some(2)
      * Option.of(2).orElse(supplier);
      *
-     * // Creates Some(5)
+     * // = Some(5)
      * Option.none().orElse(supplier);
      * }</pre>
      *
@@ -487,18 +487,17 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     }
 
     /**
-     * Returns the value if this is a {@code Some}, otherwise the {@code other} value is returned,
-     * if this is a {@code None}.
+     * Returns the value if this is a {@code Some}, otherwise {@code supplier.get()} is returned.
      * <p>
-     * Please note, that the other value is lazily evaluated.
+     * Please note, that the alternate value is lazily evaluated.
      *
      * <pre>{@code
      * Supplier<Double> supplier = () -> 5.342;
      *
-     * // Creates Some(1.2)
+     * // = 1.2
      * Option.of(1.2).getOrElse(supplier);
      *
-     * // Creates None
+     * // = 5.342
      * Option.none().getOrElse(supplier);
      * }</pre>
      *
@@ -517,10 +516,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <pre>{@code
      * Supplier<RuntimeException> supplier = () -> new RuntimeException();
      *
-     * // Creates Some(12)
+     * // = 12
      * Option.of(12).getOrElseThrow(supplier);
      *
-     * // Throws RuntimeException
+     * // throws RuntimeException
      * Option.none().getOrElseThrow(supplier);
      * }</pre>
      *
@@ -546,13 +545,13 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <pre>{@code
      * Predicate<Integer> isLessThanTen = i -> i < 10;
      *
-     * // Creates Some(8)
+     * // = Some(8)
      * Option.some(8).filter(isLessThanTen);
      *
-     * // Creates None
+     * // = None
      * Option.some(12).filter(isLessThanTen);
      *
-     * // Creates None
+     * // = None
      * Option.<Integer>none().filter(isLessThanTen);
      * }</pre>
      *
@@ -571,13 +570,13 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <pre>{@code
      * Predicate<Integer> isEven = i -> (i & 1) == 0;
      *
-     * // Creates Some(5)
+     * // = Some(5)
      * Option.some(5).filterNot(isEven);
      *
-     * // Creates None
+     * // = None
      * Option.some(12).filterNot(isEven);
      *
-     * // Creates None
+     * // = None
      * Option.<Integer>none().filterNot(isEven);
      * }</pre>
      *
@@ -595,13 +594,13 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <pre>{@code
      * Function<Integer, Option<Integer>> mapper = i -> i < 10 ? Option.of(i * 2) : Option.none();
      *
-     * // Creates Some(14)
+     * // = Some(14)
      * Option.of(7).flatMap(mapper);
      *
-     * // Creates None
+     * // = None
      * Option.of(11).flatMap(mapper);
      *
-     * // Creates None
+     * // = None
      * Option.<Integer>none().flatMap(mapper);
      * }</pre>
      *
@@ -621,10 +620,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * <pre>{@code
      * Function<String, String> mapper = s -> s + " World!";
      *
-     * // Creates Some("Hello World!")
+     * // = Some("Hello World!")
      * Option.of("Hello").map(mapper);
      *
-     * // Creates None
+     * // = None
      * Option.<String>none().map(mapper);
      * }</pre>
      *
@@ -645,10 +644,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Supplier<Double> ifNone = () -> 3.14;
      * Function<String, Double> mapper = s -> Double.valueOf(s) + 0.98;
      *
-     * // Creates Some(4.98)
+     * // = Some(4.98)
      * Option.of("4").fold(ifNone, mapper);
      *
-     * // Creates Some(3.14)
+     * // = Some(3.14)
      * Option.<String>none().fold(ifNone, mapper);
      * }</pre>
      *
