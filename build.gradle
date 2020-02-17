@@ -42,19 +42,21 @@ sourceSets {
 }
 
 task generateSources() {
-    delete 'src-gen'
-    def ammoniteDir = file("generator/bin")
-    if (!ammoniteDir.exists()) {
-        ammoniteDir.mkdirs()
-    }
-    def ammoniteJar = new File(ammoniteDir, "amm-${ammoniteScalaVersion}-${ammoniteVersion}.jar")
-    if (!ammoniteJar.exists()) {
-        def ammoniteReleaseUrl = "https://github.com/lihaoyi/Ammonite/releases/download/${ammoniteVersion}/${ammoniteScalaVersion}-${ammoniteVersion}"
-        ant.get(src: ammoniteReleaseUrl, dest: ammoniteJar)
-    }
-    javaexec {
-        main = "-jar"
-        args = [ammoniteJar, "generator/Generator.sc"]
+    doLast {
+        delete 'src-gen'
+        def ammoniteDir = file("generator/bin")
+        if (!ammoniteDir.exists()) {
+            ammoniteDir.mkdirs()
+        }
+        def ammoniteJar = new File(ammoniteDir, "amm-${ammoniteScalaVersion}-${ammoniteVersion}.jar")
+        if (!ammoniteJar.exists()) {
+            def ammoniteReleaseUrl = "https://github.com/lihaoyi/Ammonite/releases/download/${ammoniteVersion}/${ammoniteScalaVersion}-${ammoniteVersion}"
+            ant.get(src: ammoniteReleaseUrl, dest: ammoniteJar)
+        }
+        javaexec {
+            main = "-jar"
+            args = [ammoniteJar, "generator/Generator.sc"]
+        }
     }
 }
 
