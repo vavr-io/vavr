@@ -4101,7 +4101,7 @@ object Generator {
         (part, arg) <- sc.parts zip args.map(s => if (s == null) "" else s.toString)
       } yield {
         // get the leading space of last line of current part
-        val space = """([ \t]*)[^\s]*$""".r.findFirstMatchIn(part).map(_.group(1)).getOrElse("")
+        val space = """([ \t]*)[^\n]*$""".r.findFirstMatchIn(part).map(_.group(1)).getOrElse("")
         // add this leading space to each line (except the first) of current arg
         arg.split("\r?\n") match {
           case lines: Array[String] if lines.nonEmpty => lines reduce (_ + lineSeparator + space + _)
