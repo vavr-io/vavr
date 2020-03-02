@@ -4129,7 +4129,7 @@ object Generator {
       } mkString lineSeparator dropRight 1 // dropping termination character \u0000
 
       // combine multiple newlines to two
-      aligned.replaceAll("""[ \t]*\r?\n ([ \t]*\r?\n)+""", lineSeparator * 2)
+      aligned.replaceAll("""[ \t]*\r?\n([ \t]*\r?\n)+""", lineSeparator * 2)
     }
   }
 }
