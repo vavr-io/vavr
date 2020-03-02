@@ -24,6 +24,7 @@ import io.vavr.control.Option;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Enumeration;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
@@ -167,7 +168,23 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return HashSet.ofAll(Iterator.ofAll(javaStream.iterator()));
     }
 
-    /**
+	/**
+		 * Creates a HashSet that contains the elements of the given {@link Enumeration}.
+		 *
+		 * @param enumeration A {@link Enumeration}
+		 * @param <T>        Component type of the Enumeration.
+		 * @return A HashSet containing the given elements.
+		 */
+		public static <T> HashSet<T> ofAll(Enumeration<? extends T> enumeration) {
+			Objects.requireNonNull(enumeration, "enumeration is null");
+			HashSet<T> set = HashSet.empty();
+			while (enumeration.hasMoreElements()) {
+				set = set.add(enumeration.nextElement());
+			}
+			return set;
+		}
+
+	/**
      * Creates a HashSet from boolean values.
      *
      * @param elements boolean values

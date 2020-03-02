@@ -280,6 +280,22 @@ public abstract class List<T> implements LinearSeq<T> {
         return list.reverse();
     }
 
+	/**
+	 * Creates a List that contains the elements of the given {@link Enumeration}.
+	 *
+	 * @param enumeration A {@link Enumeration}
+	 * @param <T>        Component type of the Enumeration.
+	 * @return A List containing the given elements in the same order.
+	 */
+	public static <T> List<T> ofAll(Enumeration<? extends T> enumeration) {
+		Objects.requireNonNull(enumeration, "enumeration is null");
+		List<T> list = List.empty();
+		while (enumeration.hasMoreElements()) {
+			list = list.prepend(enumeration.nextElement());
+		}
+		return list.reverse();
+	}
+
     /**
      * Creates a List from boolean values.
      *

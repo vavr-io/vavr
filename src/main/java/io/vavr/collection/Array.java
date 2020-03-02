@@ -154,6 +154,23 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return wrap(toArray(elements));
     }
 
+	/**
+	 * Creates a Array that contains the elements of the given {@link Enumeration}.
+	 *
+	 * @param enumeration A {@link Enumeration}
+	 * @param <T>        Component type of the Enumeration.
+	 * @return A Array containing the given elements in the same order.
+	 */
+		public static <T> Array<T> ofAll(Enumeration<? extends T> enumeration) {
+			Objects.requireNonNull(enumeration, "enumeration is null");
+			Array<T> array = Array.empty();
+			while (enumeration.hasMoreElements()) {
+				array = array.append(enumeration.nextElement());
+			}
+			return array;
+		}
+
+
     /**
      * Creates an Array that contains the elements of the given {@link java.util.stream.Stream}.
      *

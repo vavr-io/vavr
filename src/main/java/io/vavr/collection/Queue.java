@@ -167,6 +167,22 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         }
     }
 
+	/**
+	 * Creates a Queue that contains the elements of the given {@link Enumeration}.
+	 *
+	 * @param enumeration A {@link java.util.stream.Stream}
+	 * @param <T>        Component type of the Stream.
+	 * @return A Queue containing the given elements in the same order.
+	 */
+		public static <T> Queue<T> ofAll(Enumeration<? extends T> enumeration) {
+			Objects.requireNonNull(enumeration, "enumeration is null");
+			Queue<T> queue = Queue.empty();
+			while (enumeration.hasMoreElements()) {
+				queue = queue.append(enumeration.nextElement());
+			}
+			return queue;
+		}
+
     /**
      * Creates a Queue that contains the elements of the given {@link java.util.stream.Stream}.
      *

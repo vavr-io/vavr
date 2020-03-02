@@ -189,7 +189,23 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return ofAll(BitMappedTrie.ofAll(values));
     }
 
-    /**
+	/**
+		 * Creates a Vector that contains the elements of the given {@link Enumeration}.
+		 *
+		 * @param enumeration A {@link java.util.stream.Stream}
+		 * @param <T>        Component type of the Enumeration.
+		 * @return A Vector containing the given elements in the same order.
+		 */
+		public static <T> Vector<T> ofAll(Enumeration<? extends T> enumeration) {
+			Objects.requireNonNull(enumeration, "enumeration is null");
+			Vector<T> vector = Vector.empty();
+			while (enumeration.hasMoreElements()) {
+				vector = vector.append(enumeration.nextElement());
+			}
+			return vector;
+		}
+
+	/**
      * Creates a Vector that contains the elements of the given {@link java.util.stream.Stream}.
      *
      * @param javaStream A {@link java.util.stream.Stream}
