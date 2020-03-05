@@ -144,7 +144,6 @@ public interface CheckedFunction2<T1, T2, R> extends Serializable {
         return (CheckedFunction2<T1, T2, R>) f;
     }
 
-
     /**
      * Applies this function to two arguments and returns the result.
      *
@@ -164,7 +163,6 @@ public interface CheckedFunction2<T1, T2, R> extends Serializable {
     default CheckedFunction1<T2, R> apply(T1 t1) {
         return (T2 t2) -> apply(t1, t2);
     }
-
 
     /**
      * Returns the number of function arguments.
@@ -239,7 +237,6 @@ public interface CheckedFunction2<T1, T2, R> extends Serializable {
         return this instanceof Memoized;
     }
 
-
     /**
      * Return a composed function that first applies this CheckedFunction2 to the given arguments and in case of throwable
      * try to get value from {@code recover} function with same arguments and throwable information.
@@ -289,7 +286,6 @@ public interface CheckedFunction2<T1, T2, R> extends Serializable {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2) -> after.apply(apply(t1, t2));
     }
-
 
 }
 

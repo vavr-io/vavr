@@ -104,7 +104,6 @@ public class Tuple3Test {
         assertThat(actual).isEqualTo(List.of(1, 0, 0));
     }
 
-
     @Test
     public void shouldMap() {
         final Tuple3<Object, Object, Object> tuple = createTuple();

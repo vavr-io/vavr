@@ -173,7 +173,6 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Seriali
         return (CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R>) f;
     }
 
-
     /**
      * Applies this function to 7 arguments and returns the result.
      *
@@ -264,7 +263,6 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Seriali
         return (T7 t7) -> apply(t1, t2, t3, t4, t5, t6, t7);
     }
 
-
     /**
      * Returns the number of function arguments.
      * @return an int value &gt;= 0
@@ -338,7 +336,6 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Seriali
         return this instanceof Memoized;
     }
 
-
     /**
      * Return a composed function that first applies this CheckedFunction7 to the given arguments and in case of throwable
      * try to get value from {@code recover} function with same arguments and throwable information.
@@ -388,7 +385,6 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Seriali
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
     }
-
 
 }
 

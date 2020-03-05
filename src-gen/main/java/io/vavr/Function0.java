@@ -22,8 +22,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-
-
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.io.Serializable;
@@ -48,7 +46,6 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * Returns a function that always returns the constant
      * value that you give in parameter.
      *
-
      * @param <R> the result type
      * @param value the value to be returned
      * @return a function always returning the given value
@@ -131,7 +128,6 @@ public interface Function0<R> extends Serializable, Supplier<R> {
         return (Function0<R>) f;
     }
 
-
     /**
      * Applies this function to no arguments and returns the result.
      *
@@ -139,7 +135,6 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * 
      */
     R apply();
-
 
     /**
      * Implementation of {@linkplain java.util.function.Supplier#get()}, just calls {@linkplain #apply()}.
@@ -212,7 +207,6 @@ public interface Function0<R> extends Serializable, Supplier<R> {
         return this instanceof Memoized;
     }
 
-
     /**
      * Returns a composed function that first applies this Function0 to the given argument and then applies
      * {@linkplain Function} {@code after} to the result.
@@ -226,6 +220,5 @@ public interface Function0<R> extends Serializable, Supplier<R> {
         Objects.requireNonNull(after, "after is null");
         return () -> after.apply(apply());
     }
-
 
 }

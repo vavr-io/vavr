@@ -161,7 +161,6 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Serializable {
         return (CheckedFunction5<T1, T2, T3, T4, T5, R>) f;
     }
 
-
     /**
      * Applies this function to 5 arguments and returns the result.
      *
@@ -220,7 +219,6 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Serializable {
     default CheckedFunction1<T5, R> apply(T1 t1, T2 t2, T3 t3, T4 t4) {
         return (T5 t5) -> apply(t1, t2, t3, t4, t5);
     }
-
 
     /**
      * Returns the number of function arguments.
@@ -295,7 +293,6 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Serializable {
         return this instanceof Memoized;
     }
 
-
     /**
      * Return a composed function that first applies this CheckedFunction5 to the given arguments and in case of throwable
      * try to get value from {@code recover} function with same arguments and throwable information.
@@ -345,7 +342,6 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Serializable {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5) -> after.apply(apply(t1, t2, t3, t4, t5));
     }
-
 
 }
 

@@ -22,8 +22,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-
-
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import java.io.Serializable;
@@ -297,7 +295,6 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Serializable {
         return Tuple.of(_1, _2, _3, _4);
     }
 
-
     /**
      * Maps the components of this tuple using a mapper function.
      *
@@ -487,10 +484,10 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Serializable {
         } else {
             final Tuple5<?, ?, ?, ?, ?> that = (Tuple5<?, ?, ?, ?, ?>) o;
             return Objects.equals(this._1, that._1)
-                    && Objects.equals(this._2, that._2)
-                    && Objects.equals(this._3, that._3)
-                    && Objects.equals(this._4, that._4)
-                    && Objects.equals(this._5, that._5);
+                                         && Objects.equals(this._2, that._2)
+                                         && Objects.equals(this._3, that._3)
+                                         && Objects.equals(this._4, that._4)
+                                         && Objects.equals(this._5, that._5);
         }
     }
 
@@ -503,6 +500,5 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Serializable {
     public String toString() {
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ", " + _5 + ")";
     }
-
 
 }

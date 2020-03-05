@@ -49,7 +49,6 @@ public class CheckedFunction2Test {
         assertThat(CheckedFunction2.lift((o1, o2) -> { while(true); })).isNotNull();
     }
 
-
     @Test
     public void shouldPartiallyApply() throws Throwable {
         final CheckedFunction2<Object, Object, Object> f = (o1, o2) -> null;
@@ -125,7 +124,6 @@ public class CheckedFunction2Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
-
     private static final CheckedFunction2<String, String, MessageDigest> digest = (s1, s2) -> MessageDigest.getInstance(s1 + s2);
 
     @Test
@@ -197,7 +195,6 @@ public class CheckedFunction2Test {
         final CheckedFunction2<Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
-
 
     @Test
     public void shouldNarrow() throws Throwable{

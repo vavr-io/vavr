@@ -49,7 +49,6 @@ public class CheckedFunction8Test {
         assertThat(CheckedFunction8.lift((o1, o2, o3, o4, o5, o6, o7, o8) -> { while(true); })).isNotNull();
     }
 
-
     @Test
     public void shouldPartiallyApply() throws Throwable {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> f = (o1, o2, o3, o4, o5, o6, o7, o8) -> null;
@@ -131,7 +130,6 @@ public class CheckedFunction8Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
-
     private static final CheckedFunction8<String, String, String, String, String, String, String, String, MessageDigest> digest = (s1, s2, s3, s4, s5, s6, s7, s8) -> MessageDigest.getInstance(s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8);
 
     @Test
@@ -203,7 +201,6 @@ public class CheckedFunction8Test {
         final CheckedFunction8<Object, Object, Object, Object, Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
-
 
     @Test
     public void shouldNarrow() throws Throwable{

@@ -179,7 +179,6 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Ser
         return (CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R>) f;
     }
 
-
     /**
      * Applies this function to 8 arguments and returns the result.
      *
@@ -287,7 +286,6 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Ser
         return (T8 t8) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
     }
 
-
     /**
      * Returns the number of function arguments.
      * @return an int value &gt;= 0
@@ -361,7 +359,6 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Ser
         return this instanceof Memoized;
     }
 
-
     /**
      * Return a composed function that first applies this CheckedFunction8 to the given arguments and in case of throwable
      * try to get value from {@code recover} function with same arguments and throwable information.
@@ -411,7 +408,6 @@ public interface CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Ser
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
     }
-
 
 }
 

@@ -21,6 +21,7 @@ import JavaGenerator._
 
 import collection.immutable.ListMap
 import scala.language.implicitConversions
+import scala.reflect.macros.whitebox
 
 val N = 8
 val VARARGS = 10
@@ -1531,8 +1532,7 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * Returns a function that always returns the constant
                * value that you give in parameter.
-               *
-               ${(1 to i).gen(j => s"* @param <T$j> generic parameter type $j of the resulting function")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> generic parameter type $j of the resulting function")("\n")}
                * @param <R> the result type
                * @param value the value to be returned
                * @return a function always returning the given value
@@ -3801,9 +3801,9 @@ object JavaGenerator {
     def getImports: String = {
 
       def optimizeImports(imports: Seq[String], static: Boolean): String = {
-        val counts = imports.map(getPackageName).groupBy(s => s).map { case (s, list) => s -> list.length }
-        val directImports = imports.filter(s => counts(getPackageName(s)) <= wildcardThreshold)
-        val wildcardImports = counts.filter { case (_, count) => count > wildcardThreshold }.keySet.toIndexedSeq.map(s => s"$s.*")
+        val counts: Map[String, Int] = imports.map(getPackageName).groupBy(s => s).map { case (s: String, list: Seq[String]) => s -> list.length }
+        val directImports: Seq[String] = imports.filter(s => counts(getPackageName(s)) <= wildcardThreshold)
+        val wildcardImports: Seq[String] = counts.filter { case (_, count) => count > wildcardThreshold }.keySet.toIndexedSeq.map(s => s"$s.*")
         (directImports ++ wildcardImports).sorted.map(fqn => s"import ${static.gen("static ")}$fqn;").mkString("\n")
       }
 
@@ -4080,7 +4080,7 @@ object Generator {
      * @param args StringContext parts
      * @return An aligned String
      */
-    def xs(args: Any*): String = align(sc.s, args)
+    def xs(args: Any*): String = align(sc.s(indentedArgs(args:_*):_*))
 
     /**
      * Formats raw/unescaped strings.
@@ -4088,16 +4088,11 @@ object Generator {
      * @param args StringContext parts
      * @return An aligned String
      */
-    def xraw(args: Any*): String = align(sc.raw, args)
+    def xraw(args: Any*): String = align(sc.raw(indentedArgs(args:_*):_*))
 
-    /**
-     * Indenting a rich string, removing first and last newline.
-     * A rich string consists of arguments surrounded by text parts.
-     */
-    private def align(interpolator: Seq[Any] => String, args: collection.Seq[Any]): String = {
-
-      // indent embedded strings, invariant: parts.length = args.length + 1
-      val indentedArgs = for {
+    // indent embedded strings, invariant: parts.length = args.length + 1
+    private def indentedArgs(args: Any*): Seq[String] =
+      for {
         (part, arg) <- sc.parts zip args.map(s => if (s == null) "" else s.toString)
       } yield {
         // get the leading space of last line of current part
@@ -4109,9 +4104,12 @@ object Generator {
         }
       }
 
+    private def align(interpolated: String): String = {
+
       // remove first and last newline and split string into separate lines
       // adding termination symbol \u0000 in order to preserve empty strings between last newlines when splitting
-      val split = (interpolator(indentedArgs).replaceAll( """(^[ \t]*\r?\n)|(\r?\n[ \t]*$)""", "") + '\u0000').split("\r?\n")
+      val split = (interpolated.replaceAll( """(^[ \t]*\r?\n)|(\r?\n[ \t]*$)""", "") + '\u0000')
+        .split("\r?\n")
 
       // find smallest indentation
       val prefix = split filter (!_.trim().isEmpty) map { s =>
@@ -4129,7 +4127,7 @@ object Generator {
       } mkString lineSeparator dropRight 1 // dropping termination character \u0000
 
       // combine multiple newlines to two
-      aligned.replaceAll("""[ \t]*\r?\n([ \t]*\r?\n)+""", lineSeparator * 2)
+      aligned.replaceAll("""([ \t]*\r?\n){2,}""", lineSeparator * 2)
     }
   }
 }

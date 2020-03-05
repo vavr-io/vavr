@@ -18,10 +18,10 @@ apply plugin: 'jacoco'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-ext.ammoniteScalaVersion = '2.12' // Currently, generator/Generator.sc does not build with Scala 2.13
-ext.ammoniteVersion = '1.6.9'
-ext.assertjVersion = '3.11.1'
-ext.junitVersion = '4.13-beta-3'
+ext.ammoniteScalaVersion = '2.13' // Currently, generator/Generator.sc does not build with Scala 2.13
+ext.ammoniteVersion = '2.0.4'
+ext.assertjVersion = '3.15.0'
+ext.junitVersion = '4.13'
 
 repositories {
     mavenLocal()
@@ -60,9 +60,7 @@ task generateSources() {
     }
 }
 
-compileJava {
-    dependsOn 'generateSources'
-}
+compileJava.dependsOn 'generateSources'
 
 tasks.withType(JavaCompile) {
     sourceCompatibility = 8

@@ -22,8 +22,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-
-
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import java.io.Serializable;
@@ -113,7 +111,6 @@ public final class Tuple1<T1> implements Tuple, Serializable {
         return Tuple.empty();
     }
 
-
     /**
      * Maps the components of this tuple using a mapper function.
      *
@@ -126,7 +123,6 @@ public final class Tuple1<T1> implements Tuple, Serializable {
         Objects.requireNonNull(mapper, "mapper is null");
         return Tuple.of(mapper.apply(_1));
     }
-
 
     /**
      * Transforms this tuple to an object of type U.
@@ -292,6 +288,5 @@ public final class Tuple1<T1> implements Tuple, Serializable {
     public String toString() {
         return "(" + _1 + ")";
     }
-
 
 }

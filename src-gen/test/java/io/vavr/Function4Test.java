@@ -47,7 +47,6 @@ public class Function4Test {
         assertThat(Function4.lift((o1, o2, o3, o4) -> { while(true); })).isNotNull();
     }
 
-
     @Test
     public void shouldPartiallyApply() {
         final Function4<Object, Object, Object, Object, Object> f = (o1, o2, o3, o4) -> null;
@@ -125,7 +124,6 @@ public class Function4Test {
         assertThat(memo.isMemoized()).isTrue();
     }
 
-
     @Test
     public void shouldLiftTryPartialFunction() {
         AtomicInteger integer = new AtomicInteger();
@@ -143,7 +141,6 @@ public class Function4Test {
         assertThat(res.get()).isEqualTo(10);
     }
 
-
     private static final Function4<Integer, Integer, Integer, Integer, Integer> recurrent1 = (i1, i2, i3, i4) -> i1 <= 0 ? i1 : Function4Test.recurrent2.apply(i1 - 1, i2, i3, i4) + 1;
     private static final Function4<Integer, Integer, Integer, Integer, Integer> recurrent2 = Function4Test.recurrent1.memoized();
 
@@ -160,7 +157,6 @@ public class Function4Test {
         final Function4<Object, Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
     }
-
 
     @Test
     public void shouldNarrow(){

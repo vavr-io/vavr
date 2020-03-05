@@ -22,8 +22,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-
-
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.io.Serializable;
@@ -155,7 +153,6 @@ public interface Function4<T1, T2, T3, T4, R> extends Serializable {
         return (Function4<T1, T2, T3, T4, R>) f;
     }
 
-
     /**
      * Applies this function to 4 arguments and returns the result.
      *
@@ -200,7 +197,6 @@ public interface Function4<T1, T2, T3, T4, R> extends Serializable {
     default Function1<T4, R> apply(T1 t1, T2 t2, T3 t3) {
         return (T4 t4) -> apply(t1, t2, t3, t4);
     }
-
 
     /**
      * Returns the number of function arguments.
@@ -275,7 +271,6 @@ public interface Function4<T1, T2, T3, T4, R> extends Serializable {
         return this instanceof Memoized;
     }
 
-
     /**
      * Returns a composed function that first applies this Function4 to the given argument and then applies
      * {@linkplain Function} {@code after} to the result.
@@ -289,6 +284,5 @@ public interface Function4<T1, T2, T3, T4, R> extends Serializable {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4) -> after.apply(apply(t1, t2, t3, t4));
     }
-
 
 }

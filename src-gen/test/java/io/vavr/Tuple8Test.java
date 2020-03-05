@@ -264,7 +264,6 @@ public class Tuple8Test {
         assertThat(actual).isEqualTo(List.of(1, 0, 0, 0, 0, 0, 0, 0));
     }
 
-
     @Test
     public void shouldMap() {
         final Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
@@ -363,7 +362,6 @@ public class Tuple8Test {
         final Tuple0 actual = tuple.apply((o1, o2, o3, o4, o5, o6, o7, o8) -> Tuple0.instance());
         assertThat(actual).isEqualTo(Tuple0.instance());
     }
-
 
     @Test
     public void shouldRecognizeEquality() {

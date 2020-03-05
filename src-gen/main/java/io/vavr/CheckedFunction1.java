@@ -156,7 +156,6 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      */
     R apply(T1 t1) throws Throwable;
 
-
     /**
      * Returns the number of function arguments.
      * @return an int value &gt;= 0
@@ -228,7 +227,6 @@ public interface CheckedFunction1<T1, R> extends Serializable {
     default boolean isMemoized() {
         return this instanceof Memoized;
     }
-
 
     /**
      * Return a composed function that first applies this CheckedFunction1 to the given arguments and in case of throwable
