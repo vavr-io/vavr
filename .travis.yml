@@ -15,15 +15,12 @@ env:
 matrix:
   include:
   - jdk: oraclejdk8
-  - jdk: oraclejdk9
-  - jdk: openjdk10
   - jdk: openjdk11
     env: DEPLOY=true
-  - jdk: openjdk12
-  - jdk: openjdk-13
+  - jdk: openjdk14
   - jdk: openjdk-ea
   allow_failures:
-  - jdk: openjdk-13
+  - jdk: openjdk14
   - jdk: openjdk-ea
 
 before_cache:
