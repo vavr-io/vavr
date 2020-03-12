@@ -2208,7 +2208,7 @@ def generateMainClasses(): Unit = {
                       return false;
                   } else {
                       final $className$untyped that = ($className$untyped) o;
-                      return ${(1 to i).gen(j => s"${im.getType("java.util.Objects")}.equals(this._$j, that._$j)")("\n                             && ")};
+                      return ${(1 to i).gen(j => s"${im.getType("java.util.Objects")}.equals(this._$j, that._$j)")("\n        && ")};
                   }"""
                 }
             }

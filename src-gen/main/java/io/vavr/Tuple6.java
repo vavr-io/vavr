@@ -532,11 +532,11 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Serializable
         } else {
             final Tuple6<?, ?, ?, ?, ?, ?> that = (Tuple6<?, ?, ?, ?, ?, ?>) o;
             return Objects.equals(this._1, that._1)
-                                         && Objects.equals(this._2, that._2)
-                                         && Objects.equals(this._3, that._3)
-                                         && Objects.equals(this._4, that._4)
-                                         && Objects.equals(this._5, that._5)
-                                         && Objects.equals(this._6, that._6);
+                    && Objects.equals(this._2, that._2)
+                    && Objects.equals(this._3, that._3)
+                    && Objects.equals(this._4, that._4)
+                    && Objects.equals(this._5, that._5)
+                    && Objects.equals(this._6, that._6);
         }
     }
 
