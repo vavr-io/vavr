@@ -22,8 +22,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-
-
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import java.io.Serializable;
@@ -204,7 +202,6 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Serializable {
     public Tuple2<T1, T2> remove3() {
         return Tuple.of(_1, _2);
     }
-
 
     /**
      * Maps the components of this tuple using a mapper function.
@@ -408,6 +405,5 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Serializable {
     public String toString() {
         return "(" + _1 + ", " + _2 + ", " + _3 + ")";
     }
-
 
 }

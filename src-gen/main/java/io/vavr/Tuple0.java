@@ -22,8 +22,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-
-
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import java.io.Serializable;
@@ -38,7 +36,6 @@ import java.util.function.Supplier;
 public final class Tuple0 implements Tuple, Serializable {
 
     private static final long serialVersionUID = 1L;
-
 
     /**
      * The singleton instance of Tuple0.
@@ -67,12 +64,10 @@ public final class Tuple0 implements Tuple, Serializable {
         return COMPARATOR;
     }
 
-
     @Override
     public int arity() {
         return 0;
     }
-
 
     /**
      * Transforms this tuple to an object of type U.

@@ -22,8 +22,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-
-
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import java.io.Serializable;
@@ -384,6 +382,5 @@ public final class Tuple2<T1, T2> implements Tuple, Serializable {
     public String toString() {
         return "(" + _1 + ", " + _2 + ")";
     }
-
 
 }

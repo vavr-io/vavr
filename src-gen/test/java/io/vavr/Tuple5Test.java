@@ -156,7 +156,6 @@ public class Tuple5Test {
         assertThat(actual).isEqualTo(List.of(1, 0, 0, 0, 0));
     }
 
-
     @Test
     public void shouldMap() {
         final Tuple5<Object, Object, Object, Object, Object> tuple = createTuple();

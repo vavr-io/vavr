@@ -44,13 +44,11 @@ public class Tuple0Test {
         assertThat(tuple.arity()).isEqualTo(0);
     }
 
-
     @Test
     public void shouldConvertToSeq() {
         final Seq<?> actual = createIntTuple().toSeq();
         assertThat(actual).isEqualTo(List.of());
     }
-
 
     @Test
     public void shouldApplyTuple() {
@@ -135,7 +133,6 @@ public class Tuple0Test {
         final Object other = new Object();
         assertThat(tuple).isNotEqualTo(other);
     }
-
 
     @Test
     public void shouldComputeCorrectHashCode() {

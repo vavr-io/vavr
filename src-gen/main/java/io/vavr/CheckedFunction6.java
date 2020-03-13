@@ -167,7 +167,6 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends Serializabl
         return (CheckedFunction6<T1, T2, T3, T4, T5, T6, R>) f;
     }
 
-
     /**
      * Applies this function to 6 arguments and returns the result.
      *
@@ -242,7 +241,6 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends Serializabl
         return (T6 t6) -> apply(t1, t2, t3, t4, t5, t6);
     }
 
-
     /**
      * Returns the number of function arguments.
      * @return an int value &gt;= 0
@@ -316,7 +314,6 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends Serializabl
         return this instanceof Memoized;
     }
 
-
     /**
      * Return a composed function that first applies this CheckedFunction6 to the given arguments and in case of throwable
      * try to get value from {@code recover} function with same arguments and throwable information.
@@ -366,7 +363,6 @@ public interface CheckedFunction6<T1, T2, T3, T4, T5, T6, R> extends Serializabl
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5, t6) -> after.apply(apply(t1, t2, t3, t4, t5, t6));
     }
-
 
 }
 

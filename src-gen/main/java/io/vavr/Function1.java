@@ -22,8 +22,6 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-
-
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import java.io.Serializable;
@@ -157,7 +155,6 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      */
     R apply(T1 t1);
 
-
     /**
      * Returns the number of function arguments.
      * @return an int value &gt;= 0
@@ -255,7 +252,6 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
             }
         };
     }
-
 
     /**
      * Returns a composed function that first applies this Function1 to the given argument and then applies

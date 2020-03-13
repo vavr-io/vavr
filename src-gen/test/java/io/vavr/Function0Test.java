@@ -47,14 +47,12 @@ public class Function0Test {
         assertThat(Function0.lift(() -> { while(true); })).isNotNull();
     }
 
-
     @Test
     public void shouldGetValue() {
         final String s = "test";
         final Function0<String> supplier = () -> s;
         assertThat(supplier.get()).isEqualTo(s);
     }
-
 
     @Test
     public void shouldGetArity() {
@@ -107,7 +105,6 @@ public class Function0Test {
         assertThat(memo.memoized() == memo).isTrue();
     }
 
-
     @Test
     public void shouldRecognizeMemoizedFunctions() {
         final Function0<Integer> f = () -> null;
@@ -115,7 +112,6 @@ public class Function0Test {
         assertThat(f.isMemoized()).isFalse();
         assertThat(memo.isMemoized()).isTrue();
     }
-
 
     @Test
     public void shouldLiftTryPartialFunction() {
@@ -134,7 +130,6 @@ public class Function0Test {
         assertThat(res.get()).isEqualTo(10);
     }
 
-
     private static final Function0<Integer> recurrent1 = () -> 11;
 
     @Test
@@ -151,7 +146,6 @@ public class Function0Test {
         assertThat(composed).isNotNull();
     }
 
-
     @Test
     public void shouldNarrow(){
         final Function0<String> wideFunction = () -> "Zero args";
@@ -159,6 +153,5 @@ public class Function0Test {
 
         assertThat(narrowFunction.apply()).isEqualTo("Zero args");
     }
-
 
 }

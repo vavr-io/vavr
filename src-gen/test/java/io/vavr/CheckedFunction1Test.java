@@ -56,7 +56,6 @@ public class CheckedFunction1Test {
         assertThat(identity.apply(s)).isEqualTo(s);
     }
 
-
     @Test
     public void shouldGetArity() {
         final CheckedFunction1<Object, Object> f = (o1) -> null;
@@ -125,7 +124,6 @@ public class CheckedFunction1Test {
         assertThat(f.isMemoized()).isFalse();
         assertThat(memo.isMemoized()).isTrue();
     }
-
 
     private static final CheckedFunction1<String, MessageDigest> digest = (s1) -> MessageDigest.getInstance(s1);
 
@@ -206,7 +204,6 @@ public class CheckedFunction1Test {
         final CheckedFunction1<Object, Object> composed = f.compose(before);
         assertThat(composed).isNotNull();
     }
-
 
     @Test
     public void shouldNarrow() throws Throwable{

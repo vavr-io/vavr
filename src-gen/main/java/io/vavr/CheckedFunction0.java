@@ -48,7 +48,6 @@ public interface CheckedFunction0<R> extends Serializable {
      * Returns a function that always returns the constant
      * value that you give in parameter.
      *
-
      * @param <R> the result type
      * @param value the value to be returned
      * @return a function always returning the given value
@@ -131,7 +130,6 @@ public interface CheckedFunction0<R> extends Serializable {
         return (CheckedFunction0<R>) f;
     }
 
-
     /**
      * Applies this function to no arguments and returns the result.
      *
@@ -139,7 +137,6 @@ public interface CheckedFunction0<R> extends Serializable {
      * @throws Throwable if something goes wrong applying this function to the given arguments
      */
     R apply() throws Throwable;
-
 
     /**
      * Returns the number of function arguments.
@@ -215,7 +212,6 @@ public interface CheckedFunction0<R> extends Serializable {
         return this instanceof Memoized;
     }
 
-
     /**
      * Return a composed function that first applies this CheckedFunction0 to the given arguments and in case of throwable
      * try to get value from {@code recover} function with same arguments and throwable information.
@@ -265,7 +261,6 @@ public interface CheckedFunction0<R> extends Serializable {
         Objects.requireNonNull(after, "after is null");
         return () -> after.apply(apply());
     }
-
 
 }
 

@@ -224,7 +224,6 @@ public class Tuple7Test {
         assertThat(actual).isEqualTo(List.of(1, 0, 0, 0, 0, 0, 0));
     }
 
-
     @Test
     public void shouldMap() {
         final Tuple7<Object, Object, Object, Object, Object, Object, Object> tuple = createTuple();
