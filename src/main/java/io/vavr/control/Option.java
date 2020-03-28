@@ -487,6 +487,23 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     }
 
     /**
+     * Returns this {@code Option} if this is defined, or {@code null} if it is empty.
+     *
+     * <pre>{@code
+     * // = Some("Hello World")
+     * Option.of("Hello World").orNull();
+     *
+     * // = null
+     * Option.none().orNull();
+     * }</pre>
+     *
+     * @return this value if it is defined, or {@code null} if it is empty.
+     */
+    public final T orNull() {
+        return isEmpty() ? null : get();
+    }
+
+    /**
      * Returns the value if this is a {@code Some}, otherwise {@code supplier.get()} is returned.
      * <p>
      * Please note, that the alternate value is lazily evaluated.
