@@ -220,6 +220,18 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.none().orElse(() -> opt)).isSameAs(opt);
     }
 
+    // -- orNull
+
+    @Test
+    public void shouldReturnValueOnOrNullIfValueIsDefined() {
+        assertThat(Option.of("v").orNull()).isEqualTo("v");
+    }
+
+    @Test
+    public void shouldReturnValueOnOrNullIfValueIsEmpty() {
+        assertThat(Option.none().orNull()).isNull();
+    }
+
     // -- getOrElse
 
     @Test
