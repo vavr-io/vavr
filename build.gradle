@@ -85,6 +85,12 @@ check {
     dependsOn javadoc
 }
 
+jar {
+    manifest {
+        attributes "Automatic-Module-Name": "io.vavr"
+    }
+}
+
 task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
     archiveClassifier = 'sources'
