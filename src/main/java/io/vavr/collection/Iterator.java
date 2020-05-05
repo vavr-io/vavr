@@ -1722,16 +1722,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            Stream<T> first = Stream.empty();
-            Stream<T> second = Stream.empty();
+            final java.util.List<T> first = new ArrayList<>();
+            final java.util.List<T> second = new ArrayList<>();
             for (T t : this) {
                 if (predicate.test(t)) {
-                    first = first.append(t);
+                    first.add(t);
                 } else {
-                    second = second.append(t);
+                    second.add(t);
                 }
             }
-            return Tuple.of(first.iterator(), second.iterator());
+            return Tuple.of(ofAll(first), ofAll(second));
         }
     }
 
