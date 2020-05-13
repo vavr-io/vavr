@@ -389,6 +389,23 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- static ofAll
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfStream() {
+        final Stream<Integer> source = ofAll(1, 2, 3);
+        final Stream<Integer> target = Stream.ofAll(source);
+        assertThat(target).isSameAs(source);
+    }
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+        final JavaConverters.ListView<Integer, Stream<Integer>> source = JavaConverters
+                .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
+        final Stream<Integer> target = Stream.ofAll(source);
+        assertThat(target).isSameAs(source.getDelegate());
+    }
+
     // -- append
 
     @Test

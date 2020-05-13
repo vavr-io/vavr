@@ -35,6 +35,7 @@ import java.util.stream.Collector;
 
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
+import static io.vavr.collection.JavaConverters.ListView;
 
 /**
  * An immutable {@code List} is an eager sequence of elements. Its immutability makes it suitable for concurrent programming.
@@ -249,6 +250,9 @@ public interface List<T> extends LinearSeq<T> {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             return (List<T>) elements;
+        } else if (elements instanceof ListView
+                && ((ListView<T, ?>) elements).getDelegate() instanceof List) {
+            return (List<T>) ((ListView<T, ?>) elements).getDelegate();
         } else if (elements instanceof java.util.List) {
             List<T> result = Nil.instance();
             final java.util.List<T> list = (java.util.List<T>) elements;

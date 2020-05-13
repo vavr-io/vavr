@@ -21,6 +21,7 @@ package io.vavr.collection;
 
 import io.vavr.*;
 import io.vavr.collection.ArrayModule.Combinations;
+import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
@@ -131,9 +132,14 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @SuppressWarnings("unchecked")
     public static <T> Array<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return elements instanceof Array
-               ? (Array<T>) elements
-               : wrap(toArray(elements));
+        if (elements instanceof Array) {
+            return (Array<T>) elements;
+        }
+        if (elements instanceof ListView
+                && ((ListView<T, ?>) elements).getDelegate() instanceof Array) {
+            return (Array<T>) ((ListView<T, ?>) elements).getDelegate();
+        }
+        return wrap(toArray(elements));
     }
 
     /**

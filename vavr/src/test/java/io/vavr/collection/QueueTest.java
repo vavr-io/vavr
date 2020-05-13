@@ -221,6 +221,23 @@ public class QueueTest extends AbstractLinearSeqTest {
         assertThat(actual).isEqualTo(3);
     }
 
+    // -- static ofAll
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfQueue() {
+        final Queue<Integer> source = ofAll(1, 2, 3);
+        final Queue<Integer> target = Queue.ofAll(source);
+        assertThat(target).isSameAs(source);
+    }
+
+    @Test
+    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+        final JavaConverters.ListView<Integer, Queue<Integer>> source = JavaConverters
+                .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
+        final Queue<Integer> target = Queue.ofAll(source);
+        assertThat(target).isSameAs(source.getDelegate());
+    }
+
     // -- peek
 
     @Test(expected = NoSuchElementException.class)
