@@ -123,7 +123,7 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
     default Function1<T, Option<R>> lift() {
-        return t -> Option.when(isDefinedAt(t), apply(t));
+        return t -> Option.when(isDefinedAt(t), () -> apply(t));
     }
 
 }
