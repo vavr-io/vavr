@@ -3646,7 +3646,7 @@ public final class API {
           */
          @Deprecated
          public Iterator<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
@@ -3996,7 +3996,7 @@ public final class API {
           */
          @Deprecated
          public Option<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
@@ -4346,7 +4346,7 @@ public final class API {
           */
          @Deprecated
          public Future<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
@@ -4696,7 +4696,7 @@ public final class API {
           */
          @Deprecated
          public Try<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
@@ -5046,7 +5046,7 @@ public final class API {
           */
          @Deprecated
          public Either<L, T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
@@ -5396,7 +5396,7 @@ public final class API {
           */
          @Deprecated
          public List<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 

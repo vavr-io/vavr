@@ -843,7 +843,7 @@ def generateMainClasses(): Unit = {
                      */
                     @Deprecated
                     public ${if(mtype == "Either") s"$rtype<L, T1>" else s"$rtype<T1>"} yield() {
-                        return yield(Function.identity());
+                        return this.yield(Function.identity());
                     }
                   """)}
               }
