@@ -563,6 +563,12 @@ public class OptionTest extends AbstractValueTest {
         Option.some(1).collect(pf);
     }
 
+    @Test
+    public void shouldNotCallPartialFunctionOnUndefinedArg() {
+        final PartialFunction<Integer, Integer> pf = Function1.<Integer, Integer> of(x -> 1/x).partial(i -> i != 0);
+        assertThat(Option.of(0).collect(pf)).isEqualTo(Option.none());
+    }
+
     // -- iterator
 
     @Test
