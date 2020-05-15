@@ -34,7 +34,7 @@ import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
  * The underlying {@code Executor} is used to execute asynchronous handlers, e.g. via
  * {@code promise.future().onComplete(...)}.
  *
- * <h3>Creation</h3>
+ * <h2>Creation</h2>
  * <p>
  * Promise offers static factory methods to create new promises which hasn't been fulfilled yet:
  * <ul>
@@ -49,7 +49,7 @@ import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
  * All the static factory methods mentioned above have additional versions which take an {@link Executor} as
  * argument. This gives us more control over thread creation and thread pool sizes.
  *
- * <h3>One-shot API</h3>
+ * <h2>One-shot API</h2>
  * <p>
  * The main purpose of a {@code Promise} is to complete its underlying {@code Future}. When only a single {@code Thread}
  * will eventually complete the {@code Promise}, we use one of these methods. Calls will throw if the {@code Promise} is already
@@ -61,7 +61,7 @@ import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
  * <li>{@link #success(Object)}</li>
  * </ul>
  *
- * <h3>API for competing threads</h3>
+ * <h2>API for competing threads</h2>
  * <p>
  * When multiple {@code Thread}s may complete our {@code Promise}, we typically use one of these methods. Calls will
  * gracefully return {@code false} if the {@code Promise} is already completed.

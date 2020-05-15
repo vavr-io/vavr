@@ -47,7 +47,7 @@ import java.util.function.Supplier;
  * import static io.vavr.API.*;
  * </code></pre>
  *
- * <h3>For-comprehension</h3>
+ * <h2>For-comprehension</h2>
  * <p>
  * The {@code For}-comprehension is syntactic sugar for nested for-loops. We write
  *
