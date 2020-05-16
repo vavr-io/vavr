@@ -19,6 +19,8 @@ matrix:
     env: DEPLOY=true
   - jdk: openjdk14
   - jdk: openjdk-ea
+  allow_failures:
+  - jdk: openjdk-ea
 
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
