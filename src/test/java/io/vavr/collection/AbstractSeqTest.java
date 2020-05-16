@@ -541,6 +541,80 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).get(2)).isEqualTo(3);
     }
 
+    // -- getOption
+
+    @Test
+    public void shouldReturnNoneWhenGetOptionWithNegativeIndexOnNil() {
+        assertThat(empty().getOption(-1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnNoneWhenGetOptionWithNegativeIndexOnNonNil() {
+        assertThat(of(1).getOption(-1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnNoneWhenGetOptionOnNil() {
+        assertThat(empty().getOption(0)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnNoneWhenGetOptionWithTooBigIndexOnNonNil() {
+        assertThat(of(1).getOption(1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldGetOptionFirstElement() {
+        assertThat(of(1, 2, 3).getOption(0)).isEqualTo(Option.of(1));
+    }
+
+    @Test
+    public void shouldGetOptionWithNullContentsReturnSomeNull() {
+        assertThat(of(new Integer(1), null).getOption(1)).isEqualTo(Option.some(null));
+    }
+
+    @Test
+    public void shouldGetOptionLastElement() {
+        assertThat(of(1, 2, 3).getOption(2)).isEqualTo(Option.of(3));
+    }
+
+    // -- getOrElse
+
+    @Test
+    public void shouldReturnDefaultWhenGetOrElseWithNegativeIndexOnNil() {
+        assertThat(empty().getOrElse(-1, 6)).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldReturnDefaultWhenGetOrElseWithNegativeIndexOnNonNil() {
+        assertThat(of(1).getOrElse(-1, 5)).isEqualTo(5);
+    }
+
+    @Test
+    public void shouldReturnDefaultWhenGetOrElseOnNil() {
+        assertThat(empty().getOrElse(0, 4)).isEqualTo(4);
+    }
+
+    @Test
+    public void shouldReturnDefaultWhenGetOrElseWithTooBigIndexOnNonNil() {
+        assertThat(of(1).getOrElse(1, 3)).isEqualTo(3);
+    }
+
+    @Test
+    public void shouldGetOrElseFirstElement() {
+        assertThat(of(1, 2, 3).getOrElse(0, 4)).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldGetOrElseWithNullContentsReturnNull() {
+        assertThat(of(new Integer(1), null).getOrElse(1, 4)).isEqualTo(null);
+    }
+
+    @Test
+    public void shouldGetOrElseLastElement() {
+        assertThat(of(1, 2, 3).getOrElse(2, 5)).isEqualTo(3);
+    }
+
     // -- indexOf
 
     @Test

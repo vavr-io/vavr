@@ -1070,6 +1070,36 @@ public abstract class Stream<T> implements LinearSeq<T> {
     }
 
     @Override
+    public final Option<T> getOption(int index) {
+        if (isEmpty() || index < 0) {
+            return Option.none();
+        }
+        Stream<T> stream = this;
+        for (int i = index - 1; i >= 0; i--) {
+            stream = stream.tail();
+            if (stream.isEmpty()) {
+                return Option.none();
+            }
+        }
+        return Option.some(stream.head());
+    }
+
+    @Override
+    public final T getOrElse(int index, T defaultValue) {
+        if (isEmpty() || index < 0) {
+            return defaultValue;
+        }
+        Stream<T> stream = this;
+        for (int i = index - 1; i >= 0; i--) {
+            stream = stream.tail();
+            if (stream.isEmpty()) {
+                return defaultValue;
+            }
+        }
+        return stream.head();
+    }
+
+    @Override
     public final <C> Map<C, Stream<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, Stream::ofAll);
     }

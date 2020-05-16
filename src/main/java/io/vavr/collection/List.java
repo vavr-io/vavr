@@ -912,6 +912,36 @@ public abstract class List<T> implements LinearSeq<T> {
     }
 
     @Override
+    public final Option<T> getOption(int index) {
+        if (isEmpty() || index < 0) {
+            return Option.none();
+        }
+        List<T> list = this;
+        for (int i = index - 1; i >= 0; i--) {
+            list = list.tail();
+            if (list.isEmpty()) {
+                return Option.none();
+            }
+        }
+        return Option.some(list.head());
+    }
+
+    @Override
+    public final T getOrElse(int index, T defaultValue) {
+        if (isEmpty() || index < 0) {
+            return defaultValue;
+        }
+        List<T> list = this;
+        for (int i = index - 1; i >= 0; i--) {
+            list = list.tail();
+            if (list.isEmpty()) {
+                return defaultValue;
+            }
+        }
+        return list.head();
+    }
+
+    @Override
     public final <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return Collections.groupBy(this, classifier, List::ofAll);
     }

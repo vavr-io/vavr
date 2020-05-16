@@ -814,6 +814,46 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
+    public Option<T> getOption(int index) {
+        if (isEmpty() || index < 0) {
+             return Option.none();
+        }
+        final int length = front.length();
+        if (index < length) {
+            return Option.some(front.get(index));
+        } else {
+            final int rearIndex = index - length;
+            final int rearLength = rear.length();
+            if (rearIndex < rearLength) {
+                final int reverseRearIndex = rearLength - rearIndex - 1;
+                return Option.some(rear.get(reverseRearIndex));
+            } else {
+                return Option.none();
+            }
+        }
+    }
+
+    @Override
+    public T getOrElse(int index, T defaultValue) {
+        if (isEmpty() || index < 0) {
+             return defaultValue;
+        }
+        final int length = front.length();
+        if (index < length) {
+            return front.get(index);
+        } else {
+            final int rearIndex = index - length;
+            final int rearLength = rear.length();
+            if (rearIndex < rearLength) {
+                final int reverseRearIndex = rearLength - rearIndex - 1;
+                return rear.get(reverseRearIndex);
+            } else {
+                return defaultValue;
+            }
+        }
+    }
+
+    @Override
     public <C> Map<C, Queue<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, Queue::ofAll);
     }

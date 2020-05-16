@@ -781,6 +781,24 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return (T) delegate[index];
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Option<T> getOption(int index) {
+        if (index < 0 || index >= length()) {
+            return Option.none();
+        }
+        return Option.some((T) delegate[index]);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public T getOrElse(int index, T defaultValue) {
+        if (index < 0 || index >= length()) {
+            return defaultValue;
+        }
+        return (T) delegate[index];
+    }
+
     @Override
     public Array<T> distinct() {
         return distinctBy(Function.identity());

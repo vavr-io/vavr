@@ -2401,6 +2401,70 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').get(2)).isEqualTo('3');
     }
 
+    // -- getOption
+
+    @Test
+    public void shouldReturnNoneWhenGetOptionWithNegativeIndexOnNil() {
+        assertThat(CharSeq.empty().getOption(-1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnNoneWhenGetOptionWithNegativeIndexOnNonNil() {
+        assertThat(CharSeq.of('1').getOption(-1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnNoneWhenGetOptionOnNil() {
+        assertThat(CharSeq.empty().getOption(0)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldReturnNoneWhenGetOptionWithTooBigIndexOnNonNil() {
+        assertThat(CharSeq.of('1').getOption(1)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldGetOptionFirstElement() {
+        assertThat(CharSeq.of('1', '2', '3').getOption(0)).isEqualTo(Option.of('1'));
+    }
+
+    @Test
+    public void shouldGetOptionLastElement() {
+        assertThat(CharSeq.of('1', '2', '3').getOption(2)).isEqualTo(Option.of('3'));
+    }
+
+    // -- getOrElse
+
+    @Test
+    public void shouldReturnDefaultWhenGetOrElseWithNegativeIndexOnNil() {
+        assertThat(CharSeq.empty().getOrElse(-1, 'x')).isEqualTo('x');
+    }
+
+    @Test
+    public void shouldReturnDefaultWhenGetOrElseWithNegativeIndexOnNonNil() {
+        assertThat(CharSeq.of('1').getOrElse(-1, 'y')).isEqualTo('y');
+    }
+
+    @Test
+    public void shouldReturnDefaultWhenGetOrElseOnNil() {
+        assertThat(CharSeq.empty().getOrElse(0, 'z')).isEqualTo('z');
+    }
+
+    @Test
+    public void shouldReturnDefaultWhenGetOrElseWithTooBigIndexOnNonNil() {
+        assertThat(CharSeq.of('1').getOrElse(1, 'z')).isEqualTo('z');
+    }
+
+    @Test
+    public void shouldGetOrElseFirstElement() {
+        assertThat(CharSeq.of('1', '2', '3').getOrElse(0, 'x')).isEqualTo('1');
+    }
+
+    @Test
+    public void shouldGetOrElseLastElement() {
+        assertThat(CharSeq.of('1', '2', '3').getOrElse(2, 'x')).isEqualTo('3');
+    }
+
     // -- grouped
 
     @Test
