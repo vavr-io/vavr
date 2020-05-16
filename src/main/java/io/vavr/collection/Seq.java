@@ -1304,32 +1304,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     @Override
     <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
-    /**
-     * Turns this sequence from a partial function into a total function that
-     * returns defaultValue for all indexes that are out of bounds.
-     *
-     * @param defaultValue default value to return for out of bound indexes
-     * @return a total function from index to T
-     * @deprecated Will be removed
-     */
-    @Deprecated
-    default Function1<Integer, T> withDefaultValue(T defaultValue) {
-        return i -> (i >= 0 && i < length()) ? apply(i) : defaultValue;
-    }
-
-    /**
-     * Turns this sequence from a partial function into a total function that
-     * returns a value computed by defaultFunction for all indexes that are out of bounds.
-     *
-     * @param defaultFunction function to evaluate for all out of bounds indexes.
-     * @return a total function from index to T
-     * @deprecated Will be removed
-     */
-    @Deprecated
-    default Function1<Integer, T> withDefault(Function<? super Integer, ? extends T> defaultFunction) {
-        return i -> (i >= 0 && i < length()) ? apply(i) : defaultFunction.apply(i);
-    }
-
     @Override
     default boolean isSequential() {
         return true;

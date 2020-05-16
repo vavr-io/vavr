@@ -86,8 +86,6 @@ import java.util.function.*;
  * <li>{@link #transform(Function)}</li>
  * <li>{@link #unzip(BiFunction)}</li>
  * <li>{@link #unzip3(BiFunction)}</li>
- * <li>{@link #withDefault(Function)}</li>
- * <li>{@link #withDefaultValue(Object)}</li>
  * </ul>
  *
  * @param <K> Key type
@@ -712,33 +710,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      */
     default Iterator<V> valuesIterator() {
         return iterator().map(Tuple2::_2);
-    }
-
-    /**
-     * Turns this map from a partial function into a total function that
-     * returns a value computed by defaultFunction for all keys
-     * absent from the map.
-     *
-     * @param defaultFunction function to evaluate for all keys not present in the map
-     * @return a total function from K to T
-     * @deprecated Will be removed
-     */
-    @Deprecated
-    default Function1<K, V> withDefault(Function<? super K, ? extends V> defaultFunction) {
-        return k -> get(k).getOrElse(() -> defaultFunction.apply(k));
-    }
-
-    /**
-     * Turns this map from a partial function into a total function that
-     * returns defaultValue for all keys absent from the map.
-     *
-     * @param defaultValue default value to return for all keys not present in the map
-     * @return a total function from K to T
-     * @deprecated Will be removed
-     */
-    @Deprecated
-    default Function1<K, V> withDefaultValue(V defaultValue) {
-        return k -> get(k).getOrElse(defaultValue);
     }
 
     @Override
