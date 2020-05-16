@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -234,6 +235,20 @@ public class QueueTest extends AbstractLinearSeqTest {
                 .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
         final Queue<Integer> target = Queue.ofAll(source);
         assertThat(target).isSameAs(source.getDelegate());
+    }
+
+    // -- partition
+
+    @Test
+    public void shouldPartitionInOneIteration() {
+        final AtomicInteger count = new AtomicInteger(0);
+        final Tuple2<Queue<Integer>, Queue<Integer>> results = of(1, 2, 3).partition(i -> {
+            count.incrementAndGet();
+            return true;
+        });
+        assertThat(results._1).isEqualTo(of(1, 2, 3));
+        assertThat(results._2).isEqualTo(of());
+        assertThat(count.get()).isEqualTo(3);
     }
 
     // -- peek

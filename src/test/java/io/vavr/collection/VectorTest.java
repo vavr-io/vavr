@@ -28,6 +28,7 @@ import org.junit.Test;
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -233,6 +234,21 @@ public class VectorTest extends AbstractIndexedSeqTest {
                 .asJava(ofAll(1, 2, 3), ChangePolicy.IMMUTABLE);
         final Vector<Integer> target = Vector.ofAll(source);
         assertThat(target).isSameAs(source.getDelegate());
+    }
+
+    // -- partition
+
+    @Test
+    public void shouldPartitionInOneIteration() {
+        final AtomicInteger count = new AtomicInteger(0);
+        final Vector<Integer> values = ofAll(1, 2, 3);
+        final Tuple2<Vector<Integer>, Vector<Integer>> results = values.partition(v -> {
+            count.incrementAndGet();
+            return true;
+        });
+        assertThat(results._1).isEqualTo(ofAll(1, 2, 3));
+        assertThat(results._2).isEmpty();
+        assertThat(count.get()).isEqualTo(3);
     }
 
     // -- primitives
