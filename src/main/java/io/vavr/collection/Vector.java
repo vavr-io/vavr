@@ -732,14 +732,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public T get(int index) {
-        if (isValid(index)) {
-            return trie.get(index);
-        } else {
-            throw new IndexOutOfBoundsException("get(" + index + ")");
-        }
+    public T apply(Integer index) {
+        return trie.get(index);
     }
-    private boolean isValid(int index) { return (index >= 0) && (index < length()); }
 
     @Override
     public T head() {
@@ -978,7 +973,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Vector<T> removeAt(int index) {
-        if (isValid(index)) {
+        if (isDefinedAt(index)) {
             final Vector<T> begin = take(index);
             final Vector<T> end = drop(index + 1);
             return (begin.size() > end.size())
@@ -1258,7 +1253,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Vector<T> update(int index, T element) {
-        if (isValid(index)) {
+        if (isDefinedAt(index)) {
             return wrap(trie.update(index, element));
         } else {
             throw new IndexOutOfBoundsException("update(" + index + ")");

@@ -147,19 +147,16 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Seq<T> appendAll(Iterable<? extends T> elements);
 
     /**
-     * A {@code Seq} is a partial function which returns the element at the specified index by calling
-     * {@linkplain #get(int)}.
+     * A {@code Seq} is a partial function which returns the element at the specified index if the
+     * index is valid. It's up to the caller to make sure the index is valid (for instance through
+     * {@code isDefinedAt}).
+     * The behaviour is undefined if the index is out of bounds.
+     * It will throw but you may not depend on the type of the thrown exception.
      *
      * @param index an index
      * @return the element at the given index
-     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
-     * @deprecated Will be removed
      */
-    @Deprecated
-    @Override
-    default T apply(Integer index) {
-        return get(index);
-    }
+    T apply(Integer index);
     
     /**
      * Creates an <strong>immutable</strong> {@link java.util.List} view on top of this {@code Seq},
@@ -357,7 +354,12 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return the element at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    T get(int index);
+    default T get(int index) {
+        if (isDefinedAt(index)) {
+            return apply(index);
+        }
+        throw new IndexOutOfBoundsException("get(" + index + ")");
+    }
 
     /**
      * Returns an optional value, which may element at the specified index, or be empty
@@ -367,7 +369,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return an optional value containing the element at the given index, or being empty if this is empty, index &lt; 0 or index &gt;= length()
      */
     default Option<T> getOption(int index) {
-        return isDefinedAt(index) ? Option.some(get(index)) : Option.none();
+        return isDefinedAt(index) ? Option.some(apply(index)) : Option.none();
     }
 
     /**
@@ -379,7 +381,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return the element at the given index or the default value if this is empty, index &lt; 0 or index &gt;= length()
      */
     default T getOrElse(int index, T defaultValue) {
-        return isDefinedAt(index) ? get(index) : defaultValue;
+        return isDefinedAt(index) ? apply(index) : defaultValue;
     }
 
     /**

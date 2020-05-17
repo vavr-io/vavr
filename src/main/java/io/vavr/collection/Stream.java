@@ -1052,6 +1052,11 @@ public abstract class Stream<T> implements LinearSeq<T> {
     }
 
     @Override
+    public T apply(Integer index) {
+        return get(index);
+    }
+
+    @Override
     public final T get(int index) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("get(" + index + ") on Nil");

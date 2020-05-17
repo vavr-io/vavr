@@ -774,10 +774,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public T get(int index) {
-        if (index < 0 || index >= length()) {
-            throw new IndexOutOfBoundsException("get(" + index + ")");
-        }
+    public T apply(Integer index) {
         return (T) delegate[index];
     }
 
