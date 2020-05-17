@@ -96,9 +96,10 @@ public class CollectionsTest {
 
     @Test
     public void shouldUseMergeFunctionToHandleKeysCollisions() {
-        Seq<Tuple2<String, Integer>> s = Vector.of(Tuple.of("a",2), Tuple.of("a",55), Tuple.of("a",3), Tuple.of("b",2));
+        final Seq<Tuple2<String, Integer>> input =
+                Vector.of(Tuple.of("a",2), Tuple.of("a",55), Tuple.of("a",3), Tuple.of("b",2));
 
-        Map<String, Seq<Integer>> m = s.toMap(
+        Map<String, Seq<Integer>> m = input.toMap(
                 Tuple2::_1,
                 t -> Vector.of(t._2),
                 (l1, l2) -> l1.appendAll(l2));
@@ -108,10 +109,10 @@ public class CollectionsTest {
         assertThat(m.containsKey("b")).isTrue();
         assertThat(m.get("b").get().size()).isEqualTo(1);
 
-        Map<String, Integer> m1 = s.toSet().toMap(
+        Map<String, Integer> m1 = input.toMap(
                 Tuple2::_1,
                 Tuple2::_2,
-                (a, b) -> a + b);
+                Integer::sum);
 
         assertThat(m1.containsKey("a")).isTrue();
         assertThat(m1.get("a").get()).isEqualTo(60);

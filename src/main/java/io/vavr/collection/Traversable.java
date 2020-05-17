@@ -1715,15 +1715,15 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @return A new {@link HashMap}.
      */
     default <K, V> Map<K, V> toMap(
-            Function<? super T, K> keyMapper,
-            Function<? super T, V> valueMapper,
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper,
             BiFunction<? super V, ? super V, ? extends V> merge) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         Objects.requireNonNull(merge, "merge is null");
         return this
-                .groupBy(keyMapper)
-                .mapValues(s ->  s.map(valueMapper).reduce(merge));
+                .<K>groupBy(keyMapper)
+                .mapValues(s ->  s.<V>map(valueMapper).reduce(merge));
     }
 }
 
