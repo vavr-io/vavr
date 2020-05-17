@@ -742,24 +742,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     private boolean isValid(int index) { return (index >= 0) && (index < length()); }
 
     @Override
-    public Option<T> getOption(int index) {
-        if (isValid(index)) {
-            return Option.some(trie.get(index));
-        } else {
-            return Option.none();
-        }
-    }
-
-    @Override
-    public T getOrElse(int index, T defaultValue) {
-        if (isValid(index)) {
-            return trie.get(index);
-        } else {
-            return defaultValue;
-        }
-    }
-
-    @Override
     public T head() {
         if (nonEmpty()) {
             return get(0);

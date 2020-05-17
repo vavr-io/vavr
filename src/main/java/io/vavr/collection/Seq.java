@@ -367,7 +367,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return an optional value containing the element at the given index, or being empty if this is empty, index &lt; 0 or index &gt;= length()
      */
     default Option<T> getOption(int index) {
-        return Option.of(getOrElse(index, null));
+        return isDefinedAt(index) ? Option.some(get(index)) : Option.none();
     }
 
     /**
@@ -375,9 +375,12 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * the index is invalid for this collection.
      *
      * @param index an index
+     * @param defaultValue a default value to use if the index is invalid for this collection.
      * @return the element at the given index or the default value if this is empty, index &lt; 0 or index &gt;= length()
      */
-    T getOrElse(int index, T defaultValue);
+    default T getOrElse(int index, T defaultValue) {
+        return isDefinedAt(index) ? get(index) : defaultValue;
+    }
 
     /**
      * Returns the index of the first occurrence of the given element or -1 if this does not contain the given element.

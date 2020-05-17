@@ -1086,17 +1086,7 @@ public abstract class Stream<T> implements LinearSeq<T> {
 
     @Override
     public final T getOrElse(int index, T defaultValue) {
-        if (isEmpty() || index < 0) {
-            return defaultValue;
-        }
-        Stream<T> stream = this;
-        for (int i = index - 1; i >= 0; i--) {
-            stream = stream.tail();
-            if (stream.isEmpty()) {
-                return defaultValue;
-            }
-        }
-        return stream.head();
+        return getOption(index).getOrElse(defaultValue);
     }
 
     @Override
@@ -1227,6 +1217,13 @@ public abstract class Stream<T> implements LinearSeq<T> {
     @Override
     public final int length() {
         return foldLeft(0, (n, ignored) -> n + 1);
+    }
+
+    @Override
+    @Deprecated
+    public boolean isDefinedAt(Integer index) {
+        // we can't use length() because the stream might be infinite
+        return 0 <= index && drop(index).nonEmpty();
     }
 
     @Override

@@ -1203,22 +1203,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Option<Character> getOption(int index) {
-        if (index < 0 || index >= back.length()) {
-            return Option.none();
-        }
-        return Option.some(back.charAt(index));
-    }
-
-    @Override
-    public Character getOrElse(int index, Character defaultValue) {
-        if (index < 0 || index >= back.length()) {
-            return defaultValue;
-        }
-        return back.charAt(index);
-    }
-
-    @Override
     public int indexOf(Character element, int from) {
         return back.indexOf(element, from);
     }

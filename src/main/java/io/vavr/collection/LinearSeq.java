@@ -175,13 +175,6 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     LinearSeq<T> intersperse(T element);
 
-    @Deprecated
-    @Override
-    default boolean isDefinedAt(Integer index) {
-        // we can't use length() because of infinite long sequences
-        return 0 <= index && drop(index).nonEmpty();
-    }
-
     @Override
     default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
         Objects.requireNonNull(that, "that is null");
