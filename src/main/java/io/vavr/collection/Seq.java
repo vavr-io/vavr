@@ -151,7 +151,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * index is valid. It's up to the caller to make sure the index is valid (for instance through
      * {@code isDefinedAt}).
      * The behaviour is undefined if the index is out of bounds.
-     * It will throw but you may not depend on the type of the thrown exception.
+     * It may throw any {@code RuntimeException} or return an arbitrary value.
      *
      * @param index an index
      * @return the element at the given index
