@@ -1704,6 +1704,15 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      */
     <U> Traversable<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
+
+    default <K, V> Map<K, V> toMap(
+            Function<? super T, K> keyMapper,
+            Function<? super T, V> valueMapper,
+            BiFunction<? super V, ? super V, ? extends V> merge) {
+        return this
+                .groupBy(keyMapper)
+                .mapValues(s ->  s.map(valueMapper).reduce(merge));
+    }
 }
 
 interface TraversableModule {

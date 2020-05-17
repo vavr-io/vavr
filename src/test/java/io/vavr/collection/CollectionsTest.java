@@ -22,8 +22,6 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import org.junit.Test;
 
-import java.util.function.Function;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class CollectionsTest {
@@ -102,18 +100,18 @@ public class CollectionsTest {
 
         Map<String, Seq<Integer>> m = s.toMap(
                 Tuple2::_1,
-                t -> List.of(t._2),
-                (allValues) -> allValues.flatMap(Function.identity()));
+                t -> Vector.of(t._2),
+                (l1, l2) -> l1.appendAll(l2));
 
         assertThat(m.containsKey("a")).isTrue();
         assertThat(m.get("a").get().size()).isEqualTo(3);
         assertThat(m.containsKey("b")).isTrue();
         assertThat(m.get("b").get().size()).isEqualTo(1);
 
-        Map<String, Integer> m1 = s.toMap(
+        Map<String, Integer> m1 = s.toSet().toMap(
                 Tuple2::_1,
                 Tuple2::_2,
-                (allValues) -> allValues.sum().intValue());
+                (a, b) -> a + b);
 
         assertThat(m1.containsKey("a")).isTrue();
         assertThat(m1.get("a").get()).isEqualTo(60);

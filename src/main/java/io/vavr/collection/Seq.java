@@ -1308,21 +1308,4 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     default boolean isSequential() {
         return true;
     }
-
-    default <K, V> Map<K, V> toMap(Function<? super T, K> keyMapper, Function<? super T, ? extends V> valueMapper, Function<Seq<? extends V>, ? extends V> mergeFunction) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
-        Objects.requireNonNull(mergeFunction, "mergeFunction is null");
-
-        return this
-                .groupBy(keyMapper)
-                .mapValues(s -> {
-                    Seq<? extends V> vs = s.map(valueMapper);
-                    if (vs.size() == 1) {
-                        return vs.get(0);
-                    } else {
-                        return mergeFunction.apply(vs);
-                    }
-                });
-    }
 }
