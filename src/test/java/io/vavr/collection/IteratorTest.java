@@ -521,6 +521,107 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 1, 3, 3).distinct().toList()).isEqualTo(List.of(1, 2, 3));
     }
 
+    // -- duplicate
+
+    @Test
+    public void shouldDuplicateIteratorsWithCorrectValues() {
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = of(1, 2, 3).duplicate();
+
+        assertThat(partners._1).isEqualTo(of(1, 2, 3));
+        assertThat(partners._2).isEqualTo(of(1, 2, 3));
+    }
+
+    @Test
+    public void shouldDuplicateIteratorsWithCorrectHashCodeAndEquals() {
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = of(1, 2, 3).duplicate();
+
+        assertThat(partners._1.equals(partners._1)).isTrue();
+        assertThat(partners._1.equals(partners._2)).isTrue();
+        assertThat(partners._2.equals(partners._1)).isTrue();
+
+        assertThat(partners._1.equals(null)).isFalse();
+        assertThat(partners._1.equals(of(1, 2, 3))).isFalse();
+        assertThat(partners._2.equals(of(1, 2, 3))).isFalse();
+        assertThat(partners._2.equals(of("1", "2", "3"))).isFalse();
+
+        assertThat(partners._1.hashCode()).isEqualTo(partners._2.hashCode());
+        assertThat(partners._1.hashCode()).isNotEqualTo(of(1, 2, 3).hashCode());
+    }
+
+    @Test
+    public void shouldCalculateEqualsForDuplicateIteratorsBasedOnGap() {
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = of(1, 2, 3).duplicate();
+        final Iterator<Integer> ahead = partners._1;
+        final Iterator<Integer> behind = partners._2;
+        assertThat(ahead.equals(behind)).isTrue();
+
+        for (final int i : of(1, 2, 3)) {
+            assertThat(ahead.hasNext()).isTrue();
+            assertThat(ahead.next()).isEqualTo(i);
+            assertThat(ahead.equals(behind)).as("Two iterators are different when gap exists").isFalse();
+
+            assertThat(behind.hasNext()).isTrue();
+            assertThat(behind.next()).isEqualTo(i);
+            assertThat(ahead.equals(behind)).as("Two iterators are equal when no gap").isTrue();
+        }
+    }
+
+    @Test(timeout = 5_000L)  // avoid endless test caused by infinite iterator
+    public void shouldDuplicateIteratorsLazily() {
+        final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
+
+        // Given an infinite iterator
+        final Iterator<Integer> iterator = Iterator.iterate(1, i -> {
+            itemsCalled.add(i);
+            return i + 1;
+        });
+
+        // When duplicating it
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = iterator.duplicate();
+
+        // Then the duplication is done lazily
+        assertThat(iterator.hasNext()).isTrue();
+        assertThat(itemsCalled).as("Duplicating iterators should be done lazily.").isEmpty();
+
+        // When retrieving more elements
+        for (final int i : of(1, 2, 3)) {
+            assertThat(partners._1.hasNext()).isTrue();
+            assertThat(partners._2.hasNext()).isTrue();
+            assertThat(partners._1.next()).isEqualTo(i);
+            assertThat(partners._2.next()).isEqualTo(i);
+        }
+
+        // Then the original iterator is called, once per next()
+        assertThat(itemsCalled).containsExactly(1, 2);
+    }
+
+    @Test(timeout = 5_000L)  // avoid endless test caused by infinite iterator
+    public void shouldLetBehindIteratorBecomeAheadIteratorWhenItMovesForward() {
+        final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
+
+        // Given an infinite iterator
+        final Iterator<Integer> iterator = Iterator.iterate(1, i -> {
+            itemsCalled.add(i);
+            return i + 1;
+        });
+
+        // When duplicating it
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = iterator.duplicate();
+        // And move forward one iterator
+        assertThat(partners._1.hasNext()).isTrue();
+        assertThat(partners._1.next()).isEqualTo(1);
+        // Then we have one iterator "ahead" and the other iterator "behind"
+
+        // When moving forward the "behind" iterator
+        // Then it becomes the new iterator ahead because `duplicate()` should
+        // be able to change the ahead iterator
+        for (final int i : of(1, 2, 3, 4)) {
+            assertThat(partners._2.hasNext()).isTrue();
+            assertThat(partners._2.next()).isEqualTo(i);
+        }
+        assertThat(itemsCalled).containsExactly(1, 2, 3);
+    }
+
     // -- groupBy
 
     @Override
