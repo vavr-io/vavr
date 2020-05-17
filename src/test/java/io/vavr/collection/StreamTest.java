@@ -484,6 +484,25 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(count.get()).isEqualTo(6);
     }
 
+    @Test
+    public void shouldPartitionLazily() {
+        final java.util.Set<Integer> itemsCalled = new java.util.HashSet<>();
+
+        final Stream<Integer> infiniteStream = Stream.iterate(0, i -> i + 1);
+        assertThat(itemsCalled).isEmpty();
+
+        final Tuple2<Stream<Integer>, Stream<Integer>> results = infiniteStream.partition(i -> {
+            itemsCalled.add(i);
+            return i % 2 == 0;
+        });
+        assertThat(itemsCalled).containsExactly(0, 1);
+        assertThat(results._1.head()).isEqualTo(0);
+        assertThat(results._2.head()).isEqualTo(1);
+        assertThat(results._1.take(3)).isEqualTo(of(0, 2, 4));
+        assertThat(results._2.take(3)).isEqualTo(of(1, 3, 5));
+        assertThat(itemsCalled).containsExactly(0, 1, 2, 3, 4, 5);
+    }
+
     // -- peek
 
     @Override
