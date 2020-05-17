@@ -1198,7 +1198,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Character get(int index) {
+    public Character apply(Integer index) {
         return back.charAt(index);
     }
 

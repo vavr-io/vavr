@@ -894,19 +894,10 @@ public abstract class List<T> implements LinearSeq<T> {
     }
 
     @Override
-    public final T get(int index) {
-        if (isEmpty()) {
-            throw new IndexOutOfBoundsException("get(" + index + ") on Nil");
-        }
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("get(" + index + ")");
-        }
+    public final T apply(Integer index) {
         List<T> list = this;
         for (int i = index - 1; i >= 0; i--) {
             list = list.tail();
-            if (list.isEmpty()) {
-                throw new IndexOutOfBoundsException("get(" + index + ") on List of length " + (index - i));
-            }
         }
         return list.head();
     }
@@ -953,6 +944,12 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public abstract int length();
+
+    @Deprecated
+    @Override
+    public boolean isDefinedAt(Integer index) {
+        return index >= 0 && index < length();
+    }
 
     @Override
     public final List<T> insert(int index, T element) {

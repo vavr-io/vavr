@@ -791,13 +791,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
-    public T get(int index) {
-        if (isEmpty()) {
-            throw new IndexOutOfBoundsException("get(" + index + ") on empty Queue");
-        }
-        if (index < 0) {
-            throw new IndexOutOfBoundsException("get(" + index + ")");
-        }
+    public T apply(Integer index) {
         final int length = front.length();
         if (index < length) {
             return front.get(index);
@@ -962,6 +956,12 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     @Override
     public int length() {
         return front.length() + rear.length();
+    }
+
+    @Deprecated
+    @Override
+    public boolean isDefinedAt(Integer index) {
+        return index >= 0 && index < length();
     }
 
     @Override

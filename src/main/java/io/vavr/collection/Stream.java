@@ -1052,6 +1052,11 @@ public abstract class Stream<T> implements LinearSeq<T> {
     }
 
     @Override
+    public T apply(Integer index) {
+        return get(index);
+    }
+
+    @Override
     public final T get(int index) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("get(" + index + ") on Nil");
@@ -1067,6 +1072,26 @@ public abstract class Stream<T> implements LinearSeq<T> {
             }
         }
         return stream.head();
+    }
+
+    @Override
+    public final Option<T> getOption(int index) {
+        if (isEmpty() || index < 0) {
+            return Option.none();
+        }
+        Stream<T> stream = this;
+        for (int i = index - 1; i >= 0; i--) {
+            stream = stream.tail();
+            if (stream.isEmpty()) {
+                return Option.none();
+            }
+        }
+        return Option.some(stream.head());
+    }
+
+    @Override
+    public final T getOrElse(int index, T defaultValue) {
+        return getOption(index).getOrElse(defaultValue);
     }
 
     @Override
@@ -1197,6 +1222,13 @@ public abstract class Stream<T> implements LinearSeq<T> {
     @Override
     public final int length() {
         return foldLeft(0, (n, ignored) -> n + 1);
+    }
+
+    @Override
+    @Deprecated
+    public boolean isDefinedAt(Integer index) {
+        // we can't use length() because the stream might be infinite
+        return 0 <= index && drop(index).nonEmpty();
     }
 
     @Override
