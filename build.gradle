@@ -70,8 +70,8 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-    testCompile "junit:junit:$junitVersion"
-    testCompile "org.assertj:assertj-core:$assertjVersion"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
 }
 
 jacocoTestReport {
