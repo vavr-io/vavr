@@ -110,25 +110,6 @@ public class CollectionsTest {
         assertThat(m.get("a").get().size()).isEqualTo(3);
         assertThat(m.containsKey("b")).isTrue();
         assertThat(m.get("b").get().size()).isEqualTo(1);
-
-        Map<String, Integer> m1 = input.toMap(
-                Tuple2::_1,
-                Tuple2::_2,
-                Integer::sum);
-
-        assertThat(m1.containsKey("a")).isTrue();
-        assertThat(m1.get("a").get()).isEqualTo(60);
-        assertThat(m1.containsKey("b")).isTrue();
-        assertThat(m1.get("b").get()).isEqualTo(2);
-
-        Map<String, Integer> m2 = input.toMap(
-                Function.identity(),
-                Integer::sum);
-
-        assertThat(m2.containsKey("a")).isTrue();
-        assertThat(m2.get("a").get()).isEqualTo(60);
-        assertThat(m2.containsKey("b")).isTrue();
-        assertThat(m2.get("b").get()).isEqualTo(2);
     }
 
     private void forAll(List<Traversable<?>> traversables, boolean value) {
