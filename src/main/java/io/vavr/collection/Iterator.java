@@ -1723,16 +1723,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            final java.util.List<T> first = new ArrayList<>();
-            final java.util.List<T> second = new ArrayList<>();
-            for (T t : this) {
-                if (predicate.test(t)) {
-                    first.add(t);
-                } else {
-                    second.add(t);
-                }
-            }
-            return Tuple.of(ofAll(first), ofAll(second));
+            final Tuple2<Iterator<T>, Iterator<T>> dup = duplicate();
+            return Tuple.of(dup._1.filter(predicate), dup._2.filterNot(predicate));
         }
     }
 
