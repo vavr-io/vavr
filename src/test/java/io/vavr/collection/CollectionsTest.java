@@ -19,7 +19,10 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import org.junit.Test;
+
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -91,6 +94,22 @@ public class CollectionsTest {
     public void shouldNotBeEqualMapAndSet() throws Exception {
         forAll(List.of(HashSet.of(Tuple.of(1, 2), Tuple.of(2, 3)),
                 TreeMap.of(1, 2, 2, 3)), false);
+    }
+
+    @Test
+    public void shouldUseMergeFunctionToHandleKeysCollisions() {
+        final Seq<Tuple2<String, Integer>> input =
+                Vector.of(Tuple.of("a",2), Tuple.of("a",55), Tuple.of("a",3), Tuple.of("b",2));
+
+        Map<String, Seq<Integer>> m = input.toMap(
+                Tuple2::_1,
+                t -> Vector.of(t._2),
+                Seq::appendAll);
+
+        assertThat(m.containsKey("a")).isTrue();
+        assertThat(m.get("a").get().size()).isEqualTo(3);
+        assertThat(m.containsKey("b")).isTrue();
+        assertThat(m.get("b").get().size()).isEqualTo(1);
     }
 
     private void forAll(List<Traversable<?>> traversables, boolean value) {
