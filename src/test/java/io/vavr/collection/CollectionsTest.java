@@ -22,6 +22,7 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import org.junit.Test;
 
+import java.util.Comparator;
 import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -110,6 +111,27 @@ public class CollectionsTest {
         assertThat(m.get("a").get().size()).isEqualTo(3);
         assertThat(m.containsKey("b")).isTrue();
         assertThat(m.get("b").get().size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldUseMergeFunctionToHandleKeysCollisionsSortedMap() {
+        final Seq<Tuple2<String, Integer>> input =
+                Vector.of(Tuple.of("a",21), Tuple.of("a",21), Tuple.of("a",21), Tuple.of("bb",2));
+
+        Map<String, Integer> m = input.toSortedMap(
+                Comparator.comparing(String::length).reversed(),
+                Tuple2::_1,
+                Tuple2::_2,
+                Integer::sum);
+
+        assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("bb", 2), Tuple.of("a", 63)));
+
+        Map<String, Integer> m2 = input.toSortedMap(
+                Tuple2::_1,
+                Tuple2::_2,
+                Integer::sum);
+
+        assertThat(m2.toVector()).isEqualTo(Vector.of(Tuple.of("a", 63), Tuple.of("bb", 2)));
     }
 
     private void forAll(List<Traversable<?>> traversables, boolean value) {

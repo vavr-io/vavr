@@ -1705,6 +1705,42 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
     <U> Traversable<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
     /**
+     * Converts this collection to a {@link SortedMap}.
+     *
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param merge A function that merges values that are associated with the same key
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K, V> SortedMap<K, V> toSortedMap(
+            Comparator<? super K> comparator,
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper,
+            BiFunction<? super V, ? super V, ? extends V> merge) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return TreeMap.ofEntries(comparator, toMap(keyMapper, valueMapper, merge));
+    }
+
+    /**
+     * Converts this collection to a {@link SortedMap}.
+     *
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param merge A function that merges values that are associated with the same key
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper,
+            BiFunction<? super V, ? super V, ? extends V> merge) {
+        return toSortedMap(Comparator.naturalOrder(), keyMapper, valueMapper, merge);
+    }
+
+    /**
      * Converts this collection to a {@link Map}.
      *
      * @param keyMapper   A function that maps an element to a key
