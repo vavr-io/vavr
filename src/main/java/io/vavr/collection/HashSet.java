@@ -668,7 +668,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     public boolean isEmpty() {
         return tree.isEmpty();
     }
-    
+
     /**
      * A {@code HashSet} is computed eagerly.
      *
@@ -730,9 +730,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final Tuple2<Iterator<T>, Iterator<T>> p = iterator().partition(predicate);
-        return Tuple.of(HashSet.ofAll(p._1), HashSet.ofAll(p._2));
+        return Collections.partition(this, HashSet::ofAll, predicate);
     }
 
     @Override

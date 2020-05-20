@@ -800,9 +800,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return iterator().partition(predicate).map(i1 -> TreeSet.ofAll(tree.comparator(), i1),
-                i2 -> TreeSet.ofAll(tree.comparator(), i2));
+        return Collections.partition(this, values -> TreeSet.ofAll(tree.comparator(), values), predicate);
     }
 
     @Override
