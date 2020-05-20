@@ -1707,6 +1707,7 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
     /**
      * Converts this collection to a {@link SortedMap}.
      *
+     * @param comparator  A comparator that induces an order of the Map keys.
      * @param keyMapper   A function that maps an element to a key
      * @param valueMapper A function that maps an element to a value
      * @param merge A function that merges values that are associated with the same key
