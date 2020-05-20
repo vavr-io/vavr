@@ -201,8 +201,12 @@ final class Maps {
     static <K, V, M extends Map<K, V>> Tuple2<M, M> partition(M map, OfEntries<K, V, M> ofEntries,
             Predicate<? super Tuple2<K, V>> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> p = map.iterator().partition(predicate);
-        return Tuple.of(ofEntries.apply(p._1), ofEntries.apply(p._2));
+        final java.util.List<Tuple2<K, V>> left = new java.util.ArrayList<>();
+        final java.util.List<Tuple2<K, V>> right = new java.util.ArrayList<>();
+        for (Tuple2<K, V> entry : map) {
+            (predicate.test(entry) ? left : right).add(entry);
+        }
+        return Tuple.of(ofEntries.apply(left), ofEntries.apply(right));
     }
 
     static <K, V, M extends Map<K, V>> M peek(M map, Consumer<? super Tuple2<K, V>> action) {
