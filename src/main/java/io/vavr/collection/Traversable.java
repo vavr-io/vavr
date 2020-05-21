@@ -1705,6 +1705,46 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
     <U> Traversable<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
     /**
+     * Converts this collection to a {@link SortedMap}.
+     *
+     * @param keyComparator  A comparator that induces an order of the Map keys.
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param merge A function that merges values that are associated with the same key
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K, V> SortedMap<K, V> toSortedMap(
+            Comparator<? super K> keyComparator,
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper,
+            BiFunction<? super V, ? super V, ? extends V> merge) {
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
+        if (isEmpty()) {
+            return TreeMap.empty(keyComparator);
+        }
+        return TreeMap.ofEntries(keyComparator, toMap(keyMapper, valueMapper, merge));
+    }
+
+    /**
+     * Converts this collection to a {@link SortedMap}.
+     *
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param merge A function that merges values that are associated with the same key
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @return A new {@link TreeMap}.
+     */
+    default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper,
+            BiFunction<? super V, ? super V, ? extends V> merge) {
+        return toSortedMap(Comparator.naturalOrder(), keyMapper, valueMapper, merge);
+    }
+
+    /**
      * Converts this collection to a {@link Map}.
      *
      * @param keyMapper   A function that maps an element to a key
@@ -1721,6 +1761,9 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         Objects.requireNonNull(merge, "merge is null");
+        if (isEmpty()) {
+            return HashMap.empty();
+        }
         return this.<K>groupBy(keyMapper)
                 .mapValues(s -> s.<V>map(valueMapper).reduce(merge));
     }
