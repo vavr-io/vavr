@@ -98,6 +98,18 @@ public class CollectionsTest {
     }
 
     @Test
+    public void shouldReturnEmptyMapWithMergeFunction() {
+        final Seq<Tuple2<String, Integer>> input = Vector.of();
+
+        Map<String, Seq<Integer>> m = input.toMap(
+                Tuple2::_1,
+                t -> Vector.of(t._2),
+                Seq::appendAll);
+
+        assertThat(m.toVector()).isEmpty();
+    }
+
+    @Test
     public void shouldUseMergeFunctionToHandleKeysCollisions() {
         final Seq<Tuple2<String, Integer>> input =
                 Vector.of(Tuple.of("a",2), Tuple.of("a",55), Tuple.of("a",3), Tuple.of("b",2));
@@ -114,7 +126,45 @@ public class CollectionsTest {
     }
 
     @Test
-    public void shouldUseMergeFunctionToHandleKeysCollisionsSortedMap() {
+    public void shouldReturnEmptySortedMapWithDefaultComparator() {
+        final Seq<Tuple2<String, Integer>> input = Vector.empty();
+
+        Map<String, Integer> m = input.toSortedMap(
+                Tuple2::_1,
+                Tuple2::_2,
+                Integer::sum);
+
+        assertThat(m.toVector()).isEmpty();
+    }
+
+    @Test
+    public void shouldUseMergeFunctionToHandleKeysCollisionsSortedMapWithDefaultComparator() {
+        final Seq<Tuple2<String, Integer>> input =
+                Vector.of(Tuple.of("a",21), Tuple.of("a",21), Tuple.of("a",21), Tuple.of("bb",2));
+
+        Map<String, Integer> m = input.toSortedMap(
+                Tuple2::_1,
+                Tuple2::_2,
+                Integer::sum);
+
+        assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("a", 63), Tuple.of("bb", 2)));
+    }
+
+    @Test
+    public void shouldReturnEmptySortedMapWithCustomComparator() {
+        final Seq<Tuple2<String, Integer>> input = Vector.empty();
+
+        Map<String, Integer> m = input.toSortedMap(
+                Comparator.comparing(String::length),
+                Tuple2::_1,
+                Tuple2::_2,
+                Integer::sum);
+
+        assertThat(m.toVector()).isEmpty();
+    }
+
+    @Test
+    public void shouldUseMergeFunctionToHandleKeysCollisionsSortedMapWithCustomComparator() {
         final Seq<Tuple2<String, Integer>> input =
                 Vector.of(Tuple.of("a",21), Tuple.of("a",21), Tuple.of("a",21), Tuple.of("bb",2));
 
@@ -125,13 +175,6 @@ public class CollectionsTest {
                 Integer::sum);
 
         assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("bb", 2), Tuple.of("a", 63)));
-
-        Map<String, Integer> m2 = input.toSortedMap(
-                Tuple2::_1,
-                Tuple2::_2,
-                Integer::sum);
-
-        assertThat(m2.toVector()).isEqualTo(Vector.of(Tuple.of("a", 63), Tuple.of("bb", 2)));
     }
 
     private void forAll(List<Traversable<?>> traversables, boolean value) {

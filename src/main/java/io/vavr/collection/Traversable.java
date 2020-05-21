@@ -1707,7 +1707,7 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
     /**
      * Converts this collection to a {@link SortedMap}.
      *
-     * @param comparator  A comparator that induces an order of the Map keys.
+     * @param keyComparator  A comparator that induces an order of the Map keys.
      * @param keyMapper   A function that maps an element to a key
      * @param valueMapper A function that maps an element to a value
      * @param merge A function that merges values that are associated with the same key
@@ -1716,12 +1716,15 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @return A new {@link TreeMap}.
      */
     default <K, V> SortedMap<K, V> toSortedMap(
-            Comparator<? super K> comparator,
+            Comparator<? super K> keyComparator,
             Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valueMapper,
             BiFunction<? super V, ? super V, ? extends V> merge) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        return TreeMap.ofEntries(comparator, toMap(keyMapper, valueMapper, merge));
+        Objects.requireNonNull(keyComparator, "keyComparator is null");
+        if (isEmpty()) {
+            return TreeMap.empty(keyComparator);
+        }
+        return TreeMap.ofEntries(keyComparator, toMap(keyMapper, valueMapper, merge));
     }
 
     /**
@@ -1758,6 +1761,9 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         Objects.requireNonNull(merge, "merge is null");
+        if (isEmpty()) {
+            return HashMap.empty();
+        }
         return this.<K>groupBy(keyMapper)
                 .mapValues(s -> s.<V>map(valueMapper).reduce(merge));
     }
