@@ -1752,6 +1752,23 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @param merge A function that merges values that are associated with the same key
      * @param <K>         The key type
      * @param <V>         The value type
+     * @return A new {@link LinkedHashMap}.
+     */
+    default <K extends Comparable<? super K>, V> Map<K, V> toLinkedMap(
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper,
+            BiFunction<? super V, ? super V, ? extends V> merge) {
+        return LinkedHashMap.ofEntries(toMap(keyMapper, valueMapper, merge));
+    }
+
+    /**
+     * Converts this collection to a {@link Map}.
+     *
+     * @param keyMapper   A function that maps an element to a key
+     * @param valueMapper A function that maps an element to a value
+     * @param merge A function that merges values that are associated with the same key
+     * @param <K>         The key type
+     * @param <V>         The value type
      * @return A new {@link HashMap}.
      */
     default <K, V> Map<K, V> toMap(
