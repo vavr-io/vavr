@@ -2217,36 +2217,6 @@ interface IteratorModule {
                     return gap.poll();
                 }
             }
-
-            private boolean hasSame(java.util.Queue<T> queue) {
-                return gap == queue;
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (obj == this) {
-                    return true;
-                }
-                if (obj == null) {
-                    return false;
-                }
-                if (obj.getClass().isAssignableFrom(Partner.class)) {
-                    @SuppressWarnings("unchecked")
-                    final Partner that = (Partner) obj;
-                    /*
-                     * Two iterators are equal if and only if they are partners
-                     * (use the same queue for iteration) and they iterated
-                     * over the same number of elements, i.e. no gaps.
-                     */
-                    return that.hasSame(gap) && gap.isEmpty();
-                }
-                return super.equals(obj);
-            }
-
-            @Override
-            public int hashCode() {
-                return gap.hashCode();
-            }
         }
         return Tuple.of(new Partner(), new Partner());
     }

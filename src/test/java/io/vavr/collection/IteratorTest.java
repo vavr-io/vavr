@@ -531,41 +531,6 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(partners._2).isEqualTo(of(1, 2, 3));
     }
 
-    @Test
-    public void shouldDuplicateIteratorsWithCorrectHashCodeAndEquals() {
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(of(1, 2, 3));
-
-        assertThat(partners._1.equals(partners._1)).isTrue();
-        assertThat(partners._1.equals(partners._2)).isTrue();
-        assertThat(partners._2.equals(partners._1)).isTrue();
-
-        assertThat(partners._1.equals(null)).isFalse();
-        assertThat(partners._1.equals(of(1, 2, 3))).isFalse();
-        assertThat(partners._2.equals(of(1, 2, 3))).isFalse();
-        assertThat(partners._2.equals(of("1", "2", "3"))).isFalse();
-
-        assertThat(partners._1.hashCode()).isEqualTo(partners._2.hashCode());
-        assertThat(partners._1.hashCode()).isNotEqualTo(of(1, 2, 3).hashCode());
-    }
-
-    @Test
-    public void shouldCalculateEqualsForDuplicateIteratorsBasedOnGap() {
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(of(1, 2, 3));
-        final Iterator<Integer> ahead = partners._1;
-        final Iterator<Integer> behind = partners._2;
-        assertThat(ahead.equals(behind)).isTrue();
-
-        for (final int i : of(1, 2, 3)) {
-            assertThat(ahead.hasNext()).isTrue();
-            assertThat(ahead.next()).isEqualTo(i);
-            assertThat(ahead.equals(behind)).as("Two iterators are different when gap exists").isFalse();
-
-            assertThat(behind.hasNext()).isTrue();
-            assertThat(behind.next()).isEqualTo(i);
-            assertThat(ahead.equals(behind)).as("Two iterators are equal when no gap").isTrue();
-        }
-    }
-
     @Test(timeout = 5_000L)  // avoid endless test caused by infinite iterator
     public void shouldDuplicateIteratorsLazily() {
         final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
