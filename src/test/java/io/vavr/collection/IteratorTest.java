@@ -525,10 +525,10 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldDuplicateIteratorsWithCorrectValues() {
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(of(1, 2, 3));
+        final Tuple2<Iterator<String>, Iterator<String>> partners = IteratorModule.duplicate(of("1", "2", "3"));
 
-        assertThat(partners._1).isEqualTo(of(1, 2, 3));
-        assertThat(partners._2).isEqualTo(of(1, 2, 3));
+        assertThat(String.join(", ", partners._1)).isEqualTo("1, 2, 3");
+        assertThat(String.join(", ", partners._2)).isEqualTo("1, 2, 3");
     }
 
     @Test(timeout = 5_000L)  // avoid endless test caused by infinite iterator
@@ -803,9 +803,9 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPartition() {
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partitions = of(1, 2, 3).partition(i -> i % 2 == 0);
-        assertThat(partitions._1).isEqualTo(of(2));
-        assertThat(partitions._2).isEqualTo(of(1, 3));
+        final Tuple2<Iterator<String>, Iterator<String>> partitions = of("1", "2", "3").partition(i -> "2".equals(i));
+        assertThat(String.join(", ", partitions._1)).isEqualTo("2");
+        assertThat(String.join(", ", partitions._2)).isEqualTo("1, 3");
     }
 
     @Test(timeout = 5_000L)  // avoid endless test caused by infinite iterator
