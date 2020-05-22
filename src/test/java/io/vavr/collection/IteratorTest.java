@@ -525,7 +525,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldDuplicateIteratorsWithCorrectValues() {
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = of(1, 2, 3).duplicate();
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(of(1, 2, 3));
 
         assertThat(partners._1).isEqualTo(of(1, 2, 3));
         assertThat(partners._2).isEqualTo(of(1, 2, 3));
@@ -533,7 +533,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldDuplicateIteratorsWithCorrectHashCodeAndEquals() {
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = of(1, 2, 3).duplicate();
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(of(1, 2, 3));
 
         assertThat(partners._1.equals(partners._1)).isTrue();
         assertThat(partners._1.equals(partners._2)).isTrue();
@@ -550,7 +550,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldCalculateEqualsForDuplicateIteratorsBasedOnGap() {
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = of(1, 2, 3).duplicate();
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(of(1, 2, 3));
         final Iterator<Integer> ahead = partners._1;
         final Iterator<Integer> behind = partners._2;
         assertThat(ahead.equals(behind)).isTrue();
@@ -577,7 +577,7 @@ public class IteratorTest extends AbstractTraversableTest {
         });
 
         // When duplicating it
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = iterator.duplicate();
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(iterator);
 
         // Then the duplication is done lazily
         assertThat(iterator.hasNext()).isTrue();
@@ -606,7 +606,7 @@ public class IteratorTest extends AbstractTraversableTest {
         });
 
         // When duplicating it
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = iterator.duplicate();
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(iterator);
         // And move forward one iterator
         assertThat(partners._1.hasNext()).isTrue();
         assertThat(partners._1.next()).isEqualTo(1);

@@ -1723,7 +1723,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Tuple2<Iterator<T>, Iterator<T>> dup = duplicate();
+            final Tuple2<Iterator<T>, Iterator<T>> dup = IteratorModule.duplicate(this);
             return Tuple.of(dup._1.filter(predicate), dup._2.filterNot(predicate));
         }
     }
@@ -1951,73 +1951,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
-    /**
-     * Creates two new iterators that both iterates over the same elements as
-     * this iterator and in the same order. The duplicate iterators are
-     * considered equal if they are positioned at the same element.
-     * <p>
-     * Given that most methods on iterators will make the original iterator
-     * unfit for further use, this methods provides a reliable way of calling
-     * multiple such methods on an iterator.
-     *
-     * @return a pair of iterators
-     */
-    default Tuple2<Iterator<T>, Iterator<T>> duplicate() {
-        final java.util.Queue<T> gap = new java.util.LinkedList<>();
-        final AtomicReference<Iterator<T>> ahead = new AtomicReference<>();
-        class Partner implements Iterator<T> {
-
-            @Override
-            public synchronized boolean hasNext() {
-                return (this != ahead.get() && !gap.isEmpty()) || Iterator.this.hasNext();
-            }
-
-            @Override
-            public synchronized T next() {
-                if (gap.isEmpty()) {
-                    ahead.set(this);
-                }
-                if (this == ahead.get()) {
-                    final T element = Iterator.this.next();
-                    gap.add(element);
-                    return element;
-                } else {
-                    return gap.poll();
-                }
-            }
-
-            private boolean hasSame(java.util.Queue<T> queue) {
-                return gap == queue;
-            }
-
-            @Override
-            public boolean equals(Object obj) {
-                if (obj == this) {
-                    return true;
-                }
-                if (obj == null) {
-                    return false;
-                }
-                if (obj.getClass().isAssignableFrom(Partner.class)) {
-                    @SuppressWarnings("unchecked")
-                    final Partner that = (Partner) obj;
-                    /*
-                     * Two iterators are equal if and only if they are partners
-                     * (use the same queue for iteration) and they iterated
-                     * over the same number of elements, i.e. no gaps.
-                     */
-                    return that.hasSame(gap) && gap.isEmpty();
-                }
-                return super.equals(obj);
-            }
-
-            @Override
-            public int hashCode() {
-                return gap.hashCode();
-            }
-        }
-        return Tuple.of(new Partner(), new Partner());
-    }
 
     @Override
     default String stringPrefix() {
@@ -2246,6 +2179,76 @@ final class CachedIterator<T> implements Iterator<T> {
     @Override
     public String toString() {
         return "CachedIterator";
+    }
+}
+
+interface IteratorModule {
+    /**
+     * Creates two new iterators that both iterates over the same elements as
+     * this iterator and in the same order. The duplicate iterators are
+     * considered equal if they are positioned at the same element.
+     * <p>
+     * Given that most methods on iterators will make the original iterator
+     * unfit for further use, this methods provides a reliable way of calling
+     * multiple such methods on an iterator.
+     *
+     * @return a pair of iterators
+     */
+    static <T> Tuple2<Iterator<T>, Iterator<T>> duplicate(Iterator<T> iterator) {
+        final java.util.Queue<T> gap = new java.util.LinkedList<>();
+        final AtomicReference<Iterator<T>> ahead = new AtomicReference<>();
+        class Partner implements Iterator<T> {
+
+            @Override
+            public synchronized boolean hasNext() {
+                return (this != ahead.get() && !gap.isEmpty()) || iterator.hasNext();
+            }
+
+            @Override
+            public synchronized T next() {
+                if (gap.isEmpty()) {
+                    ahead.set(this);
+                }
+                if (this == ahead.get()) {
+                    final T element = iterator.next();
+                    gap.add(element);
+                    return element;
+                } else {
+                    return gap.poll();
+                }
+            }
+
+            private boolean hasSame(java.util.Queue<T> queue) {
+                return gap == queue;
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                if (obj == this) {
+                    return true;
+                }
+                if (obj == null) {
+                    return false;
+                }
+                if (obj.getClass().isAssignableFrom(Partner.class)) {
+                    @SuppressWarnings("unchecked")
+                    final Partner that = (Partner) obj;
+                    /*
+                     * Two iterators are equal if and only if they are partners
+                     * (use the same queue for iteration) and they iterated
+                     * over the same number of elements, i.e. no gaps.
+                     */
+                    return that.hasSame(gap) && gap.isEmpty();
+                }
+                return super.equals(obj);
+            }
+
+            @Override
+            public int hashCode() {
+                return gap.hashCode();
+            }
+        }
+        return Tuple.of(new Partner(), new Partner());
     }
 }
 
