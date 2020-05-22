@@ -2200,12 +2200,12 @@ interface IteratorModule {
         class Partner implements Iterator<T> {
 
             @Override
-            public synchronized boolean hasNext() {
+            public boolean hasNext() {
                 return (this != ahead.get() && !gap.isEmpty()) || iterator.hasNext();
             }
 
             @Override
-            public synchronized T next() {
+            public T next() {
                 if (gap.isEmpty()) {
                     ahead.set(this);
                 }
