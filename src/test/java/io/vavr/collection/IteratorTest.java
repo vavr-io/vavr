@@ -521,72 +521,6 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(of(1, 2, 1, 3, 3).distinct().toList()).isEqualTo(List.of(1, 2, 3));
     }
 
-    // -- duplicate
-
-    @Test
-    public void shouldDuplicateIteratorsWithCorrectValues() {
-        final Tuple2<Iterator<String>, Iterator<String>> partners = IteratorModule.duplicate(of("1", "2", "3"));
-
-        assertThat(String.join(", ", partners._1)).isEqualTo("1, 2, 3");
-        assertThat(String.join(", ", partners._2)).isEqualTo("1, 2, 3");
-    }
-
-    @Test(timeout = 5_000L)  // avoid endless test caused by infinite iterator
-    public void shouldDuplicateIteratorsLazily() {
-        final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
-
-        // Given an infinite iterator
-        final Iterator<Integer> iterator = Iterator.iterate(1, i -> {
-            itemsCalled.add(i);
-            return i + 1;
-        });
-
-        // When duplicating it
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(iterator);
-
-        // Then the duplication is done lazily
-        assertThat(iterator.hasNext()).isTrue();
-        assertThat(itemsCalled).as("Duplicating iterators should be done lazily.").isEmpty();
-
-        // When retrieving more elements
-        for (final int i : of(1, 2, 3)) {
-            assertThat(partners._1.hasNext()).isTrue();
-            assertThat(partners._2.hasNext()).isTrue();
-            assertThat(partners._1.next()).isEqualTo(i);
-            assertThat(partners._2.next()).isEqualTo(i);
-        }
-
-        // Then the original iterator is called, once per next()
-        assertThat(itemsCalled).containsExactly(1, 2);
-    }
-
-    @Test(timeout = 5_000L)  // avoid endless test caused by infinite iterator
-    public void shouldLetBehindIteratorBecomeAheadIteratorWhenItMovesForward() {
-        final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
-
-        // Given an infinite iterator
-        final Iterator<Integer> iterator = Iterator.iterate(1, i -> {
-            itemsCalled.add(i);
-            return i + 1;
-        });
-
-        // When duplicating it
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partners = IteratorModule.duplicate(iterator);
-        // And move forward one iterator
-        assertThat(partners._1.hasNext()).isTrue();
-        assertThat(partners._1.next()).isEqualTo(1);
-        // Then we have one iterator "ahead" and the other iterator "behind"
-
-        // When moving forward the "behind" iterator
-        // Then it becomes the new iterator ahead because `duplicate()` should
-        // be able to change the ahead iterator
-        for (final int i : of(1, 2, 3, 4)) {
-            assertThat(partners._2.hasNext()).isTrue();
-            assertThat(partners._2.next()).isEqualTo(i);
-        }
-        assertThat(itemsCalled).containsExactly(1, 2, 3);
-    }
-
     // -- groupBy
 
     @Override
@@ -803,7 +737,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     @Test
     public void shouldPartition() {
-        final Tuple2<Iterator<String>, Iterator<String>> partitions = of("1", "2", "3").partition(i -> "2".equals(i));
+        final Tuple2<Iterator<String>, Iterator<String>> partitions = of("1", "2", "3").partition("2"::equals);
         assertThat(String.join(", ", partitions._1)).isEqualTo("2");
         assertThat(String.join(", ", partitions._2)).isEqualTo("1, 3");
     }
