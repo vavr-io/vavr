@@ -23,6 +23,7 @@ import io.vavr.control.Option;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 
 import static io.vavr.collection.BigDecimalHelper.areEqual;
@@ -1722,10 +1723,8 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Stream<T> that = Stream.ofAll(this);
-            final Iterator<T> first = that.iterator().filter(predicate);
-            final Iterator<T> second = that.iterator().filter(predicate.negate());
-            return Tuple.of(first, second);
+            final Tuple2<Iterator<T>, Iterator<T>> dup = IteratorModule.duplicate(this);
+            return Tuple.of(dup._1.filter(predicate), dup._2.filterNot(predicate));
         }
     }
 
@@ -1951,6 +1950,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             return Tuple.of(that.iterator().takeWhile(predicate), that.iterator().dropWhile(predicate));
         }
     }
+
 
     @Override
     default String stringPrefix() {
@@ -2179,6 +2179,46 @@ final class CachedIterator<T> implements Iterator<T> {
     @Override
     public String toString() {
         return "CachedIterator";
+    }
+}
+
+interface IteratorModule {
+    /**
+     * Creates two new iterators that both iterates over the same elements as
+     * this iterator and in the same order. The duplicate iterators are
+     * considered equal if they are positioned at the same element.
+     * <p>
+     * Given that most methods on iterators will make the original iterator
+     * unfit for further use, this methods provides a reliable way of calling
+     * multiple such methods on an iterator.
+     *
+     * @return a pair of iterators
+     */
+    static <T> Tuple2<Iterator<T>, Iterator<T>> duplicate(Iterator<T> iterator) {
+        final java.util.Queue<T> gap = new java.util.LinkedList<>();
+        final AtomicReference<Iterator<T>> ahead = new AtomicReference<>();
+        class Partner implements Iterator<T> {
+
+            @Override
+            public boolean hasNext() {
+                return (this != ahead.get() && !gap.isEmpty()) || iterator.hasNext();
+            }
+
+            @Override
+            public T next() {
+                if (gap.isEmpty()) {
+                    ahead.set(this);
+                }
+                if (this == ahead.get()) {
+                    final T element = iterator.next();
+                    gap.add(element);
+                    return element;
+                } else {
+                    return gap.poll();
+                }
+            }
+        }
+        return Tuple.of(new Partner(), new Partner());
     }
 }
 

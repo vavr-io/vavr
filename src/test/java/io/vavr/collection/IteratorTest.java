@@ -733,6 +733,41 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(Iterator.of(1).nextOption()).isEqualTo(Option.some(1));
     }
 
+    // -- partition()
+
+    @Test
+    public void shouldPartition() {
+        final Tuple2<Iterator<String>, Iterator<String>> partitions = of("1", "2", "3").partition("2"::equals);
+        assertThat(String.join(", ", partitions._1)).isEqualTo("2");
+        assertThat(String.join(", ", partitions._2)).isEqualTo("1, 3");
+    }
+
+    @Test(timeout = 5_000L)  // avoid endless test caused by infinite iterator
+    public void shouldPartitionLazily() {
+        final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
+
+        // Given an infinite iterator
+        final Iterator<Integer> iterator = Iterator.iterate(1, i -> {
+            itemsCalled.add(i);
+            return i + 1;
+        });
+
+        // When partitioning it
+        // Then the partitioning is done lazily (otherwise the test will timeout)
+        final Tuple2<Iterator<Integer>, Iterator<Integer>> partitions = iterator.partition(i -> i % 2 == 0);
+        assertThat(itemsCalled).isEmpty();
+
+        // When moving forwards iterators
+        // Then the moves are done as expected
+        assertThat(partitions._1.hasNext()).isTrue();
+        assertThat(partitions._1.next()).isEqualTo(2);
+        for (int i : of(1, 3, 5)) {
+            assertThat(partitions._2.hasNext()).isTrue();
+            assertThat(partitions._2.next()).isEqualTo(i);
+        }
+        assertThat(itemsCalled).containsExactly(1, 2, 3, 4);
+    }
+
     // -- .toString()
 
     @Test

@@ -809,6 +809,20 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
                         mapOfTuples(Tuple.of(1, 2), Tuple.of(3, 4))));
     }
 
+    @Test
+    @SuppressWarnings("unchecked")
+    public void shouldPartitionInOneIteration() {
+        final AtomicInteger count = new AtomicInteger(0);
+        final Multimap<String, Integer> map = mapOfTuples(Tuple.of("1", 1), Tuple.of("2", 2), Tuple.of("3", 3));
+        final Tuple2<? extends Multimap<String, Integer>, ? extends Multimap<String, Integer>> results = map.partition(entry -> {
+            count.incrementAndGet();
+            return true;
+        });
+        assertThat(results._1).isEqualTo(mapOfTuples(Tuple.of("1", 1), Tuple.of("2", 2), Tuple.of("3", 3)));
+        assertThat(results._2).isEmpty();
+        assertThat(count.get()).isEqualTo(3);
+    }
+
     // -- put
 
     @Test
