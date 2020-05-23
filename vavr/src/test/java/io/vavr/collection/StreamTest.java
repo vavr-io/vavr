@@ -29,6 +29,7 @@ import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Spliterator;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -468,6 +469,39 @@ public class StreamTest extends AbstractLinearSeqTest {
     public void shouldFlatMapInfiniteTraversable() {
         assertThat(Stream.iterate(1, i -> i + 1).flatMap(i -> List.of(i, 2 * i)).take(7))
                 .isEqualTo(Stream.of(1, 2, 2, 4, 3, 6, 4));
+    }
+
+    // -- partition
+
+    @Test
+    public void shouldPartitionInTwoIterations() {
+        final AtomicInteger count = new AtomicInteger(0);
+        final Tuple2<Stream<Integer>, Stream<Integer>> results = Stream.of(1, 2, 3).partition(i -> {
+            count.incrementAndGet();
+            return true;
+        });
+        assertThat(results._1).isEqualTo(of(1, 2, 3));
+        assertThat(results._2).isEqualTo(of());
+        assertThat(count.get()).isEqualTo(6);
+    }
+
+    @Test
+    public void shouldPartitionLazily() {
+        final java.util.Set<Integer> itemsCalled = new java.util.HashSet<>();
+
+        final Stream<Integer> infiniteStream = Stream.iterate(0, i -> i + 1);
+        assertThat(itemsCalled).isEmpty();
+
+        final Tuple2<Stream<Integer>, Stream<Integer>> results = infiniteStream.partition(i -> {
+            itemsCalled.add(i);
+            return i % 2 == 0;
+        });
+        assertThat(itemsCalled).containsExactly(0, 1);
+        assertThat(results._1.head()).isEqualTo(0);
+        assertThat(results._2.head()).isEqualTo(1);
+        assertThat(results._1.take(3)).isEqualTo(of(0, 2, 4));
+        assertThat(results._2.take(3)).isEqualTo(of(1, 3, 5));
+        assertThat(itemsCalled).containsExactly(0, 1, 2, 3, 4, 5);
     }
 
     // -- peek

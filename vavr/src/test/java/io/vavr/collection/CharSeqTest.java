@@ -274,6 +274,20 @@ public class CharSeqTest {
         assertThat(src.orElse(() -> CharSeq.of("12"))).isSameAs(src);
     }
 
+    // -- partition
+
+    @Test
+    public void shouldPartitionInOneIteration() {
+        final AtomicInteger count = new AtomicInteger(0);
+        final Tuple2<CharSeq, CharSeq> results = CharSeq.of('1', '2', '3').partition(c -> {
+            count.incrementAndGet();
+            return true;
+        });
+        assertThat(results._1).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(results._2).isEqualTo(CharSeq.of());
+        assertThat(count.get()).isEqualTo(3);
+    }
+
     // -- patch
 
     @Test

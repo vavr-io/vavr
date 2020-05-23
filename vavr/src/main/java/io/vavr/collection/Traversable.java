@@ -168,7 +168,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     static <T> Traversable<T> narrow(Traversable<? extends T> traversable) {
         return (Traversable<T>) traversable;
     }
-    
+
     /**
      * Matches each element with a unique key that you extract from it.
      * If the same key is present twice, the function will return {@code None}.
@@ -227,7 +227,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             throw new UnsupportedOperationException("not numeric", x);
         }
     }
-    
+
     /**
      * Collects all elements that are in the domain of the given {@code partialFunction} by mapping the elements to type {@code R}.
      * <p>
@@ -345,7 +345,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     Traversable<T> dropUntil(Predicate<? super T> predicate);
 
     /**
-     * Drops elements while the predicate holds for the current element.                                                                            
+     * Drops elements while the predicate holds for the current element.
      * <p>
      * Note: This is essentially the same as {@code dropUntil(predicate.negate())}.
      * It is intended to be used with method references, which cannot be negated directly.
@@ -374,7 +374,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <li>contain the same elements</li>
      * <li>have the same element order, if the collections are of type Seq</li>
      * </ul>
-     * 
+     *
      * Two Map/Multimap elements, resp. entries, (key1, value1) and (key2, value2) are equal,
      * if the keys are equal and the values are equal.
      * <p>
@@ -600,7 +600,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     default Option<T> headOption() {
         return isEmpty() ? Option.none() : Option.some(head());
     }
-    
+
     /**
      * Returns the hash code of this collection.
      * <br>
@@ -965,7 +965,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             return Option.some(tm);
         }
     }
-    
+
     /**
      * Joins the elements of this by concatenating their string representations.
      * <p>
@@ -1255,7 +1255,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code operation} is null.
      */
     <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
-    
+
     /**
      * Returns the single element of this Traversable or throws, if this is empty or contains more than one element.
      *
@@ -1418,7 +1418,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
             }
         }
     }
-    
+
     /**
      * Drops the first element of a non-empty Traversable.
      *
@@ -1548,7 +1548,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code that} is null
      */
     <U> Traversable<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
-    
+
     /**
      * Returns a traversable formed from this traversable and another Iterable collection by mapping elements.
      * If one of the two iterables is longer than the other, its remaining elements are ignored.

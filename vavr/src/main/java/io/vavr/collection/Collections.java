@@ -20,6 +20,7 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
@@ -283,6 +284,17 @@ final class Collections {
         });
     }
 
+    static <C extends Traversable<T>, T> Tuple2<C, C> partition(C collection, Function<Iterable<T>, C> creator,
+                                                                Predicate<? super T> predicate) {
+        Objects.requireNonNull(predicate, "predicate is null");
+        final java.util.List<T> left = new java.util.ArrayList<>();
+        final java.util.List<T> right = new java.util.ArrayList<>();
+        for (T element : collection) {
+            (predicate.test(element) ? left : right).add(element);
+        }
+        return Tuple.of(creator.apply(left), creator.apply(right));
+    }
+
     @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C removeAll(C source, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -531,7 +543,7 @@ final class Collections {
             return new IterableWithSize<>(iterable, ((Traversable<?>) iterable).size());
         }
     }
-    
+
     static class IterableWithSize<T> {
         private final Iterable<? extends T> iterable;
         private final int size;

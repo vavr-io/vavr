@@ -754,9 +754,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final Tuple2<Iterator<T>, Iterator<T>> p = iterator().partition(predicate);
-        return Tuple.of(LinkedHashSet.ofAll(p._1), LinkedHashSet.ofAll(p._2));
+        return Collections.partition(this, LinkedHashSet::ofAll, predicate);
     }
 
     @Override

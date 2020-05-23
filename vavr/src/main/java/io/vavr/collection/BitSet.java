@@ -815,8 +815,7 @@ interface BitSetModule {
 
         @Override
         public Tuple2<BitSet<T>, BitSet<T>> partition(Predicate<? super T> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
-            return iterator().partition(predicate).map(this::createFromAll, this::createFromAll);
+            return Collections.partition(this, this::createFromAll, predicate);
         }
 
         @Override

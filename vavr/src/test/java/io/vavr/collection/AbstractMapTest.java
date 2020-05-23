@@ -1440,6 +1440,21 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(map.getOrElse("3", "3")).isEqualTo("3");
     }
 
+    // -- partition
+
+    @Test
+    public void shouldPartitionInOneIteration() {
+        final AtomicInteger count = new AtomicInteger(0);
+        final Map<String, Integer> map = mapOf("1", 1, "2", 2, "3", 3);
+        final Tuple2<? extends Map<String, Integer>, ? extends Map<String, Integer>> results = map.partition(entry -> {
+            count.incrementAndGet();
+            return true;
+        });
+        assertThat(results._1).isEqualTo(mapOf("1", 1, "2", 2, "3", 3));
+        assertThat(results._2).isEmpty();
+        assertThat(count.get()).isEqualTo(3);
+    }
+
     // -- spliterator
 
     @Test

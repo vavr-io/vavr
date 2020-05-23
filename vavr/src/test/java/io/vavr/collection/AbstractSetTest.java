@@ -19,10 +19,12 @@
  */
 package io.vavr.collection;
 
+import io.vavr.Tuple2;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Spliterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
 
@@ -190,6 +192,20 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
         assertThat(empty().remove(5)).isEqualTo(empty());
     }
 
+    // -- partition
+
+    @Test
+    public void shouldPartitionInOneIteration() {
+        final AtomicInteger count = new AtomicInteger(0);
+        final Tuple2<? extends Set<Integer>, ? extends Set<Integer>> results = of(1, 2, 3).partition(i -> {
+            count.incrementAndGet();
+            return true;
+        });
+        assertThat(results._1).isEqualTo(of(1, 2, 3));
+        assertThat(results._2).isEqualTo(of());
+        assertThat(count.get()).isEqualTo(3);
+    }
+
     // -- removeAll
 
     @Test
@@ -228,7 +244,7 @@ public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
             assertThat(empty().union(set)).isSameAs(set);
         }
     }
-    
+
     @Test
     public void shouldReturnSameSetWhenNonEmptyUnionEmpty() {
         final Set<Integer> set = of(1, 2);
