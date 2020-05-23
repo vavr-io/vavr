@@ -186,6 +186,7 @@ public class CollectionsTest {
                 Tuple2::_2,
                 Integer::sum);
 
+        assertThat(m).isInstanceOf(LinkedHashMap.class);
         assertThat(m.toVector()).isEmpty();
     }
 
@@ -199,6 +200,7 @@ public class CollectionsTest {
                 Tuple2::_2,
                 Integer::sum);
 
+        assertThat(m).isInstanceOf(LinkedHashMap.class);
         assertThat(m.keySet()).isEqualTo(LinkedHashSet.of("b", "a", "c"));
         assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("b", 21), Tuple.of("a", 63), Tuple.of("c", 21)));
     }
@@ -214,6 +216,7 @@ public class CollectionsTest {
                 Integer::sum)
                 .put("a", 21);
 
+        assertThat(m).isInstanceOf(LinkedHashMap.class);
         assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("b", 21), Tuple.of("a", 21), Tuple.of("c", 21)));
     }
 
