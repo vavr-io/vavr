@@ -1758,7 +1758,15 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
             Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valueMapper,
             BiFunction<? super V, ? super V, ? extends V> merge) {
-        return LinkedHashMap.ofEntries(toMap(keyMapper, valueMapper, merge));
+        final Map<K, V> map = toMap(keyMapper, valueMapper, merge);
+        final Iterator<Tuple2<K, V>> entries = iterator()
+                .map(keyMapper)
+                .distinct()
+                .map(key -> {
+                    V value = map.getOrElse(key, null); // the default value will not be used
+                    return Tuple.of(key, value);
+                });
+        return LinkedHashMap.ofEntries(entries);
     }
 
     /**

@@ -201,7 +201,6 @@ public class CollectionsTest {
 
         assertThat(m.keySet()).isEqualTo(LinkedHashSet.of("b", "a", "c"));
         assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("b", 21), Tuple.of("a", 63), Tuple.of("c", 21)));
-        assertThat(m.put("a", 21).toVector()).isEqualTo(Vector.of(Tuple.of("b", 21), Tuple.of("a", 21), Tuple.of("c", 21)));
     }
 
     @Test
@@ -215,7 +214,7 @@ public class CollectionsTest {
                 Integer::sum)
                 .put("a", 21);
 
-        assertThat(m.put("a", 21).toVector()).isEqualTo(Vector.of(Tuple.of("b", 21), Tuple.of("a", 21), Tuple.of("c", 21)));
+        assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("b", 21), Tuple.of("a", 21), Tuple.of("c", 21)));
     }
 
     private void forAll(List<Traversable<?>> traversables, boolean value) {
