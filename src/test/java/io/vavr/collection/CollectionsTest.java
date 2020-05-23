@@ -129,7 +129,7 @@ public class CollectionsTest {
     public void shouldReturnEmptySortedMapWithDefaultComparator() {
         final Seq<Tuple2<String, Integer>> input = Vector.empty();
 
-        Map<String, Integer> m = input.toSortedMap(
+        SortedMap<String, Integer> m = input.toSortedMap(
                 Tuple2::_1,
                 Tuple2::_2,
                 Integer::sum);
@@ -142,7 +142,7 @@ public class CollectionsTest {
         final Seq<Tuple2<String, Integer>> input =
                 Vector.of(Tuple.of("a",21), Tuple.of("a",21), Tuple.of("a",21), Tuple.of("bb",2));
 
-        Map<String, Integer> m = input.toSortedMap(
+        SortedMap<String, Integer> m = input.toSortedMap(
                 Tuple2::_1,
                 Tuple2::_2,
                 Integer::sum);
@@ -154,7 +154,7 @@ public class CollectionsTest {
     public void shouldReturnEmptySortedMapWithCustomComparator() {
         final Seq<Tuple2<String, Integer>> input = Vector.empty();
 
-        Map<String, Integer> m = input.toSortedMap(
+        SortedMap<String, Integer> m = input.toSortedMap(
                 Comparator.comparing(String::length),
                 Tuple2::_1,
                 Tuple2::_2,
@@ -168,7 +168,7 @@ public class CollectionsTest {
         final Seq<Tuple2<String, Integer>> input =
                 Vector.of(Tuple.of("a",21), Tuple.of("a",21), Tuple.of("a",21), Tuple.of("bb",2));
 
-        Map<String, Integer> m = input.toSortedMap(
+        SortedMap<String, Integer> m = input.toSortedMap(
                 Comparator.comparing(String::length).reversed(),
                 Tuple2::_1,
                 Tuple2::_2,
