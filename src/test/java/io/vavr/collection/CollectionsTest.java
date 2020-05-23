@@ -99,7 +99,7 @@ public class CollectionsTest {
 
     @Test
     public void shouldReturnEmptyMapWithMergeFunction() {
-        final Seq<Tuple2<String, Integer>> input = Vector.of();
+        final Seq<Tuple2<String, Integer>> input = Vector.empty();
 
         Map<String, Seq<Integer>> m = input.toMap(
                 Tuple2::_1,
@@ -129,7 +129,7 @@ public class CollectionsTest {
     public void shouldReturnEmptySortedMapWithDefaultComparator() {
         final Seq<Tuple2<String, Integer>> input = Vector.empty();
 
-        Map<String, Integer> m = input.toSortedMap(
+        SortedMap<String, Integer> m = input.toSortedMap(
                 Tuple2::_1,
                 Tuple2::_2,
                 Integer::sum);
@@ -142,7 +142,7 @@ public class CollectionsTest {
         final Seq<Tuple2<String, Integer>> input =
                 Vector.of(Tuple.of("a",21), Tuple.of("a",21), Tuple.of("a",21), Tuple.of("bb",2));
 
-        Map<String, Integer> m = input.toSortedMap(
+        SortedMap<String, Integer> m = input.toSortedMap(
                 Tuple2::_1,
                 Tuple2::_2,
                 Integer::sum);
@@ -154,7 +154,7 @@ public class CollectionsTest {
     public void shouldReturnEmptySortedMapWithCustomComparator() {
         final Seq<Tuple2<String, Integer>> input = Vector.empty();
 
-        Map<String, Integer> m = input.toSortedMap(
+        SortedMap<String, Integer> m = input.toSortedMap(
                 Comparator.comparing(String::length),
                 Tuple2::_1,
                 Tuple2::_2,
@@ -168,13 +168,56 @@ public class CollectionsTest {
         final Seq<Tuple2<String, Integer>> input =
                 Vector.of(Tuple.of("a",21), Tuple.of("a",21), Tuple.of("a",21), Tuple.of("bb",2));
 
-        Map<String, Integer> m = input.toSortedMap(
+        SortedMap<String, Integer> m = input.toSortedMap(
                 Comparator.comparing(String::length).reversed(),
                 Tuple2::_1,
                 Tuple2::_2,
                 Integer::sum);
 
         assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("bb", 2), Tuple.of("a", 63)));
+    }
+
+    @Test
+    public void shouldReturnEmptyLinkedMapWithCustomComparator() {
+        final Seq<Tuple2<String, Integer>> input = Vector.empty();
+
+        Map<String, Integer> m = input.toLinkedMap(
+                Tuple2::_1,
+                Tuple2::_2,
+                Integer::sum);
+
+        assertThat(m).isInstanceOf(LinkedHashMap.class);
+        assertThat(m.toVector()).isEmpty();
+    }
+
+    @Test
+    public void shouldUseMergeFunctionToHandleKeysCollisionsLinkedMap() {
+        final Seq<Tuple2<String, Integer>> input =
+                Vector.of(Tuple.of("b",20), Tuple.of("a",21), Tuple.of("c",21), Tuple.of("b",1), Tuple.of("a",21), Tuple.of("a",21));
+
+        Map<String, Integer> m = input.toLinkedMap(
+                Tuple2::_1,
+                Tuple2::_2,
+                Integer::sum);
+
+        assertThat(m).isInstanceOf(LinkedHashMap.class);
+        assertThat(m.keySet()).isEqualTo(LinkedHashSet.of("b", "a", "c"));
+        assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("b", 21), Tuple.of("a", 63), Tuple.of("c", 21)));
+    }
+
+    @Test
+    public void shouldKeepKeyOrderingWhenLinkedMapCreatedWithMergeFunction() {
+        final Seq<Tuple2<String, Integer>> input =
+                Vector.of(Tuple.of("b",20), Tuple.of("a",21), Tuple.of("c",21), Tuple.of("b",1), Tuple.of("a",21), Tuple.of("a",21));
+
+        Map<String, Integer> m = input.toLinkedMap(
+                Tuple2::_1,
+                Tuple2::_2,
+                Integer::sum)
+                .put("a", 21);
+
+        assertThat(m).isInstanceOf(LinkedHashMap.class);
+        assertThat(m.toVector()).isEqualTo(Vector.of(Tuple.of("b", 21), Tuple.of("a", 21), Tuple.of("c", 21)));
     }
 
     private void forAll(List<Traversable<?>> traversables, boolean value) {
