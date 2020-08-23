@@ -78,7 +78,7 @@ import java.util.function.*;
  * @param <T> Component type
  */
 @SuppressWarnings("deprecation")
-public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializable {
+public interface Set<T> extends Traversable<T>, Serializable {
 
     long serialVersionUID = 1L;
 
@@ -111,21 +111,6 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
      * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
      */
     Set<T> addAll(Iterable<? extends T> elements);
-
-    /**
-     * Tests if a given {@code element} is contained in this {@code Set}.
-     * <p>
-     * This method is equivalent to {@link #contains(Object)}.
-     *
-     * @param element the element to test for membership.
-     * @return {@code true} if the given {@code element} is contained, {@code false} otherwise.
-     * @deprecated Will be removed
-     */
-    @Override
-    @Deprecated
-    default Boolean apply(T element) {
-        return contains(element);
-    }
 
     /**
      * Calculates the difference between this set and another set.
