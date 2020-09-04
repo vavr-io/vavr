@@ -30,6 +30,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.fail;
 
 public class OptionTest extends AbstractValueTest {
 
@@ -711,4 +712,32 @@ public class OptionTest extends AbstractValueTest {
         assertThat(right.get()).isEqualTo(1);
         assertThat(left.getLeft()).isEqualTo("Empty");
     }
+
+    // -- zip
+
+    @Test
+    public void shouldReturnEmptyIfAtLeasOneOptionIsNone() {
+        assertThat(Option.zip(Option.some(1), Option.none(), (a, b) -> fail("Must not happen"))).isEmpty();
+        assertThat(Option.zip(Option.none(), Option.some(1), (a, b) -> fail("Must not happen"))).isEmpty();
+        assertThat(Option.zip(Option.none(), Option.none(), (a, b) -> fail("Must not happen"))).isEmpty();
+
+        assertThat(Option.zip(Option.some(1), Option.none(), Option.some(1), (a, b, c) -> fail("Must not happen"))).isEmpty();
+        assertThat(Option.zip(Option.none(), Option.some(1), Option.some(1), (a, b, c) -> fail("Must not happen"))).isEmpty();
+        assertThat(Option.zip(Option.none(), Option.none(), Option.some(1), (a, b, c) -> fail("Must not happen"))).isEmpty();
+        assertThat(Option.zip(Option.some(1), Option.some(1), Option.none(), (a, b, c) -> fail("Must not happen"))).isEmpty();
+
+        assertThat(Option.zip(Option.some(1), Option.none(), Option.some(1), Option.some(1), (a, b, c, d) -> fail("Must not happen"))).isEmpty();
+        assertThat(Option.zip(Option.none(), Option.some(1), Option.some(1), Option.some(1), (a, b, c, d) -> fail("Must not happen"))).isEmpty();
+        assertThat(Option.zip(Option.none(), Option.none(), Option.some(1), Option.some(1), (a, b, c, d) -> fail("Must not happen"))).isEmpty();
+        assertThat(Option.zip(Option.some(1), Option.some(1), Option.none(), Option.some(1), (a, b, c, d) -> fail("Must not happen"))).isEmpty();
+    }
+
+    @Test
+    public void shouldCallFunctionIfAllOptionsAreSome() {
+        assertThat(Option.zip(Option.some("a"), Option.some("b"), (a, b) -> a + b)).contains("ab");
+
+        assertThat(Option.zip(Option.some("a"), Option.some("b"), Option.some("c"), (a, b, c) -> a + b + c)).contains("abc");
+        assertThat(Option.zip(Option.some("a"), Option.some("b"), Option.some("c"), Option.some("d"), (a, b, c, d) -> a + b + c + d)).contains("abcd");
+    }
+
 }

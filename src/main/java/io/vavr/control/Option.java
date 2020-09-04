@@ -18,6 +18,8 @@
  */
 package io.vavr.control;
 
+import io.vavr.Function3;
+import io.vavr.Function4;
 import io.vavr.PartialFunction;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
@@ -27,6 +29,7 @@ import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -173,6 +176,99 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
         @SuppressWarnings("unchecked")
         final None<T> none = (None<T>) None.INSTANCE;
         return none;
+    }
+
+    /**
+     * If all provided {@link Option Options} are {@code Some} their values are combined using the
+     * provided {@link BiFunction} otherwise {@code None} is returned.
+     *
+     * <pre>{@code
+     * // = Some("ab")
+     * Option<String> some = Option.zip(Option.some("a"), Option.some("b"), (a, b) -> a + b);
+     * // = None
+     * Option<String> none = Option<String> some = Option.zip(Option.some("a"), Option.none(), (a, b) -> a + b);
+     * }</pre>
+     *
+     * @param optionA first {@link Option} to combine
+     * @param optionB second {@link Option} to combine
+     * @param f {@link BiFunction} to combine with
+     * @param <A> type of value of {@code optionA}
+     * @param <B> type of value of {@code optionB}
+     * @param <R> type of value of resulting {@link Option}
+     * @return combined {@link Option} or {@code None}
+     * @see Option#zip(Option, Option, Option, Function3)
+     * @see Option#zip(Option, Option, Option, Option, Function4)
+     */
+    public static <A, B, R> Option<R> zip(Option<A> optionA, Option<B> optionB, BiFunction<? super A, ? super B, R> f) {
+        Objects.requireNonNull(f, "f is null");
+        Objects.requireNonNull(optionA, "optionA is null");
+        Objects.requireNonNull(optionB, "optionB is null");
+        return optionA.flatMap(a -> optionB.map(b -> f.apply(a, b)));
+    }
+
+    /**
+     * If all provided {@link Option Options} are {@code Some} their values are combined using the
+     * provided {@link Function3} otherwise {@code None} is returned.
+     *
+     * <pre>{@code
+     * // = Some("abc")
+     * Option<String> some = Option.zip(Option.some("a"), Option.some("b"), Option.some("c"), (a, b, c) -> a + b + c);
+     * // = None
+     * Option<String> none = Option<String> some = Option.zip(Option.some("a"), Option.none(), Option.some("c"), (a, b, c) -> a + b + c);
+     * }</pre>
+     *
+     * @param optionA first {@link Option} to combine
+     * @param optionB second {@link Option} to combine
+     * @param optionC third {@link Option} to combine
+     * @param f {@link Function3} to combine with
+     * @param <A> type of value of {@code optionA}
+     * @param <B> type of value of {@code optionB}
+     * @param <C> type of value of {@code optionC}
+     * @param <R> type of value of resulting {@link Option}
+     * @return combined {@link Option} or {@code None}
+     * @see Option#zip(Option, Option, BiFunction)
+     * @see Option#zip(Option, Option, Option, Option, Function4)
+     */
+    public static <A, B, C, R> Option<R> zip(Option<A> optionA, Option<B> optionB, Option<C> optionC, Function3<? super A, ? super B, ? super C, R> f) {
+        Objects.requireNonNull(f, "f is null");
+        Objects.requireNonNull(optionA, "optionA is null");
+        Objects.requireNonNull(optionB, "optionB is null");
+        Objects.requireNonNull(optionC, "optionC is null");
+        return optionA.flatMap(a -> optionB.flatMap(b -> optionC.map(c  -> f.apply(a, b, c))));
+    }
+
+    /**
+     * If all provided {@link Option Options} are {@code Some} their values are combined using the
+     * provided {@link Function4} otherwise {@code None} is returned.
+     *
+     * <pre>{@code
+     * // = Some("abcd")
+     * Option<String> some = Option.zip(Option.some("a"), Option.some("b"), Option.some("c"), Option.some("d"), (a, b, c, d) -> a + b + c + d);
+     * // = None
+     * Option<String> none = Option<String> some = Option.zip(Option.some("a"), Option.none(), Option.some("c"), Option.some("d"), (a, b, c, d) -> a + b + c + d);
+     * }</pre>
+     *
+     * @param optionA first {@link Option} to combine
+     * @param optionB second {@link Option} to combine
+     * @param optionC third {@link Option} to combine
+     * @param optionD fourth {@link Option} to combine
+     * @param f {@link Function4} to combine with
+     * @param <A> type of value of {@code optionA}
+     * @param <B> type of value of {@code optionB}
+     * @param <C> type of value of {@code optionC}
+     * @param <D> type of value of {@code optionD}
+     * @param <R> type of value of resulting {@link Option}
+     * @return combined {@link Option} or {@code None}
+     * @see Option#zip(Option, Option, BiFunction)
+     * @see Option#zip(Option, Option, Option, Function3) 
+     */
+    public static <A, B, C, D, R> Option<R> zip(Option<A> optionA, Option<B> optionB, Option<C> optionC, Option<D> optionD, Function4<? super A, ? super B, ? super C, ? super D, R> f) {
+        Objects.requireNonNull(f, "f is null");
+        Objects.requireNonNull(optionA, "optionA is null");
+        Objects.requireNonNull(optionB, "optionB is null");
+        Objects.requireNonNull(optionC, "optionC is null");
+        Objects.requireNonNull(optionD, "optionD is null");
+        return optionA.flatMap(a -> optionB.flatMap(b -> optionC.flatMap(c  -> optionD.map(d -> f.apply(a, b, c, d)))));
     }
 
     /**
