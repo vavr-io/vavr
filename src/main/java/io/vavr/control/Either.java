@@ -657,7 +657,7 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
      * Filters this right-biased {@code Either} by testing a predicate.
      * If the {@code Either} is a {@code Right} and the predicate doesn't match, the
      * {@code Either} will be turned into a {@code Left} with contents computed by applying
-     * the filterVal function to the {@code Either} value.
+     * the zero function to the {@code Either} value.
      *
      * <pre>{@code
      * // = Left("bad: a")
