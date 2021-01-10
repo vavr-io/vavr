@@ -2169,6 +2169,19 @@ def generateMainClasses(): Unit = {
 
             ${(i < N).gen(xs"""
               /$javadoc
+               * Prepend a value to this tuple.
+               *
+               * @param <T0> type of the value to prepend
+               * @param t0 the value to prepend
+               * @return a new Tuple with the value prepended
+               */
+              public <T0> Tuple${i+1}<${(0 to i).gen(j => s"T$j")(", ")}> prepend(T0 t0) {
+                  return ${im.getType("io.vavr.Tuple")}.of(t0${(i > 0).gen(", ")}${(1 to i).gen(k => s"_$k")(", ")});
+              }
+            """)}
+
+            ${(i < N).gen(xs"""
+              /$javadoc
                * Append a value to this tuple.
                *
                * @param <T${i+1}> type of the value to append
