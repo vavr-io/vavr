@@ -3654,6 +3654,15 @@ def generateTestClasses(): Unit = {
 
               ${(i < N).gen(xs"""
                 @$test
+                public void shouldPrependValue() {
+                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(", ")})"}.prepend(${i+1});
+                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> expected = Tuple.of(${i+1}${(i > 0).gen(", ")}${(1 to i).gen(j => xs"$j")(", ")});
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """)}
+
+              ${(i < N).gen(xs"""
+                @$test
                 public void shouldAppendValue() {
                     final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(", ")})"}.append(${i+1});
                     final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> expected = Tuple.of(${(1 to i+1).gen(j => xs"$j")(", ")});

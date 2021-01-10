@@ -99,6 +99,13 @@ public class Tuple1Test {
     }
 
     @Test
+    public void shouldPrependValue() {
+        final Tuple2<Integer, Integer> actual = Tuple.of(1).prepend(2);
+        final Tuple2<Integer, Integer> expected = Tuple.of(2, 1);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldAppendValue() {
         final Tuple2<Integer, Integer> actual = Tuple.of(1).append(2);
         final Tuple2<Integer, Integer> expected = Tuple.of(1, 2);
