@@ -143,6 +143,17 @@ public final class Tuple1<T1> implements Tuple, Serializable {
     }
 
     /**
+     * Prepend a value to this tuple.
+     *
+     * @param <T0> type of the value to prepend
+     * @param t0 the value to prepend
+     * @return a new Tuple with the value prepended
+     */
+    public <T0> Tuple2<T0, T1> prepend(T0 t0) {
+        return Tuple.of(t0, _1);
+    }
+
+    /**
      * Append a value to this tuple.
      *
      * @param <T2> type of the value to append

@@ -2169,6 +2169,19 @@ def generateMainClasses(): Unit = {
 
             ${(i < N).gen(xs"""
               /$javadoc
+               * Prepend a value to this tuple.
+               *
+               * @param <T0> type of the value to prepend
+               * @param t0 the value to prepend
+               * @return a new Tuple with the value prepended
+               */
+              public <T0> Tuple${i+1}<${(0 to i).gen(j => s"T$j")(", ")}> prepend(T0 t0) {
+                  return ${im.getType("io.vavr.Tuple")}.of(t0${(i > 0).gen(", ")}${(1 to i).gen(k => s"_$k")(", ")});
+              }
+            """)}
+
+            ${(i < N).gen(xs"""
+              /$javadoc
                * Append a value to this tuple.
                *
                * @param <T${i+1}> type of the value to append
@@ -3638,6 +3651,15 @@ def generateTestClasses(): Unit = {
                   final Tuple0 actual = tuple.apply($functionArgs -> Tuple0.instance());
                   assertThat(actual).isEqualTo(Tuple0.instance());
               }
+
+              ${(i < N).gen(xs"""
+                @$test
+                public void shouldPrependValue() {
+                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(", ")})"}.prepend(${i+1});
+                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> expected = Tuple.of(${i+1}${(i > 0).gen(", ")}${(1 to i).gen(j => xs"$j")(", ")});
+                    assertThat(actual).isEqualTo(expected);
+                }
+              """)}
 
               ${(i < N).gen(xs"""
                 @$test

@@ -196,6 +196,13 @@ public class Tuple4Test {
     }
 
     @Test
+    public void shouldPrependValue() {
+        final Tuple5<Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2, 3, 4).prepend(5);
+        final Tuple5<Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(5, 1, 2, 3, 4);
+        assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
     public void shouldAppendValue() {
         final Tuple5<Integer, Integer, Integer, Integer, Integer> actual = Tuple.of(1, 2, 3, 4).append(5);
         final Tuple5<Integer, Integer, Integer, Integer, Integer> expected = Tuple.of(1, 2, 3, 4, 5);
