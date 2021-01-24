@@ -20,7 +20,7 @@ apply plugin: 'signing'
 
 ext.ammoniteScalaVersion = '2.13' // Currently, generator/Generator.sc does not build with Scala 2.13
 ext.ammoniteVersion = '2.0.4'
-ext.assertjVersion = '3.15.0'
+ext.assertjVersion = '3.19.0'
 ext.junitVersion = '4.13'
 
 repositories {
