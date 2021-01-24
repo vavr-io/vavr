@@ -101,12 +101,12 @@ public final class Tuple0 implements Tuple, Serializable {
     /**
      * Append a value to this tuple.
      *
-     * @param <T1> type of the value to append
-     * @param t1 the value to append
+     * @param <T> type of the value to append
+     * @param t the value to append
      * @return a new Tuple with the value appended
      */
-    public <T1> Tuple1<T1> append(T1 t1) {
-        return Tuple.of(t1);
+    public <T> Tuple1<T> append(T t) {
+        return Tuple.of(t);
     }
 
     /**

@@ -434,12 +434,12 @@ public final class Tuple5<T1, T2, T3, T4, T5> implements Tuple, Serializable {
     /**
      * Append a value to this tuple.
      *
-     * @param <T6> type of the value to append
-     * @param t6 the value to append
+     * @param <T> type of the value to append
+     * @param t the value to append
      * @return a new Tuple with the value appended
      */
-    public <T6> Tuple6<T1, T2, T3, T4, T5, T6> append(T6 t6) {
-        return Tuple.of(_1, _2, _3, _4, _5, t6);
+    public <T> Tuple6<T1, T2, T3, T4, T5, T> append(T t) {
+        return Tuple.of(_1, _2, _3, _4, _5, t);
     }
 
     /**

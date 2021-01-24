@@ -2184,12 +2184,12 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * Append a value to this tuple.
                *
-               * @param <T${i+1}> type of the value to append
-               * @param t${i+1} the value to append
+               * @param <T> type of the value to append
+               * @param t the value to append
                * @return a new Tuple with the value appended
                */
-              public <T${i+1}> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(", ")}> append(T${i+1} t${i+1}) {
-                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}t${i+1});
+              public <T> Tuple${i+1}<${(1 to i).gen(j => s"T$j")(", ")}${(i > 0).gen(", ")}T> append(T t) {
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}t);
               }
             """)}
 
