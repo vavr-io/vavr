@@ -486,12 +486,12 @@ public final class Tuple6<T1, T2, T3, T4, T5, T6> implements Tuple, Serializable
     /**
      * Prepend a value to this tuple.
      *
-     * @param <T0> type of the value to prepend
-     * @param t0 the value to prepend
+     * @param <T> type of the value to prepend
+     * @param t the value to prepend
      * @return a new Tuple with the value prepended
      */
-    public <T0> Tuple7<T0, T1, T2, T3, T4, T5, T6> prepend(T0 t0) {
-        return Tuple.of(t0, _1, _2, _3, _4, _5, _6);
+    public <T> Tuple7<T, T1, T2, T3, T4, T5, T6> prepend(T t) {
+        return Tuple.of(t, _1, _2, _3, _4, _5, _6);
     }
 
     /**

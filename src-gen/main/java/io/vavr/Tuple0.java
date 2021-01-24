@@ -90,12 +90,12 @@ public final class Tuple0 implements Tuple, Serializable {
     /**
      * Prepend a value to this tuple.
      *
-     * @param <T0> type of the value to prepend
-     * @param t0 the value to prepend
+     * @param <T> type of the value to prepend
+     * @param t the value to prepend
      * @return a new Tuple with the value prepended
      */
-    public <T0> Tuple1<T0> prepend(T0 t0) {
-        return Tuple.of(t0);
+    public <T> Tuple1<T> prepend(T t) {
+        return Tuple.of(t);
     }
 
     /**
