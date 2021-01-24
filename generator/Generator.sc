@@ -2171,12 +2171,12 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * Prepend a value to this tuple.
                *
-               * @param <T0> type of the value to prepend
-               * @param t0 the value to prepend
+               * @param <T> type of the value to prepend
+               * @param t the value to prepend
                * @return a new Tuple with the value prepended
                */
-              public <T0> Tuple${i+1}<${(0 to i).gen(j => s"T$j")(", ")}> prepend(T0 t0) {
-                  return ${im.getType("io.vavr.Tuple")}.of(t0${(i > 0).gen(", ")}${(1 to i).gen(k => s"_$k")(", ")});
+              public <T> Tuple${i+1}<T${(i > 0).gen(", ")}${(1 to i).gen(j => s"T$j")(", ")}> prepend(T t) {
+                  return ${im.getType("io.vavr.Tuple")}.of(t${(i > 0).gen(", ")}${(1 to i).gen(k => s"_$k")(", ")});
               }
             """)}
 
