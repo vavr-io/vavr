@@ -26,6 +26,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -1917,6 +1918,17 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldSlideNilByClassifier() {
         assertThat(empty().slideBy(Function.identity())).isEmpty();
+    }
+
+    @Test(timeout=1000)
+    public void shouldTerminateSlideByClassifier() {
+        AtomicInteger ai = new AtomicInteger(0);
+        List<List<String>> expected = List.of(List.of("a", "-"), List.of( "-"), List.of("d") );
+        List<List<String>> actual = List.of("a", "-", "-", "d")
+                .slideBy(x -> x.equals("-") ? ai.getAndIncrement() : ai.get())
+                .toList();
+        assertThat(actual).containsAll(expected);
+        assertThat(expected).containsAll(actual);
     }
 
     @Test
