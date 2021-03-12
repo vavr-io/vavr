@@ -25,8 +25,8 @@ import scala.reflect.macros.whitebox
 
 val N = 8
 val VARARGS = 10
-val TARGET_MAIN = s"src-gen/main/java"
-val TARGET_TEST = s"src-gen/test/java"
+val TARGET_MAIN = s"build/generated-sources/main/java"
+val TARGET_TEST = s"build/generated-sources/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
 
 /**
@@ -37,7 +37,7 @@ generateMainClasses()
 generateTestClasses()
 
 /**
- * Generate Vavr src-gen/main/java classes
+ * Generate Vavr build/generated-sources/main/java classes
  */
 def generateMainClasses(): Unit = {
 

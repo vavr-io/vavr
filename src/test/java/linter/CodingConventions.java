@@ -74,7 +74,7 @@ public class CodingConventions {
     }
 
     private static final Supplier<List<Class<?>>> vavrTypes = Function0.of(() -> getClasses(
-            "src/main/java", "src-gen/main/java"
+            "src/main/java", "build/generated-sources/main/java"
     )).memoized();
 
     private static List<Class<?>> getClasses(String... startDirs) {

@@ -10,61 +10,33 @@
  */
 plugins {
     id "net.researchgate.release" version "2.8.1"
+    id 'io.vavr.ammonite'
+    id 'jacoco'
+    id 'maven' // THIS IS DEPRECATED!
+    id 'signing'
 }
 
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'maven'
-apply plugin: 'signing'
+ammonite {
+    ammoniteVersion = '2.0.4'
+    scalaVersion = '2.13'
+}
 
-ext.ammoniteScalaVersion = '2.13' // Currently, generator/Generator.sc does not build with Scala 2.13
-ext.ammoniteVersion = '2.0.4'
 ext.assertjVersion = '3.19.0'
 ext.junitVersion = '4.13'
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', 'src-gen/main/java']
-        }
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
     }
-    test {
-        java {
-            srcDirs = ['src/test/java', 'src-gen/test/java']
-        }
-    }
+    withSourcesJar()
+    withJavadocJar()
 }
-
-task generateSources() {
-    doLast {
-        delete 'src-gen'
-        def ammoniteDir = file("generator/bin")
-        if (!ammoniteDir.exists()) {
-            ammoniteDir.mkdirs()
-        }
-        def ammoniteJar = new File(ammoniteDir, "amm-${ammoniteScalaVersion}-${ammoniteVersion}.jar")
-        if (!ammoniteJar.exists()) {
-            def ammoniteReleaseUrl = "https://github.com/lihaoyi/Ammonite/releases/download/${ammoniteVersion}/${ammoniteScalaVersion}-${ammoniteVersion}"
-            ant.get(src: ammoniteReleaseUrl, dest: ammoniteJar)
-        }
-        javaexec {
-            main = "-jar"
-            args = [ammoniteJar, "generator/Generator.sc"]
-        }
-    }
-}
-
-compileJava.dependsOn 'generateSources'
 
 tasks.withType(JavaCompile) {
-    sourceCompatibility = 8
-    targetCompatibility = 8
     options.encoding = 'UTF-8'
     options.compilerArgs = [ '-Werror', '-Xlint:all', '-Xlint:-deprecation' ]
 }
@@ -91,19 +63,9 @@ jar {
     }
 }
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-}
-
 task testSourcesJar(type: Jar) {
     from sourceSets.test.allSource
     archiveClassifier = 'test-sources'
-}
-
-task javadocJar(type: Jar) {
-    from javadoc
-    archiveClassifier = 'javadoc'
 }
 
 artifacts {

@@ -1,1 +1,3 @@
 rootProject.name = 'vavr'
+
+includeBuild 'build-logic'

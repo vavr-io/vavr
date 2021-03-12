@@ -1,0 +1,36 @@
+import io.vavr.gradle.AmmoniteExtension
+import io.vavr.gradle.AmmoniteCodeGenerator
+import io.vavr.gradle.AmmoniteDownload
+
+plugins {
+    id 'java-library'
+}
+
+def ammoniteExtension = extensions.create('ammonite', AmmoniteExtension)
+
+def ammoniteDownload = tasks.register("ammoniteDownload", AmmoniteDownload) {
+    extension.set(ammoniteExtension)
+    outputDirectory.fileProvider(providers.provider {
+        new File("${gradle.gradleUserHomeDir}/caches/ammonite/${ammoniteExtension.scalaVersion.get()}-${ammoniteExtension.ammoniteVersion.get()}")
+    })
+}
+
+def ammoniteCodeGen = tasks.register("ammonite", AmmoniteCodeGenerator) {
+    classpath.from(ammoniteDownload)
+    scriptFile.set(layout.projectDirectory.file("generator/Generator.sc"))
+    outputDirectory.set(layout.buildDirectory.dir("generated-sources"))
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDir(ammoniteCodeGen.get().outputDirectory.dir("main/java") )
+        }
+    }
+    test {
+        java {
+            srcDir(ammoniteCodeGen.get().outputDirectory.dir("test/java") )
+        }
+    }
+}
