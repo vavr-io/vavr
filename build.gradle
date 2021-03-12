@@ -36,7 +36,7 @@ java {
     withJavadocJar()
 }
 
-tasks.withType(JavaCompile) {
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs = [ '-Werror', '-Xlint:all', '-Xlint:-deprecation' ]
 }
@@ -46,24 +46,24 @@ dependencies {
     testImplementation "org.assertj:assertj-core:$assertjVersion"
 }
 
-jacocoTestReport {
+tasks.named('jacocoTestReport') {
     reports {
         xml.enabled = true
     }
 }
 
-check {
+tasks.named('check') {
     dependsOn jacocoTestReport
     dependsOn javadoc
 }
 
-jar {
+tasks.named('jar') {
     manifest {
         attributes('Automatic-Module-Name': 'io.vavr')
     }
 }
 
-task testSourcesJar(type: Jar) {
+tasks.register('testSourcesJar', Jar) {
     from sourceSets.test.allSource
     archiveClassifier = 'test-sources'
 }
@@ -151,4 +151,6 @@ release {
     }
 }
 
-afterReleaseBuild.dependsOn uploadArchives
+tasks.named('afterReleaseBuild') {
+    dependsOn uploadArchives
+}
