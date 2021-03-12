@@ -2,3 +2,11 @@ plugins {
     id 'groovy-gradle-plugin'
 }
 
+repositories {
+    gradlePluginPortal()
+}
+
+dependencies {
+    implementation 'net.researchgate:gradle-release:2.8.1'
+    implementation 'io.github.gradle-nexus:publish-plugin:1.0.0'
+}

@@ -1,0 +1,43 @@
+/**
+ * This plugin configures the vavr library: compilation options, jacoco support,
+ * additional artifacts like test sources jar, automatic module name...
+ */
+plugins {
+    id 'java-library'
+    id 'jacoco'
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+    withSourcesJar()
+    withJavadocJar()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs = [ '-Werror', '-Xlint:all', '-Xlint:-deprecation' ]
+}
+
+tasks.named('jacocoTestReport') {
+    reports {
+        xml.enabled = true
+    }
+}
+
+tasks.named('check') {
+    dependsOn jacocoTestReport
+    dependsOn javadoc
+}
+
+tasks.named('jar') {
+    manifest {
+        attributes('Automatic-Module-Name': 'io.vavr')
+    }
+}
+
+tasks.register('testSourcesJar', Jar) {
+    from sourceSets.test.allSource
+    archiveClassifier = 'test-sources'
+}

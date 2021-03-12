@@ -5,15 +5,31 @@
  *   -> test reports: ./build/reports/tests/test/index.html
  *   -> coverage reports: ./build/reports/jacoco/test/html/index.html
  *   -> javadoc: `./build/docs/javadoc`
- * 
- * - Release: `./gradlew release --info`
+ *
+ * - Release:
+ *   -> checking the generated artifacts: `./gradlew publishAllPublicationsToTestRepo` then look into `build/repo`
+ *   -> Releasing: `./gradlew release --info`
+ *
+ * In order to perform a release you need to:
+ *   - Add the following properties to ~/.gradle/gradle.properties
+ *     ossrhUsername=<username>
+ *     ossrhPassword=<password>
+ *   - or pass the credentials as command line parameters
+ *     ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -DossrhUsername=<my-username> -DossrhPassword=<my-password>
+ *
+ * And for signing the artifacts:
+ *   - Get public key ID `gpg --list-keys --keyid-format SHORT`
+ *   - Export key `gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg`
+ *   - Add the following properties to ~/.gradle/gradle.properties
+ *          signing.keyId=0ABCDEF
+ *          signing.password=password
+ *          signing.secretKeyRingFile=/absolute/path/to/.gnupg/secring.gpg
  */
+
 plugins {
-    id "net.researchgate.release" version "2.8.1"
+    id 'io.vavr.library'
     id 'io.vavr.ammonite'
-    id 'jacoco'
-    id 'maven' // THIS IS DEPRECATED!
-    id 'signing'
+    id 'io.vavr.publishing'
 }
 
 ammonite {
@@ -28,129 +44,7 @@ repositories {
     mavenCentral()
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
-    withSourcesJar()
-    withJavadocJar()
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-    options.compilerArgs = [ '-Werror', '-Xlint:all', '-Xlint:-deprecation' ]
-}
-
 dependencies {
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
-}
-
-tasks.named('jacocoTestReport') {
-    reports {
-        xml.enabled = true
-    }
-}
-
-tasks.named('check') {
-    dependsOn jacocoTestReport
-    dependsOn javadoc
-}
-
-tasks.named('jar') {
-    manifest {
-        attributes('Automatic-Module-Name': 'io.vavr')
-    }
-}
-
-tasks.register('testSourcesJar', Jar) {
-    from sourceSets.test.allSource
-    archiveClassifier = 'test-sources'
-}
-
-artifacts {
-    archives javadocJar, sourcesJar, testSourcesJar
-}
-
-// Requirements:
-//
-// - Get public key ID `gpg --list-keys --keyid-format SHORT`
-// - Export key `gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg`
-// - Add the following properties to ~/.gradle/gradle.properties
-//      signing.keyId=0ABCDEF
-//      signing.password=password
-//      signing.secretKeyRingFile=/absolute/path/to/.gnupg/secring.gpg
-//
-signing {
-    required { !version.endsWith("-SNAPSHOT") }
-    sign configurations.archives
-}
-
-// Requirements:
-//
-// - Add the following properties to ~/.gradle/gradle.properties
-//     ossrhUsername=<username>
-//     ossrhPassword=<password>
-// - Or pass the credentials as command line parameters
-//     ./gradlew uploadArchives -PossrhUsername=<my-username> -PossrhPassword=<my-password>
-//
-uploadArchives {
-    repositories {
-        mavenDeployer {
-
-            def sonatypeUser = findProperty("ossrhUsername")
-            def sonatypePass = findProperty("ossrhPassword")
-
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatypeUser, password: sonatypePass)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: sonatypeUser, password: sonatypePass)
-            }
-
-            // Generate Sonatype conform .pom for Bintray Maven-sync, see https://central.sonatype.org/pages/requirements.html
-            pom.project {
-                name = project.name
-                description = "Vavr is an object-functional library for Java 8+"
-                url = 'https://www.vavr.io'
-                inceptionYear '2014'
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                developers {
-                    developer {
-                        name = 'Daniel Dietrich'
-                        email = 'cafebab3@gmail.com'
-                        organization = 'Vavr'
-                        organizationUrl = 'https://github.com/vavr-io'
-                    }
-                }
-                scm {
-                    connection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                    developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                    url = 'https://github.com/vavr-io/vavr/tree/master'
-                }
-            }
-        }
-    }
-}
-
-release {
-    buildTasks = ['build']
-    tagTemplate = '$name-$version'
-    git {
-        requireBranch = ''
-        pushToRemote = 'origin'
-        pushToCurrentBranch = true
-    }
-}
-
-tasks.named('afterReleaseBuild') {
-    dependsOn uploadArchives
 }

@@ -1,0 +1,88 @@
+/**
+ * This build scripts configures publication (POM files, Maven Central release, ...)
+ */
+plugins {
+    id 'net.researchgate.release'
+    id 'maven-publish'
+    id 'signing'
+    id 'io.github.gradle-nexus.publish-plugin'
+}
+
+// What we want to publish
+publishing {
+    repositories {
+        maven {
+            // A test repository which can be used to
+            // verify what is going to be uploaded by
+            // running ./gradlew publishAllPublicationsToTestRepo
+            name = "testRepo"
+            url = "${buildDir}/repo"
+        }
+    }
+
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            // vavr also publishes a test sources jar
+            artifact tasks.named('testSourcesJar')
+            pom {
+                name = project.name
+                description = "Vavr is an object-functional library for Java 8+"
+                url = 'https://www.vavr.io'
+                inceptionYear = '2014'
+                licenses {
+                    license {
+                        name = 'The Apache Software License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        name = 'Daniel Dietrich'
+                        email = 'cafebab3@gmail.com'
+                        organization = 'Vavr'
+                        organizationUrl = 'https://github.com/vavr-io'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                    developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
+                    url = 'https://github.com/vavr-io/vavr/tree/master'
+                }
+            }
+        }
+    }
+}
+
+// Signing configuration mandatory for Maven Central
+signing {
+    required { !version.endsWith("-SNAPSHOT") }
+    publishing.publications.configureEach {
+        sign(it)
+    }
+}
+
+// Configure the publishing repositories for Maven Central
+nexusPublishing {
+    repositories {
+        sonatype {
+            username.set(providers.systemProperty("ossrhUsername").forUseAtConfigurationTime())
+            password.set(providers.systemProperty("ossrhPassword").forUseAtConfigurationTime())
+        }
+    }
+}
+
+// Configure the "release" plugin
+tasks.named('afterReleaseBuild') {
+    dependsOn "publishToSonatype", "closeAndReleaseSonatypeStagingRepository"
+}
+
+release {
+    buildTasks = ['build']
+    tagTemplate = '$name-$version'
+    git {
+        requireBranch = ''
+        pushToRemote = 'origin'
+        pushToCurrentBranch = true
+    }
+}
