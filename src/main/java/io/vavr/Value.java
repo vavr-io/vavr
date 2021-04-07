@@ -1054,6 +1054,18 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Converts this to a {@link Map}, with the elements as values.
+     *
+     * @param keyMapper   A function that maps an element to a key
+     * @param <K>         The key type
+     * @return A new {@link HashMap}.
+     */
+    default <K> Map<K, T> toMapBy(Function<? super T, ? extends K> keyMapper) {
+        Objects.requireNonNull(keyMapper, "keyMapper is null");
+        return toMap(keyMapper, v -> v);
+    }
+    
+    /**
      * Converts this to a {@link Map}.
      *
      * @param keyMapper   A function that maps an element to a key
