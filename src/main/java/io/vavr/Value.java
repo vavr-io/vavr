@@ -52,6 +52,7 @@ import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
 
 import static io.vavr.API.*;
+import static java.util.function.Function.identity;
 
 /**
  * Functional programming is all about values and transformation of values using functions. The {@code Value}
@@ -1062,7 +1063,7 @@ public interface Value<T> extends Iterable<T> {
      */
     default <K> Map<K, T> toMapBy(Function<? super T, ? extends K> keyMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
-        return toMap(keyMapper, v -> v);
+        return toMap(keyMapper, identity());
     }
     
     /**
