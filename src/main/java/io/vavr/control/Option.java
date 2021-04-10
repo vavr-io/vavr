@@ -176,6 +176,25 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     }
 
     /**
+     * Returns the single instance of {@code None}
+     *
+     * <pre>{@code
+     * // = None
+     * Option<String> none = Option.none();
+     * }</pre>
+     *
+     * @param <T> component type
+     * @param type the class of the component type
+     * @return the single instance of {@code None}
+     */
+    @SuppressWarnings("unused")
+    public static <T> Option<T> none(Class<T> type) {
+        @SuppressWarnings("unchecked")
+        final None<T> none = (None<T>) None.INSTANCE;
+        return none;
+    }
+    
+    /**
      * Narrows a widened {@code Option<? extends T>} to {@code Option<T>}
      * by performing a type-safe cast. This is eligible because immutable/read-only
      * collections are covariant.

@@ -711,4 +711,11 @@ public class OptionTest extends AbstractValueTest {
         assertThat(right.get()).isEqualTo(1);
         assertThat(left.getLeft()).isEqualTo("Empty");
     }
+
+    @Test
+    public void testOptionNoneWithType() {
+        Supplier<Option<String>> noneWithStringTypeSupplier = () -> Option.none(String.class);
+        Object option = noneWithStringTypeSupplier.get();
+        assertThat(option).isEqualTo(Option.none());
+    }
 }
