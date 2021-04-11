@@ -807,6 +807,15 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
         return this;
     }
 
+    public final Validation<E, T> peekError(Consumer<? super E> action) {
+        Objects.requireNonNull(action, "action is null");
+
+        if (isInvalid()) {
+            action.accept(getError());
+        }
+        return this;
+    }
+
     /**
      * A {@code Validation}'s value is computed synchronously.
      *

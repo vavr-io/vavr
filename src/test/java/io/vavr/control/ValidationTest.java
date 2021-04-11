@@ -224,6 +224,26 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(invalid.flatMap(v -> Validation.valid("ok"))).isSameAs(invalid);
     }
 
+    // -- peekError
+
+    @Test
+    public void shouldPeekErrorNil() {
+        assertThat(empty().peekError(t -> {})).isEqualTo(empty());
+    }
+
+    @Test
+    public void shouldPeekErrorForInvalid() {
+        final int[] effect = { 0 };
+        final Validation<Integer, ?> actual = Validation.invalid(1).peekError(i -> effect[0] = i);
+        assertThat(actual).isEqualTo(Validation.invalid(1));
+        assertThat(effect[0]).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldNotPeekErrorForValid() {
+        Validation.valid(1).peekError(i -> { throw new IllegalStateException(); });
+    }
+
     // -- orElse
 
     @Test
