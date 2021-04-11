@@ -16,7 +16,7 @@
  * </tr>
  * </thead>
  * <tbody>
- * <tr><td>{@linkplain io.vavr.collection.Array}</td><td><small>const</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td></tr>
+ * <tr><td>{@linkplain io.vavr.collection.Array}</td><td><small>const</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>linear</small></td></tr>
  * <tr><td>{@linkplain io.vavr.collection.CharSeq}</td><td><small>const</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>linear</small></td></tr>
  * <tr><td><em>{@linkplain io.vavr.collection.Iterator}</em></td><td><small>const</small></td><td><small>const</small></td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td><td>&mdash;</td></tr>
  * <tr><td>{@linkplain io.vavr.collection.List}</td><td><small>const</small></td><td><small>const</small></td><td><small>linear</small></td><td><small>linear</small></td><td><small>const</small></td><td><small>linear</small></td></tr>
