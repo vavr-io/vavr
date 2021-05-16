@@ -111,7 +111,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A new Vector instance containing the given element
      */
     public static <T> Vector<T> of(T element) {
-        return ofAll(Iterator.of(element));
+        return ofAll(BitMappedTrie.ofAll(new Object[]{element}));
     }
 
     /**
