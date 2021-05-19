@@ -895,8 +895,8 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
      * @return this {@code Try}
      */
     public final Try<T> peek(Consumer<? super Throwable> failureAction, Consumer<? super T> successAction) {
-        Objects.requireNonNull(failureAction, "action is null");
-        Objects.requireNonNull(successAction, "action is null");
+        Objects.requireNonNull(failureAction, "failureAction is null");
+        Objects.requireNonNull(successAction, "successAction is null");
 
         if (isFailure()) {
             failureAction.accept(getCause());
