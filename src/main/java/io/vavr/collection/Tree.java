@@ -786,6 +786,19 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
+    public final <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(
+            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
+        Objects.requireNonNull(unzipper1, "unzipper1 is null");
+        Objects.requireNonNull(unzipper2, "unzipper2 is null");
+        if (isEmpty()) {
+            return Tuple.of(Empty.instance(), Empty.instance());
+        } else {
+            return (Tuple2<Tree<T1>, Tree<T2>>) (Object) Tree.unzip((Node<T>) this, unzipper1, unzipper2);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
     public final <T1, T2, T3> Tuple3<Tree<T1>, Tree<T2>, Tree<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
@@ -1283,6 +1296,19 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
                 .map(child -> unzip(child, unzipper));
         final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
         final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
+        return Tuple.of(node1, node2);
+    }
+
+    private static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> unzip(Node<T> node,
+                                                                Function<? super T, ? extends T1> unzipper1,
+                                                                Function<? super T, ? extends T2> unzipper2) {
+        final T1 value1 = unzipper1.apply(node.getValue());
+        final T2 value2 = unzipper2.apply(node.getValue());
+        final io.vavr.collection.List<Tuple2<Node<T1>, Node<T2>>> children = node
+                .getChildren()
+                .map(child -> unzip(child, unzipper1, unzipper2));
+        final Node<T1> node1 = new Node<>(value1, children.map(t -> t._1));
+        final Node<T2> node2 = new Node<>(value2, children.map(t -> t._2));
         return Tuple.of(node1, node2);
     }
 

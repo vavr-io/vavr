@@ -1237,6 +1237,21 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(
+            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
+        Objects.requireNonNull(unzipper1, "unzipper1 is null");
+        Objects.requireNonNull(unzipper2, "unzipper2 is null");
+        Vector<T1> xs = empty();
+        Vector<T2> ys = empty();
+        for (int i = 0; i < length(); i++) {
+            final T element = get(i);
+            xs = xs.append(unzipper1.apply(element));
+            ys = ys.append(unzipper2.apply(element));
+        }
+        return Tuple.of(xs, ys);
+    }
+
+    @Override
     public <T1, T2, T3> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         Vector<T1> xs = empty();

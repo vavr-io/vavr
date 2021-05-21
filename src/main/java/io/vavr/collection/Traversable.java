@@ -140,6 +140,7 @@ import java.util.stream.DoubleStream;
  * <li>{@link #scanRight(Object, BiFunction)}</li>
  * <li>{@link #span(Predicate)}</li>
  * <li>{@link #unzip(Function)}</li>
+ * <li>{@link #unzip(Function, Function)}</li>
  * <li>{@link #unzip3(Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
@@ -1602,7 +1603,7 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
     /**
-     * Unzips this elements by mapping this elements to pairs which are subsequently split into two distinct
+     * iterators this elements by mapping this elements to pairs which are subsequently split into two distinct
      * sets.
      *
      * @param unzipper a function which converts elements of this to pairs
@@ -1613,6 +1614,19 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      */
     <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(
             Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+
+    /**
+     * Unzips this elements by mapping this elements to a pair of distinct sets.
+     *
+     * @param unzipper1 a function which converts elements of this to elements of first set
+     * @param unzipper2 a function which converts elements of this to elements of second set
+     * @param <T1>      element type returned by unzipper1
+     * @param <T2>      element type returned by unzipper2
+     * @return A pair of set containing elements split by unzipper1, unzipper2
+     * @throws NullPointerException if {@code unzipper} is null
+     */
+    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(
+            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2);
 
     /**
      * Unzips this elements by mapping this elements to triples which are subsequently split into three distinct

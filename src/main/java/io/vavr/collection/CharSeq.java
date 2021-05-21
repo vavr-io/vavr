@@ -1119,6 +1119,21 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public <T1, T2> Tuple2<IndexedSeq<T1>, IndexedSeq<T2>> unzip(
+            Function<? super Character, ? extends T1> unzipper1, Function<? super Character, ? extends T2> unzipper2) {
+        Objects.requireNonNull(unzipper1, "unzipper1 is null");
+        Objects.requireNonNull(unzipper2, "unzipper2 is null");
+        IndexedSeq<T1> xs = Vector.empty();
+        IndexedSeq<T2> ys = Vector.empty();
+        for (int i = 0; i < length(); i++) {
+            final Character element = get(i);
+            xs = xs.append(unzipper1.apply(element));
+            ys = ys.append(unzipper2.apply(element));
+        }
+        return Tuple.of(xs, ys);
+    }
+
+    @Override
     public <T1, T2, T3> Tuple3<IndexedSeq<T1>, IndexedSeq<T2>, IndexedSeq<T3>> unzip3(Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         IndexedSeq<T1> xs = Vector.empty();

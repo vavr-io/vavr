@@ -1479,6 +1479,25 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             return Tuple.of(wrap(xs), wrap(ys));
         }
     }
+    
+    @Override
+    public <T1, T2> Tuple2<Array<T1>, Array<T2>> unzip(
+            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
+        Objects.requireNonNull(unzipper1, "unzipper1 is null");
+        Objects.requireNonNull(unzipper2, "unzipper2 is null");
+        if (isEmpty()) {
+            return Tuple.of(empty(), empty());
+        } else {
+            final Object[] xs = new Object[delegate.length];
+            final Object[] ys = new Object[delegate.length];
+            for (int i = 0; i < delegate.length; i++) {
+                final T element = get(i);
+                xs[i] = unzipper1.apply(element);
+                ys[i] = unzipper2.apply(element);
+            }
+            return Tuple.of(wrap(xs), wrap(ys));
+        }
+    }
 
     @Override
     public <T1, T2, T3> Tuple3<Array<T1>, Array<T2>, Array<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {

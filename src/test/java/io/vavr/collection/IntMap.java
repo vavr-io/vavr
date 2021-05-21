@@ -391,6 +391,14 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(
+            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
+        Objects.requireNonNull(unzipper1, "unzipper1 is null");
+        Objects.requireNonNull(unzipper2, "unzipper2 is null");
+        return iterator().unzip(unzipper1, unzipper2).map(Stream::ofAll, Stream::ofAll);
+    }
+
+    @Override
     public <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);

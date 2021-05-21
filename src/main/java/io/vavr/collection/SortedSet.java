@@ -229,6 +229,9 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
+    <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2);
+
+    @Override
     <T1, T2, T3> Tuple3<? extends SortedSet<T1>, ? extends SortedSet<T2>, ? extends SortedSet<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override

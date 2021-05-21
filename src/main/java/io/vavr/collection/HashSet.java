@@ -904,6 +904,16 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(
+            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
+        Objects.requireNonNull(unzipper1, "unzipper1 is null");
+        Objects.requireNonNull(unzipper2, "unzipper2 is null");
+        final Iterator<T1> t1 = iterator().map(unzipper1);
+        final Iterator<T2> t2 = iterator().map(unzipper2);
+        return Tuple.of(HashSet.ofAll(t1), HashSet.ofAll(t2));
+    }
+
+    @Override
     public <T1, T2, T3> Tuple3<HashSet<T1>, HashSet<T2>, HashSet<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

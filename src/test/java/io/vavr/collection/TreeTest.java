@@ -666,14 +666,17 @@ public class TreeTest extends AbstractTraversableTest {
     @Test
     public void shouldUnzipEmptyTree() {
         assertThat(Tree.empty().unzip(t -> Tuple.of(t, t))).isEqualTo(Tuple.of(Tree.empty(), Tree.empty()));
+        assertThat(Tree.empty().unzip(t -> t, t -> t)).isEqualTo(Tuple.of(Tree.empty(), Tree.empty()));
     }
 
     @Test
     public void shouldUnzipNonEmptyTree() {
         final Tree<Integer> testee = $(1, $(2), $(3));
         final Tuple2<Tree<Integer>, Tree<Integer>> actual = testee.unzip(i -> Tuple.of(i, -i));
+        final Tuple2<Tree<Integer>, Tree<Integer>> actual2unzippers = testee.unzip(i -> i, i -> -i);
         final Tuple2<Tree<Integer>, Tree<Integer>> expected = Tuple.of($(1, $(2), $(3)), $(-1, $(-2), $(-3)));
         assertThat(actual).isEqualTo(expected);
+        assertThat(actual2unzippers).isEqualTo(expected);
     }
 
     @Test
