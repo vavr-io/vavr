@@ -1214,7 +1214,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @Override
     default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(
             Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
-        // return unzip(i -> Tuple.of(unzipper1.apply(i), unzipper2.apply(i)));
         Objects.requireNonNull(unzipper1, "unzipper1 is null");
         Objects.requireNonNull(unzipper2, "unzipper2 is null");
         if (!hasNext()) {
