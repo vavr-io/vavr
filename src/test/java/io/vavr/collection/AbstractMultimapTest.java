@@ -1066,7 +1066,6 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     @Test
     public void shouldUnzipNil() {
         assertThat(emptyMap().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(Stream.empty(), Stream.empty()));
-        assertThat(emptyMap().unzip(x -> x, y -> y)).isEqualTo(Tuple.of(Stream.empty(), Stream.empty()));
         assertThat(emptyMap().unzip((k, v) -> Tuple.of(Tuple.of(k, v), Tuple.of(k, v))))
                 .isEqualTo(Tuple.of(Stream.empty(), Stream.empty()));
     }
@@ -1075,14 +1074,6 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     public void shouldUnzipNonNil() {
         final Multimap<Integer, Integer> map = emptyIntInt().put(0, 0).put(1, 1);
         final Tuple actual = map.unzip(entry -> Tuple.of(entry._1, entry._2 + 1));
-        final Tuple expected = Tuple.of(Stream.of(0, 1), Stream.of(1, 2));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldUnzipNonNilWithTwoUnzippers() {
-        final Multimap<Integer, Integer> map = emptyIntInt().put(0, 0).put(1, 1);
-        final Tuple actual = map.unzip(entry -> entry._1, entry -> entry._2 + 1);
         final Tuple expected = Tuple.of(Stream.of(0, 1), Stream.of(1, 2));
         assertThat(actual).isEqualTo(expected);
     }

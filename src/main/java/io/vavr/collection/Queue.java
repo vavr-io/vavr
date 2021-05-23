@@ -1298,16 +1298,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
-    public <T1, T2> Tuple2<Queue<T1>, Queue<T2>> unzip(
-            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
-        Objects.requireNonNull(unzipper1, "unzipper1 is null");
-        Objects.requireNonNull(unzipper2, "unzipper2 is null");
-
-        final Tuple2<List<T1>, List<T2>> unzippedLists = toList().unzip(unzipper1, unzipper2);
-        return unzippedLists.map(io.vavr.collection.List::toQueue, io.vavr.collection.List::toQueue);
-    }
-
-    @Override
     public <T1, T2, T3> Tuple3<Queue<T1>, Queue<T2>, Queue<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return toList().unzip3(unzipper).map(io.vavr.collection.List::toQueue, io.vavr.collection.List::toQueue, io.vavr.collection.List::toQueue);

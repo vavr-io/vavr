@@ -1669,14 +1669,6 @@ public abstract class Stream<T> implements LinearSeq<T> {
     }
 
     @Override
-    public final <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(
-            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
-        Objects.requireNonNull(unzipper1, "unzipper1 is null");
-        Objects.requireNonNull(unzipper2, "unzipper2 is null");
-        return Tuple.of(map(unzipper1), map(unzipper2));
-    }
-
-    @Override
     public final <T1, T2, T3> Tuple3<Stream<T1>, Stream<T2>, Stream<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

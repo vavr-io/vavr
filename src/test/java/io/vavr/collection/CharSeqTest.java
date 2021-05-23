@@ -3588,19 +3588,11 @@ public class CharSeqTest {
     @Test
     public void shouldUnzipNil() {
         assertThat(CharSeq.empty().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(Vector.empty(), Vector.empty()));
-        assertThat(CharSeq.empty().unzip(x -> x, y -> y)).isEqualTo(Tuple.of(Vector.empty(), Vector.empty()));
     }
 
     @Test
     public void shouldUnzipNonNil() {
         final Tuple actual = CharSeq.of('0', '1').unzip(i -> Tuple.of(i, i == '0' ? 'a' : 'b'));
-        final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldUnzipNonNilWithTwoUnzippers() {
-        final Tuple actual = CharSeq.of('0', '1').unzip(i -> i, i -> i == '0' ? 'a' : 'b');
         final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'));
         assertThat(actual).isEqualTo(expected);
     }

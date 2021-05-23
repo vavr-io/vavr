@@ -1625,8 +1625,14 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @return A pair of set containing elements split by unzipper1, unzipper2
      * @throws NullPointerException if {@code unzipper} is null
      */
-    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(
-            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2);
+    default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(
+            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
+        Objects.requireNonNull(unzipper1, "unzipper1 is null");
+        Objects.requireNonNull(unzipper2, "unzipper2 is null");
+        final Iterator<T1> iter1 = iterator().map(unzipper1);
+        final Iterator<T2> iter2 = iterator().map(unzipper2);
+        return Tuple.of(iter1, iter2);
+    }
 
     /**
      * Unzips this elements by mapping this elements to triples which are subsequently split into three distinct

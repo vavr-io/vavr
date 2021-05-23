@@ -1219,9 +1219,9 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Stream<Tuple2<? extends T1, ? extends T2>> source = Stream.ofAll(() -> map(i -> Tuple.of(unzipper1.apply(i), unzipper2.apply(i))));
-            return Tuple.of(source.map(t -> (T1) t._1).iterator(), source.map(t -> (T2) t._2).iterator());
-        }
+            final Iterator<T1> iter1 = map(unzipper1);
+            final Iterator<T2> iter2 = map(unzipper2);
+            return Tuple.of(iter1, iter2);        }
     }
 
     @Override

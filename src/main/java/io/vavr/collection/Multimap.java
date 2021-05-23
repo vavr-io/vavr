@@ -609,18 +609,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
         return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
     }
 
-    @Override
-    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(
-            Function<? super Tuple2<K, V>, ? extends T1> unzipper1, Function<? super Tuple2<K, V>, ? extends T2> unzipper2) {
-        Objects.requireNonNull(unzipper1, "unzipper1 is null");
-        Objects.requireNonNull(unzipper2, "unzipper2 is null");
-
-        final Iterator<T1> t1 = iterator().map(unzipper1);
-        final Iterator<T2> t2 = iterator().map(unzipper2);
-
-        return Tuple.of(Stream.ofAll(t1), Stream.ofAll(t2));
-    }
-
     default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(BiFunction<? super K, ? super V, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return unzip3(entry -> unzipper.apply(entry._1, entry._2));

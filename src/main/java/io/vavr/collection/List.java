@@ -1649,20 +1649,6 @@ public abstract class List<T> implements LinearSeq<T> {
     }
 
     @Override
-    public final <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
-            Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
-        Objects.requireNonNull(unzipper1, "unzipper1 is null");
-        Objects.requireNonNull(unzipper2, "unzipper2 is null");
-        List<T1> xs = Nil.instance();
-        List<T2> ys = Nil.instance();
-        for (T element : this) {
-            xs = xs.prepend(unzipper1.apply(element));
-            ys = ys.prepend(unzipper2.apply(element));
-        }
-        return Tuple.of(xs.reverse(), ys.reverse());
-    }
-
-    @Override
     public final <T1, T2, T3> Tuple3<List<T1>, List<T2>, List<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");

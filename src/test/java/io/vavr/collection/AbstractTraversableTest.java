@@ -2412,7 +2412,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldUnzipNil() {
         assertThat(empty().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(empty(), empty()));
-        assertThat(empty().unzip(x -> x, y -> y)).isEqualTo(Tuple.of(empty(), empty()));
+        assertThat(empty().unzip(x -> x, y -> y)).isEqualTo(Tuple.of(Iterator.empty(), Iterator.empty()));
     }
 
     @Test
@@ -2425,9 +2425,14 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldUnzipNonNilWithTwoUnzippers() {
         final Traversable<Integer> actual0 = of(0, 1);
-        final Tuple actual = actual0.unzip(i -> i, i -> (char) ((short) 'a' + i));
-        final Tuple expected = Tuple.of(of(0, 1), of('a', 'b'));
-        assertThat(actual).isEqualTo(expected);
+        final Tuple2<Iterator<Integer>, Iterator<Character>> actual = actual0.unzip(i -> i, i -> (char) ((short) 'a' + i));
+
+        Traversable<Integer> e1 = of(0, 1);
+        Traversable<Character> e2 = of('a', 'b');
+        final Tuple2<Iterator<Integer>, Iterator<Character>> expected = Tuple.of(e1.iterator(), e2.iterator());
+
+        assertThat(actual._1.toArray()).isEqualTo(expected._1.toArray());
+        assertThat(actual._2.toArray()).isEqualTo(expected._2.toArray());
     }
 
     @Test
