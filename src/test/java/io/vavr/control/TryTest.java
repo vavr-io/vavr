@@ -74,7 +74,7 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Override
-    @Test(expected = NoSuchElementException.class)
+    @Test(expected = RuntimeException.class)
     public void shouldGetEmpty() {
         empty().get();
     }
@@ -739,7 +739,7 @@ public class TryTest extends AbstractValueTest {
                 new Class<?>[] { Value.class },
                 (proxy, method, args) -> Try.failure(new Exception()).get());
         assertThatThrownBy(testee::get)
-                .isInstanceOf(UndeclaredThrowableException.class)
+                .isInstanceOf(RuntimeException.class)
                 .hasCauseExactlyInstanceOf(Exception.class);
     }
 
@@ -863,7 +863,9 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldReturnExceptionWhenRecoveryWasNotSuccess(){
         final Try<?> testee = Try.of(() -> { throw error(); }).recoverWith(IOException.class, x -> failure());
-        assertThatThrownBy(testee::get).isInstanceOf(RuntimeException.class).hasMessage("error");
+        assertThatThrownBy(testee::get)
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasCauseExactlyInstanceOf(RuntimeException.class);
     }
 
     @Test
@@ -881,7 +883,9 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldHandleErrorDuringRecovering(){
         final Try<?> t = Try.of(() -> {throw new IllegalArgumentException(OK);}).recoverWith(IOException.class, x -> { throw new IllegalStateException(FAILURE);});
-        assertThatThrownBy(t::get).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(t::get)
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasCauseExactlyInstanceOf(IllegalArgumentException.class);
     }
 
     // -- recoverWith(Class, Try)
@@ -1418,7 +1422,9 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldFilterNonMatchingPredicateOnSuccess() {
         final Try<?> testee = success().filter(s -> false);
-        assertThatThrownBy(testee::get).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(testee::get)
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasCauseExactlyInstanceOf(NoSuchElementException.class);
     }
 
     @Test
@@ -1461,7 +1467,9 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldFilterNotOnNonMatchingPredicateOnSuccess() {
         final Try<?> success = success().filterNot(s -> true);
-        assertThatThrownBy(success::get).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(success::get)
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasCauseExactlyInstanceOf(NoSuchElementException.class);
     }
 
     @Test
@@ -1539,13 +1547,17 @@ public class TryTest extends AbstractValueTest {
         final Try<?> testee = success().map(s -> {
             throw new RuntimeException("xxx");
         });
-        assertThatThrownBy(testee::get).isInstanceOf(RuntimeException.class).hasMessage("xxx");
+        assertThatThrownBy(testee::get)
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasCauseExactlyInstanceOf(RuntimeException.class);
     }
 
     @Test
     public void shouldThrowWhenCallingFailedOnSuccess() {
         final Try<?> testee = success().failed();
-        assertThatThrownBy(testee::get).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(testee::get)
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasCauseExactlyInstanceOf(NoSuchElementException.class);
     }
 
     @Test(expected = UnsupportedOperationException.class)

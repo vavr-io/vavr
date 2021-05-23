@@ -111,7 +111,7 @@ public abstract class AbstractValueTest {
     public void shouldGetNonEmpty() {
         assertThat(of(1).get()).isEqualTo(1);
     }
-    
+
     // -- getOrElse(T)
 
     @Test
@@ -164,7 +164,7 @@ public abstract class AbstractValueTest {
         assertThat(empty().getOrElseTry(() -> 2)).isEqualTo(2);
     }
 
-    @Test(expected = Error.class)
+    @Test(expected = RuntimeException.class)
     public void shouldThrowWhenCallingGetOrElseTryOnEmptyValueAndTryIsAFailure() {
         empty().getOrElseTry(() -> {
             throw new Error();

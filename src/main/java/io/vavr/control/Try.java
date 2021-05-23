@@ -1303,7 +1303,7 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
 
         @Override
         public T get() {
-            return sneakyThrow(cause);
+            throw new RuntimeException(cause);
         }
 
         @Override
