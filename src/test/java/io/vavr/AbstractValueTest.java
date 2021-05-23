@@ -102,7 +102,7 @@ public abstract class AbstractValueTest {
 
     // -- get()
 
-    @Test(expected = NoSuchElementException.class)
+    @Test(expected = RuntimeException.class)
     public void shouldGetEmpty() {
         empty().get();
     }
@@ -518,7 +518,6 @@ public abstract class AbstractValueTest {
     public void shouldConvertEmptyToTry() {
         final Try<?> actual = empty().toTry();
         assertThat(actual.isFailure()).isTrue();
-        assertThat(actual.getCause()).isInstanceOf(NoSuchElementException.class);
     }
 
     @Test

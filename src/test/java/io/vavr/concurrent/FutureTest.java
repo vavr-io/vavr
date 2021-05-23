@@ -45,6 +45,7 @@ import java.util.function.Function;
 import static io.vavr.concurrent.Concurrent.waitUntil;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static io.vavr.concurrent.Concurrent.zZz;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
 @SuppressWarnings("deprecation")
@@ -608,7 +609,7 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
         assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 milliseconds");
     }
-    
+
     @Test
     public void shouldHandleInterruptedExceptionCorrectlyInAwait() {
         // the Future should never be completed as long as the InterruptedException is rethrown by the Try...
@@ -714,7 +715,7 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.isCancelled()).isTrue();
     }
 
-    @Test(expected = CancellationException.class)
+    @Test
     public void shouldThrowOnGetAfterCancellation() {
         final Object monitor = new Object();
         final AtomicBoolean running = new AtomicBoolean(false);
@@ -729,8 +730,9 @@ public class FutureTest extends AbstractValueTest {
             future.cancel();
         }
         assertThat(future.isCancelled()).isTrue();
-        future.get();
-        fail("Future was expected to throw on get() after cancellation!");
+        assertThatThrownBy(future::get)
+                .isExactlyInstanceOf(RuntimeException.class)
+                .hasCauseExactlyInstanceOf(CancellationException.class);
     }
 
     @Test
@@ -886,7 +888,7 @@ public class FutureTest extends AbstractValueTest {
     public void shouldBeFailed() {
         assertThat(Future.failed(new Exception()).isFailure()).isTrue();
     }
-    
+
     // -- onComplete()
 
     @Test
@@ -1013,7 +1015,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertFailedFutureToTry() {
-        assertThat(Future.failed(new Error("!")).toTry()).isEqualTo(Try.failure(new Error("!")));
+        assertThat(Future.failed(new Error("!")).toTry()).isInstanceOf(Try.Failure.class);
     }
 
     // -- transform()
