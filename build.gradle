@@ -5,41 +5,72 @@
  *   -> test reports: ./build/reports/tests/test/index.html
  *   -> coverage reports: ./build/reports/jacoco/test/html/index.html
  *   -> javadoc: `./build/docs/javadoc`
- * 
+ *
  * - Release: `./gradlew release --info`
+ *
+ * - Release:
+ *   -> checking the generated artifacts: `./gradlew publishAllPublicationsToTestRepo` then look into `build/repo`
+ *   -> Releasing: `./gradlew release --info`
+ *
+ * In order to perform a release you need to:
+ *   - Add the following properties to ~/.gradle/gradle.properties
+ *     ossrhUsername=<username>
+ *     ossrhPassword=<password>
+ *   - or pass the credentials as command line parameters
+ *     ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -DossrhUsername=<my-username> -DossrhPassword=<my-password>
+ *
+ * And for signing the artifacts:
+ *   - Get public key ID `gpg --list-keys --keyid-format SHORT`
+ *   - Export key `gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg`
+ *   - Add the following properties to ~/.gradle/gradle.properties
+ *          signing.keyId=0ABCDEF
+ *          signing.password=password
+ *          signing.secretKeyRingFile=/absolute/path/to/.gnupg/secring.gpg
  */
 plugins {
-    id "net.researchgate.release" version "2.8.1"
+
+    // library
+    id 'java-library'
+    id 'jacoco'
+
+    // publishing
+    id 'maven-publish'
+    id 'signing'
+    id 'net.researchgate.release' version '2.8.1'
+    id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
 }
 
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'jacoco'
-apply plugin: 'maven'
-apply plugin: 'signing'
-
-ext.ammoniteScalaVersion = '2.13' // Currently, generator/Generator.sc does not build with Scala 2.13
-ext.ammoniteVersion = '2.0.4'
+ext.ammoniteScalaVersion = '2.13'
+ext.ammoniteVersion = '2.3.8'
 ext.assertjVersion = '3.19.0'
-ext.junitVersion = '4.13'
+ext.junitVersion = '4.13.2'
+
+// JAVA_VERSION used for CI build matrix, may be provided as env variable
+def javaVersion = Integer.parseInt(System.getenv('JAVA_VERSION') ?: '8')
 
 repositories {
-    mavenLocal()
     mavenCentral()
 }
 
-sourceSets {
-    main {
-        java {
-            srcDirs = ['src/main/java', 'src-gen/main/java']
-        }
-    }
-    test {
-        java {
-            srcDirs = ['src/test/java', 'src-gen/test/java']
-        }
-    }
+// --                       --
+// -- JAVA BUILD & CODE GEN --
+// --                       --
+
+dependencies {
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.assertj:assertj-core:$assertjVersion"
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(javaVersion))
+    }
+    withSourcesJar()
+    withJavadocJar()
+}
+
+sourceSets.main.java.srcDirs += ['src-gen/main/java']
+sourceSets.test.java.srcDirs += ['src-gen/test/java']
 
 task generateSources() {
     doLast {
@@ -62,103 +93,63 @@ task generateSources() {
 
 compileJava.dependsOn 'generateSources'
 
-tasks.withType(JavaCompile) {
-    sourceCompatibility = 8
-    targetCompatibility = 8
+tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs = [ '-Werror', '-Xlint:all', '-Xlint:-deprecation' ]
 }
 
-dependencies {
-    testImplementation "junit:junit:$junitVersion"
-    testImplementation "org.assertj:assertj-core:$assertjVersion"
-}
-
-jacocoTestReport {
+tasks.named('jacocoTestReport') {
     reports {
         xml.enabled = true
     }
 }
 
-check {
+tasks.named('check') {
     dependsOn jacocoTestReport
     dependsOn javadoc
 }
 
-jar {
+tasks.named('jar') {
     manifest {
         attributes('Automatic-Module-Name': 'io.vavr')
     }
 }
 
-task sourcesJar(type: Jar) {
-    from sourceSets.main.allSource
-    archiveClassifier = 'sources'
-}
-
-task testSourcesJar(type: Jar) {
+tasks.register('testSourcesJar', Jar) {
     from sourceSets.test.allSource
     archiveClassifier = 'test-sources'
 }
 
-task javadocJar(type: Jar) {
-    from javadoc
-    archiveClassifier = 'javadoc'
-}
+// --                        --
+// -- PUBLISHING & RELEASING --
+// --                        --
 
-artifacts {
-    archives javadocJar, sourcesJar, testSourcesJar
-}
-
-// Requirements:
-//
-// - Get public key ID `gpg --list-keys --keyid-format SHORT`
-// - Export key `gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg`
-// - Add the following properties to ~/.gradle/gradle.properties
-//      signing.keyId=0ABCDEF
-//      signing.password=password
-//      signing.secretKeyRingFile=/absolute/path/to/.gnupg/secring.gpg
-//
-signing {
-    required { !version.endsWith("-SNAPSHOT") }
-    sign configurations.archives
-}
-
-// Requirements:
-//
-// - Add the following properties to ~/.gradle/gradle.properties
-//     ossrhUsername=<username>
-//     ossrhPassword=<password>
-// - Or pass the credentials as command line parameters
-//     ./gradlew uploadArchives -PossrhUsername=<my-username> -PossrhPassword=<my-password>
-//
-uploadArchives {
+// What we want to publish
+publishing {
     repositories {
-        mavenDeployer {
+        maven {
+            // A test repository which can be used to
+            // verify what is going to be uploaded by
+            // running ./gradlew publishAllPublicationsToTestRepo
+            name = "testRepo"
+            url = "${buildDir}/repo"
+        }
+    }
 
-            def sonatypeUser = findProperty("ossrhUsername")
-            def sonatypePass = findProperty("ossrhPassword")
-
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: sonatypeUser, password: sonatypePass)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: sonatypeUser, password: sonatypePass)
-            }
-
-            // Generate Sonatype conform .pom for Bintray Maven-sync, see https://central.sonatype.org/pages/requirements.html
-            pom.project {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+            // vavr also publishes a test sources jar
+            artifact tasks.named('testSourcesJar')
+            pom {
                 name = project.name
                 description = "Vavr is an object-functional library for Java 8+"
                 url = 'https://www.vavr.io'
-                inceptionYear '2014'
+                inceptionYear = '2014'
                 licenses {
                     license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        name = 'The Apache Software License, Version 2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
                     }
                 }
                 developers {
@@ -179,6 +170,29 @@ uploadArchives {
     }
 }
 
+// Signing configuration mandatory for Maven Central
+signing {
+    required { !version.endsWith("-SNAPSHOT") }
+    publishing.publications.configureEach {
+        sign(it)
+    }
+}
+
+// Configure the publishing repositories for Maven Central
+nexusPublishing {
+    repositories {
+        sonatype {
+            username.set(providers.systemProperty("ossrhUsername").forUseAtConfigurationTime())
+            password.set(providers.systemProperty("ossrhPassword").forUseAtConfigurationTime())
+        }
+    }
+}
+
+// Configure the "release" plugin
+tasks.named('afterReleaseBuild') {
+    dependsOn "publishToSonatype", "closeAndReleaseSonatypeStagingRepository"
+}
+
 release {
     buildTasks = ['build']
     tagTemplate = '$name-$version'
@@ -188,5 +202,3 @@ release {
         pushToCurrentBranch = true
     }
 }
-
-afterReleaseBuild.dependsOn uploadArchives
