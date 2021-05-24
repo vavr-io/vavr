@@ -202,10 +202,6 @@ public interface Set<T> extends Traversable<T>, Serializable {
     @Override
     Set<T> filterNot(Predicate<? super T> predicate);
 
-    @Deprecated
-    @Override
-    Set<T> reject(Predicate<? super T> predicate);
-
     @Override
     <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 

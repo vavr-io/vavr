@@ -754,41 +754,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(empty.filterNot(v -> true)).isSameAs(empty);
     }
 
-    // -- reject
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldRejectExistingElements() {
-        assertThat(of(1, 2, 3).reject(i -> i == 1)).isEqualTo(of(2, 3));
-        assertThat(of(1, 2, 3).reject(i -> i == 2)).isEqualTo(of(1, 3));
-        assertThat(of(1, 2, 3).reject(i -> i == 3)).isEqualTo(of(1, 2));
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(of(1, 2, 3).reject(ignore -> false)).isEqualTo(of(1, 2, 3));
-        } else {
-            final Traversable<Integer> t = of(1, 2, 3);
-            assertThat(t.reject(ignore -> false)).isSameAs(t);
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldRejectNonExistingElements() {
-        if (useIsEqualToInsteadOfIsSameAs()) {
-            assertThat(this.<Integer> empty().reject(i -> i == 0)).isEqualTo(empty());
-            assertThat(of(1, 2, 3).reject(i -> i > 0)).isEqualTo(empty());
-        } else {
-            assertThat(this.<Integer> empty().reject(i -> i == 0)).isSameAs(empty());
-            assertThat(of(1, 2, 3).reject(i -> i > 0)).isSameAs(empty());
-        }
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldReturnSameInstanceWhenRejectingEmptyTraversable() {
-        final Traversable<?> empty = empty();
-        assertThat(empty.reject(v -> true)).isSameAs(empty);
-    }
-
     // -- find
 
     @Test

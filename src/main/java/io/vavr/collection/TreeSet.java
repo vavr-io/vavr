@@ -628,13 +628,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return filter(predicate.negate());
     }
 
-    @Deprecated
-    @Override
-    public TreeSet<T> reject(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
     @Override
     public <U> TreeSet<U> flatMap(Comparator<? super U> comparator,
             Function<? super T, ? extends Iterable<? extends U>> mapper) {

@@ -1038,13 +1038,6 @@ public abstract class Stream<T> implements LinearSeq<T> {
         return Collections.filterNot(this, predicate);
     }
 
-    @Deprecated
-    @Override
-    public final Stream<T> reject(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Collections.reject(this, predicate);
-    }
-
     @Override
     public final <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -1386,13 +1379,6 @@ public abstract class Stream<T> implements LinearSeq<T> {
     @Override
     public final Stream<T> removeAll(Iterable<? extends T> elements) {
         return io.vavr.collection.Collections.removeAll(this, elements);
-    }
-
-    @Override
-    @Deprecated
-    public final Stream<T> removeAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return reject(predicate);
     }
 
     @Override

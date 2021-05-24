@@ -391,10 +391,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
     @Override
     public abstract BitSet<T> filterNot(Predicate<? super T> predicate);
 
-    @Deprecated
-    @Override
-    public abstract BitSet<T> reject(Predicate<? super T> predicate);
-
     @Override
     public final <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -845,14 +841,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
         public BitSet<T> filterNot(Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             final BitSet<T> bitSet = createFromAll(iterator().filterNot(predicate));
-            return (bitSet.length() == length()) ? this : bitSet;
-        }
-
-        @Deprecated
-        @Override
-        public BitSet<T> reject(Predicate<? super T> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
-            final BitSet<T> bitSet = createFromAll(iterator().reject(predicate));
             return (bitSet.length() == length()) ? this : bitSet;
         }
 
