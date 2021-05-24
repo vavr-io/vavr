@@ -1603,7 +1603,7 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
     /**
-     * iterators this elements by mapping this elements to pairs which are subsequently split into two distinct
+     * Unzips this elements by mapping this elements to pairs which are subsequently split into two distinct
      * sets.
      *
      * @param unzipper a function which converts elements of this to pairs
