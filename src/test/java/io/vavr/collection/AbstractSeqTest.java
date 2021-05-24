@@ -570,7 +570,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldGetOptionWithNullContentsReturnSomeNull() {
-        assertThat(of(new Integer(1), null).getOption(1)).isEqualTo(Option.some(null));
+        assertThat(of(1, null).getOption(1)).isEqualTo(Option.some(null));
     }
 
     @Test
@@ -607,7 +607,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldGetOrElseWithNullContentsReturnNull() {
-        assertThat(of(new Integer(1), null).getOrElse(1, 4)).isEqualTo(null);
+        assertThat(of(1, null).getOrElse(1, 4)).isEqualTo(null);
     }
 
     @Test
