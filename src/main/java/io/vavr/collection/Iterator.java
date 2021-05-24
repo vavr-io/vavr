@@ -1219,9 +1219,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
-            final Iterator<T1> iter1 = map(unzipper1);
-            final Iterator<T2> iter2 = map(unzipper2);
-            return Tuple.of(iter1, iter2);        }
+            final Stream<T> stream = Stream.ofAll(() -> this);
+            final Iterator<T1> iter1 = stream.iterator().map(unzipper1);
+            final Iterator<T2> iter2 = stream.iterator().map(unzipper2);
+            return Tuple.of(iter1, iter2);
+        }
     }
 
     @Override
