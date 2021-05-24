@@ -895,7 +895,6 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(emptyMap().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(Stream.empty(), Stream.empty()));
         assertThat(emptyMap().unzip((k, v) -> Tuple.of(Tuple.of(k, v), Tuple.of(k, v))))
                 .isEqualTo(Tuple.of(Stream.empty(), Stream.empty()));
-
     }
 
     @Test
