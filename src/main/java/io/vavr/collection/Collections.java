@@ -318,17 +318,6 @@ final class Collections {
         }
     }
 
-    @Deprecated
-    @SuppressWarnings("unchecked")
-    static <C extends Traversable<T>, T> C reject(C source, Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (source.isEmpty()) {
-            return source;
-        } else {
-            return (C) source.filter(predicate.negate());
-        }
-    }
-
     @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C removeAll(C source, T element) {
         if (source.isEmpty()) {

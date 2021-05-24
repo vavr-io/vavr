@@ -874,13 +874,6 @@ public abstract class List<T> implements LinearSeq<T> {
         return Collections.filterNot(this, predicate);
     }
 
-    @Deprecated
-    @Override
-    public final List<T> reject(Predicate<? super T> predicate){
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Collections.reject(this, predicate);
-    }
-
     @Override
     public final <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -1330,13 +1323,6 @@ public abstract class List<T> implements LinearSeq<T> {
     @Override
     public final List<T> removeAll(Iterable<? extends T> elements) {
         return Collections.removeAll(this, elements);
-    }
-
-    @Override
-    @Deprecated
-    public final List<T> removeAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return reject(predicate);
     }
 
     @Override

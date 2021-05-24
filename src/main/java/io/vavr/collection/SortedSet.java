@@ -121,10 +121,6 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     @Override
     SortedSet<T> filterNot(Predicate<? super T> predicate);
 
-    @Deprecated
-    @Override
-    SortedSet<T> reject(Predicate<? super T> predicate);
-
     @Override
     <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 

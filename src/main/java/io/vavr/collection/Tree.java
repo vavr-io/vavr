@@ -550,17 +550,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
         }
     }
 
-    @Deprecated
-    @Override
-    public final Seq<T> reject(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        if (isEmpty()) {
-            return Stream.empty();
-        } else {
-            return values().reject(predicate);
-        }
-    }
-
     @Override
     public final <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");

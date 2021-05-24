@@ -529,13 +529,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return Collections.filterNot(this, predicate);
     }
 
-    @Deprecated
-    @Override
-    public CharSeq reject(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return Collections.reject(this, predicate);
-    }
-
     @Override
     public <U> IndexedSeq<U> flatMap(Function<? super Character, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -860,13 +853,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     @Override
     public CharSeq removeAll(Iterable<? extends Character> elements) {
         return io.vavr.collection.Collections.removeAll(this, elements);
-    }
-
-    @Override
-    @Deprecated
-    public CharSeq removeAll(Predicate<? super Character> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return reject(predicate);
     }
 
     @Override

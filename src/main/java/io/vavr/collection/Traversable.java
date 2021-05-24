@@ -443,24 +443,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
     }
 
     /**
-     * Returns a new traversable consisting of all elements which do not satisfy the given predicate.
-     * <p>
-     * The default implementation is equivalent to
-     *
-     * <pre>{@code filter(predicate.negate()}</pre>
-     *
-     * @deprecated Please use {@link #filterNot(Predicate)}
-     * @param predicate A predicate
-     * @return a new traversable
-     * @throws NullPointerException if {@code predicate} is null
-     */
-    @Deprecated
-    default Traversable<T> reject(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
-    /**
      * Returns the first element of this which satisfies the given predicate.
      *
      * @param predicate A predicate.

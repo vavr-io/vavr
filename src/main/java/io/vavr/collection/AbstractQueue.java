@@ -165,19 +165,6 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
         return Collections.removeAll((Q) this, elements);
     }
 
-    @Deprecated
-    public Q removeAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return reject(predicate);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Deprecated
-    @Override
-    public Q reject(Predicate<? super T> predicate) {
-        return Collections.reject((Q) this, predicate);
-    }
-
     @Override
     public Q takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");

@@ -859,27 +859,6 @@ public class CharSeqTest {
         assertThat(t.filterNot(i -> false)).isSameAs(t);
     }
 
-    // -- reject
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldRejectEmptyTraversable() {
-        assertThat(CharSeq.empty().reject(ignored -> true)).isSameAs(CharSeq.empty());
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldRejectNonEmptyTraversable() {
-        assertThat(CharSeq.of('1', '2', '3', '4').reject(i -> i == '2' || i == '4')).isEqualTo(CharSeq.of('1', '3'));
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldRejectNonEmptyTraversableNoneMatch() {
-        final CharSeq t = CharSeq.of('1', '2', '3', '4');
-        assertThat(t.reject(i -> false)).isSameAs(t);
-    }
-
     // -- find
 
     @Test
@@ -3032,28 +3011,6 @@ public class CharSeqTest {
     public void shouldRemoveAllIterableContainingNull() {
         final CharSeq charSeq = CharSeq.of('a');
         assertThat(charSeq.removeAll(List.of((Character) null))).isSameAs(charSeq);
-    }
-
-    // -- removeAll(Predicate)
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldRemoveAllElementsByPredicateFromNil() {
-        assertThat(CharSeq.empty().removeAll(Character::isDigit)).isSameAs(CharSeq.empty());
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldRemoveAllMatchedElementsFromNonNil() {
-        assertThat(CharSeq.of('1', '2', '3', 'a', 'b', 'c').removeAll(Character::isDigit))
-                .isEqualTo(CharSeq.of('a', 'b', 'c'));
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    public void shouldNotRemoveAllNonMatchedElementsFromNonNil() {
-        final CharSeq t = CharSeq.of('a', 'b', 'c');
-        assertThat(t.removeAll(Character::isDigit)).isSameAs(t);
     }
 
     // -- removeAll(Object)
