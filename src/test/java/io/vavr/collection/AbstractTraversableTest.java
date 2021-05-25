@@ -2410,12 +2410,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     // -- unzip
 
     @Test
-    public void shouldUnzipNilWithTwoUnzippers() {
+    public void shouldUnzipNil() {
         assertThat(empty().unzip(x -> x, y -> y)).isEqualTo(Tuple.of(Iterator.empty(), Iterator.empty()));
     }
 
     @Test
-    public void shouldUnzipNonNilWithTwoUnzippers() {
+    public void shouldUnzipNonNil() {
         final Traversable<Integer> actual0 = of(0, 1);
         final Tuple2<Iterator<Integer>, Iterator<Character>> actual = actual0.unzip(i -> i, i -> (char) ((short) 'a' + i));
         final Tuple2<Iterator<Integer>, Iterator<Character>> expected = Tuple.of(of(0, 1).iterator(), of('a', 'b').iterator());
@@ -2423,12 +2423,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldUnzip3NilWithThreeUnzippers() {
+    public void shouldUnzip3Nil() {
         assertThat(empty().unzip3(x -> x, y -> y, z -> z)).isEqualTo(Tuple.of(Iterator.empty(), Iterator.empty(), Iterator.empty()));
     }
 
     @Test
-    public void shouldUnzip3NonNilWithThreeUnzippers() {
+    public void shouldUnzip3NonNil() {
         final Tuple3<? extends Iterator<Integer>, ? extends Iterator<Character>, ? extends Iterator<Character>> actual
                 = of(0, 1).unzip3(i -> i, i -> (char) ((short) 'a' + i), i -> (char) ((short) 'a' + i + 1));
         final Tuple3<? extends Iterator<Integer>, ? extends Iterator<Character>, ? extends Iterator<Character>> expected
