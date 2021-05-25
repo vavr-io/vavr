@@ -772,30 +772,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
         return values().takeWhile(predicate);
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public final <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        if (isEmpty()) {
-            return Tuple.of(Empty.instance(), Empty.instance());
-        } else {
-            return (Tuple2<Tree<T1>, Tree<T2>>) (Object) Tree.unzip((Node<T>) this, unzipper);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public final <T1, T2, T3> Tuple3<Tree<T1>, Tree<T2>, Tree<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        if (isEmpty()) {
-            return Tuple.of(Empty.instance(), Empty.instance(), Empty.instance());
-        } else {
-            return (Tuple3<Tree<T1>, Tree<T2>, Tree<T3>>) (Object) Tree.unzip3((Node<T>) this, unzipper);
-        }
-    }
-
     @Override
     public final <U> Tree<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
@@ -1273,28 +1249,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
             queue.addAll(next.getChildren().toJavaList());
         }
         return result.reverse();
-    }
-
-    private static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> unzip(Node<T> node,
-                                                                Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        final Tuple2<? extends T1, ? extends T2> value = unzipper.apply(node.getValue());
-        final io.vavr.collection.List<Tuple2<Node<T1>, Node<T2>>> children = node
-                .getChildren()
-                .map(child -> unzip(child, unzipper));
-        final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
-        final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
-        return Tuple.of(node1, node2);
-    }
-
-    private static <T, T1, T2, T3> Tuple3<Node<T1>, Node<T2>, Node<T3>> unzip3(Node<T> node,
-                                                                               Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
-        final io.vavr.collection.List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
-                .map(child -> unzip3(child, unzipper));
-        final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
-        final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
-        final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));
-        return Tuple.of(node1, node2, node3);
     }
 
     @SuppressWarnings("unchecked")

@@ -1659,27 +1659,6 @@ public abstract class Stream<T> implements LinearSeq<T> {
     }
 
     @Override
-    public final <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
-        final Stream<T1> stream1 = stream.map(t -> t._1);
-        final Stream<T2> stream2 = stream.map(t -> t._2);
-        return Tuple.of(stream1, stream2);
-    }
-
-    @Override
-    public final <T1, T2, T3> Tuple3<Stream<T1>, Stream<T2>, Stream<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> stream = map(unzipper);
-        final Stream<T1> stream1 = stream.map(t -> t._1);
-        final Stream<T2> stream2 = stream.map(t -> t._2);
-        final Stream<T3> stream3 = stream.map(t -> t._3);
-        return Tuple.of(stream1, stream2, stream3);
-    }
-
-    @Override
     public final Stream<T> update(int index, T element) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("update(" + index + ", e) on Nil");

@@ -1224,34 +1224,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <T1, T2> Tuple2<Vector<T1>, Vector<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        Vector<T1> xs = empty();
-        Vector<T2> ys = empty();
-        for (int i = 0; i < length(); i++) {
-            final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(get(i));
-            xs = xs.append(t._1);
-            ys = ys.append(t._2);
-        }
-        return Tuple.of(xs, ys);
-    }
-
-    @Override
-    public <T1, T2, T3> Tuple3<Vector<T1>, Vector<T2>, Vector<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        Vector<T1> xs = empty();
-        Vector<T2> ys = empty();
-        Vector<T3> zs = empty();
-        for (int i = 0; i < length(); i++) {
-            final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
-            xs = xs.append(t._1);
-            ys = ys.append(t._2);
-            zs = zs.append(t._3);
-        }
-        return Tuple.of(xs, ys, zs);
-    }
-
-    @Override
     public Vector<T> update(int index, T element) {
         if (isDefinedAt(index)) {
             return wrap(trie.update(index, element));

@@ -425,12 +425,6 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> takeRightWhile(Predicate<? super T> predicate);
 
     @Override
-    <T1, T2> Tuple2<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-
-    @Override
-    <T1, T2, T3> Tuple3<? extends IndexedSeq<T1>, ? extends IndexedSeq<T2>, ? extends IndexedSeq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
-
-    @Override
     IndexedSeq<T> update(int index, T element);
 
     @Override

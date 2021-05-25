@@ -139,9 +139,7 @@ import java.util.stream.DoubleStream;
  * <li>{@link #scanLeft(Object, BiFunction)}</li>
  * <li>{@link #scanRight(Object, BiFunction)}</li>
  * <li>{@link #span(Predicate)}</li>
- * <li>{@link #unzip(Function)}</li>
  * <li>{@link #unzip(Function, Function)}</li>
- * <li>{@link #unzip3(Function)}</li>
  * <li>{@link #unzip3(Function, Function, Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
@@ -1604,19 +1602,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
     Traversable<T> takeWhile(Predicate<? super T> predicate);
 
     /**
-     * Unzips this elements by mapping this elements to pairs which are subsequently split into two distinct
-     * sets.
-     *
-     * @param unzipper a function which converts elements of this to pairs
-     * @param <T1>     1st element type of a pair returned by unzipper
-     * @param <T2>     2nd element type of a pair returned by unzipper
-     * @return A pair of set containing elements split by unzipper
-     * @throws NullPointerException if {@code unzipper} is null
-     */
-    <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-
-    /**
      * Unzips this elements by mapping this elements to a pair of distinct sets.
      *
      * @param unzipper1 a function which converts elements of this to elements of first set
@@ -1634,20 +1619,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
         final Iterator<T2> iter2 = iterator().map(unzipper2);
         return Tuple.of(iter1, iter2);
     }
-
-    /**
-     * Unzips this elements by mapping this elements to triples which are subsequently split into three distinct
-     * sets.
-     *
-     * @param unzipper a function which converts elements of this to pairs
-     * @param <T1>     1st element type of a triplet returned by unzipper
-     * @param <T2>     2nd element type of a triplet returned by unzipper
-     * @param <T3>     3rd element type of a triplet returned by unzipper
-     * @return A triplet of set containing elements split by unzipper
-     * @throws NullPointerException if {@code unzipper} is null
-     */
-    <T1, T2, T3> Tuple3<? extends Traversable<T1>, ? extends Traversable<T2>, ? extends Traversable<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     /**
      * Unzips this elements by mapping this elements to three distinct sets.

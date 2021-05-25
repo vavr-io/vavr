@@ -84,9 +84,7 @@ import java.util.function.*;
  * <li>{@link #mapKeys(Function, BiFunction)}</li>
  * <li>{@link #mapValues(Function)}</li>
  * <li>{@link #transform(Function)}</li>
- * <li>{@link #unzip(BiFunction)}</li>
  * <li>{@link #unzip(Function, Function)}</li>
- * <li>{@link #unzip3(BiFunction)}</li>
  * <li>{@link #unzip3(Function, Function, Function)}</li>
  * </ul>
  *
@@ -661,31 +659,8 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
         return f.apply(this);
     }
 
-    default Tuple2<Seq<K>, Seq<V>> unzip() {
-        return unzip(Function.identity());
-    }
-
-    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return unzip(entry -> unzipper.apply(entry._1, entry._2));
-    }
-
-    @Override
-    default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super Tuple2<K, V>, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
-    }
-
-    default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(BiFunction<? super K, ? super V, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return unzip3(entry -> unzipper.apply(entry._1, entry._2));
-    }
-
-    @Override
-    default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(
-            Function<? super Tuple2<K, V>, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
+    default Tuple2<Iterator<K>, Iterator<V>> unzip() {
+        return unzip(entry -> entry._1, entry -> entry._2);
     }
 
     /**

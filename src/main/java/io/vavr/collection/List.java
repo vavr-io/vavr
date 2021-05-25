@@ -1635,36 +1635,6 @@ public abstract class List<T> implements LinearSeq<T> {
     }
 
     @Override
-    public final <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        List<T1> xs = Nil.instance();
-        List<T2> ys = Nil.instance();
-        for (T element : this) {
-            final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(element);
-            xs = xs.prepend(t._1);
-            ys = ys.prepend(t._2);
-        }
-        return Tuple.of(xs.reverse(), ys.reverse());
-    }
-
-    @Override
-    public final <T1, T2, T3> Tuple3<List<T1>, List<T2>, List<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        List<T1> xs = Nil.instance();
-        List<T2> ys = Nil.instance();
-        List<T3> zs = Nil.instance();
-        for (T element : this) {
-            final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(element);
-            xs = xs.prepend(t._1);
-            ys = ys.prepend(t._2);
-            zs = zs.prepend(t._3);
-        }
-        return Tuple.of(xs.reverse(), ys.reverse(), zs.reverse());
-    }
-
-    @Override
     public final List<T> update(int index, T element) {
         if (isEmpty()) {
             throw new IndexOutOfBoundsException("update(" + index + ", e) on Nil");

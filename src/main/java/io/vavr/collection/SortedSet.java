@@ -226,12 +226,6 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     SortedSet<T> union(Set<? extends T> elements);
 
     @Override
-    <T1, T2> Tuple2<? extends SortedSet<T1>, ? extends SortedSet<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-
-    @Override
-    <T1, T2, T3> Tuple3<? extends SortedSet<T1>, ? extends SortedSet<T2>, ? extends SortedSet<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
-
-    @Override
     <U> SortedSet<Tuple2<T, U>> zip(Iterable<? extends U> that);
 
     @Override
