@@ -2412,7 +2412,6 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @Test
     public void shouldUnzipNil() {
         assertThat(empty().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(empty(), empty()));
-        assertThat(empty().unzip(x -> x, y -> y)).isEqualTo(Tuple.of(Iterator.empty(), Iterator.empty()));
     }
 
     @Test

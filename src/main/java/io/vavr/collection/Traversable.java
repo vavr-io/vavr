@@ -1624,7 +1624,7 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @param <T1>      element type returned by unzipper1
      * @param <T2>      element type returned by unzipper2
      * @return A pair of set containing elements split by unzipper1, unzipper2
-     * @throws NullPointerException if {@code unzipper} is null
+     * @throws NullPointerException if any of {@code unzipper1}, {@code unzipper2} are null
      */
     default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(
             Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
