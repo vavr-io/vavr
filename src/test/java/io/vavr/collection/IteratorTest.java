@@ -671,11 +671,11 @@ public class IteratorTest extends AbstractTraversableTest {
         multipleHasNext(() -> Iterator.of(1, 2, 3).slideBy(Function.identity()));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).sliding(2));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).sliding(2, 1));
-        //multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip(i -> Tuple.of(i, i + 1))._1);
-        //multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip(i -> Tuple.of(i, i + 1))._2);
-        //multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip3(i -> Tuple.of(i, i + 1, i + 2))._1);
-        //multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip3(i -> Tuple.of(i, i + 1, i + 2))._2);
-        //multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip3(i -> Tuple.of(i, i + 1, i + 2))._3);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip(i -> i, i -> i + 1)._1);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip(i -> i, i -> i + 1)._2);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip3(i -> i, i -> i + 1, i -> i + 2)._1);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip3(i -> i, i -> i + 1, i -> i + 2)._2);
+        multipleHasNext(() -> Iterator.of(1, 2, 3, 4).unzip3(i -> i, i -> i + 1, i -> i + 2)._3);
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).zip(Iterator.from(1)));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).zipAll(Iterator.of(1, 2), -1, -2));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).zipWith(Iterator.of(1, 2), (a, b) -> a + b));
