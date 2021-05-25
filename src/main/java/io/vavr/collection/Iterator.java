@@ -1238,6 +1238,25 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
+    @Override
+    default <T1, T2, T3> Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> unzip3(
+            Function<? super T, ? extends T1> unzipper1,
+            Function<? super T, ? extends T2> unzipper2,
+            Function<? super T, ? extends T3> unzipper3) {
+        Objects.requireNonNull(unzipper1, "unzipper1 is null");
+        Objects.requireNonNull(unzipper2, "unzipper2 is null");
+        Objects.requireNonNull(unzipper3, "unzipper3 is null");
+        if (!hasNext()) {
+            return Tuple.of(empty(), empty(), empty());
+        } else {
+            final Stream<T> stream = Stream.ofAll(() -> this);
+            final Iterator<T1> iter1 = stream.iterator().map(unzipper1);
+            final Iterator<T2> iter2 = stream.iterator().map(unzipper2);
+            final Iterator<T3> iter3 = stream.iterator().map(unzipper3);
+            return Tuple.of(iter1, iter2, iter3);
+        }
+    }
+
     /**
      * Creates an iterator from a seed value and a function.
      * The function takes the seed at first.

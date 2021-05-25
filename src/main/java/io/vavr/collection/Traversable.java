@@ -142,6 +142,7 @@ import java.util.stream.DoubleStream;
  * <li>{@link #unzip(Function)}</li>
  * <li>{@link #unzip(Function, Function)}</li>
  * <li>{@link #unzip3(Function)}</li>
+ * <li>{@link #unzip3(Function, Function, Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
  * <li>{@link #zipWithIndex()}</li>
@@ -1647,6 +1648,31 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      */
     <T1, T2, T3> Tuple3<? extends Traversable<T1>, ? extends Traversable<T2>, ? extends Traversable<T3>> unzip3(
             Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
+
+    /**
+     * Unzips this elements by mapping this elements to three distinct sets.
+     *
+     * @param unzipper1 a function which converts elements of this to first set
+     * @param unzipper2 a function which converts elements of this to second set
+     * @param unzipper3 a function which converts elements of this to third set
+     * @param <T1>      element type returned by unzipper1
+     * @param <T2>      element type returned by unzipper2
+     * @param <T3>      element type returned by unzipper3
+     * @return A triplet of {@code Iterator} to iterate over elements of sets split by {@code unzipper1}, {@code unzipper2}, {@code unzipper3}
+     * @throws NullPointerException if any of {@code unzipper1}, {@code unzipper2}, {@code unzipper3} is null
+     */
+    default <T1, T2, T3> Tuple3<? extends Iterator<T1>, ? extends Iterator<T2>, ? extends Iterator<T3>> unzip3(
+            Function<? super T, ? extends T1> unzipper1,
+            Function<? super T, ? extends T2> unzipper2,
+            Function<? super T, ? extends T3> unzipper3) {
+        Objects.requireNonNull(unzipper1, "unzipper1 is null");
+        Objects.requireNonNull(unzipper2, "unzipper2 is null");
+        Objects.requireNonNull(unzipper2, "unzipper3 is null");
+        final Iterator<T1> iter1 = iterator().map(unzipper1);
+        final Iterator<T2> iter2 = iterator().map(unzipper2);
+        final Iterator<T3> iter3 = iterator().map(unzipper3);
+        return Tuple.of(iter1, iter2, iter3);
+    }
 
     /**
      * Returns a traversable formed from this traversable and another Iterable collection by combining

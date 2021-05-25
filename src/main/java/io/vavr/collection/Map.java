@@ -87,6 +87,7 @@ import java.util.function.*;
  * <li>{@link #unzip(BiFunction)}</li>
  * <li>{@link #unzip(Function, Function)}</li>
  * <li>{@link #unzip3(BiFunction)}</li>
+ * <li>{@link #unzip3(Function, Function, Function)}</li>
  * </ul>
  *
  * @param <K> Key type
