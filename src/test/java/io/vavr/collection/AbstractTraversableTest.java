@@ -2419,7 +2419,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         final Traversable<Integer> actual0 = of(0, 1);
         final Tuple2<Iterator<Integer>, Iterator<Character>> actual = actual0.unzip(i -> i, i -> (char) ((short) 'a' + i));
         final Tuple2<Iterator<Integer>, Iterator<Character>> expected = Tuple.of(of(0, 1).iterator(), of('a', 'b').iterator());
-        assertThat(actual.map(Value::<Integer>toArray, Value::<Integer>toArray)).isEqualTo(expected.map(Value::<Integer>toArray, Value::<Integer>toArray));
+        assertThat(actual.map(Value<Integer>::toArray, Value<Character>::toArray)).isEqualTo(expected.map(Value<Integer>::toArray, Value<Character>::toArray));
     }
 
     @Test
@@ -2433,7 +2433,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
                 = of(0, 1).unzip3(i -> i, i -> (char) ((short) 'a' + i), i -> (char) ((short) 'a' + i + 1));
         final Tuple3<? extends Iterator<Integer>, ? extends Iterator<Character>, ? extends Iterator<Character>> expected
                 = Tuple.of(of(0, 1).iterator(), of('a', 'b').iterator(), of('b', 'c').iterator());
-        assertThat(actual.map(Value::<Integer>toArray, Value::<Integer>toArray, Value::<Integer>toArray)).isEqualTo(expected.map(Value::<Integer>toArray, Value::<Integer>toArray, Value::<Integer>toArray));
+        assertThat(actual.map(Value<Integer>::toArray, Value<Character>::toArray, Value<Character>::toArray)).isEqualTo(expected.map(Value<Integer>::toArray, Value<Character>::toArray, Value<Character>::toArray));
     }
 
     // -- zip
