@@ -2429,9 +2429,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldUnzip3NonNil() {
-        final Tuple3<? extends Iterator<Integer>, ? extends Iterator<Character>, ? extends Iterator<Character>> actual
+        final Tuple3<Iterator<Integer>, Iterator<Character>, Iterator<Character>> actual
                 = of(0, 1).unzip3(i -> i, i -> (char) ((short) 'a' + i), i -> (char) ((short) 'a' + i + 1));
-        final Tuple3<? extends Iterator<Integer>, ? extends Iterator<Character>, ? extends Iterator<Character>> expected
+        final Tuple3<Iterator<Integer>, Iterator<Character>, Iterator<Character>> expected
                 = Tuple.of(of(0, 1).iterator(), of('a', 'b').iterator(), of('b', 'c').iterator());
         assertThat(actual.map(Value<Integer>::toArray, Value<Character>::toArray, Value<Character>::toArray)).isEqualTo(expected.map(Value<Integer>::toArray, Value<Character>::toArray, Value<Character>::toArray));
     }
