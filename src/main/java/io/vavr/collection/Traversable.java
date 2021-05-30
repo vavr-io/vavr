@@ -1632,7 +1632,7 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @return A triplet of {@code Iterator} to iterate over elements of sets split by {@code unzipper1}, {@code unzipper2}, {@code unzipper3}
      * @throws NullPointerException if any of {@code unzipper1}, {@code unzipper2}, {@code unzipper3} is null
      */
-    default <T1, T2, T3> Tuple3<? extends Iterator<T1>, ? extends Iterator<T2>, ? extends Iterator<T3>> unzip3(
+    default <T1, T2, T3> Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> unzip3(
             Function<? super T, ? extends T1> unzipper1,
             Function<? super T, ? extends T2> unzipper2,
             Function<? super T, ? extends T3> unzipper3) {
