@@ -1079,6 +1079,30 @@ public interface Future<T> extends Iterable<T>, Value<T> {
     }
 
     /**
+     * Handles a failure of this Future by returning another result.
+     * <p>
+     * Returns this, if this is a Success or this is a Failure and the cause is not assignable from {@code exceptionType}.
+     * Otherwise tries to recover the exception of the failure with {@code f}.
+     * <p>
+     * Example:
+     * <pre><code>
+     * // = "oh!"
+     * Future.of(() -&gt; new Error("oh!")).recover(Error.class, Throwable::getMessage);
+     * </code></pre>
+     *
+     * @param <X> The type of exception type to recover
+     * @param exceptionType {@code Class<X>} object defining exception class.
+     * @param f A function which takes the exception of a failure and returns a new value.
+     * @return A new Future.
+     * @throws NullPointerException if {@code f} is null
+     */
+    default <X extends Throwable> Future<T> recover(Class<X> exceptionType, Function<? super X, ? extends T> f) {
+        Objects.requireNonNull(exceptionType, "exceptionType is null");
+        Objects.requireNonNull(f, "f is null");
+        return transformValue(t -> t.recover(exceptionType, f));
+    }
+
+    /**
      * Handles a failure of this Future by returning the result of another Future.
      * <p>
      * Example:

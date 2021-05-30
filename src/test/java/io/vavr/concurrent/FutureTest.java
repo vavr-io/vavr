@@ -953,8 +953,33 @@ public class FutureTest extends AbstractValueTest {
     }
 
     @Test
+    public void shouldRecoverFailedFutureWithSpecificCause() {
+        final Future<Integer> recovered = Future.<Integer> of(zZz(new Error())).recover(Error.class, t -> 42);
+        waitUntil(recovered::isCompleted);
+        assertThat(recovered.isSuccess()).isTrue();
+        assertThat(recovered.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldNotRecoverFailedFutureWithMismatchingCause() {
+        final Future<Integer> recovered = Future.<Integer> of(zZz(new Error())).recover(ArithmeticException.class, t -> 42);
+        waitUntil(recovered::isCompleted);
+        assertThat(recovered.isFailure()).isTrue();
+    }
+
+    @Test
     public void shouldNotCrashWhenRecoverFails() {
         final Future<Integer> recovered = Future.<Integer> of(zZz(new Error())).recover(t -> {
+            throw new ArithmeticException();
+        });
+        waitUntil(recovered::isCompleted);
+        waitUntil(recovered::isFailure);
+        assertThat(recovered.getCause().get().getClass()).isEqualTo(ArithmeticException.class);
+    }
+
+    @Test
+    public void shouldNotCrashWhenRecoverFailsWithSpecificCause() {
+        final Future<Integer> recovered = Future.<Integer> of(zZz(new Error())).recover(Error.class, t -> {
             throw new ArithmeticException();
         });
         waitUntil(recovered::isCompleted);
