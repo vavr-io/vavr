@@ -54,79 +54,78 @@ import java.util.NoSuchElementException;
  * @param <T> element type
  */
 public interface Range<T> extends Iterable<T> {
+    static Range<Integer> inclusive(Integer from, Integer toInclusive) {
+        return Range.inclusiveBy(from, toInclusive, from <= toInclusive ? 1 : -1);
+    }
 
-	static Range<Integer> inclusive(Integer from, Integer toInclusive) {
-		return Range.inclusiveBy(from, toInclusive, from <= toInclusive ? 1 : -1);
-	}
+    static Range<Integer> inclusiveBy(int from, int toInclusive, int step) {
+        if (step == 0) {
+            throw new IllegalArgumentException("step cannot be 0");
+        } else if (from == toInclusive) {
+            return () -> Iterator.of(from);
+        }
 
-	static Range<Integer> inclusiveBy(int from, int toInclusive, int step) {
-		if (step == 0) {
-			throw new IllegalArgumentException("step cannot be 0");
-		} else if (from == toInclusive) {
-			return () -> Iterator.of(from);
-		} if (step > 0) {
-			if (from > toInclusive) {
-				return () -> Iterator.empty();
-			} else {
-				return () -> new AbstractRangeIterator(from, step) {
-					@Override
-					public boolean hasNext() {
-						return !overflow && next <= toInclusive;
-					}
-				};
-			}
-		} else {
-			if (from < toInclusive) {
-				return () -> Iterator.empty();
-			} else {
-				return () -> new AbstractRangeIterator(from, step) {
-					@Override
-					public boolean hasNext() {
-						return !overflow && next >= toInclusive;
-					}
-				};
-			}
-		}
-	}
+        if (step > 0) {
+            if (from > toInclusive) {
+                return () -> Iterator.empty();
+            } else {
+                return () -> new AbstractRangeIterator(from, step) {
+                	@Override
+	                public boolean hasNext() {
+                        return !overflow && next <= toInclusive;
+                    }
+                };
+            }
+        } else {
+            if (from < toInclusive) {
+                return () -> Iterator.empty();
+            } else {
+            	return () -> new AbstractRangeIterator(from, step) {
+                    @Override
+                    public boolean hasNext() {
+                        return !overflow && next >= toInclusive;
+                    }
+                };
+            }
+        }
+    }
 
-	static Range<Integer> exclusive(int from, int toExclusive) {
-		return Range.exclusiveBy(from, toExclusive, from <= toExclusive ? 1 : -1);
-	}
+    static Range<Integer> exclusive(int from, int toExclusive) {
+        return Range.exclusiveBy(from, toExclusive, from <= toExclusive ? 1 : -1);
+    }
 
-	static Range<Integer> exclusiveBy(int from, int toExclusive, int step) {
-		int signum = Integer.signum(step);
-		int toInclusive = toExclusive - signum;
-		if (Integer.signum(toInclusive) != Integer.signum(toExclusive)) {
-			// because of abs(signum) <= abs(step) and overflow detection, toExclusive will not be included
-			return Range.inclusiveBy(from, toExclusive, step);
-		} else {
-			return Range.inclusiveBy(from, toInclusive, step);
-		}
-	}
-
+    static Range<Integer> exclusiveBy(int from, int toExclusive, int step) {
+        int signum = Integer.signum(step);
+        int toInclusive = toExclusive - signum;
+        if (Integer.signum(toInclusive) != Integer.signum(toExclusive)) {
+        	// because of abs(signum) <= abs(step) and overflow detection, toExclusive will not be included
+            return Range.inclusiveBy(from, toExclusive, step);
+        } else {
+            return Range.inclusiveBy(from, toInclusive, step);
+        }
+    }
 }
 
 abstract class AbstractRangeIterator implements Iterator<Integer> {
+    final int step;
+    int next;
+    boolean overflow = false;
 
-	final int step;
+    AbstractRangeIterator(int from, int step) {
+        this.next = from;
+        this.step = step;
+    }
 
-	int next;
-	boolean overflow = false;
+    @Override
+    public Integer next() {
+        if (!hasNext()) {
+            throw new NoSuchElementException();
+        }
 
-	AbstractRangeIterator(int from, int step) {
-		this.next = from;
-		this.step = step;
-	}
-
-	@Override
-	public Integer next() {
-		if (!hasNext()) {
-			throw new NoSuchElementException();
-		}
-		final int curr = next;
-		final int r = curr + step;
-		overflow = ((curr ^ r) & (step ^ r)) < 0;
-		next = r;
-		return curr;
-	}
+        final int curr = next;
+        final int r = curr + step;
+        overflow = ((curr ^ r) & (step ^ r)) < 0;
+        next = r;
+        return curr;
+    }
 }
