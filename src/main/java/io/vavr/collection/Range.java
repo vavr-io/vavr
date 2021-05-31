@@ -17,7 +17,6 @@
  * limitations under the License.
  */
 package io.vavr.collection;
-
 import java.util.NoSuchElementException;
 
 /**
@@ -54,78 +53,244 @@ import java.util.NoSuchElementException;
  * @param <T> element type
  */
 public interface Range<T> extends Iterable<T> {
-    static Range<Integer> inclusive(Integer from, Integer toInclusive) {
-        return Range.inclusiveBy(from, toInclusive, from <= toInclusive ? 1 : -1);
-    }
+	static Range<Integer> inclusive(Integer from, Integer toInclusive) {
+		return Range.inclusiveBy(from, toInclusive, from <= toInclusive ? 1 : -1);
+	}
 
-    static Range<Integer> inclusiveBy(int from, int toInclusive, int step) {
-        if (step == 0) {
-            throw new IllegalArgumentException("step cannot be 0");
-        } else if (from == toInclusive) {
-            return () -> Iterator.of(from);
-        }
+	static Range<Integer> inclusiveBy(int from, int toInclusive, int step) {
+		if (step == 0) {
+			throw new IllegalArgumentException("step cannot be 0");
+		} else if (from == toInclusive) {
+			return () -> Iterator.of(from);
+		}
 
-        if (step > 0) {
-            if (from > toInclusive) {
-                return () -> Iterator.empty();
-            } else {
-                return () -> new AbstractRangeIterator(from, step) {
-                	@Override
-	                public boolean hasNext() {
-                        return !overflow && next <= toInclusive;
-                    }
-                };
-            }
-        } else {
-            if (from < toInclusive) {
-                return () -> Iterator.empty();
-            } else {
-            	return () -> new AbstractRangeIterator(from, step) {
-                    @Override
-                    public boolean hasNext() {
-                        return !overflow && next >= toInclusive;
-                    }
-                };
-            }
-        }
-    }
+		if (step > 0) {
+			if (from > toInclusive) {
+				return () -> Iterator.empty();
+			} else {
+				return () -> new IntegerForwardIterator(from, toInclusive, step, true);
+			}
+		} else {
+			if (from < toInclusive) {
+				return () -> Iterator.empty();
+			} else {
+				return () -> new IntegerBackwardIterator(from, toInclusive, step, true);
+			}
+		}
+	}
 
-    static Range<Integer> exclusive(int from, int toExclusive) {
-        return Range.exclusiveBy(from, toExclusive, from <= toExclusive ? 1 : -1);
-    }
+	static Range<Integer> exclusive(int from, int toExclusive) {
+		return Range.exclusiveBy(from, toExclusive, from <= toExclusive ? 1 : -1);
+	}
 
-    static Range<Integer> exclusiveBy(int from, int toExclusive, int step) {
-        int signum = Integer.signum(step);
-        int toInclusive = toExclusive - signum;
-        if (Integer.signum(toInclusive) != Integer.signum(toExclusive)) {
-        	// because of abs(signum) <= abs(step) and overflow detection, toExclusive will not be included
-            return Range.inclusiveBy(from, toExclusive, step);
-        } else {
-            return Range.inclusiveBy(from, toInclusive, step);
-        }
-    }
+	static Range<Integer> exclusiveBy(int from, int toExclusive, int step) {
+		int signum = Integer.signum(step);
+		int toInclusive = toExclusive - signum;
+		if (Integer.signum(toInclusive) != Integer.signum(toExclusive)) {
+			// because of abs(signum) <= abs(step) and overflow detection, toExclusive will not be included
+			return Range.inclusiveBy(from, toExclusive, step);
+		} else {
+			return Range.inclusiveBy(from, toInclusive, step);
+		}
+	}
+
+	// TODO: Byte
+	// TODO: Short
+	// Long
+	static Range<Long> exclusiveBy(long from, long toExclusive, long step) {
+		if (step == 0) {
+			throw new IllegalArgumentException("step cannot be 0");
+		}
+
+		return step > 0
+				? () -> new LongForwardIterator(from, toExclusive, step, false)
+				: () -> new LongBackwardIterator(from, toExclusive, step, false);
+	}
+
+	static Range<Long> exclusive(long from, long toExclusive) {
+		return exclusiveBy(from, toExclusive, 1L);
+	}
+
+	static Range<Long> inclusiveBy(Long from, Long toInclusive, long step) {
+		if (step == 0) {
+			throw new IllegalArgumentException("step cannot be 0");
+		}
+
+		return step > 0
+				? () -> new LongForwardIterator(from, toInclusive, step, true)
+				: () -> new LongBackwardIterator(from, toInclusive, step, true);
+	}
+
+	static Range<Long> inclusive(Long from, Long toInclusive) {
+		return inclusiveBy(from, toInclusive, 1L);
+	}
+
+	// TODO: Character
+	// TODO: Float
+	// TODO: Double
+	// TODO: BigDecimal
 }
 
-abstract class AbstractRangeIterator implements Iterator<Integer> {
-    final int step;
-    int next;
-    boolean overflow = false;
+final class IntegerForwardIterator implements Iterator<Integer> {
+	private final int start;
+	private final int end;
+	private final int step;
+	private final boolean inclusive;
+	private int next;
+	private boolean overflow;
 
-    AbstractRangeIterator(int from, int step) {
-        this.next = from;
-        this.step = step;
-    }
+	IntegerForwardIterator(int start, int end, int step, boolean inclusive) {
+		this.start = start;
+		this.next = start;
+		this.end = end;
+		this.step = step;
+		this.inclusive = inclusive;
+	}
 
-    @Override
-    public Integer next() {
-        if (!hasNext()) {
-            throw new NoSuchElementException();
-        }
+	@Override
+	public boolean hasNext() {
+		if (start > end) {
+			return false;
+		}
+		if (inclusive) {
+			return !overflow && next <= end;
+		} else {
+			return !overflow && next < end;
+		}
+	}
 
-        final int curr = next;
-        final int r = curr + step;
-        overflow = ((curr ^ r) & (step ^ r)) < 0;
-        next = r;
-        return curr;
-    }
+	@Override
+	public Integer next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		int curr = next;
+		int r = curr + step;
+		overflow = ((curr ^ r) & (step ^ r)) < 0;
+		next = r;
+		return curr;
+	}
+}
+
+final class IntegerBackwardIterator implements Iterator<Integer> {
+	private final int start;
+	private final int end;
+	private final int step;
+	private final boolean inclusive;
+	private int next;
+	private boolean underflow;
+
+	IntegerBackwardIterator(int start, int end, int step, boolean inclusive) {
+		this.start = start;
+		this.next = start;
+		this.end = end;
+		this.step = step;
+		this.inclusive = inclusive;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (start < end) {
+			return false;
+		}
+		if (inclusive) {
+			return !underflow && next >= end;
+		} else {
+			return !underflow && next > end;
+		}
+	}
+
+	@Override
+	public Integer next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		int curr = next;
+		int r = curr + step;
+		underflow = ((curr ^ r) & (step ^ r)) < 0;
+		next = r;
+		return curr;
+	}
+}
+
+final class LongForwardIterator implements Iterator<Long> {
+	private final long start;
+	private final long end;
+	private final long step;
+	private final boolean inclusive;
+	private long next;
+	private boolean overflow;
+
+	LongForwardIterator(long start, long end, long step, boolean inclusive) {
+		this.start = start;
+		this.next = start;
+		this.end = end;
+		this.step = step;
+		this.inclusive = inclusive;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (start > end) {
+			return false;
+		}
+		if (inclusive) {
+			return !overflow && next <= end;
+		} else {
+			return !overflow && next < end;
+		}
+	}
+
+	@Override
+	public Long next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		long curr = next;
+		long r = curr + step;
+		overflow = ((curr ^ r) & (step ^ r)) < 0;
+		next = r;
+		return curr;
+	}
+}
+
+final class LongBackwardIterator implements Iterator<Long> {
+	private final long start;
+	private final long end;
+	private final long step;
+	private final boolean inclusive;
+	private long next;
+	private boolean underflow;
+
+	LongBackwardIterator(long start, long end, long step, boolean inclusive) {
+		this.start = start;
+		this.next = start;
+		this.end = end;
+		this.step = step;
+		this.inclusive = inclusive;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (start < end) {
+			return false;
+		}
+		if (inclusive) {
+			return !underflow && next >= end;
+		} else {
+			return !underflow && next > end;
+		}
+	}
+
+	@Override
+	public Long next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		long curr = next;
+		long r = curr + step;
+		underflow = ((curr ^ r) & (step ^ r)) < 0;
+		next = r;
+		return curr;
+	}
 }
