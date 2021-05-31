@@ -17,7 +17,15 @@
  * limitations under the License.
  */
 package io.vavr.collection;
+
+import io.vavr.Lazy;
+
+import java.math.BigDecimal;
 import java.util.NoSuchElementException;
+
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
+import static java.math.RoundingMode.HALF_UP;
 
 /**
  * A {@code Range} represents a finite sequence of elements.
@@ -94,9 +102,6 @@ public interface Range<T> extends Iterable<T> {
 		}
 	}
 
-	// TODO: Byte
-	// TODO: Short
-	// Long
 	static Range<Long> exclusiveBy(long from, long toExclusive, long step) {
 		if (step == 0) {
 			throw new IllegalArgumentException("step cannot be 0");
@@ -125,7 +130,6 @@ public interface Range<T> extends Iterable<T> {
 		return inclusiveBy(from, toInclusive, 1L);
 	}
 
-	// Character
 	static Range<Character> exclusiveBy(char from, char toExclusive, int step) {
 		if (step == 0) {
 			throw new IllegalArgumentException("step cannot be 0");
@@ -154,9 +158,47 @@ public interface Range<T> extends Iterable<T> {
 		return inclusiveBy(from, toInclusive, 1);
 	}
 
+	// BigDecimal
+	static Range<BigDecimal> exclusiveBy(BigDecimal from, BigDecimal toExclusive, BigDecimal step) {
+		if (step.signum() == 0) {
+			throw new IllegalArgumentException("step cannot be 0");
+		} else if (HelperBigDecimal.areEqual(from, toExclusive) || step.signum() == from.subtract(toExclusive).signum()) {
+			return () -> Iterator.empty();
+		} else {
+			if (step.signum() > 0) {
+				return () -> new BigDecimalForwardIterator(from, toExclusive, step, false);
+			} else {
+				return () -> new BigDecimalBackwardIterator(from, toExclusive, step, false);
+			}
+		}
+	}
+
+	static Range<BigDecimal> exclusive(BigDecimal from, BigDecimal toExclusive) {
+		return exclusiveBy(from, toExclusive, BigDecimal.valueOf(1));
+	}
+
+	static Range<BigDecimal> inclusiveBy(BigDecimal from, BigDecimal toInclusive, BigDecimal step) {
+		if (step.signum() == 0) {
+			throw new IllegalArgumentException("step cannot be 0");
+		} else if (HelperBigDecimal.areEqual(from, toInclusive) || step.signum() == from.subtract(toInclusive).signum()) {
+			return () -> Iterator.empty();
+		} else {
+			if (step.signum() > 0) {
+				return () -> new BigDecimalForwardIterator(from, toInclusive, step, true);
+			} else {
+				return () -> new BigDecimalBackwardIterator(from, toInclusive, step, true);
+			}
+		}
+	}
+
+	static Range<BigDecimal> inclusive(BigDecimal from, BigDecimal toInclusive) {
+		return inclusiveBy(from, toInclusive, BigDecimal.valueOf(1));
+	}
+
 	// TODO: Float
 	// TODO: Double
-	// TODO: BigDecimal
+	// TODO: Byte
+	// TODO: Short
 }
 
 final class IntegerForwardIterator implements Iterator<Integer> {
@@ -402,5 +444,88 @@ final class CharacterBackwardIterator implements Iterator<Character> {
 		underflow = ((curr ^ r) & (step ^ r)) < 0;
 		next = r;
 		return curr;
+	}
+}
+
+final class BigDecimalForwardIterator implements Iterator<BigDecimal> {
+	private final BigDecimal start;
+	private final BigDecimal end;
+	private final BigDecimal step;
+	private final boolean inclusive;
+	private BigDecimal next;
+
+	BigDecimalForwardIterator(BigDecimal start, BigDecimal end, BigDecimal step, boolean inclusive) {
+		this.start = start;
+		this.next = start;
+		this.end = end;
+		this.step = step;
+		this.inclusive = inclusive;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (start.compareTo(end) > 0) {
+			return false;
+		}
+		if (inclusive) {
+			return next.compareTo(end) <= 0;
+		} else {
+			return next.compareTo(end) < 0;
+		}
+	}
+
+	@Override
+	public BigDecimal next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		final BigDecimal current = this.next;
+		this.next = current.add(step);
+		return current;
+	}
+}
+
+final class BigDecimalBackwardIterator implements Iterator<BigDecimal> {
+	private final BigDecimal start;
+	private final BigDecimal end;
+	private final BigDecimal step;
+	private final boolean inclusive;
+	private BigDecimal next;
+
+	BigDecimalBackwardIterator(BigDecimal start, BigDecimal end, BigDecimal step, boolean inclusive) {
+		this.start = start;
+		this.next = start;
+		this.end = end;
+		this.step = step;
+		this.inclusive = inclusive;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (start.compareTo(end) > 0) {
+			return false;
+		}
+		if (inclusive) {
+			return next.compareTo(end) >= 0;
+		} else {
+			return next.compareTo(end) > 0;
+		}
+	}
+
+	@Override
+	public BigDecimal next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		final BigDecimal current = this.next;
+		this.next = current.add(step);
+		return current;
+	}
+}
+
+final class HelperBigDecimal {
+	/* scale-independent equality */
+	static boolean areEqual(BigDecimal from, BigDecimal toExclusive) {
+		return from.compareTo(toExclusive) == 0;
 	}
 }
