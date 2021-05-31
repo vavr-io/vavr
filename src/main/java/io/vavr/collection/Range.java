@@ -125,7 +125,35 @@ public interface Range<T> extends Iterable<T> {
 		return inclusiveBy(from, toInclusive, 1L);
 	}
 
-	// TODO: Character
+	// Character
+	static Range<Character> exclusiveBy(char from, char toExclusive, int step) {
+		if (step == 0) {
+			throw new IllegalArgumentException("step cannot be 0");
+		}
+
+		return step > 0
+				? () -> new CharacterForwardIterator(from, toExclusive, step, false)
+				: () -> new CharacterBackwardIterator(from, toExclusive, step, false);
+	}
+
+	static Range<Character> exclusive(char from, char toExclusive) {
+		return exclusiveBy(from, toExclusive, 1);
+	}
+
+	static Range<Character> inclusiveBy(char from, char toInclusive, int step) {
+		if (step == 0) {
+			throw new IllegalArgumentException("step cannot be 0");
+		}
+
+		return step > 0
+				? () -> new CharacterForwardIterator(from, toInclusive, step, true)
+				: () -> new CharacterBackwardIterator(from, toInclusive, step, true);
+	}
+
+	static Range<Character> inclusive(char from, char toInclusive) {
+		return inclusiveBy(from, toInclusive, 1);
+	}
+
 	// TODO: Float
 	// TODO: Double
 	// TODO: BigDecimal
@@ -289,6 +317,88 @@ final class LongBackwardIterator implements Iterator<Long> {
 		}
 		long curr = next;
 		long r = curr + step;
+		underflow = ((curr ^ r) & (step ^ r)) < 0;
+		next = r;
+		return curr;
+	}
+}
+
+final class CharacterForwardIterator implements Iterator<Character> {
+	private final char start;
+	private final char end;
+	private final int step;
+	private final boolean inclusive;
+	private char next;
+	private boolean overflow;
+
+	CharacterForwardIterator(char start, char end, int step, boolean inclusive) {
+		this.start = start;
+		this.next = start;
+		this.end = end;
+		this.step = step;
+		this.inclusive = inclusive;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (start > end) {
+			return false;
+		}
+		if (inclusive) {
+			return !overflow && next <= end;
+		} else {
+			return !overflow && next < end;
+		}
+	}
+
+	@Override
+	public Character next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		char curr = next;
+		char r = (char)(curr + step);
+		overflow = ((curr ^ r) & (step ^ r)) < 0;
+		next = r;
+		return curr;
+	}
+}
+
+final class CharacterBackwardIterator implements Iterator<Character> {
+	private final char start;
+	private final char end;
+	private final int step;
+	private final boolean inclusive;
+	private char next;
+	private boolean underflow;
+
+	CharacterBackwardIterator(char start, char end, int step, boolean inclusive) {
+		this.start = start;
+		this.next = start;
+		this.end = end;
+		this.step = step;
+		this.inclusive = inclusive;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if (start < end) {
+			return false;
+		}
+		if (inclusive) {
+			return !underflow && next >= end;
+		} else {
+			return !underflow && next > end;
+		}
+	}
+
+	@Override
+	public Character next() {
+		if (!hasNext()) {
+			throw new NoSuchElementException();
+		}
+		char curr = next;
+		char r = (char)(curr + step);
 		underflow = ((curr ^ r) & (step ^ r)) < 0;
 		next = r;
 		return curr;
