@@ -20,10 +20,47 @@ package io.vavr.collection;
 
 import org.junit.Test;
 
+import java.math.BigDecimal;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 public class RangeTest {
+    // Byte
+    private static Byte byteFrom = Byte.valueOf((byte)1);
+    private static Byte byteTo = Byte.valueOf((byte)3);
+    private static Byte byteStep = Byte.valueOf((byte)1);
+    // Short
+    private static Short shortFrom = Short.valueOf((short)1);
+    private static Short shortTo = Short.valueOf((short)3);
+    private static Short shortStep = Short.valueOf((short)1);
+    // Integer
+    private static Integer integerFrom = 1;
+    private static Integer integerTo = 3;
+    private static Integer integerStep = 1;
+    // Long
+    private static Long longFrom = 1L;
+    private static Long longTo = 3L;
+    private static Long longStep = 1L;
+    // Character
+    private static Character characterFrom = 'a';
+    private static Character characterTo = 'c';
+    private static Character characterStep = 1;
+    // Float
+    private static Float floatFrom = 1.0f;
+    private static Float floatTo = 3.0f;
+    private static Float floatStep = 1.0f;
+    // Double
+    private static Double doubleFrom = 1.0d;
+    private static Double doubleTo = 3.0d;
+    private static Double doubleStep = 1.0d;
+    // BigDecimal
+    private static BigDecimal decimalFrom = BigDecimal.valueOf(1);
+    private static BigDecimal decimalTo = BigDecimal.valueOf(3);
+    private static BigDecimal decimalStep = BigDecimal.valueOf(1);
+
     @Test
     public void shallWorkWithForLoop() {
-        // This test will pass of it compiles without errors
+        // This test will pass if it compiles without errors
         for (int i : Range.inclusive(0, 2)) {
             System.out.println(i);
         }
@@ -31,25 +68,47 @@ public class RangeTest {
 
     @Test
     public void shallWorkWithAllNumericTypes() {
-        // This test will pass of it compiles without errors
+        // This test will pass of it compiles without errors.
+        // Numeric types to support: Byte, Short, Integer, Long, Character, Float, Double, BigDecimal.
 
-        // Numeric types to support:
-        //   Byte
-        //   Short
-        //   Integer
-        //   Long
-        //   Char
-        //   Float
-        //   Double
-        //   BigDecimal
+        // .inclusive()
+        Range.inclusive(integerFrom, integerTo);
+        // TODO: add tests for all other supported numeric types
 
-        // TODO: Range.inclusive(Byte.valueOf(0b), Byte.valueOf(10b));
-        // TODO: Range.inclusive(Short.valueOf((byte)0), Short.valueOf((byte)10));
-        Range.inclusive(Integer.valueOf(0), Integer.valueOf(10));
-        // TODO: Range.inclusive(Long.valueOf(0), Long.valueOf(10));
-        // TODO: Range.inclusive(Character.valueOf(0), Character.valueOf(10));
-        // TODO: Range.inclusive(Float.valueOf(0), Float.valueOf(10));
-        // TODO: Range.inclusive(Double.valueOf(0), Double.valueOf(10));
-        // TODO: Range.inclusive(BigDecimal.valueOf(0), BigDecimal.valueOf(10));
+        // .inclusiveBy()
+        Range.inclusiveBy(integerFrom, integerTo, integerStep);
+        // TODO: add tests for all other supported numeric types
+
+        // .exclusive()
+        Range.exclusive(integerFrom, integerTo);
+        // TODO: add tests for all other supported numeric types
+
+        // . exclusiveBy()
+        Range.exclusiveBy(integerFrom, integerTo, integerStep);
+        // TODO: add tests for all other supported numeric types
+    }
+
+    @Test
+    public void shallGenerateIncusiveRanges() {
+        assertThat(Array.ofAll(Range.inclusive(integerFrom, integerTo))).isEqualTo(Array.of(1,2,3));
+        // TODO: add tests for all other supported numeric types
+    }
+
+    @Test
+    public void shallGenerateExclusiveRanges() {
+        assertThat(Array.ofAll(Range.exclusive(integerFrom, integerTo))).isEqualTo(Array.of(1,2));
+        // TODO: add tests for all other supported numeric types
+    }
+
+    @Test
+    public void shallGenerateInclusiveRangesByIncrement() {
+        assertThat(Array.ofAll(Range.inclusiveBy(integerFrom, integerTo, integerStep))).isEqualTo(Array.of(1,2,3));
+        // TODO: add tests for all other supported numeric types
+    }
+
+    @Test
+    public void shallGenerateExclusiveRangesByIncrement() {
+        assertThat(Array.ofAll(Range.exclusiveBy(integerFrom, integerTo, integerStep))).isEqualTo(Array.of(1,2));
+        // TODO: add tests for all other supported numeric types
     }
 }
