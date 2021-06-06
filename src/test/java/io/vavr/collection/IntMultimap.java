@@ -380,18 +380,6 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
-    }
-
-    @Override
-    public <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
-    }
-
-    @Override
     public <U> Seq<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }

@@ -661,34 +661,6 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat(tree.values(Tree.Order.LEVEL_ORDER)).isEqualTo(Stream.of(1, 2, 3, 4, 5, 6, 7, 8, 9));
     }
 
-    // -- unzip
-
-    @Test
-    public void shouldUnzipEmptyTree() {
-        assertThat(Tree.empty().unzip(t -> Tuple.of(t, t))).isEqualTo(Tuple.of(Tree.empty(), Tree.empty()));
-    }
-
-    @Test
-    public void shouldUnzipNonEmptyTree() {
-        final Tree<Integer> testee = $(1, $(2), $(3));
-        final Tuple2<Tree<Integer>, Tree<Integer>> actual = testee.unzip(i -> Tuple.of(i, -i));
-        final Tuple2<Tree<Integer>, Tree<Integer>> expected = Tuple.of($(1, $(2), $(3)), $(-1, $(-2), $(-3)));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldUnzip3EmptyTree() {
-        assertThat(Tree.empty().unzip3(t -> Tuple.of(t, t, t))).isEqualTo(Tuple.of(Tree.empty(), Tree.empty(), Tree.empty()));
-    }
-
-    @Test
-    public void shouldUnzip3NonEmptyTree() {
-        final Tree<Integer> testee = $(1, $(2), $(3));
-        final Tuple3<Tree<Integer>, Tree<Integer>, Tree<Integer>> actual = testee.unzip3(i -> Tuple.of(i, -i, -i - 1));
-        final Tuple3<Tree<Integer>, Tree<Integer>, Tree<Integer>> expected = Tuple.of($(1, $(2), $(3)), $(-1, $(-2), $(-3)), $(-2, $(-3), $(-4)));
-        assertThat(actual).isEqualTo(expected);
-    }
-
     // equals
 
     @SuppressWarnings("EqualsWithItself")

@@ -1449,43 +1449,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <T1, T2> Tuple2<Array<T1>, Array<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        if (isEmpty()) {
-            return Tuple.of(empty(), empty());
-        } else {
-            final Object[] xs = new Object[delegate.length];
-            final Object[] ys = new Object[delegate.length];
-            for (int i = 0; i < delegate.length; i++) {
-                final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(get(i));
-                xs[i] = t._1;
-                ys[i] = t._2;
-            }
-            return Tuple.of(wrap(xs), wrap(ys));
-        }
-    }
-
-    @Override
-    public <T1, T2, T3> Tuple3<Array<T1>, Array<T2>, Array<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        if (isEmpty()) {
-            return Tuple.of(empty(), empty(), empty());
-        } else {
-            final Object[] xs = new Object[delegate.length];
-            final Object[] ys = new Object[delegate.length];
-            final Object[] zs = new Object[delegate.length];
-            for (int i = 0; i < delegate.length; i++) {
-                final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
-                xs[i] = t._1;
-                ys[i] = t._2;
-                zs[i] = t._3;
-            }
-            return Tuple.of(wrap(xs), wrap(ys), wrap(zs));
-        }
-    }
-
-    @Override
     public Array<T> update(int index, T element) {
         if ((index < 0) || (index >= length())) {
             throw new IndexOutOfBoundsException("update(" + index + ")");

@@ -2376,26 +2376,29 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @Test
     public void shouldUnzipNil() {
-        assertThat(empty().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(empty(), empty()));
+        assertThat(empty().unzip(x -> x, y -> y)).isEqualTo(Tuple.of(Iterator.empty(), Iterator.empty()));
     }
 
     @Test
     public void shouldUnzipNonNil() {
-        final Tuple actual = of(0, 1).unzip(i -> Tuple.of(i, (char) ((short) 'a' + i)));
-        final Tuple expected = Tuple.of(of(0, 1), of('a', 'b'));
-        assertThat(actual).isEqualTo(expected);
+        final Traversable<Integer> actual0 = of(0, 1);
+        final Tuple2<Iterator<Integer>, Iterator<Character>> actual = actual0.unzip(i -> i, i -> (char) ((short) 'a' + i));
+        final Tuple2<Iterator<Integer>, Iterator<Character>> expected = Tuple.of(of(0, 1).iterator(), of('a', 'b').iterator());
+        assertThat(actual.map(Value<Integer>::toArray, Value<Character>::toArray)).isEqualTo(expected.map(Value<Integer>::toArray, Value<Character>::toArray));
     }
 
     @Test
     public void shouldUnzip3Nil() {
-        assertThat(empty().unzip3(x -> Tuple.of(x, x, x))).isEqualTo(Tuple.of(empty(), empty(), empty()));
+        assertThat(empty().unzip3(x -> x, y -> y, z -> z)).isEqualTo(Tuple.of(Iterator.empty(), Iterator.empty(), Iterator.empty()));
     }
 
     @Test
     public void shouldUnzip3NonNil() {
-        final Tuple actual = of(0, 1).unzip3(i -> Tuple.of(i, (char) ((short) 'a' + i), (char) ((short) 'a' + i + 1)));
-        final Tuple expected = Tuple.of(of(0, 1), of('a', 'b'), of('b', 'c'));
-        assertThat(actual).isEqualTo(expected);
+        final Tuple3<Iterator<Integer>, Iterator<Character>, Iterator<Character>> actual
+                = of(0, 1).unzip3(i -> i, i -> (char) ((short) 'a' + i), i -> (char) ((short) 'a' + i + 1));
+        final Tuple3<Iterator<Integer>, Iterator<Character>, Iterator<Character>> expected
+                = Tuple.of(of(0, 1).iterator(), of('a', 'b').iterator(), of('b', 'c').iterator());
+        assertThat(actual.map(Value<Integer>::toArray, Value<Character>::toArray, Value<Character>::toArray)).isEqualTo(expected.map(Value<Integer>::toArray, Value<Character>::toArray, Value<Character>::toArray));
     }
 
     // -- zip

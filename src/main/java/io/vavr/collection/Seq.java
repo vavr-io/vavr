@@ -88,7 +88,6 @@ import java.util.function.*;
  * <li>{@link #sorted()}</li>
  * <li>{@link #sorted(Comparator)}</li>
  * <li>{@link #splitAt(int)}</li>
- * <li>{@link #unzip(Function)}</li>
  * <li>{@link #zip(Iterable)}</li>
  * <li>{@link #zipAll(Iterable, Object, Object)}</li>
  * <li>{@link #zipWithIndex()}</li>
@@ -1292,12 +1291,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @throws NullPointerException if {@code predicate} is null
      */
     Seq<T> takeRightWhile(Predicate<? super T> predicate);
-
-    @Override
-    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
-
-    @Override
-    <T1, T2, T3> Tuple3<? extends Seq<T1>, ? extends Seq<T2>, ? extends Seq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
     <U> Seq<Tuple2<T, U>> zip(Iterable<? extends U> that);

@@ -599,24 +599,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public final <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip(unzipper).map(i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
-                i2 -> TreeSet.ofAll(Comparators.naturalComparator(), i2));
-    }
-
-    @Override
-    public final <T1, T2, T3> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip3(unzipper).map(
-                i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
-                i2 -> TreeSet.ofAll(Comparators.naturalComparator(), i2),
-                i3 -> TreeSet.ofAll(Comparators.naturalComparator(), i3));
-    }
-
-    @Override
     public final <U> TreeSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(comparator(), Comparators.naturalComparator());

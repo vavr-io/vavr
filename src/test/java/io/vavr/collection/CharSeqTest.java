@@ -3540,32 +3540,6 @@ public class CharSeqTest {
         CharSeq.of('1', '2', '3').subSequence(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
     }
 
-    // -- unzip
-
-    @Test
-    public void shouldUnzipNil() {
-        assertThat(CharSeq.empty().unzip(x -> Tuple.of(x, x))).isEqualTo(Tuple.of(Vector.empty(), Vector.empty()));
-    }
-
-    @Test
-    public void shouldUnzipNonNil() {
-        final Tuple actual = CharSeq.of('0', '1').unzip(i -> Tuple.of(i, i == '0' ? 'a' : 'b'));
-        final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'));
-        assertThat(actual).isEqualTo(expected);
-    }
-
-    @Test
-    public void shouldUnzip3Nil() {
-        assertThat(CharSeq.empty().unzip3(x -> Tuple.of(x, x, x))).isEqualTo(Tuple.of(Vector.empty(), Vector.empty(), Vector.empty()));
-    }
-
-    @Test
-    public void shouldUnzip3NonNil() {
-        final Tuple actual = CharSeq.of('0', '1').unzip3(i -> Tuple.of(i, i == '0' ? 'a' : 'b', i == '0' ? 'b' : 'a'));
-        final Tuple expected = Tuple.of(Vector.of('0', '1'), Vector.of('a', 'b'), Vector.of('b', 'a'));
-        assertThat(actual).isEqualTo(expected);
-    }
-
     // -- zip
 
     @Test
