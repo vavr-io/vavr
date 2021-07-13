@@ -55,9 +55,9 @@ public class OptionTest extends AbstractValueTest {
         return true;
     }
 
-    // -- Option
+    // -- construction
 
-    // -- narrow
+    // Option.narrow
 
     @Test
     public void shouldNarrowOption() {
@@ -67,7 +67,7 @@ public class OptionTest extends AbstractValueTest {
     }
 
 
-    // -- construction
+    // Option.of
 
     @Test
     public void shouldMapNullToNone() {
@@ -80,35 +80,67 @@ public class OptionTest extends AbstractValueTest {
         assertThat(option.isDefined()).isTrue();
     }
 
+    // Option.some
+
     @Test
     public void shouldWrapNullInSome() {
         final Option<?> some = Option.some(null);
         assertThat(some.get()).isEqualTo(null);
     }
 
+    // Option.when
+
     @Test
-    public void shouldWrapIfTrue() {
+    public void shouldWrapWhenIfTrue() {
         assertThat(Option.when(true, () -> null)).isEqualTo(Option.some(null));
         assertThat(Option.when(true, (Object) null)).isEqualTo(Option.some(null));
     }
 
     @Test
-    public void shouldNotWrapIfFalse() {
+    public void shouldNotWrapWhenIfFalse() {
         assertThat(Option.when(false, () -> null)).isEqualTo(Option.none());
         assertThat(Option.when(false, (Object) null)).isEqualTo(Option.none());
     }
 
     @Test
-    public void shouldNotExecuteIfFalse() {
+    public void shouldNotExecuteWhenIfFalse() {
         assertThat(Option.when(false, () -> {
             throw new RuntimeException();
         })).isEqualTo(Option.none());
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrowExceptionOnWhenWithProvider() {
+    public void shouldThrowExceptionOnWhenIfSupplierIsNull() {
         assertThat(Option.when(false, (Supplier<?>) null)).isEqualTo(Option.none());
     }
+
+    // Option.unless
+
+    @Test
+    public void shouldWrapUnlessIfFalse() {
+        assertThat(Option.unless(false, () -> null)).isEqualTo(Option.some(null));
+        assertThat(Option.unless(false, (Object) null)).isEqualTo(Option.some(null));
+    }
+
+    @Test
+    public void shouldNotWrapUnlessIfTrue() {
+        assertThat(Option.unless(true, () -> null)).isEqualTo(Option.none());
+        assertThat(Option.unless(true, (Object) null)).isEqualTo(Option.none());
+    }
+
+    @Test
+    public void shouldNotExecuteUnlessIfTrue() {
+        assertThat(Option.unless(true, () -> {
+            throw new RuntimeException();
+        })).isEqualTo(Option.none());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowExceptionOnUnlessIfSupplierIsNull() {
+        assertThat(Option.unless(true, (Supplier<?>) null)).isEqualTo(Option.none());
+    }
+
+    // Option.ofOptional
 
     @Test
     public void shouldWrapEmptyOptional() {
@@ -125,7 +157,7 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.ofOptional(null)).isEqualTo(Option.none());
     }
 
-    // -- sequence
+    // Option.sequence
 
     @Test
     public void shouldConvertListOfNonEmptyOptionsToOptionOfList() {

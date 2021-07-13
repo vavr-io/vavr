@@ -199,7 +199,54 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     }
 
     /**
-     * Creates {@code Some} of suppliers value if condition is true, or {@code None} in other case
+     * Unless the given {@code condition} is true, returns {@code Option.some(supplier.get())},
+     * otherwise returns {@code Option.none()}.
+     *
+     * <pre>{@code
+     * Supplier<String> supplier = () -> "supplied";
+     *
+     * // = Some("supplied")
+     * Option<String> supplied = Option.unless(false, supplier);
+     *
+     * // = None
+     * Option<String> none = Option.unless(true, supplier);
+     * }</pre>
+     *
+     * @param <T>       value type
+     * @param condition a boolean value
+     * @param supplier  a value supplier
+     * @return {@code Some(supplier.get())} if {@code condition} is false, otherwise {@code None}
+     * @throws NullPointerException if the given {@code supplier} is null
+     */
+    public static <T> Option<T> unless(boolean condition, Supplier<? extends T> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return when(!condition, supplier);
+    }
+
+    /**
+     * Unless the given {@code condition} is true, returns {@code Option.some(value)},
+     * otherwise returns {@code Option.none()}.
+     *
+     * <pre>{@code
+     * // = Some(5)
+     * Option<Integer> option = Option.when(true, 5);
+     *
+     * // = None
+     * Option<Integer> none = Option.when(false, 5);
+     * }</pre>
+     *
+     * @param <T>       type of the value
+     * @param condition a boolean value
+     * @param value     a possibly {@code null} value
+     * @return {@code Some(value)} if {@code condition} is false, otherwise {@code None}
+     */
+    public static <T> Option<T> unless(boolean condition, T value) {
+        return when(!condition, value);
+    }
+
+    /**
+     * When the given {@code condition} is true, returns {@code Option.some(supplier.get())},
+     * otherwise returns {@code Option.none()}.
      *
      * <pre>{@code
      * Supplier<String> supplier = () -> "supplied";
@@ -211,10 +258,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Option<String> none = Option.when(false, supplier);
      * }</pre>
      *
-     * @param <T>       type of the optional value
-     * @param condition A boolean value
-     * @param supplier  An optional value supplier, may supply {@code null}
-     * @return return {@code Some} of supplier's value if condition is true, or {@code None} in other case
+     * @param <T>       value type
+     * @param condition a boolean value
+     * @param supplier  a value supplier
+     * @return {@code Some(supplier.get())} if {@code condition} is true, otherwise {@code None}
      * @throws NullPointerException if the given {@code supplier} is null
      */
     public static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
@@ -223,7 +270,8 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     }
 
     /**
-     * Creates {@code Some} of value if condition is true, or {@code None} in other case
+     * When the given {@code condition} is true, returns {@code Option.some(value)},
+     * otherwise returns {@code Option.none()}.
      *
      * <pre>{@code
      * // = Some(5)
@@ -233,10 +281,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * Option<Integer> none = Option.when(false, 5);
      * }</pre>
      *
-     * @param <T>       type of the optional value
-     * @param condition A boolean value
-     * @param value     An optional value, may be {@code null}
-     * @return return {@code Some} of value if condition is true, or {@code None} in other case
+     * @param <T>       type of the value
+     * @param condition a boolean value
+     * @param value     a possibly {@code null} value
+     * @return {@code Some(value)} if {@code condition} is true, otherwise {@code None}
      */
     public static <T> Option<T> when(boolean condition, T value) {
         return condition ? some(value) : none();
