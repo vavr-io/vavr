@@ -26,7 +26,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
     </parent>
     <groupId>io.vavr</groupId>
     <artifactId>vavr-parent</artifactId>
-    <version>0.10.4-SNAPSHOT</version>
+    <version>0.10.4</version>
     <packaging>pom</packaging>
     <name>Vavr Parent</name>
     <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
@@ -49,7 +49,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <connection>scm:git:git@github.com:vavr-io/vavr.git</connection>
         <developerConnection>scm:git:git@github.com:vavr-io/vavr.git</developerConnection>
         <url>git@github.com:vavr-io/vavr.git</url>
-        <tag>v0.10.3</tag>
+        <tag>v0.10.4</tag>
     </scm>
     <developers>
         <developer>
