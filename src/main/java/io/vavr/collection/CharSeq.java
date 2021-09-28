@@ -559,6 +559,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public Seq<CharSeq> group() {
+        return Collections.group(this, CharSeq::empty);
+    }
+
+    @Override
     public <C> Map<C, CharSeq> groupBy(Function<? super Character, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, CharSeq::ofAll);
     }

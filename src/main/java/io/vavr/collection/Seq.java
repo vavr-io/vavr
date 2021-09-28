@@ -1196,6 +1196,13 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
     }
 
+    /**
+     * Groups subsequent equal elements.
+     *
+     * @return a new Seq of new instances containing the equal elements.
+     */
+    Seq<? extends Seq<T>> group();
+
     @Override
     <C> Map<C, ? extends Seq<T>> groupBy(Function<? super T, ? extends C> classifier);
 

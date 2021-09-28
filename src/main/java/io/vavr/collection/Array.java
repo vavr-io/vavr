@@ -884,6 +884,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Seq<Array<T>> group() {
+        return Collections.group(this, Array::empty);
+    }
+
+    @Override
     public <C> Map<C, Array<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, Array::ofAll);
     }

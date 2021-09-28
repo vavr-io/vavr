@@ -896,6 +896,11 @@ public abstract class List<T> implements LinearSeq<T> {
     }
 
     @Override
+    public final Seq<List<T>> group() {
+        return Collections.group(this, List::empty);
+    }
+
+    @Override
     public final <C> Map<C, List<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return Collections.groupBy(this, classifier, List::ofAll);
     }

@@ -153,7 +153,13 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
+    Seq<? extends IndexedSeq<T>> group();
+
+    @Override
     <C> Map<C, ? extends IndexedSeq<T>> groupBy(Function<? super T, ? extends C> classifier);
+
+    @Override
+    Iterator<? extends IndexedSeq<T>> grouped(int size);
 
     @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
@@ -162,9 +168,6 @@ public interface IndexedSeq<T> extends Seq<T> {
         int n = start + segmentLength(predicate.negate(), start);
         return (n >= length()) ? -1 : n;
     }
-
-    @Override
-    Iterator<? extends IndexedSeq<T>> grouped(int size);
 
     @Override
     default int indexOfSlice(Iterable<? extends T> that, int from) {

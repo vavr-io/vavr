@@ -808,6 +808,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
+    public Seq<Queue<T>> group() {
+        return Collections.group(this, Queue::empty);
+    }
+
+    @Override
     public <C> Map<C, Queue<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, Queue::ofAll);
     }
