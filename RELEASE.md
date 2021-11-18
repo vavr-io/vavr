@@ -1,27 +1,43 @@
-### Releasing
+# Releasing
+
+## Prerequisites
+
+In the following please substitute the placeholders `<SOMETHING>` with concrete values.
+
+### OSS Sonatype
 
 See http://central.sonatype.org/pages/ossrh-guide.html
 
-Sonatype-Nexus specific maven configuration: `~/.m2/settings.xml`
+#### Signing
 
-```xml
-<settings>
-  <servers>
-    <server>
-      <id>sonatype-nexus-snapshots</id>
-      <username>your-jira-id</username>
-      <password>your-jira-pwd</password>
-    </server>
-    <server>
-      <id>sonatype-nexus-staging</id>
-      <username>your-jira-id</username>
-      <password>your-jira-pwd</password>
-    </server>
-  </servers>
-</settings>
+To configure jar signing, you need to have a gpg key.
+
+* Get public key ID `gpg --list-keys --keyid-format SHORT`
+* Export key `gpg --keyring secring.gpg --export-secret-keys > ~/.gnupg/secring.gpg`
+* Add the following properties to `~/.gradle/gradle.properties`
+
+```properties
+signing.keyId=<KEY-ID>
+signing.password=<PASSWORD>
+signing.secretKeyRingFile=<HOME-DIR>/.gnupg/secring.gpg
 ```
 
-Note: Detailed information about performing a release can be found in the SCM section.
+#### Upload archives
+
+Add the following properties to `~/.gradle/gradle.properties` (same credentials as for https://oss.sonatype.org):
+
+```properties
+ossrhUsername=<USERNAME>
+ossrhPassword=<PASSWORD>
+```
+
+Alternatively, you can pass the credentials as command line parameters:
+
+```sh
+./gradlew release --info -PossrhUsername=<USERNAME> -PossrhPassword=<PASSWORD>
+```
+
+### OSS Sonatype Repository
 
 ## SCM
 
