@@ -300,6 +300,30 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(result).isEqualTo(3);
     }
 
+
+    // getOrElseThrow(Function)
+
+    @Test
+    public void shouldReturnValidWhenGetOrElseThrowWithFunctionOnValid() {
+      final Integer actual = Validation.<String, Integer> valid(1).getOrElseThrow(s -> new RuntimeException(s));
+      assertThat(actual).isEqualTo(1);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowWhenGetOrElseThrowWithFunctionOnInvalid() {
+      Validation.<String, Integer> invalid("some error").getOrElseThrow(s -> new RuntimeException(s));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerExceptionWhenGetOrElseThrowNullWithFunctionOnValid() {
+      Validation.<String, Integer> valid(1).getOrElseThrow((Function<? super String, RuntimeException>) null);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowNullPointerExceptionWhenGetOrElseThrowNullWithFunctionOnInvalid() {
+      Validation.<String, Integer> invalid("some error").getOrElseThrow((Function<? super String, RuntimeException>) null);
+    }
+
     // -- swap
 
     @Test

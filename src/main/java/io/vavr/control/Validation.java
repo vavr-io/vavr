@@ -658,6 +658,33 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
     }
 
     /**
+     * Gets the Valid value or throws, if the projected Validation is an Invalid.
+     *
+     * <pre>{@code
+     * Function<String, RuntimeException> exceptionFunction = RuntimeException::new;
+     * // prints "42"
+     * System.out.println(Validation.<String, Integer>valid(42).getOrElseThrow(exceptionFunction));
+     *
+     * // throws RuntimeException("no value found")
+     * Validation.invalid("no value found").getOrElseThrow(exceptionFunction);
+     * }</pre>
+     *
+     * @param <X>               a throwable type
+     * @param exceptionFunction a function which creates an exception based on an Invalid value
+     * @return the valid value, if the underlying Valdition is a Valid or else throws the exception provided by
+     * {@code exceptionFunction} by applying the Invalid value.
+     * @throws X if the projected Validation is an Invalid
+     */
+    public final <X extends Throwable> T getOrElseThrow(Function<? super E, X> exceptionFunction) throws X {
+      Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
+      if (isValid()) {
+        return get();
+      } else {
+        throw exceptionFunction.apply(getError());
+      }
+    }
+
+    /**
      * Flip the valid/invalid values for this Validation. If this is a Valid&lt;E,T&gt;, returns Invalid&lt;T,E&gt;.
      * Or if this is an Invalid&lt;E,T&gt;, return a Valid&lt;T,E&gt;.
      *
