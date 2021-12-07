@@ -696,7 +696,8 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if {@code f} is null
      */
     public static <T, U> List<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
-        return Iterator.unfoldLeft(seed, f).toList();
+        return Iterator.unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(Tuple2::swap)))
+                .foldLeft(List.empty(), List::prepend);
     }
 
     /**
@@ -724,7 +725,8 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if {@code f} is null
      */
     public static <T> List<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
-        return Iterator.unfold(seed, f).toList();
+        return Iterator.unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(Tuple2::swap)))
+                .foldLeft(List.empty(), List::prepend);
     }
 
     @Override
