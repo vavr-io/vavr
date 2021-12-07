@@ -29,7 +29,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Spliterator;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.stream.Collector;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -2319,4 +2318,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
     }
 
+    @Test
+    public void shouldGroupElementsInSeq() {
+        assertThat(of(1, 2, 1, 2, 3, 3, 3, 2).group()).isEqualTo(List.of(
+                of(1, 1),
+                of(2, 2, 2),
+                of(3, 3, 3)));
+    }
 }

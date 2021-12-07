@@ -211,6 +211,13 @@ final class Collections {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    static <T, S extends Seq<T>> Seq<S> group(S source, Supplier<S> supplier) {
+        return source.foldLeft(HashMap.empty(), (Map<T, S> map, T value) ->
+                map.put(value, (S) map.getOrElse(value, supplier.get()).append(value)))
+                .map(entry -> entry._2);
+    }
+
     static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
         Objects.requireNonNull(classifier, "classifier is null");
         Objects.requireNonNull(mapper, "mapper is null");

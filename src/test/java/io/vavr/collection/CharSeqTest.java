@@ -4092,4 +4092,11 @@ public class CharSeqTest {
         CharSeq.empty().toShort(2);
     }
 
+    @Test
+    public void shouldGroupElementsInCharSeq() {
+        assertThat(CharSeq.of("12123332").group()).isEqualTo(List.of(
+                CharSeq.of("11"),
+                CharSeq.of("222"),
+                CharSeq.of("333")));
+    }
 }

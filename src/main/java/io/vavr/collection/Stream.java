@@ -1088,6 +1088,11 @@ public abstract class Stream<T> implements LinearSeq<T> {
     }
 
     @Override
+    public final Seq<Stream<T>> group() {
+        return Collections.group(this, Stream::empty);
+    }
+
+    @Override
     public final <C> Map<C, Stream<T>> groupBy(Function<? super T, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, Stream::ofAll);
     }
