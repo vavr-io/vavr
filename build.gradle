@@ -182,8 +182,8 @@ signing {
 nexusPublishing {
     repositories {
         sonatype {
-            username.set(ossrhUsername)
-            password.set(ossrhPassword)
+            username.set(providers.systemProperty("ossrhUsername").orElse("").forUseAtConfigurationTime())
+            password.set(providers.systemProperty("ossrhPassword").orElse("").forUseAtConfigurationTime())        
         }
     }
 }
