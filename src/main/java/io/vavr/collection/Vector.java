@@ -794,16 +794,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     @Override
     public Vector<T> intersperse(T element) { return ofAll(iterator().intersperse(element)); }
 
-    /**
-     * A {@code Vector} is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
-    }
-
     @Override
     public boolean isEmpty() { return length() == 0; }
 
@@ -1271,7 +1261,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public String stringPrefix() { return "Vector"; }
+    public String stringPrefix() {
+        return "Vector";
+    }
 
     @Override
     public String toString() { return mkString(stringPrefix() + "(", ", ", ")"); }

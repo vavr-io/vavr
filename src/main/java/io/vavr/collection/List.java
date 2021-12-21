@@ -150,16 +150,6 @@ public abstract class List<T> implements LinearSeq<T> {
         return Nil.instance();
     }
 
-    /**
-     * A {@code List} is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public final boolean isAsync() {
-        return false;
-    }
-
     @Override
     public abstract boolean isEmpty();
 
@@ -1519,7 +1509,7 @@ public abstract class List<T> implements LinearSeq<T> {
     }
 
     @Override
-    public final String stringPrefix() {
+    public String stringPrefix() {
         return "List";
     }
 
@@ -1693,9 +1683,7 @@ public abstract class List<T> implements LinearSeq<T> {
      * Representation of the singleton empty {@code List}.
      *
      * @param <T> Component type of the List.
-     * @deprecated will be removed from the public API
      */
-    @Deprecated
     public static final class Nil<T> extends List<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
@@ -1767,9 +1755,7 @@ public abstract class List<T> implements LinearSeq<T> {
      * Non-empty {@code List}, consisting of a {@code head} and a {@code tail}.
      *
      * @param <T> Component type of the List.
-     * @deprecated will be removed from the public API
      */
-    @Deprecated
     // DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
     public static final class Cons<T> extends List<T> implements Serializable {
 
