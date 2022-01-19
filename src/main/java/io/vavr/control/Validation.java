@@ -558,6 +558,24 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
         return isValid() ? this : (Validation<E, T>) supplier.get();
     }
 
+     /**
+     * Returns result of evaluating supplier if it is valid, otherwise return this.
+     *
+     * <pre>{@code
+     * // following code return an alternative Supplier validation("vavr") when there is an error in first validation
+     * Validation<? super Exception, ?> errorInValidation = Validation.invalid(Error.class);
+     * Validation<? super Exception, ?> validation = errorInValidation.onSuccess(() -> Validation.valid("vavr"));
+     * }</pre>
+     *
+     * @param supplier An alternative {@code Validation} supplier
+     * @return this {@code Validation} if it is invalid, otherwise return the result of evaluating supplier.
+     */
+    @SuppressWarnings("unchecked")
+    public final Validation<E, T> onSuccess(Supplier<? extends Validation<? extends E, ? extends T>> supplier) {
+        Objects.requireNonNull(supplier, "supplier is null");
+        return isValid() ? (Validation<E, T>) supplier.get() : this;
+    }
+    
     @Override
     public final boolean isEmpty() {
         return isInvalid();
