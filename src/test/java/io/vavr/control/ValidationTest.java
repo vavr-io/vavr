@@ -742,4 +742,18 @@ public class ValidationTest extends AbstractValueTest {
     public void shouldHandleTransformOnLeft() {
         assertThat(Validation.invalid(0).<String> transform(self -> self.isEmpty() ? "ok" : "failed")).isEqualTo("ok");
     }
+    
+        // -- onSuccess
+
+    @Test
+    public void shouldReturnSupplierOnOnSuccessIfValid() {
+        Validation<Seq<String>, String> validValidation = valid();
+        assertThat(validValidation.onSuccess(this::valid)).isEqualTo(validValidation);
+    }
+
+    @Test
+    public void shouldReturnErrorOnOnSuccessIfInValid() {
+        Validation<Seq<String>, String> inValidValidation = invalid();
+        assertThat(inValidValidation.onSuccess(this::invalid)).isEqualTo(inValidValidation);
+    }
 }
