@@ -20,6 +20,7 @@ package io.vavr.collection.euler;
 
 import io.vavr.API;
 import io.vavr.Function1;
+import io.vavr.Tuple;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Stream;
 
@@ -30,7 +31,6 @@ import java.net.URL;
 import java.util.Scanner;
 
 import static io.vavr.API.$;
-import static io.vavr.API.Case;
 
 final class Utils {
 
@@ -114,5 +114,16 @@ final class Utils {
 
     static boolean isPalindrome(int val) {
         return isPalindrome(Long.toString(val));
+    }
+
+    static Stream<Long> pentagonal() {
+        return Stream.of(Tuple.of(1L, 1)).appendSelf(self ->
+                self.map(t ->
+                        Tuple.of((t._2 + 1) * (3L * (t._2 + 1) - 1) / 2, t._2 + 1)))
+                .map(t -> t._1);
+    }
+
+    static boolean isPentagonal(long number) {
+        return ((1 + Math.sqrt(1 + 24 * number)) / 6) % 1 == 0;
     }
 }
