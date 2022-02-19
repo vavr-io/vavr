@@ -1573,15 +1573,11 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     Traversable<Tuple2<T, Integer>> zipWithIndex();
 
     /**
-     * Returns a traversable formed from this traversable and another Iterable collection by mapping elements.
-     * If one of the two iterables is longer than the other, its remaining elements are ignored.
-     * <p>
-     * The length of the returned traversable is the minimum of the lengths of this traversable and {@code that}
-     * iterable.
+     * Zips this traversable with its indices by applying mapper provided.
      *
-     * @param <U>    The type of the mapped elements.
+     * @param <U> The type of the mapped elements.
      * @param mapper a mapper.
-     * @return a new traversable containing mapped elements of this traversable and {@code that} iterable.
+     * @return a new traversable containing elements of this traversable, zipped with indices, and mapped with mapper provided.
      * @throws NullPointerException if {@code mapper} is null
      */
     <U> Traversable<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
