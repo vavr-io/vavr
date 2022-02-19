@@ -6,7 +6,6 @@
 [![Code Coverage](https://codecov.io/gh/vavr-io/vavr/branch/master/graph/badge.svg)](https://codecov.io/gh/vavr-io/vavr)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vavr-io/vavr)
 [![donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?logo=paypal&style=flat-square)](https://paypal.me/danieldietrich13)
-[![patrons](https://img.shields.io/liberapay/patrons/danieldietrich?logo=liberapay&style=flat-square)](https://liberapay.com/danieldietrich/)
 
 [![vavr-logo](https://user-images.githubusercontent.com/743833/62367542-486f0500-b52a-11e9-815e-e9788d4c8c8d.png)](http://vavr.io/)
 
