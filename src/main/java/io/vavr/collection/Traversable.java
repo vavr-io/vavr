@@ -269,7 +269,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code elements} is null
      */
     default boolean containsAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         for (T element : elements) {
             if (!contains(element)) {
                 return false;
@@ -286,7 +285,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code predicate} is null.
      */
     default int count(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return foldLeft(0, (i, t) -> predicate.test(t) ? i + 1 : i);
     }
 
@@ -411,7 +409,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code predicate} is null
      */
     default boolean existsUnique(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         boolean exists = false;
         for (T t : this) {
             if (predicate.test(t)) {
@@ -446,7 +443,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code predicate} is null
      */
     default Traversable<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
@@ -458,7 +454,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code predicate} is null
      */
     default Option<T> find(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         for (T a : this) {
             if (predicate.test(a)) {
                 return Option.some(a); // may be Some(null)
@@ -477,7 +472,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code predicate} is null
      */
     default Option<T> findLast(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return iterator().findLast(predicate);
     }
 
@@ -525,7 +519,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code combine} is null
      */
     default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> combine) {
-        Objects.requireNonNull(combine, "combine is null");
         return foldLeft(zero, combine);
     }
 
@@ -547,7 +540,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      */
     @Override
     default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine) {
-        Objects.requireNonNull(combine, "combine is null");
         U xs = zero;
         for (T x : this) {
             xs = combine.apply(xs, x);
@@ -590,7 +582,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code action} is null
      */
     default void forEachWithIndex(ObjIntConsumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         int index = 0;
         for (T t : this) {
             action.accept(t, index++);
@@ -921,7 +912,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code comparator} is null
      */
     default Option<T> maxBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
             return Option.none();
         } else {
@@ -939,7 +929,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code f} is null.
      */
     default <U extends Comparable<? super U>> Option<T> maxBy(Function<? super T, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return Option.none();
         } else {
@@ -1009,7 +998,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code comparator} is null
      */
     default Option<T> minBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
             return Option.none();
         } else {
@@ -1027,7 +1015,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code f} is null.
      */
     default <U extends Comparable<? super U>> Option<T> minBy(Function<? super T, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return Option.none();
         } else {
@@ -1214,7 +1201,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException   if {@code op} is null
      */
     default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         return reduceLeft(op);
     }
 
@@ -1227,7 +1213,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code op} is null
      */
     default Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         return reduceLeftOption(op);
     }
 
@@ -1240,7 +1225,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException   if {@code op} is null
      */
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         return iterator().reduceLeft(op);
     }
 
@@ -1254,7 +1238,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code op} is null
      */
     default Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         return isEmpty() ? Option.none() : Option.some(reduceLeft(op));
     }
 
@@ -1267,7 +1250,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException   if {@code op} is null
      */
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
             throw new NoSuchElementException("reduceRight on empty");
         } else {
@@ -1285,7 +1267,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      * @throws NullPointerException if {@code op} is null
      */
     default Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         return isEmpty() ? Option.none() : Option.some(reduceRight(op));
     }
 
@@ -1603,8 +1584,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      */
     default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(
             Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
-        Objects.requireNonNull(unzipper1, "unzipper1 is null");
-        Objects.requireNonNull(unzipper2, "unzipper2 is null");
         final Iterator<T1> iter1 = iterator().map(unzipper1);
         final Iterator<T2> iter2 = iterator().map(unzipper2);
         return Tuple.of(iter1, iter2);
@@ -1626,9 +1605,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
             Function<? super T, ? extends T1> unzipper1,
             Function<? super T, ? extends T2> unzipper2,
             Function<? super T, ? extends T3> unzipper3) {
-        Objects.requireNonNull(unzipper1, "unzipper1 is null");
-        Objects.requireNonNull(unzipper2, "unzipper2 is null");
-        Objects.requireNonNull(unzipper2, "unzipper3 is null");
         final Iterator<T1> iter1 = iterator().map(unzipper1);
         final Iterator<T2> iter2 = iterator().map(unzipper2);
         final Iterator<T3> iter3 = iterator().map(unzipper3);
@@ -1723,7 +1699,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
             Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valueMapper,
             BiFunction<? super V, ? super V, ? extends V> merge) {
-        Objects.requireNonNull(keyComparator, "keyComparator is null");
         if (isEmpty()) {
             return TreeMap.empty(keyComparator);
         }
@@ -1786,9 +1761,6 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
             Function<? super T, ? extends K> keyMapper,
             Function<? super T, ? extends V> valueMapper,
             BiFunction<? super V, ? super V, ? extends V> merge) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
-        Objects.requireNonNull(merge, "merge is null");
         if (isEmpty()) {
             return HashMap.empty();
         }

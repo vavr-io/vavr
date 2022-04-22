@@ -113,7 +113,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if error is null
      */
     public static <E, T> Validation<E, T> invalid(E error) {
-        Objects.requireNonNull(error, "error is null");
         return new Invalid<>(error);
     }
 
@@ -136,7 +135,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if either is null
      */
     public static <E, T> Validation<E, T> fromEither(Either<E, T> either) {
-        Objects.requireNonNull(either, "either is null");
         return either.isRight() ? valid(either.get()) : invalid(either.getLeft());
     }
 
@@ -158,7 +156,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if {@code t} is null
      */
     public static <T> Validation<Throwable, T> fromTry(Try<? extends T> t) {
-        Objects.requireNonNull(t, "t is null");
         return t.isSuccess() ? valid(t.get()) : invalid(t.getCause());
     }
 
@@ -184,7 +181,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if values is null
      */
     public static <E, T> Validation<Seq<E>, Seq<T>> sequence(Iterable<? extends Validation<? extends Seq<? extends E>, ? extends T>> values) {
-        Objects.requireNonNull(values, "values is null");
         List<E> errors = List.empty();
         List<T> list = List.empty();
         for (Validation<? extends Seq<? extends E>, ? extends T> value : values) {
@@ -252,7 +248,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if {@code f} is null
      */
     public final <U> U transform(Function<? super Validation<E, T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -276,8 +271,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if values or f is null.
      */
     public static <E, T, U> Validation<Seq<E>, Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Validation<? extends Seq<? extends E>, ? extends U>> mapper) {
-        Objects.requireNonNull(values, "values is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
     }
 
@@ -323,8 +316,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if validation1 or validation2 is null
      */
     public static <E, T1, T2> Builder<E, T1, T2> combine(Validation<E, T1> validation1, Validation<E, T2> validation2) {
-        Objects.requireNonNull(validation1, "validation1 is null");
-        Objects.requireNonNull(validation2, "validation2 is null");
         return new Builder<>(validation1, validation2);
     }
 
@@ -351,9 +342,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if validation1, validation2 or validation3 is null
      */
     public static <E, T1, T2, T3> Builder3<E, T1, T2, T3> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3) {
-        Objects.requireNonNull(validation1, "validation1 is null");
-        Objects.requireNonNull(validation2, "validation2 is null");
-        Objects.requireNonNull(validation3, "validation3 is null");
         return new Builder3<>(validation1, validation2, validation3);
     }
 
@@ -383,10 +371,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if validation1, validation2, validation3 or validation4 is null
      */
     public static <E, T1, T2, T3, T4> Builder4<E, T1, T2, T3, T4> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4) {
-        Objects.requireNonNull(validation1, "validation1 is null");
-        Objects.requireNonNull(validation2, "validation2 is null");
-        Objects.requireNonNull(validation3, "validation3 is null");
-        Objects.requireNonNull(validation4, "validation4 is null");
         return new Builder4<>(validation1, validation2, validation3, validation4);
     }
 
@@ -420,11 +404,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if validation1, validation2, validation3, validation4 or validation5 is null
      */
     public static <E, T1, T2, T3, T4, T5> Builder5<E, T1, T2, T3, T4, T5> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5) {
-        Objects.requireNonNull(validation1, "validation1 is null");
-        Objects.requireNonNull(validation2, "validation2 is null");
-        Objects.requireNonNull(validation3, "validation3 is null");
-        Objects.requireNonNull(validation4, "validation4 is null");
-        Objects.requireNonNull(validation5, "validation5 is null");
         return new Builder5<>(validation1, validation2, validation3, validation4, validation5);
     }
 
@@ -460,12 +439,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5 or validation6 is null
      */
     public static <E, T1, T2, T3, T4, T5, T6> Builder6<E, T1, T2, T3, T4, T5, T6> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6) {
-        Objects.requireNonNull(validation1, "validation1 is null");
-        Objects.requireNonNull(validation2, "validation2 is null");
-        Objects.requireNonNull(validation3, "validation3 is null");
-        Objects.requireNonNull(validation4, "validation4 is null");
-        Objects.requireNonNull(validation5, "validation5 is null");
-        Objects.requireNonNull(validation6, "validation6 is null");
         return new Builder6<>(validation1, validation2, validation3, validation4, validation5, validation6);
     }
 
@@ -504,13 +477,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6 or validation7 is null
      */
     public static <E, T1, T2, T3, T4, T5, T6, T7> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7) {
-        Objects.requireNonNull(validation1, "validation1 is null");
-        Objects.requireNonNull(validation2, "validation2 is null");
-        Objects.requireNonNull(validation3, "validation3 is null");
-        Objects.requireNonNull(validation4, "validation4 is null");
-        Objects.requireNonNull(validation5, "validation5 is null");
-        Objects.requireNonNull(validation6, "validation6 is null");
-        Objects.requireNonNull(validation7, "validation7 is null");
         return new Builder7<>(validation1, validation2, validation3, validation4, validation5, validation6, validation7);
     }
 
@@ -552,14 +518,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6, validation7 or validation8 is null
      */
     public static <E, T1, T2, T3, T4, T5, T6, T7, T8> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7, Validation<E, T8> validation8) {
-        Objects.requireNonNull(validation1, "validation1 is null");
-        Objects.requireNonNull(validation2, "validation2 is null");
-        Objects.requireNonNull(validation3, "validation3 is null");
-        Objects.requireNonNull(validation4, "validation4 is null");
-        Objects.requireNonNull(validation5, "validation5 is null");
-        Objects.requireNonNull(validation6, "validation6 is null");
-        Objects.requireNonNull(validation7, "validation7 is null");
-        Objects.requireNonNull(validation8, "validation8 is null");
         return new Builder8<>(validation1, validation2, validation3, validation4, validation5, validation6, validation7, validation8);
     }
 
@@ -592,7 +550,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      */
     @SuppressWarnings("unchecked")
     public final Validation<E, T> orElse(Validation<? extends E, ? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
         return isValid() ? this : (Validation<E, T>) other;
     }
 
@@ -610,7 +567,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      */
     @SuppressWarnings("unchecked")
     public final Validation<E, T> orElse(Supplier<Validation<? extends E, ? extends T>> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return isValid() ? this : (Validation<E, T>) supplier.get();
     }
 
@@ -644,7 +600,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * provided by {@code other} by applying the error.
      */
     public final T getOrElseGet(Function<? super E, ? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
         if (isValid()) {
             return get();
         } else {
@@ -685,7 +640,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      */
     @Override
     public final void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         if (isValid()) {
             action.accept(get());
         }
@@ -708,8 +662,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if one of the given mappers {@code ifInvalid} or {@code ifValid} is null
      */
     public final <U> U fold(Function<? super E, ? extends U> ifInvalid, Function<? super T, ? extends U> ifValid) {
-        Objects.requireNonNull(ifInvalid, "ifInvalid is null");
-        Objects.requireNonNull(ifValid, "ifValid is null");
         return isValid() ? ifValid.apply(get()) : ifInvalid.apply(getError());
     }
 
@@ -732,7 +684,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws X if the projected Validation is an Invalid
      */
     public final <X extends Throwable> T getOrElseThrow(Function<? super E, X> exceptionFunction) throws X {
-      Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
       if (isValid()) {
         return get();
       } else {
@@ -758,7 +709,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     @Override
     public final <U> Validation<E, U> map(Function<? super T, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
             return Validation.invalid(this.getError());
         } else {
@@ -782,8 +732,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if invalidMapper or validMapper is null
      */
     public final <E2, T2> Validation<E2, T2> bimap(Function<? super E, ? extends E2> errorMapper, Function<? super T, ? extends T2> valueMapper) {
-        Objects.requireNonNull(errorMapper, "errorMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         if (isInvalid()) {
             final E error = this.getError();
             return Validation.invalid(errorMapper.apply(error));
@@ -803,7 +751,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws NullPointerException if mapping operation f is null
      */
     public final <U> Validation<U, T> mapError(Function<? super E, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
             final E error = this.getError();
             return Validation.invalid(f.apply(error));
@@ -813,7 +760,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
     }
 
     public final <U> Validation<Seq<E>, U> ap(Validation<Seq<E>, ? extends Function<? super T, ? extends U>> validation) {
-        Objects.requireNonNull(validation, "validation is null");
         if (isValid()) {
             if (validation.isValid()) {
                 final Function<? super T, ? extends U> f = validation.get();
@@ -850,13 +796,11 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
     // -- Implementation of Value
 
     public final Option<Validation<E, T>> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return isInvalid() || predicate.test(get()) ? Option.some(this) : Option.none();
     }
 
     @SuppressWarnings("unchecked")
     public final <U> Validation<E, U> flatMap(Function<? super T, ? extends Validation<E, ? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return isInvalid() ? (Validation<E, U>) this : (Validation<E, U>) mapper.apply(get());
     }
 
@@ -868,8 +812,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @return this {@code Validation}
      */
     public final Validation<E, T> peek(Consumer<? super E> invalidAction, Consumer<? super T> validAction) {
-        Objects.requireNonNull(invalidAction, "invalidAction is null");
-        Objects.requireNonNull(validAction, "validAction is null");
 
         if(isInvalid()) {
             invalidAction.accept(getError());
@@ -882,7 +824,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     @Override
     public final Validation<E, T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
 
         if (isValid()) {
             action.accept(get());
@@ -891,7 +832,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
     }
 
     public final Validation<E, T> peekError(Consumer<? super E> action) {
-        Objects.requireNonNull(action, "action is null");
 
         if (isInvalid()) {
             action.accept(getError());

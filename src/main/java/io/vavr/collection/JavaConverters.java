@@ -130,14 +130,12 @@ class JavaConverters {
         @SuppressWarnings("unchecked")
         @Override
         public boolean addAll(Collection<? extends T> collection) {
-            Objects.requireNonNull(collection, "collection is null");
             return setDelegateAndCheckChanged(() -> (C) getDelegate().appendAll(collection));
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public boolean addAll(int index, Collection<? extends T> collection) {
-            Objects.requireNonNull(collection, "collection is null");
             return setDelegateAndCheckChanged(() -> (C) getDelegate().insertAll(index, collection));
         }
 
@@ -159,7 +157,6 @@ class JavaConverters {
 
         @Override
         public boolean containsAll(Collection<?> collection) {
-            Objects.requireNonNull(collection, "collection is null");
             @SuppressWarnings("unchecked") final Collection<T> that = (Collection<T>) collection;
             return getDelegate().containsAll(that);
         }
@@ -217,7 +214,6 @@ class JavaConverters {
         @SuppressWarnings("unchecked")
         @Override
         public boolean removeAll(Collection<?> collection) {
-            Objects.requireNonNull(collection, "collection is null");
             @SuppressWarnings("unchecked") final Collection<T> that = (Collection<T>) collection;
             return setDelegateAndCheckChanged(() -> (C) getDelegate().removeAll(that));
         }
@@ -225,7 +221,6 @@ class JavaConverters {
         @SuppressWarnings("unchecked")
         @Override
         public boolean retainAll(Collection<?> collection) {
-            Objects.requireNonNull(collection, "collection is null");
             @SuppressWarnings("unchecked") final Collection<T> that = (Collection<T>) collection;
             return setDelegateAndCheckChanged(() -> (C) getDelegate().retainAll(that));
         }
@@ -244,7 +239,6 @@ class JavaConverters {
         @SuppressWarnings("unchecked")
         @Override
         public void sort(Comparator<? super T> comparator) {
-            Objects.requireNonNull(comparator, "comparator is null");
             if (isEmpty()) {
                 return;
             }
@@ -264,7 +258,6 @@ class JavaConverters {
         @SuppressWarnings("unchecked")
         @Override
         public <U> U[] toArray(U[] array) {
-            Objects.requireNonNull(array, "array is null");
             final U[] target;
             final C delegate = getDelegate();
             final int length = delegate.length();
@@ -362,7 +355,6 @@ class JavaConverters {
 
             @Override
             public void forEachRemaining(Consumer<? super T> consumer) {
-                Objects.requireNonNull(consumer, "consumer is  null");
                 checkForComodification();
                 if (nextIndex >= list.size()) {
                     return;

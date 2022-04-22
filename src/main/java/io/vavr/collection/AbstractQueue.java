@@ -77,7 +77,6 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
      */
     @SuppressWarnings("unchecked")
     public Q enqueue(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return enqueueAll(List.of(elements));
     }
 
@@ -116,7 +115,6 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
 
     @Override
     public Q dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
@@ -175,7 +173,6 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
 
     @Override
     public Q takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return takeUntil(predicate.negate());
     }
 
@@ -185,7 +182,6 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
     @SuppressWarnings("unchecked")
     @Override
     public Q peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
         }

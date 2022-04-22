@@ -233,7 +233,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @SuppressWarnings("unchecked")
     public static <T> PriorityQueue<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof PriorityQueue && ((PriorityQueue) elements).comparator == comparator) {
             return (PriorityQueue<T>) elements;
         } else {
@@ -266,7 +265,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @throws NullPointerException if {@code function} is null
      */
     public static <T> PriorityQueue<T> tabulate(int size, Function<? super Integer, ? extends T> function) {
-        Objects.requireNonNull(function, "function is null");
         final Comparator<? super T> comparator = Comparators.naturalComparator();
         return io.vavr.collection.Collections.tabulate(size, function, empty(comparator), values -> ofAll(comparator, io.vavr.collection.List.of(values)));
     }
@@ -282,7 +280,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      */
     @SuppressWarnings("unchecked")
     public static <T> PriorityQueue<T> fill(int size, Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         final Comparator<? super T> comparator = Comparators.naturalComparator();
         return io.vavr.collection.Collections.fill(size, supplier, empty(comparator), values -> ofAll(comparator, io.vavr.collection.List.of(values)));
     }
@@ -321,7 +318,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @throws NullPointerException if {@code f} is null
      */
     public final <U> U transform(Function<? super PriorityQueue<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -332,13 +328,11 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public PriorityQueue<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : ofAll(comparator, iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> PriorityQueue<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return isEmpty() ? this : ofAll(comparator, iterator().distinctBy(keyExtractor));
     }
 
@@ -366,7 +360,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public PriorityQueue<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         PriorityQueue<T> result = this;
         while (!result.isEmpty() && predicate.test(result.head())) {
             result = result.tail();
@@ -376,7 +369,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public PriorityQueue<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return this;
         } else {
@@ -390,8 +382,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     public <U> PriorityQueue<U> flatMap(Comparator<U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(comparator, iterator().flatMap(mapper));
     }
 
@@ -408,8 +398,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      */
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> accumulator) {
-        Objects.requireNonNull(zero, "zero is null");
-        Objects.requireNonNull(accumulator, "accumulator is null");
         return toList().foldRight(zero, accumulator);
     }
 
@@ -477,13 +465,10 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public <U> PriorityQueue<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return map(Comparators.naturalComparator(), mapper);
     }
 
     public <U> PriorityQueue<U> map(Comparator<U> comparator, Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(comparator, iterator().map(mapper));
     }
 
@@ -515,7 +500,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public Tuple2<? extends PriorityQueue<T>, ? extends PriorityQueue<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         PriorityQueue<T> left = empty(comparator), right = left;
         for (T t : this) {
             if (predicate.test(t)) {
@@ -530,15 +514,11 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public PriorityQueue<T> replace(T currentElement, T newElement) {
-        Objects.requireNonNull(currentElement, "currentElement is null");
-        Objects.requireNonNull(newElement, "newElement is null");
         return ofAll(comparator, iterator().replace(currentElement, newElement));
     }
 
     @Override
     public PriorityQueue<T> replaceAll(T currentElement, T newElement) {
-        Objects.requireNonNull(currentElement, "currentElement is null");
-        Objects.requireNonNull(newElement, "newElement is null");
         return ofAll(comparator, iterator().replaceAll(currentElement, newElement));
     }
 
@@ -574,7 +554,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public Tuple2<? extends PriorityQueue<T>, ? extends PriorityQueue<T>> span(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
@@ -602,26 +581,21 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public PriorityQueue<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return isEmpty() ? this : ofAll(comparator, iterator().takeUntil(predicate));
     }
 
     @Override
     public <U> PriorityQueue<Tuple2<T, U>> zip(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
         return ofAll(Tuple2.comparator(comparator(), Comparators.naturalComparator()), iterator().zipWith(that, Tuple::of));
     }
 
     @Override
     public <U, R> PriorityQueue<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(Comparators.naturalComparator(), iterator().zipWith(that, mapper));
     }
 
     @Override
     public <U> PriorityQueue<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         return ofAll(Tuple2.comparator(comparator(), Comparators.naturalComparator()), iterator().zipAll(that, thisElem, thatElem));
     }
 
@@ -632,7 +606,6 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     @Override
     public <U> PriorityQueue<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));
     }
 

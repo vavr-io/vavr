@@ -102,7 +102,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * @throws NullPointerException if {@code values} is null
      */
     public static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
-        Objects.requireNonNull(values, "values is null");
         Vector<T> vector = Vector.empty();
         for (Option<? extends T> value : values) {
             if (value.isEmpty()) {
@@ -140,8 +139,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * @throws NullPointerException if values or f is null.
      */
     public static <T, U> Option<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Option<? extends U>> mapper) {
-        Objects.requireNonNull(values, "values is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
     }
 
@@ -223,7 +220,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * @throws NullPointerException if the given {@code supplier} is null
      */
     public static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return condition ? some(supplier.get()) : none();
     }
 
@@ -268,7 +264,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     public static <T> Option<T> ofOptional(Optional<? extends T> optional) {
-        Objects.requireNonNull(optional, "optional is null");
         return optional.<Option<T>>map(Option::of).orElseGet(Option::none);
     }
 
@@ -292,7 +287,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * @throws NullPointerException if {@code partialFunction} is null
      */
     public final <R> Option<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        Objects.requireNonNull(partialFunction, "partialFunction is null");
         return flatMap(partialFunction.lift());
     }
 
@@ -329,7 +323,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * @return this {@code Option}
      */
     public final Option<T> onEmpty(Runnable action) {
-        Objects.requireNonNull(action, "action is null");
         if (isEmpty()) {
             action.run();
         }
@@ -468,7 +461,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     @SuppressWarnings("unchecked")
     public final Option<T> orElse(Option<? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
         return isEmpty() ? (Option<T>) other : this;
     }
 
@@ -490,7 +482,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     @SuppressWarnings("unchecked")
     public final Option<T> orElse(Supplier<? extends Option<? extends T>> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? (Option<T>) supplier.get() : this;
     }
 
@@ -531,7 +522,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     @Override
     public final T getOrElse(Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? supplier.get() : get();
     }
 
@@ -555,7 +545,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     @Override
     public final <X extends Throwable> T getOrElseThrow(Supplier<X> exceptionSupplier) throws X {
-        Objects.requireNonNull(exceptionSupplier, "exceptionSupplier is null");
         if (isEmpty()) {
             throw exceptionSupplier.get();
         } else {
@@ -584,7 +573,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * @return {@code Some(value)} or {@code None} as specified
      */
     public final Option<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return isEmpty() || predicate.test(get()) ? this : none();
     }
 
@@ -609,7 +597,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * @return {@code Some(value)} or {@code None} as specified
      */
     public final Option<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
@@ -635,7 +622,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     @SuppressWarnings("unchecked")
     public final <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? none() : (Option<U>) mapper.apply(get());
     }
 
@@ -658,7 +644,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     @Override
     public final <U> Option<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? none() : some(mapper.apply(get()));
     }
 
@@ -694,8 +679,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * @return this instance
      */
     public final Option<T> peek(Runnable noneAction, Consumer<? super T> someAction) {
-        Objects.requireNonNull(noneAction, "noneAction is null");
-        Objects.requireNonNull(someAction, "someAction is null");
 
         if (isEmpty()) {
             noneAction.run();
@@ -724,7 +707,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      */
     @Override
     public final Option<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         if (isDefined()) {
             action.accept(get());
         }
@@ -750,7 +732,6 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
      * @throws NullPointerException if {@code f} is null
      */
     public final <U> U transform(Function<? super Option<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 

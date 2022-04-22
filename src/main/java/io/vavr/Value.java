@@ -313,7 +313,6 @@ public interface Value<T> extends Iterable<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     default boolean exists(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         for (T t : this) {
             if (predicate.test(t)) {
                 return true;
@@ -330,7 +329,6 @@ public interface Value<T> extends Iterable<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     default boolean forAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return !exists(predicate.negate());
     }
 
@@ -342,7 +340,6 @@ public interface Value<T> extends Iterable<T> {
      */
     @Override
     default void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         for (T t : this) {
             action.accept(t);
         }
@@ -383,7 +380,6 @@ public interface Value<T> extends Iterable<T> {
      * @throws NullPointerException if supplier is null
      */
     default T getOrElse(Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? supplier.get() : get();
     }
 
@@ -397,7 +393,6 @@ public interface Value<T> extends Iterable<T> {
      * @throws X                    if no value is present
      */
     default <X extends Throwable> T getOrElseThrow(Supplier<X> supplier) throws X {
-        Objects.requireNonNull(supplier, "supplier is null");
         if (isEmpty()) {
             throw supplier.get();
         } else {
@@ -413,7 +408,6 @@ public interface Value<T> extends Iterable<T> {
      * @throws NullPointerException if supplier is null
      */
     default T getOrElseTry(CheckedFunction0<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return isEmpty() ? Try.of(supplier).get() : get();
     }
 
@@ -612,7 +606,6 @@ public interface Value<T> extends Iterable<T> {
      */
     @Deprecated
     default <U> Validation<T, U> toInvalid(Supplier<? extends U> valueSupplier) {
-        Objects.requireNonNull(valueSupplier, "valueSupplier is null");
         return isEmpty() ? Validation.valid(valueSupplier.get()) : Validation.invalid(get());
     }
 
@@ -672,7 +665,6 @@ public interface Value<T> extends Iterable<T> {
     @Deprecated
     @SuppressWarnings("unchecked")
     default T[] toJavaArray(Class<T> componentType) {
-        Objects.requireNonNull(componentType, "componentType is null");
         if (componentType.isPrimitive()) {
             final Class<?> boxedType =
                     componentType == boolean.class ? Boolean.class :
@@ -852,8 +844,6 @@ public interface Value<T> extends Iterable<T> {
      * @return a new {@code java.util.Map} of type {@code MAP}
      */
     default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(Supplier<MAP> factory, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toJavaMap(factory, t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
     }
 
@@ -883,7 +873,6 @@ public interface Value<T> extends Iterable<T> {
      * @return a new {@code java.util.Map} of type {@code MAP}
      */
     default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(Supplier<MAP> factory, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
         final MAP map = factory.get();
         if (!isEmpty()) {
             if (isSingleValued()) {
@@ -1048,7 +1037,6 @@ public interface Value<T> extends Iterable<T> {
      */
     @Deprecated
     default <R> Either<T, R> toLeft(Supplier<? extends R> right) {
-        Objects.requireNonNull(right, "right is null");
         return isEmpty() ? Either.right(right.get()) : Either.left(get());
     }
 
@@ -1071,8 +1059,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link HashMap}.
      */
     default <K, V> Map<K, V> toMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
     }
 
@@ -1085,7 +1071,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link HashMap}.
      */
     default <K, V> Map<K, V> toMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
         final Function<Tuple2<? extends K, ? extends V>, Map<K, V>> ofElement = HashMap::of;
         final Function<Iterable<Tuple2<? extends K, ? extends V>>, Map<K, V>> ofAll = HashMap::ofEntries;
         return ValueModule.toMap(this, HashMap.empty(), ofElement, ofAll, f);
@@ -1101,8 +1086,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link LinkedHashMap}.
      */
     default <K, V> Map<K, V> toLinkedMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toLinkedMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
     }
 
@@ -1115,7 +1098,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link LinkedHashMap}.
      */
     default <K, V> Map<K, V> toLinkedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
         final Function<Tuple2<? extends K, ? extends V>, Map<K, V>> ofElement = LinkedHashMap::of;
         final Function<Iterable<Tuple2<? extends K, ? extends V>>, Map<K, V>> ofAll = LinkedHashMap::ofEntries;
         return ValueModule.toMap(this, LinkedHashMap.empty(), ofElement, ofAll, f);
@@ -1131,8 +1113,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link TreeMap}.
      */
     default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toSortedMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
     }
 
@@ -1145,7 +1125,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link TreeMap}.
      */
     default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
         return toSortedMap(Comparator.naturalOrder(), f);
     }
 
@@ -1160,9 +1139,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link TreeMap}.
      */
     default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toSortedMap(comparator, t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
     }
 
@@ -1176,8 +1152,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link TreeMap}.
      */
     default <K, V> SortedMap<K, V> toSortedMap(Comparator<? super K> comparator, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(f, "f is null");
         final Function<Tuple2<? extends K, ? extends V>, SortedMap<K, V>> ofElement = t -> TreeMap.of(comparator, t);
         final Function<Iterable<Tuple2<? extends K, ? extends V>>, SortedMap<K, V>> ofAll = t -> TreeMap.ofEntries(comparator, t);
         return ValueModule.toMap(this, TreeMap.empty(comparator), ofElement, ofAll, f);
@@ -1219,7 +1193,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Either}.
      */
     default <L> Either<L, T> toEither(Supplier<? extends L> leftSupplier) {
-        Objects.requireNonNull(leftSupplier, "leftSupplier is null");
         if (this instanceof Either) {
             return ((Either<?, T>) this).mapLeft(ignored -> leftSupplier.get());
         } else {
@@ -1250,7 +1223,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Validation}.
      */
     default <E> Validation<E, T> toValidation(Supplier<? extends E> invalidSupplier) {
-        Objects.requireNonNull(invalidSupplier, "invalidSupplier is null");
         if (this instanceof Validation) {
             return ((Validation<?, T>) this).mapError(ignored -> invalidSupplier.get());
         } else {
@@ -1291,7 +1263,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link PriorityQueue}.
      */
     default PriorityQueue<T> toPriorityQueue(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         final PriorityQueue<T> empty = PriorityQueue.empty(comparator);
         final Function<T, PriorityQueue<T>> of = value -> PriorityQueue.of(comparator, value);
         final Function<Iterable<T>, PriorityQueue<T>> ofAll = values -> PriorityQueue.ofAll(comparator, values);
@@ -1324,7 +1295,6 @@ public interface Value<T> extends Iterable<T> {
      */
     @Deprecated
     default <L> Either<L, T> toRight(Supplier<? extends L> left) {
-        Objects.requireNonNull(left, "left is null");
         return isEmpty() ? Either.left(left.get()) : Either.right(get());
     }
 
@@ -1372,7 +1342,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link TreeSet}.
      */
     default SortedSet<T> toSortedSet(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return ValueModule.toTraversable(this, TreeSet.empty(comparator), value -> TreeSet.of(comparator, value), values -> TreeSet.ofAll(comparator, values));
     }
 
@@ -1411,7 +1380,6 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Try}.
      */
     default Try<T> toTry(Supplier<? extends Throwable> ifEmpty) {
-        Objects.requireNonNull(ifEmpty, "ifEmpty is null");
         return isEmpty() ? Try.failure(ifEmpty.get()) : toTry();
     }
 
@@ -1463,7 +1431,6 @@ public interface Value<T> extends Iterable<T> {
      */
     @Deprecated
     default <E> Validation<E, T> toValid(Supplier<? extends E> errorSupplier) {
-        Objects.requireNonNull(errorSupplier, "errorSupplier is null");
         return isEmpty() ? Validation.invalid(errorSupplier.get()) : Validation.valid(get());
     }
 

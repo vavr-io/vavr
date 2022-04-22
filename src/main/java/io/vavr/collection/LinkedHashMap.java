@@ -76,7 +76,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @return A {@link LinkedHashMap} Collector.
      */
     public static <K, V, T extends V> Collector<T, ArrayList<T>, LinkedHashMap<K, V>> collector(Function<? super T, ? extends K> keyMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
         return LinkedHashMap.collector(keyMapper, v -> v);
     }
 
@@ -93,8 +92,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V, T> Collector<T, ArrayList<T>, LinkedHashMap<K, V>> collector(
             Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return Collections.toListAndThen(arr -> LinkedHashMap.ofEntries(Iterator.ofAll(arr)
           .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
@@ -143,7 +140,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given map
      */
     public static <K, V> LinkedHashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
-        Objects.requireNonNull(map, "map is null");
         LinkedHashMap<K, V> result = LinkedHashMap.empty();
         for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
             result = result.put(entry.getKey(), entry.getValue());
@@ -436,7 +432,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
         return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
     }
 
@@ -452,7 +447,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        Objects.requireNonNull(s, "s is null");
         return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
     }
 
@@ -501,7 +495,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof LinkedHashMap) {
             return (LinkedHashMap<K, V>) entries;
         } else {
@@ -517,8 +510,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <K2, V2> LinkedHashMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
         return LinkedHashMap.ofEntries(entries);
     }
@@ -615,7 +606,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <K2, V2> LinkedHashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(LinkedHashMap.<K2, V2> empty(), (acc, entry) -> {
             for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
                 acc = acc.put(mappedEntry);
@@ -711,13 +701,11 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <K2, V2> LinkedHashMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(LinkedHashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
     }
 
     @Override
     public <K2> LinkedHashMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
         return map((k, v) -> Tuple.of(keyMapper.apply(k), v));
     }
 
@@ -728,7 +716,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <W> LinkedHashMap<K, W> mapValues(Function<? super V, ? extends W> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return map((k, v) -> Tuple.of(k, mapper.apply(v)));
     }
 
@@ -816,7 +803,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> removeAll(Iterable<? extends K> keys) {
-        Objects.requireNonNull(keys, "keys is null");
         final HashSet<K> toRemove = HashSet.ofAll(keys);
         final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
         final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
@@ -825,8 +811,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
-        Objects.requireNonNull(currentElement, "currentElement is null");
-        Objects.requireNonNull(newElement, "newElement is null");
 
         // We replace the whole element, i.e. key and value have to be present.
         if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
@@ -878,7 +862,6 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public LinkedHashMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         LinkedHashMap<K, V> result = empty();
         for (Tuple2<K, V> entry : elements) {
             if (contains(entry)) {

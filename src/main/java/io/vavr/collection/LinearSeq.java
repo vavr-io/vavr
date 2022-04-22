@@ -148,13 +148,11 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     default int indexOfSlice(Iterable<? extends T> that, int from) {
-        Objects.requireNonNull(that, "that is null");
         return LinearSeqModule.Slice.indexOfSlice(this, that, from);
     }
 
     @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
-        Objects.requireNonNull(predicate, "predicate is null");
         int i = from;
         LinearSeq<T> these = drop(from);
         while (!these.isEmpty()) {
@@ -184,13 +182,11 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
-        Objects.requireNonNull(that, "that is null");
         return LinearSeqModule.Slice.lastIndexOfSlice(this, that, end);
     }
 
     @Override
     default int lastIndexWhere(Predicate<? super T> predicate, int end) {
-        Objects.requireNonNull(predicate, "predicate is null");
         int i = 0;
         LinearSeq<T> these = this;
         int last = -1;
@@ -292,7 +288,6 @@ public interface LinearSeq<T> extends Seq<T> {
 
     @Override
     default int segmentLength(Predicate<? super T> predicate, int from) {
-        Objects.requireNonNull(predicate, "predicate is null");
         int i = 0;
         LinearSeq<T> these = this.drop(from);
         while (!these.isEmpty() && predicate.test(these.head())) {
@@ -413,7 +408,6 @@ public interface LinearSeq<T> extends Seq<T> {
      */
     @Override
     default int search(T element, Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         final ToIntFunction<T> comparison = current -> comparator.compare(element, current);
         return LinearSeqModule.Search.linearSearch(this, comparison);
     }

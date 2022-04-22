@@ -76,7 +76,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @return A io.vavr.collection.List Collector.
      */
     public static <T> Collector<T, ArrayList<T>, TreeSet<T>> collector(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return Collections.toListAndThen(list -> TreeSet.ofAll(comparator, list));
     }
 
@@ -85,7 +84,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     public static <T> TreeSet<T> empty(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return new TreeSet<>(RedBlackTree.empty(comparator));
     }
 
@@ -110,7 +108,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     public static <T> TreeSet<T> of(Comparator<? super T> comparator, T value) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return new TreeSet<>(RedBlackTree.of(comparator, value));
     }
 
@@ -123,8 +120,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> TreeSet<T> of(Comparator<? super T> comparator, T... values) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.of(comparator, values));
     }
 
@@ -140,8 +135,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if {@code comparator} or {@code f} are null
      */
     public static <T> TreeSet<T> tabulate(Comparator<? super T> comparator, int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f, TreeSet.empty(comparator), values -> of(comparator, values));
     }
 
@@ -157,7 +150,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if {@code f} is null
      */
     public static <T extends Comparable<? super T>> TreeSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
         return tabulate(Comparators.naturalComparator(), n, f);
     }
 
@@ -172,8 +164,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if {@code comparator} or {@code s} are null
      */
     public static <T> TreeSet<T> fill(Comparator<? super T> comparator, int n, Supplier<? extends T> s) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, TreeSet.empty(comparator), values -> of(comparator, values));
     }
 
@@ -188,7 +178,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if {@code s} is null
      */
     public static <T extends Comparable<? super T>> TreeSet<T> fill(int n, Supplier<? extends T> s) {
-        Objects.requireNonNull(s, "s is null");
         return fill(Comparators.naturalComparator(), n, s);
     }
 
@@ -198,8 +187,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(values, "values is null");
         if (values instanceof TreeSet && ((TreeSet<?>) values).comparator() == comparator) {
             return (TreeSet<T>) values;
         } else {
@@ -208,12 +195,10 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
-        Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(Iterator.ofAll(javaStream.iterator()));
     }
 
     public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> javaStream) {
-        Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(comparator, Iterator.ofAll(javaStream.iterator()));
     }
 
@@ -225,7 +210,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static TreeSet<Boolean> ofAll(boolean... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
@@ -237,7 +221,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static TreeSet<Byte> ofAll(byte... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
@@ -249,7 +232,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static TreeSet<Character> ofAll(char... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
@@ -261,7 +243,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static TreeSet<Double> ofAll(double... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
@@ -273,7 +254,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static TreeSet<Float> ofAll(float... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
@@ -285,7 +265,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static TreeSet<Integer> ofAll(int... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
@@ -297,7 +276,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static TreeSet<Long> ofAll(long... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
@@ -309,7 +287,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static TreeSet<Short> ofAll(short... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return TreeSet.ofAll(Iterator.ofAll(elements));
     }
 
@@ -528,7 +505,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> addAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         RedBlackTree<T> that = tree;
         for (T element : elements) {
             if (!that.contains(element)) {
@@ -555,7 +531,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public TreeSet<T> diff(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             return this;
         } else if (elements instanceof TreeSet) {
@@ -578,13 +553,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(comparator));
     }
 
     @Override
     public <U> TreeSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(keyExtractor));
     }
 
@@ -612,46 +585,39 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
     public TreeSet<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().dropWhile(predicate));
         return (treeSet.length() == length()) ? this : treeSet;
     }
 
     @Override
     public TreeSet<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().filter(predicate));
         return (treeSet.length() == length()) ? this : treeSet;
     }
 
     @Override
     public TreeSet<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
     @Override
     public <U> TreeSet<U> flatMap(Comparator<? super U> comparator,
             Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
     }
 
     @Override
     public <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? HashSet.empty() : HashSet.ofAll(this).flatMap(mapper);
     }
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
 
@@ -701,7 +667,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public TreeSet<T> intersect(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             return this;
         } else if (elements instanceof TreeSet) {
@@ -763,13 +728,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public <U> TreeSet<U> map(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(comparator, iterator().map(mapper));
     }
 
     @Override
     public <U> Set<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? HashSet.empty() : HashSet.ofAll(this).map(mapper);
     }
 
@@ -806,7 +769,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
         }
@@ -885,7 +847,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public Tuple2<TreeSet<T>, TreeSet<T>> span(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return iterator().span(predicate).map(i1 -> TreeSet.ofAll(tree.comparator(), i1),
                 i2 -> TreeSet.ofAll(tree.comparator(), i2));
     }
@@ -928,14 +889,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public TreeSet<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final TreeSet<T> treeSet = takeWhile(predicate.negate());
         return (treeSet.length() == length()) ? this : treeSet;
     }
 
     @Override
     public TreeSet<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().takeWhile(predicate));
         return (treeSet.length() == length()) ? this : treeSet;
     }
@@ -949,7 +908,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if {@code f} is null
      */
     public <U> U transform(Function<? super TreeSet<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -961,7 +919,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public TreeSet<T> union(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof TreeSet) {
             final TreeSet<T> that = (TreeSet<T>) elements;
             return that.isEmpty() ? this : new TreeSet<>(tree.union(that.tree));
@@ -972,21 +929,17 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(tree.comparator(), Comparators.naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWith(that, Tuple::of));
     }
 
     @Override
     public <U, R> TreeSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWith(that, mapper));
     }
 
     @Override
     public <U> TreeSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(tree.comparator(), Comparators.naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
     }

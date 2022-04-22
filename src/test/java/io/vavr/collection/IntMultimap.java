@@ -100,7 +100,6 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        Objects.requireNonNull(partialFunction, "partialFunction is null");
         final PartialFunction<Tuple2<Integer, T>, R> pf = new PartialFunction<Tuple2<Integer, T>, R>() {
             private static final long serialVersionUID = 1L;
             @Override
@@ -169,7 +168,6 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return original.foldRight(zero, (e, u) -> f.apply(e._2, u));
     }
 
@@ -246,7 +244,6 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Tuple2<IntMultimap<T>, IntMultimap<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return original.partition(p -> predicate.test(p._2)).map(IntMultimap::of, IntMultimap::of);
     }
 
@@ -394,14 +391,11 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public <U, R> Seq<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
     public <U> Seq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
@@ -412,7 +406,6 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @Override
     public <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWithIndex(mapper));
     }
 }

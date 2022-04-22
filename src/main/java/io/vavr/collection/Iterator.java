@@ -74,7 +74,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @SuppressWarnings("varargs")
     @SafeVarargs
     static <T> Iterator<T> concat(Iterable<? extends T>... iterables) {
-        Objects.requireNonNull(iterables, "iterables is null");
         if (iterables.length == 0) {
             return empty();
         } else {
@@ -90,7 +89,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return A new {@code io.vavr.collection.Iterator}
      */
     static <T> Iterator<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
-        Objects.requireNonNull(iterables, "iterables is null");
         final Iterator<Iterator<T>> iterators = ofAll(iterables).map(Iterator::ofAll);
         if (!iterators.hasNext()) {
             return empty();
@@ -154,7 +152,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @SafeVarargs
     @SuppressWarnings("varargs")
     static <T> Iterator<T> of(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return (elements.length == 0) ? empty() : new ArrayIterator<>(elements);
     }
 
@@ -168,7 +165,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     @SuppressWarnings("unchecked")
     static <T> Iterator<T> ofAll(Iterable<? extends T> iterable) {
-        Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Iterator) {
             return (Iterator<T>) iterable;
         } else {
@@ -186,7 +182,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     @SuppressWarnings("unchecked")
     static <T> Iterator<T> ofAll(java.util.Iterator<? extends T> iterator) {
-        Objects.requireNonNull(iterator, "iterator is null");
         if (iterator instanceof Iterator) {
             return (Iterator<T>) iterator;
         } else {
@@ -216,7 +211,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if elements is null
      */
     static Iterator<Boolean> ofAll(boolean... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return new Iterator<Boolean>() {
             int i = 0;
 
@@ -243,7 +237,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if elements is null
      */
     static Iterator<Byte> ofAll(byte... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return new Iterator<Byte>() {
             int i = 0;
 
@@ -270,7 +263,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if elements is null
      */
     static Iterator<Character> ofAll(char... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return new Iterator<Character>() {
             int i = 0;
 
@@ -297,7 +289,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if elements is null
      */
     static Iterator<Double> ofAll(double... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return new Iterator<Double>() {
             int i = 0;
 
@@ -324,7 +315,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if elements is null
      */
     static Iterator<Float> ofAll(float... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return new Iterator<Float>() {
             int i = 0;
 
@@ -351,7 +341,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if elements is null
      */
     static Iterator<Integer> ofAll(int... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return new Iterator<Integer>() {
             int i = 0;
 
@@ -378,7 +367,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if elements is null
      */
     static Iterator<Long> ofAll(long... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return new Iterator<Long>() {
             int i = 0;
 
@@ -405,7 +393,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if elements is null
      */
     static Iterator<Short> ofAll(short... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return new Iterator<Short>() {
             int i = 0;
 
@@ -435,7 +422,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if {@code f} is null
      */
     static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f);
     }
 
@@ -449,7 +435,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if {@code s} is null
      */
     static <T> Iterator<T> fill(int n, Supplier<? extends T> s) {
-        Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s);
     }
 
@@ -939,7 +924,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return A new {@code Iterator}
      */
     static <T> Iterator<T> continually(Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return new Iterator<T>() {
             @Override
             public boolean hasNext() {
@@ -966,7 +950,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if supplier produces null value
      */
     static <T> Iterator<T> iterate(Supplier<? extends Option<? extends T>> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return new Iterator<T>() {
             Option<? extends T> nextOption;
 
@@ -1000,7 +983,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @return A new {@code Iterator}
      */
     static <T> Iterator<T> iterate(T seed, Function<? super T, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
         return new Iterator<T>() {
             Function<? super T, ? extends T> nextFunc = s -> {
                 nextFunc = f;
@@ -1052,13 +1034,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <R> Iterator<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        Objects.requireNonNull(partialFunction, "partialFunction is null");
         return filter(partialFunction::isDefinedAt).map(partialFunction);
     }
 
     // DEV-NOTE: cannot use arg Iterable, it would be ambiguous
     default Iterator<T> concat(java.util.Iterator<? extends T> that) {
-        Objects.requireNonNull(that, "that is null");
         if (!that.hasNext()) {
             return this;
         } else if (!hasNext()) {
@@ -1114,7 +1094,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if {@code f} is null
      */
     default <U> U transform(Function<? super Iterator<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -1125,8 +1104,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <U, R> Iterator<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
         } else {
@@ -1151,7 +1128,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <U> Iterator<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         final java.util.Iterator<? extends U> thatIt = that.iterator();
         if (isEmpty() && !thatIt.hasNext()) {
             return empty();
@@ -1183,7 +1159,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <U> Iterator<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
         } else {
@@ -1210,8 +1185,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     @Override
     default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(
             Function<? super T, ? extends T1> unzipper1, Function<? super T, ? extends T2> unzipper2) {
-        Objects.requireNonNull(unzipper1, "unzipper1 is null");
-        Objects.requireNonNull(unzipper2, "unzipper2 is null");
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
@@ -1227,9 +1200,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
             Function<? super T, ? extends T1> unzipper1,
             Function<? super T, ? extends T2> unzipper2,
             Function<? super T, ? extends T3> unzipper3) {
-        Objects.requireNonNull(unzipper1, "unzipper1 is null");
-        Objects.requireNonNull(unzipper2, "unzipper2 is null");
-        Objects.requireNonNull(unzipper3, "unzipper3 is null");
         if (!hasNext()) {
             return Tuple.of(empty(), empty(), empty());
         } else {
@@ -1295,7 +1265,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if {@code f} is null
      */
     static <T, U> Iterator<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
-        Objects.requireNonNull(f, "f is null");
         return Stream.<U> ofAll(
                 unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(t -> Tuple.of(t._2, t._1)))))
                 .reverse().iterator();
@@ -1327,7 +1296,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      * @throws NullPointerException if {@code f} is null
      */
     static <T, U> Iterator<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
-        Objects.requireNonNull(f, "the unfold iterating function is null");
         return new Iterator<U>() {
             private Option<Tuple2<? extends U, ? extends T>> nextVal = f.apply(seed);
 
@@ -1361,7 +1329,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -1371,7 +1338,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <U> Iterator<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -1451,13 +1417,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
     default Iterator<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -1477,7 +1441,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     @Override
     default Iterator<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -1518,13 +1481,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     @Override
     default Iterator<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
     @Override
     default Option<T> findLast(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         T last = null;
         while (hasNext()) {
             final T elem = next();
@@ -1545,7 +1506,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     // DEV-NOTE: the shorter implementation `concat(map(mapper))` does not perform well
     @Override
     default <U> Iterator<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -1577,7 +1537,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return Stream.ofAll(this).foldRight(zero, f);
     }
 
@@ -1682,7 +1641,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
      */
     @Override
     default <U> Iterator<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -1730,7 +1688,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
@@ -1741,7 +1698,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -1767,7 +1723,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
             throw new NoSuchElementException("reduceLeft on Nil");
         } else {
@@ -1781,7 +1736,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default T reduceRight(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         if (isEmpty()) {
             throw new NoSuchElementException("reduceRight on Nil");
         } else {
@@ -1862,7 +1816,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <U> Iterator<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         if (isEmpty()) {
             return of(zero);
         } else {
@@ -1897,7 +1850,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     // not lazy!
     @Override
     default <U> Iterator<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        Objects.requireNonNull(operation, "operation is null");
         if (isEmpty()) {
             return of(zero);
         } else {
@@ -1907,7 +1859,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<Seq<T>> slideBy(Function<? super T, ?> classifier) {
-        Objects.requireNonNull(classifier, "classifier is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -1954,7 +1905,6 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Tuple2<Iterator<T>, Iterator<T>> span(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
         } else {
@@ -2057,13 +2007,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default Iterator<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
     default Iterator<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (!hasNext()) {
             return empty();
         } else {
@@ -2139,7 +2087,6 @@ final class ArrayIterator<T> implements Iterator<T> {
 
     @Override
     public void forEachRemaining(Consumer<? super T> action) {
-        Objects.requireNonNull(action);
         while (index < elements.length) {
             action.accept(elements[index++]);
         }
@@ -2372,7 +2319,6 @@ final class EmptyIterator implements Iterator<Object> {
 
     @Override
     public void forEachRemaining(Consumer<? super Object> action) {
-        Objects.requireNonNull(action);
     }
 
     @Override
@@ -2483,7 +2429,6 @@ final class SingletonIterator<T> implements Iterator<T> {
 
     @Override
     public void forEachRemaining(Consumer<? super T> action) {
-        Objects.requireNonNull(action);
         if (hasNext) {
             action.accept(element);
             hasNext = false;

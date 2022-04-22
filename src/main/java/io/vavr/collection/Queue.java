@@ -146,7 +146,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Queue<T> of(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(io.vavr.collection.List.of(elements));
     }
 
@@ -160,7 +159,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      */
     @SuppressWarnings("unchecked")
     public static <T> Queue<T> ofAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Queue) {
             return (Queue<T>) elements;
         } else if (elements instanceof ListView
@@ -183,7 +181,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @return A Queue containing the given elements in the same order.
      */
     public static <T> Queue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
-        Objects.requireNonNull(javaStream, "javaStream is null");
         return new Queue<>(io.vavr.collection.List.ofAll(javaStream), io.vavr.collection.List.empty());
     }
 
@@ -195,7 +192,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if elements is null
      */
     public static Queue<Boolean> ofAll(boolean... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(io.vavr.collection.List.ofAll(elements));
     }
 
@@ -207,7 +203,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if elements is null
      */
     public static Queue<Byte> ofAll(byte... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(io.vavr.collection.List.ofAll(elements));
     }
 
@@ -219,7 +214,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if elements is null
      */
     public static Queue<Character> ofAll(char... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(io.vavr.collection.List.ofAll(elements));
     }
 
@@ -231,7 +225,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if elements is null
      */
     public static Queue<Double> ofAll(double... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(io.vavr.collection.List.ofAll(elements));
     }
 
@@ -243,7 +236,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if elements is null
      */
     public static Queue<Float> ofAll(float... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(io.vavr.collection.List.ofAll(elements));
     }
 
@@ -255,7 +247,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if elements is null
      */
     public static Queue<Integer> ofAll(int... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(io.vavr.collection.List.ofAll(elements));
     }
 
@@ -267,7 +258,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if elements is null
      */
     public static Queue<Long> ofAll(long... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(io.vavr.collection.List.ofAll(elements));
     }
 
@@ -279,7 +269,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if elements is null
      */
     public static Queue<Short> ofAll(short... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(io.vavr.collection.List.ofAll(elements));
     }
 
@@ -294,7 +283,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if {@code f} is null
      */
     public static <T> Queue<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Queue::of);
     }
 
@@ -308,7 +296,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if {@code s} is null
      */
     public static <T> Queue<T> fill(int n, Supplier<? extends T> s) {
-        Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Queue::of);
     }
 
@@ -656,7 +643,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      */
     @SuppressWarnings("unchecked")
     public Queue<T> enqueueAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() && elements instanceof Queue) {
             return (Queue<T>) elements;
         } else {
@@ -723,13 +709,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return ofAll(toList().distinctBy(comparator));
     }
 
     @Override
     public <U> Queue<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return ofAll(toList().distinctBy(keyExtractor));
     }
 
@@ -746,7 +730,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final List<T> dropped = toList().dropWhile(predicate);
         return ofAll(dropped.length() == length() ? this : dropped);
     }
@@ -764,19 +747,16 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> dropRightUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return reverse().dropUntil(predicate).reverse();
     }
 
     @Override
     public Queue<T> dropRightWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropRightUntil(predicate.negate());
     }
 
     @Override
     public Queue<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final io.vavr.collection.List<T> filtered = toList().filter(predicate);
 
         if (filtered.isEmpty()) {
@@ -790,7 +770,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public <U> Queue<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
         } else {
@@ -890,7 +869,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     @SuppressWarnings("unchecked")
     @Override
     public Queue<T> insertAll(int index, Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         }
@@ -979,7 +957,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public <U> Queue<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return new Queue<>(front.map(mapper), rear.map(mapper));
     }
 
@@ -1025,7 +1002,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Tuple2<Queue<T>, Queue<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return toList().partition(predicate).map(io.vavr.collection.List::toQueue, io.vavr.collection.List::toQueue);
     }
 
@@ -1042,7 +1018,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     @SuppressWarnings("unchecked")
     @Override
     public Queue<T> prependAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() && elements instanceof Queue) {
             return (Queue<T>) elements;
         } else {
@@ -1164,7 +1139,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> sorted(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return ofAll(toList().sorted(comparator));
     }
 
@@ -1180,7 +1154,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Tuple2<Queue<T>, Queue<T>> span(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return toList().span(predicate).map(io.vavr.collection.List::toQueue, io.vavr.collection.List::toQueue);
     }
 
@@ -1254,7 +1227,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final io.vavr.collection.List<T> taken = toList().takeUntil(predicate);
         return taken.length() == length() ? this : ofAll(taken);
     }
@@ -1279,14 +1251,12 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> takeRightUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final io.vavr.collection.List<T> taken = toList().takeRightUntil(predicate);
         return taken.length() == length() ? this : ofAll(taken);
     }
 
     @Override
     public Queue<T> takeRightWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return takeRightUntil(predicate.negate());
     }
 
@@ -1299,7 +1269,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @throws NullPointerException if {@code f} is null
      */
     public <U> U transform(Function<? super Queue<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -1310,7 +1279,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public Queue<T> update(int index, Function<? super T, ? extends T> updater) {
-        Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }
 
@@ -1322,14 +1290,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     @SuppressWarnings("unchecked")
     @Override
     public <U, R> Queue<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(toList().zipWith(that, mapper));
     }
 
     @Override
     public <U> Queue<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         return ofAll(toList().zipAll(that, thisElem, thatElem));
     }
 
@@ -1340,7 +1305,6 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public <U> Queue<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(toList().zipWithIndex(mapper));
     }
 

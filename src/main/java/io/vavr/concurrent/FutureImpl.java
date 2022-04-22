@@ -179,7 +179,6 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public Future<T> await(long timeout, TimeUnit unit) {
         final long now = System.nanoTime();
-        Objects.requireNonNull(unit, "unit is null");
         if (timeout < 0) {
             throw new IllegalArgumentException("negative timeout");
         }
@@ -324,7 +323,6 @@ final class FutureImpl<T> implements Future<T> {
     @SuppressWarnings("unchecked")
     @Override
     public Future<T> onComplete(Consumer<? super Try<T>> action) {
-        Objects.requireNonNull(action, "action is null");
         if (isCompleted()) {
             perform(action);
         } else {
@@ -361,7 +359,6 @@ final class FutureImpl<T> implements Future<T> {
      * @throws NullPointerException  if the given {@code value} is null.
      */
     boolean tryComplete(Try<? extends T> value) {
-        Objects.requireNonNull(value, "value is null");
         if (isCompleted()) {
             return false;
         } else {

@@ -103,7 +103,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <T> Lazy<T> of(Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         if (supplier instanceof Lazy) {
             return (Lazy<T>) supplier;
         } else {
@@ -122,7 +121,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     @SuppressWarnings("Convert2MethodRef") // TODO should be fixed in JDK 9 and Idea
     public static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
-        Objects.requireNonNull(values, "values is null");
         return Lazy.of(() -> Vector.ofAll(values).map(lazy -> lazy.get()));
     }
 
@@ -137,8 +135,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <T> T val(Supplier<? extends T> supplier, Class<T> type) {
-        Objects.requireNonNull(supplier, "supplier is null");
-        Objects.requireNonNull(type, "type is null");
         if (!type.isInterface()) {
             throw new IllegalArgumentException("type has to be an interface");
         }
@@ -148,13 +144,11 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     public Option<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final T v = get();
         return predicate.test(v) ? Option.some(v) : Option.none();
     }
 
     public Option<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
@@ -245,7 +239,6 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * @throws NullPointerException if {@code f} is null
      */
     public <U> U transform(Function<? super Lazy<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 

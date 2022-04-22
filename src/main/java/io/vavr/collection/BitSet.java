@@ -92,22 +92,18 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
         }
 
         public BitSet<T> ofAll(Iterable<? extends T> values) {
-            Objects.requireNonNull(values, "values is null");
             return empty().addAll(values);
         }
 
         public BitSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
-            Objects.requireNonNull(javaStream, "javaStream is null");
             return empty().addAll(Iterator.ofAll(javaStream.iterator()));
         }
 
         public BitSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-            Objects.requireNonNull(f, "f is null");
             return empty().addAll(Collections.tabulate(n, f));
         }
 
         public BitSet<T> fill(int n, Supplier<? extends T> s) {
-            Objects.requireNonNull(s, "s is null");
             return empty().addAll(Collections.fill(n, s));
         }
     }
@@ -200,7 +196,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static BitSet<Boolean> ofAll(boolean... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return BitSet.withRelations(i -> i != 0, b -> b ? 1 : 0).ofAll(Iterator.ofAll(elements));
     }
 
@@ -212,7 +207,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static BitSet<Byte> ofAll(byte... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return BitSet.withBytes().ofAll(Iterator.ofAll(elements));
     }
 
@@ -224,7 +218,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static BitSet<Character> ofAll(char... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return BitSet.withCharacters().ofAll(Iterator.ofAll(elements));
     }
 
@@ -236,7 +229,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static BitSet<Integer> ofAll(int... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return BitSet.ofAll(Iterator.ofAll(elements));
     }
 
@@ -248,7 +240,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static BitSet<Long> ofAll(long... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return BitSet.withLongs().ofAll(Iterator.ofAll(elements));
     }
 
@@ -260,7 +251,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static BitSet<Short> ofAll(short... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return BitSet.withShorts().ofAll(Iterator.ofAll(elements));
     }
 
@@ -358,7 +348,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public final <R> SortedSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        Objects.requireNonNull(partialFunction, "partialFunction is null");
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().collect(partialFunction));
     }
 
@@ -386,7 +375,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public final BitSet<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
@@ -401,19 +389,16 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public final <U> SortedSet<U> flatMap(Comparator<? super U> comparator, Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
     }
 
     @Override
     public final <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? HashSet.empty() : HashSet.ofAll(this).flatMap(mapper);
     }
 
     @Override
     public final <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
 
@@ -476,7 +461,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public final BitSet<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
         }
@@ -490,13 +474,11 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public final <U> SortedSet<U> map(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(comparator, iterator().map(mapper));
     }
 
     @Override
     public final <U> Set<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? HashSet.empty() : HashSet.ofAll(this).map(mapper);
     }
 
@@ -575,7 +557,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public final BitSet<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
@@ -596,33 +577,27 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
      * @throws NullPointerException if {@code f} is null
      */
     public final <U> U transform(Function<? super BitSet<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
     @Override
     public final BitSet<T> union(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return elements.isEmpty() ? this : addAll(elements);
     }
 
     @Override
     public final <U> TreeSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(comparator(), Comparators.naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zip(that));
     }
 
     @Override
     public final <U, R> TreeSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWith(that, mapper));
     }
 
     @Override
     public final <U> TreeSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(comparator(), Comparators.naturalComparator());
         return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
     }
@@ -636,7 +611,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
     @Override
     public final <U> TreeSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));
     }
 
@@ -711,13 +685,11 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
         @Override
         public BitSet<T> distinctBy(Comparator<? super T> comparator) {
-            Objects.requireNonNull(comparator, "comparator is null");
             return isEmpty() ? this : createFromAll(iterator().distinctBy(comparator));
         }
 
         @Override
         public <U> BitSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-            Objects.requireNonNull(keyExtractor, "keyExtractor is null");
             return isEmpty() ? this : createFromAll(iterator().distinctBy(keyExtractor));
         }
 
@@ -745,14 +717,12 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
         @Override
         public BitSet<T> dropWhile(Predicate<? super T> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
             final BitSet<T> bitSet = createFromAll(iterator().dropWhile(predicate));
             return (bitSet.length() == length()) ? this : bitSet;
         }
 
         @Override
         public BitSet<T> intersect(Set<? extends T> elements) {
-            Objects.requireNonNull(elements, "elements is null");
             if (isEmpty()) {
                 return this;
             } else if (elements.isEmpty()) {
@@ -806,7 +776,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
         @Override
         public Tuple2<BitSet<T>, BitSet<T>> span(Predicate<? super T> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
             return iterator().span(predicate).map(this::createFromAll, this::createFromAll);
         }
 
@@ -822,14 +791,12 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
         @Override
         public BitSet<T> filter(Predicate<? super T> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
             final BitSet<T> bitSet = createFromAll(iterator().filter(predicate));
             return (bitSet.length() == length()) ? this : bitSet;
         }
 
         @Override
         public BitSet<T> filterNot(Predicate<? super T> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
             final BitSet<T> bitSet = createFromAll(iterator().filterNot(predicate));
             return (bitSet.length() == length()) ? this : bitSet;
         }
@@ -846,7 +813,6 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
 
         @Override
         public BitSet<T> takeWhile(Predicate<? super T> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
             final BitSet<T> result = createFromAll(iterator().takeWhile(predicate));
             return (result.length() == length()) ? this : result;
         }

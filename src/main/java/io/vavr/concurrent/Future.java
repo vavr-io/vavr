@@ -125,7 +125,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if exception is null
      */
     static <T> Future<T> failed(Throwable exception) {
-        Objects.requireNonNull(exception, "exception is null");
         return failed(DEFAULT_EXECUTOR, exception);
     }
 
@@ -139,8 +138,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor or exception is null
      */
     static <T> Future<T> failed(Executor executor, Throwable exception) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(exception, "exception is null");
         return FutureImpl.of(executor, Try.failure(exception));
     }
 
@@ -174,9 +171,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if one of the arguments is null
      */
     static <T> Future<Option<T>> find(Executor executor, Iterable<? extends Future<? extends T>> futures, Predicate<? super T> predicate) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(futures, "futures is null");
-        Objects.requireNonNull(predicate, "predicate is null");
         final List<Future<? extends T>> list = List.ofAll(futures);
         if (list.isEmpty()) {
             return successful(executor, Option.none());
@@ -229,8 +223,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor or futures is null
      */
     static <T> Future<T> firstCompletedOf(Executor executor, Iterable<? extends Future<? extends T>> futures) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(futures, "futures is null");
         return run(executor, complete -> futures.forEach(future -> future.onComplete(complete::with)));
     }
 
@@ -268,9 +260,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor, futures or f is null.
      */
     static <T, U> Future<U> fold(Executor executor, Iterable<? extends Future<? extends T>> futures, U zero, BiFunction<? super U, ? super T, ? extends U> f) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(futures, "futures is null");
-        Objects.requireNonNull(f, "f is null");
         if (!futures.iterator().hasNext()) {
             return successful(executor, zero);
         } else {
@@ -287,7 +276,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if future is null
      */
     static <T> Future<T> fromJavaFuture(java.util.concurrent.Future<T> future) {
-        Objects.requireNonNull(future, "future is null");
         return of(DEFAULT_EXECUTOR, future::get);
     }
 
@@ -301,8 +289,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor or future is null
      */
     static <T> Future<T> fromJavaFuture(Executor executor, java.util.concurrent.Future<T> future) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(future, "future is null");
         return of(executor, future::get);
     }
 
@@ -328,8 +314,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor or future is null
      */
     static <T> Future<T> fromCompletableFuture(Executor executor, CompletableFuture<T> future) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(future, "future is null");
         if (future.isDone() || future.isCompletedExceptionally() || future.isCancelled()) {
             return fromTry(Try.of(future::get).recoverWith(error -> Try.failure(error.getCause())));
         } else {
@@ -361,8 +345,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor or result is null
      */
     static <T> Future<T> fromTry(Executor executor, Try<? extends T> result) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(result, "result is null");
         return FutureImpl.of(executor, result);
     }
 
@@ -391,7 +373,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      */
     @Deprecated
     static <T> Future<T> ofSupplier(Supplier<? extends T> computation) {
-        Objects.requireNonNull(computation, "computation is null");
         return of(DEFAULT_EXECUTOR, computation::get);
     }
 
@@ -407,8 +388,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      */
     @Deprecated
     static <T> Future<T> ofSupplier(Executor executor, Supplier<? extends T> computation) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(computation, "computation is null");
         return of(executor, computation::get);
     }
 
@@ -423,7 +402,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      */
     @Deprecated
     static <T> Future<T> ofCallable(Callable<? extends T> computation) {
-        Objects.requireNonNull(computation, "computation is null");
         return of(DEFAULT_EXECUTOR, computation::call);
     }
 
@@ -439,8 +417,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      */
     @Deprecated
     static <T> Future<T> ofCallable(Executor executor, Callable<? extends T> computation) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(computation, "computation is null");
         return of(executor, computation::call);
     }
 
@@ -454,7 +430,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      */
     @Deprecated
     static Future<Void> runRunnable(Runnable computation) {
-        Objects.requireNonNull(computation, "computation is null");
         return run(DEFAULT_EXECUTOR, computation::run);
     }
 
@@ -469,8 +444,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      */
     @Deprecated
     static Future<Void> runRunnable(Executor executor, Runnable computation) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(computation, "computation is null");
         return run(executor, computation::run);
     }
 
@@ -496,8 +469,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if one of executor or computation is null.
      */
     static <T> Future<T> of(Executor executor, CheckedFunction0<? extends T> computation) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(computation, "computation is null");
         return FutureImpl.async(executor, complete -> complete.with(Try.of(computation)));
     }
 
@@ -610,9 +581,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor, futures or f is null.
      */
     static <T> Future<T> reduce(Executor executor, Iterable<? extends Future<? extends T>> futures, BiFunction<? super T, ? super T, ? extends T> f) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(futures, "futures is null");
-        Objects.requireNonNull(f, "f is null");
         if (!futures.iterator().hasNext()) {
             throw new NoSuchElementException("Future.reduce on empty futures");
         } else {
@@ -640,8 +608,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if one of executor or unit is null.
      */
     static Future<Void> run(Executor executor, CheckedRunnable unit) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(unit, "unit is null");
         return of(executor, () -> {
             unit.run();
             return null;
@@ -699,8 +665,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor or futures is null.
      */
     static <T> Future<Seq<T>> sequence(Executor executor, Iterable<? extends Future<? extends T>> futures) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(futures, "futures is null");
         final Future<Seq<T>> zero = successful(executor, Stream.empty());
         final BiFunction<Future<Seq<T>>, Future<? extends T>, Future<Seq<T>>> f =
                 (result, future) -> result.flatMap(seq -> future.map(seq::append));
@@ -728,7 +692,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor is null
      */
     static <T> Future<T> successful(Executor executor, T result) {
-        Objects.requireNonNull(executor, "executor is null");
         return FutureImpl.of(executor, Try.success(result));
     }
 
@@ -772,9 +735,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if executor, values or f is null.
      */
     static <T, U> Future<Seq<U>> traverse(Executor executor, Iterable<? extends T> values, Function<? super T, ? extends Future<? extends U>> mapper) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(values, "values is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return sequence(executor, Iterator.ofAll(values).map(mapper));
     }
 
@@ -799,7 +759,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if action is null
      */
     default Future<T> andThen(Consumer<? super Try<T>> action) {
-        Objects.requireNonNull(action, "action is null");
         return run(executor(), complete ->
                 onComplete(t -> {
                     Try.run(() -> action.accept(t));
@@ -880,7 +839,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code partialFunction} is null
      */
     default <R> Future<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        Objects.requireNonNull(partialFunction, "partialFunction is null");
         return run(executor(), complete ->
             onComplete(result -> complete.with(result.collect(partialFunction)))
         );
@@ -949,7 +907,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if that is null
      */
     default Future<T> fallbackTo(Future<? extends T> that) {
-        Objects.requireNonNull(that, "that is null");
         return run(executor(), complete ->
             onComplete(t -> {
                 if (t.isSuccess()) {
@@ -969,7 +926,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     default Future<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filterTry(predicate::test);
     }
 
@@ -981,7 +937,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code predicate} is null
      */
     default Future<T> filterTry(CheckedPredicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return run(executor(), complete -> onComplete(result -> complete.with(result.filterTry(predicate))));
     }
 
@@ -1052,7 +1007,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code action} is null.
      */
     default Future<T> onFailure(Consumer<? super Throwable> action) {
-        Objects.requireNonNull(action, "action is null");
         return onComplete(result -> result.onFailure(action));
     }
 
@@ -1064,7 +1018,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code action} is null.
      */
     default Future<T> onSuccess(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         return onComplete(result -> result.onSuccess(action));
     }
 
@@ -1082,7 +1035,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code f} is null
      */
     default Future<T> recover(Function<? super Throwable, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
         return transformValue(t -> t.recover(f));
     }
 
@@ -1105,8 +1057,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code f} is null
      */
     default <X extends Throwable> Future<T> recover(Class<X> exceptionType, Function<? super X, ? extends T> f) {
-        Objects.requireNonNull(exceptionType, "exceptionType is null");
-        Objects.requireNonNull(f, "f is null");
         return transformValue(t -> t.recover(exceptionType, f));
     }
 
@@ -1124,7 +1074,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code f} is null
      */
     default Future<T> recoverWith(Function<? super Throwable, ? extends Future<? extends T>> f) {
-        Objects.requireNonNull(f, "f is null");
         return run(executor(), complete ->
             onComplete(t -> {
                 if (t.isFailure()) {
@@ -1146,7 +1095,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code f} is null
      */
     default <U> U transform(Function<? super Future<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -1159,7 +1107,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code f} is null
      */
     default <U> Future<U> transformValue(Function<? super Try<T>, ? extends Try<? extends U>> f) {
-        Objects.requireNonNull(f, "f is null");
         return run(executor(), complete ->
             onComplete(t -> Try.run(() -> complete.with(f.apply(t)))
                     .onFailure(x -> complete.with(Try.failure(x)))
@@ -1179,7 +1126,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code that} is null
      */
     default <U> Future<Tuple2<T, U>> zip(Future<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
         return zipWith(that, Tuple::of);
     }
 
@@ -1198,8 +1144,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      */
     @SuppressWarnings({"deprecation", "unchecked"})
     default <U, R> Future<R> zipWith(Future<? extends U> that, BiFunction<? super T, ? super U, ? extends R> combinator) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(combinator, "combinator is null");
         return run(executor(), complete ->
             onComplete(res1 -> {
                 if (res1.isFailure()) {
@@ -1217,12 +1161,10 @@ public interface Future<T> extends Iterable<T>, Value<T> {
     // -- Value & Monad implementation
 
     default <U> Future<U> flatMap(Function<? super T, ? extends Future<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return flatMapTry(mapper::apply);
     }
 
     default <U> Future<U> flatMapTry(CheckedFunction1<? super T, ? extends Future<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return run(executor(), complete ->
             onComplete(result -> result.mapTry(mapper)
                     .onSuccess(future -> future.onComplete(complete::with))
@@ -1239,7 +1181,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      */
     @Override
     default void forEach(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         onComplete(result -> result.forEach(action));
     }
 
@@ -1303,17 +1244,14 @@ public interface Future<T> extends Iterable<T>, Value<T> {
 
     @Override
     default <U> Future<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return transformValue(t -> t.map(mapper));
     }
 
     default <U> Future<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return transformValue(t -> t.mapTry(mapper));
     }
 
     default Future<T> orElse(Future<? extends T> other) {
-        Objects.requireNonNull(other, "other is null");
         return run(executor(), complete ->
             onComplete(result -> {
                 if (result.isSuccess()) {
@@ -1326,7 +1264,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
     }
 
     default Future<T> orElse(Supplier<? extends Future<? extends T>> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return run(executor(), complete ->
             onComplete(result -> {
                 if (result.isSuccess()) {
@@ -1340,7 +1277,6 @@ public interface Future<T> extends Iterable<T>, Value<T> {
 
     @Override
     default Future<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         onSuccess(action);
         return this;
     }

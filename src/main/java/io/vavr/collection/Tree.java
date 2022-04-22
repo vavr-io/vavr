@@ -106,7 +106,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Node<T> of(T value, Node<T>... children) {
-        Objects.requireNonNull(children, "children is null");
         return new Node<>(value, io.vavr.collection.List.of(children));
     }
 
@@ -119,7 +118,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * @return A new Node instance.
      */
     public static <T> Node<T> of(T value, Iterable<Node<T>> children) {
-        Objects.requireNonNull(children, "children is null");
         return new Node<>(value, io.vavr.collection.List.ofAll(children));
     }
 
@@ -134,7 +132,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Tree<T> of(T... values) {
-        Objects.requireNonNull(values, "values is null");
         final io.vavr.collection.List<T> list = io.vavr.collection.List.of(values);
         return list.isEmpty() ? Empty.instance() : new Node<>(list.head(), list.tail().map(Tree::of));
     }
@@ -152,7 +149,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <T> Tree<T> ofAll(Iterable<? extends T> iterable) {
-        Objects.requireNonNull(iterable, "iterable is null");
         if (iterable instanceof Tree) {
             return (Tree<T>) iterable;
         } else {
@@ -169,7 +165,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * @return A Tree containing the given elements in the same order.
      */
     public static <T> Tree<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
-        Objects.requireNonNull(javaStream, "javaStream is null");
         return ofAll(io.vavr.collection.Iterator.ofAll(javaStream.iterator()));
     }
 
@@ -184,7 +179,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * @throws NullPointerException if {@code f} is null
      */
     public static <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Tree::of);
     }
 
@@ -198,7 +192,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * @throws NullPointerException if {@code s} is null
      */
     public static <T> Tree<T> fill(int n, Supplier<? extends T> s) {
-        Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Tree::of);
     }
 
@@ -241,7 +234,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * @throws NullPointerException if {@code descend} is null
      */
     public static <T> Node<T> recurse(T seed, Function<? super T, ? extends Iterable<? extends T>> descend) {
-        Objects.requireNonNull(descend, "descend is null");
         return Tree.of(seed, Stream.of(seed).flatMap(descend).map(children -> recurse(children, descend)));
     }
 
@@ -271,9 +263,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * @throws NullPointerException if {@code source}, {@code idMapper} or {@code parentMapper} is null
      */
     public static <T, ID> List<Node<T>> build(Iterable<? extends T> source, Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
-        Objects.requireNonNull(source, "source is null");
-        Objects.requireNonNull(source, "idMapper is null");
-        Objects.requireNonNull(source, "parentMapper is null");
         final List<T> list = List.ofAll(source);
         final Map<ID, List<T>> byParent = list.groupBy(parentMapper);
         final Function<? super T, Iterable<? extends T>> descend = idMapper
@@ -377,7 +366,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * @throws NullPointerException if {@code f} is null
      */
     public final <U> U transform(Function<? super Tree<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -398,7 +386,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
      * @throws java.lang.NullPointerException if order is null
      */
     public final Seq<Node<T>> traverse(Order order) {
-        Objects.requireNonNull(order, "order is null");
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -486,7 +473,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final Seq<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -496,7 +482,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final <U> Seq<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -524,13 +509,11 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final Seq<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
     public final Seq<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -540,7 +523,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final Seq<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -550,7 +532,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final Seq<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Stream.empty();
         } else {
@@ -560,13 +541,11 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final <U> Tree<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : Tree.flatMap((Node<T>) this, mapper);
     }
 
     @Override
     public final <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return zero;
         } else {
@@ -625,7 +604,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final <U> Tree<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : Tree.map((Node<T>) this, mapper);
     }
 
@@ -642,7 +620,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public final Tuple2<Seq<T>, Seq<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Tuple.of(Stream.empty(), Stream.empty());
         } else {
@@ -652,7 +629,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final Tree<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
         }
@@ -675,7 +651,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final Seq<T> retainAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return values().retainAll(elements);
     }
 
@@ -712,7 +687,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     public final Tuple2<Seq<T>, Seq<T>> span(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Tuple.of(Stream.empty(), Stream.empty());
         } else {
@@ -759,13 +733,11 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final Seq<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return values().takeUntil(predicate);
     }
 
     @Override
     public final Seq<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return values().takeWhile(predicate);
     }
 
@@ -776,8 +748,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final <U, R> Tree<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Empty.instance();
         } else {
@@ -787,7 +757,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final <U> Tree<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
             return io.vavr.collection.Iterator.<U>ofAll(that).map(elem -> Tuple.of(thisElem, elem)).toTree();
         } else {
@@ -811,7 +780,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
     @Override
     public final <U> Tree<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return zipWith(io.vavr.collection.Iterator.from(0), mapper);
     }
 
@@ -847,7 +815,6 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
          * @throws IllegalArgumentException if children is empty
          */
         public Node(T value, io.vavr.collection.List<Node<T>> children) {
-            Objects.requireNonNull(children, "children is null");
             this.value = value;
             this.children = children;
             this.size = children.foldLeft(1, (acc, child) -> acc + child.size);

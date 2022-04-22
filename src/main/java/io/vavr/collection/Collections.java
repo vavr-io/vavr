@@ -54,7 +54,6 @@ final class Collections {
     }
 
     static <T, C extends Seq<T>> C asJava(C source, Consumer<? super java.util.List<T>> action, ChangePolicy changePolicy) {
-        Objects.requireNonNull(action, "action is null");
         final ListView<T, C> view = JavaConverters.asJava(source, changePolicy);
         action.accept(view);
         return view.getDelegate();
@@ -75,7 +74,6 @@ final class Collections {
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
     static <T, S extends IndexedSeq<T>> S dropRightUntil(S seq, Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         for (int i = seq.length() - 1; i >= 0; i--) {
             if (predicate.test(seq.get(i))) {
                 return (S) seq.take(i + 1);
@@ -89,7 +87,6 @@ final class Collections {
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
     static <T, S extends IndexedSeq<T>> S dropUntil(S seq, Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < seq.length(); i++) {
             if (predicate.test(seq.get(i))) {
                 return (S) seq.drop(i);
@@ -171,7 +168,6 @@ final class Collections {
     }
 
     static <T> Iterator<T> fill(int n, Supplier<? extends T> supplier) {
-        Objects.requireNonNull(supplier, "supplier is null");
         return tabulate(n, ignored -> supplier.get());
     }
 
@@ -190,15 +186,10 @@ final class Collections {
     }
 
     static <C extends Traversable<T>, T> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
-        Objects.requireNonNull(s, "s is null");
-        Objects.requireNonNull(empty, "empty is null");
-        Objects.requireNonNull(of, "of is null");
         return tabulate(n, anything -> s.get(), empty, of);
     }
 
     static <C extends Traversable<T>, T> C fillObject(int n, T element, C empty, Function<T[], C> of) {
-        Objects.requireNonNull(empty, "empty is null");
-        Objects.requireNonNull(of, "of is null");
         if (n <= 0) {
             return empty;
         } else {
@@ -211,7 +202,6 @@ final class Collections {
 
     @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C filterNot(C source, Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (source.isEmpty()) {
             return source;
         } else {
@@ -227,8 +217,6 @@ final class Collections {
     }
 
     static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
-        Objects.requireNonNull(classifier, "classifier is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         Map<C, R> results = LinkedHashMap.empty();
         for (java.util.Map.Entry<? extends C, Collection<T>> entry : groupBy(source, classifier)) {
             results = results.put(entry.getKey(), mapper.apply(entry.getValue()));
@@ -299,9 +287,6 @@ final class Collections {
 
     @SuppressWarnings("unchecked")
     static <K, V, K2, U extends Map<K2, V>> U mapKeys(Map<K, V> source, U zero, Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
-        Objects.requireNonNull(zero, "zero is null");
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMerge, "valueMerge is null");
         return source.foldLeft(zero, (acc, entry) -> {
             final K2 k2 = keyMapper.apply(entry._1);
             final V v2 = entry._2;
@@ -313,7 +298,6 @@ final class Collections {
 
     static <C extends Traversable<T>, T> Tuple2<C, C> partition(C collection, Function<Iterable<T>, C> creator,
                                                                 Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new java.util.ArrayList<>();
         final java.util.List<T> right = new java.util.ArrayList<>();
         for (T element : collection) {
@@ -324,7 +308,6 @@ final class Collections {
 
     @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C removeAll(C source, Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (source.isEmpty()) {
             return source;
         } else {
@@ -344,7 +327,6 @@ final class Collections {
 
     @SuppressWarnings("unchecked")
     static <C extends Traversable<T>, T> C retainAll(C source, Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (source.isEmpty()) {
             return source;
         } else {
@@ -415,21 +397,17 @@ final class Collections {
 
     static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,
                                                        U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
-        Objects.requireNonNull(operation, "operation is null");
         final Iterator<U> iterator = source.iterator().scanLeft(zero, operation);
         return finisher.apply(iterator);
     }
 
     static <T, U, R extends Traversable<U>> R scanRight(Traversable<? extends T> source,
                                                         U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
-        Objects.requireNonNull(operation, "operation is null");
         final Iterator<? extends T> reversedElements = reverseIterator(source);
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
     }
 
     static <T, U, R extends Seq<T>> R sortBy(Seq<? extends T> source, Comparator<? super U> comparator, Function<? super T, ? extends U> mapper, Collector<T, ?, R> collector) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return source.toJavaStream()
                 .sorted((e1, e2) -> comparator.compare(mapper.apply(e1), mapper.apply(e2)))
                 .collect(collector);
@@ -464,7 +442,6 @@ final class Collections {
     }
 
     static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
         if (n <= 0) {
             return Iterator.empty();
         } else {
@@ -489,9 +466,6 @@ final class Collections {
     }
 
     static <C extends Traversable<T>, T> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {
-        Objects.requireNonNull(f, "f is null");
-        Objects.requireNonNull(empty, "empty is null");
-        Objects.requireNonNull(of, "of is null");
         if (n <= 0) {
             return empty;
         } else {
@@ -509,7 +483,6 @@ final class Collections {
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
     static <T, S extends IndexedSeq<T>> S takeRightUntil(S seq, Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         for (int i = seq.length() - 1; i >= 0; i--) {
             if (predicate.test(seq.get(i))) {
                 return (S) seq.drop(i + 1);
@@ -523,7 +496,6 @@ final class Collections {
     // see https://github.com/vavr-io/vavr/issues/2007
     @SuppressWarnings("unchecked")
     static <T, S extends IndexedSeq<T>> S takeUntil(S seq, Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < seq.length(); i++) {
             if (predicate.test(seq.get(i))) {
                 return (S) seq.take(i);
@@ -533,7 +505,6 @@ final class Collections {
     }
 
     static <T, U extends Seq<T>, V extends Seq<U>> V transpose(V matrix, Function<Iterable<U>, V> rowFactory, Function<T[], U> columnFactory) {
-        Objects.requireNonNull(matrix, "matrix is null");
         if (matrix.isEmpty() || (matrix.length() == 1 && matrix.head().length() <= 1)) {
             return matrix;
         } else {
