@@ -220,11 +220,6 @@ public class LazyTest extends AbstractValueTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenCreatingLazyProxyAndSupplierIsNull() {
-        Lazy.val(null, CharSequence.class);
-    }
-
-    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenCreatingLazyProxyAndTypeIsNull() {
         Lazy.val(() -> "", null);
     }
