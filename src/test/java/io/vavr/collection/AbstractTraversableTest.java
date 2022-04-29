@@ -1659,10 +1659,22 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(this.<String> empty().reduceLeftOption((a, b) -> a + b)).isSameAs(Option.none());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenReduceLeftOptionNullOperator() {
-        this.<String> empty().reduceLeftOption(null);
+    @Test
+    public void shouldIgnoreNullOperatorWhenThereAreNoElementsToReduceLeftOption() {
+        // empty().reduceLeftOption(f) should fail the same way, whether f is null or not null.
+        try {
+            this.<String>empty().reduceLeftOption(null);
+            fail("How did empty().reduceLeftOption() not throw an exception?!");
+        } catch (Exception caughtWithNullOperator) {
+            try {
+                this.<String>empty().reduceLeftOption((a, b) -> a + b);
+                fail("How did empty().reduceLeftOption() not throw an exception?!");
+            } catch (Exception caughtWithValidOperator) {
+                assertThat(caughtWithNullOperator.getClass()).isEqualTo(caughtWithValidOperator.getClass());
+            }
+        }
     }
+
 
     @Test
     public void shouldReduceLeftOptionNonNil() {
@@ -1676,9 +1688,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         this.<String> empty().reduceLeft((a, b) -> a + b);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenReduceLeftNullOperator() {
-        this.<String> empty().reduceLeft(null);
+    @Test
+    public void shouldIgnoreNullOperatorWhenThereAreNoElementsToReduceLeft() {
+        // empty().reduceLeft(f) should fail the same way, whether f is null or not null.
+        try {
+            this.<String>empty().reduceLeft(null);
+            fail("How did empty().reduceLeft() not throw an exception?!");
+        } catch (Exception caughtWithNullOperator) {
+            try {
+                this.<String>empty().reduceLeft((a, b) -> a + b);
+                fail("How did empty().reduceLeft() not throw an exception?!");
+            } catch (Exception caughtWithValidOperator) {
+                assertThat(caughtWithNullOperator.getClass()).isEqualTo(caughtWithValidOperator.getClass());
+            }
+        }
     }
 
     @Test
@@ -1693,9 +1716,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(this.<String> empty().reduceRightOption((a, b) -> a + b)).isSameAs(Option.none());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenReduceRightOptionNullOperator() {
-        this.<String> empty().reduceRightOption(null);
+    @Test
+    public void shouldIgnoreNullOperatorWhenThereAreNoElementsToReduceRightOption() {
+        // empty().reduceRightOption(f) should fail the same way, whether f is null or not null.
+        try {
+            this.<String>empty().reduceRightOption(null);
+            fail("How did empty().reduceRightOption() not throw an exception?!");
+        } catch (Exception caughtWithNullOperator) {
+            try {
+                this.<String>empty().reduceRightOption((a, b) -> a + b);
+                fail("How did empty().reduceRightOption() not throw an exception?!");
+            } catch (Exception caughtWithValidOperator) {
+                assertThat(caughtWithNullOperator.getClass()).isEqualTo(caughtWithValidOperator.getClass());
+            }
+        }
     }
 
     @Test
@@ -1710,9 +1744,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         this.<String> empty().reduceRight((a, b) -> a + b);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenReduceRightNullOperator() {
-        this.<String> empty().reduceRight(null);
+    @Test
+    public void shouldIgnoreNullOperatorWhenThereAreNoElementsToReduceRight() {
+        // empty().reduceRight(f) should fail the same way, whether f is null or not null.
+        try {
+            this.<String>empty().reduceRight(null);
+            fail("How did empty().reduceRight() not throw an exception?!");
+        } catch (Exception caughtWithNullOperator) {
+            try {
+                this.<String>empty().reduceRight((a, b) -> a + b);
+                fail("How did empty().reduceRight() not throw an exception?!");
+            } catch (Exception caughtWithValidOperator) {
+                assertThat(caughtWithNullOperator.getClass()).isEqualTo(caughtWithValidOperator.getClass());
+            }
+        }
     }
 
     @Test
