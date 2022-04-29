@@ -388,11 +388,6 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
-    public void shouldThrowWhenFoldRightNullOperator() {
-        throw new NullPointerException(); // TODO
-    }
-
-    @Override
     public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
         // TODO
     }
