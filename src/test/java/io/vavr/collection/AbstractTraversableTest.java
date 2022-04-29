@@ -1430,8 +1430,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     // -- minBy(Comparator)
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenMinByWithNullComparator() {
+    @Test
+    public void shouldTolerateNullComparatorWhenThereIsNoNeedToInvokeIt() {
         of(1).minBy((Comparator<Integer>) null);
     }
 

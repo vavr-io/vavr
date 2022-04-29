@@ -995,7 +995,7 @@ public interface Traversable<T> extends Iterable<T>, Foldable<T>, io.vavr.Value<
      *
      * @param comparator A non-null element comparator
      * @return {@code Some(minimum)} of this elements or {@code None} if this is empty
-     * @throws NullPointerException if {@code comparator} is null
+     * @throws NullPointerException if {@code comparator} is null, unless no comparison is needed.
      */
     default Option<T> minBy(Comparator<? super T> comparator) {
         if (isEmpty()) {
