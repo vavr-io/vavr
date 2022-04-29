@@ -90,11 +90,6 @@ public class LazyTest extends AbstractValueTest {
         assertThat(Lazy.of(expected)).isSameAs(expected);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowOnNullSupplier() {
-        Lazy.of(null);
-    }
-
     @Test
     public void shouldMemoizeValues() {
         final Lazy<Double> testee = Lazy.of(Math::random);
@@ -219,7 +214,7 @@ public class LazyTest extends AbstractValueTest {
         assertThat(evaluated[0]).isEqualTo("Yay!");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = Exception.class)
     public void shouldThrowWhenCreatingLazyProxyAndTypeIsNull() {
         Lazy.val(() -> "", null);
     }
