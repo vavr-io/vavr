@@ -1631,9 +1631,20 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         this.<String> empty().reduce((a, b) -> a + b);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenReduceNullOperator() {
-        this.<String> empty().reduce(null);
+    @Test
+    public void shouldIgnoreNullOperatorWhenThereAreNoElementsToReduce() {
+        // empty().reduce(f) should fail the same way, whether f is null or not null.
+        try {
+            this.<String>empty().reduce(null);
+            fail("How did empty().reduce() not throw an exception?!");
+        } catch (Exception caughtWithNullOperator) {
+            try {
+                this.<String>empty().reduce((a, b) -> a + b);
+                fail("How did empty().reduce() not throw an exception?!");
+            } catch (Exception caughtWithValidOperator) {
+                assertThat(caughtWithNullOperator.getClass()).isEqualTo(caughtWithValidOperator.getClass());
+            }
+        }
     }
 
     @Test
