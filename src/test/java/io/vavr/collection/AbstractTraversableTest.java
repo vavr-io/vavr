@@ -1610,13 +1610,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     // -- reduceOption
 
     @Test
-    public void shouldThrowWhenReduceOptionNil() {
+    public void shouldAnswerNoneOnReduceOptionOverNoElements() {
         assertThat(this.<String> empty().reduceOption((a, b) -> a + b)).isSameAs(Option.none());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenReduceOptionNullOperator() {
-        this.<String> empty().reduceOption(null);
+    @Test
+    public void shouldIgnoreNullOperatorWhenThereAreNoElementsToReduceOption() {
+        assertThat(this.<String> empty().reduceOption(null)).isSameAs(Option.none());
     }
 
     @Test
@@ -1655,26 +1655,14 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     // -- reduceLeftOption
 
     @Test
-    public void shouldThrowWhenReduceLeftOptionNil() {
+    public void shouldAnswerNoneOnReduceLeftOptionOverNoElements() {
         assertThat(this.<String> empty().reduceLeftOption((a, b) -> a + b)).isSameAs(Option.none());
     }
 
     @Test
     public void shouldIgnoreNullOperatorWhenThereAreNoElementsToReduceLeftOption() {
-        // empty().reduceLeftOption(f) should fail the same way, whether f is null or not null.
-        try {
-            this.<String>empty().reduceLeftOption(null);
-            fail("How did empty().reduceLeftOption() not throw an exception?!");
-        } catch (Exception caughtWithNullOperator) {
-            try {
-                this.<String>empty().reduceLeftOption((a, b) -> a + b);
-                fail("How did empty().reduceLeftOption() not throw an exception?!");
-            } catch (Exception caughtWithValidOperator) {
-                assertThat(caughtWithNullOperator.getClass()).isEqualTo(caughtWithValidOperator.getClass());
-            }
-        }
+        assertThat(this.<String> empty().reduceLeftOption(null)).isSameAs(Option.none());
     }
-
 
     @Test
     public void shouldReduceLeftOptionNonNil() {
@@ -1712,24 +1700,13 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     // -- reduceRightOption
 
     @Test
-    public void shouldThrowWhenReduceRightOptionNil() {
+    public void shouldAnswerNoneOnReduceRightOptionOverNoElements() {
         assertThat(this.<String> empty().reduceRightOption((a, b) -> a + b)).isSameAs(Option.none());
     }
 
     @Test
     public void shouldIgnoreNullOperatorWhenThereAreNoElementsToReduceRightOption() {
-        // empty().reduceRightOption(f) should fail the same way, whether f is null or not null.
-        try {
-            this.<String>empty().reduceRightOption(null);
-            fail("How did empty().reduceRightOption() not throw an exception?!");
-        } catch (Exception caughtWithNullOperator) {
-            try {
-                this.<String>empty().reduceRightOption((a, b) -> a + b);
-                fail("How did empty().reduceRightOption() not throw an exception?!");
-            } catch (Exception caughtWithValidOperator) {
-                assertThat(caughtWithNullOperator.getClass()).isEqualTo(caughtWithValidOperator.getClass());
-            }
-        }
+        assertThat(this.<String> empty().reduceRightOption(null)).isSameAs(Option.none());
     }
 
     @Test
@@ -2519,9 +2496,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowIfZipWithThatIsNull() {
-        empty().zip(null);
+    @Test
+    public void shouldIgnoreNullIfThereIsNothingToZip() {
+        assertThat(empty().zip(null)).isEmpty();
     }
 
     // -- zipAll
