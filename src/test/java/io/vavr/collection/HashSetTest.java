@@ -252,11 +252,6 @@ public class HashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowIfZipWithThatIsNull() {
-        empty().zip(null);
-    }
-
     // TODO move to traversable
     // -- zipAll
 

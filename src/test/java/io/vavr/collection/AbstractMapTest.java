@@ -933,10 +933,12 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 Stream.of(Tuple.of(Tuple.of(0, 0), 5), Tuple.of(Tuple.of(1, 1), 6), Tuple.of(Tuple.of(2, 2), 7)));
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowIfZipWithThatIsNull() {
-        emptyMap().zip(null);
+    @Override
+    @Test
+    public void shouldIgnoreNullIfThereIsNothingToZip() {
+        assertThat(emptyMap().zip(null)).isEmpty();
     }
+
 
     // -- zipWithIndex
 
