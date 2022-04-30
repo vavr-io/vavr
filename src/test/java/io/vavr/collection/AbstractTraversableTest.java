@@ -300,10 +300,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     // -- collect
 
     @Test
-    public void shouldThrowOnCollectWhenPartialFunctionIsNull() {
-        assertThatThrownBy(() -> empty().collect((PartialFunction<Object, ?>) null))
-                .isExactlyInstanceOf(NullPointerException.class)
-                .hasMessage("partialFunction is null");
+    public void shouldIgnoreNullPartialFunctionWhenThereAreNoElementsToCollect() {
+        assertThat(empty().collect((PartialFunction<Object, ?>) null)).isEmpty();
     }
 
     @Test
