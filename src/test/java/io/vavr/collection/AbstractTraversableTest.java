@@ -1535,9 +1535,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     // -- partition
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenPartitionNilAndPredicateIsNull() {
-        empty().partition(null);
+    @Test
+    public void shouldIgnoreNullPredicateWhenThereAreNoElementsToPartition() {
+        assertThat(empty().partition(null)).isEqualTo(Tuple.of(empty(), empty()));
     }
 
     @Test
