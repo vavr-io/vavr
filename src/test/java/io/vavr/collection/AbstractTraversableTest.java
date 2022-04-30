@@ -1277,8 +1277,8 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     // -- maxBy(Comparator)
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenMaxByWithNullComparator() {
+    @Test
+    public void shouldTolerateNullComparatorInMaxByWhenThereIsNoNeedToInvokeIt() {
         of(1).maxBy((Comparator<Integer>) null);
     }
 
@@ -1432,7 +1432,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     // -- minBy(Comparator)
 
     @Test
-    public void shouldTolerateNullComparatorWhenThereIsNoNeedToInvokeIt() {
+    public void shouldTolerateNullComparatorInMinByWhenThereIsNoNeedToInvokeIt() {
         of(1).minBy((Comparator<Integer>) null);
     }
 
