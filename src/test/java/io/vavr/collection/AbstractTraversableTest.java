@@ -809,9 +809,14 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(this.<String> empty().fold("", (a, b) -> a + b)).isEqualTo("");
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenFoldNullOperator() {
-        this.<String> empty().fold(null, null);
+    @Test
+    public void shouldIgnoreNullOperatorWhenThereAreNoElementsToFold() {
+        assertThat(this.<String> empty().fold("", null)).isEqualTo("");
+    }
+
+    @Test
+    public void shouldIgnoreNullOperatorAndTolerateNullZeroWhenThereAreNoElementsToFold() {
+        assertThat(this.<String> empty().fold(null, null)).isEqualTo(null);
     }
 
     @Test
