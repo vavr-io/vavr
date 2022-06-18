@@ -5,12 +5,15 @@
 package io.vavr.collection.champ;
 
 
+import io.vavr.collection.Set;
+
 import java.io.Serializable;
 import java.util.AbstractCollection;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Spliterators;
+import java.util.function.Function;
 
 /**
  * An optimized array-based binary heap with long keys.
@@ -240,5 +243,12 @@ public class LongArrayHeap extends AbstractCollection<Long>
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public <U> U transform(Function<? super Set<Long>, ? extends U> f) {
+        // XXX CodingConventions.shouldHaveTransformMethodWhenIterable
+        //     wants us to have a transform() method although this class
+        //     is a standard Collection class.
+        throw new UnsupportedOperationException();
     }
 }
