@@ -7,6 +7,7 @@ import io.vavr.control.Option;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -52,15 +53,11 @@ interface SetMixin<T> extends Set<T> {
     default Set<T> drop(int n) {
         if (n <= 0) {
             return this;
-        } else {
-            return _ofAll(iterator().drop(n));
         }
+            return _ofAll(iterator().drop(n));
     }
 
-    @Override
-    default Set<T> dropRight(int n) {
-        return drop(n);
-    }
+
 
     @Override
     default Set<T> dropUntil(Predicate<? super T> predicate) {
@@ -91,8 +88,8 @@ interface SetMixin<T> extends Set<T> {
 
     @Override
     default Set<T> tail() {
-        // XXX AbstractTraversableTest.shouldThrowWhenTailOnNil() wants
-        //     us to throw UnsupportedOperationException instead of
+        // XXX Traversable.tail() specifies that we must throw
+        //     UnsupportedOperationException instead of
         //     NoSuchElementException.
         if (isEmpty()) {
             throw new UnsupportedOperationException();
@@ -126,10 +123,6 @@ interface SetMixin<T> extends Set<T> {
         return filter(predicate.negate());
     }
 
-    @Override
-    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine) {
-        return foldLeft(zero, (u, t) -> combine.apply(t, u));
-    }
 
     @Override
     default <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier) {
@@ -151,10 +144,6 @@ interface SetMixin<T> extends Set<T> {
         return iterator().next();
     }
 
-    @Override
-    default Set<T> init() {
-        return tail();
-    }
 
     @Override
     default Option<? extends Set<T>> initOption() {
@@ -307,10 +296,6 @@ interface SetMixin<T> extends Set<T> {
         }
     }
 
-    @Override
-    default Set<T> takeRight(int n) {
-        return take(n);
-    }
 
     @Override
     default Set<T> takeUntil(Predicate<? super T> predicate) {
@@ -351,6 +336,19 @@ interface SetMixin<T> extends Set<T> {
     default <U> U transform(Function<? super Set<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
+    }
+
+    @Override
+    default T get() {
+        // XXX LinkedChampSetTest.shouldThrowWhenInitOfNil wants us to throw
+        //     UnsupportedOperationException instead of NoSuchElementException
+        //     when this set is empty.
+        // XXX LinkedChampSetTest.shouldConvertEmptyToTry wants us to throw
+        //     NoSuchElementException when this set is empty.
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        return head();
     }
 
     @Override

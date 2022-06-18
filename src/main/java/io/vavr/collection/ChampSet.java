@@ -273,4 +273,25 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E>, Se
     private Object writeReplace() {
         return new SerializationProxy<E>(this.toMutable());
     }
+
+    @Override
+    public Set<E> dropRight(int n) {
+        return drop(n);
+    }
+
+    @Override
+    public Set<E> takeRight(int n) {
+        return take(n);
+    }
+
+    @Override
+    public Set<E> init() {
+        return tail();
+    }
+
+    @Override
+    public <U> U foldRight(U zero, BiFunction<? super E, ? super U, ? extends U> combine) {
+        Objects.requireNonNull(combine, "combine is null");
+        return foldLeft(zero, (u, t) -> combine.apply(t, u));
+    }
 }

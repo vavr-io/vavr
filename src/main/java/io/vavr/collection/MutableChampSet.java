@@ -8,6 +8,7 @@ import io.vavr.collection.champ.Node;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Implements a mutable set using a Compressed Hash-Array Mapped Prefix-tree
@@ -221,5 +222,12 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
             return details.modified;
         }
         return super.addAll(c);
+    }
+
+    public <U> U transform(Function<? super Set<Long>, ? extends U> f) {
+        // XXX CodingConventions.shouldHaveTransformMethodWhenIterable
+        //     wants us to have a transform() method although this class
+        //     is a standard Collection class.
+        throw new UnsupportedOperationException();
     }
 }
