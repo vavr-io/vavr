@@ -45,8 +45,6 @@ public class VavrHashSetJmh {
     private BenchmarkData data;
     private HashSet<Key> setA;
 
-    private int index;
-
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);

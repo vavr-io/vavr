@@ -12,7 +12,9 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import java.util.HashSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -22,10 +24,11 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
  * Benchmark               (size)  Mode  Cnt    _     Score        Error  Units
- * mIterate               1000000  avgt    4  33_497667.586 ± 522756.433  ns/op
- * mRemoveAdd             1000000  avgt    4    _   164.231 ±     12.128  ns/op
- * mContainsFound         1000000  avgt    4    _    92.212 ±      2.679  ns/op
- * mContainsNotFound      1000000  avgt    4    _    91.997 ±      3.519  ns/op
+ * ContainsFound          1000000  avgt    4        93.098 ±      2.658  ns/op
+ * ContainsNotFound       1000000  avgt    4        93.507 ±      0.773  ns/op
+ * Iterate                1000000  avgt    4  33816828.875 ± 907645.391  ns/op
+ * Put                    1000000  avgt    4       203.074 ±      7.930  ns/op
+ * RemoveAdd              1000000  avgt    4       164.366 ±      2.594  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -34,20 +37,23 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 1)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
-public class JavaUtilHashSetJmh {
+public class JavaUtilHashMapJmh {
     @Param({"1000000"})
     private int size;
 
     private final int mask = ~64;
 
     private BenchmarkData data;
-    private HashSet<Key> setA;
+    private Set<Key> setA;
+    private HashMap<Key, Boolean> mapA;
 
 
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-        setA = new HashSet<>(data.setA);
+         mapA = new HashMap<>();
+        setA = Collections.newSetFromMap(mapA);
+        setA.addAll(data.setA);
     }
 
     @Benchmark
@@ -64,6 +70,12 @@ public class JavaUtilHashSetJmh {
         Key key =data.nextKeyInA();
         setA.remove(key);
         setA.add(key);
+    }
+
+    @Benchmark
+    public void mPut() {
+        Key key =data.nextKeyInA();
+        mapA.put(key,Boolean.FALSE);
     }
 
     @Benchmark
