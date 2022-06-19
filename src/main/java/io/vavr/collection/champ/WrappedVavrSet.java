@@ -18,7 +18,7 @@ import java.util.function.Supplier;
  *
  * @param <E> the element type of the set
  */
-public class WrappedVavrSet<E> implements SetMixin<E> {
+public class WrappedVavrSet<E> implements SetMixin<E, WrappedVavrSet<E>> {
     private static final long serialVersionUID = 1L;
     protected final Function<E, Set<E>> addFunction;
     protected final IntFunction<Set<E>> dropRightFunction;

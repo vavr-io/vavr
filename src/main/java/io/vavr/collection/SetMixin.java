@@ -22,7 +22,8 @@ import java.util.function.Supplier;
  *
  * @param <T> the element type of the set
  */
-public interface SetMixin<T> extends Set<T> {
+@SuppressWarnings("unchecked")
+public interface SetMixin<T, SELF extends SetMixin<T, SELF>> extends Set<T> {
     long serialVersionUID = 0L;
 
     /**
@@ -49,72 +50,78 @@ public interface SetMixin<T> extends Set<T> {
     }
 
     @Override
-    default Set<T> diff(Set<? extends T> that) {
+    default SELF diff(Set<? extends T> that) {
         return removeAll(that);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> distinct() {
-        return this;
+    default SELF distinct() {
+        return (SELF) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> distinctBy(Comparator<? super T> comparator) {
+    default SELF distinctBy(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
-        return createFromElements(iterator().distinctBy(comparator));
+        return (SELF) createFromElements(iterator().distinctBy(comparator));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     default <U> Set<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return createFromElements(iterator().distinctBy(keyExtractor));
+        return (SELF) createFromElements(iterator().distinctBy(keyExtractor));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> drop(int n) {
+    default SELF drop(int n) {
         if (n <= 0) {
-            return this;
+            return (SELF) this;
         }
-        return createFromElements(iterator().drop(n));
+        return (SELF) createFromElements(iterator().drop(n));
     }
 
 
     @Override
-    default Set<T> dropUntil(Predicate<? super T> predicate) {
+    default SELF dropUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> dropWhile(Predicate<? super T> predicate) {
+    default SELF dropWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final Set<T> dropped = createFromElements(iterator().dropWhile(predicate));
-        return dropped.length() == length() ? this : dropped;
+        final SELF dropped = (SELF) createFromElements(iterator().dropWhile(predicate));
+        return dropped.length() == length() ? (SELF) this : dropped;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> filter(Predicate<? super T> predicate) {
+    default SELF filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        final Set<T> filtered = createFromElements(iterator().filter(predicate));
+        final SELF filtered = (SELF) createFromElements(iterator().filter(predicate));
 
         if (filtered.isEmpty()) {
-            return create();
+            return (SELF) create();
         } else if (filtered.length() == length()) {
-            return this;
+            return (SELF) this;
         } else {
             return filtered;
         }
     }
 
     @Override
-    default Set<T> tail() {
+    default SELF tail() {
         // XXX Traversable.tail() specifies that we must throw
         //     UnsupportedOperationException instead of
         //     NoSuchElementException.
         if (isEmpty()) {
             throw new UnsupportedOperationException();
         }
-        return remove(iterator().next());
+        return (SELF) remove(iterator().next());
     }
 
     @Override
@@ -138,7 +145,7 @@ public interface SetMixin<T> extends Set<T> {
     }
 
     @Override
-    default Set<T> filterNot(Predicate<? super T> predicate) {
+    default SELF filterNot(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
@@ -170,18 +177,19 @@ public interface SetMixin<T> extends Set<T> {
         return tailOption();
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> intersect(Set<? extends T> elements) {
+    default SELF intersect(Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() || elements.isEmpty()) {
-            return create();
+            return (SELF) create();
         } else {
             final int size = size();
             if (size <= elements.size()) {
                 return retainAll(elements);
             } else {
-                final Set<T> results = this.<T>createFromElements(elements).retainAll(this);
-                return (size == results.size()) ? this : results;
+                final SELF results = (SELF) this.<T>createFromElements(elements).retainAll(this);
+                return (size == results.size()) ? (SELF) this : results;
             }
         }
     }
@@ -206,14 +214,16 @@ public interface SetMixin<T> extends Set<T> {
         return Collections.last(this);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> orElse(Iterable<? extends T> other) {
-        return isEmpty() ? createFromElements(other) : this;
+    default SELF orElse(Iterable<? extends T> other) {
+        return isEmpty() ? (SELF) createFromElements(other) : (SELF) this;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
-        return isEmpty() ? createFromElements(supplier.get()) : this;
+    default SELF orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+        return isEmpty() ? (SELF) createFromElements(supplier.get()) : (SELF) this;
     }
 
     @Override
@@ -221,42 +231,44 @@ public interface SetMixin<T> extends Set<T> {
         return Collections.partition(this, this::createFromElements, predicate);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> peek(Consumer<? super T> action) {
+    default SELF peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(iterator().head());
         }
-        return this;
+        return (SELF) this;
     }
 
     @Override
-    default Set<T> removeAll(Iterable<? extends T> elements) {
-        return Collections.removeAll(this, elements);
+    default SELF removeAll(Iterable<? extends T> elements) {
+        return (SELF) Collections.removeAll(this, elements);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    default Set<T> replace(T currentElement, T newElement) {
+    default SELF replace(T currentElement, T newElement) {
         if (contains(currentElement)) {
-            return remove(currentElement).add(newElement);
+            return (SELF) remove(currentElement).add(newElement);
         } else {
-            return this;
+            return (SELF) this;
         }
     }
 
     @Override
-    default Set<T> replaceAll(T currentElement, T newElement) {
+    default SELF replaceAll(T currentElement, T newElement) {
         return replace(currentElement, newElement);
     }
 
     @Override
-    default Set<T> retainAll(Iterable<? extends T> elements) {
-        return Collections.retainAll(this, elements);
+    default SELF retainAll(Iterable<? extends T> elements) {
+        return (SELF) Collections.retainAll(this, elements);
     }
 
     @Override
-    default Set<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return scanLeft(zero, operation);
+    default SELF scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+        return (SELF) scanLeft(zero, operation);
     }
 
     @Override
@@ -306,28 +318,28 @@ public interface SetMixin<T> extends Set<T> {
     }
 
     @Override
-    default Set<T> take(int n) {
+    default SELF take(int n) {
         if (n >= size() || isEmpty()) {
-            return this;
+            return (SELF) this;
         } else if (n <= 0) {
-            return create();
+            return (SELF) create();
         } else {
-            return createFromElements(() -> iterator().take(n));
+            return (SELF) createFromElements(() -> iterator().take(n));
         }
     }
 
 
     @Override
-    default Set<T> takeUntil(Predicate<? super T> predicate) {
+    default SELF takeUntil(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
-    default Set<T> takeWhile(Predicate<? super T> predicate) {
+    default SELF takeWhile(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Set<T> taken = createFromElements(iterator().takeWhile(predicate));
-        return taken.length() == length() ? this : taken;
+        return taken.length() == length() ? (SELF) this : (SELF) taken;
     }
 
     @Override
@@ -336,8 +348,8 @@ public interface SetMixin<T> extends Set<T> {
     }
 
     @Override
-    default Set<T> union(Set<? extends T> that) {
-        return addAll(that);
+    default SELF union(Set<? extends T> that) {
+        return (SELF) addAll(that);
     }
 
     @Override
@@ -396,8 +408,8 @@ public interface SetMixin<T> extends Set<T> {
     }
 
     @Override
-    default Set<T> toSet() {
-        return this;
+    default SELF toSet() {
+        return (SELF) this;
     }
 
     @Override
