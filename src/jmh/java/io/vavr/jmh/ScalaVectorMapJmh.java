@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * Head              1000000  avgt    4         38.234 ±      2.455  ns/op
  * Iterate           1000000  avgt    4  284698238.201 ± 950950.509  ns/op
  * Put               1000000  avgt    4        501.840 ±      6.593  ns/op
- * RemoveAdd         1000000  avgt    4       1242.707 ±    503.426  ns/op
+ * RemoveThenAdd     1000000  avgt    4       1242.707 ±    503.426  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -70,7 +70,7 @@ public class ScalaVectorMapJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         mapA.$minus(key).$plus(new Tuple2<>(key,Boolean.TRUE));
     }

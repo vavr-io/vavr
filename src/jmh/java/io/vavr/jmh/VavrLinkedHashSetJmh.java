@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * ContainsNotFound  1000000  avgt    4    _   207.064 ±       28.109  ns/op
  * Head              1000000  avgt    4   4_572643.356 ±   304792.025  ns/op
  * Iterate           1000000  avgt    4  72_354050.601 ±  4164487.060  ns/op
- * RemoveAdd         1000000  avgt    4  55_789995.082 ±  6626404.364  ns/op
+ * RemoveThenAdd     1000000  avgt    4  55_789995.082 ±  6626404.364  ns/op
  * Tail              1000000  avgt    4  48_914447.602 ± 16458725.793  ns/op
  * </pre>
  */
@@ -61,7 +61,7 @@ public class VavrLinkedHashSetJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         setA.remove(key).add(key);
     }

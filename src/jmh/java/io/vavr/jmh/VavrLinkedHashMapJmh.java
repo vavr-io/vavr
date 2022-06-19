@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Iterate           1000000  avgt    4  61178364.610 ± 1591497.482  ns/op
  * Put               1000000  avgt    4  20852951.646 ± 4411897.843  ns/op
  * Head              1000000  avgt    4         3.219 ±       0.061  ns/op
- * RemoveAdd         1000000  avgt    4  54802086.451 ± 5489641.693  ns/op
+ * RemoveThenAdd     1000000  avgt    4  54802086.451 ± 5489641.693  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -48,7 +48,7 @@ public class VavrLinkedHashMapJmh {
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-         mapA =  LinkedHashMap.empty();
+        mapA =  LinkedHashMap.empty();
         for (Key key : data.setA) {
             mapA=mapA.put(key,Boolean.TRUE);
         }
@@ -64,7 +64,7 @@ public class VavrLinkedHashMapJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         mapA.remove(key).put(key,Boolean.TRUE);
     }

@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * Iterate           1000000  avgt    4  38126058.704 ± 2402214.160  ns/op
  * Put               1000000  avgt    4       403.080 ±       4.946  ns/op
  * Head              1000000  avgt    4        24.020 ±       3.039  ns/op
- * RemoveAdd         1000000  avgt    4       674.819 ±       6.798  ns/op
+ * RemoveThenAdd     1000000  avgt    4       674.819 ±       6.798  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -70,7 +70,7 @@ public class ScalaHashMapJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         mapA.$minus(key).$plus(new Tuple2<>(key,Boolean.TRUE));
     }

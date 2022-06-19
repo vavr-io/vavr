@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * ContainsNotFound  1000000  avgt    4       212.304 ±       1.445  ns/op
  * Head              1000000  avgt    4        24.136 ±       0.929  ns/op
  * Iterate           1000000  avgt    4  39136478.695 ± 1245379.552  ns/op
- * RemoveAdd         1000000  avgt    4       626.577 ±      12.087  ns/op
+ * RemoveThenAdd     1000000  avgt    4       626.577 ±      12.087  ns/op
  * Tail              1000000  avgt    4       116.357 ±       5.528  ns/op
  * </pre>
  */
@@ -68,7 +68,7 @@ public class ScalaHashSetJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         setA.$minus(key).$plus(key);
     }

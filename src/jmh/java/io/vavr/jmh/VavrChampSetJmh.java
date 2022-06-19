@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  * mContainsNotFound  1000000  avgt    4    _   173.803 ±       5.247  ns/op
  * mHead              1000000  avgt    4    _    23.992 ±       1.879  ns/op
  * mIterate           1000000  avgt    4  36_428809.525 ± 1247676.226  ns/op
- * mRemoveAdd         1000000  avgt    4    _   518.853 ±      16.583  ns/op
+ * mRemoveThenAdd     1000000  avgt    4    _   518.853 ±      16.583  ns/op
  * mTail              1000000  avgt    4    _   109.234 ±       2.909  ns/op
  * </pre>
  */
@@ -62,7 +62,7 @@ public class VavrChampSetJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         setA.remove(key).add(key);
     }
