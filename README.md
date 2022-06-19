@@ -81,8 +81,7 @@ This cuts of the elapsed times of functions that run in linear times.
 
 * **scala.HashMap** has a very competitive and balanced performance.
   It uses a CHAMP trie as its underlying data structure.
-* **scala.VectorMap** has also a very competitive performance, removal and addition
-  of entries is a bit slower than with most other collections.
+* **scala.VectorMap** is slower than most of the other collections, but the performance is balanced.
   It uses a radix-balanced finger tree (Vector) and a CHAMP trie as its
   underlying data structure.
 * **vavr.HashMap** has a very competitive and balanced performance.
