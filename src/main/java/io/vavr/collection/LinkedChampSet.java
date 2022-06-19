@@ -166,12 +166,12 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
     }
 
     @Override
-    public <R> Set<R> _empty() {
+    public <R> Set<R> clear() {
         return empty();
     }
 
     @Override
-    public <R> LinkedChampSet<R> _ofAll(Iterable<? extends R> elements) {
+    public <R> LinkedChampSet<R> setAll(Iterable<? extends R> elements) {
         return ofAll(elements);
     }
 
