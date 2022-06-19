@@ -1,6 +1,5 @@
 package io.vavr.jmh;
 
-import io.vavr.collection.LinkedChampMap;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -12,6 +11,10 @@ import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
+import scala.Tuple2;
+import scala.collection.Iterator;
+import scala.collection.immutable.ListMap;
+import scala.collection.mutable.Builder;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,14 +23,14 @@ import java.util.concurrent.TimeUnit;
  * # JMH version: 1.28
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
- *
+ * # org.scala-lang:scala-library:2.13.8
+ * 
  * Benchmark         (size)  Mode  Cnt    _     Score        Error  Units
- * ContainsFound     1000000  avgt    4       180.018 ±        8.546  ns/op
- * ContainsNotFound  1000000  avgt    4       179.753 ±       13.559  ns/op
- * Iterate           1000000  avgt    4  67746660.311 ± 11683119.941  ns/op
- * Put               1000000  avgt    4       340.929 ±        8.589  ns/op
- * Head              1000000  avgt    4  34162107.506 ±  2239763.509  ns/op
- * RemoveAdd         1000000  avgt    4       536.753 ±       18.663  ns/op
+ * ContainsFound     1000000  avgt    4             ? ± ?  ns/op
+ * ContainsNotFound  1000000  avgt    4             ? ± ?  ns/op
+ * Iterate           1000000  avgt    4             ? ± ?  ns/op
+ * Put               1000000  avgt    4             ? ± ?  ns/op
+ * RemoveAdd         1000000  avgt    4             ? ± ?  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -36,30 +39,31 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 1)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
-public class VavrLinkedChampMapJmh {
+public class ScalaListMapJmh {
     @Param({"1000000"})
     private int size;
 
     private final int mask = ~64;
 
     private BenchmarkData data;
-    private LinkedChampMap<Key, Boolean> mapA;
+    private ListMap<Key, Boolean> mapA;
 
 
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-         mapA =  LinkedChampMap.empty();
+        Builder<Tuple2<Key, Boolean>, ListMap<Key, Boolean>> b = ListMap.newBuilder();
         for (Key key : data.setA) {
-            mapA=mapA.put(key,Boolean.TRUE);
+            b.addOne(new Tuple2<>(key,Boolean.TRUE));
         }
+        mapA = b.result();
     }
 
     @Benchmark
     public int mIterate() {
         int sum = 0;
-        for (Key k : mapA.keysIterator()) {
-            sum += k.value;
+        for(Iterator<Key> i = mapA.keysIterator();i.hasNext();){
+            sum += i.next().value;
         }
         return sum;
     }
@@ -67,30 +71,29 @@ public class VavrLinkedChampMapJmh {
     @Benchmark
     public void mRemoveAdd() {
         Key key =data.nextKeyInA();
-        mapA.remove(key).put(key,Boolean.TRUE);
+        mapA.$minus(key).$plus(new Tuple2<>(key,Boolean.TRUE));
     }
 
     @Benchmark
     public void mPut() {
         Key key =data.nextKeyInA();
-        mapA.put(key,Boolean.FALSE);
+        mapA.$plus(new Tuple2<>(key,Boolean.FALSE));
     }
 
     @Benchmark
     public boolean mContainsFound() {
         Key key = data.nextKeyInA();
-        return mapA.containsKey(key);
+        return mapA.contains(key);
     }
 
     @Benchmark
     public boolean mContainsNotFound() {
         Key key = data.nextKeyInB();
-        return mapA.containsKey(key);
+        return mapA.contains(key);
     }
 
     @Benchmark
     public Key mHead() {
         return mapA.head()._1;
     }
-
 }

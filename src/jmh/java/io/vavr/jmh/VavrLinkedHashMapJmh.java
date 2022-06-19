@@ -26,7 +26,8 @@ import java.util.concurrent.TimeUnit;
  * ContainsNotFound  1000000  avgt    4    _   207.006 ±      22.474  ns/op
  * Iterate           1000000  avgt    4  61_178364.610 ± 1591497.482  ns/op
  * Put               1000000  avgt    4  20_852951.646 ± 4411897.843  ns/op
- * RemoveAdd         1000000  avgt    4  80_465692.667 ± 1886212.261  ns/op
+ * Head              1000000  avgt    4          3.219 ±       0.061  ns/op
+ * RemoveAdd         1000000  avgt    4  54_802086.451 ± 5489641.693  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -44,7 +45,6 @@ public class VavrLinkedHashMapJmh {
     private BenchmarkData data;
     private LinkedHashMap<Key, Boolean> mapA;
 
-
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
@@ -53,7 +53,7 @@ public class VavrLinkedHashMapJmh {
             mapA=mapA.put(key,Boolean.TRUE);
         }
     }
-
+/*
     @Benchmark
     public int mIterate() {
         int sum = 0;
@@ -62,14 +62,13 @@ public class VavrLinkedHashMapJmh {
         }
         return sum;
     }
-
+*/
     @Benchmark
     public void mRemoveAdd() {
         Key key =data.nextKeyInA();
-        mapA.remove(key);
-        mapA.put(key,Boolean.TRUE);
+        mapA.remove(key).put(key,Boolean.TRUE);
     }
-
+/*
     @Benchmark
     public void mPut() {
         Key key =data.nextKeyInA();
@@ -86,5 +85,10 @@ public class VavrLinkedHashMapJmh {
     public boolean mContainsNotFound() {
         Key key = data.nextKeyInB();
         return mapA.containsKey(key);
+    }
+    */
+    @Benchmark
+    public Key mHead() {
+        return mapA.head()._1;
     }
 }
