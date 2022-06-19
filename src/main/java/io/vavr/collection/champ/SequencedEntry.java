@@ -14,8 +14,11 @@ public class SequencedEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V>
     private final int sequenceNumber;
 
     public SequencedEntry(K key) {
-        super(key, null);
-        sequenceNumber = NO_SEQUENCE_NUMBER;
+        this(key, null, NO_SEQUENCE_NUMBER);
+    }
+
+    public SequencedEntry(K key, V value) {
+        this(key, value, NO_SEQUENCE_NUMBER);
     }
 
     public SequencedEntry(K key, V value, int sequenceNumber) {

@@ -382,11 +382,10 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
         if (Objects.equals(currentElement, newElement)) {
             return this;
         }
-        final int keyHash = Objects.hashCode(currentElement);
         final ChangeEvent<SequencedElement<E>> detailsCurrent = new ChangeEvent<>();
         BitmapIndexedNode<SequencedElement<E>> newRootNode = remove(null,
                 new SequencedElement<>(currentElement),
-                keyHash, 0, detailsCurrent, Objects::equals);
+                Objects.hashCode(currentElement), 0, detailsCurrent, Objects::equals);
         if (!detailsCurrent.modified) {
             return this;
         }
