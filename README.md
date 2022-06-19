@@ -55,9 +55,12 @@ nodes again.
 
 The collections are not actually linked. The collections store a sequence number with
 each data element. The sequence numbers must be renumbered from time to time, to prevent
-large gaps and overflows/underflows. The bucket sort is O(N) and not O(N log N).
-We allocate enough buckets, so that we only need to store at most one sequence number
-per bucket.
+large gaps and overflows/underflows.
+
+When we iterate over the elements, we need to sort them.
+We do this with a bucket sort in O(N) time. We achieve O(N) instead of O(N log N)
+for the bucket sort, because we use at least N buckets, and no more than
+N * 4 buckets.
 
 Currently, the code contains a fall-back code for collections that grow larger than
 2<sup>30</sup> elements. For very large collections the buckets do not fit into
