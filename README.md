@@ -1,35 +1,90 @@
-[![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/vavr-io/vavr)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg?style=flat-square)](https://opensource.org/licenses/Apache-2.0)
-[![GitHub Release](https://img.shields.io/github/release/vavr-io/vavr.svg?style=flat-square)](https://github.com/vavr-io/vavr/releases)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.vavr/vavr/badge.svg?style=flat-square)](http://search.maven.org/#search|gav|1|g:"io.vavr"%20AND%20a:"vavr")
-[![Build Status](https://img.shields.io/travis/vavr-io/vavr.svg?branch=master&style=flat-square)](https://travis-ci.org/vavr-io/vavr)
-[![Code Coverage](https://codecov.io/gh/vavr-io/vavr/branch/master/graph/badge.svg)](https://codecov.io/gh/vavr-io/vavr)
-[![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vavr-io/vavr)
-[![donate](https://img.shields.io/badge/Donate-PayPal-blue.svg?logo=paypal&style=flat-square)](https://paypal.me/danieldietrich13)
+# Experimental fork of 'vavr' with CHAMP collections
 
-[![vavr-logo](https://user-images.githubusercontent.com/743833/62367542-486f0500-b52a-11e9-815e-e9788d4c8c8d.png)](http://vavr.io/)
+## Status
 
-Vavr is an object-functional language extension to Java 8, which aims to reduce the lines of code and increase code quality.
-It provides persistent collections, functional abstractions for error handling, concurrent programming, pattern matching and much more.
+This is an experimental fork of [github.com/vavr-io/vavr](https://github.com/vavr-io/vavr).
 
-Vavr fuses the power of object-oriented programming with the elegance and robustness of functional programming.
-The most interesting part is a feature-rich, persistent collection library that smoothly integrates with Java's standard collections.
+## CHAMP collections
 
-Because Vavr does not depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
+This fork contains additional collections, that use
+CHAMP (Compressed Hash-Array Mapped Prefix-tree) as their underlying data structures.
+The collections are derived from [github.com/usethesource/capsule](https://github.com/usethesource/capsule),
+and [github.com/wrandelshofer/jhotdraw8](https://github.com/wrandelshofer/jhotdraw8).
 
-To stay up to date please follow the [blog](http://blog.vavr.io).
+The collections are:
 
-## Using Vavr
+* ChampSet
+* ChampMap
+* LinkedChampSet
+* LinkedChampMap
 
-See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc/io.vavr/vavr).
+Each collection has a mutable partner:
 
-### Gradle tasks:
+* MutableChampSet
+* MutableChampMap
+* MutableLinkedChampSet
+* MutableLinkedChampMap
 
-* Build: `./gradlew check`
-  * test reports: `./build/reports/tests/test/index.html`
-  * coverage reports: `./build/reports/jacoco/test/html/index.html`
-* Javadoc (linting): `./gradlew javadoc`
+## Performance characteristics
 
-### Contributing
+### ChampSet, ChampMap, MutableChampSet, MutableChampMap:
 
-A small number of users have reported problems building Vavr. Read our [contribution guide](./CONTRIBUTING.md) for details.
+* Maximal supported size: 2<sup>30</sup> elements.
+* Get/Insert/Remove: O(1)
+* Head/Tail: O(1)
+* Iterator creation: O(1)
+* Iterator.next(): O(1)
+* toImmutable/toMutable: O(1) + a cost distributed across subsequent updates of the mutable copy
+
+The costs are only constant in the limit. In practice, they are more like
+O(log<sub>32</sub> N).
+
+If a collection is converted from/to immutable/mutable, the mutual copy
+of the collection loses ownership of all its trie nodes. Updates are slightly
+more expensive for the mutual copy, until it gains exclusive ownership of all trie
+nodes again.
+
+### LinkedChampSet, LinkedChampMap, MutableLinkedChampSet, MutableLinkedChampMap:
+
+* Maximal supported size: 2<sup>30</sup> elements.
+* Get/Insert/Remove: O(1) amortized
+* Head/Tail: O(N)
+* Iterator creation: O(N)
+* Iterator.next(): O(1)
+* toImmutable/toMutable: O(1) + a cost distributed across subsequent updates of the mutable copy
+
+The collections are not actually linked. The collections store a sequence number with
+each data element. The sequence numbers must be renumbered from time to time, to prevent
+large gaps and overflows/underflows. The bucket sort is O(N) and not O(N log N).
+We allocate enough buckets, so that we only need to store at most one sequence number
+per bucket.
+
+Currently, the code contains a fall-back code for collections that grow larger than
+2<sup>30</sup> elements. For very large collections the buckets do not fit into
+a Java array anymore. We have to fall back to a heap.
+With the heap, Iterator.next() needs O(log N) instead of O(1).
+
+## Benchmarks
+
+The following chart shows a comparison of the CHAMP maps with vavr collections
+and with Scala collections. Scala org.scala-lang:scala-library:2.13.8 was used.
+
+The collections have 1 million entries.
+
+![](BenchmarkChart.png)
+
+* **scala.HashMap** has a very competitive and balanced performance.
+  It uses a CHAMP trie as its underlying data structure.
+* **scala.VectorMap** has also a very competitive performance, removal and addition
+  of entries is a bit slower than with most other collections.
+  It uses a radix-balanced finger tree (Vector) and a CHAMP trie as its
+  underlying data structure.
+* **vavr.HashMap** has a very competitive and balanced performance.
+  It uses a HAMP trie as its underlying data structure.
+* **vavr.LinkedHashMap** has competitive query times, but updates need linear time.
+  It uses a HAMP trie and a Banker's queue as its underlying data structure.
+* **vavr.ChampMap** has a very competitive and balanced performance.
+  It uses a CHAMP trie as its underlying data structure.
+* **vavr.LinkedChampMap** has competitive performance except for accesses to the
+  first/last entry. It uses a CHAMP trie and sequence numbers on the entries. 
+
