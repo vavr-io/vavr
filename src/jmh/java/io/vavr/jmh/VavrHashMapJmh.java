@@ -12,7 +12,9 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import java.util.HashSet;
+import java.util.Collections;
+import io.vavr.collection.HashMap;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,11 +23,12 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark               (size)  Mode  Cnt    _     Score        Error  Units
- * mIterate               1000000  avgt    4  33_497667.586 ± 522756.433  ns/op
- * mRemoveAdd             1000000  avgt    4    _   164.231 ±     12.128  ns/op
- * mContainsFound         1000000  avgt    4    _    92.212 ±      2.679  ns/op
- * mContainsNotFound      1000000  avgt    4    _    91.997 ±      3.519  ns/op
+ * Benchmark         (size)  Mode  Cnt    _     Score        Error  Units
+ * ContainsFound     1000000  avgt    4       188.841 ±       7.319  ns/op
+ * ContainsNotFound  1000000  avgt    4       186.394 ±       6.957  ns/op
+ * Iterate           1000000  avgt    4  72885227.133 ± 3892692.065  ns/op
+ * Put               1000000  avgt    4       365.380 ±      14.707  ns/op
+ * RemoveAdd         1000000  avgt    4       493.927 ±      17.767  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -34,26 +37,29 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 1)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
-public class JavaUtilHashSetJmh {
+public class VavrHashMapJmh {
     @Param({"1000000"})
     private int size;
 
     private final int mask = ~64;
 
     private BenchmarkData data;
-    private HashSet<Key> setA;
+    private HashMap<Key, Boolean> mapA;
 
 
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-        setA = new HashSet<>(data.setA);
+         mapA =  HashMap.empty();
+        for (Key key : data.setA) {
+            mapA=mapA.put(key,Boolean.TRUE);
+        }
     }
 
     @Benchmark
     public int mIterate() {
         int sum = 0;
-        for (Key k : setA) {
+        for (Key k : mapA.keysIterator()) {
             sum += k.value;
         }
         return sum;
@@ -62,19 +68,25 @@ public class JavaUtilHashSetJmh {
     @Benchmark
     public void mRemoveAdd() {
         Key key =data.nextKeyInA();
-        setA.remove(key);
-        setA.add(key);
+        mapA.remove(key);
+        mapA.put(key,Boolean.TRUE);
+    }
+
+    @Benchmark
+    public void mPut() {
+        Key key =data.nextKeyInA();
+        mapA.put(key,Boolean.FALSE);
     }
 
     @Benchmark
     public boolean mContainsFound() {
         Key key = data.nextKeyInA();
-        return setA.contains(key);
+        return mapA.containsKey(key);
     }
 
     @Benchmark
     public boolean mContainsNotFound() {
         Key key = data.nextKeyInB();
-        return setA.contains(key);
+        return mapA.containsKey(key);
     }
 }

@@ -45,8 +45,6 @@ public class VavrLinkedHashSetJmh {
     private BenchmarkData data;
     private LinkedHashSet<Key> setA;
 
-    private int index;
-
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);

@@ -45,7 +45,6 @@ public class VavrChampSetJmh {
     private BenchmarkData data;
     private ChampSet<Key> setA;
 
-    private int index;
 
     @Setup
     public void setup() {
