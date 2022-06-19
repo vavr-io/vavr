@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit;
  * Iterate           1000000  avgt    4  72885227.133 ± 3892692.065  ns/op
  * Put               1000000  avgt    4       365.380 ±      14.707  ns/op
  * RemoveAdd         1000000  avgt    4       493.927 ±      17.767  ns/op
+ * Head              1000000  avgt    4        27.143 ±       1.361  ns/op
+ * RemoveAdd         1000000  avgt    4       497.325 ±      12.266  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -68,8 +70,7 @@ public class VavrHashMapJmh {
     @Benchmark
     public void mRemoveAdd() {
         Key key =data.nextKeyInA();
-        mapA.remove(key);
-        mapA.put(key,Boolean.TRUE);
+        mapA.remove(key).put(key,Boolean.TRUE);
     }
 
     @Benchmark
@@ -88,5 +89,10 @@ public class VavrHashMapJmh {
     public boolean mContainsNotFound() {
         Key key = data.nextKeyInB();
         return mapA.containsKey(key);
+    }
+
+    @Benchmark
+    public Key mHead() {
+        return mapA.head()._1;
     }
 }
