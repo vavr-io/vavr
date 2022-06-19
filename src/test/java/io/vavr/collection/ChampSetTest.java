@@ -117,7 +117,7 @@ public class ChampSetTest extends AbstractSetTest {
 
     @Override
     protected <T> ChampSet<T> of(T element) {
-        return ChampSet.of(element);
+        return ChampSet.<T>empty().add(element);
     }
 
     @SuppressWarnings("varargs")
@@ -129,52 +129,52 @@ public class ChampSetTest extends AbstractSetTest {
 
     @Override
     protected <T> ChampSet<T> ofAll(Iterable<? extends T> elements) {
-        return ChampSet.ofAll(elements);
+        return ChampSet.<T>empty().addAll(elements);
     }
 
     @Override
     protected <T extends Comparable<? super T>> ChampSet<T> ofJavaStream(java.util.stream.Stream<? extends T> javaStream) {
-        return ChampSet.ofAll(javaStream.collect(Collectors.toList()));
+        return ChampSet.<T>empty().addAll(javaStream.collect(Collectors.toList()));
     }
 
     @Override
     protected ChampSet<Boolean> ofAll(boolean... elements) {
-        return ChampSet.ofAll(Iterator.ofAll(elements));
+        return ChampSet.<Boolean>empty().addAll(Iterator.ofAll(elements));
     }
 
     @Override
     protected ChampSet<Byte> ofAll(byte... elements) {
-        return ChampSet.ofAll(Iterator.ofAll(elements));
+        return ChampSet.<Byte>empty().addAll(Iterator.ofAll(elements));
     }
 
     @Override
     protected ChampSet<Character> ofAll(char... elements) {
-        return ChampSet.ofAll(Iterator.ofAll(elements));
+        return ChampSet.<Character>empty().addAll(Iterator.ofAll(elements));
     }
 
     @Override
     protected ChampSet<Double> ofAll(double... elements) {
-        return ChampSet.ofAll(Iterator.ofAll(elements));
+        return ChampSet.<Double>empty().addAll(Iterator.ofAll(elements));
     }
 
     @Override
     protected ChampSet<Float> ofAll(float... elements) {
-        return ChampSet.ofAll(Iterator.ofAll(elements));
+        return ChampSet.<Float>empty().addAll(Iterator.ofAll(elements));
     }
 
     @Override
     protected ChampSet<Integer> ofAll(int... elements) {
-        return ChampSet.ofAll(Iterator.ofAll(elements));
+        return ChampSet.<Integer>empty().addAll(Iterator.ofAll(elements));
     }
 
     @Override
     protected ChampSet<Long> ofAll(long... elements) {
-        return ChampSet.ofAll(Iterator.ofAll(elements));
+        return ChampSet.<Long>empty().addAll(Iterator.ofAll(elements));
     }
 
     @Override
     protected ChampSet<Short> ofAll(short... elements) {
-        return ChampSet.ofAll(Iterator.ofAll(elements));
+        return ChampSet.<Short>empty().addAll(Iterator.ofAll(elements));
     }
 
     @Override
@@ -397,7 +397,7 @@ public class ChampSetTest extends AbstractSetTest {
 
     @Test
     public void shouldBeEqual() {
-        assertTrue(ChampSet.of(1).equals(ChampSet.of(1)));
+        assertTrue(ChampSet.<Integer>empty().add(1).equals(ChampSet.<Integer>empty().add(1)));
     }
 
     //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
@@ -408,72 +408,72 @@ public class ChampSetTest extends AbstractSetTest {
 
     @Override
     protected ChampSet<Character> range(char from, char toExclusive) {
-        return ChampSet.ofAll(Iterator.range(from, toExclusive));
+        return ChampSet.<Character>empty().addAll(Iterator.range(from, toExclusive));
     }
 
     @Override
     protected ChampSet<Character> rangeBy(char from, char toExclusive, int step) {
-        return ChampSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ChampSet.<Character>empty().addAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     @Override
     protected ChampSet<Double> rangeBy(double from, double toExclusive, double step) {
-        return ChampSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ChampSet.<Double>empty().addAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     @Override
     protected ChampSet<Integer> range(int from, int toExclusive) {
-        return ChampSet.ofAll(Iterator.range(from, toExclusive));
+        return ChampSet.<Integer>empty().addAll(Iterator.range(from, toExclusive));
     }
 
     @Override
     protected ChampSet<Integer> rangeBy(int from, int toExclusive, int step) {
-        return ChampSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ChampSet.<Integer>empty().addAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     @Override
     protected ChampSet<Long> range(long from, long toExclusive) {
-        return ChampSet.ofAll(Iterator.range(from, toExclusive));
+        return ChampSet.<Long>empty().addAll(Iterator.range(from, toExclusive));
     }
 
     @Override
     protected ChampSet<Long> rangeBy(long from, long toExclusive, long step) {
-        return ChampSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+        return ChampSet.<Long>empty().addAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
     @Override
     protected ChampSet<Character> rangeClosed(char from, char toInclusive) {
-        return ChampSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ChampSet.<Character>empty().addAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     @Override
     protected ChampSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return ChampSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ChampSet.<Character>empty().addAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override
     protected ChampSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        return ChampSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ChampSet.<Double>empty().addAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override
     protected ChampSet<Integer> rangeClosed(int from, int toInclusive) {
-        return ChampSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ChampSet.<Integer>empty().addAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     @Override
     protected ChampSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return ChampSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ChampSet.<Integer>empty().addAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     @Override
     protected ChampSet<Long> rangeClosed(long from, long toInclusive) {
-        return ChampSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+        return ChampSet.<Long>empty().addAll(Iterator.rangeClosed(from, toInclusive));
     }
 
     @Override
     protected ChampSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return ChampSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+        return ChampSet.<Long>empty().addAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
     // -- toSet
