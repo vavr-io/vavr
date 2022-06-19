@@ -29,8 +29,9 @@ public interface Sequenced {
      * @return
      */
     static boolean mustRenumber(int size, int first, int last) {
+        long extent = (long) last - first;
         return last > Integer.MAX_VALUE - 2
                 || first < Integer.MIN_VALUE + 2
-                || (long) last - first > size * 4L;
+                || extent > 16 && extent > size * 4L;
     }
 }
