@@ -48,7 +48,7 @@ import java.util.stream.Collector;
  * copy of the node and of all parent nodes up to the root (copy-path-on-write).
  * Since the CHAMP tree has a fixed maximal height, the cost is O(1).
  * <p>
- * This set can create a mutable copy of itself in O(1) time and O(0) space
+ * This set can create a mutable copy of itself in O(1) time and O(1) space
  * using method {@code #toMutable()}}. The mutable copy shares its nodes
  * with this set, until it has gradually replaced the nodes with exclusively
  * owned nodes.
@@ -87,26 +87,14 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E>, Se
         return ((ChampSet<E>) ChampSet.EMPTY);
     }
 
-    /**
-     * Returns an immutable set that contains the provided elements.
-     *
-     * @param iterable an iterable
-     * @param <E>      the element type
-     * @return an immutable set of the provided elements
-     */
-    @SuppressWarnings("unchecked")
-    public static <E> ChampSet<E> ofAll(Iterable<? extends E> iterable) {
-        return ((ChampSet<E>) ChampSet.EMPTY).addAll(iterable);
-    }
-
     @Override
-    public <R> Set<R> clear() {
+    public <R> Set<R> create() {
         return empty();
     }
 
     @Override
-    public <R> ChampSet<R> setAll(Iterable<? extends R> elements) {
-        return ofAll(elements);
+    public <R> ChampSet<R> createFromElements(Iterable<? extends R> elements) {
+        return ChampSet.<R>empty().addAll(elements);
     }
 
     @Override
@@ -175,6 +163,11 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E>, Se
         return this;
     }
 
+    /**
+     * Creates a mutable copy of this set.
+     *
+     * @return a mutable copy of this set.
+     */
     MutableChampSet<E> toMutable() {
         return new MutableChampSet<>(this);
     }
@@ -187,18 +180,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E>, Se
      * @return A io.vavr.collection.ChampSet Collector.
      */
     public static <T> Collector<T, ArrayList<T>, ChampSet<T>> collector() {
-        return Collections.toListAndThen(ChampSet::ofAll);
-    }
-
-    /**
-     * Returns a singleton {@code HashSet}, i.e. a {@code HashSet} of one element.
-     *
-     * @param element An element.
-     * @param <T>     The component type
-     * @return A new HashSet instance containing the given element
-     */
-    public static <T> ChampSet<T> of(T element) {
-        return ChampSet.<T>empty().add(element);
+        return Collections.toListAndThen(iterable -> ChampSet.<T>empty().addAll(iterable));
     }
 
     @Override
@@ -238,35 +220,21 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E>, Se
         return ChampSet.<T>empty().addAll(Arrays.asList(elements));
     }
 
-    /**
-     * Narrows a widened {@code ChampSet<? extends T>} to {@code ChampSet<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
-     *
-     * @param hashSet A {@code ChampSet}.
-     * @param <T>     Component type of the {@code ChampSet}.
-     * @return the given {@code ChampSet} instance as narrowed type {@code HashSet<T>}.
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> ChampSet<T> narrow(ChampSet<? extends T> hashSet) {
-        return (ChampSet<T>) hashSet;
-    }
-
     @Override
     public String toString() {
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static class SerializationProxy<E> extends SetSerializationProxy<E> {
+    public static class SerializationProxy<E> extends SetSerializationProxy<E> {
         private final static long serialVersionUID = 0L;
 
-        protected SerializationProxy(java.util.Set<E> target) {
+        public SerializationProxy(java.util.Set<E> target) {
             super(target);
         }
 
         @Override
         protected Object readResolve() {
-            return ChampSet.ofAll(deserialized);
+            return ChampSet.<E>empty().addAll(deserialized);
         }
     }
 
@@ -293,5 +261,30 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E>, Se
     public <U> U foldRight(U zero, BiFunction<? super E, ? super U, ? extends U> combine) {
         Objects.requireNonNull(combine, "combine is null");
         return foldLeft(zero, (u, t) -> combine.apply(t, u));
+    }
+
+    /**
+     * Creates a mutable copy of this set.
+     * The copy is an instance of {@link MutableChampSet}.
+     *
+     * @return a mutable copy of this set.
+     */
+    @Override
+    public MutableChampSet<E> toJavaSet() {
+        return toMutable();
+    }
+
+    /**
+     * Narrows a widened {@code ChampSet<? extends T>} to {@code ChampSet<T>}
+     * by performing a type-safe cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param hashSet A {@code ChampSet}.
+     * @param <T>     Component type of the {@code ChampSet}.
+     * @return the given {@code ChampSet} instance as narrowed type {@code HashSet<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ChampSet<T> narrow(ChampSet<? extends T> hashSet) {
+        return (ChampSet<T>) hashSet;
     }
 }

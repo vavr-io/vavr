@@ -38,7 +38,8 @@ import java.util.stream.Collector;
  *     <li>contains: O(1)</li>
  *     <li>toMutable: O(1) + a cost distributed across subsequent updates in the mutable copy</li>
  *     <li>clone: O(1)</li>
- *     <li>iterator.next(): O(log N)</li>
+ *     <li>iterator creation: O(N)</li>
+ *     <li>iterator.next: O(1) with bucket sort or O(log N) with a heap</li>
  *     <li>getFirst(), getLast(): O(N)</li>
  * </ul>
  * <p>
@@ -53,7 +54,7 @@ import java.util.stream.Collector;
  * copy of the node and of all parent nodes up to the root (copy-path-on-write).
  * Since the CHAMP tree has a fixed maximal height, the cost is O(1).
  * <p>
- * This set can create a mutable copy of itself in O(1) time and O(0) space
+ * This set can create a mutable copy of itself in O(1) time and O(1) space
  * using method {@link #toMutable()}}. The mutable copy shares its nodes
  * with this set, until it has gradually replaced the nodes with exclusively
  * owned nodes.
@@ -166,12 +167,12 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
     }
 
     @Override
-    public <R> Set<R> clear() {
+    public <R> Set<R> create() {
         return empty();
     }
 
     @Override
-    public <R> LinkedChampSet<R> setAll(Iterable<? extends R> elements) {
+    public <R> LinkedChampSet<R> createFromElements(Iterable<? extends R> elements) {
         return ofAll(elements);
     }
 
@@ -368,10 +369,10 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static class SerializationProxy<E> extends SetSerializationProxy<E> {
+    public static class SerializationProxy<E> extends SetSerializationProxy<E> {
         private final static long serialVersionUID = 0L;
 
-        protected SerializationProxy(java.util.Set<E> target) {
+        public SerializationProxy(java.util.Set<E> target) {
             super(target);
         }
 

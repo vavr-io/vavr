@@ -50,7 +50,7 @@ import java.util.function.Function;
  * Since the CHAMP tree has a fixed maximal height, the cost is O(1) in either
  * case.
  * <p>
- * This set can create an immutable copy of itself in O(1) time and O(0) space
+ * This set can create an immutable copy of itself in O(1) time and O(1) space
  * using method {@link #toImmutable()}. This set loses exclusive ownership of
  * all its tree nodes.
  * Thus, creating an immutable copy increases the constant cost of
