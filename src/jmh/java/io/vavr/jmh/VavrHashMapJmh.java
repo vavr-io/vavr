@@ -30,7 +30,6 @@ import java.util.concurrent.TimeUnit;
  * Put               1000000  avgt    4       365.380 ±      14.707  ns/op
  * RemoveAdd         1000000  avgt    4       493.927 ±      17.767  ns/op
  * Head              1000000  avgt    4        27.143 ±       1.361  ns/op
- * RemoveAdd         1000000  avgt    4       497.325 ±      12.266  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)

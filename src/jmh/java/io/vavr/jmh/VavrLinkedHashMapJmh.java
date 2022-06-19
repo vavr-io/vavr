@@ -21,13 +21,13 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark         (size)  Mode  Cnt     _     Score        Error  Units
- * ContainsFound     1000000  avgt    4    _   203.768 ±      20.920  ns/op
- * ContainsNotFound  1000000  avgt    4    _   207.006 ±      22.474  ns/op
- * Iterate           1000000  avgt    4  61_178364.610 ± 1591497.482  ns/op
- * Put               1000000  avgt    4  20_852951.646 ± 4411897.843  ns/op
- * Head              1000000  avgt    4          3.219 ±       0.061  ns/op
- * RemoveAdd         1000000  avgt    4  54_802086.451 ± 5489641.693  ns/op
+ * Benchmark         (size)  Mode  Cnt          Score        Error  Units
+ * ContainsFound     1000000  avgt    4       203.768 ±      20.920  ns/op
+ * ContainsNotFound  1000000  avgt    4       207.006 ±      22.474  ns/op
+ * Iterate           1000000  avgt    4  61178364.610 ± 1591497.482  ns/op
+ * Put               1000000  avgt    4  20852951.646 ± 4411897.843  ns/op
+ * Head              1000000  avgt    4         3.219 ±       0.061  ns/op
+ * RemoveAdd         1000000  avgt    4  54802086.451 ± 5489641.693  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -53,7 +53,7 @@ public class VavrLinkedHashMapJmh {
             mapA=mapA.put(key,Boolean.TRUE);
         }
     }
-/*
+
     @Benchmark
     public int mIterate() {
         int sum = 0;
@@ -62,13 +62,13 @@ public class VavrLinkedHashMapJmh {
         }
         return sum;
     }
-*/
+
     @Benchmark
     public void mRemoveAdd() {
         Key key =data.nextKeyInA();
         mapA.remove(key).put(key,Boolean.TRUE);
     }
-/*
+
     @Benchmark
     public void mPut() {
         Key key =data.nextKeyInA();
@@ -86,7 +86,7 @@ public class VavrLinkedHashMapJmh {
         Key key = data.nextKeyInB();
         return mapA.containsKey(key);
     }
-    */
+
     @Benchmark
     public Key mHead() {
         return mapA.head()._1;
