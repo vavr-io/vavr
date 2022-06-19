@@ -119,7 +119,7 @@ interface SetMixin<T> extends Set<T> {
 
     @Override
     default <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Set<U> flatMapped = this.<U>clear();
+        Set<U> flatMapped = this.clear();
         for (T t : this) {
             for (U u : mapper.apply(t)) {
                 flatMapped = flatMapped.add(u);
@@ -130,7 +130,7 @@ interface SetMixin<T> extends Set<T> {
 
     @Override
     default <U> Set<U> map(Function<? super T, ? extends U> mapper) {
-        Set<U> mapped = this.<U>clear();
+        Set<U> mapped = this.clear();
         for (T t : this) {
             mapped = mapped.add(mapper.apply(t));
         }
