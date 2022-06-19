@@ -41,7 +41,7 @@ O(log<sub>32</sub> N).
 
 If a collection is converted from/to immutable/mutable, the mutual copy
 of the collection loses ownership of all its trie nodes. Updates are slightly
-more expensive for the mutual copy, until it gains exclusive ownership of all trie
+more expensive for the mutable copy, until it gains exclusive ownership of all trie
 nodes again.
 
 ### LinkedChampSet, LinkedChampMap, MutableLinkedChampSet, MutableLinkedChampMap:
