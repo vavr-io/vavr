@@ -91,22 +91,22 @@ public class ChampMapTest extends AbstractMapTest {
     @SafeVarargs
     @Override
     protected final <K extends Comparable<? super K>, V> ChampMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return ChampMap.<K, V>empty().putAllMapEntries(Arrays.asList(entries));
+        return ChampMap.ofEntries(Arrays.asList(entries));
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapOf(K k1, V v1) {
-        return ChampMap.<K, V>empty().putAllMapEntries(MapEntries.of(k1, v1));
+        return ChampMap.ofEntries(MapEntries.of(k1, v1));
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapOf(K k1, V v1, K k2, V v2) {
-        return ChampMap.<K, V>empty().putAllMapEntries(MapEntries.of(k1, v1, k2, v2));
+        return ChampMap.ofEntries(MapEntries.of(k1, v1, k2, v2));
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
-        return ChampMap.<K, V>empty().putAllMapEntries(MapEntries.of(k1, v1, k2, v2, k3, v3));
+        return ChampMap.ofEntries(MapEntries.of(k1, v1, k2, v2, k3, v3));
     }
 
     @Override
@@ -153,7 +153,7 @@ public class ChampMapTest extends AbstractMapTest {
         final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
-        assertThat(ChampMap.empty().putAllMapEntries(source.entrySet())).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+        assertThat(LinkedChampMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 
     // -- specific
