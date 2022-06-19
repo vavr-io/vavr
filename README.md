@@ -75,7 +75,7 @@ and with Scala collections. Scala org.scala-lang:scala-library:2.13.8 was used.
 The collections have 1 million entries.
 
 The y-axis is labeled in nanoseconds. The bars are cut off at 1'500 ns (!).
-This cuts of the elapsed times of functions that ran in linear times.
+This cuts of the elapsed times of functions that run in linear times.
 
 ![](BenchmarkChart.png)
 
