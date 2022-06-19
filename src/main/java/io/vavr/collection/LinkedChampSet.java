@@ -4,7 +4,6 @@ import io.vavr.collection.champ.BitmapIndexedNode;
 import io.vavr.collection.champ.BucketSequencedIterator;
 import io.vavr.collection.champ.ChangeEvent;
 import io.vavr.collection.champ.HeapSequencedIterator;
-import io.vavr.collection.champ.KeyIterator;
 import io.vavr.collection.champ.Node;
 import io.vavr.collection.champ.Sequenced;
 import io.vavr.collection.champ.SequencedElement;
@@ -110,14 +109,6 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
         this.size = size;
         this.first = first;
         this.last = last;
-        int count = 0;
-        for (KeyIterator<SequencedElement<E>> i = new KeyIterator<>(root); i.hasNext(); ) {
-            count++;
-            i.next();
-        }
-        if (count != size) {
-            throw new AssertionError("count=" + count + " size=" + size);
-        }
     }
 
 
