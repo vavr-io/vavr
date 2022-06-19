@@ -100,12 +100,12 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E>, Se
     }
 
     @Override
-    public <R> Set<R> _empty() {
+    public <R> Set<R> clear() {
         return empty();
     }
 
     @Override
-    public <R> ChampSet<R> _ofAll(Iterable<? extends R> elements) {
+    public <R> ChampSet<R> setAll(Iterable<? extends R> elements) {
         return ofAll(elements);
     }
 
