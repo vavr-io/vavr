@@ -85,7 +85,7 @@ import java.util.stream.Collector;
  *
  * @param <E> the element type
  */
-public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> implements SetMixin<E>, Serializable {
+public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> implements SetMixin<E, LinkedChampSet<E>>, Serializable {
     private static final long serialVersionUID = 1L;
     private static final LinkedChampSet<?> EMPTY = new LinkedChampSet<>(BitmapIndexedNode.emptyNode(), 0, -1, 0);
 
@@ -133,11 +133,11 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
     }
 
     /**
-     * Returns an immutable set that contains the provided elements.
+     * Returns a LinkedChampSet set that contains the provided elements.
      *
      * @param iterable an iterable
      * @param <E>      the element type
-     * @return an immutable set of the provided elements
+     * @return a LinkedChampSet set of the provided elements
      */
     @SuppressWarnings("unchecked")
     public static <E> LinkedChampSet<E> ofAll(Iterable<? extends E> iterable) {
@@ -387,7 +387,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
     }
 
     @Override
-    public Set<E> replace(E currentElement, E newElement) {
+    public LinkedChampSet<E> replace(E currentElement, E newElement) {
         if (Objects.equals(currentElement, newElement)) {
             return this;
         }

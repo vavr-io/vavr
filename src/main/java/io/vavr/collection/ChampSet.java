@@ -66,7 +66,7 @@ import java.util.stream.Collector;
  *
  * @param <E> the element type
  */
-public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E>, Serializable {
+public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E, ChampSet<E>>, Serializable {
     private static final long serialVersionUID = 1L;
     private static final ChampSet<?> EMPTY = new ChampSet<>(BitmapIndexedNode.emptyNode(), 0);
     final int size;
@@ -218,6 +218,23 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E>, Se
     public static <T> ChampSet<T> of(T... elements) {
         //Arrays.asList throws a NullPointerException for us.
         return ChampSet.<T>empty().addAll(Arrays.asList(elements));
+    }
+
+    /**
+     * Creates a ChampSet of the given elements.
+     *
+     * @param elements Set elements
+     * @param <T>      The value type
+     * @return A new ChampSet containing the given entries
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ChampSet<T> ofAll(Iterable<? extends T> elements) {
+        Objects.requireNonNull(elements, "elements is null");
+        if (elements instanceof ChampSet) {
+            return (ChampSet<T>) elements;
+        } else {
+            return ChampSet.<T>of().addAll(elements);
+        }
     }
 
     @Override
