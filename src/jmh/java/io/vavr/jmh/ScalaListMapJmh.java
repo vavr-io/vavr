@@ -30,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  * ContainsNotFound  1000000  avgt    4             ? ± ?  ns/op
  * Iterate           1000000  avgt    4             ? ± ?  ns/op
  * Put               1000000  avgt    4             ? ± ?  ns/op
- * RemoveAdd         1000000  avgt    4             ? ± ?  ns/op
+ * RemoveThenAdd     1000000  avgt    4             ? ± ?  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -69,7 +69,7 @@ public class ScalaListMapJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         mapA.$minus(key).$plus(new Tuple2<>(key,Boolean.TRUE));
     }

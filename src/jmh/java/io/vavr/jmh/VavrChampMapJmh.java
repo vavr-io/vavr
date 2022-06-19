@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
  * Iterate           1000000  avgt    4  48892070.205 ± 4267871.730  ns/op
  * Put               1000000  avgt    4       334.626 ±      17.592  ns/op
  * Head              1000000  avgt    4        38.292 ±       2.783  ns/op
- * RemoveAdd         1000000  avgt    4       530.084 ±      13.140  ns/op
+ * RemoveThenAdd     1000000  avgt    4       530.084 ±      13.140  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -65,7 +65,7 @@ public class VavrChampMapJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         mapA.remove(key).put(key,Boolean.TRUE);
     }

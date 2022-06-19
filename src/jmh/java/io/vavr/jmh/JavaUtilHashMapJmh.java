@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit;
  * ContainsNotFound       1000000  avgt    4        93.507 ±      0.773  ns/op
  * Iterate                1000000  avgt    4  33816828.875 ± 907645.391  ns/op
  * Put                    1000000  avgt    4       203.074 ±      7.930  ns/op
- * RemoveAdd              1000000  avgt    4       164.366 ±      2.594  ns/op
+ * RemoveThenAdd          1000000  avgt    4       164.366 ±      2.594  ns/op
  * Head                   1000000  avgt    4        12.922 ±      0.437  ns/op
  * </pre>
  */
@@ -52,7 +52,7 @@ public class JavaUtilHashMapJmh {
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-        mapA = new HashMap<>();
+         mapA = new HashMap<>();
         setA = Collections.newSetFromMap(mapA);
         setA.addAll(data.setA);
     }
@@ -67,7 +67,7 @@ public class JavaUtilHashMapJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         setA.remove(key);
         setA.add(key);

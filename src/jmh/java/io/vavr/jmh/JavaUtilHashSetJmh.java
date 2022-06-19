@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  *
  * Benchmark               (size)  Mode  Cnt    _     Score        Error  Units
  * mIterate               1000000  avgt    4  33_497667.586 ± 522756.433  ns/op
- * mRemoveAdd             1000000  avgt    4    _   164.231 ±     12.128  ns/op
+ * mRemoveThenAdd         1000000  avgt    4    _   164.231 ±     12.128  ns/op
  * mContainsFound         1000000  avgt    4    _    92.212 ±      2.679  ns/op
  * mContainsNotFound      1000000  avgt    4    _    91.997 ±      3.519  ns/op
  * </pre>
@@ -60,7 +60,7 @@ public class JavaUtilHashSetJmh {
     }
 
     @Benchmark
-    public void mRemoveAdd() {
+    public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
         setA.remove(key);
         setA.add(key);
