@@ -5,17 +5,17 @@
 
 package io.vavr.collection.champ;
 
-public class ChangeEvent<V> {
+ class ChangeEvent<V> {
 
-    public boolean modified;
-    private V oldValue;
-    public boolean updated;
-    public int numInBothCollections;
+     public boolean modified;
+     private V oldValue;
+     public boolean updated;
+     public int numInBothCollections;
 
-    public ChangeEvent() {
-    }
+     public ChangeEvent() {
+     }
 
-    void found(V oldValue) {
+     void found(V oldValue) {
         this.oldValue = oldValue;
     }
 

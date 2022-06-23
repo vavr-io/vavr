@@ -26,7 +26,10 @@
  */
 package io.vavr.collection;
 
-import io.vavr.*;
+import io.vavr.Function1;
+import io.vavr.PartialFunction;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.control.Option;
 import org.assertj.core.api.IterableAssert;
 import org.junit.Test;
@@ -34,10 +37,16 @@ import org.junit.Test;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.NoSuchElementException;
 import java.util.Set;
-import java.util.*;
+import java.util.Spliterator;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
 
@@ -142,7 +151,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     protected abstract String className();
 
-    abstract <T1, T2> java.util.Map<T1, T2> javaEmptyMap();
+    protected abstract <T1, T2> java.util.Map<T1, T2> javaEmptyMap();
 
     protected abstract <T1 extends Comparable<? super T1>, T2> Map<T1, T2> emptyMap();
 

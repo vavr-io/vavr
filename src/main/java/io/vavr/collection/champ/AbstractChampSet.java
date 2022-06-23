@@ -1,7 +1,4 @@
-package io.vavr.collection;
-
-import io.vavr.collection.champ.BitmapIndexedNode;
-import io.vavr.collection.champ.UniqueId;
+package io.vavr.collection.champ;
 
 import java.io.Serializable;
 import java.util.AbstractSet;

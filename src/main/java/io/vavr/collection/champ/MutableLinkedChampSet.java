@@ -1,13 +1,5 @@
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
-import io.vavr.collection.champ.BitmapIndexedNode;
-import io.vavr.collection.champ.BucketSequencedIterator;
-import io.vavr.collection.champ.ChangeEvent;
-import io.vavr.collection.champ.FailFastIterator;
-import io.vavr.collection.champ.HeapSequencedIterator;
-import io.vavr.collection.champ.Node;
-import io.vavr.collection.champ.Sequenced;
-import io.vavr.collection.champ.SequencedElement;
 
 import java.util.Iterator;
 import java.util.Objects;

@@ -1,5 +1,10 @@
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
+import io.vavr.collection.AbstractSetTest;
+import io.vavr.collection.Collections;
+import io.vavr.collection.Iterator;
+import io.vavr.collection.List;
+import io.vavr.collection.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 

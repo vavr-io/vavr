@@ -57,7 +57,7 @@ import java.util.function.Function;
  *      <dd><a href="https://github.com/d-michail/jheaps">github.com</a>
  * </dl>
  */
-public class LongArrayHeap extends AbstractCollection<Long>
+class LongArrayHeap extends AbstractCollection<Long>
         implements /*LongQueue,*/ Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;

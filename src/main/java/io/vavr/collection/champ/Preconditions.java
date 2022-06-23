@@ -10,7 +10,7 @@ package io.vavr.collection.champ;
  *
  * @author Werner Randelshofer
  */
-public class Preconditions {
+class Preconditions {
     private Preconditions() {
 
     }

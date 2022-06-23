@@ -4,16 +4,16 @@ import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.function.IntSupplier;
 
-public class FailFastIterator<E> implements Iterator<E>, io.vavr.collection.Iterator<E> {
-    private final Iterator<? extends E> i;
-    private int expectedModCount;
-    private final IntSupplier modCountSupplier;
+ class FailFastIterator<E> implements Iterator<E>, io.vavr.collection.Iterator<E> {
+     private final Iterator<? extends E> i;
+     private int expectedModCount;
+     private final IntSupplier modCountSupplier;
 
-    public FailFastIterator(Iterator<? extends E> i, IntSupplier modCountSupplier) {
-        this.i = i;
-        this.modCountSupplier = modCountSupplier;
-        this.expectedModCount = modCountSupplier.getAsInt();
-    }
+     public FailFastIterator(Iterator<? extends E> i, IntSupplier modCountSupplier) {
+         this.i = i;
+         this.modCountSupplier = modCountSupplier;
+         this.expectedModCount = modCountSupplier.getAsInt();
+     }
 
     @Override
     public boolean hasNext() {

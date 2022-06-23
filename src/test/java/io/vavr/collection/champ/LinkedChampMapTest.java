@@ -1,8 +1,15 @@
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import io.vavr.collection.champ.MapEntries;
+import io.vavr.collection.AbstractMapTest;
+import io.vavr.collection.Collections;
+import io.vavr.collection.Iterator;
+import io.vavr.collection.List;
+import io.vavr.collection.Map;
+import io.vavr.collection.Maps;
+import io.vavr.collection.Seq;
+import io.vavr.collection.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
@@ -24,7 +31,7 @@ public class LinkedChampMapTest extends AbstractMapTest {
     }
 
     @Override
-    <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
+    protected <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
         return new MutableLinkedChampMap<>();
     }
 

@@ -23,7 +23,7 @@ import java.util.function.Function;
  * @param <E> the type parameter of the  CHAMP trie {@link Node}s
  * @param <X> the type parameter of the {@link Iterator} interface
  */
-public class HeapSequencedIterator<E extends Sequenced, X> implements Iterator<X>, io.vavr.collection.Iterator<X> {
+class HeapSequencedIterator<E extends Sequenced, X> implements Iterator<X>, io.vavr.collection.Iterator<X> {
     private final LongArrayHeap queue;
     private E current;
     private boolean canRemove;

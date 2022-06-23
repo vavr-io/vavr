@@ -3,7 +3,7 @@
  * Copyright © 2022 The authors and contributors of JHotDraw. MIT License.
  */
 
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
 
 import java.io.IOException;

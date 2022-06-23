@@ -1,8 +1,15 @@
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
 import io.vavr.PartialFunction;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.collection.Collections;
+import io.vavr.collection.HashSet;
+import io.vavr.collection.Iterator;
+import io.vavr.collection.List;
+import io.vavr.collection.Map;
+import io.vavr.collection.Set;
+import io.vavr.collection.Tree;
 import io.vavr.control.Option;
 
 import java.util.ArrayList;
@@ -23,7 +30,7 @@ import java.util.function.Supplier;
  * @param <T> the element type of the set
  */
 @SuppressWarnings("unchecked")
-public interface SetMixin<T, SELF extends SetMixin<T, SELF>> extends Set<T> {
+interface SetMixin<T, SELF extends SetMixin<T, SELF>> extends Set<T> {
     long serialVersionUID = 0L;
 
     /**

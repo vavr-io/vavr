@@ -1,7 +1,12 @@
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.collection.Collections;
+import io.vavr.collection.Iterator;
+import io.vavr.collection.Map;
+import io.vavr.collection.Maps;
+import io.vavr.collection.Set;
 import io.vavr.control.Option;
 
 import java.util.Comparator;
