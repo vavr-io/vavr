@@ -1,9 +1,8 @@
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
-import io.vavr.collection.champ.BitmapIndexedNode;
-import io.vavr.collection.champ.ChangeEvent;
-import io.vavr.collection.champ.KeyIterator;
-import io.vavr.collection.champ.Node;
+import io.vavr.collection.Collections;
+import io.vavr.collection.Iterator;
+import io.vavr.collection.Set;
 
 import java.io.Serializable;
 import java.util.ArrayList;

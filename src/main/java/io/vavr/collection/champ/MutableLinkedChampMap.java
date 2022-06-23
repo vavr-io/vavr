@@ -1,15 +1,7 @@
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
 import io.vavr.Tuple2;
-import io.vavr.collection.champ.BitmapIndexedNode;
-import io.vavr.collection.champ.ChangeEvent;
-import io.vavr.collection.champ.FailFastIterator;
-import io.vavr.collection.champ.HeapSequencedIterator;
-import io.vavr.collection.champ.MutableMapEntry;
-import io.vavr.collection.champ.Node;
-import io.vavr.collection.champ.Sequenced;
-import io.vavr.collection.champ.SequencedEntry;
-import io.vavr.collection.champ.WrappedSet;
+import io.vavr.collection.Iterator;
 
 import java.util.Map;
 import java.util.Objects;
@@ -198,7 +190,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return new WrappedSet<>(
+        return new SetFacade<>(
                 () -> entryIterator(false),
                 this::size,
                 this::containsEntry,

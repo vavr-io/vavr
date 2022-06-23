@@ -13,7 +13,7 @@ import java.util.function.Function;
  * @param <F> the original element type
  * @author Werner Randelshofer
  */
-public class MappedIterator<E, F> implements Iterator<E>, io.vavr.collection.Iterator<E> {
+class MappedIterator<E, F> implements Iterator<E>, io.vavr.collection.Iterator<E> {
     private final Iterator<F> i;
 
     private final Function<F, E> mappingFunction;

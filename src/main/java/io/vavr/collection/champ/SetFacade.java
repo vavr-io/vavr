@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * @param <E> the element type of the set
  * @author Werner Randelshofer
  */
-public class WrappedSet<E> extends AbstractSet<E> {
+class SetFacade<E> extends AbstractSet<E> {
     protected final Supplier<Iterator<E>> iteratorFunction;
     protected final IntSupplier sizeFunction;
     protected final Predicate<Object> containsFunction;
@@ -25,23 +25,23 @@ public class WrappedSet<E> extends AbstractSet<E> {
     protected final Predicate<Object> removeFunction;
 
 
-    public WrappedSet(Set<E> backingSet) {
+    public SetFacade(Set<E> backingSet) {
         this(backingSet::iterator, backingSet::size,
                 backingSet::contains, backingSet::clear, backingSet::add, backingSet::remove);
     }
 
-    public WrappedSet(Supplier<Iterator<E>> iteratorFunction,
-                      IntSupplier sizeFunction,
-                      Predicate<Object> containsFunction) {
+    public SetFacade(Supplier<Iterator<E>> iteratorFunction,
+                     IntSupplier sizeFunction,
+                     Predicate<Object> containsFunction) {
         this(iteratorFunction, sizeFunction, containsFunction, null, null, null);
     }
 
-    public WrappedSet(Supplier<Iterator<E>> iteratorFunction,
-                      IntSupplier sizeFunction,
-                      Predicate<Object> containsFunction,
-                      Runnable clearFunction,
-                      Predicate<E> addFunction,
-                      Predicate<Object> removeFunction) {
+    public SetFacade(Supplier<Iterator<E>> iteratorFunction,
+                     IntSupplier sizeFunction,
+                     Predicate<Object> containsFunction,
+                     Runnable clearFunction,
+                     Predicate<E> addFunction,
+                     Predicate<Object> removeFunction) {
         this.iteratorFunction = iteratorFunction;
         this.sizeFunction = sizeFunction;
         this.containsFunction = containsFunction;

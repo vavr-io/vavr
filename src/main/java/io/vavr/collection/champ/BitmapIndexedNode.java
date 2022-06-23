@@ -20,7 +20,7 @@ import static io.vavr.collection.champ.ChampTrie.newHashCollisionNode;
  *
  * @param <K> the key type
  */
-public class BitmapIndexedNode<K> extends Node<K> {
+class BitmapIndexedNode<K> extends Node<K> {
     static final BitmapIndexedNode<?> EMPTY_NODE = newBitmapIndexedNode(null, (0), (0), new Object[]{});
 
     public final Object[] mixed;

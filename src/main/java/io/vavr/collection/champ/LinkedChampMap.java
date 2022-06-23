@@ -1,16 +1,11 @@
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
 import io.vavr.Tuple2;
-import io.vavr.collection.champ.BitmapIndexedNode;
-import io.vavr.collection.champ.BucketSequencedIterator;
-import io.vavr.collection.champ.ChangeEvent;
-import io.vavr.collection.champ.HeapSequencedIterator;
-import io.vavr.collection.champ.MappedIterator;
-import io.vavr.collection.champ.Node;
-import io.vavr.collection.champ.Sequenced;
-import io.vavr.collection.champ.SequencedEntry;
-import io.vavr.collection.champ.UniqueId;
-import io.vavr.collection.champ.WrappedVavrSet;
+import io.vavr.collection.Collections;
+import io.vavr.collection.Iterator;
+import io.vavr.collection.Map;
+import io.vavr.collection.Set;
+import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 
 import java.io.ObjectStreamException;
@@ -332,7 +327,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
 
     @Override
     public Set<K> keySet() {
-        return new WrappedVavrSet<>(this);
+        return new VavrSetFacade<>(this);
     }
 
     @Override

@@ -1,10 +1,8 @@
 package io.vavr.collection.champ;
 
 import io.vavr.collection.Iterator;
-import io.vavr.collection.LinkedChampSet;
 import io.vavr.collection.Map;
 import io.vavr.collection.Set;
-import io.vavr.collection.SetMixin;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -18,7 +16,7 @@ import java.util.function.Supplier;
  *
  * @param <E> the element type of the set
  */
-public class WrappedVavrSet<E> implements SetMixin<E, WrappedVavrSet<E>> {
+class VavrSetFacade<E> implements SetMixin<E, VavrSetFacade<E>> {
     private static final long serialVersionUID = 1L;
     protected final Function<E, Set<E>> addFunction;
     protected final IntFunction<Set<E>> dropRightFunction;
@@ -37,36 +35,36 @@ public class WrappedVavrSet<E> implements SetMixin<E, WrappedVavrSet<E>> {
      *
      * @param map the map
      */
-    public WrappedVavrSet(Map<E, ?> map) {
-        this.addFunction = e -> new WrappedVavrSet<>(map.put(e, null));
+    public VavrSetFacade(Map<E, ?> map) {
+        this.addFunction = e -> new VavrSetFacade<>(map.put(e, null));
         this.foldRightFunction = (u, f) -> map.foldRight(u, (tuple, uu) -> f.apply(tuple._1(), uu));
-        this.dropRightFunction = n -> new WrappedVavrSet<>(map.dropRight(n));
-        this.takeRightFunction = n -> new WrappedVavrSet<>(map.takeRight(n));
+        this.dropRightFunction = n -> new VavrSetFacade<>(map.dropRight(n));
+        this.takeRightFunction = n -> new VavrSetFacade<>(map.takeRight(n));
         this.containsFunction = map::containsKey;
-        this.clearFunction = () -> new WrappedVavrSet<>(map.dropRight(map.length()));
-        this.initFunction = () -> new WrappedVavrSet<>(map.init());
+        this.clearFunction = () -> new VavrSetFacade<>(map.dropRight(map.length()));
+        this.initFunction = () -> new VavrSetFacade<>(map.init());
         this.iteratorFunction = map::keysIterator;
         this.lengthFunction = map::length;
-        this.removeFunction = e -> new WrappedVavrSet<>(map.remove(e));
+        this.removeFunction = e -> new VavrSetFacade<>(map.remove(e));
         this.addAllFunction = i -> {
             Map<E, ?> m = map;
             for (E e : i) {
                 m = m.put(e, null);
             }
-            return new WrappedVavrSet<>(m);
+            return new VavrSetFacade<>(m);
         };
     }
 
-    public WrappedVavrSet(Function<E, Set<E>> addFunction,
-                          IntFunction<Set<E>> dropRightFunction,
-                          IntFunction<Set<E>> takeRightFunction,
-                          Predicate<E> containsFunction,
-                          Function<E, Set<E>> removeFunction,
-                          Function<Iterable<? extends E>, Set<E>> addAllFunction,
-                          Supplier<Set<E>> clearFunction,
-                          Supplier<Set<E>> initFunction,
-                          Supplier<Iterator<E>> iteratorFunction, IntSupplier lengthFunction,
-                          BiFunction<Object, BiFunction<? super E, ? super Object, Object>, Object> foldRightFunction) {
+    public VavrSetFacade(Function<E, Set<E>> addFunction,
+                         IntFunction<Set<E>> dropRightFunction,
+                         IntFunction<Set<E>> takeRightFunction,
+                         Predicate<E> containsFunction,
+                         Function<E, Set<E>> removeFunction,
+                         Function<Iterable<? extends E>, Set<E>> addAllFunction,
+                         Supplier<Set<E>> clearFunction,
+                         Supplier<Set<E>> initFunction,
+                         Supplier<Iterator<E>> iteratorFunction, IntSupplier lengthFunction,
+                         BiFunction<Object, BiFunction<? super E, ? super Object, Object>, Object> foldRightFunction) {
         this.addFunction = addFunction;
         this.dropRightFunction = dropRightFunction;
         this.takeRightFunction = takeRightFunction;

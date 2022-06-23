@@ -21,7 +21,7 @@ import java.util.function.Consumer;
  * passed to this iterator must not change the trie structure that the iterator
  * currently uses.
  */
-public class KeyIterator<K> implements Iterator<K>, io.vavr.collection.Iterator<K> {
+class KeyIterator<K> implements Iterator<K>, io.vavr.collection.Iterator<K> {
 
     private final int[] nodeCursorsAndLengths = new int[Node.MAX_DEPTH * 2];
     int nextValueCursor;

@@ -9,7 +9,7 @@ package io.vavr.collection.champ;
 /**
  * Provides static utility methods for CHAMP tries.
  */
-public class ChampTrie {
+class ChampTrie {
 
     /**
      * Don't let anyone instantiate this class.

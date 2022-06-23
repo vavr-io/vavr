@@ -16,10 +16,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.collection.AbstractSetTest;
+import io.vavr.collection.Collections;
+import io.vavr.collection.Iterator;
+import io.vavr.collection.List;
+import io.vavr.collection.Set;
 import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.DoubleAssert;
 import org.assertj.core.api.IntegerAssert;

@@ -33,10 +33,10 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
-import static java.util.Arrays.asList;
-import static java.util.Comparator.nullsFirst;
 import static io.vavr.API.List;
 import static io.vavr.API.Tuple;
+import static java.util.Arrays.asList;
+import static java.util.Comparator.nullsFirst;
 
 public class TreeMapTest extends AbstractSortedMapTest {
 
@@ -46,7 +46,7 @@ public class TreeMapTest extends AbstractSortedMapTest {
     }
 
     @Override
-    <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
+    protected <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
         return new java.util.TreeMap<>();
     }
 

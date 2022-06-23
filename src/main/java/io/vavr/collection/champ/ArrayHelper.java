@@ -14,7 +14,7 @@ import java.util.function.BiPredicate;
 /**
  * Provides static helper methods for arrays.
  */
-public class ArrayHelper {
+class ArrayHelper {
     /**
      * Don't let anyone instantiate this class.
      */

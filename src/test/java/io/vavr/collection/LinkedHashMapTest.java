@@ -21,7 +21,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
     }
 
     @Override
-    <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
+    protected <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
         return new java.util.LinkedHashMap<>();
     }
 

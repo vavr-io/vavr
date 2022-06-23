@@ -12,7 +12,7 @@ import java.util.function.Supplier;
 /**
  * Static utility-methods for creating a list of map entries.
  */
-public class MapEntries {
+class MapEntries {
     /**
      * Don't let anyone instantiate this class.
      */

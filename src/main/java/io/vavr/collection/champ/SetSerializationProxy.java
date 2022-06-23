@@ -1,4 +1,4 @@
-package io.vavr.collection;
+package io.vavr.collection.champ;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -43,7 +43,7 @@ import java.io.Serializable;
  *
  * @param <E> the element type
  */
-public abstract class SetSerializationProxy<E> implements Serializable {
+abstract class SetSerializationProxy<E> implements Serializable {
     private final static long serialVersionUID = 0L;
     private final transient java.util.Set<E> serialized;
     protected transient java.util.List<E> deserialized;
