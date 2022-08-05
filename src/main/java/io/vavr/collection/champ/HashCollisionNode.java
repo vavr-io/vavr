@@ -11,7 +11,7 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
 
-import static io.vavr.collection.champ.ChampTrie.newHashCollisionNode;
+import static io.vavr.collection.champ.NodeFactory.newHashCollisionNode;
 
 
 /**
@@ -128,7 +128,7 @@ class HashCollisionNode<K> extends Node<K> {
                     // This node will be a) either be the new root
                     // returned, or b) unwrapped and inlined.
                     final Object[] theOtherEntry = {getKey(idx ^ 1)};
-                    return ChampTrie.newBitmapIndexedNode(mutator, 0, bitpos(mask(keyHash, 0)), theOtherEntry);
+                    return NodeFactory.newBitmapIndexedNode(mutator, 0, bitpos(mask(keyHash, 0)), theOtherEntry);
                 }
                 // copy keys and vals and remove entryLength elements at position idx
                 final Object[] entriesNew = ArrayHelper.copyComponentRemove(this.keys, idx, 1);

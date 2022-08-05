@@ -13,9 +13,6 @@ import java.util.function.ToIntFunction;
 
 /**
  * Represents a node in a CHAMP trie.
- * <p>
- * A node can store entries which have a key, a value (optionally) and a
- * sequence number (optionally).
  *
  * @param <K> the key type
  */
@@ -86,7 +83,7 @@ abstract class Node<K> {
             Object[] entries = new Object[2];
             entries[0] = k0;
             entries[1] = k1;
-            return ChampTrie.newHashCollisionNode(mutator, keyHash0, entries);
+            return NodeFactory.newHashCollisionNode(mutator, keyHash0, entries);
         }
 
         final int mask0 = mask(keyHash0, shift);
@@ -100,11 +97,11 @@ abstract class Node<K> {
             if (mask0 < mask1) {
                 entries[0] = k0;
                 entries[1] = k1;
-                return ChampTrie.newBitmapIndexedNode(mutator, (0), dataMap, entries);
+                return NodeFactory.newBitmapIndexedNode(mutator, (0), dataMap, entries);
             } else {
                 entries[0] = k1;
                 entries[1] = k0;
-                return ChampTrie.newBitmapIndexedNode(mutator, (0), dataMap, entries);
+                return NodeFactory.newBitmapIndexedNode(mutator, (0), dataMap, entries);
             }
         } else {
             final Node<K> node = mergeTwoDataEntriesIntoNode(mutator,
@@ -114,7 +111,7 @@ abstract class Node<K> {
             // values fit on next level
 
             final int nodeMap = bitpos(mask0);
-            return ChampTrie.newBitmapIndexedNode(mutator, nodeMap, (0), new Object[]{node});
+            return NodeFactory.newBitmapIndexedNode(mutator, nodeMap, (0), new Object[]{node});
         }
     }
 

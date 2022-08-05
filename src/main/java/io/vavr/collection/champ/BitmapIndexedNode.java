@@ -10,8 +10,8 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
 
-import static io.vavr.collection.champ.ChampTrie.newBitmapIndexedNode;
-import static io.vavr.collection.champ.ChampTrie.newHashCollisionNode;
+import static io.vavr.collection.champ.NodeFactory.newBitmapIndexedNode;
+import static io.vavr.collection.champ.NodeFactory.newHashCollisionNode;
 
 
 /**
