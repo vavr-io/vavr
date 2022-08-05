@@ -306,13 +306,11 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
                                                        boolean moveToFirst) {
         final int keyHash = Objects.hashCode(key);
         final ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
-        final BitmapIndexedNode<SequencedEntry<K, V>> newRootNode =
-                root.update(getOrCreateMutator(),
-                        new SequencedEntry<>(key, val, first), keyHash, 0, details,
-                        moveToFirst ? getUpdateAndMoveToFirstFunction() : getUpdateFunction(),
-                        getEqualsFunction(), getHashFunction());
+        root = root.update(getOrCreateMutator(),
+                new SequencedEntry<>(key, val, first), keyHash, 0, details,
+                moveToFirst ? getUpdateAndMoveToFirstFunction() : getUpdateFunction(),
+                getEqualsFunction(), getHashFunction());
         if (details.isModified()) {
-            root = newRootNode;
             if (details.isUpdated()) {
                 first = details.getOldValue().getSequenceNumber() == first ? first : first - 1;
                 last = details.getOldValue().getSequenceNumber() == last ? last - 1 : last;
@@ -335,14 +333,11 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     ChangeEvent<SequencedEntry<K, V>> putLast(
             final K key, final V val, boolean moveToLast) {
         final ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
-        final BitmapIndexedNode<SequencedEntry<K, V>> newRoot =
-                root.update(getOrCreateMutator(),
-                        new SequencedEntry<>(key, val, last), Objects.hashCode(key), 0, details,
-                        moveToLast ? getUpdateAndMoveToLastFunction() : getUpdateFunction(),
-                        getEqualsFunction(), getHashFunction());
-
+        root = root.update(getOrCreateMutator(),
+                new SequencedEntry<>(key, val, last), Objects.hashCode(key), 0, details,
+                moveToLast ? getUpdateAndMoveToLastFunction() : getUpdateFunction(),
+                getEqualsFunction(), getHashFunction());
         if (details.isModified()) {
-            root = newRoot;
             if (details.isUpdated()) {
                 first = details.getOldValue().getSequenceNumber() == first - 1 ? first - 1 : first;
                 last = details.getOldValue().getSequenceNumber() == last ? last : last + 1;
@@ -370,12 +365,10 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     ChangeEvent<SequencedEntry<K, V>> removeAndGiveDetails(final K key) {
         final int keyHash = Objects.hashCode(key);
         final ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
-        final BitmapIndexedNode<SequencedEntry<K, V>> newRootNode =
-                root.remove(getOrCreateMutator(),
-                        new SequencedEntry<>(key), keyHash, 0, details,
-                        getEqualsFunction());
+        root = root.remove(getOrCreateMutator(),
+                new SequencedEntry<>(key), keyHash, 0, details,
+                getEqualsFunction());
         if (details.isModified()) {
-            root = newRootNode;
             size = size - 1;
             modCount++;
             int seq = details.getOldValue().getSequenceNumber();
