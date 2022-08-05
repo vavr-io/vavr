@@ -1,15 +1,15 @@
 package io.vavr.collection.champ;
 
- interface Sequenced {
-     /**
-      * We use {@link Integer#MIN_VALUE} to detect overflows in the sequence number.
-      * <p>
-      * {@link Integer#MIN_VALUE} is the only integer number which can not
-      * be negated.
-      * <p>
-      * We use negated numbers to iterate backwards through the sequence.
-      */
-     int NO_SEQUENCE_NUMBER = Integer.MIN_VALUE;
+interface Sequenced {
+    /**
+     * We use {@link Integer#MIN_VALUE} to detect overflows in the sequence number.
+     * <p>
+     * {@link Integer#MIN_VALUE} is the only integer number which can not
+     * be negated.
+     * <p>
+     * We use negated numbers to iterate backwards through the sequence.
+     */
+    int NO_SEQUENCE_NUMBER = Integer.MIN_VALUE;
 
     int getSequenceNumber();
 
@@ -30,7 +30,8 @@ package io.vavr.collection.champ;
      */
     static boolean mustRenumber(int size, int first, int last) {
         long extent = (long) last - first;
-        return last > Integer.MAX_VALUE - 2
+        return size == 0 && (first != -1 || last != 0)
+                || last > Integer.MAX_VALUE - 2
                 || first < Integer.MIN_VALUE + 2
                 || extent > 16 && extent > size * 4L;
     }
