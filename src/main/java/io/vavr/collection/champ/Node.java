@@ -76,13 +76,6 @@ abstract class Node<K> {
         return (keyHash >>> shift) & BIT_PARTITION_MASK;
     }
 
-    public abstract Node<K> updateAll(Node<K> that, final int shift,
-                                      ChangeEvent<K> bulkChange, UniqueId mutator,
-                                      BiFunction<K, K, K> updateFunction,
-                                      BiFunction<K, K, K> inverseUpdateFunction,
-                                      BiPredicate<K, K> equalsFunction,
-                                      ToIntFunction<K> hashFunction);
-
     static <K> Node<K> mergeTwoDataEntriesIntoNode(UniqueId mutator,
                                                    final K k0, final int keyHash0,
                                                    final K k1, final int keyHash1,
