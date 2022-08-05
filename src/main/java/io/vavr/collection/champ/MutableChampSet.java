@@ -195,31 +195,6 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public boolean addAll(Iterable<? extends E> c) {
-        if (c == this) {
-            return false;
-        }
-        if (c instanceof ChampSet<?>) {
-            c = (Iterable<? extends E>) ((ChampSet<?>) c).toMutable();
-        }
-        if (c instanceof MutableChampSet<?>) {
-            MutableChampSet<E> that = (MutableChampSet<E>) ((MutableChampSet<?>) c);
-            ChangeEvent<E> details = new ChangeEvent<>();
-            BitmapIndexedNode<E> newRoot = root.updateAll(that.root, 0, details, getOrCreateMutator(),
-                    (oldk, newk) -> oldk, (oldk, newk) -> newk, Objects::equals, Objects::hashCode);
-            if (details.modified) {
-                root = newRoot;
-                if (!details.isUpdated()) {
-                    size += that.size - details.numInBothCollections;
-                }
-                modCount++;
-            }
-            return details.modified;
-        }
-        return super.addAll(c);
-    }
-
     public <U> U transform(Function<? super Set<Long>, ? extends U> f) {
         // XXX CodingConventions.shouldHaveTransformMethodWhenIterable
         //     wants us to have a transform() method although this class
