@@ -7,14 +7,14 @@ package io.vavr.collection.champ;
 
 
 /**
- * Provides static utility methods for CHAMP tries.
+ * Provides factory methods for {@link Node}s.
  */
-class ChampTrie {
+class NodeFactory {
 
     /**
      * Don't let anyone instantiate this class.
      */
-    private ChampTrie() {
+    private NodeFactory() {
     }
 
     static <K> BitmapIndexedNode<K> newBitmapIndexedNode(
