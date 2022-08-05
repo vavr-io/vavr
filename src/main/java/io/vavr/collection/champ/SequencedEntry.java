@@ -8,17 +8,17 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
- class SequencedEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V>
-         implements Sequenced {
-     private final static long serialVersionUID = 0L;
-     private final int sequenceNumber;
+class SequencedEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V>
+        implements Sequenced {
+    private final static long serialVersionUID = 0L;
+    private final int sequenceNumber;
 
-     public SequencedEntry(K key) {
-         this(key, null, NO_SEQUENCE_NUMBER);
-     }
+    public SequencedEntry(K key) {
+        this(key, null, NO_SEQUENCE_NUMBER);
+    }
 
-     public SequencedEntry(K key, V value) {
-         this(key, value, NO_SEQUENCE_NUMBER);
+    public SequencedEntry(K key, V value) {
+        this(key, value, NO_SEQUENCE_NUMBER);
     }
 
     public SequencedEntry(K key, V value, int sequenceNumber) {
@@ -44,6 +44,9 @@ import java.util.function.ToIntFunction;
     public static <K, V> BitmapIndexedNode<SequencedEntry<K, V>> renumber(int size, BitmapIndexedNode<SequencedEntry<K, V>> root, UniqueId mutator,
                                                                           ToIntFunction<SequencedEntry<K, V>> hashFunction,
                                                                           BiPredicate<SequencedEntry<K, V>, SequencedEntry<K, V>> equalsFunction) {
+        if (size == 0) {
+            return root;
+        }
         BitmapIndexedNode<SequencedEntry<K, V>> newRoot = root;
         ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
         int seq = 0;

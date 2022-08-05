@@ -376,9 +376,6 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
     }
 
     private LinkedChampMap<K, V> renumber(BitmapIndexedNode<SequencedEntry<K, V>> root, int size, int first, int last) {
-        if (size == 0) {
-            return empty();
-        }
         if (Sequenced.mustRenumber(size, first, last)) {
             root = SequencedEntry.renumber(size, root, new UniqueId(), Objects::hashCode, Objects::equals);
             return new LinkedChampMap<>(root, size, -1, size);

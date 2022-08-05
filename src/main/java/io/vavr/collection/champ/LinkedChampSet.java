@@ -141,9 +141,6 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
      */
 
     private LinkedChampSet<E> renumber(BitmapIndexedNode<SequencedElement<E>> root, int size, int first, int last) {
-        if (size == 0) {
-            return of();
-        }
         if (Sequenced.mustRenumber(size, first, last)) {
             return new LinkedChampSet<>(
                     SequencedElement.renumber(size, root, new UniqueId(), Objects::hashCode, Objects::equals),
