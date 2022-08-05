@@ -183,7 +183,7 @@ public class MutableLinkedChampSet<E> extends AbstractChampSet<E, SequencedEleme
         root = BitmapIndexedNode.emptyNode();
         size = 0;
         modCount++;
-        first = 0;
+        first = -1;
         last = 0;
     }
 
