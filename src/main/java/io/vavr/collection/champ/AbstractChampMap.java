@@ -16,9 +16,30 @@ import java.util.Objects;
 abstract class AbstractChampMap<K, V, X> extends AbstractMap<K, V>
         implements Serializable, Cloneable {
     private final static long serialVersionUID = 0L;
+
+    /**
+     * The current mutator id of this map.
+     * <p>
+     * All nodes that have the same non-null mutator id, are exclusively owned
+     * by this map, and therefore can be mutated without affecting other map.
+     * <p>
+     * If this mutator id is null, then this map does not own any nodes.
+     */
     protected UniqueId mutator;
+
+    /**
+     * The root of this CHAMP trie.
+     */
     protected BitmapIndexedNode<X> root;
+
+    /**
+     * The number of entries in this map.
+     */
     protected int size;
+
+    /**
+     * The number of times this map has been structurally modified.
+     */
     protected int modCount;
 
     protected UniqueId getOrCreateMutator() {
