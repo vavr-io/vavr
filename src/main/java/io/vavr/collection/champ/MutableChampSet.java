@@ -105,15 +105,12 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
     @Override
     public boolean add(final E e) {
         ChangeEvent<E> details = new ChangeEvent<>();
-        BitmapIndexedNode<E> newRoot = root.update(getOrCreateMutator(),
+        root = root.update(getOrCreateMutator(),
                 e, Objects.hashCode(e), 0, details,
                 (oldk, newk) -> oldk,
                 Objects::equals, Objects::hashCode);
         if (details.modified) {
-            root = newRoot;
-            if (!details.isUpdated()) {
-                size++;
-            }
+            size++;
             modCount++;
         }
         return details.modified;
@@ -157,11 +154,10 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
     @SuppressWarnings("unchecked")
     public boolean remove(Object o) {
         ChangeEvent<E> details = new ChangeEvent<>();
-        BitmapIndexedNode<E> newRoot = root.remove(
+        root = root.remove(
                 getOrCreateMutator(), (E) o, Objects.hashCode(o), 0, details,
                 Objects::equals);
         if (details.modified) {
-            root = newRoot;
             size--;
             modCount++;
         }

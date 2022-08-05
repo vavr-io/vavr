@@ -197,19 +197,13 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
     ChangeEvent<SimpleImmutableEntry<K, V>> putAndGiveDetails(K key, V val) {
         int keyHash = Objects.hashCode(key);
         ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChangeEvent<>();
-        BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root
-                .update(getOrCreateMutator(), new AbstractMap.SimpleImmutableEntry<>(key, val), keyHash, 0, details,
-                        getUpdateFunction(),
-                        getEqualsFunction(),
-                        getHashFunction());
-        if (details.isModified()) {
-            if (details.isUpdated()) {
-                root = newRootNode;
-            } else {
-                root = newRootNode;
-                size += 1;
-                modCount++;
-            }
+        root = root.update(getOrCreateMutator(), new AbstractMap.SimpleImmutableEntry<>(key, val), keyHash, 0, details,
+                getUpdateFunction(),
+                getEqualsFunction(),
+                getHashFunction());
+        if (details.isModified() && !details.isUpdated()) {
+            size += 1;
+            modCount++;
         }
         return details;
     }
@@ -247,11 +241,9 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
     ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> removeAndGiveDetails(final K key) {
         final int keyHash = Objects.hashCode(key);
         final ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChangeEvent<>();
-        final BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode =
-                root.remove(getOrCreateMutator(), new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
-                        getEqualsFunction());
+        root = root.remove(getOrCreateMutator(), new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
+                getEqualsFunction());
         if (details.isModified()) {
-            root = newRootNode;
             size = size - 1;
             modCount++;
         }
