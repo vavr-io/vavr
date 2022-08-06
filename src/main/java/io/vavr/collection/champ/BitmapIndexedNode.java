@@ -214,7 +214,7 @@ class BitmapIndexedNode<K> extends Node<K> {
             return this;
         }
         final K currentVal = getKey(dataIndex);
-        details.setValueRemoved(currentVal);
+        details.setRemoved(currentVal);
         if (dataArity() == 2 && !hasNodes()) {
             final int newDataMap =
                     (shift == 0) ? (dataMap ^ bitpos) : bitpos(mask(keyHash, 0));
@@ -263,14 +263,14 @@ class BitmapIndexedNode<K> extends Node<K> {
                     details.found(oldKey);
                     return this;
                 }
-                details.setValueUpdated(oldKey);
+                details.setUpdated(oldKey);
                 return copyAndSetValue(mutator, dataIndex, updatedKey);
             }
             final Node<K> updatedSubNode =
                     mergeTwoDataEntriesIntoNode(mutator,
                             oldKey, hashFunction.applyAsInt(oldKey),
                             key, keyHash, shift + BIT_PARTITION_SIZE);
-            details.setValueAdded();
+            details.setAdded();
             return copyAndMigrateFromDataToNode(mutator, bitpos, updatedSubNode);
         } else if ((nodeMap & bitpos) != 0) {
             Node<K> subNode = nodeAt(bitpos);
@@ -278,7 +278,7 @@ class BitmapIndexedNode<K> extends Node<K> {
                     .update(mutator, key, keyHash, shift + BIT_PARTITION_SIZE, details, updateFunction, equalsFunction, hashFunction);
             return subNode == updatedSubNode ? this : copyAndSetNode(mutator, bitpos, updatedSubNode);
         }
-        details.setValueAdded();
+        details.setAdded();
         return copyAndInsertValue(mutator, bitpos, key);
     }
 
