@@ -362,7 +362,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     public V remove(Object o) {
         @SuppressWarnings("unchecked") final K key = (K) o;
         ChangeEvent<SequencedEntry<K, V>> details = removeAndGiveDetails(key);
-        if (details.modified) {
+        if (details.isModified()) {
             return details.getOldValue().getValue();
         }
         return null;

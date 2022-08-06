@@ -239,7 +239,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details =
                     t.putAndGiveDetails(entry.getKey(), entry.getValue());
-            modified |= details.modified;
+            modified |= details.isModified();
         }
         return modified ? t.toImmutable() : this;
     }
@@ -250,7 +250,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details =
                     t.putAndGiveDetails(entry._1(), entry._2());
-            modified |= details.modified;
+            modified |= details.isModified();
         }
         return modified ? t.toImmutable() : this;
     }
@@ -277,7 +277,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
         boolean modified = false;
         for (K key : keys) {
             ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = t.removeAndGiveDetails(key);
-            modified |= details.modified;
+            modified |= details.isModified();
         }
         return modified ? t.toImmutable() : this;
     }

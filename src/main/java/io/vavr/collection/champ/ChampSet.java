@@ -100,9 +100,9 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E, Cha
     @Override
     public ChampSet<E> add(E key) {
         int keyHash = Objects.hashCode(key);
-        ChangeEvent<E> changeEvent = new ChangeEvent<>();
-        BitmapIndexedNode<E> newRootNode = update(null, key, keyHash, 0, changeEvent, getUpdateFunction(), getEqualsFunction(), getHashFunction());
-        if (changeEvent.modified) {
+        ChangeEvent<E> details = new ChangeEvent<>();
+        BitmapIndexedNode<E> newRootNode = update(null, key, keyHash, 0, details, getUpdateFunction(), getEqualsFunction(), getHashFunction());
+        if (details.isModified()) {
             return new ChampSet<>(newRootNode, size + 1);
         }
         return this;
@@ -155,9 +155,9 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E, Cha
     @Override
     public Set<E> remove(E key) {
         int keyHash = Objects.hashCode(key);
-        ChangeEvent<E> changeEvent = new ChangeEvent<>();
-        BitmapIndexedNode<E> newRootNode = remove(null, key, keyHash, 0, changeEvent, getEqualsFunction());
-        if (changeEvent.modified) {
+        ChangeEvent<E> details = new ChangeEvent<>();
+        BitmapIndexedNode<E> newRootNode = remove(null, key, keyHash, 0, details, getEqualsFunction());
+        if (details.isModified()) {
             return new ChampSet<>(newRootNode, size - 1);
         }
         return this;

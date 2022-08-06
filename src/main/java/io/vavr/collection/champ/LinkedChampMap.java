@@ -192,14 +192,14 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
                 keyHash, 0, details,
                 moveToFirst ? getUpdateAndMoveToFirstFunction() : getUpdateFunction(),
                 getEqualsFunction(), getHashFunction());
-        if (details.updated) {
+        if (details.isUpdated()) {
             return moveToFirst
                     ? renumber(newRootNode, size,
                     details.getOldValue().getSequenceNumber() == first ? first : first - 1,
                     details.getOldValue().getSequenceNumber() == last ? last - 1 : last)
                     : new LinkedChampMap<>(newRootNode, size, first - 1, last);
         }
-        return details.modified ? renumber(newRootNode, size + 1, first - 1, last) : this;
+        return details.isModified() ? renumber(newRootNode, size + 1, first - 1, last) : this;
     }
 
     private LinkedChampMap<K, V> copyPutLast(K key, V value) {
@@ -214,14 +214,14 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
                 keyHash, 0, details,
                 moveToLast ? getUpdateAndMoveToLastFunction() : getUpdateFunction(),
                 getEqualsFunction(), getHashFunction());
-        if (details.updated) {
+        if (details.isUpdated()) {
             return moveToLast
                     ? renumber(newRootNode, size,
                     details.getOldValue().getSequenceNumber() == first ? first + 1 : first,
                     details.getOldValue().getSequenceNumber() == last ? last : last + 1)
                     : new LinkedChampMap<>(newRootNode, size, first, last + 1);
         }
-        return details.modified ? renumber(newRootNode, size + 1, first, last + 1) : this;
+        return details.isModified() ? renumber(newRootNode, size + 1, first, last + 1) : this;
     }
 
     private LinkedChampMap<K, V> copyRemove(K key, int newFirst, int newLast) {
@@ -341,7 +341,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         boolean modified = false;
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             ChangeEvent<SequencedEntry<K, V>> details = t.putLast(entry.getKey(), entry.getValue(), false);
-            modified |= details.modified;
+            modified |= details.isModified();
         }
         return modified ? t.toImmutable() : this;
     }
@@ -351,7 +351,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         boolean modified = false;
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             ChangeEvent<SequencedEntry<K, V>> details = t.putLast(entry._1, entry._2, false);
-            modified |= details.modified;
+            modified |= details.isModified();
         }
         return modified ? t.toImmutable() : this;
 
@@ -371,7 +371,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         boolean modified = false;
         for (K key : c) {
             ChangeEvent<SequencedEntry<K, V>> details = t.removeAndGiveDetails(key);
-            modified |= details.modified;
+            modified |= details.isModified();
         }
         return modified ? t.toImmutable() : this;
     }
@@ -395,7 +395,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
                 Objects.hashCode(currentElement._1), 0, detailsCurrent,
                 (a, b) -> Objects.equals(a.getKey(), b.getKey())
                         && Objects.equals(a.getValue(), b.getValue()));
-        if (!detailsCurrent.modified) {
+        if (!detailsCurrent.isModified()) {
             return this;
         }
         int seq = detailsCurrent.getOldValue().getSequenceNumber();
@@ -404,7 +404,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
                 new SequencedEntry<>(newElement._1, newElement._2, seq),
                 Objects.hashCode(newElement._1), 0, detailsNew,
                 getForceUpdateFunction(), getEqualsFunction(), getHashFunction());
-        if (detailsNew.updated) {
+        if (detailsNew.isUpdated()) {
             return renumber(newRootNode, size - 1, first, last);
         } else {
             return new LinkedChampMap<>(newRootNode, size, first, last);

@@ -171,14 +171,14 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
                 new SequencedElement<>(key, last), Objects.hashCode(key), 0, details,
                 moveToLast ? getUpdateAndMoveToLastFunction() : getUpdateFunction(),
                 Objects::equals, Objects::hashCode);
-        if (details.updated) {
+        if (details.isUpdated()) {
             return moveToLast
                     ? renumber(root, size,
                     details.getOldValue().getSequenceNumber() == first ? first + 1 : first,
                     details.getOldValue().getSequenceNumber() == last ? last : last + 1)
                     : new LinkedChampSet<>(root, size, first, last);
         }
-        return details.modified ? renumber(root, size + 1, first, last + 1) : this;
+        return details.isModified() ? renumber(root, size + 1, first, last + 1) : this;
     }
 
     @Override
@@ -258,7 +258,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
         final BitmapIndexedNode<SequencedElement<E>> newRootNode = remove(null,
                 new SequencedElement<>(key),
                 keyHash, 0, details, Objects::equals);
-        if (details.modified) {
+        if (details.isModified()) {
             int seq = details.getOldValue().getSequenceNumber();
             if (seq == newFirst) {
                 newFirst++;
@@ -379,7 +379,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
         BitmapIndexedNode<SequencedElement<E>> newRootNode = remove(null,
                 new SequencedElement<>(currentElement),
                 Objects.hashCode(currentElement), 0, detailsCurrent, Objects::equals);
-        if (!detailsCurrent.modified) {
+        if (!detailsCurrent.isModified()) {
             return this;
         }
         int seq = detailsCurrent.getOldValue().getSequenceNumber();
@@ -388,7 +388,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
                 new SequencedElement<>(newElement, seq), Objects.hashCode(newElement), 0, detailsNew,
                 getForceUpdateFunction(),
                 Objects::equals, Objects::hashCode);
-        if (detailsNew.updated) {
+        if (detailsNew.isUpdated()) {
             return renumber(newRootNode, size - 1, first, last);
         } else {
             return new LinkedChampSet<>(newRootNode, size, first, last);

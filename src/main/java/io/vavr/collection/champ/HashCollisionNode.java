@@ -119,7 +119,7 @@ class HashCollisionNode<K> extends Node<K> {
         for (int idx = 0, i = 0; i < keys.length; i += 1, idx++) {
             if (equalsFunction.test((K) keys[i], key)) {
                 @SuppressWarnings("unchecked") final K currentVal = (K) keys[i];
-                details.setValueRemoved(currentVal);
+                details.setRemoved(currentVal);
 
                 if (keys.length == 1) {
                     return BitmapIndexedNode.emptyNode();
@@ -158,7 +158,7 @@ class HashCollisionNode<K> extends Node<K> {
                     details.found(key);
                     return this;
                 }
-                details.setValueUpdated(oldKey);
+                details.setUpdated(oldKey);
                 if (isAllowedToEdit(mutator)) {
                     this.keys[i] = updatedKey;
                     return this;
@@ -171,7 +171,7 @@ class HashCollisionNode<K> extends Node<K> {
         // copy entries and add 1 more at the end
         final Object[] entriesNew = ArrayHelper.copyComponentAdd(this.keys, this.keys.length, 1);
         entriesNew[this.keys.length] = key;
-        details.setValueAdded();
+        details.setAdded();
         if (isAllowedToEdit(mutator)) {
             this.keys = entriesNew;
             return this;

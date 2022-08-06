@@ -5,17 +5,29 @@
 
 package io.vavr.collection.champ;
 
- class ChangeEvent<V> {
+/**
+ * This class is used to report a change (or no changes) in a CHAMP trie.
+ *
+ * @param <V> the value type of elements stored in the CHAMP trie. Only
+ *            elements that are 'map entries' do have a value type. If a CHAMP
+ *            trie is used to store 'elements' of a set, then the value
+ *            type should be the {@link Void} type.
+ */
+class ChangeEvent<V> {
+    enum Type {
+        UNCHANGED,
+        ADDED,
+        REMOVED,
+        UPDATED
+    }
 
-     public boolean modified;
-     private V oldValue;
-     public boolean updated;
-     public int numInBothCollections;
+    private Type type = Type.UNCHANGED;
+    private V oldValue;
 
-     public ChangeEvent() {
-     }
+    public ChangeEvent() {
+    }
 
-     void found(V oldValue) {
+    void found(V oldValue) {
         this.oldValue = oldValue;
     }
 
@@ -23,29 +35,44 @@ package io.vavr.collection.champ;
         return oldValue;
     }
 
-    public boolean isUpdated() {
-        return updated;
+    /**
+     * Call this method to indicate that the value of an element has changed.
+     *
+     * @param oldValue the old value of the element
+     */
+    void setUpdated(V oldValue) {
+        this.oldValue = oldValue;
+        this.type = Type.UPDATED;
     }
 
     /**
-     * Returns true if a value has been inserted, replaced or removed.
+     * Call this method to indicate that an element has been removed.
+     *
+     * @param oldValue the value of the removed element
      */
-    public boolean isModified() {
-        return modified;
-    }
-
-    void setValueUpdated(V oldValue) {
+    void setRemoved(V oldValue) {
         this.oldValue = oldValue;
-        this.updated = true;
-        this.modified = true;
+        this.type = Type.REMOVED;
     }
 
-    void setValueRemoved(V oldValue) {
-        this.oldValue = oldValue;
-        this.modified = true;
+    /**
+     * Call this method to indicate that an element has been added.
+     */
+    void setAdded() {
+        this.type = Type.ADDED;
     }
 
-    void setValueAdded() {
-        this.modified = true;
+    /**
+     * Returns true if the CHAMP trie has been modified.
+     */
+    boolean isModified() {
+        return type != Type.UNCHANGED;
+    }
+
+    /**
+     * Returns true if the value of an element has been updated.
+     */
+    boolean isUpdated() {
+        return type == Type.UPDATED;
     }
 }
