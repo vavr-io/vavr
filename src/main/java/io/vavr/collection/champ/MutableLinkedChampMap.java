@@ -178,7 +178,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     @SuppressWarnings("unchecked")
     public boolean containsKey(final Object o) {
         K key = (K) o;
-        return Node.NO_VALUE != root.findByKey(new SequencedEntry<>(key),
+        return Node.NO_DATA != root.findByData(new SequencedEntry<>(key),
                 Objects.hashCode(key), 0,
                 getEqualsFunction());
     }
@@ -219,7 +219,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     @Override
     @SuppressWarnings("unchecked")
     public V get(final Object o) {
-        Object result = root.findByKey(
+        Object result = root.findByData(
                 new SequencedEntry<>((K) o),
                 Objects.hashCode(o), 0, getEqualsFunction());
         return (result instanceof SequencedEntry<?, ?>) ? ((SequencedEntry<K, V>) result).getValue() : null;
@@ -396,7 +396,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
      * 4 times the size of the set.
      */
     private void renumber() {
-        if (SequencedKey.mustRenumber(size, first, last)) {
+        if (SequencedData.mustRenumber(size, first, last)) {
             root = SequencedEntry.renumber(size, root, getOrCreateMutator(),
                     getHashFunction(), getEqualsFunction());
             last = size;

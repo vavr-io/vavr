@@ -127,7 +127,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E, Cha
 
     @Override
     public boolean contains(E o) {
-        return findByKey(o, Objects.hashCode(o), 0, getEqualsFunction()) != Node.NO_VALUE;
+        return findByData(o, Objects.hashCode(o), 0, getEqualsFunction()) != Node.NO_DATA;
     }
 
     private BiPredicate<E, E> getEqualsFunction() {

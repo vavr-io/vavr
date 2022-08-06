@@ -10,7 +10,7 @@ import java.util.function.ToIntFunction;
  * <p>
  * {@code hashCode} and {@code equals} are based on the key only.
  */
-class SequencedElement<E> implements SequencedKey {
+class SequencedElement<E> implements SequencedData {
 
     private final E element;
     private final int sequenceNumber;

@@ -1,16 +1,29 @@
 package io.vavr.collection.champ;
 
-interface SequencedKey {
+/**
+ * Represents data in a CHAMP trie, that has a sequence number.
+ * <p>
+ * The sequence number is unique within the CHAMP trie.
+ * <p>
+ */
+interface SequencedData {
     /**
      * We use {@link Integer#MIN_VALUE} to detect overflows in the sequence number.
      * <p>
      * {@link Integer#MIN_VALUE} is the only integer number which can not
      * be negated.
      * <p>
-     * We use negated numbers to iterate backwards through the sequence.
+     * Therefore, we can not use {@link Integer#MIN_VALUE} as a sequence number
+     * anyway.
      */
     int NO_SEQUENCE_NUMBER = Integer.MIN_VALUE;
 
+    /**
+     * Gets the sequence number of the data.
+     *
+     * @return sequence number in the range from {@link Integer#MIN_VALUE}
+     * (exclusive) to {@link Integer#MAX_VALUE} (inclusive).
+     */
     int getSequenceNumber();
 
     /**

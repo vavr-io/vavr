@@ -17,9 +17,9 @@ import static io.vavr.collection.champ.NodeFactory.newHashCollisionNode;
 /**
  * Represents a hash-collision node in a CHAMP trie.
  *
- * @param <K> the key type
+ * @param <D> the data type
  */
-class HashCollisionNode<K> extends Node<K> {
+class HashCollisionNode<D> extends Node<D> {
     private final int hash;
     Object[] keys;
 
@@ -57,7 +57,7 @@ class HashCollisionNode<K> extends Node<K> {
         for (final Object key : keys) {
             for (int j = 0; j < remainingLength; j += 1) {
                 final Object todoKey = thatEntriesCloned[j];
-                if (Objects.equals((K) todoKey, (K) key)) {
+                if (Objects.equals((D) todoKey, (D) key)) {
                     // We have found an equal entry. We do not need to compare
                     // this entry again. So we replace it with the last entry
                     // from the array and reduce the remaining length.
@@ -75,23 +75,23 @@ class HashCollisionNode<K> extends Node<K> {
 
     @SuppressWarnings("unchecked")
     @Override
-    Object findByKey(final K key, final int keyHash, final int shift, BiPredicate<K, K> equalsFunction) {
+    Object findByData(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction) {
         for (Object entry : keys) {
-            if (equalsFunction.test(key, (K) entry)) {
+            if (equalsFunction.test(data, (D) entry)) {
                 return entry;
             }
         }
-        return NO_VALUE;
+        return NO_DATA;
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    K getKey(final int index) {
-        return (K) keys[index];
+    D getData(final int index) {
+        return (D) keys[index];
     }
 
     @Override
-    Node<K> getNode(int index) {
+    Node<D> getNode(int index) {
         throw new IllegalStateException("Is leaf node.");
     }
 
@@ -114,11 +114,11 @@ class HashCollisionNode<K> extends Node<K> {
 
     @SuppressWarnings("unchecked")
     @Override
-    Node<K> remove(final UniqueId mutator, final K key,
-                   final int keyHash, final int shift, final ChangeEvent<K> details, BiPredicate<K, K> equalsFunction) {
+    Node<D> remove(final UniqueId mutator, final D data,
+                   final int dataHash, final int shift, final ChangeEvent<D> details, BiPredicate<D, D> equalsFunction) {
         for (int idx = 0, i = 0; i < keys.length; i += 1, idx++) {
-            if (equalsFunction.test((K) keys[i], key)) {
-                @SuppressWarnings("unchecked") final K currentVal = (K) keys[i];
+            if (equalsFunction.test((D) keys[i], data)) {
+                @SuppressWarnings("unchecked") final D currentVal = (D) keys[i];
                 details.setRemoved(currentVal);
 
                 if (keys.length == 1) {
@@ -127,8 +127,8 @@ class HashCollisionNode<K> extends Node<K> {
                     // Create root node with singleton element.
                     // This node will be a) either be the new root
                     // returned, or b) unwrapped and inlined.
-                    final Object[] theOtherEntry = {getKey(idx ^ 1)};
-                    return NodeFactory.newBitmapIndexedNode(mutator, 0, bitpos(mask(keyHash, 0)), theOtherEntry);
+                    final Object[] theOtherEntry = {getData(idx ^ 1)};
+                    return NodeFactory.newBitmapIndexedNode(mutator, 0, bitpos(mask(dataHash, 0)), theOtherEntry);
                 }
                 // copy keys and vals and remove entryLength elements at position idx
                 final Object[] entriesNew = ArrayHelper.copyComponentRemove(this.keys, idx, 1);
@@ -136,7 +136,7 @@ class HashCollisionNode<K> extends Node<K> {
                     this.keys = entriesNew;
                     return this;
                 }
-                return newHashCollisionNode(mutator, keyHash, entriesNew);
+                return newHashCollisionNode(mutator, dataHash, entriesNew);
             }
         }
         return this;
@@ -144,18 +144,18 @@ class HashCollisionNode<K> extends Node<K> {
 
     @SuppressWarnings("unchecked")
     @Override
-    Node<K> update(final UniqueId mutator, final K key,
-                   final int keyHash, final int shift, final ChangeEvent<K> details,
-                   final BiFunction<K, K, K> updateFunction, BiPredicate<K, K> equalsFunction,
-                   ToIntFunction<K> hashFunction) {
-        assert this.hash == keyHash;
+    Node<D> update(final UniqueId mutator, final D data,
+                   final int dataHash, final int shift, final ChangeEvent<D> details,
+                   final BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction,
+                   ToIntFunction<D> hashFunction) {
+        assert this.hash == dataHash;
 
         for (int i = 0; i < keys.length; i++) {
-            K oldKey = (K) keys[i];
-            if (equalsFunction.test(oldKey, key)) {
-                K updatedKey = updateFunction.apply(oldKey, key);
+            D oldKey = (D) keys[i];
+            if (equalsFunction.test(oldKey, data)) {
+                D updatedKey = updateFunction.apply(oldKey, data);
                 if (updatedKey == oldKey) {
-                    details.found(key);
+                    details.found(data);
                     return this;
                 }
                 details.setUpdated(oldKey);
@@ -164,18 +164,18 @@ class HashCollisionNode<K> extends Node<K> {
                     return this;
                 }
                 final Object[] newKeys = ArrayHelper.copySet(this.keys, i, updatedKey);
-                return newHashCollisionNode(mutator, keyHash, newKeys);
+                return newHashCollisionNode(mutator, dataHash, newKeys);
             }
         }
 
         // copy entries and add 1 more at the end
         final Object[] entriesNew = ArrayHelper.copyComponentAdd(this.keys, this.keys.length, 1);
-        entriesNew[this.keys.length] = key;
+        entriesNew[this.keys.length] = data;
         details.setAdded();
         if (isAllowedToEdit(mutator)) {
             this.keys = entriesNew;
             return this;
         }
-        return newHashCollisionNode(mutator, keyHash, entriesNew);
+        return newHashCollisionNode(mutator, dataHash, entriesNew);
     }
 }
