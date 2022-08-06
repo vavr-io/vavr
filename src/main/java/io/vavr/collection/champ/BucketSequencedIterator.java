@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Iterates over {@link Sequenced} elements in a CHAMP trie in the order of the
+ * Iterates over {@link SequencedKey} elements in a CHAMP trie in the order of the
  * sequence numbers.
  * <p>
  * Uses a bucket array for ordering the elements. The size of the array is
@@ -24,7 +24,7 @@ import java.util.function.Function;
  * @param <E> the type parameter of the  CHAMP trie {@link Node}s
  * @param <X> the type parameter of the {@link Iterator} interface
  */
-class BucketSequencedIterator<E extends Sequenced, X> implements Iterator<X>, io.vavr.collection.Iterator<X> {
+class BucketSequencedIterator<E extends SequencedKey, X> implements Iterator<X>, io.vavr.collection.Iterator<X> {
     private int next;
     private int remaining;
     private E current;
@@ -62,9 +62,9 @@ class BucketSequencedIterator<E extends Sequenced, X> implements Iterator<X>, io
         this.mappingFunction = mappingFunction;
         this.remaining = size;
         if (size == 0) {
-            buckets = (E[]) new Sequenced[0];
+            buckets = (E[]) new SequencedKey[0];
         } else {
-            buckets = (E[]) new Sequenced[last - first];
+            buckets = (E[]) new SequencedKey[last - first];
             if (reversed) {
                 int length = buckets.length;
                 for (Iterator<? extends E> it = new KeyIterator<>(rootNode, null); it.hasNext(); ) {
@@ -78,6 +78,46 @@ class BucketSequencedIterator<E extends Sequenced, X> implements Iterator<X>, io
                 }
             }
         }
+    }
+
+    public static <E extends SequencedKey> E getFirst(Node<? extends E> root, int first, int last) {
+        int minSeq = last;
+        E minKey = null;
+        for (KeyIterator<? extends E> i = new KeyIterator<>(root, null); i.hasNext(); ) {
+            E k = i.next();
+            int seq = k.getSequenceNumber();
+            if (seq <= minSeq) {
+                minSeq = seq;
+                minKey = k;
+                if (seq == first) {
+                    break;
+                }
+            }
+        }
+        if (minKey == null) {
+            throw new NoSuchElementException();
+        }
+        return minKey;
+    }
+
+    public static <E extends SequencedKey> E getLast(Node<? extends E> root, int first, int last) {
+        int maxSeq = first;
+        E maxKey = null;
+        for (KeyIterator<? extends E> i = new KeyIterator<>(root, null); i.hasNext(); ) {
+            E k = i.next();
+            int seq = k.getSequenceNumber();
+            if (seq >= maxSeq) {
+                maxSeq = seq;
+                maxKey = k;
+                if (seq == last - 1) {
+                    break;
+                }
+            }
+        }
+        if (maxKey == null) {
+            throw new NoSuchElementException();
+        }
+        return maxKey;
     }
 
     @Override
@@ -111,9 +151,7 @@ class BucketSequencedIterator<E extends Sequenced, X> implements Iterator<X>, io
 
     public static boolean isSupported(int size, int first, int last) {
         long extent = (long) last - first;
-        return extent < Integer.MAX_VALUE / 2
+        return extent <= Integer.MAX_VALUE / 2
                 && extent <= size * 4L;
     }
-
-
 }

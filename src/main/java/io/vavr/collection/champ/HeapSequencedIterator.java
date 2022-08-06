@@ -2,12 +2,11 @@ package io.vavr.collection.champ;
 
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- * Iterates over {@link Sequenced} elements in a CHAMP trie in the
+ * Iterates over {@link SequencedKey} elements in a CHAMP trie in the
  * order of the sequence numbers.
  * <p>
  * Uses a {@link LongArrayHeap} and a data array for
@@ -23,7 +22,7 @@ import java.util.function.Function;
  * @param <E> the type parameter of the  CHAMP trie {@link Node}s
  * @param <X> the type parameter of the {@link Iterator} interface
  */
-class HeapSequencedIterator<E extends Sequenced, X> implements Iterator<X>, io.vavr.collection.Iterator<X> {
+class HeapSequencedIterator<E extends SequencedKey, X> implements Iterator<X>, io.vavr.collection.Iterator<X> {
     private final LongArrayHeap queue;
     private E current;
     private boolean canRemove;
@@ -51,7 +50,7 @@ class HeapSequencedIterator<E extends Sequenced, X> implements Iterator<X>, io.v
         this.removeFunction = removeFunction;
         this.mappingFunction = mappingFunction;
         queue = new LongArrayHeap(size);
-        array = (E[]) new Sequenced[size];
+        array = (E[]) new SequencedKey[size];
         int i = 0;
         for (Iterator<? extends E> it = new KeyIterator<>(rootNode, null); it.hasNext(); i++) {
             E k = it.next();
@@ -83,46 +82,5 @@ class HeapSequencedIterator<E extends Sequenced, X> implements Iterator<X>, io.v
         }
         removeFunction.accept(current);
         canRemove = false;
-    }
-
-
-    public static <E extends Sequenced> E getLast(Node<? extends E> root, int first, int last) {
-        int maxSeq = first;
-        E maxKey = null;
-        for (KeyIterator<? extends E> i = new KeyIterator<>(root, null); i.hasNext(); ) {
-            E k = i.next();
-            int seq = k.getSequenceNumber();
-            if (seq >= maxSeq) {
-                maxSeq = seq;
-                maxKey = k;
-                if (seq == last - 1) {
-                    break;
-                }
-            }
-        }
-        if (maxKey == null) {
-            throw new NoSuchElementException();
-        }
-        return maxKey;
-    }
-
-    public static <E extends Sequenced> E getFirst(Node<? extends E> root, int first, int last) {
-        int minSeq = last;
-        E minKey = null;
-        for (KeyIterator<? extends E> i = new KeyIterator<>(root, null); i.hasNext(); ) {
-            E k = i.next();
-            int seq = k.getSequenceNumber();
-            if (seq <= minSeq) {
-                minSeq = seq;
-                minKey = k;
-                if (seq == first) {
-                    break;
-                }
-            }
-        }
-        if (minKey == null) {
-            throw new NoSuchElementException();
-        }
-        return minKey;
     }
 }

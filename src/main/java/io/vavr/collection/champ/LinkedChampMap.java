@@ -20,6 +20,7 @@ import java.util.function.ToIntFunction;
  * <p>
  * Features:
  * <ul>
+ *     <li>supports up to 2<sup>30</sup> entries</li>
  *     <li>allows null keys and null values</li>
  *     <li>is immutable</li>
  *     <li>is thread-safe</li>
@@ -32,11 +33,11 @@ import java.util.function.ToIntFunction;
  *     renumbering</li>
  *     <li>copyRemove: O(1) amortized due to renumbering</li>
  *     <li>containsKey: O(1)</li>
- *     <li>toMutable: O(1) + a cost distributed across subsequent updates in
+ *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in
  *     the mutable copy</li>
  *     <li>clone: O(1)</li>
  *     <li>iterator creation: O(N)</li>
- *     <li>iterator.next: O(1) with bucket sort or O(log N) with a heap</li>
+ *     <li>iterator.next: O(1) with bucket sort, O(log N) with heap sort</li>
  *     <li>getFirst, getLast: O(N)</li>
  * </ul>
  * <p>
@@ -319,10 +320,10 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
 
     public Iterator<Tuple2<K, V>> iterator(boolean reversed) {
         return BucketSequencedIterator.isSupported(size, first, last)
-                ? new BucketSequencedIterator<SequencedEntry<K, V>, Tuple2<K, V>>(size, first, last, this, reversed,
-                null, e -> new Tuple2<K, V>(e.getKey(), e.getValue()))
-                : new HeapSequencedIterator<SequencedEntry<K, V>, Tuple2<K, V>>(size, this, reversed,
-                null, e -> new Tuple2<K, V>(e.getKey(), e.getValue()));
+                ? new BucketSequencedIterator<>(size, first, last, this, reversed,
+                null, e -> new Tuple2<>(e.getKey(), e.getValue()))
+                : new HeapSequencedIterator<>(size, this, reversed,
+                null, e -> new Tuple2<>(e.getKey(), e.getValue()));
     }
 
     @Override
@@ -376,7 +377,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
     }
 
     private LinkedChampMap<K, V> renumber(BitmapIndexedNode<SequencedEntry<K, V>> root, int size, int first, int last) {
-        if (Sequenced.mustRenumber(size, first, last)) {
+        if (SequencedKey.mustRenumber(size, first, last)) {
             root = SequencedEntry.renumber(size, root, new UniqueId(), Objects::hashCode, Objects::equals);
             return new LinkedChampMap<>(root, size, -1, size);
         }

@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 class SequencedEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V>
-        implements Sequenced {
+        implements SequencedKey {
     private final static long serialVersionUID = 0L;
     private final int sequenceNumber;
 
@@ -36,9 +36,9 @@ class SequencedEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V>
      * Afterwards the sequence number for the next inserted entry must be
      * set to the value {@code size};
      *
+     * @param <K>     the key type
      * @param root    the root of the trie
      * @param mutator the mutator which will own all nodes of the trie
-     * @param <K>     the key type
      * @return the new root
      */
     public static <K, V> BitmapIndexedNode<SequencedEntry<K, V>> renumber(int size, BitmapIndexedNode<SequencedEntry<K, V>> root, UniqueId mutator,

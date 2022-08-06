@@ -16,6 +16,7 @@ import java.util.function.ToIntFunction;
  * <p>
  * Features:
  * <ul>
+ *     <li>supports up to 2<sup>30</sup> entries</li>
  *     <li>allows null keys and null values</li>
  *     <li>is mutable</li>
  *     <li>is not thread-safe</li>
@@ -27,9 +28,9 @@ import java.util.function.ToIntFunction;
  *     <li>put: O(1)</li>
  *     <li>remove: O(1)</li>
  *     <li>containsKey: O(1)</li>
- *     <li>toImmutable: O(1) + a cost distributed across subsequent updates in
+ *     <li>toImmutable: O(1) + O(log N) distributed across subsequent updates in
  *     this map</li>
- *     <li>clone: O(1) + a cost distributed across subsequent updates in this
+ *     <li>clone: O(1) + O(log N) distributed across subsequent updates in this
  *     map and in the clone</li>
  *     <li>iterator.next: O(1)</li>
  * </ul>

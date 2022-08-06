@@ -21,6 +21,7 @@ import java.util.function.ToIntFunction;
  * <p>
  * Features:
  * <ul>
+ *     <li>supports up to 2<sup>30</sup> entries</li>
  *     <li>allows null keys and null values</li>
  *     <li>is immutable</li>
  *     <li>is thread-safe</li>
@@ -32,7 +33,7 @@ import java.util.function.ToIntFunction;
  *     <li>copyPut: O(1)</li>
  *     <li>copyRemove: O(1)</li>
  *     <li>containsKey: O(1)</li>
- *     <li>toMutable: O(1) + a cost distributed across subsequent updates in the mutable copy</li>
+ *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in the mutable copy</li>
  *     <li>clone: O(1)</li>
  *     <li>iterator.next(): O(1)</li>
  * </ul>

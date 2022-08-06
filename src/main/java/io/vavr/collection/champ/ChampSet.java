@@ -20,6 +20,7 @@ import java.util.stream.Collector;
  * <p>
  * Features:
  * <ul>
+ *     <li>supports up to 2<sup>30</sup> elements</li>
  *     <li>allows null elements</li>
  *     <li>is immutable</li>
  *     <li>is thread-safe</li>
@@ -31,7 +32,7 @@ import java.util.stream.Collector;
  *     <li>add: O(1)</li>
  *     <li>remove: O(1)</li>
  *     <li>contains: O(1)</li>
- *     <li>toMutable: O(1) + a cost distributed across subsequent updates in the mutable copy</li>
+ *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in the mutable copy</li>
  *     <li>clone: O(1)</li>
  *     <li>iterator.next(): O(1)</li>
  * </ul>

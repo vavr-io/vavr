@@ -12,6 +12,7 @@ import java.util.function.Function;
  * <p>
  * Features:
  * <ul>
+ *     <li>supports up to 2<sup>30</sup> elements</li>
  *     <li>allows null elements</li>
  *     <li>is mutable</li>
  *     <li>is not thread-safe</li>
@@ -23,9 +24,9 @@ import java.util.function.Function;
  *     <li>add: O(1)</li>
  *     <li>remove: O(1)</li>
  *     <li>contains: O(1)</li>
- *     <li>toImmutable: O(1) + a cost distributed across subsequent updates in
+ *     <li>toImmutable: O(1) + O(log N) distributed across subsequent updates in
  *     this set</li>
- *     <li>clone: O(1) + a cost distributed across subsequent updates in this
+ *     <li>clone: O(1) + O(log N) distributed across subsequent updates in this
  *     set and in the clone</li>
  *     <li>iterator.next: O(1)</li>
  * </ul>

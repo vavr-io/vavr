@@ -1,6 +1,6 @@
 package io.vavr.collection.champ;
 
-interface Sequenced {
+interface SequencedKey {
     /**
      * We use {@link Integer#MIN_VALUE} to detect overflows in the sequence number.
      * <p>
