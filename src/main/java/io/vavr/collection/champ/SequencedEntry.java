@@ -9,7 +9,7 @@ import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
 class SequencedEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V>
-        implements SequencedKey {
+        implements SequencedData {
     private final static long serialVersionUID = 0L;
     private final int sequenceNumber;
 

@@ -14,15 +14,15 @@ import java.util.function.ToIntFunction;
 /**
  * Represents a node in a CHAMP trie.
  *
- * @param <K> the key type
+ * @param <D> the data type
  */
-abstract class Node<K> {
+abstract class Node<D> {
     /**
-     * Represents no value.
-     * We can not use {@code null}, because we allow storing null-keys and
+     * Represents no data.
+     * We can not use {@code null}, because we allow storing null-data and
      * null-values in the trie.
      */
-    public static final Object NO_VALUE = new Object();
+    public static final Object NO_DATA = new Object();
     static final int HASH_CODE_LENGTH = 32;
     /**
      * Bit partition size in the range [1,5].
@@ -39,15 +39,15 @@ abstract class Node<K> {
     }
 
     /**
-     * Given a masked keyHash, returns its bit-position
+     * Given a masked dataHash, returns its bit-position
      * in the bit-map.
      * <p>
      * For example, if the bit partition is 5 bits, then
      * we 2^5 == 32 distinct bit-positions.
-     * If the masked keyHash is 3 then the bit-position is
+     * If the masked dataHash is 3 then the bit-position is
      * the bit with index 3. That is, 1<<3 = 0b0100.
      *
-     * @param mask masked key hash
+     * @param mask masked data hash
      * @return bit position
      */
     static int bitpos(final int mask) {
@@ -69,8 +69,8 @@ abstract class Node<K> {
         return Integer.bitCount(bitmap & (bitpos - 1));
     }
 
-    static int mask(final int keyHash, final int shift) {
-        return (keyHash >>> shift) & BIT_PARTITION_MASK;
+    static int mask(final int dataHash, final int shift) {
+        return (dataHash >>> shift) & BIT_PARTITION_MASK;
     }
 
     static <K> Node<K> mergeTwoDataEntriesIntoNode(UniqueId mutator,
@@ -126,22 +126,24 @@ abstract class Node<K> {
     abstract boolean equivalent(final Object other);
 
     /**
-     * Finds a value by a key.
+     * Finds data in the CHAMP trie, that is equal to the specified data.
      *
-     * @param key     a key
-     * @param keyHash the hash code of the key
-     * @param shift   the shift for this node
-     * @return the value, returns {@link #NO_VALUE} if the value is not present.
+     * @param data           a data
+     * @param dataHash       the hash code of the data
+     * @param shift          the shift for this node
+     * @param equalsFunction a function that checks the data for equality
+     * @return the found data, returns {@link #NO_DATA} if the data is not
+     * in the trie.
      */
-    abstract Object findByKey(final K key, final int keyHash, final int shift, BiPredicate<K, K> equalsFunction);
+    abstract Object findByData(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction);
 
-    abstract K getKey(final int index);
+    abstract D getData(final int index);
 
     UniqueId getMutator() {
         return null;
     }
 
-    abstract Node<K> getNode(final int index);
+    abstract Node<D> getNode(final int index);
 
     abstract boolean hasData();
 
@@ -156,28 +158,28 @@ abstract class Node<K> {
 
     abstract int nodeArity();
 
-    abstract Node<K> remove(final UniqueId mutator, final K key,
-                            final int keyHash, final int shift,
-                            final ChangeEvent<K> details,
-                            BiPredicate<K, K> equalsFunction);
+    abstract Node<D> remove(final UniqueId mutator, final D data,
+                            final int dataHash, final int shift,
+                            final ChangeEvent<D> details,
+                            BiPredicate<D, D> equalsFunction);
 
     /**
-     * Inserts or updates a key in the trie.
+     * Inserts or updates a data in the trie.
      *
      * @param mutator        a mutator that uniquely owns mutated nodes
-     * @param key            a key
-     * @param keyHash        the hash-code of the key
+     * @param data           a data
+     * @param dataHash       the hash-code of the data
      * @param shift          the shift of the current node
      * @param details        update details on output
      * @param updateFunction only used on update:
-     *                       given the existing key (oldk) and the new key (newk),
+     *                       given the existing data (oldk) and the new data (newk),
      *                       this function decides whether it replaces the old
-     *                       key with the new key
+     *                       data with the new data
      * @return the updated trie
      */
-    abstract Node<K> update(final UniqueId mutator, final K key,
-                            final int keyHash, final int shift, final ChangeEvent<K> details,
-                            BiFunction<K, K, K> updateFunction,
-                            BiPredicate<K, K> equalsFunction,
-                            ToIntFunction<K> hashFunction);
+    abstract Node<D> update(final UniqueId mutator, final D data,
+                            final int dataHash, final int shift, final ChangeEvent<D> details,
+                            BiFunction<D, D, D> updateFunction,
+                            BiPredicate<D, D> equalsFunction,
+                            ToIntFunction<D> hashFunction);
 }

@@ -142,7 +142,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
      */
 
     private LinkedChampSet<E> renumber(BitmapIndexedNode<SequencedElement<E>> root, int size, int first, int last) {
-        if (SequencedKey.mustRenumber(size, first, last)) {
+        if (SequencedData.mustRenumber(size, first, last)) {
             return new LinkedChampSet<>(
                     SequencedElement.renumber(size, root, new UniqueId(), Objects::hashCode, Objects::equals),
                     size, -1, size);
@@ -200,7 +200,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
 
     @Override
     public boolean contains(E o) {
-        return findByKey(new SequencedElement<>(o), Objects.hashCode(o), 0, Objects::equals) != Node.NO_VALUE;
+        return findByData(new SequencedElement<>(o), Objects.hashCode(o), 0, Objects::equals) != Node.NO_DATA;
     }
 
 

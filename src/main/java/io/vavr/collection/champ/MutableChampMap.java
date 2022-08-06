@@ -133,9 +133,9 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
     @Override
     @SuppressWarnings("unchecked")
     public boolean containsKey(Object o) {
-        return root.findByKey(new AbstractMap.SimpleImmutableEntry<>((K) o, null),
+        return root.findByData(new AbstractMap.SimpleImmutableEntry<>((K) o, null),
                 Objects.hashCode(o), 0,
-                getEqualsFunction()) != Node.NO_VALUE;
+                getEqualsFunction()) != Node.NO_DATA;
     }
 
     @Override
@@ -157,9 +157,9 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
     @Override
     @SuppressWarnings("unchecked")
     public V get(Object o) {
-        Object result = root.findByKey(new AbstractMap.SimpleImmutableEntry<>((K) o, null),
+        Object result = root.findByData(new AbstractMap.SimpleImmutableEntry<>((K) o, null),
                 Objects.hashCode(o), 0, getEqualsFunction());
-        return result == Node.NO_VALUE || result == null ? null : ((SimpleImmutableEntry<K, V>) result).getValue();
+        return result == Node.NO_DATA || result == null ? null : ((SimpleImmutableEntry<K, V>) result).getValue();
     }
 
 

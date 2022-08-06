@@ -178,10 +178,10 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
 
     @Override
     public boolean containsKey(K key) {
-        Object result = findByKey(
+        Object result = findByData(
                 new SequencedEntry<>(key),
                 Objects.hashCode(key), 0, getEqualsFunction());
-        return result != Node.NO_VALUE;
+        return result != Node.NO_DATA;
     }
 
     private LinkedChampMap<K, V> copyPutFirst(K key, V value, boolean moveToFirst) {
@@ -272,7 +272,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
     @Override
     @SuppressWarnings("unchecked")
     public Option<V> get(K key) {
-        Object result = findByKey(
+        Object result = findByData(
                 new SequencedEntry<>(key),
                 Objects.hashCode(key), 0, getEqualsFunction());
         return (result instanceof SequencedEntry<?, ?>)
@@ -377,7 +377,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
     }
 
     private LinkedChampMap<K, V> renumber(BitmapIndexedNode<SequencedEntry<K, V>> root, int size, int first, int last) {
-        if (SequencedKey.mustRenumber(size, first, last)) {
+        if (SequencedData.mustRenumber(size, first, last)) {
             root = SequencedEntry.renumber(size, root, new UniqueId(), Objects::hashCode, Objects::equals);
             return new LinkedChampMap<>(root, size, -1, size);
         }

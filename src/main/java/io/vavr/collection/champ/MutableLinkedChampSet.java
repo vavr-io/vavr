@@ -210,7 +210,7 @@ public class MutableLinkedChampSet<E> extends AbstractChampSet<E, SequencedEleme
     @Override
     @SuppressWarnings("unchecked")
     public boolean contains(final Object o) {
-        return Node.NO_VALUE != root.findByKey(new SequencedElement<>((E) o),
+        return Node.NO_DATA != root.findByData(new SequencedElement<>((E) o),
                 Objects.hashCode((E) o), 0, Objects::equals);
     }
 
@@ -298,7 +298,7 @@ public class MutableLinkedChampSet<E> extends AbstractChampSet<E, SequencedEleme
      * 4 times the size of the set.
      */
     private void renumber() {
-        if (SequencedKey.mustRenumber(size, first, last)) {
+        if (SequencedData.mustRenumber(size, first, last)) {
             root = SequencedElement.renumber(size, root, getOrCreateMutator(),
                     Objects::hashCode, Objects::equals);
             last = size;
