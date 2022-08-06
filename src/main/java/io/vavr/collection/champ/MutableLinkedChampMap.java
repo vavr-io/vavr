@@ -16,6 +16,7 @@ import java.util.function.ToIntFunction;
  * <p>
  * Features:
  * <ul>
+ *     <li>supports up to 2<sup>30</sup> entries</li>
  *     <li>allows null keys and null values</li>
  *     <li>is mutable</li>
  *     <li>is not thread-safe</li>
@@ -27,12 +28,12 @@ import java.util.function.ToIntFunction;
  *     <li>put, putFirst, putLast: O(1) amortized due to renumbering</li>
  *     <li>remove: O(1)</li>
  *     <li>containsKey: O(1)</li>
- *     <li>toImmutable: O(1) + a cost distributed across subsequent updates in
+ *     <li>toImmutable: O(1) + O(log N) distributed across subsequent updates in
  *     this mutable map</li>
- *     <li>clone: O(1) + a cost distributed across subsequent updates in this
+ *     <li>clone: O(1) + O(log N) distributed across subsequent updates in this
  *     mutable map and in the clone</li>
  *     <li>iterator creation: O(N)</li>
- *     <li>iterator.next: O(1) with bucket sort or O(log N) with a heap</li>
+ *     <li>iterator.next: O(1) with bucket sort, O(log N) with heap sort</li>
  *     <li>getFirst, getLast: O(N)</li>
  * </ul>
  * <p>
@@ -119,6 +120,8 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
             this.root = that.root;
             this.size = that.size;
             this.modCount = 0;
+            this.first = that.first;
+            this.last = that.last;
         } else {
             this.root = BitmapIndexedNode.emptyNode();
             this.putAll(m);
@@ -181,11 +184,14 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     }
 
     private Iterator<Entry<K, V>> entryIterator(boolean reversed) {
-        return new FailFastIterator<>(new HeapSequencedIterator<SequencedEntry<K, V>, Entry<K, V>>(
-                size, root, reversed,
+        java.util.Iterator<MutableMapEntry<K, V>> i = BucketSequencedIterator.isSupported(size, first, last)
+                ? new BucketSequencedIterator<>(size, first, last, root, reversed,
                 this::iteratorRemove,
-                e -> new MutableMapEntry<>(this::iteratorPutIfPresent, e.getKey(), e.getValue())),
-                () -> this.modCount);
+                e -> new MutableMapEntry<>(this::iteratorPutIfPresent, e.getKey(), e.getValue()))
+                : new HeapSequencedIterator<>(size, root, reversed,
+                this::iteratorRemove,
+                e -> new MutableMapEntry<>(this::iteratorPutIfPresent, e.getKey(), e.getValue()));
+        return new FailFastIterator<>(i, () -> this.modCount);
     }
 
     @Override
@@ -202,12 +208,12 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
 
     //@Override
     public Entry<K, V> firstEntry() {
-        return isEmpty() ? null : HeapSequencedIterator.getFirst(root, first, last);
+        return isEmpty() ? null : BucketSequencedIterator.getFirst(root, first, last);
     }
 
     //@Override
     public K firstKey() {
-        return HeapSequencedIterator.getFirst(root, first, last).getKey();
+        return BucketSequencedIterator.getFirst(root, first, last).getKey();
     }
 
     @Override
@@ -258,12 +264,12 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
 
     //@Override
     public Entry<K, V> lastEntry() {
-        return isEmpty() ? null : HeapSequencedIterator.getLast(root, first, last);
+        return isEmpty() ? null : BucketSequencedIterator.getLast(root, first, last);
     }
 
     //@Override
     public K lastKey() {
-        return HeapSequencedIterator.getLast(root, first, last).getKey();
+        return BucketSequencedIterator.getLast(root, first, last).getKey();
     }
 
     //@Override
@@ -271,7 +277,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
         if (isEmpty()) {
             return null;
         }
-        SequencedEntry<K, V> entry = HeapSequencedIterator.getFirst(root, first, last);
+        SequencedEntry<K, V> entry = BucketSequencedIterator.getFirst(root, first, last);
         remove(entry.getKey());
         first = entry.getSequenceNumber();
         renumber();
@@ -283,7 +289,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
         if (isEmpty()) {
             return null;
         }
-        SequencedEntry<K, V> entry = HeapSequencedIterator.getLast(root, first, last);
+        SequencedEntry<K, V> entry = BucketSequencedIterator.getLast(root, first, last);
         remove(entry.getKey());
         last = entry.getSequenceNumber();
         renumber();
@@ -390,7 +396,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
      * 4 times the size of the set.
      */
     private void renumber() {
-        if (Sequenced.mustRenumber(size, first, last)) {
+        if (SequencedKey.mustRenumber(size, first, last)) {
             root = SequencedEntry.renumber(size, root, getOrCreateMutator(),
                     getHashFunction(), getEqualsFunction());
             last = size;

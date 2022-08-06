@@ -7,41 +7,31 @@ package io.vavr.collection.champ;
 
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 /**
- * Entry iterator over a CHAMP trie.
+ * Key iterator over a CHAMP trie.
  * <p>
  * Uses a fixed stack in depth.
  * Iterates first over inlined data entries and then continues depth first.
  * <p>
- * Supports remove and {@link Map.Entry#setValue}. The functions that are
+ * Supports the {@code remove} operation. The functions that are
  * passed to this iterator must not change the trie structure that the iterator
  * currently uses.
  */
 class KeyIterator<K> implements Iterator<K>, io.vavr.collection.Iterator<K> {
 
     private final int[] nodeCursorsAndLengths = new int[Node.MAX_DEPTH * 2];
-    int nextValueCursor;
+    private int nextValueCursor;
     private int nextValueLength;
     private int nextStackLevel = -1;
-    Node<K> nextValueNode;
-    K current;
+    private Node<K> nextValueNode;
+    private K current;
     private boolean canRemove = false;
     private final Consumer<K> removeFunction;
     @SuppressWarnings({"unchecked", "rawtypes"})
-    Node<K>[] nodes = new Node[Node.MAX_DEPTH];
-
-    /**
-     * Creates a new instance.
-     *
-     * @param root the root node of the trie
-     */
-    public KeyIterator(Node<K> root) {
-        this(root, null);
-    }
+    private Node<K>[] nodes = new Node[Node.MAX_DEPTH];
 
     /**
      * Creates a new instance.
