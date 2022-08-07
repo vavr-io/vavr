@@ -178,7 +178,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     @SuppressWarnings("unchecked")
     public boolean containsKey(final Object o) {
         K key = (K) o;
-        return Node.NO_DATA != root.findByData(new SequencedEntry<>(key),
+        return Node.NO_DATA != root.find(new SequencedEntry<>(key),
                 Objects.hashCode(key), 0,
                 getEqualsFunction());
     }
@@ -196,7 +196,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
 
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return new SetFacade<>(
+        return new JavaSetFacade<>(
                 () -> entryIterator(false),
                 this::size,
                 this::containsEntry,
@@ -219,7 +219,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     @Override
     @SuppressWarnings("unchecked")
     public V get(final Object o) {
-        Object result = root.findByData(
+        Object result = root.find(
                 new SequencedEntry<>((K) o),
                 Objects.hashCode(o), 0, getEqualsFunction());
         return (result instanceof SequencedEntry<?, ?>) ? ((SequencedEntry<K, V>) result).getValue() : null;
@@ -298,13 +298,13 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
 
     @Override
     public V put(K key, V value) {
-        SequencedEntry<K, V> oldValue = this.putLast(key, value, false).getOldValue();
+        SequencedEntry<K, V> oldValue = this.putLast(key, value, false).getData();
         return oldValue == null ? null : oldValue.getValue();
     }
 
     //@Override
     public V putFirst(K key, V value) {
-        SequencedEntry<K, V> oldValue = putFirst(key, value, true).getOldValue();
+        SequencedEntry<K, V> oldValue = putFirst(key, value, true).getData();
         return oldValue == null ? null : oldValue.getValue();
     }
 
@@ -318,8 +318,8 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
                 getEqualsFunction(), getHashFunction());
         if (details.isModified()) {
             if (details.isUpdated()) {
-                first = details.getOldValue().getSequenceNumber() == first ? first : first - 1;
-                last = details.getOldValue().getSequenceNumber() == last ? last - 1 : last;
+                first = details.getData().getSequenceNumber() == first ? first : first - 1;
+                last = details.getData().getSequenceNumber() == last ? last - 1 : last;
             } else {
                 modCount++;
                 size++;
@@ -332,7 +332,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
 
     //@Override
     public V putLast(K key, V value) {
-        SequencedEntry<K, V> oldValue = putLast(key, value, true).getOldValue();
+        SequencedEntry<K, V> oldValue = putLast(key, value, true).getData();
         return oldValue == null ? null : oldValue.getValue();
     }
 
@@ -345,8 +345,8 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
                 getEqualsFunction(), getHashFunction());
         if (details.isModified()) {
             if (details.isUpdated()) {
-                first = details.getOldValue().getSequenceNumber() == first - 1 ? first - 1 : first;
-                last = details.getOldValue().getSequenceNumber() == last ? last : last + 1;
+                first = details.getData().getSequenceNumber() == first - 1 ? first - 1 : first;
+                last = details.getData().getSequenceNumber() == last ? last : last + 1;
             } else {
                 modCount++;
                 size++;
@@ -363,7 +363,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
         @SuppressWarnings("unchecked") final K key = (K) o;
         ChangeEvent<SequencedEntry<K, V>> details = removeAndGiveDetails(key);
         if (details.isModified()) {
-            return details.getOldValue().getValue();
+            return details.getData().getValue();
         }
         return null;
     }
@@ -377,7 +377,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
         if (details.isModified()) {
             size = size - 1;
             modCount++;
-            int seq = details.getOldValue().getSequenceNumber();
+            int seq = details.getData().getSequenceNumber();
             if (seq == last - 1) {
                 last--;
             }

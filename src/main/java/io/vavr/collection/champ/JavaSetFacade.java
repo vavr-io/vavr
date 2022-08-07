@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  * @param <E> the element type of the set
  * @author Werner Randelshofer
  */
-class SetFacade<E> extends AbstractSet<E> {
+class JavaSetFacade<E> extends AbstractSet<E> {
     protected final Supplier<Iterator<E>> iteratorFunction;
     protected final IntSupplier sizeFunction;
     protected final Predicate<Object> containsFunction;
@@ -25,23 +25,23 @@ class SetFacade<E> extends AbstractSet<E> {
     protected final Predicate<Object> removeFunction;
 
 
-    public SetFacade(Set<E> backingSet) {
+    public JavaSetFacade(Set<E> backingSet) {
         this(backingSet::iterator, backingSet::size,
                 backingSet::contains, backingSet::clear, backingSet::add, backingSet::remove);
     }
 
-    public SetFacade(Supplier<Iterator<E>> iteratorFunction,
-                     IntSupplier sizeFunction,
-                     Predicate<Object> containsFunction) {
+    public JavaSetFacade(Supplier<Iterator<E>> iteratorFunction,
+                         IntSupplier sizeFunction,
+                         Predicate<Object> containsFunction) {
         this(iteratorFunction, sizeFunction, containsFunction, null, null, null);
     }
 
-    public SetFacade(Supplier<Iterator<E>> iteratorFunction,
-                     IntSupplier sizeFunction,
-                     Predicate<Object> containsFunction,
-                     Runnable clearFunction,
-                     Predicate<E> addFunction,
-                     Predicate<Object> removeFunction) {
+    public JavaSetFacade(Supplier<Iterator<E>> iteratorFunction,
+                         IntSupplier sizeFunction,
+                         Predicate<Object> containsFunction,
+                         Runnable clearFunction,
+                         Predicate<E> addFunction,
+                         Predicate<Object> removeFunction) {
         this.iteratorFunction = iteratorFunction;
         this.sizeFunction = sizeFunction;
         this.containsFunction = containsFunction;

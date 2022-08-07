@@ -30,7 +30,7 @@ import java.util.function.Supplier;
  * @param <T> the element type of the set
  */
 @SuppressWarnings("unchecked")
-interface SetMixin<T, SELF extends SetMixin<T, SELF>> extends Set<T> {
+interface VavrSetMixin<T, SELF extends VavrSetMixin<T, SELF>> extends Set<T> {
     long serialVersionUID = 0L;
 
     /**

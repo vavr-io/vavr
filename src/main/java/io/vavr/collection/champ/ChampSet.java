@@ -66,7 +66,7 @@ import java.util.stream.Collector;
  *
  * @param <E> the element type
  */
-public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E, ChampSet<E>>, Serializable {
+public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E, ChampSet<E>>, Serializable {
     private static final long serialVersionUID = 1L;
     private static final ChampSet<?> EMPTY = new ChampSet<>(BitmapIndexedNode.emptyNode(), 0);
     final int size;
@@ -127,7 +127,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements SetMixin<E, Cha
 
     @Override
     public boolean contains(E o) {
-        return findByData(o, Objects.hashCode(o), 0, getEqualsFunction()) != Node.NO_DATA;
+        return find(o, Objects.hashCode(o), 0, getEqualsFunction()) != Node.NO_DATA;
     }
 
     private BiPredicate<E, E> getEqualsFunction() {
