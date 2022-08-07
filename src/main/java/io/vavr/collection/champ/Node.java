@@ -12,9 +12,35 @@ import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
 
 /**
- * Represents a node in a CHAMP trie.
+ * Represents a node in a 'Compressed Hash-Array Mapped Prefix-tree'
+ * (CHAMP) trie.
+ * <p>
+ * A trie is a tree structure that stores a set of data objects; the
+ * path to a data object is determined by a bit sequence derived from the data
+ * object.
+ * <p>
+ * In a CHAMP trie, the bit sequence is derived from the hash code of a data
+ * object. A hash code is a bit sequence with a fixed length. This bit sequence
+ * is split up into parts. Each part is used as the index to the next child node
+ * in the tree, starting from the root node of the tree.
+ * <p>
+ * The nodes of a CHAMP trie are compressed. Instead of allocating a node for
+ * each data object, the data objects are stored directly in the ancestor node
+ * at which the path to the data object starts to become unique. This means,
+ * that in most cases, only a prefix of the bit sequence is needed for the
+ * path to a data object in the tree.
+ * <p>
+ * If the hash code of a data object in the set is not unique, then it is
+ * stored in a {@link HashCollisionNode}, otherwise it is stored in a
+ * {@link BitmapIndexedNode}. Since the hash codes have a fixed length,
+ * all {@link HashCollisionNode}s are located at the same, maximal depth
+ * of the tree.
+ * <p>
+ * In this implementation, a hash code has a length of
+ * {@value #HASH_CODE_LENGTH} bits, and is split up into parts of
+ * {@value BIT_PARTITION_SIZE} bits (the last part contains the remaining bits).
  *
- * @param <D> the data type
+ * @param <D> the type of the data objects that are stored in this trie
  */
 abstract class Node<D> {
     /**
@@ -126,16 +152,17 @@ abstract class Node<D> {
     abstract boolean equivalent(final Object other);
 
     /**
-     * Finds data in the CHAMP trie, that is equal to the specified data.
+     * Finds a data object in the CHAMP trie, that matches the provided data
+     * object and data hash.
      *
-     * @param data           a data
-     * @param dataHash       the hash code of the data
+     * @param data           the provided data object
+     * @param dataHash       the hash code of the provided data
      * @param shift          the shift for this node
-     * @param equalsFunction a function that checks the data for equality
-     * @return the found data, returns {@link #NO_DATA} if the data is not
-     * in the trie.
+     * @param equalsFunction a function that tests data objects for equality
+     * @return the found data, returns {@link #NO_DATA} if no data in the trie
+     * matches the provided data.
      */
-    abstract Object findByData(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction);
+    abstract Object find(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction);
 
     abstract D getData(final int index);
 
@@ -151,30 +178,58 @@ abstract class Node<D> {
 
     abstract boolean hasNodes();
 
-    boolean isAllowedToEdit(UniqueId y) {
+    boolean isAllowedToUpdate(UniqueId y) {
         UniqueId x = getMutator();
         return x != null && x == y;
     }
 
     abstract int nodeArity();
 
+    /**
+     * Removes a data object from the trie.
+     *
+     * @param mutator        A non-null value means, that this method may update
+     *                       nodes that are marked with the same unique id,
+     *                       and that this method may create new mutable nodes
+     *                       with this unique id.
+     *                       A null value means, that this method must not update
+     *                       any node and may only create new immutable nodes.
+     * @param data           the data to be removed
+     * @param dataHash       the hash-code of the data object
+     * @param shift          the shift of the current node
+     * @param details        this method reports the changes that it performed
+     *                       in this object
+     * @param equalsFunction a function that tests data objects for equality
+     * @return the updated trie
+     */
     abstract Node<D> remove(final UniqueId mutator, final D data,
                             final int dataHash, final int shift,
                             final ChangeEvent<D> details,
                             BiPredicate<D, D> equalsFunction);
 
     /**
-     * Inserts or updates a data in the trie.
+     * Inserts or updates a data object in the trie.
      *
-     * @param mutator        a mutator that uniquely owns mutated nodes
-     * @param data           a data
-     * @param dataHash       the hash-code of the data
+     * @param mutator        A non-null value means, that this method may update
+     *                       nodes that are marked with the same unique id,
+     *                       and that this method may create new mutable nodes
+     *                       with this unique id.
+     *                       A null value means, that this method must not update
+     *                       any node and may only create new immutable nodes.
+     * @param data           the data to be inserted,
+     *                       or to be used for updating if there is already
+     *                       a matching data object in the trie
+     * @param dataHash       the hash-code of the data object
      * @param shift          the shift of the current node
-     * @param details        update details on output
+     * @param details        this method reports the changes that it performed
+     *                       in this object
      * @param updateFunction only used on update:
-     *                       given the existing data (oldk) and the new data (newk),
-     *                       this function decides whether it replaces the old
-     *                       data with the new data
+     *                       given the existing data object (first argument) and
+     *                       the new data object (second argument), yields a
+     *                       new data object or returns either of the two.
+     * @param equalsFunction a function that tests data objects for equality
+     * @param hashFunction   a function that computes the hash-code for a data
+     *                       object
      * @return the updated trie
      */
     abstract Node<D> update(final UniqueId mutator, final D data,

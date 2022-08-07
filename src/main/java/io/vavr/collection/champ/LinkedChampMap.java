@@ -88,7 +88,7 @@ import java.util.function.ToIntFunction;
  * @param <V> the value type
  */
 public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>>
-        implements MapMixin<K, V> {
+        implements VavrMapMixin<K, V> {
     private final static long serialVersionUID = 0L;
     private static final LinkedChampMap<?, ?> EMPTY = new LinkedChampMap<>(BitmapIndexedNode.emptyNode(), 0, -1, 0);
     /**
@@ -178,7 +178,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
 
     @Override
     public boolean containsKey(K key) {
-        Object result = findByData(
+        Object result = find(
                 new SequencedEntry<>(key),
                 Objects.hashCode(key), 0, getEqualsFunction());
         return result != Node.NO_DATA;
@@ -195,8 +195,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         if (details.isUpdated()) {
             return moveToFirst
                     ? renumber(newRootNode, size,
-                    details.getOldValue().getSequenceNumber() == first ? first : first - 1,
-                    details.getOldValue().getSequenceNumber() == last ? last - 1 : last)
+                    details.getData().getSequenceNumber() == first ? first : first - 1,
+                    details.getData().getSequenceNumber() == last ? last - 1 : last)
                     : new LinkedChampMap<>(newRootNode, size, first - 1, last);
         }
         return details.isModified() ? renumber(newRootNode, size + 1, first - 1, last) : this;
@@ -217,8 +217,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         if (details.isUpdated()) {
             return moveToLast
                     ? renumber(newRootNode, size,
-                    details.getOldValue().getSequenceNumber() == first ? first + 1 : first,
-                    details.getOldValue().getSequenceNumber() == last ? last : last + 1)
+                    details.getData().getSequenceNumber() == first ? first + 1 : first,
+                    details.getData().getSequenceNumber() == last ? last : last + 1)
                     : new LinkedChampMap<>(newRootNode, size, first, last + 1);
         }
         return details.isModified() ? renumber(newRootNode, size + 1, first, last + 1) : this;
@@ -230,7 +230,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         final BitmapIndexedNode<SequencedEntry<K, V>> newRootNode =
                 remove(null, new SequencedEntry<>(key), keyHash, 0, details, getEqualsFunction());
         if (details.isModified()) {
-            int seq = details.getOldValue().getSequenceNumber();
+            int seq = details.getData().getSequenceNumber();
             if (seq == newFirst) {
                 newFirst++;
             }
@@ -272,7 +272,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
     @Override
     @SuppressWarnings("unchecked")
     public Option<V> get(K key) {
-        Object result = findByData(
+        Object result = find(
                 new SequencedEntry<>(key),
                 Objects.hashCode(key), 0, getEqualsFunction());
         return (result instanceof SequencedEntry<?, ?>)
@@ -398,7 +398,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         if (!detailsCurrent.isModified()) {
             return this;
         }
-        int seq = detailsCurrent.getOldValue().getSequenceNumber();
+        int seq = detailsCurrent.getData().getSequenceNumber();
         ChangeEvent<SequencedEntry<K, V>> detailsNew = new ChangeEvent<>();
         newRootNode = newRootNode.update(null,
                 new SequencedEntry<>(newElement._1, newElement._2, seq),

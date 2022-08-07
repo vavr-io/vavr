@@ -80,7 +80,7 @@ import java.util.stream.Collector;
  *
  * @param <E> the element type
  */
-public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> implements SetMixin<E, LinkedChampSet<E>>, Serializable {
+public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> implements VavrSetMixin<E, LinkedChampSet<E>>, Serializable {
     private static final long serialVersionUID = 1L;
     private static final LinkedChampSet<?> EMPTY = new LinkedChampSet<>(BitmapIndexedNode.emptyNode(), 0, -1, 0);
 
@@ -174,8 +174,8 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
         if (details.isUpdated()) {
             return moveToLast
                     ? renumber(root, size,
-                    details.getOldValue().getSequenceNumber() == first ? first + 1 : first,
-                    details.getOldValue().getSequenceNumber() == last ? last : last + 1)
+                    details.getData().getSequenceNumber() == first ? first + 1 : first,
+                    details.getData().getSequenceNumber() == last ? last : last + 1)
                     : new LinkedChampSet<>(root, size, first, last);
         }
         return details.isModified() ? renumber(root, size + 1, first, last + 1) : this;
@@ -200,7 +200,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
 
     @Override
     public boolean contains(E o) {
-        return findByData(new SequencedElement<>(o), Objects.hashCode(o), 0, Objects::equals) != Node.NO_DATA;
+        return find(new SequencedElement<>(o), Objects.hashCode(o), 0, Objects::equals) != Node.NO_DATA;
     }
 
 
@@ -259,7 +259,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
                 new SequencedElement<>(key),
                 keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
-            int seq = details.getOldValue().getSequenceNumber();
+            int seq = details.getData().getSequenceNumber();
             if (seq == newFirst) {
                 newFirst++;
             }
@@ -382,7 +382,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
         if (!detailsCurrent.isModified()) {
             return this;
         }
-        int seq = detailsCurrent.getOldValue().getSequenceNumber();
+        int seq = detailsCurrent.getData().getSequenceNumber();
         ChangeEvent<SequencedElement<E>> detailsNew = new ChangeEvent<>();
         newRootNode = newRootNode.update(null,
                 new SequencedElement<>(newElement, seq), Objects.hashCode(newElement), 0, detailsNew,

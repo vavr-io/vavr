@@ -85,7 +85,7 @@ class BitmapIndexedNode<D> extends Node<D> {
                                         final Node<D> node) {
 
         final int idx = this.mixed.length - 1 - nodeIndex(bitpos);
-        if (isAllowedToEdit(mutator)) {
+        if (isAllowedToUpdate(mutator)) {
             // no copying if already editable
             this.mixed[idx] = node;
             return this;
@@ -129,10 +129,10 @@ class BitmapIndexedNode<D> extends Node<D> {
 
 
     @Override
-    public Object findByData(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction) {
+    public Object find(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction) {
         final int bitpos = bitpos(mask(dataHash, shift));
         if ((nodeMap & bitpos) != 0) {
-            return nodeAt(bitpos).findByData(data, dataHash, shift + BIT_PARTITION_SIZE, equalsFunction);
+            return nodeAt(bitpos).find(data, dataHash, shift + BIT_PARTITION_SIZE, equalsFunction);
         }
         if ((dataMap & bitpos) != 0) {
             D k = getData(dataIndex(bitpos));
@@ -262,7 +262,7 @@ class BitmapIndexedNode<D> extends Node<D> {
                     details.found(oldKey);
                     return this;
                 }
-                details.setUpdated(oldKey);
+                details.setReplaced(oldKey);
                 return copyAndSetData(mutator, dataIndex, updatedKey);
             }
             final Node<D> updatedSubNode =
@@ -283,7 +283,7 @@ class BitmapIndexedNode<D> extends Node<D> {
 
 
     private BitmapIndexedNode<D> copyAndSetData(UniqueId mutator, int dataIndex, D updatedData) {
-        if (isAllowedToEdit(mutator)) {
+        if (isAllowedToUpdate(mutator)) {
             this.mixed[dataIndex] = updatedData;
             return this;
         }

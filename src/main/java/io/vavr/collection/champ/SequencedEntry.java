@@ -8,6 +8,12 @@ import java.util.function.BiPredicate;
 import java.util.function.Function;
 import java.util.function.ToIntFunction;
 
+/**
+ * A {@code SequencedEntry} stores an entry of a map and a sequence number.
+ * <p>
+ * {@code hashCode} and {@code equals} are based on the key and the value
+ * of the entry - the sequence number is not included.
+ */
 class SequencedEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V>
         implements SequencedData {
     private final static long serialVersionUID = 0L;

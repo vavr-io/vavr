@@ -27,7 +27,7 @@ import java.util.function.Supplier;
  * @param <K> the key type of the map
  * @param <V> the value type of the map
  */
-interface MapMixin<K, V> extends Map<K, V> {
+interface VavrMapMixin<K, V> extends Map<K, V> {
     long serialVersionUID = 1L;
 
     /**

@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  *
  * @param <E> the element type of the set
  */
-class VavrSetFacade<E> implements SetMixin<E, VavrSetFacade<E>> {
+class VavrSetFacade<E> implements VavrSetMixin<E, VavrSetFacade<E>> {
     private static final long serialVersionUID = 1L;
     protected final Function<E, Set<E>> addFunction;
     protected final IntFunction<Set<E>> dropRightFunction;

@@ -72,7 +72,7 @@ import java.util.function.ToIntFunction;
  * @param <V> the value type
  */
 public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>>
-        implements MapMixin<K, V> {
+        implements VavrMapMixin<K, V> {
     private final static long serialVersionUID = 0L;
     private static final ChampMap<?, ?> EMPTY = new ChampMap<>(BitmapIndexedNode.emptyNode(), 0);
     private final int size;
@@ -147,7 +147,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
 
     @Override
     public boolean containsKey(K key) {
-        return findByData(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0,
+        return find(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0,
                 getEqualsFunction()) != Node.NO_DATA;
     }
 
@@ -181,7 +181,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
     @Override
     @SuppressWarnings("unchecked")
     public Option<V> get(K key) {
-        Object result = findByData(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0, getEqualsFunction());
+        Object result = find(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0, getEqualsFunction());
         return result == Node.NO_DATA || result == null
                 ? Option.none()
                 : Option.some(((AbstractMap.SimpleImmutableEntry<K, V>) result).getValue());

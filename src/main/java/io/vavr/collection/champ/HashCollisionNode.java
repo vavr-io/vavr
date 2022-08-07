@@ -75,7 +75,7 @@ class HashCollisionNode<D> extends Node<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    Object findByData(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction) {
+    Object find(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction) {
         for (Object entry : keys) {
             if (equalsFunction.test(data, (D) entry)) {
                 return entry;
@@ -132,7 +132,7 @@ class HashCollisionNode<D> extends Node<D> {
                 }
                 // copy keys and vals and remove entryLength elements at position idx
                 final Object[] entriesNew = ArrayHelper.copyComponentRemove(this.keys, idx, 1);
-                if (isAllowedToEdit(mutator)) {
+                if (isAllowedToUpdate(mutator)) {
                     this.keys = entriesNew;
                     return this;
                 }
@@ -158,8 +158,8 @@ class HashCollisionNode<D> extends Node<D> {
                     details.found(data);
                     return this;
                 }
-                details.setUpdated(oldKey);
-                if (isAllowedToEdit(mutator)) {
+                details.setReplaced(oldKey);
+                if (isAllowedToUpdate(mutator)) {
                     this.keys[i] = updatedKey;
                     return this;
                 }
@@ -172,7 +172,7 @@ class HashCollisionNode<D> extends Node<D> {
         final Object[] entriesNew = ArrayHelper.copyComponentAdd(this.keys, this.keys.length, 1);
         entriesNew[this.keys.length] = data;
         details.setAdded();
-        if (isAllowedToEdit(mutator)) {
+        if (isAllowedToUpdate(mutator)) {
             this.keys = entriesNew;
             return this;
         }

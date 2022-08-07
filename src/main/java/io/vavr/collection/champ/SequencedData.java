@@ -1,10 +1,17 @@
 package io.vavr.collection.champ;
 
 /**
- * Represents data in a CHAMP trie, that has a sequence number.
+ * A {@code SequencedData} stores a sequence number plus some data.
  * <p>
- * The sequence number is unique within the CHAMP trie.
+ * {@code SequencedData} objects are used to store sequenced data in a CHAMP
+ * trie (see {@link Node}).
  * <p>
+ * The kind of data is specified in concrete implementations of this
+ * interface.
+ * <p>
+ * All sequence numbers of {@code SequencedData} objects in the same CHAMP trie
+ * are unique. Sequence numbers range from {@link Integer#MIN_VALUE} (exclusive)
+ * to {@link Integer#MAX_VALUE} (inclusive).
  */
 interface SequencedData {
     /**
