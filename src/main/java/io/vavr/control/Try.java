@@ -1133,6 +1133,21 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     }
 
     /**
+     * Converts this {@code Try} to an {@link Either}, converting the Throwable (if present)
+     * to a left value using the passed {@link Function}
+     *
+     * @param throwableMapper A transformation from throwable to the left type of the new {@code Either}
+     * @return A new {@code Either}
+     */
+    public final <L> Either<L, T> toEither(Function<? super Throwable, ? extends L> throwableMapper) {
+        if (isFailure()) {
+            return Either.left(throwableMapper.apply(getCause()));
+        } else {
+            return Either.right(get());
+        }
+    }
+
+    /**
      * Converts this {@code Try} to a {@link Validation}.
      *
      * @return A new {@code Validation}
