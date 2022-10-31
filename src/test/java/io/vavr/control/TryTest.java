@@ -972,10 +972,8 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void shouldConvertFailureToEitherLeftMapper() {
         final Try<Object> failure = Try.failure(new RuntimeException("a certain value"));
-        final Either<Boolean, Object> either = failure.toEither(t ->
-                t.getMessage().equals("a certain value")
-        );
-        assertThat(either).isEqualTo(Either.left(true));
+        final Either<String, Object> either = failure.toEither(Throwable::getMessage);
+        assertThat(either).isEqualTo(Either.left("a certain value"));
     }
 
 
