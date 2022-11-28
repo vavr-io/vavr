@@ -917,7 +917,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty LinkedHashMap");
         } else {
-            return LinkedHashMap.ofEntries(list.tail());
+            return wrap(list.tail(), map.remove(list.head()._1()));
         }
     }
 
