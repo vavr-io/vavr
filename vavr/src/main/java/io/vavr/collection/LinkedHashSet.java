@@ -841,7 +841,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         if (map.isEmpty()) {
             throw new UnsupportedOperationException("tail of empty set");
         }
-        return remove(head());
+        return wrap(map.tail());
     }
 
     @Override
