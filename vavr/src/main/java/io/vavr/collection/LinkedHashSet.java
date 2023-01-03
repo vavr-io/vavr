@@ -641,12 +641,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         if (map.isEmpty()) {
             throw new NoSuchElementException("head of empty set");
         }
-        return iterator().next();
+        return map.head()._1();
     }
 
     @Override
     public Option<T> headOption() {
-        return iterator().headOption();
+        return map.headOption().map(Tuple2::_1);
     }
 
     @Override
