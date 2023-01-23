@@ -110,6 +110,10 @@ tasks.named('check') {
 }
 
 tasks.named('jar') {
+    from('.') {
+        include 'COPYRIGHT'
+    }
+
     manifest {
         attributes('Automatic-Module-Name': 'io.vavr')
     }
