@@ -2,7 +2,7 @@
  * \   \/   /      \   \/   /   __/   /      \   \/   /      \
  *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
- * Copyright 2022 Vavr, https://vavr.io
+ * Copyright 2023 Vavr, https://vavr.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -917,7 +917,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty LinkedHashMap");
         } else {
-            return LinkedHashMap.ofEntries(list.tail());
+            return wrap(list.tail(), map.remove(list.head()._1()));
         }
     }
 

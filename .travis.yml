@@ -20,6 +20,8 @@ matrix:
     env: JAVA_VERSION=11 DEPLOY=true
   - jdk: openjdk16
     env: JAVA_VERSION=16
+  - jdk: openjdk17
+    env: JAVA_VERSION=17
 
 before_cache:
 - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock

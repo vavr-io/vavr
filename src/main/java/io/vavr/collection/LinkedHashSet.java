@@ -2,7 +2,7 @@
  * \   \/   /      \   \/   /   __/   /      \   \/   /      \
  *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
- * Copyright 2022 Vavr, https://vavr.io
+ * Copyright 2023 Vavr, https://vavr.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -631,12 +631,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         if (map.isEmpty()) {
             throw new NoSuchElementException("head of empty set");
         }
-        return iterator().next();
+        return map.head()._1();
     }
 
     @Override
     public Option<T> headOption() {
-        return iterator().headOption();
+        return map.headOption().map(Tuple2::_1);
     }
 
     @Override
@@ -831,7 +831,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         if (map.isEmpty()) {
             throw new UnsupportedOperationException("tail of empty set");
         }
-        return remove(head());
+        return wrap(map.tail());
     }
 
     @Override
