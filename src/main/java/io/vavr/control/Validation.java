@@ -19,9 +19,11 @@
 package io.vavr.control;
 
 import io.vavr.*;
+import io.vavr.collection.Array;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -185,6 +187,52 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
             }
         }
         return errors.isEmpty() ? valid(list.reverse()) : invalid(errors.reverse());
+    }
+
+    /**
+     * A wrapper to {@link #all(Traversable)}.
+     * <p/>
+     * Usage example :
+     *
+     * <pre>{@code
+     *  Validation<String, Path> isDirectory(Path path){
+     *      [...]
+     *  }
+     *
+     *  Validation<String, Path> isWritable(Path path){
+     *      [...]
+     *  }
+     *
+     *  Validation<Seq<String>, Path> checkWritableDirectory = Validation.all(
+     *                 isDirectory(path),
+     *                 isWritable(path)
+     *  );
+     * }</pre>
+     *
+     * @see #all(Traversable)
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <E, T> Validation<Seq<E>, T> all(final Validation <? extends E, ? extends T>... values) {
+        Objects.requireNonNull(values, "values is null");
+        return all(Array.of(values));
+    }
+
+    /**
+     * Combine many {@code Validation} of the same type into a single {@code Validation} with a list of invalid values.
+     *
+     *
+     * @param <E>    value type in the case of invalid
+     * @param <T>    value type in the case of valid
+     * @param values An iterable of Validation instances.
+     * @return A valid Validation of the last value if all Validation instances are valid
+     * or an invalid Validation containing an accumulated List of errors.
+     * @throws NullPointerException if values is null
+     */
+    public static <E, T> Validation<Seq<E>, T> all(Traversable<? extends Validation <? extends E, ? extends T>> values) {
+        Objects.requireNonNull(values, "values is null");
+        Iterable<Validation<List<? extends E>, ? extends T>> mapped = values.map(v -> v.mapError(List::of));
+        return sequence(mapped).map(Traversable::last);
     }
 
     /**

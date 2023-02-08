@@ -20,8 +20,9 @@ package io.vavr.control;
 
 import io.vavr.AbstractValueTest;
 import io.vavr.collection.CharSeq;
-import io.vavr.collection.Seq;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -151,6 +152,58 @@ public class ValidationTest extends AbstractValueTest {
                 Validation.invalid(List.of("error3", "error4"))
         ));
         assertThat(actual).isEqualTo(Validation.invalid(List.of("error1", "error2", "error3", "error4")));
+    }
+
+    // -- Validation.all
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenAllCombiningNull() {
+        Validation.all((Traversable<? extends Validation<?, ?>>) null);
+    }
+
+    @Test
+    public void shouldCreateValidWhenAllCombiningValids() {
+        final Validation<Seq<String>, Integer> actual = Validation.all(List.of(
+                Validation.valid(1),
+                Validation.valid(2)
+        ));
+        assertThat(actual).isEqualTo(Validation.valid(List.of(1, 2).last()));
+    }
+
+    @Test
+    public void shouldCreateInvalidWhenAllCombiningInvalid() {
+        final Validation<Seq<String>, Integer> actual = Validation.all(List.of(
+                Validation.valid(1),
+                Validation.invalid("error1"),
+                Validation.valid(2),
+                Validation.invalid("error2")
+        ));
+        assertThat(actual).isEqualTo(Validation.invalid(List.of("error1", "error2")));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void shouldThrowWhenAllCombiningVargNull() {
+        Validation.all((Validation<?, ?>) null);
+    }
+
+    @Test
+    public void shouldCreateValidWhenAllCombiningVargValids() {
+        final Validation<Seq<String>, Integer> actual = Validation.all(
+                Validation.valid(1),
+                Validation.valid(2)
+        );
+        assertThat(actual).isEqualTo(Validation.valid(List.of(1, 2).last()));
+    }
+
+    @Test
+    public void shouldCreateInvalidWhenAllCombiningVargInvalid() {
+        Validation<Seq<String>, Integer> actual = Validation.all(
+                Validation.valid(1),
+                Validation.invalid("error2"),
+                Validation.valid(3),
+                Validation.invalid("error4")
+        );
+        assertThat(actual).isEqualTo(Validation.invalid(List.of("error2", "error4")));
     }
 
     // -- Validation.traverse
