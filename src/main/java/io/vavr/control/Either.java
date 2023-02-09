@@ -794,6 +794,22 @@ public abstract class Either<L, R> implements Iterable<R>, io.vavr.Value<R>, Ser
         return isRight() ? Validation.valid(get()) : Validation.invalid(getLeft());
     }
 
+    /**
+     * Transforms this {@code Either} into a {@link Try} instance.
+     * <p>
+     * Map this {@code left} value to a {@link Throwable} using the {@code leftMapper}
+     * or return a {@link Try#success(Object) Success} of this {@code right} value.
+     * </p>
+     *
+     * @param leftMapper A function that maps the left value of this {@code Either} to a {@link Throwable} instance
+     * @return A {@link Try} instance that represents the result of the transformation
+     * @throws NullPointerException if {@code leftMapper} is {@code null}
+     */
+    public final Try<R> toTry(Function<? super L, ? extends Throwable> leftMapper) {
+        Objects.requireNonNull(leftMapper, "leftMapper is null");
+        return mapLeft(leftMapper).fold(Try::failure,Try::success);
+    }
+
     // -- Left/Right projections
 
     /**
