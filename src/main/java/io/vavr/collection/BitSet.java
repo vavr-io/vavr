@@ -93,7 +93,7 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
             return empty().addAll(Iterator.ofAll(javaStream.iterator()));
         }
 
-        public BitSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        public BitSet<T> tabulate(int n, IntFunction<? extends T> f) {
             Objects.requireNonNull(f, "f is null");
             return empty().addAll(Collections.tabulate(n, f));
         }
@@ -160,7 +160,7 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
      * @return A BitSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static BitSet<Integer> tabulate(int n, Function<Integer, Integer> f) {
+    public static BitSet<Integer> tabulate(int n, IntFunction<Integer> f) {
         return Builder.DEFAULT.tabulate(n, f);
     }
 
@@ -675,12 +675,12 @@ public abstract class BitSet<T> implements SortedSet<T>, Serializable {
             }
         }
 
-        private void setElement(long[] words, int element) {
+        private static void setElement(long[] words, int element) {
             final int index = element >> ADDRESS_BITS_PER_WORD;
             words[index] |= (1L << element);
         }
 
-        private void unsetElement(long[] words, int element) {
+        private static void unsetElement(long[] words, int element) {
             final int index = element >> ADDRESS_BITS_PER_WORD;
             words[index] &= ~(1L << element);
         }

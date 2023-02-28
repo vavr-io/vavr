@@ -455,7 +455,7 @@ final class Collections {
         }
     }
 
-    static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    static <T> Iterator<T> tabulate(int n, IntFunction<? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         if (n <= 0) {
             return Iterator.empty();

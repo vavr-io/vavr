@@ -1540,7 +1540,7 @@ interface ValueModule {
     }
 
     static <T, R extends java.util.Collection<T>> R toJavaCollection(
-            Value<T> value, Function<Integer, R> containerSupplier, int defaultInitialCapacity) {
+            Value<T> value, IntFunction<R> containerSupplier, int defaultInitialCapacity) {
         final int size;
         if (value instanceof Traversable && ((Traversable) value).isTraversableAgain() && !value.isLazy()) {
             size = ((Traversable) value).size();
