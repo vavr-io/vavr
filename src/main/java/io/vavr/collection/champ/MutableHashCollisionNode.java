@@ -8,15 +8,15 @@ package io.vavr.collection.champ;
 
  class MutableHashCollisionNode<K> extends HashCollisionNode<K> {
      private final static long serialVersionUID = 0L;
-     private final UniqueId mutator;
+     private final IdentityObject mutator;
 
-     MutableHashCollisionNode(UniqueId mutator, int hash, Object[] entries) {
+     MutableHashCollisionNode(IdentityObject mutator, int hash, Object[] entries) {
          super(hash, entries);
          this.mutator = mutator;
      }
 
      @Override
-     protected UniqueId getMutator() {
-        return mutator;
-    }
+     protected IdentityObject getMutator() {
+         return mutator;
+     }
 }

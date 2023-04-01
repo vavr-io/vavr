@@ -25,7 +25,7 @@ abstract class AbstractChampMap<K, V, X> extends AbstractMap<K, V>
      * <p>
      * If this mutator id is null, then this map does not own any nodes.
      */
-    protected UniqueId mutator;
+    protected IdentityObject mutator;
 
     /**
      * The root of this CHAMP trie.
@@ -42,9 +42,9 @@ abstract class AbstractChampMap<K, V, X> extends AbstractMap<K, V>
      */
     protected int modCount;
 
-    protected UniqueId getOrCreateMutator() {
+    protected IdentityObject getOrCreateMutator() {
         if (mutator == null) {
-            mutator = new UniqueId();
+            mutator = new IdentityObject();
         }
         return mutator;
     }

@@ -21,16 +21,16 @@ import static io.vavr.collection.champ.NodeFactory.newHashCollisionNode;
  */
 class HashCollisionNode<D> extends Node<D> {
     private final int hash;
-    Object[] keys;
+    @NonNull Object[] data;
 
-    HashCollisionNode(final int hash, final Object[] keys) {
-        this.keys = keys;
+    HashCollisionNode(int hash, Object @NonNull [] data) {
+        this.data = data;
         this.hash = hash;
     }
 
     @Override
     int dataArity() {
-        return keys.length;
+        return data.length;
     }
 
     @Override
@@ -40,23 +40,23 @@ class HashCollisionNode<D> extends Node<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    boolean equivalent(Object other) {
+    boolean equivalent(@NonNull Object other) {
         if (this == other) {
             return true;
         }
         HashCollisionNode<?> that = (HashCollisionNode<?>) other;
-        Object[] thatEntries = that.keys;
-        if (hash != that.hash || thatEntries.length != keys.length) {
+        @NonNull Object[] thatEntries = that.data;
+        if (hash != that.hash || thatEntries.length != data.length) {
             return false;
         }
 
         // Linear scan for each key, because of arbitrary element order.
-        Object[] thatEntriesCloned = thatEntries.clone();
+        @NonNull Object[] thatEntriesCloned = thatEntries.clone();
         int remainingLength = thatEntriesCloned.length;
         outerLoop:
-        for (final Object key : keys) {
+        for (Object key : data) {
             for (int j = 0; j < remainingLength; j += 1) {
-                final Object todoKey = thatEntriesCloned[j];
+                Object todoKey = thatEntriesCloned[j];
                 if (Objects.equals((D) todoKey, (D) key)) {
                     // We have found an equal entry. We do not need to compare
                     // this entry again. So we replace it with the last entry
@@ -75,9 +75,10 @@ class HashCollisionNode<D> extends Node<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    Object find(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction) {
-        for (Object entry : keys) {
-            if (equalsFunction.test(data, (D) entry)) {
+    @Nullable
+    Object find(D key, int dataHash, int shift, @NonNull BiPredicate<D, D> equalsFunction) {
+        for (Object entry : data) {
+            if (equalsFunction.test(key, (D) entry)) {
                 return entry;
             }
         }
@@ -86,11 +87,13 @@ class HashCollisionNode<D> extends Node<D> {
 
     @Override
     @SuppressWarnings("unchecked")
-    D getData(final int index) {
-        return (D) keys[index];
+    @NonNull
+    D getData(int index) {
+        return (D) data[index];
     }
 
     @Override
+    @NonNull
     Node<D> getNode(int index) {
         throw new IllegalStateException("Is leaf node.");
     }
@@ -114,26 +117,27 @@ class HashCollisionNode<D> extends Node<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    Node<D> remove(final UniqueId mutator, final D data,
-                   final int dataHash, final int shift, final ChangeEvent<D> details, BiPredicate<D, D> equalsFunction) {
-        for (int idx = 0, i = 0; i < keys.length; i += 1, idx++) {
-            if (equalsFunction.test((D) keys[i], data)) {
-                @SuppressWarnings("unchecked") final D currentVal = (D) keys[i];
+    @Nullable
+    Node<D> remove(@Nullable IdentityObject mutator, D data,
+                   int dataHash, int shift, @NonNull ChangeEvent<D> details, @NonNull BiPredicate<D, D> equalsFunction) {
+        for (int idx = 0, i = 0; i < this.data.length; i += 1, idx++) {
+            if (equalsFunction.test((D) this.data[i], data)) {
+                @SuppressWarnings("unchecked") D currentVal = (D) this.data[i];
                 details.setRemoved(currentVal);
 
-                if (keys.length == 1) {
+                if (this.data.length == 1) {
                     return BitmapIndexedNode.emptyNode();
-                } else if (keys.length == 2) {
+                } else if (this.data.length == 2) {
                     // Create root node with singleton element.
                     // This node will be a) either be the new root
                     // returned, or b) unwrapped and inlined.
-                    final Object[] theOtherEntry = {getData(idx ^ 1)};
-                    return NodeFactory.newBitmapIndexedNode(mutator, 0, bitpos(mask(dataHash, 0)), theOtherEntry);
+                    return NodeFactory.newBitmapIndexedNode(mutator, 0, bitpos(mask(dataHash, 0)),
+                            new Object[]{getData(idx ^ 1)});
                 }
-                // copy keys and vals and remove entryLength elements at position idx
-                final Object[] entriesNew = ArrayHelper.copyComponentRemove(this.keys, idx, 1);
+                // copy keys and remove 1 element at position idx
+                Object[] entriesNew = ListHelper.copyComponentRemove(this.data, idx, 1);
                 if (isAllowedToUpdate(mutator)) {
-                    this.keys = entriesNew;
+                    this.data = entriesNew;
                     return this;
                 }
                 return newHashCollisionNode(mutator, dataHash, entriesNew);
@@ -144,36 +148,37 @@ class HashCollisionNode<D> extends Node<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    Node<D> update(final UniqueId mutator, final D data,
-                   final int dataHash, final int shift, final ChangeEvent<D> details,
-                   final BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction,
-                   ToIntFunction<D> hashFunction) {
+    @Nullable
+    Node<D> update(@Nullable IdentityObject mutator, D data,
+                   int dataHash, int shift, @NonNull ChangeEvent<D> details,
+                   @NonNull BiFunction<D, D, D> replaceFunction, @NonNull BiPredicate<D, D> equalsFunction,
+                   @NonNull ToIntFunction<D> hashFunction) {
         assert this.hash == dataHash;
 
-        for (int i = 0; i < keys.length; i++) {
-            D oldKey = (D) keys[i];
+        for (int i = 0; i < this.data.length; i++) {
+            D oldKey = (D) this.data[i];
             if (equalsFunction.test(oldKey, data)) {
-                D updatedKey = updateFunction.apply(oldKey, data);
+                D updatedKey = replaceFunction.apply(oldKey, data);
                 if (updatedKey == oldKey) {
                     details.found(data);
                     return this;
                 }
                 details.setReplaced(oldKey);
                 if (isAllowedToUpdate(mutator)) {
-                    this.keys[i] = updatedKey;
+                    this.data[i] = updatedKey;
                     return this;
                 }
-                final Object[] newKeys = ArrayHelper.copySet(this.keys, i, updatedKey);
+                final Object[] newKeys = ListHelper.copySet(this.data, i, updatedKey);
                 return newHashCollisionNode(mutator, dataHash, newKeys);
             }
         }
 
         // copy entries and add 1 more at the end
-        final Object[] entriesNew = ArrayHelper.copyComponentAdd(this.keys, this.keys.length, 1);
-        entriesNew[this.keys.length] = data;
+        Object[] entriesNew = ListHelper.copyComponentAdd(this.data, this.data.length, 1);
+        entriesNew[this.data.length] = data;
         details.setAdded();
         if (isAllowedToUpdate(mutator)) {
-            this.keys = entriesNew;
+            this.data = entriesNew;
             return this;
         }
         return newHashCollisionNode(mutator, dataHash, entriesNew);

@@ -62,7 +62,7 @@ class SequencedElement<E> implements SequencedData {
      * @param mutator the mutator which will own all nodes of the trie
      * @return the new root
      */
-    public static <K> BitmapIndexedNode<SequencedElement<K>> renumber(int size, BitmapIndexedNode<SequencedElement<K>> root, UniqueId mutator,
+    public static <K> BitmapIndexedNode<SequencedElement<K>> renumber(int size, BitmapIndexedNode<SequencedElement<K>> root, IdentityObject mutator,
                                                                       ToIntFunction<SequencedElement<K>> hashFunction,
                                                                       BiPredicate<SequencedElement<K>, SequencedElement<K>> equalsFunction) {
         if (size == 0) {

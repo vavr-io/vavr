@@ -14,7 +14,7 @@ abstract class AbstractChampSet<E, X> extends AbstractSet<E> implements Serializ
      * <p>
      * If this mutator id is null, then this set does not own any nodes.
      */
-    protected UniqueId mutator;
+    protected IdentityObject mutator;
 
     /**
      * The root of this CHAMP trie.
@@ -70,9 +70,9 @@ abstract class AbstractChampSet<E, X> extends AbstractSet<E> implements Serializ
         return size;
     }
 
-    protected UniqueId getOrCreateMutator() {
+    protected IdentityObject getOrCreateMutator() {
         if (mutator == null) {
-            mutator = new UniqueId();
+            mutator = new IdentityObject();
         }
         return mutator;
     }

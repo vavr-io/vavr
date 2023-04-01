@@ -62,10 +62,11 @@ public class KotlinxPersistentHashSetJmh {
     }
 
     @Benchmark
-    public void mRemoveThenAdd() {
-        Key key =data.nextKeyInA();
-        setA.remove(key).add(key);
+    public PersistentSet<Key> mRemoveThenAdd() {
+        Key key = data.nextKeyInA();
+        return setA.remove(key).add(key);
     }
+
     @Benchmark
     public Key mHead() {
         return setA.iterator().next();

@@ -6,6 +6,7 @@
 package io.vavr.collection.champ;
 
 
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -37,16 +38,16 @@ import java.util.function.ToIntFunction;
  * of the tree.
  * <p>
  * In this implementation, a hash code has a length of
- * {@value #HASH_CODE_LENGTH} bits, and is split up into parts of
- * {@value BIT_PARTITION_SIZE} bits (the last part contains the remaining bits).
+ * {@value #HASH_CODE_LENGTH} bits, and is split up in little-endian order into parts of
+ * {@value #BIT_PARTITION_SIZE} bits (the last part contains the remaining bits).
  *
  * @param <D> the type of the data objects that are stored in this trie
  */
-abstract class Node<D> {
+public abstract class Node<D> {
     /**
      * Represents no data.
-     * We can not use {@code null}, because we allow storing null-data and
-     * null-values in the trie.
+     * We can not use {@code null}, because we allow storing null-data in the
+     * trie.
      */
     public static final Object NO_DATA = new Object();
     static final int HASH_CODE_LENGTH = 32;
@@ -76,33 +77,60 @@ abstract class Node<D> {
      * @param mask masked data hash
      * @return bit position
      */
-    static int bitpos(final int mask) {
+    static int bitpos(int mask) {
         return 1 << mask;
     }
 
-    /**
-     * Given a bitmap and a bit-position, returns the index
-     * in the array.
-     * <p>
-     * For example, if the bitmap is 0b1101 and
-     * bit-position is 0b0100, then the index is 1.
-     *
-     * @param bitmap a bit-map
-     * @param bitpos a bit-position
-     * @return the array index
-     */
-    static int index(final int bitmap, final int bitpos) {
-        return Integer.bitCount(bitmap & (bitpos - 1));
+    public static <E> @NonNull E getFirst(@NonNull Node<E> node) {
+        while (node instanceof BitmapIndexedNode<E> bxn) {
+            int nodeMap = bxn.nodeMap();
+            int dataMap = bxn.dataMap();
+            if ((nodeMap | dataMap) == 0) {
+                break;
+            }
+            int firstNodeBit = Integer.numberOfTrailingZeros(nodeMap);
+            int firstDataBit = Integer.numberOfTrailingZeros(dataMap);
+            if (nodeMap != 0 && firstNodeBit < firstDataBit) {
+                node = node.getNode(0);
+            } else {
+                return node.getData(0);
+            }
+        }
+        if (node instanceof HashCollisionNode<E> hcn) {
+            return hcn.getData(0);
+        }
+        throw new NoSuchElementException();
     }
 
-    static int mask(final int dataHash, final int shift) {
+    public static <E> @NonNull E getLast(@NonNull Node<E> node) {
+        while (node instanceof BitmapIndexedNode<E> bxn) {
+            int nodeMap = bxn.nodeMap();
+            int dataMap = bxn.dataMap();
+            if ((nodeMap | dataMap) == 0) {
+                break;
+            }
+            int lastNodeBit = 32 - Integer.numberOfLeadingZeros(nodeMap);
+            int lastDataBit = 32 - Integer.numberOfLeadingZeros(dataMap);
+            if (lastNodeBit > lastDataBit) {
+                node = node.getNode(node.nodeArity() - 1);
+            } else {
+                return node.getData(node.dataArity() - 1);
+            }
+        }
+        if (node instanceof HashCollisionNode<E> hcn) {
+            return hcn.getData(hcn.dataArity() - 1);
+        }
+        throw new NoSuchElementException();
+    }
+
+    static int mask(int dataHash, int shift) {
         return (dataHash >>> shift) & BIT_PARTITION_MASK;
     }
 
-    static <K> Node<K> mergeTwoDataEntriesIntoNode(UniqueId mutator,
-                                                   final K k0, final int keyHash0,
-                                                   final K k1, final int keyHash1,
-                                                   final int shift) {
+    static <K> @NonNull Node<K> mergeTwoDataEntriesIntoNode(IdentityObject mutator,
+                                                            K k0, int keyHash0,
+                                                            K k1, int keyHash1,
+                                                            int shift) {
         assert !Objects.equals(k0, k1);
 
         if (shift >= HASH_CODE_LENGTH) {
@@ -112,12 +140,12 @@ abstract class Node<D> {
             return NodeFactory.newHashCollisionNode(mutator, keyHash0, entries);
         }
 
-        final int mask0 = mask(keyHash0, shift);
-        final int mask1 = mask(keyHash1, shift);
+        int mask0 = mask(keyHash0, shift);
+        int mask1 = mask(keyHash1, shift);
 
         if (mask0 != mask1) {
             // both nodes fit on same level
-            final int dataMap = bitpos(mask0) | bitpos(mask1);
+            int dataMap = bitpos(mask0) | bitpos(mask1);
 
             Object[] entries = new Object[2];
             if (mask0 < mask1) {
@@ -130,13 +158,13 @@ abstract class Node<D> {
                 return NodeFactory.newBitmapIndexedNode(mutator, (0), dataMap, entries);
             }
         } else {
-            final Node<K> node = mergeTwoDataEntriesIntoNode(mutator,
+            Node<K> node = mergeTwoDataEntriesIntoNode(mutator,
                     k0, keyHash0,
                     k1, keyHash1,
                     shift + BIT_PARTITION_SIZE);
             // values fit on next level
 
-            final int nodeMap = bitpos(mask0);
+            int nodeMap = bitpos(mask0);
             return NodeFactory.newBitmapIndexedNode(mutator, nodeMap, (0), new Object[]{node});
         }
     }
@@ -149,7 +177,7 @@ abstract class Node<D> {
      * @param other the other trie
      * @return true if equivalent
      */
-    abstract boolean equivalent(final Object other);
+    abstract boolean equivalent(@NonNull Object other);
 
     /**
      * Finds a data object in the CHAMP trie, that matches the provided data
@@ -162,15 +190,15 @@ abstract class Node<D> {
      * @return the found data, returns {@link #NO_DATA} if no data in the trie
      * matches the provided data.
      */
-    abstract Object find(final D data, final int dataHash, final int shift, BiPredicate<D, D> equalsFunction);
+    abstract Object find(D data, int dataHash, int shift, @NonNull BiPredicate<D, D> equalsFunction);
 
-    abstract D getData(final int index);
+    abstract @Nullable D getData(int index);
 
-    UniqueId getMutator() {
+    @Nullable IdentityObject getMutator() {
         return null;
     }
 
-    abstract Node<D> getNode(final int index);
+    abstract @NonNull Node<D> getNode(int index);
 
     abstract boolean hasData();
 
@@ -178,8 +206,8 @@ abstract class Node<D> {
 
     abstract boolean hasNodes();
 
-    boolean isAllowedToUpdate(UniqueId y) {
-        UniqueId x = getMutator();
+    boolean isAllowedToUpdate(@Nullable IdentityObject y) {
+        IdentityObject x = getMutator();
         return x != null && x == y;
     }
 
@@ -202,39 +230,43 @@ abstract class Node<D> {
      * @param equalsFunction a function that tests data objects for equality
      * @return the updated trie
      */
-    abstract Node<D> remove(final UniqueId mutator, final D data,
-                            final int dataHash, final int shift,
-                            final ChangeEvent<D> details,
-                            BiPredicate<D, D> equalsFunction);
+    abstract @NonNull Node<D> remove(@Nullable IdentityObject mutator, D data,
+                                     int dataHash, int shift,
+                                     @NonNull ChangeEvent<D> details,
+                                     @NonNull BiPredicate<D, D> equalsFunction);
 
     /**
-     * Inserts or updates a data object in the trie.
+     * Inserts or replaces a data object in the trie.
      *
-     * @param mutator        A non-null value means, that this method may update
-     *                       nodes that are marked with the same unique id,
-     *                       and that this method may create new mutable nodes
-     *                       with this unique id.
-     *                       A null value means, that this method must not update
-     *                       any node and may only create new immutable nodes.
-     * @param data           the data to be inserted,
-     *                       or to be used for updating if there is already
-     *                       a matching data object in the trie
-     * @param dataHash       the hash-code of the data object
-     * @param shift          the shift of the current node
-     * @param details        this method reports the changes that it performed
-     *                       in this object
-     * @param updateFunction only used on update:
-     *                       given the existing data object (first argument) and
-     *                       the new data object (second argument), yields a
-     *                       new data object or returns either of the two.
-     * @param equalsFunction a function that tests data objects for equality
-     * @param hashFunction   a function that computes the hash-code for a data
-     *                       object
+     * @param mutator         A non-null value means, that this method may update
+     *                        nodes that are marked with the same unique id,
+     *                        and that this method may create new mutable nodes
+     *                        with this unique id.
+     *                        A null value means, that this method must not update
+     *                        any node and may only create new immutable nodes.
+     * @param data            the data to be inserted,
+     *                        or to be used for merging if there is already
+     *                        a matching data object in the trie
+     * @param dataHash        the hash-code of the data object
+     * @param shift           the shift of the current node
+     * @param details         this method reports the changes that it performed
+     *                        in this object
+     * @param replaceFunction only used if there is a matching data object
+     *                        in the trie.
+     *                        Given the existing data object (first argument) and
+     *                        the new data object (second argument), yields a
+     *                        new data object or returns either of the two.
+     *                        In all cases, the update function must return
+     *                        a data object that has the same data hash
+     *                        as the existing data object.
+     * @param equalsFunction  a function that tests data objects for equality
+     * @param hashFunction    a function that computes the hash-code for a data
+     *                        object
      * @return the updated trie
      */
-    abstract Node<D> update(final UniqueId mutator, final D data,
-                            final int dataHash, final int shift, final ChangeEvent<D> details,
-                            BiFunction<D, D, D> updateFunction,
-                            BiPredicate<D, D> equalsFunction,
-                            ToIntFunction<D> hashFunction);
+    abstract @NonNull Node<D> update(@Nullable IdentityObject mutator, D data,
+                                     int dataHash, int shift, @NonNull ChangeEvent<D> details,
+                                     @NonNull BiFunction<D, D, D> replaceFunction,
+                                     @NonNull BiPredicate<D, D> equalsFunction,
+                                     @NonNull ToIntFunction<D> hashFunction);
 }

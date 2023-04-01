@@ -35,11 +35,12 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 4)
-@Warmup(iterations = 4)
-@Fork(value = 1)
+@Measurement(iterations = 0)
+@Warmup(iterations = 0)
+@Fork(value = 0)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
+@SuppressWarnings("unchecked")
 public class ScalaHashMapJmh {
     @Param({"1000000"})
     private int size;
@@ -96,5 +97,10 @@ public class ScalaHashMapJmh {
     @Benchmark
     public Key mHead() {
         return mapA.head()._1;
+    }
+
+    @Benchmark
+    public HashMap<Key, Boolean> mTail() {
+        return mapA.tail();
     }
 }

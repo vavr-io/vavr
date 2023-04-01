@@ -47,7 +47,7 @@ class SequencedEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V>
      * @param mutator the mutator which will own all nodes of the trie
      * @return the new root
      */
-    public static <K, V> BitmapIndexedNode<SequencedEntry<K, V>> renumber(int size, BitmapIndexedNode<SequencedEntry<K, V>> root, UniqueId mutator,
+    public static <K, V> BitmapIndexedNode<SequencedEntry<K, V>> renumber(int size, BitmapIndexedNode<SequencedEntry<K, V>> root, IdentityObject mutator,
                                                                           ToIntFunction<SequencedEntry<K, V>> hashFunction,
                                                                           BiPredicate<SequencedEntry<K, V>, SequencedEntry<K, V>> equalsFunction) {
         if (size == 0) {

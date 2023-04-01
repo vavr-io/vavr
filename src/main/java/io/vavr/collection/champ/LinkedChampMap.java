@@ -378,7 +378,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
 
     private LinkedChampMap<K, V> renumber(BitmapIndexedNode<SequencedEntry<K, V>> root, int size, int first, int last) {
         if (SequencedData.mustRenumber(size, first, last)) {
-            root = SequencedEntry.renumber(size, root, new UniqueId(), Objects::hashCode, Objects::equals);
+            root = SequencedEntry.renumber(size, root, new IdentityObject(), Objects::hashCode, Objects::equals);
             return new LinkedChampMap<>(root, size, -1, size);
         }
         return new LinkedChampMap<>(root, size, first, last);
@@ -390,7 +390,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
             return this;
         }
         final ChangeEvent<SequencedEntry<K, V>> detailsCurrent = new ChangeEvent<>();
-        BitmapIndexedNode<SequencedEntry<K, V>> newRootNode = remove(null,
+        IdentityObject mutator = new IdentityObject();
+        BitmapIndexedNode<SequencedEntry<K, V>> newRootNode = remove(mutator,
                 new SequencedEntry<>(currentElement._1, currentElement._2),
                 Objects.hashCode(currentElement._1), 0, detailsCurrent,
                 (a, b) -> Objects.equals(a.getKey(), b.getKey())
@@ -400,7 +401,7 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         }
         int seq = detailsCurrent.getData().getSequenceNumber();
         ChangeEvent<SequencedEntry<K, V>> detailsNew = new ChangeEvent<>();
-        newRootNode = newRootNode.update(null,
+        newRootNode = newRootNode.update(mutator,
                 new SequencedEntry<>(newElement._1, newElement._2, seq),
                 Objects.hashCode(newElement._1), 0, detailsNew,
                 getForceUpdateFunction(), getEqualsFunction(), getHashFunction());

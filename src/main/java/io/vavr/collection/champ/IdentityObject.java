@@ -10,9 +10,9 @@ import java.io.Serializable;
 /**
  * An object with a unique identity within this VM.
  */
-class UniqueId implements Serializable {
+class IdentityObject implements Serializable {
     private final static long serialVersionUID = 0L;
 
-    public UniqueId() {
+    public IdentityObject() {
     }
 }
