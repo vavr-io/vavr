@@ -1,6 +1,6 @@
 package io.vavr.jmh;
 
-import io.vavr.collection.ChampSet;
+import io.vavr.collection.champ.ChampSet;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;

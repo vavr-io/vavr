@@ -1,7 +1,6 @@
 package io.vavr.jmh;
 
-import kotlinx.collections.immutable.ExtensionsKt;
-import kotlinx.collections.immutable.PersistentSet;
+import io.vavr.collection.champ.ChampChampSet;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -22,34 +21,35 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark           (size)  Mode  Cnt     _      Score         Error  Units
- * mContainsFound     1000000  avgt    4     _   210.009 ±        2.035  ns/op
- * mContainsNotFound  1000000  avgt    4     _   206.363 ±        3.361  ns/op
- * mHead              1000000  avgt    4     _    24.717 ±        1.430  ns/op
- * mIterate           1000000  avgt    4  279_659623.980 ± 12253725.677  ns/op
- * mRemoveThenAdd     1000000  avgt    4     _  1688.609 ±      162.751  ns/op
- * mTail              1000000  avgt    4     _   295.335 ±       80.637  ns/op
+ * Benchmark          (size)  Mode  Cnt    _     Score         Error  Units
+ * ContainsFound     1000000  avgt    4    _   187.804 ±       7.898  ns/op
+ * ContainsNotFound  1000000  avgt    4    _   189.635 ±      11.438  ns/op
+ * Head              1000000  avgt    4  17_254402.086 ± 6508953.518  ns/op
+ * Iterate           1000000  avgt    4  51_883556.621 ± 8627597.187  ns/op
+ * RemoveThenAdd     1000000  avgt    4    _   576.505 ±      45.590  ns/op
+ * Tail              1000000  avgt    4  18_164028.334 ± 2231690.063  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 4)
-@Warmup(iterations = 4)
-@Fork(value = 1)
+@Measurement(iterations = 0)
+@Warmup(iterations = 0)
+@Fork(value = 0)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
-public class KotlinxPersistentOrderedSetJmh {
+public class VavrChampChampSetJmh {
     @Param({"1000000"})
     private int size;
 
     private final int mask = ~64;
 
     private BenchmarkData data;
-    private PersistentSet<Key> setA;
+    private ChampChampSet<Key> setA;
+
 
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-        setA =  ExtensionsKt.toPersistentSet(data.setA);
+        setA = ChampChampSet.ofAll(data.setA);
     }
 
     @Benchmark
@@ -66,13 +66,15 @@ public class KotlinxPersistentOrderedSetJmh {
         Key key =data.nextKeyInA();
         setA.remove(key).add(key);
     }
+
     @Benchmark
     public Key mHead() {
-        return setA.iterator().next();
+        return setA.head();
     }
+
     @Benchmark
-    public PersistentSet<Key> mTail() {
-        return setA.remove(setA.iterator().next());
+    public ChampChampSet<Key> mTail() {
+        return setA.tail();
     }
 
     @Benchmark
@@ -86,4 +88,5 @@ public class KotlinxPersistentOrderedSetJmh {
         Key key = data.nextKeyInB();
         return setA.contains(key);
     }
+
 }

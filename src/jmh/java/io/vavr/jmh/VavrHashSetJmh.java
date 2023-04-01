@@ -1,5 +1,6 @@
 package io.vavr.jmh;
 
+import io.vavr.collection.HashSet;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -12,7 +13,6 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 
-import io.vavr.collection.HashSet;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,19 +21,19 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark          (size)  Mode  Cnt    _     Score         Error  Units
- * ContainsFound     1000000  avgt    4    _   187.334 ±       6.720  ns/op
- * ContainsNotFound  1000000  avgt    4    _   184.569 ±       6.285  ns/op
- * Head              1000000  avgt    4    _    28.304 ±       1.221  ns/op
- * Iterate           1000000  avgt    4  75_220573.689 ± 2519747.255  ns/op
- * RemoveThenAdd     1000000  avgt    4    _  515.512 ±      17.707  ns/op
- * Tail              1000000  avgt    4    _  126.476 ±      12.657  ns/op
+ *                    (size)  Mode  Cnt         Score   Error  Units
+ * ContainsFound     1000000  avgt            378.413          ns/op
+ * ContainsNotFound  1000000  avgt            336.846          ns/op
+ * Head              1000000  avgt             30.872          ns/op
+ * Iterate           1000000  avgt       89830953.705          ns/op
+ * RemoveThenAdd     1000000  avgt            704.592          ns/op
+ * Tail              1000000  avgt            224.280          ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 4)
-@Warmup(iterations = 4)
-@Fork(value = 1)
+@Measurement(iterations = 0)
+@Warmup(iterations = 0)
+@Fork(value = 0)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class VavrHashSetJmh {

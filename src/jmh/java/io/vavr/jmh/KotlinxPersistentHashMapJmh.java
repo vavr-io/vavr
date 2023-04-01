@@ -65,15 +65,15 @@ public class KotlinxPersistentHashMapJmh {
     }
 
     @Benchmark
-    public void mRemoveThenAdd() {
-        Key key =data.nextKeyInA();
-        mapA.remove(key).put(key,Boolean.TRUE);
+    public PersistentMap<Key, Boolean> mRemoveThenAdd() {
+        Key key = data.nextKeyInA();
+        return mapA.remove(key).put(key, Boolean.TRUE);
     }
 
     @Benchmark
-    public void mPut() {
-        Key key =data.nextKeyInA();
-        mapA.put(key,Boolean.FALSE);
+    public PersistentMap<Key, Boolean> mPut() {
+        Key key = data.nextKeyInA();
+        return mapA.put(key, Boolean.FALSE);
     }
 
     @Benchmark
@@ -91,5 +91,10 @@ public class KotlinxPersistentHashMapJmh {
     @Benchmark
     public Key mHead() {
         return mapA.keySet().iterator().next();
+    }
+
+    @Benchmark
+    public PersistentMap<Key, Boolean> mTail() {
+        return mapA.remove(mapA.keySet().iterator().next());
     }
 }

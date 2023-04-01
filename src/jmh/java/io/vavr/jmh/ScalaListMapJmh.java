@@ -34,11 +34,12 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 4)
-@Warmup(iterations = 4)
-@Fork(value = 1)
+@Measurement(iterations = 0)
+@Warmup(iterations = 0)
+@Fork(value = 0)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
+@SuppressWarnings("unchecked")
 public class ScalaListMapJmh {
     @Param({"1000000"})
     private int size;

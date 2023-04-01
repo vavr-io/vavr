@@ -8,15 +8,15 @@ package io.vavr.collection.champ;
 
  class MutableBitmapIndexedNode<K> extends BitmapIndexedNode<K> {
      private final static long serialVersionUID = 0L;
-     private final UniqueId mutator;
+     private final IdentityObject mutator;
 
-     MutableBitmapIndexedNode(UniqueId mutator, int nodeMap, int dataMap, Object[] nodes) {
+     MutableBitmapIndexedNode(IdentityObject mutator, int nodeMap, int dataMap, Object[] nodes) {
          super(nodeMap, dataMap, nodes);
          this.mutator = mutator;
      }
 
      @Override
-     protected UniqueId getMutator() {
-        return mutator;
-    }
+     protected IdentityObject getMutator() {
+         return mutator;
+     }
 }
