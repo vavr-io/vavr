@@ -70,6 +70,7 @@ repositories {
 dependencies {
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation 'com.google.guava:guava-testlib:31.1-jre'
 
     jmhImplementation 'org.openjdk.jmh:jmh-core:1.36'
     jmhImplementation 'org.openjdk.jmh:jmh-generator-annprocess:1.36'
@@ -83,6 +84,9 @@ java {
     }
     withSourcesJar()
     withJavadocJar()
+}
+javadoc {
+    options.encoding = 'UTF-8'
 }
 
 sourceSets.main.java.srcDirs += ['src-gen/main/java']

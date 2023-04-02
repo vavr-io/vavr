@@ -14,22 +14,22 @@ abstract class AbstractChampSet<E, X> extends AbstractSet<E> implements Serializ
      * <p>
      * If this mutator id is null, then this set does not own any nodes.
      */
-    protected IdentityObject mutator;
+    IdentityObject mutator;
 
     /**
      * The root of this CHAMP trie.
      */
-    protected BitmapIndexedNode<X> root;
+    BitmapIndexedNode<X> root;
 
     /**
      * The number of elements in this set.
      */
-    protected int size;
+    int size;
 
     /**
      * The number of times this set has been structurally modified.
      */
-    protected transient int modCount;
+    transient int modCount;
 
     @Override
     public boolean addAll(Collection<? extends E> c) {
@@ -70,7 +70,7 @@ abstract class AbstractChampSet<E, X> extends AbstractSet<E> implements Serializ
         return size;
     }
 
-    protected IdentityObject getOrCreateMutator() {
+    IdentityObject getOrCreateIdentity() {
         if (mutator == null) {
             mutator = new IdentityObject();
         }

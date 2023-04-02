@@ -1,9 +1,11 @@
+/*
+ * @(#)SequencedElement.java
+ * Copyright © 2022 The authors and contributors of JHotDraw. MIT License.
+ */
+
 package io.vavr.collection.champ;
 
-
 import java.util.Objects;
-import java.util.function.BiPredicate;
-import java.util.function.ToIntFunction;
 
 /**
  * A {@code SequencedElement} stores an element of a set and a sequence number.
@@ -13,15 +15,15 @@ import java.util.function.ToIntFunction;
  */
 class SequencedElement<E> implements SequencedData {
 
-    private final E element;
+    private final @Nullable E element;
     private final int sequenceNumber;
 
-    public SequencedElement(E element) {
+    public SequencedElement(@Nullable E element) {
         this.element = element;
         this.sequenceNumber = NO_SEQUENCE_NUMBER;
     }
 
-    public SequencedElement(E element, int sequenceNumber) {
+    public SequencedElement(@Nullable E element, int sequenceNumber) {
         this.element = element;
         this.sequenceNumber = sequenceNumber;
     }
@@ -51,37 +53,5 @@ class SequencedElement<E> implements SequencedData {
         return sequenceNumber;
     }
 
-    /**
-     * Renumbers the sequence numbers in all nodes from {@code 0} to {@code size}.
-     * <p>
-     * Afterwards the sequence number for the next inserted entry must be
-     * set to the value {@code size};
-     *
-     * @param <K>     the key type
-     * @param root    the root of the trie
-     * @param mutator the mutator which will own all nodes of the trie
-     * @return the new root
-     */
-    public static <K> BitmapIndexedNode<SequencedElement<K>> renumber(int size, BitmapIndexedNode<SequencedElement<K>> root, IdentityObject mutator,
-                                                                      ToIntFunction<SequencedElement<K>> hashFunction,
-                                                                      BiPredicate<SequencedElement<K>, SequencedElement<K>> equalsFunction) {
-        if (size == 0) {
-            return root;
-        }
 
-        BitmapIndexedNode<SequencedElement<K>> newRoot = root;
-        ChangeEvent<SequencedElement<K>> details = new ChangeEvent<>();
-        int seq = 0;
-        for (HeapSequencedIterator<SequencedElement<K>, K> i = new HeapSequencedIterator<>(size, root, false, null, SequencedElement::getElement); i.hasNext(); ) {
-            K e = i.next();
-            SequencedElement<K> newElement = new SequencedElement<>(e, seq);
-            newRoot = newRoot.update(mutator,
-                    newElement,
-                    Objects.hashCode(e), 0, details,
-                    (oldk, newk) -> oldk.getSequenceNumber() == newk.getSequenceNumber() ? oldk : newk,
-                    equalsFunction, hashFunction);
-            seq++;
-        }
-        return newRoot;
-    }
 }

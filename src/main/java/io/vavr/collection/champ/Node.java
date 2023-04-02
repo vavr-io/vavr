@@ -7,7 +7,6 @@ package io.vavr.collection.champ;
 
 
 import java.util.NoSuchElementException;
-import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
@@ -43,13 +42,13 @@ import java.util.function.ToIntFunction;
  *
  * @param <D> the type of the data objects that are stored in this trie
  */
-public abstract class Node<D> {
+abstract class Node<D> {
     /**
      * Represents no data.
      * We can not use {@code null}, because we allow storing null-data in the
      * trie.
      */
-    public static final Object NO_DATA = new Object();
+    static final Object NO_DATA = new Object();
     static final int HASH_CODE_LENGTH = 32;
     /**
      * Bit partition size in the range [1,5].
@@ -81,7 +80,7 @@ public abstract class Node<D> {
         return 1 << mask;
     }
 
-    public static <E> @NonNull E getFirst(@NonNull Node<E> node) {
+    static <E> @NonNull E getFirst(@NonNull Node<E> node) {
         while (node instanceof BitmapIndexedNode<E> bxn) {
             int nodeMap = bxn.nodeMap();
             int dataMap = bxn.dataMap();
@@ -102,7 +101,7 @@ public abstract class Node<D> {
         throw new NoSuchElementException();
     }
 
-    public static <E> @NonNull E getLast(@NonNull Node<E> node) {
+    static <E> @NonNull E getLast(@NonNull Node<E> node) {
         while (node instanceof BitmapIndexedNode<E> bxn) {
             int nodeMap = bxn.nodeMap();
             int dataMap = bxn.dataMap();
@@ -131,8 +130,6 @@ public abstract class Node<D> {
                                                             K k0, int keyHash0,
                                                             K k1, int keyHash1,
                                                             int shift) {
-        assert !Objects.equals(k0, k1);
-
         if (shift >= HASH_CODE_LENGTH) {
             Object[] entries = new Object[2];
             entries[0] = k0;

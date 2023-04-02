@@ -106,7 +106,7 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
     @Override
     public boolean add(final E e) {
         ChangeEvent<E> details = new ChangeEvent<>();
-        root = root.update(getOrCreateMutator(),
+        root = root.update(getOrCreateIdentity(),
                 e, Objects.hashCode(e), 0, details,
                 (oldk, newk) -> oldk,
                 Objects::equals, Objects::hashCode);
@@ -156,7 +156,7 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
     public boolean remove(Object o) {
         ChangeEvent<E> details = new ChangeEvent<>();
         root = root.remove(
-                getOrCreateMutator(), (E) o, Objects.hashCode(o), 0, details,
+                getOrCreateIdentity(), (E) o, Objects.hashCode(o), 0, details,
                 Objects::equals);
         if (details.isModified()) {
             size--;

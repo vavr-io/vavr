@@ -12,8 +12,6 @@ import java.io.ObjectStreamException;
 import java.util.AbstractMap;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.ToIntFunction;
 
 /**
  * Implements an immutable map using a Compressed Hash-Array Mapped Prefix-tree
@@ -73,8 +71,8 @@ import java.util.function.ToIntFunction;
  */
 public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>>
         implements VavrMapMixin<K, V> {
-    private final static long serialVersionUID = 0L;
     private static final ChampMap<?, ?> EMPTY = new ChampMap<>(BitmapIndexedNode.emptyNode(), 0);
+    private final static long serialVersionUID = 0L;
     private final int size;
 
     ChampMap(BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> root, int size) {
@@ -92,6 +90,14 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
     @SuppressWarnings("unchecked")
     public static <K, V> ChampMap<K, V> empty() {
         return (ChampMap<K, V>) ChampMap.EMPTY;
+    }
+
+    static <V, K> boolean keyEquals(AbstractMap.SimpleImmutableEntry<K, V> a, AbstractMap.SimpleImmutableEntry<K, V> b) {
+        return Objects.equals(a.getKey(), b.getKey());
+    }
+
+    static <V, K> int keyHash(AbstractMap.SimpleImmutableEntry<K, V> e) {
+        return Objects.hashCode(e.getKey());
     }
 
     /**
@@ -122,18 +128,6 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
     }
 
     /**
-     * Creates a ChampMap of the given tuples.
-     *
-     * @param entries Tuples
-     * @param <K>     The key type
-     * @param <V>     The value type
-     * @return A new ChampMap containing the given tuples
-     */
-    public static <K, V> ChampMap<K, V> ofTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        return ChampMap.<K, V>empty().putAllTuples(entries);
-    }
-
-    /**
      * Creates a ChampMap of the given entries.
      *
      * @param entries Entries
@@ -145,18 +139,46 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
         return ChampMap.<K, V>empty().putAllEntries(entries);
     }
 
+    /**
+     * Creates a ChampMap of the given tuples.
+     *
+     * @param entries Tuples
+     * @param <K>     The key type
+     * @param <V>     The value type
+     * @return A new ChampMap containing the given tuples
+     */
+    public static <K, V> ChampMap<K, V> ofTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+        return ChampMap.<K, V>empty().putAllTuples(entries);
+    }
+
     @Override
     public boolean containsKey(K key) {
         return find(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0,
-                getEqualsFunction()) != Node.NO_DATA;
+                ChampMap::keyEquals) != Node.NO_DATA;
     }
 
+    /**
+     * Creates an empty map of the specified key and value types.
+     *
+     * @param <L> the key type of the map
+     * @param <U> the value type of the map
+     * @return a new empty map.
+     */
     @Override
     @SuppressWarnings("unchecked")
     public <L, U> ChampMap<L, U> create() {
         return isEmpty() ? (ChampMap<L, U>) this : empty();
     }
 
+    /**
+     * Creates an empty map of the specified key and value types,
+     * and adds all the specified entries.
+     *
+     * @param entries the entries
+     * @param <L>     the key type of the map
+     * @param <U>     the value type of the map
+     * @return a new map contains the specified entries.
+     */
     @Override
     public <L, U> Map<L, U> createFromEntries(Iterable<? extends Tuple2<? extends L, ? extends U>> entries) {
         return ChampMap.<L, U>empty().putAllTuples(entries);
@@ -181,18 +203,10 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
     @Override
     @SuppressWarnings("unchecked")
     public Option<V> get(K key) {
-        Object result = find(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0, getEqualsFunction());
+        Object result = find(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0, ChampMap::keyEquals);
         return result == Node.NO_DATA || result == null
                 ? Option.none()
                 : Option.some(((AbstractMap.SimpleImmutableEntry<K, V>) result).getValue());
-    }
-
-    private BiPredicate<AbstractMap.SimpleImmutableEntry<K, V>, AbstractMap.SimpleImmutableEntry<K, V>> getEqualsFunction() {
-        return (a, b) -> Objects.equals(a.getKey(), b.getKey());
-    }
-
-    private ToIntFunction<AbstractMap.SimpleImmutableEntry<K, V>> getHashFunction() {
-        return (a) -> Objects.hashCode(a.getKey());
     }
 
     private BiFunction<AbstractMap.SimpleImmutableEntry<K, V>, AbstractMap.SimpleImmutableEntry<K, V>, AbstractMap.SimpleImmutableEntry<K, V>> getUpdateFunction() {
@@ -223,7 +237,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
         final ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChangeEvent<>();
         final BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = update(null, new AbstractMap.SimpleImmutableEntry<>(key, value),
                 keyHash, 0, details,
-                getUpdateFunction(), getEqualsFunction(), getHashFunction());
+                getUpdateFunction(), ChampMap::keyEquals, ChampMap::keyHash);
         if (details.isModified()) {
             if (details.isReplaced()) {
                 return new ChampMap<>(newRootNode, size);
@@ -233,7 +247,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
         return this;
     }
 
-    public ChampMap<K, V> putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> entries) {
+    private ChampMap<K, V> putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> entries) {
         final MutableChampMap<K, V> t = this.toMutable();
         boolean modified = false;
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
@@ -244,7 +258,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
         return modified ? t.toImmutable() : this;
     }
 
-    public ChampMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    private ChampMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         final MutableChampMap<K, V> t = this.toMutable();
         boolean modified = false;
         for (Tuple2<? extends K, ? extends V> entry : entries) {
@@ -261,7 +275,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
         final ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChangeEvent<>();
         final BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode =
                 remove(null, new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
-                        getEqualsFunction());
+                        ChampMap::keyEquals);
         if (details.isModified()) {
             return new ChampMap<>(newRootNode, size - 1);
         }
@@ -314,6 +328,11 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
         return toMutable();
     }
 
+    /**
+     * Creates a mutable copy of this map.
+     *
+     * @return a mutable CHAMP map
+     */
     public MutableChampMap<K, V> toMutable() {
         return new MutableChampMap<>(this);
     }

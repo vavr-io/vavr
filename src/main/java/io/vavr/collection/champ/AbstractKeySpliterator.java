@@ -16,7 +16,7 @@ import java.util.function.Function;
  * create a new version of the trie, so that iterator does not have
  * to deal with structural changes of the trie.
  */
-abstract class AbstractKeyEnumeratorSpliterator<K, E> implements EnumeratorSpliterator<E> {
+abstract class AbstractKeySpliterator<K, E> implements EnumeratorSpliterator<E> {
     private final long size;
 
     @Override
@@ -54,7 +54,7 @@ abstract class AbstractKeyEnumeratorSpliterator<K, E> implements EnumeratorSplit
     private final int characteristics;
     private final @NonNull Function<K, E> mappingFunction;
 
-    public AbstractKeyEnumeratorSpliterator(@NonNull Node<K> root, @NonNull Function<K, E> mappingFunction, int characteristics, long size) {
+    public AbstractKeySpliterator(@NonNull Node<K> root, @NonNull Function<K, E> mappingFunction, int characteristics, long size) {
         if (root.nodeArity() + root.dataArity() > 0) {
             stack.push(new StackElement<>(root, isReverse()));
         }

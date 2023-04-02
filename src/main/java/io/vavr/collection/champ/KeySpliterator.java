@@ -12,8 +12,8 @@ import java.util.function.Function;
  * create a new version of the trie, so that iterator does not have
  * to deal with structural changes of the trie.
  */
-class KeyEnumeratorSpliterator<K, E> extends AbstractKeyEnumeratorSpliterator<K, E> {
-    public KeyEnumeratorSpliterator(@NonNull Node<K> root, @NonNull Function<K, E> mappingFunction, int characteristics, long size) {
+class KeySpliterator<K, E> extends AbstractKeySpliterator<K, E> {
+    public KeySpliterator(@NonNull Node<K> root, @NonNull Function<K, E> mappingFunction, int characteristics, long size) {
         super(root, mappingFunction, characteristics, size);
     }
 
