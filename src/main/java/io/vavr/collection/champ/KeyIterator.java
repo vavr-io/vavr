@@ -34,7 +34,7 @@ class KeyIterator<K> implements Iterator<K>, io.vavr.collection.Iterator<K> {
     private Node<K>[] nodes = new Node[Node.MAX_DEPTH];
 
     /**
-     * Creates a new instance.
+     * Constructs a new instance.
      *
      * @param root           the root node of the trie
      * @param removeFunction a function that removes an entry from a field;

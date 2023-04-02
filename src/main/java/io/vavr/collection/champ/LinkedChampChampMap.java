@@ -14,8 +14,10 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.ToIntFunction;
 
+import static io.vavr.collection.champ.LinkedChampChampSet.seqHash;
+
 /**
- * Implements an immutable map using a Compressed Hash-Array Mapped Prefix-tree
+ * Implements an immutable map using two Compressed Hash-Array Mapped Prefix-trees
  * (CHAMP), with predictable iteration order.
  * <p>
  * Features:
@@ -29,16 +31,16 @@ import java.util.function.ToIntFunction;
  * <p>
  * Performance characteristics:
  * <ul>
- *     <li>copyPut, copyPutFirst, copyPutLast: O(1) amortized due to
+ *     <li>copyPut, copyPutFirst, copyPutLast: O(1) amortized, due to
  *     renumbering</li>
- *     <li>copyRemove: O(1) amortized due to renumbering</li>
+ *     <li>copyRemove: O(1) amortized, due to renumbering</li>
  *     <li>containsKey: O(1)</li>
  *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in
  *     the mutable copy</li>
  *     <li>clone: O(1)</li>
- *     <li>iterator creation: O(N)</li>
+ *     <li>iterator creation: O(1)</li>
  *     <li>iterator.next: O(1) with bucket sort, O(log N) with heap sort</li>
- *     <li>getFirst, getLast: O(N)</li>
+ *     <li>getFirst, getLast: O(1)</li>
  * </ul>
  * <p>
  * Implementation details:
@@ -46,11 +48,11 @@ import java.util.function.ToIntFunction;
  * This map performs read and write operations of single elements in O(1) time,
  * and in O(1) space.
  * <p>
- * The CHAMP tree contains nodes that may be shared with other maps.
+ * The CHAMP trie contains nodes that may be shared with other maps.
  * <p>
  * If a write operation is performed on a node, then this map creates a
  * copy of the node and of all parent nodes up to the root (copy-path-on-write).
- * Since the CHAMP tree has a fixed maximal height, the cost is O(1).
+ * Since the CHAMP trie has a fixed maximal height, the cost is O(1).
  * <p>
  * This map can create a mutable copy of itself in O(1) time and O(1) space
  * using method {@link #toMutable()}}. The mutable copy shares its nodes
@@ -67,11 +69,21 @@ import java.util.function.ToIntFunction;
  * field of each data entry. If the counter wraps around, it must renumber all
  * sequence numbers.
  * <p>
- * The renumbering is why the {@code copyPut} is O(1) only in an amortized sense.
+ * The renumbering is why the {@code put} and {@code remove} methods are
+ * O(1) only in an amortized sense.
  * <p>
- * The iterator of the map is a priority queue, that orders the entries by
- * their stored insertion counter value. This is why {@code iterator.next()}
- * is O(log n).
+ * <p>
+ * To support iteration, a second CHAMP trie is maintained. The second CHAMP
+ * trie has the same contents as the first. However, we use the sequence number
+ * for computing the hash code of an element.
+ * <p>
+ * In this implementation, a hash code has a length of
+ * 32 bits, and is split up in little-endian order into 7 parts of
+ * 5 bits (the last part contains the remaining bits).
+ * <p>
+ * We convert the sequence number to unsigned 32 by adding Integer.MIN_VALUE
+ * to it. And then we reorder its bits from
+ * 66666555554444433333222221111100 to 00111112222233333444445555566666.
  * <p>
  * References:
  * <dl>
@@ -87,30 +99,48 @@ import java.util.function.ToIntFunction;
  * @param <K> the key type
  * @param <V> the value type
  */
-public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>>
+public class LinkedChampChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>>
         implements VavrMapMixin<K, V> {
     private final static long serialVersionUID = 0L;
-    private static final LinkedChampMap<?, ?> EMPTY = new LinkedChampMap<>(BitmapIndexedNode.emptyNode(), 0, -1, 0);
+    private static final LinkedChampChampMap<?, ?> EMPTY = new LinkedChampChampMap<>(BitmapIndexedNode.emptyNode(), BitmapIndexedNode.emptyNode(), 0, -1, 0);
     /**
      * Counter for the sequence number of the last entry.
      * The counter is incremented after a new entry is added to the end of the
      * sequence.
      */
-    protected transient final int last;
+    final int last;
     /**
      * Counter for the sequence number of the first element. The counter is
      * decrement after a new entry has been added to the start of the sequence.
      */
-    protected transient final int first;
-    final transient int size;
+    final int first;
+    final int size;
+    /**
+     * This champ trie stores the map entries by their sequence number.
+     */
+    final @NonNull BitmapIndexedNode<SequencedEntry<K, V>> sequenceRoot;
 
-    LinkedChampMap(BitmapIndexedNode<SequencedEntry<K, V>> root, int size,
-                   int first, int last) {
+    LinkedChampChampMap(BitmapIndexedNode<SequencedEntry<K, V>> root,
+                        BitmapIndexedNode<SequencedEntry<K, V>> sequenceRoot,
+                        int size,
+                        int first, int last) {
         super(root.nodeMap(), root.dataMap(), root.mixed);
         assert (long) last - first >= size : "size=" + size + " first=" + first + " last=" + last;
         this.size = size;
         this.first = first;
         this.last = last;
+        this.sequenceRoot = Objects.requireNonNull(sequenceRoot);
+    }
+
+    static <K, V> BitmapIndexedNode<SequencedEntry<K, V>> buildSequenceRoot(@NonNull BitmapIndexedNode<SequencedEntry<K, V>> root, @NonNull IdentityObject mutator) {
+        BitmapIndexedNode<SequencedEntry<K, V>> seqRoot = emptyNode();
+        ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
+        for (KeyIterator<SequencedEntry<K, V>> i = new KeyIterator<>(root, null); i.hasNext(); ) {
+            SequencedEntry<K, V> elem = i.next();
+            seqRoot = seqRoot.update(mutator, elem, seqHash(elem.getSequenceNumber()),
+                    0, details, (oldK, newK) -> oldK, Object::equals, LinkedChampChampMap::seqHashCode);
+        }
+        return seqRoot;
     }
 
     /**
@@ -121,8 +151,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
      * @return an empty immutable map
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> LinkedChampMap<K, V> empty() {
-        return (LinkedChampMap<K, V>) LinkedChampMap.EMPTY;
+    public static <K, V> LinkedChampChampMap<K, V> empty() {
+        return (LinkedChampChampMap<K, V>) LinkedChampChampMap.EMPTY;
     }
 
     /**
@@ -136,8 +166,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
      * @return the given {@code hashMap} instance as narrowed type {@code ChampMap<K, V>}.
      */
     @SuppressWarnings("unchecked")
-    public static <K, V> LinkedChampMap<K, V> narrow(LinkedChampMap<? extends K, ? extends V> hashMap) {
-        return (LinkedChampMap<K, V>) hashMap;
+    public static <K, V> LinkedChampChampMap<K, V> narrow(LinkedChampChampMap<? extends K, ? extends V> hashMap) {
+        return (LinkedChampChampMap<K, V>) hashMap;
     }
 
     /**
@@ -148,8 +178,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
      * @param <V> The value type
      * @return A new LinkedChampMap containing the given map
      */
-    public static <K, V> LinkedChampMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
-        return LinkedChampMap.<K, V>empty().putAllEntries(map.entrySet());
+    public static <K, V> LinkedChampChampMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
+        return LinkedChampChampMap.<K, V>empty().putAllEntries(map.entrySet());
     }
 
     /**
@@ -160,8 +190,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
      * @param <V>     The value type
      * @return A new LinkedChampMap containing the given entries
      */
-    public static <K, V> LinkedChampMap<K, V> ofEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> entries) {
-        return LinkedChampMap.<K, V>empty().putAllEntries(entries);
+    public static <K, V> LinkedChampChampMap<K, V> ofEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> entries) {
+        return LinkedChampChampMap.<K, V>empty().putAllEntries(entries);
     }
 
     /**
@@ -172,8 +202,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
      * @param <V>     The value type
      * @return A new LinkedChampMap containing the given tuples
      */
-    public static <K, V> LinkedChampMap<K, V> ofTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        return LinkedChampMap.<K, V>empty().putAllTuples(entries);
+    public static <K, V> LinkedChampChampMap<K, V> ofTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+        return LinkedChampChampMap.<K, V>empty().putAllTuples(entries);
     }
 
     @Override
@@ -184,73 +214,76 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         return result != Node.NO_DATA;
     }
 
-    private LinkedChampMap<K, V> copyPutFirst(K key, V value, boolean moveToFirst) {
-        final int keyHash = Objects.hashCode(key);
-        final ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
-        BitmapIndexedNode<SequencedEntry<K, V>> newRootNode = update(null,
-                new SequencedEntry<>(key, value, first),
-                keyHash, 0, details,
-                moveToFirst ? getUpdateAndMoveToFirstFunction() : getUpdateFunction(),
-                getEqualsFunction(), getHashFunction());
-        if (details.isReplaced()) {
-            return moveToFirst
-                    ? renumber(newRootNode, size,
-                    details.getData().getSequenceNumber() == first ? first : first - 1,
-                    details.getData().getSequenceNumber() == last ? last - 1 : last)
-                    : new LinkedChampMap<>(newRootNode, size, first - 1, last);
-        }
-        return details.isModified() ? renumber(newRootNode, size + 1, first - 1, last) : this;
-    }
-
-    private LinkedChampMap<K, V> copyPutLast(K key, V value) {
-        return copyPutLast(key, value, true);
-    }
-
-    private LinkedChampMap<K, V> copyPutLast(K key, V value, boolean moveToLast) {
-        final int keyHash = Objects.hashCode(key);
-        final ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
-        BitmapIndexedNode<SequencedEntry<K, V>> newRootNode = update(null,
-                new SequencedEntry<>(key, value, last),
+    private LinkedChampChampMap<K, V> copyPutLast(K key, V value, boolean moveToLast) {
+        int keyHash = Objects.hashCode(key);
+        ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
+        SequencedEntry<K, V> newEntry = new SequencedEntry<>(key, value, last);
+        BitmapIndexedNode<SequencedEntry<K, V>> newRoot = update(null,
+                newEntry,
                 keyHash, 0, details,
                 moveToLast ? getUpdateAndMoveToLastFunction() : getUpdateFunction(),
                 getEqualsFunction(), getHashFunction());
-        if (details.isReplaced()) {
-            return moveToLast
-                    ? renumber(newRootNode, size,
-                    details.getData().getSequenceNumber() == first ? first + 1 : first,
-                    details.getData().getSequenceNumber() == last ? last : last + 1)
-                    : new LinkedChampMap<>(newRootNode, size, first, last + 1);
-        }
-        return details.isModified() ? renumber(newRootNode, size + 1, first, last + 1) : this;
-    }
-
-    private LinkedChampMap<K, V> copyRemove(K key, int newFirst, int newLast) {
-        final int keyHash = Objects.hashCode(key);
-        final ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
-        final BitmapIndexedNode<SequencedEntry<K, V>> newRootNode =
-                remove(null, new SequencedEntry<>(key), keyHash, 0, details, getEqualsFunction());
+        var newSeqRoot = sequenceRoot;
+        int newFirst = first;
+        int newLast = last;
+        int newSize = size;
         if (details.isModified()) {
-            int seq = details.getData().getSequenceNumber();
-            if (seq == newFirst) {
-                newFirst++;
+            IdentityObject mutator = new IdentityObject();
+            SequencedEntry<K, V> oldEntry = details.getData();
+            boolean isUpdated = details.isReplaced();
+            newSeqRoot = newSeqRoot.update(mutator,
+                    newEntry, seqHash(last), 0, details,
+                    getUpdateFunction(),
+                    Objects::equals, LinkedChampChampMap::seqHashCode);
+            if (isUpdated) {
+                newSeqRoot = newSeqRoot.remove(mutator,
+                        oldEntry, seqHash(oldEntry.getSequenceNumber()), 0, details,
+                        Objects::equals);
+
+                newFirst = details.getData().getSequenceNumber() == newFirst - 1 ? newFirst - 1 : newFirst;
+                newLast = details.getData().getSequenceNumber() == newLast ? newLast : newLast + 1;
+            } else {
+                newSize++;
+                newLast++;
             }
-            if (seq == newLast) {
-                newLast--;
-            }
-            return renumber(newRootNode, size - 1, newFirst, newLast);
+            return renumber(newRoot, newSeqRoot, newSize, newFirst, newLast);
         }
         return this;
     }
 
+    private LinkedChampChampMap<K, V> copyRemove(K key, int newFirst, int newLast) {
+        int keyHash = Objects.hashCode(key);
+        ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
+        BitmapIndexedNode<SequencedEntry<K, V>> newRoot =
+                remove(null, new SequencedEntry<>(key), keyHash, 0, details, getEqualsFunction());
+        BitmapIndexedNode<SequencedEntry<K, V>> newSeqRoot = sequenceRoot;
+        if (details.isModified()) {
+            var oldEntry = details.getData();
+            int seq = oldEntry.getSequenceNumber();
+            newSeqRoot = newSeqRoot.remove(null,
+                    oldEntry,
+                    seqHash(seq), 0, details, Objects::equals);
+            if (seq == newFirst) {
+                newFirst++;
+            }
+            if (seq == newLast - 1) {
+                newLast--;
+            }
+            return renumber(newRoot, newSeqRoot, size - 1, newFirst, newLast);
+        }
+        return this;
+    }
+
+
     @Override
     @SuppressWarnings("unchecked")
-    public <L, U> LinkedChampMap<L, U> create() {
-        return isEmpty() ? (LinkedChampMap<L, U>) this : empty();
+    public <L, U> LinkedChampChampMap<L, U> create() {
+        return isEmpty() ? (LinkedChampChampMap<L, U>) this : empty();
     }
 
     @Override
     public <L, U> Map<L, U> createFromEntries(Iterable<? extends Tuple2<? extends L, ? extends U>> entries) {
-        return LinkedChampMap.<L, U>empty().putAllTuples(entries);
+        return LinkedChampChampMap.<L, U>empty().putAllTuples(entries);
     }
 
     @Override
@@ -261,8 +294,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         if (other == null) {
             return false;
         }
-        if (other instanceof LinkedChampMap) {
-            LinkedChampMap<?, ?> that = (LinkedChampMap<?, ?>) other;
+        if (other instanceof LinkedChampChampMap) {
+            LinkedChampChampMap<?, ?> that = (LinkedChampChampMap<?, ?>) other;
             return size == that.size && equivalent(that);
         } else {
             return Collections.equals(this, other);
@@ -332,12 +365,12 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
     }
 
     @Override
-    public LinkedChampMap<K, V> put(K key, V value) {
+    public LinkedChampChampMap<K, V> put(K key, V value) {
         return copyPutLast(key, value, false);
     }
 
-    public LinkedChampMap<K, V> putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> entries) {
-        final MutableLinkedChampMap<K, V> t = this.toMutable();
+    public LinkedChampChampMap<K, V> putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> entries) {
+        final MutableLinkedChampChampMap<K, V> t = this.toMutable();
         boolean modified = false;
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             ChangeEvent<SequencedEntry<K, V>> details = t.putLast(entry.getKey(), entry.getValue(), false);
@@ -346,8 +379,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         return modified ? t.toImmutable() : this;
     }
 
-    public LinkedChampMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        final MutableLinkedChampMap<K, V> t = this.toMutable();
+    public LinkedChampChampMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+        final MutableLinkedChampChampMap<K, V> t = this.toMutable();
         boolean modified = false;
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             ChangeEvent<SequencedEntry<K, V>> details = t.putLast(entry._1, entry._2, false);
@@ -358,16 +391,16 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
     }
 
     @Override
-    public LinkedChampMap<K, V> remove(K key) {
+    public LinkedChampChampMap<K, V> remove(K key) {
         return copyRemove(key, first, last);
     }
 
     @Override
-    public LinkedChampMap<K, V> removeAll(Iterable<? extends K> c) {
+    public LinkedChampChampMap<K, V> removeAll(Iterable<? extends K> c) {
         if (this.isEmpty()) {
             return this;
         }
-        final MutableLinkedChampMap<K, V> t = this.toMutable();
+        final MutableLinkedChampChampMap<K, V> t = this.toMutable();
         boolean modified = false;
         for (K key : c) {
             ChangeEvent<SequencedEntry<K, V>> details = t.removeAndGiveDetails(key);
@@ -376,44 +409,84 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         return modified ? t.toImmutable() : this;
     }
 
-    private LinkedChampMap<K, V> renumber(BitmapIndexedNode<SequencedEntry<K, V>> root, int size, int first, int last) {
-        if (SequencedData.mustRenumber(size, first, last)) {
-            root = SequencedEntry.renumber(size, root, new IdentityObject(), Objects::hashCode, Objects::equals);
-            return new LinkedChampMap<>(root, size, -1, size);
+    @NonNull
+    private LinkedChampChampMap<K, V> renumber(
+            BitmapIndexedNode<SequencedEntry<K, V>> root,
+            BitmapIndexedNode<SequencedEntry<K, V>> seqRoot,
+            int size, int first, int last) {
+        if (LinkedChampChampSet.mustRenumber(size, first, last)) {
+            IdentityObject mutator = new IdentityObject();
+            BitmapIndexedNode<SequencedEntry<K, V>> renumberedRoot = SequencedEntry.renumber(size, root, mutator, Objects::hashCode, Objects::equals);
+            BitmapIndexedNode<SequencedEntry<K, V>> renumberedSeqRoot = buildSequenceRoot(renumberedRoot, mutator);
+            return new LinkedChampChampMap<>(renumberedRoot, renumberedSeqRoot,
+                    size, -1, size);
         }
-        return new LinkedChampMap<>(root, size, first, last);
+        return new LinkedChampChampMap<>(root, seqRoot, size, first, last);
     }
 
     @Override
     public Map<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
+        // currentElement and newElem are the same => do nothing
         if (Objects.equals(currentElement, newElement)) {
             return this;
         }
+
+        // try to remove currentElem from the 'root' trie
         final ChangeEvent<SequencedEntry<K, V>> detailsCurrent = new ChangeEvent<>();
         IdentityObject mutator = new IdentityObject();
-        BitmapIndexedNode<SequencedEntry<K, V>> newRootNode = remove(mutator,
+        BitmapIndexedNode<SequencedEntry<K, V>> newRoot = remove(mutator,
                 new SequencedEntry<>(currentElement._1, currentElement._2),
-                Objects.hashCode(currentElement._1), 0, detailsCurrent,
-                (a, b) -> Objects.equals(a.getKey(), b.getKey())
-                        && Objects.equals(a.getValue(), b.getValue()));
+                Objects.hashCode(currentElement), 0, detailsCurrent, Objects::equals);
+        // currentElement was not in the 'root' trie => do nothing
         if (!detailsCurrent.isModified()) {
             return this;
         }
-        int seq = detailsCurrent.getData().getSequenceNumber();
+
+        // currentElement was in the 'root' trie => also remove it from the 'sequenceRoot' trie
+        var newSeqRoot = sequenceRoot;
+        SequencedEntry<K, V> currentData = detailsCurrent.getData();
+        int seq = currentData.getSequenceNumber();
+        newSeqRoot = newSeqRoot.remove(mutator, currentData, seqHash(seq), 0, detailsCurrent, LinkedChampChampMap::seqEquals);
+
+        // try to update the newElement
         ChangeEvent<SequencedEntry<K, V>> detailsNew = new ChangeEvent<>();
-        newRootNode = newRootNode.update(mutator,
-                new SequencedEntry<>(newElement._1, newElement._2, seq),
-                Objects.hashCode(newElement._1), 0, detailsNew,
-                getForceUpdateFunction(), getEqualsFunction(), getHashFunction());
-        if (detailsNew.isReplaced()) {
-            return renumber(newRootNode, size - 1, first, last);
-        } else {
-            return new LinkedChampMap<>(newRootNode, size, first, last);
+        SequencedEntry<K, V> newData = new SequencedEntry<>(newElement._1, newElement._2, seq);
+        newRoot = newRoot.update(mutator,
+                newData, Objects.hashCode(newElement), 0, detailsNew,
+                getForceUpdateFunction(),
+                Objects::equals, Objects::hashCode);
+        boolean isReplaced = detailsNew.isReplaced();
+        SequencedEntry<K, V> replacedData = detailsNew.getData();
+
+        // the newElement was replaced => remove the replaced data from the 'sequenceRoot' trie
+        if (isReplaced) {
+            newSeqRoot = newSeqRoot.remove(mutator, replacedData, seqHash(replacedData.getSequenceNumber()), 0, detailsNew, LinkedChampChampMap::seqEquals);
         }
+
+        // the newElement was inserted => insert it also in the 'sequenceRoot' trie
+        newSeqRoot = newSeqRoot.update(mutator,
+                newData, seqHash(seq), 0, detailsNew,
+                getForceUpdateFunction(),
+                LinkedChampChampMap::seqEquals, LinkedChampChampMap::seqHashCode);
+
+        if (isReplaced) {
+            // the newElement was already in the trie => renumbering may be necessary
+            return renumber(newRoot, newSeqRoot, size - 1, first, last);
+        } else {
+            // the newElement was not in the trie => no renumbering is needed
+            return new LinkedChampChampMap<>(newRoot, newSeqRoot, size, first, last);
+        }
+    }
+
+    private static <V, K> boolean seqEquals(SequencedEntry<K, V> a, SequencedEntry<K, V> b) {
+        return a.getSequenceNumber() == b.getSequenceNumber();
     }
 
     @Override
     public Map<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
+        if (elements == this) {
+            return this;
+        }
         Objects.requireNonNull(elements, "elements is null");
         MutableChampMap<K, V> m = new MutableChampMap<>();
         for (Tuple2<K, V> entry : elements) {
@@ -444,8 +517,8 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
         return toMutable();
     }
 
-    public MutableLinkedChampMap<K, V> toMutable() {
-        return new MutableLinkedChampMap<>(this);
+    public MutableLinkedChampChampMap<K, V> toMutable() {
+        return new MutableLinkedChampChampMap<>(this);
     }
 
     @Override
@@ -471,12 +544,16 @@ public class LinkedChampMap<K, V> extends BitmapIndexedNode<SequencedEntry<K, V>
 
         @Override
         protected Object readResolve() {
-            return LinkedChampMap.empty().putAllEntries(deserialized);
+            return LinkedChampChampMap.empty().putAllEntries(deserialized);
         }
     }
 
     @Override
     public boolean isSequential() {
         return true;
+    }
+
+    static <K, V> int seqHashCode(SequencedEntry<K, V> e) {
+        return seqHash(e.getSequenceNumber());
     }
 }

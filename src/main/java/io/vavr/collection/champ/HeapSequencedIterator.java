@@ -31,7 +31,7 @@ class HeapSequencedIterator<E extends SequencedData, X> implements Iterator<X>, 
     private final Consumer<E> removeFunction;
 
     /**
-     * Creates a new instance.
+     * Constructs a new instance.
      *
      * @param size            the size of the trie
      * @param rootNode        the root node of the trie

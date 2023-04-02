@@ -68,9 +68,9 @@ class ChangeEvent<D> {
     }
 
     /**
-     * Returns true if the value of an element has been updated.
+     * Returns true if the value of an element has been replaced.
      */
-    boolean isUpdated() {
+    boolean isReplaced() {
         return type == Type.REPLACED;
     }
 }
