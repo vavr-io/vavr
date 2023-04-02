@@ -8,7 +8,7 @@ import java.util.Spliterator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static io.vavr.collection.champ.ChampChampSet.seqHash;
+import static io.vavr.collection.champ.LinkedChampChampSet.seqHash;
 
 
 /**
@@ -33,9 +33,9 @@ import static io.vavr.collection.champ.ChampChampSet.seqHash;
  *     this set</li>
  *     <li>clone: O(1) + O(log N) distributed across subsequent updates in this
  *     set and in the clone</li>
- *     <li>iterator creation: O(N)</li>
+ *     <li>iterator creation: O(1)</li>
  *     <li>iterator.next: O(1) with bucket sort, O(log N) with heap sort</li>
- *     <li>getFirst, getLast: O(N)</li>
+ *     <li>getFirst, getLast: O(1)</li>
  * </ul>
  * <p>
  * Implementation details:
@@ -70,9 +70,18 @@ import static io.vavr.collection.champ.ChampChampSet.seqHash;
  * <p>
  * The renumbering is why the {@code add} is O(1) only in an amortized sense.
  * <p>
- * The iterator of the set is a priority queue, that orders the entries by
- * their stored insertion counter value. This is why {@code iterator.next()}
- * is O(log n).
+ * To support iteration, a second CHAMP trie is maintained. The second CHAMP
+ * trie has the same contents as the first. However, we use the sequence number
+ * for computing the hash code of an element.
+ * <p>
+ * In this implementation, a hash code has a length of
+ * 32 bits, and is split up in little-endian order into 7 parts of
+ * 5 bits (the last part contains the remaining bits).
+ * <p>
+ * We convert the sequence number to unsigned 32 by adding Integer.MIN_VALUE
+ * to it. And then we reorder its bits from
+ * 66666555554444433333222221111100 to 00111112222233333444445555566666.
+ * <p>
  * <p>
  * <strong>Note that this implementation is not synchronized.</strong>
  * If multiple threads access this set concurrently, and at least
@@ -93,7 +102,7 @@ import static io.vavr.collection.champ.ChampChampSet.seqHash;
  *
  * @param <E> the element type
  */
-public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElement<E>> {
+public class MutableLinkedChampChampSet<E> extends AbstractChampSet<E, SequencedElement<E>> {
     private final static long serialVersionUID = 0L;
 
     /**
@@ -114,7 +123,7 @@ public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElemen
     /**
      * Constructs an empty set.
      */
-    public MutableChampChampSet() {
+    public MutableLinkedChampChampSet() {
         root = BitmapIndexedNode.emptyNode();
         sequenceRoot = BitmapIndexedNode.emptyNode();
     }
@@ -126,12 +135,12 @@ public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElemen
      * @param c an iterable
      */
     @SuppressWarnings("unchecked")
-    public MutableChampChampSet(Iterable<? extends E> c) {
-        if (c instanceof MutableChampChampSet<?>) {
-            c = ((MutableChampChampSet<? extends E>) c).toImmutable();
+    public MutableLinkedChampChampSet(Iterable<? extends E> c) {
+        if (c instanceof MutableLinkedChampChampSet<?>) {
+            c = ((MutableLinkedChampChampSet<? extends E>) c).toImmutable();
         }
-        if (c instanceof ChampChampSet<?>) {
-            ChampChampSet<E> that = (ChampChampSet<E>) c;
+        if (c instanceof LinkedChampChampSet<?>) {
+            LinkedChampChampSet<E> that = (LinkedChampChampSet<E>) c;
             this.root = that;
             this.size = that.size;
             this.first = that.first;
@@ -177,11 +186,11 @@ public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElemen
                 Objects::equals, Objects::hashCode);
         if (details.isModified()) {
             SequencedElement<E> oldElem = details.getData();
-            boolean isUpdated = details.isUpdated();
+            boolean isUpdated = details.isReplaced();
             sequenceRoot = sequenceRoot.update(mutator,
                     newElem, seqHash(first - 1), 0, details,
                     getUpdateFunction(),
-                    Objects::equals, ChampChampSet::seqHashCode);
+                    Objects::equals, LinkedChampChampSet::seqHashCode);
             if (isUpdated) {
                 sequenceRoot = sequenceRoot.remove(mutator,
                         oldElem, seqHash(oldElem.getSequenceNumber()), 0, details,
@@ -215,11 +224,11 @@ public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElemen
                 Objects::equals, Objects::hashCode);
         if (details.isModified()) {
             SequencedElement<E> oldElem = details.getData();
-            boolean isUpdated = details.isUpdated();
+            boolean isUpdated = details.isReplaced();
             sequenceRoot = sequenceRoot.update(mutator,
                     newElem, seqHash(last), 0, details,
                     getUpdateFunction(),
-                    Objects::equals, ChampChampSet::seqHashCode);
+                    Objects::equals, LinkedChampChampSet::seqHashCode);
             if (isUpdated) {
                 sequenceRoot = sequenceRoot.remove(mutator,
                         oldElem, seqHash(oldElem.getSequenceNumber()), 0, details,
@@ -251,8 +260,8 @@ public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElemen
      * Returns a shallow copy of this set.
      */
     @Override
-    public MutableChampChampSet<E> clone() {
-        return (MutableChampChampSet<E>) super.clone();
+    public MutableLinkedChampChampSet<E> clone() {
+        return (MutableLinkedChampChampSet<E>) super.clone();
     }
 
     @Override
@@ -284,7 +293,7 @@ public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElemen
         } else {
             i = new KeyEnumeratorSpliterator<>(sequenceRoot, SequencedElement::getElement, Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED, size());
         }
-        return new FailFastIterator<>(new IteratorFacade<>(i, this::iteratorRemove), () -> MutableChampChampSet.this.modCount);
+        return new FailFastIterator<>(new IteratorFacade<>(i, this::iteratorRemove), () -> MutableLinkedChampChampSet.this.modCount);
     }
 
     private @NonNull Spliterator<E> spliterator(boolean reversed) {
@@ -356,11 +365,11 @@ public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElemen
      * 4 times the size of the set.
      */
     private void renumber() {
-        if (ChampChampSet.mustRenumber(size, first, last)) {
+        if (LinkedChampChampSet.mustRenumber(size, first, last)) {
             IdentityObject mutator = getOrCreateIdentity();
             root = SequencedElement.renumber(size, root, mutator,
                     Objects::hashCode, Objects::equals);
-            sequenceRoot = ChampChampSet.buildSequenceRoot(root, mutator);
+            sequenceRoot = LinkedChampChampSet.buildSequenceRoot(root, mutator);
             last = size;
             first = -1;
         }
@@ -372,9 +381,9 @@ public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElemen
      *
      * @return an immutable copy
      */
-    public ChampChampSet<E> toImmutable() {
+    public LinkedChampChampSet<E> toImmutable() {
         mutator = null;
-        return size == 0 ? ChampChampSet.of() : new ChampChampSet<>(root, sequenceRoot, size, first, last);
+        return size == 0 ? LinkedChampChampSet.of() : new LinkedChampChampSet<>(root, sequenceRoot, size, first, last);
     }
 
     private Object writeReplace() {
@@ -390,7 +399,7 @@ public class MutableChampChampSet<E> extends AbstractChampSet<E, SequencedElemen
 
         @Override
         protected Object readResolve() {
-            return new MutableChampChampSet<>(deserialized);
+            return new MutableLinkedChampChampSet<>(deserialized);
         }
     }
 

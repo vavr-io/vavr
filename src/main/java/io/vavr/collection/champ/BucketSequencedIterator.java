@@ -33,7 +33,7 @@ class BucketSequencedIterator<E extends SequencedData, X> implements Iterator<X>
     private final Consumer<E> removeFunction;
 
     /**
-     * Creates a new instance.
+     * Constructs a new instance.
      *
      * @param size            the size of the trie
      * @param first           a sequence number which is smaller or equal the first sequence

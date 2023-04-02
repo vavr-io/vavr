@@ -171,7 +171,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
                 new SequencedElement<>(key, last), Objects.hashCode(key), 0, details,
                 moveToLast ? getUpdateAndMoveToLastFunction() : getUpdateFunction(),
                 Objects::equals, Objects::hashCode);
-        if (details.isUpdated()) {
+        if (details.isReplaced()) {
             return moveToLast
                     ? renumber(root, size,
                     details.getData().getSequenceNumber() == first ? first + 1 : first,
@@ -382,7 +382,7 @@ public class LinkedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> im
                 new SequencedElement<>(newElement, seq), Objects.hashCode(newElement), 0, detailsNew,
                 getForceUpdateFunction(),
                 Objects::equals, Objects::hashCode);
-        if (detailsNew.isUpdated()) {
+        if (detailsNew.isReplaced()) {
             return renumber(newRootNode, size - 1, first, last);
         } else {
             return new LinkedChampSet<>(newRootNode, size, first, last);

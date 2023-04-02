@@ -202,7 +202,7 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
                 getUpdateFunction(),
                 getEqualsFunction(),
                 getHashFunction());
-        if (details.isModified() && !details.isUpdated()) {
+        if (details.isModified() && !details.isReplaced()) {
             size += 1;
             modCount++;
         }

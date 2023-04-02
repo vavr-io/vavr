@@ -151,7 +151,7 @@ public class MutableLinkedChampSet<E> extends AbstractChampSet<E, SequencedEleme
                 moveToFirst ? getUpdateAndMoveToFirstFunction() : getUpdateFunction(),
                 Objects::equals, Objects::hashCode);
         if (details.isModified()) {
-            if (details.isUpdated()) {
+            if (details.isReplaced()) {
                 first = details.getData().getSequenceNumber() == first ? first : first - 1;
                 last = details.getData().getSequenceNumber() == last ? last - 1 : last;
             } else {
@@ -177,7 +177,7 @@ public class MutableLinkedChampSet<E> extends AbstractChampSet<E, SequencedEleme
                 moveToLast ? getUpdateAndMoveToLastFunction() : getUpdateFunction(),
                 Objects::equals, Objects::hashCode);
         if (details.isModified()) {
-            if (details.isUpdated()) {
+            if (details.isReplaced()) {
                 first = details.getData().getSequenceNumber() == first - 1 ? first - 1 : first;
                 last = details.getData().getSequenceNumber() == last ? last : last + 1;
             } else {
