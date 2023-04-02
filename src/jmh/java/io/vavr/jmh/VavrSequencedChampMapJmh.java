@@ -1,5 +1,6 @@
 package io.vavr.jmh;
 
+import io.vavr.collection.Map;
 import io.vavr.collection.champ.SequencedChampMap;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
@@ -25,9 +26,9 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 0)
-@Warmup(iterations = 0)
-@Fork(value = 0)
+@Measurement(iterations = 1)
+@Warmup(iterations = 1)
+@Fork(value = 1)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class VavrSequencedChampMapJmh {
@@ -85,6 +86,11 @@ public class VavrSequencedChampMapJmh {
     @Benchmark
     public Key mHead() {
         return mapA.head()._1;
+    }
+
+    @Benchmark
+    public Map<Key, Boolean> mTail() {
+        return mapA.tail();
     }
 
 }

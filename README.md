@@ -15,15 +15,15 @@ The collections are:
 
 * ChampSet
 * ChampMap
-* LinkedChampSet
-* LinkedChampMap
+* SequencedChampSet
+* SequencedChampMap
 
 Each collection has a mutable partner:
 
 * MutableChampSet
 * MutableChampMap
-* MutableLinkedChampSet
-* MutableLinkedChampMap
+* MutableSequencedChampSet
+* MutableSequencedChampMap
 
 ## Performance characteristics
 
@@ -44,52 +44,70 @@ of the collection loses ownership of all its trie nodes. Updates are slightly
 more expensive for the mutable copy, until it gains exclusive ownership of all trie
 nodes again.
 
-### LinkedChampSet, LinkedChampMap, MutableLinkedChampSet, MutableLinkedChampMap:
+### SequencedChampSet, SequencedChampMap, MutableSequencedChampSet, MutableSequencedChampMap:
 
 * Maximal supported size: 2<sup>30</sup> elements.
 * Get/Insert/Remove: O(1) amortized
-* Head/Tail: O(N)
-* Iterator creation: O(N)
+* Head/Tail: O(1)
+* Iterator creation: O(1)
 * Iterator.next(): O(1)
 * toImmutable/toMutable: O(1) + a cost distributed across subsequent updates of the mutable copy
 
-The collections are not actually linked. The collections store a sequence number with
-each data element. The sequence numbers must be renumbered from time to time, to prevent
+The collections store a sequence number with each data element, and they maintain
+a second CHAMP trie, that is indexed by the sequence number.
+The sequence numbers must be renumbered from time to time, to prevent
 large gaps and overflows/underflows.
 
-When we iterate over the elements, we need to sort them.
-We do this with a bucket sort in O(N) time. We achieve O(N) instead of O(N log N)
-for the bucket sort, because we use at least N buckets, and no more than
-N * 4 buckets.
+To support iteration over the elements, we maintain a second CHAMP trie, which
+uses the sequence number as the key to the elements.
 
-Currently, the code contains a fall-back code for collections that grow larger than
-2<sup>30</sup> elements. For very large collections the buckets do not fit into
-a Java array anymore. We have to fall back to a heap.
-With the heap, Iterator.next() needs O(log N) instead of O(1).
 
 ## Benchmarks
 
 The following chart shows a comparison of the CHAMP maps with vavr collections
-and with Scala collections. Scala org.scala-lang:scala-library:2.13.8 was used.
+and with Scala collections. Scala org.scala-lang:scala-library:2.13.10 was used.
 
 The collections have 1 million entries.
 
 The y-axis is labeled in nanoseconds. The bars are cut off at 1'500 ns (!).
-This cuts of the elapsed times of functions that run in linear times.
+This cuts off the elapsed times of functions that run in linear times.
 
 ![](BenchmarkChart.png)
 
-* **scala.HashMap** has a very competitive and balanced performance.
-  It uses a CHAMP trie as its underlying data structure.
-* **scala.VectorMap** is slower than most of the other collections, but the performance is balanced.
-  It uses a radix-balanced finger tree (Vector) and a CHAMP trie as its
-  underlying data structure.
-* **vavr.HashMap** has a very competitive and balanced performance.
-  It uses a HAMP trie as its underlying data structure.
-* **vavr.LinkedHashMap** has competitive query times, but updates need linear time.
-  It uses a HAMP trie and a Banker's queue as its underlying data structure.
-* **vavr.ChampMap** has a very competitive and balanced performance.
-  It uses a CHAMP trie as its underlying data structure.
-* **vavr.LinkedChampMap** has competitive performance except for accesses to the
-  first/last entry. It uses a CHAMP trie and sequence numbers on the entries. 
+* **scala.HashMap**<br>
+  Uses a CHAMP trie as its underlying data structure.<br>
+  Performs all operations in constant time.<br>
+  Iterates in an unspecified sequence.<br>
+  This is the fastest implementation except for the contains() operation.
+* **scala.VectorMap** <br>
+  Uses a CHAMP trie and a radix-balanced finger tree (Vector) as its
+  underlying data structures.<br>
+  Performs all operations in constant time.<br>
+  Iterates in the sequence in which the entries were inserted in the map.<br>
+  This is one of the fastest implementation except for iteration.
+* **scala.TreeSeqMap** <br>
+  Uses a CHAMP trie and a red-black tree and as its underlying data structures.<br>
+  Performs all operations in constant time.<br>
+  Iterates in the sequence in which the entries were inserted in the map.<br>
+  This is one of the slowest implementations.
+* **vavr.HashMap**<br>
+  Uses a HAMP trie as its underlying data structure.<br>
+  Performs all operations in constant time.<br>
+  This is one of the fastest implementations.
+* **vavr.LinkedHashMap** <br>
+  Uses a HAMP trie and a Banker's queue as its underlying data structure.<br>
+  Performs some operations in constant time and some in linear time.<br>
+  Iterates in the sequence in which the entries were inserted in the map.<br>
+  This implementation is the fastest for read operations, but the
+  slowest for update operations.
+* **vavr.ChampMap** <br>
+  Uses a CHAMP trie as its underlying data structure.<br>
+  Performs all operations in constant time.<br>
+  Iterates in an unspecified sequence.<br>
+* **vavr.SequencedChampMap**<br>
+  Uses a CHAMP trie as its underlying data structure.<br>
+  Performs all operations in constant time.<br>
+  Iterates in the sequence in which the entries were inserted in the map.<br>
+  This is one of the slower implementations.
+ 
 

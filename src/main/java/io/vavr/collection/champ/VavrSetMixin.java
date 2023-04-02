@@ -76,7 +76,7 @@ interface VavrSetMixin<T, SELF extends VavrSetMixin<T, SELF>> extends Set<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    default <U> Set<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+    default <U> SELF distinctBy(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return (SELF) createFromElements(iterator().distinctBy(keyExtractor));
     }
