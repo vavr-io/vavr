@@ -92,7 +92,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
      * @return a new empty set.
      */
     @Override
-    public <R> Set<R> create() {
+    public <R> ChampSet<R> create() {
         return empty();
     }
 
@@ -264,17 +264,17 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
     }
 
     @Override
-    public Set<E> dropRight(int n) {
+    public ChampSet<E> dropRight(int n) {
         return drop(n);
     }
 
     @Override
-    public Set<E> takeRight(int n) {
+    public ChampSet<E> takeRight(int n) {
         return take(n);
     }
 
     @Override
-    public Set<E> init() {
+    public ChampSet<E> init() {
         return tail();
     }
 

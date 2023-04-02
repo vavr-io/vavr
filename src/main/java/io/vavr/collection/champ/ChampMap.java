@@ -314,7 +314,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
     }
 
     @Override
-    public Map<K, V> tail() {
+    public ChampMap<K, V> tail() {
         // XXX ChampMapTest.shouldThrowWhenTailEmpty wants us to throw
         //       UnsupportedOperationException instead of NoSuchElementException.
         if (isEmpty()) {
@@ -324,7 +324,7 @@ public class ChampMap<K, V> extends BitmapIndexedNode<AbstractMap.SimpleImmutabl
     }
 
     @Override
-    public java.util.Map<K, V> toJavaMap() {
+    public MutableChampMap<K, V> toJavaMap() {
         return toMutable();
     }
 
