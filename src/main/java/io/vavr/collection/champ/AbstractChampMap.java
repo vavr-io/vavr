@@ -25,24 +25,24 @@ abstract class AbstractChampMap<K, V, X> extends AbstractMap<K, V>
      * <p>
      * If this mutator id is null, then this map does not own any nodes.
      */
-    protected IdentityObject mutator;
+    IdentityObject mutator;
 
     /**
      * The root of this CHAMP trie.
      */
-    protected BitmapIndexedNode<X> root;
+    BitmapIndexedNode<X> root;
 
     /**
      * The number of entries in this map.
      */
-    protected int size;
+    int size;
 
     /**
      * The number of times this map has been structurally modified.
      */
-    protected int modCount;
+    int modCount;
 
-    protected IdentityObject getOrCreateMutator() {
+    IdentityObject getOrCreateIdentity() {
         if (mutator == null) {
             mutator = new IdentityObject();
         }

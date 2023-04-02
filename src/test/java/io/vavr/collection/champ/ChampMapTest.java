@@ -62,7 +62,7 @@ public class ChampMapTest extends AbstractMapTest {
         Function<? super T, ? extends V> valueMapper = v -> v;
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        return Collections.toListAndThen(arr -> ChampMap.<K, V>empty().putAllTuples(Iterator.ofAll(arr)
+        return Collections.toListAndThen(arr -> ChampMap.<K, V>ofTuples(Iterator.ofAll(arr)
                 .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
 
@@ -70,25 +70,25 @@ public class ChampMapTest extends AbstractMapTest {
     protected <K extends Comparable<? super K>, V, T> Collector<T, ArrayList<T>, ? extends Map<K, V>> collectorWithMappers(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        return Collections.toListAndThen(arr -> ChampMap.<K, V>empty().putAllTuples(Iterator.ofAll(arr)
+        return Collections.toListAndThen(arr -> ChampMap.<K, V>ofTuples(Iterator.ofAll(arr)
                 .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
 
     @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return Collections.toListAndThen(entries -> ChampMap.<Integer, T>empty().putAllTuples(entries));
+        return Collections.toListAndThen(entries -> ChampMap.<Integer, T>ofTuples(entries));
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
     protected final <K extends Comparable<? super K>, V> ChampMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return ChampMap.<K, V>empty().putAllTuples(Arrays.asList(entries));
+        return ChampMap.<K, V>ofTuples(Arrays.asList(entries));
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        return ChampMap.<K, V>empty().putAllTuples(entries);
+        return ChampMap.<K, V>ofTuples(entries);
     }
 
     @SuppressWarnings("varargs")
@@ -134,12 +134,12 @@ public class ChampMapTest extends AbstractMapTest {
 
     @Override
     protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        return ChampMap.<K, V>empty().putAllTuples(Collections.tabulate(n, f));
+        return ChampMap.<K, V>ofTuples(Collections.tabulate(n, f));
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        return ChampMap.<K, V>empty().putAllTuples(Collections.fill(n, s));
+        return ChampMap.<K, V>ofTuples(Collections.fill(n, s));
     }
 
     // -- static narrow
@@ -157,7 +157,7 @@ public class ChampMapTest extends AbstractMapTest {
         final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
-        assertThat(LinkedChampMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+        assertThat(SequencedChampMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 
     // -- specific

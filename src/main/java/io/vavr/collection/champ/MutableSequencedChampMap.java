@@ -6,12 +6,13 @@ import io.vavr.collection.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Spliterator;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.ToIntFunction;
+
+import static io.vavr.collection.champ.SequencedData.seqHash;
 
 /**
- * Implements a mutable map using a Compressed Hash-Array Mapped Prefix-tree
+ * Implements a mutable map using two Compressed Hash-Array Mapped Prefix-trees
  * (CHAMP), with predictable iteration order.
  * <p>
  * Features:
@@ -25,16 +26,16 @@ import java.util.function.ToIntFunction;
  * <p>
  * Performance characteristics:
  * <ul>
- *     <li>put, putFirst, putLast: O(1) amortized due to renumbering</li>
- *     <li>remove: O(1)</li>
+ *     <li>put, putFirst, putLast: O(1) amortized, due to renumbering</li>
+ *     <li>remove: O(1) amortized, due to renumbering</li>
  *     <li>containsKey: O(1)</li>
  *     <li>toImmutable: O(1) + O(log N) distributed across subsequent updates in
  *     this mutable map</li>
  *     <li>clone: O(1) + O(log N) distributed across subsequent updates in this
  *     mutable map and in the clone</li>
- *     <li>iterator creation: O(N)</li>
+ *     <li>iterator creation: O(1)</li>
  *     <li>iterator.next: O(1) with bucket sort, O(log N) with heap sort</li>
- *     <li>getFirst, getLast: O(N)</li>
+ *     <li>getFirst, getLast: O(1)</li>
  * </ul>
  * <p>
  * Implementation details:
@@ -42,7 +43,7 @@ import java.util.function.ToIntFunction;
  * This map performs read and write operations of single elements in O(1) time,
  * and in O(1) space.
  * <p>
- * The CHAMP tree contains nodes that may be shared with other maps, and nodes
+ * The CHAMP trie contains nodes that may be shared with other maps, and nodes
  * that are exclusively owned by this map.
  * <p>
  * If a write operation is performed on an exclusively owned node, then this
@@ -50,7 +51,7 @@ import java.util.function.ToIntFunction;
  * If a write operation is performed on a potentially shared node, then this
  * map is forced to create an exclusive copy of the node and of all not (yet)
  * exclusively owned parent nodes up to the root (copy-path-on-write).
- * Since the CHAMP tree has a fixed maximal height, the cost is O(1) in either
+ * Since the CHAMP trie has a fixed maximal height, the cost is O(1) in either
  * case.
  * <p>
  * This map can create an immutable copy of itself in O(1) time and O(1) space
@@ -67,11 +68,20 @@ import java.util.function.ToIntFunction;
  * field of each data entry. If the counter wraps around, it must renumber all
  * sequence numbers.
  * <p>
- * The renumbering is why the {@code copyPut} is O(1) only in an amortized sense.
+ * The renumbering is why the {@code put} and {@code remove} methods are
+ * O(1) only in an amortized sense.
  * <p>
- * The iterator of the map is a priority queue, that orders the entries by
- * their stored insertion counter value. This is why {@code iterator.next()}
- * is O(log n).
+ * To support iteration, a second CHAMP trie is maintained. The second CHAMP
+ * trie has the same contents as the first. However, we use the sequence number
+ * for computing the hash code of an element.
+ * <p>
+ * In this implementation, a hash code has a length of
+ * 32 bits, and is split up in little-endian order into 7 parts of
+ * 5 bits (the last part contains the remaining bits).
+ * <p>
+ * We convert the sequence number to unsigned 32 by adding Integer.MIN_VALUE
+ * to it. And then we reorder its bits from
+ * 66666555554444433333222221111100 to 00111112222233333444445555566666.
  * <p>
  * References:
  * <dl>
@@ -87,7 +97,7 @@ import java.util.function.ToIntFunction;
  * @param <K> the key type
  * @param <V> the value type
  */
-public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, SequencedEntry<K, V>> {
+public class MutableSequencedChampMap<K, V> extends AbstractChampMap<K, V, SequencedEntry<K, V>> {
     private final static long serialVersionUID = 0L;
     /**
      * Counter for the sequence number of the last element. The counter is
@@ -100,9 +110,17 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
      * decrement after a new entry has been added to the start of the sequence.
      */
     private int first = -1;
+    /**
+     * The root of the CHAMP trie for the sequence numbers.
+     */
+    private @NonNull BitmapIndexedNode<SequencedEntry<K, V>> sequenceRoot;
 
-    public MutableLinkedChampMap() {
+    /**
+     * Creates a new empty map.
+     */
+    public MutableSequencedChampMap() {
         root = BitmapIndexedNode.emptyNode();
+        sequenceRoot = BitmapIndexedNode.emptyNode();
     }
 
     /**
@@ -111,10 +129,10 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
      *
      * @param m a map
      */
-    public MutableLinkedChampMap(java.util.Map<? extends K, ? extends V> m) {
-        if (m instanceof MutableLinkedChampMap<?, ?>) {
+    public MutableSequencedChampMap(Map<? extends K, ? extends V> m) {
+        if (m instanceof MutableSequencedChampMap<?, ?>) {
             @SuppressWarnings("unchecked")
-            MutableLinkedChampMap<K, V> that = (MutableLinkedChampMap<K, V>) m;
+            MutableSequencedChampMap<K, V> that = (MutableSequencedChampMap<K, V>) m;
             this.mutator = null;
             that.mutator = null;
             this.root = that.root;
@@ -122,8 +140,10 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
             this.modCount = 0;
             this.first = that.first;
             this.last = that.last;
+            this.sequenceRoot = Objects.requireNonNull(that.sequenceRoot);
         } else {
             this.root = BitmapIndexedNode.emptyNode();
+            this.sequenceRoot = BitmapIndexedNode.emptyNode();
             this.putAll(m);
         }
     }
@@ -134,32 +154,39 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
      *
      * @param m an iterable
      */
-    public MutableLinkedChampMap(io.vavr.collection.Map<? extends K, ? extends V> m) {
-        if (m instanceof LinkedChampMap) {
+    public MutableSequencedChampMap(io.vavr.collection.Map<? extends K, ? extends V> m) {
+        if (m instanceof SequencedChampMap) {
             @SuppressWarnings("unchecked")
-            LinkedChampMap<K, V> that = (LinkedChampMap<K, V>) m;
+            SequencedChampMap<K, V> that = (SequencedChampMap<K, V>) m;
             this.root = that;
             this.size = that.size();
             this.first = that.first;
             this.last = that.last;
+            this.sequenceRoot = Objects.requireNonNull(that.sequenceRoot);
         } else {
             this.root = BitmapIndexedNode.emptyNode();
+            this.sequenceRoot = BitmapIndexedNode.emptyNode();
             this.putAll(m);
         }
 
     }
 
-    public MutableLinkedChampMap(Iterable<? extends Entry<? extends K, ? extends V>> m) {
+    public MutableSequencedChampMap(Iterable<? extends Entry<? extends K, ? extends V>> m) {
         this.root = BitmapIndexedNode.emptyNode();
+        this.sequenceRoot = BitmapIndexedNode.emptyNode();
         for (Entry<? extends K, ? extends V> e : m) {
             this.put(e.getKey(), e.getValue());
         }
     }
 
 
+    /**
+     * Removes all mappings from this map.
+     */
     @Override
     public void clear() {
         root = BitmapIndexedNode.emptyNode();
+        sequenceRoot = BitmapIndexedNode.emptyNode();
         size = 0;
         modCount++;
         first = -1;
@@ -170,8 +197,8 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
      * Returns a shallow copy of this map.
      */
     @Override
-    public MutableLinkedChampMap<K, V> clone() {
-        return (MutableLinkedChampMap<K, V>) super.clone();
+    public MutableSequencedChampMap<K, V> clone() {
+        return (MutableSequencedChampMap<K, V>) super.clone();
     }
 
     @Override
@@ -180,20 +207,28 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
         K key = (K) o;
         return Node.NO_DATA != root.find(new SequencedEntry<>(key),
                 Objects.hashCode(key), 0,
-                getEqualsFunction());
+                SequencedEntry::keyEquals);
     }
 
     private Iterator<Entry<K, V>> entryIterator(boolean reversed) {
-        java.util.Iterator<MutableMapEntry<K, V>> i = BucketSequencedIterator.isSupported(size, first, last)
-                ? new BucketSequencedIterator<>(size, first, last, root, reversed,
-                this::iteratorRemove,
-                e -> new MutableMapEntry<>(this::iteratorPutIfPresent, e.getKey(), e.getValue()))
-                : new HeapSequencedIterator<>(size, root, reversed,
-                this::iteratorRemove,
-                e -> new MutableMapEntry<>(this::iteratorPutIfPresent, e.getKey(), e.getValue()));
-        return new FailFastIterator<>(i, () -> this.modCount);
+        Enumerator<Entry<K, V>> i;
+        if (reversed) {
+            i = new ReversedKeySpliterator<>(sequenceRoot,
+                    e -> new MutableMapEntry<>(this::iteratorPutIfPresent, e.getKey(), e.getValue()),
+                    Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED, size());
+        } else {
+            i = new KeySpliterator<>(sequenceRoot,
+                    e -> new MutableMapEntry<>(this::iteratorPutIfPresent, e.getKey(), e.getValue()),
+                    Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED, size());
+        }
+        return new FailFastIterator<>(new IteratorFacade<>(i, this::iteratorRemove), () -> MutableSequencedChampMap.this.modCount);
     }
 
+    /**
+     * Returns a {@link Set} view of the mappings contained in this map.
+     *
+     * @return a view of the mappings contained in this map
+     */
     @Override
     public Set<Entry<K, V>> entrySet() {
         return new JavaSetFacade<>(
@@ -206,33 +241,20 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
         );
     }
 
-    //@Override
-    public Entry<K, V> firstEntry() {
-        return isEmpty() ? null : BucketSequencedIterator.getFirst(root, first, last);
-    }
-
-    //@Override
-    public K firstKey() {
-        return BucketSequencedIterator.getFirst(root, first, last).getKey();
-    }
-
+    /**
+     * Returns the value to which the specified key is mapped,
+     * or {@code null} if this map contains no mapping for the key.
+     *
+     * @param o the key whose associated value is to be returned
+     * @return the associated value or null
+     */
     @Override
     @SuppressWarnings("unchecked")
     public V get(final Object o) {
         Object result = root.find(
                 new SequencedEntry<>((K) o),
-                Objects.hashCode(o), 0, getEqualsFunction());
+                Objects.hashCode(o), 0, SequencedEntry::keyEquals);
         return (result instanceof SequencedEntry<?, ?>) ? ((SequencedEntry<K, V>) result).getValue() : null;
-    }
-
-
-    private BiPredicate<SequencedEntry<K, V>, SequencedEntry<K, V>> getEqualsFunction() {
-        return (a, b) -> Objects.equals(a.getKey(), b.getKey());
-    }
-
-
-    private ToIntFunction<SequencedEntry<K, V>> getHashFunction() {
-        return (a) -> Objects.hashCode(a.getKey());
     }
 
 
@@ -258,26 +280,22 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
         }
     }
 
-    private void iteratorRemove(SequencedEntry<K, V> entry) {
+    private void iteratorRemove(Map.Entry<K, V> entry) {
+        mutator = null;
         remove(entry.getKey());
     }
 
     //@Override
     public Entry<K, V> lastEntry() {
-        return isEmpty() ? null : BucketSequencedIterator.getLast(root, first, last);
+        return isEmpty() ? null : Node.getLast(sequenceRoot);
     }
 
     //@Override
-    public K lastKey() {
-        return BucketSequencedIterator.getLast(root, first, last).getKey();
-    }
-
-    //@Override
-    public Map.Entry<K, V> pollFirstEntry() {
+    public Entry<K, V> pollFirstEntry() {
         if (isEmpty()) {
             return null;
         }
-        SequencedEntry<K, V> entry = BucketSequencedIterator.getFirst(root, first, last);
+        SequencedEntry<K, V> entry = Node.getFirst(sequenceRoot);
         remove(entry.getKey());
         first = entry.getSequenceNumber();
         renumber();
@@ -285,11 +303,11 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     }
 
     //@Override
-    public Map.Entry<K, V> pollLastEntry() {
+    public Entry<K, V> pollLastEntry() {
         if (isEmpty()) {
             return null;
         }
-        SequencedEntry<K, V> entry = BucketSequencedIterator.getLast(root, first, last);
+        SequencedEntry<K, V> entry = Node.getLast(sequenceRoot);
         remove(entry.getKey());
         last = entry.getSequenceNumber();
         renumber();
@@ -310,20 +328,31 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
 
     private ChangeEvent<SequencedEntry<K, V>> putFirst(final K key, final V val,
                                                        boolean moveToFirst) {
-        final int keyHash = Objects.hashCode(key);
-        final ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
-        root = root.update(getOrCreateMutator(),
-                new SequencedEntry<>(key, val, first), keyHash, 0, details,
+        ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
+        SequencedEntry<K, V> newElem = new SequencedEntry<>(key, val, first);
+        IdentityObject mutator = getOrCreateIdentity();
+        root = root.update(mutator,
+                newElem, Objects.hashCode(key), 0, details,
                 moveToFirst ? getUpdateAndMoveToFirstFunction() : getUpdateFunction(),
-                getEqualsFunction(), getHashFunction());
+                SequencedEntry::keyEquals, SequencedEntry::keyHash);
         if (details.isModified()) {
-            if (details.isReplaced()) {
+            SequencedEntry<K, V> oldElem = details.getData();
+            boolean isReplaced = details.isReplaced();
+            sequenceRoot = sequenceRoot.update(mutator,
+                    newElem, seqHash(first), 0, details,
+                    getUpdateFunction(),
+                    SequencedData::seqEquals, SequencedData::seqHash);
+            if (isReplaced) {
+                sequenceRoot = sequenceRoot.remove(mutator,
+                        oldElem, seqHash(oldElem.getSequenceNumber()), 0, details,
+                        SequencedData::seqEquals);
+
                 first = details.getData().getSequenceNumber() == first ? first : first - 1;
                 last = details.getData().getSequenceNumber() == last ? last - 1 : last;
             } else {
                 modCount++;
-                size++;
                 first--;
+                size++;
             }
             renumber();
         }
@@ -338,13 +367,25 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
 
     ChangeEvent<SequencedEntry<K, V>> putLast(
             final K key, final V val, boolean moveToLast) {
-        final ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
-        root = root.update(getOrCreateMutator(),
-                new SequencedEntry<>(key, val, last), Objects.hashCode(key), 0, details,
+        ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
+        SequencedEntry<K, V> newElem = new SequencedEntry<>(key, val, last);
+        IdentityObject mutator = getOrCreateIdentity();
+        root = root.update(mutator,
+                newElem, Objects.hashCode(key), 0, details,
                 moveToLast ? getUpdateAndMoveToLastFunction() : getUpdateFunction(),
-                getEqualsFunction(), getHashFunction());
+                SequencedEntry::keyEquals, SequencedEntry::keyHash);
         if (details.isModified()) {
-            if (details.isReplaced()) {
+            SequencedEntry<K, V> oldElem = details.getData();
+            boolean isReplaced = details.isReplaced();
+            sequenceRoot = sequenceRoot.update(mutator,
+                    newElem, seqHash(last), 0, details,
+                    getUpdateFunction(),
+                    SequencedData::seqEquals, SequencedData::seqHash);
+            if (isReplaced) {
+                sequenceRoot = sequenceRoot.remove(mutator,
+                        oldElem, seqHash(oldElem.getSequenceNumber()), 0, details,
+                        SequencedData::seqEquals);
+
                 first = details.getData().getSequenceNumber() == first - 1 ? first - 1 : first;
                 last = details.getData().getSequenceNumber() == last ? last : last + 1;
             } else {
@@ -369,19 +410,23 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
     }
 
     ChangeEvent<SequencedEntry<K, V>> removeAndGiveDetails(final K key) {
-        final int keyHash = Objects.hashCode(key);
-        final ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
-        root = root.remove(getOrCreateMutator(),
-                new SequencedEntry<>(key), keyHash, 0, details,
-                getEqualsFunction());
+        ChangeEvent<SequencedEntry<K, V>> details = new ChangeEvent<>();
+        IdentityObject mutator = getOrCreateIdentity();
+        root = root.remove(mutator,
+                new SequencedEntry<>(key), Objects.hashCode(key), 0, details,
+                SequencedEntry::keyEquals);
         if (details.isModified()) {
-            size = size - 1;
+            size--;
             modCount++;
-            int seq = details.getData().getSequenceNumber();
+            var elem = details.getData();
+            int seq = elem.getSequenceNumber();
+            sequenceRoot = sequenceRoot.remove(mutator,
+                    elem,
+                    seqHash(seq), 0, details, SequencedData::seqEquals);
             if (seq == last - 1) {
                 last--;
             }
-            if (seq == first + 1) {
+            if (seq == first) {
                 first++;
             }
             renumber();
@@ -397,8 +442,10 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
      */
     private void renumber() {
         if (SequencedData.mustRenumber(size, first, last)) {
-            root = SequencedEntry.renumber(size, root, getOrCreateMutator(),
-                    getHashFunction(), getEqualsFunction());
+            root = SequencedData.renumber(size, root, sequenceRoot, getOrCreateIdentity(),
+                    SequencedEntry::keyHash, SequencedEntry::keyEquals,
+                    (e, seq) -> new SequencedEntry<>(e.getKey(), e.getValue(), seq));
+            sequenceRoot = SequencedData.buildSequenceRoot(root, mutator);
             last = size;
             first = -1;
         }
@@ -410,30 +457,21 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
      *
      * @return an immutable copy
      */
-    public LinkedChampMap<K, V> toImmutable() {
+    public SequencedChampMap<K, V> toImmutable() {
         mutator = null;
-        return size == 0 ? LinkedChampMap.empty() : new LinkedChampMap<>(root, size, first, last);
+        return size == 0 ? SequencedChampMap.empty() : new SequencedChampMap<>(root, sequenceRoot, size, first, last);
     }
 
 
     @Override
     public void putAll(Map<? extends K, ? extends V> m) {
-        // XXX We can putAll much faster if m is a MutableChampMap!
-        //        if (m instanceof MutableChampMap) {
-        //           newRootNode = root.updateAll(...);
-        //           ...
-        //           return;
-        //         }
+        if (m == this) {
+            return;
+        }
         super.putAll(m);
     }
 
     public void putAll(io.vavr.collection.Map<? extends K, ? extends V> m) {
-        // XXX We can putAll much faster if m is a ChampMap!
-        //        if (m instanceof ChampMap) {
-        //           newRootNode = root.updateAll(...);
-        //           ...
-        //           return;
-        //         }
         for (Tuple2<? extends K, ? extends V> e : m) {
             put(e._1, e._2);
         }
@@ -452,7 +490,7 @@ public class MutableLinkedChampMap<K, V> extends AbstractChampMap<K, V, Sequence
 
         @Override
         protected Object readResolve() {
-            return new MutableLinkedChampMap<>(deserialized);
+            return new MutableSequencedChampMap<>(deserialized);
         }
     }
 }

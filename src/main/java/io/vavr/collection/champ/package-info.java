@@ -4,10 +4,7 @@
  */
 
 /**
- * Provides the implementation of a Compressed Hash-Array Mapped Prefix-tree
- * (CHAMP).
- * <p>
- * This package is not exported from the module.
+ * Provides collections which use a Compressed Hash-Array Mapped Prefix-tree (CHAMP) as their internal data structure.
  * <p>
  * References:
  * <dl>
@@ -16,7 +13,7 @@
  *      <dd><a href="https://michael.steindorfer.name/publications/phd-thesis-efficient-immutable-collections">michael.steindorfer.name</a>
  *
  *      <dt>The Capsule Hash Trie Collections Library.
- *      <br>Copyright (c) Michael Steindorfer. BSD-2-Clause License</dt>
+ *      Copyright (c) Michael Steindorfer. BSD-2-Clause License</dt>
  *      <dd><a href="https://github.com/usethesource/capsule">github.com</a>
  * </dl>
  */

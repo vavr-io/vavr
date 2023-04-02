@@ -12,8 +12,8 @@ import java.util.function.Function;
  * create a new version of the trie, so that iterator does not have
  * to deal with structural changes of the trie.
  */
-class ReversedKeyEnumeratorSpliterator<K, E> extends AbstractKeyEnumeratorSpliterator<K, E> {
-    public ReversedKeyEnumeratorSpliterator(@NonNull Node<K> root, @NonNull Function<K, E> mappingFunction, int characteristics, long size) {
+class ReversedKeySpliterator<K, E> extends AbstractKeySpliterator<K, E> {
+    public ReversedKeySpliterator(@NonNull Node<K> root, @NonNull Function<K, E> mappingFunction, int characteristics, long size) {
         super(root, mappingFunction, characteristics, size);
     }
 
@@ -23,7 +23,7 @@ class ReversedKeyEnumeratorSpliterator<K, E> extends AbstractKeyEnumeratorSplite
     }
 
     @Override
-    boolean isDone(AbstractKeyEnumeratorSpliterator.@NonNull StackElement<K> elem) {
+    boolean isDone(AbstractKeySpliterator.@NonNull StackElement<K> elem) {
         return elem.index < 0;
     }
 

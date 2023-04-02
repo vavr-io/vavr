@@ -1,6 +1,6 @@
 package io.vavr.jmh;
 
-import io.vavr.collection.champ.LinkedChampMap;
+import io.vavr.collection.champ.SequencedChampMap;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -21,13 +21,7 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark         (size)  Mode  Cnt    _     Score        Error  Units
- * ContainsFound     1000000  avgt    4       180.018 ±        8.546  ns/op
- * ContainsNotFound  1000000  avgt    4       179.753 ±       13.559  ns/op
- * Iterate           1000000  avgt    4  67746660.311 ± 11683119.941  ns/op
- * Put               1000000  avgt    4       340.929 ±        8.589  ns/op
- * Head              1000000  avgt    4  34162107.506 ±  2239763.509  ns/op
- * RemoveThenAdd     1000000  avgt    4       536.753 ±       18.663  ns/op
+ *
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -36,20 +30,20 @@ import java.util.concurrent.TimeUnit;
 @Fork(value = 0)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
-public class VavrLinkedChampMapJmh {
+public class VavrSequencedChampMapJmh {
     @Param({"1000000"})
     private int size;
 
     private final int mask = ~64;
 
     private BenchmarkData data;
-    private LinkedChampMap<Key, Boolean> mapA;
+    private SequencedChampMap<Key, Boolean> mapA;
 
 
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-         mapA =  LinkedChampMap.empty();
+        mapA = SequencedChampMap.empty();
         for (Key key : data.setA) {
             mapA=mapA.put(key,Boolean.TRUE);
         }

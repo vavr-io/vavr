@@ -142,7 +142,7 @@ class VavrSetFacade<E> implements VavrSetMixin<E, VavrSetFacade<E>> {
 
     private Object writeReplace() {
         // FIXME WrappedVavrSet is not serializable. We convert
-        //            it into a LinkedChampSet.
-        return new LinkedChampSet.SerializationProxy<E>(this.toJavaSet());
+        //            it into a SequencedChampSet.
+        return new SequencedChampSet.SerializationProxy<E>(this.toJavaSet());
     }
 }

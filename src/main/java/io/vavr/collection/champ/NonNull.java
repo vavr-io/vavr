@@ -23,5 +23,5 @@ import static java.lang.annotation.RetentionPolicy.CLASS;
 @Documented
 @Retention(CLASS)
 @Target({TYPE_USE, TYPE_PARAMETER, FIELD, METHOD, PARAMETER, LOCAL_VARIABLE})
-public @interface NonNull {
+@interface NonNull {
 }

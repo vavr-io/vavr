@@ -15,7 +15,7 @@ import static java.lang.Integer.max;
  *
  * @author Werner Randelshofer
  */
-public class ListHelper {
+class ListHelper {
     /**
      * Don't let anyone instantiate this class.
      */

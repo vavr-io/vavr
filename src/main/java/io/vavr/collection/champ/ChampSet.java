@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import java.util.function.BiPredicate;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collector;
 
 
@@ -87,11 +85,25 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
         return ((ChampSet<E>) ChampSet.EMPTY);
     }
 
+    /**
+     * Creates an empty set of the specified element type.
+     *
+     * @param <R> the element type
+     * @return a new empty set.
+     */
     @Override
     public <R> Set<R> create() {
         return empty();
     }
 
+    /**
+     * Creates an empty set of the specified element type, and adds all
+     * the specified elements.
+     *
+     * @param elements the elements
+     * @param <R>      the element type
+     * @return a new set that contains the specified elements.
+     */
     @Override
     public <R> ChampSet<R> createFromElements(Iterable<? extends R> elements) {
         return ChampSet.<R>empty().addAll(elements);
@@ -101,7 +113,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
     public ChampSet<E> add(E key) {
         int keyHash = Objects.hashCode(key);
         ChangeEvent<E> details = new ChangeEvent<>();
-        BitmapIndexedNode<E> newRootNode = update(null, key, keyHash, 0, details, getUpdateFunction(), getEqualsFunction(), getHashFunction());
+        BitmapIndexedNode<E> newRootNode = update(null, key, keyHash, 0, details, getUpdateFunction(), Objects::equals, Objects::hashCode);
         if (details.isModified()) {
             return new ChampSet<>(newRootNode, size + 1);
         }
@@ -127,15 +139,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
 
     @Override
     public boolean contains(E o) {
-        return find(o, Objects.hashCode(o), 0, getEqualsFunction()) != Node.NO_DATA;
-    }
-
-    private BiPredicate<E, E> getEqualsFunction() {
-        return Objects::equals;
-    }
-
-    private ToIntFunction<E> getHashFunction() {
-        return Objects::hashCode;
+        return find(o, Objects.hashCode(o), 0, Objects::equals) != Node.NO_DATA;
     }
 
     private BiFunction<E, E, E> getUpdateFunction() {
@@ -156,7 +160,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
     public Set<E> remove(E key) {
         int keyHash = Objects.hashCode(key);
         ChangeEvent<E> details = new ChangeEvent<>();
-        BitmapIndexedNode<E> newRootNode = remove(null, key, keyHash, 0, details, getEqualsFunction());
+        BitmapIndexedNode<E> newRootNode = remove(null, key, keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
             return new ChampSet<>(newRootNode, size - 1);
         }
@@ -242,7 +246,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    public static class SerializationProxy<E> extends SetSerializationProxy<E> {
+    static class SerializationProxy<E> extends SetSerializationProxy<E> {
         private final static long serialVersionUID = 0L;
 
         public SerializationProxy(java.util.Set<E> target) {
