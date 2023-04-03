@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class VavrLinkedHashSetJmh {
-    @Param({"1000000"})
+    @Param({"10", "1000000"})
     private int size;
 
     private final int mask = ~64;

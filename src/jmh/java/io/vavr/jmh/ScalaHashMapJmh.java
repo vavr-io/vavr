@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @SuppressWarnings("unchecked")
 public class ScalaHashMapJmh {
-    @Param({"1000000"})
+    @Param({"10", "1000000"})
     private int size;
 
     private final int mask = ~64;
