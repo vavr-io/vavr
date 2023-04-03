@@ -7,6 +7,7 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Measurement;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -20,13 +21,19 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark           (size)  Mode  Cnt         Score         Error  Units
- * mContainsFound     1000000  avgt    4    _   162.694 ±       4.498  ns/op
- * mContainsNotFound  1000000  avgt    4    _   173.803 ±       5.247  ns/op
- * mHead              1000000  avgt    4    _    23.992 ±       1.879  ns/op
- * mIterate           1000000  avgt    4  36_428809.525 ± 1247676.226  ns/op
- * mRemoveThenAdd     1000000  avgt    4    _   518.853 ±      16.583  ns/op
- * mTail              1000000  avgt    4    _   109.234 ±       2.909  ns/op
+ * Benchmark                           (size)  Mode  Cnt         Score   Error  Units
+ * VavrChampSetJmh.mContainsFound          10  avgt              4.720          ns/op
+ * VavrChampSetJmh.mContainsFound     1000000  avgt            208.266          ns/op
+ * VavrChampSetJmh.mContainsNotFound       10  avgt              4.397          ns/op
+ * VavrChampSetJmh.mContainsNotFound  1000000  avgt            208.751          ns/op
+ * VavrChampSetJmh.mHead                   10  avgt             10.912          ns/op
+ * VavrChampSetJmh.mHead              1000000  avgt             25.173          ns/op
+ * VavrChampSetJmh.mIterate                10  avgt             15.869          ns/op
+ * VavrChampSetJmh.mIterate           1000000  avgt       39349325.941          ns/op
+ * VavrChampSetJmh.mRemoveThenAdd          10  avgt             58.045          ns/op
+ * VavrChampSetJmh.mRemoveThenAdd     1000000  avgt            614.303          ns/op
+ * VavrChampSetJmh.mTail                   10  avgt             36.092          ns/op
+ * VavrChampSetJmh.mTail              1000000  avgt            114.222          ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -37,6 +44,7 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 public class VavrChampSetJmh {
 
+    @Param({"10", "1000000"})
     private int size;
 
     private final int mask = ~64;
