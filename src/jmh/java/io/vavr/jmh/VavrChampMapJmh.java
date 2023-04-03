@@ -152,7 +152,18 @@ import java.util.concurrent.TimeUnit;
  * VavrChampMapJmh.mRemoveThenAdd                 1000000  avgt             535.499          ns/op
  * VavrChampMapJmh.mTail                               10  avgt              38.912          ns/op
  * VavrChampMapJmh.mTail                          1000000  avgt             118.332          ns/op
- * VavrChampSetJmh.mIterate                           N/A  avgt               9.475          ns/op
+ * VavrChampSetJmh.mContainsFound                      10  avgt               4.720          ns/op
+ * VavrChampSetJmh.mContainsFound                 1000000  avgt             208.266          ns/op
+ * VavrChampSetJmh.mContainsNotFound                   10  avgt               4.397          ns/op
+ * VavrChampSetJmh.mContainsNotFound              1000000  avgt             208.751          ns/op
+ * VavrChampSetJmh.mHead                               10  avgt              10.912          ns/op
+ * VavrChampSetJmh.mHead                          1000000  avgt              25.173          ns/op
+ * VavrChampSetJmh.mIterate                            10  avgt              15.869          ns/op
+ * VavrChampSetJmh.mIterate                       1000000  avgt        39349325.941          ns/op
+ * VavrChampSetJmh.mRemoveThenAdd                      10  avgt              58.045          ns/op
+ * VavrChampSetJmh.mRemoveThenAdd                 1000000  avgt             614.303          ns/op
+ * VavrChampSetJmh.mTail                               10  avgt              36.092          ns/op
+ * VavrChampSetJmh.mTail                          1000000  avgt             114.222          ns/op
  * VavrHashMapJmh.mContainsFound                       10  avgt               5.314          ns/op
  * VavrHashMapJmh.mContainsFound                  1000000  avgt             185.863          ns/op
  * VavrHashMapJmh.mContainsNotFound                    10  avgt               5.305          ns/op
@@ -230,9 +241,9 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 1)
-@Warmup(iterations = 1)
-@Fork(value = 1)
+@Measurement(iterations = 0)
+@Warmup(iterations = 0)
+@Fork(value = 0)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class VavrChampMapJmh {
