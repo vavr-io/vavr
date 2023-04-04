@@ -22,13 +22,21 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark         (size)  Mode  Cnt    _     Score        Error  Units
- * ContainsFound     1000000  avgt    4       179.705 ±       5.735  ns/op
- * ContainsNotFound  1000000  avgt    4       178.312 ±       8.082  ns/op
- * Iterate           1000000  avgt    4  48892070.205 ± 4267871.730  ns/op
- * Put               1000000  avgt    4       334.626 ±      17.592  ns/op
- * Head              1000000  avgt    4        38.292 ±       2.783  ns/op
- * RemoveThenAdd     1000000  avgt    4       530.084 ±      13.140  ns/op
+ * Benchmark                           (size)  Mode  Cnt         Score         Error  Units
+ * VavrChampMapJmh.mContainsFound          10  avgt    4         4.780 ±       0.072  ns/op
+ * VavrChampMapJmh.mContainsFound     1000000  avgt    4       204.861 ±      11.674  ns/op
+ * VavrChampMapJmh.mContainsNotFound       10  avgt    4         4.762 ±       0.046  ns/op
+ * VavrChampMapJmh.mContainsNotFound  1000000  avgt    4       201.403 ±       4.942  ns/op
+ * VavrChampMapJmh.mHead                   10  avgt    4        15.325 ±       0.233  ns/op
+ * VavrChampMapJmh.mHead              1000000  avgt    4        38.001 ±       0.898  ns/op
+ * VavrChampMapJmh.mIterate                10  avgt    4        52.887 ±       0.341  ns/op
+ * VavrChampMapJmh.mIterate           1000000  avgt    4  60767798.045 ± 1693446.487  ns/op
+ * VavrChampMapJmh.mPut                    10  avgt    4        25.176 ±       2.415  ns/op
+ * VavrChampMapJmh.mPut               1000000  avgt    4       338.119 ±       8.195  ns/op
+ * VavrChampMapJmh.mRemoveThenAdd          10  avgt    4        66.013 ±       4.305  ns/op
+ * VavrChampMapJmh.mRemoveThenAdd     1000000  avgt    4       536.347 ±      10.961  ns/op
+ * VavrChampMapJmh.mTail                   10  avgt    4        37.362 ±       2.984  ns/op
+ * VavrChampMapJmh.mTail              1000000  avgt    4       118.842 ±       1.472  ns/op
  * -----
  *
  * Benchmark                                       (size)  Mode  Cnt          Score   Error  Units

@@ -24,20 +24,27 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  * # org.scala-lang:scala-library:2.13.8
- * 
- * Benchmark         (size)  Mode  Cnt    _     Score        Error  Units
- * ContainsFound     1000000  avgt    4       235.101 ±       5.158  ns/op
- * ContainsNotFound  1000000  avgt    4       233.045 ±       2.073  ns/op
- * Iterate           1000000  avgt    4  38126058.704 ± 2402214.160  ns/op
- * Put               1000000  avgt    4       403.080 ±       4.946  ns/op
- * Head              1000000  avgt    4        24.020 ±       3.039  ns/op
- * RemoveThenAdd     1000000  avgt    4       674.819 ±       6.798  ns/op
+ *
+ * Benchmark                             (size)  Mode  Cnt          Score         Error  Units
+ * ScalaHashMapJmh.mContainsFound            10  avgt    4          6.163 ±       0.096  ns/op
+ * ScalaHashMapJmh.mContainsFound       1000000  avgt    4        271.014 ±      11.496  ns/op
+ * ScalaHashMapJmh.mContainsNotFound         10  avgt    4          6.169 ±       0.107  ns/op
+ * ScalaHashMapJmh.mContainsNotFound    1000000  avgt    4        273.811 ±      19.868  ns/op
+ * ScalaHashMapJmh.mHead                     10  avgt    4          1.699 ±       0.024  ns/op
+ * ScalaHashMapJmh.mHead                1000000  avgt    4         23.117 ±       0.496  ns/op
+ * ScalaHashMapJmh.mIterate                  10  avgt    4          9.599 ±       0.077  ns/op
+ * ScalaHashMapJmh.mIterate             1000000  avgt    4   38578271.355 ± 1380759.932  ns/op
+ * ScalaHashMapJmh.mPut                      10  avgt    4         14.226 ±       0.364  ns/op
+ * ScalaHashMapJmh.mPut                 1000000  avgt    4        399.880 ±       5.722  ns/op
+ * ScalaHashMapJmh.mRemoveThenAdd            10  avgt    4         81.323 ±       8.510  ns/op
+ * ScalaHashMapJmh.mRemoveThenAdd       1000000  avgt    4        684.429 ±       8.141  ns/op
+ * ScalaHashMapJmh.mTail                     10  avgt    4         37.080 ±       1.845  ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 0)
-@Warmup(iterations = 0)
-@Fork(value = 0)
+@Measurement(iterations = 4)
+@Warmup(iterations = 4)
+@Fork(value = 1)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @SuppressWarnings("unchecked")

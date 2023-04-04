@@ -25,19 +25,24 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  * # org.scala-lang:scala-library:2.13.8
  *
- * Benchmark         (size)  Mode  Cnt    _     Score        Error  Units
- * ContainsFound     1000000  avgt    4        262.398 ±     84.850  ns/op
- * ContainsNotFound  1000000  avgt    4        255.078 ±     11.044  ns/op
- * Head              1000000  avgt    4         38.234 ±      2.455  ns/op
- * Iterate           1000000  avgt    4  284698238.201 ± 950950.509  ns/op
- * Put               1000000  avgt    4        501.840 ±      6.593  ns/op
- * RemoveThenAdd     1000000  avgt    4       1242.707 ±    503.426  ns/op
- * </pre>
+ * Benchmark                             (size)  Mode  Cnt          Score         Error  Units
+ * ScalaVectorMapJmh.mContainsFound          10  avgt    4          7.010 ±       0.070  ns/op
+ * ScalaVectorMapJmh.mContainsFound     1000000  avgt    4        286.636 ±     163.132  ns/op
+ * ScalaVectorMapJmh.mContainsNotFound       10  avgt    4          6.475 ±       0.454  ns/op
+ * ScalaVectorMapJmh.mContainsNotFound  1000000  avgt    4        299.524 ±       2.474  ns/op
+ * ScalaVectorMapJmh.mHead                   10  avgt    4          7.291 ±       0.549  ns/op
+ * ScalaVectorMapJmh.mHead              1000000  avgt    4         26.498 ±       0.175  ns/op
+ * ScalaVectorMapJmh.mIterate                10  avgt    4         88.927 ±       6.506  ns/op
+ * ScalaVectorMapJmh.mIterate           1000000  avgt    4  341379733.683 ± 3030428.490  ns/op
+ * ScalaVectorMapJmh.mPut                    10  avgt    4         31.937 ±       1.585  ns/op
+ * ScalaVectorMapJmh.mPut               1000000  avgt    4        502.505 ±       9.940  ns/op
+ * ScalaVectorMapJmh.mRemoveThenAdd          10  avgt    4        140.745 ±       2.629  ns/op
+ * ScalaVectorMapJmh.mRemoveThenAdd     1000000  avgt    4       1212.184 ±      27.835  ns/op * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 0)
-@Warmup(iterations = 0)
-@Fork(value = 0)
+@Measurement(iterations = 4)
+@Warmup(iterations = 4)
+@Fork(value = 1)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @SuppressWarnings("unchecked")
@@ -56,7 +61,7 @@ public class ScalaVectorMapJmh {
         data = new BenchmarkData(size, mask);
         Builder<Tuple2<Key, Boolean>, VectorMap<Key, Boolean>> b = VectorMap.newBuilder();
         for (Key key : data.setA) {
-            b.addOne(new Tuple2<>(key,Boolean.TRUE));
+            b.addOne(new Tuple2<>(key, Boolean.TRUE));
         }
         mapA = b.result();
     }
@@ -64,7 +69,7 @@ public class ScalaVectorMapJmh {
     @Benchmark
     public int mIterate() {
         int sum = 0;
-        for(Iterator<Key> i = mapA.keysIterator();i.hasNext();){
+        for (Iterator<Key> i = mapA.keysIterator(); i.hasNext(); ) {
             sum += i.next().value;
         }
         return sum;
@@ -72,14 +77,14 @@ public class ScalaVectorMapJmh {
 
     @Benchmark
     public void mRemoveThenAdd() {
-        Key key =data.nextKeyInA();
-        mapA.$minus(key).$plus(new Tuple2<>(key,Boolean.TRUE));
+        Key key = data.nextKeyInA();
+        mapA.$minus(key).$plus(new Tuple2<>(key, Boolean.TRUE));
     }
 
     @Benchmark
     public void mPut() {
-        Key key =data.nextKeyInA();
-        mapA.$plus(new Tuple2<>(key,Boolean.FALSE));
+        Key key = data.nextKeyInA();
+        mapA.$plus(new Tuple2<>(key, Boolean.FALSE));
     }
 
     @Benchmark
