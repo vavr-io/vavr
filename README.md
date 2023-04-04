@@ -84,6 +84,7 @@ This cuts off the elapsed times of functions that run in linear times.
   underlying data structures.<br>
   Performs all operations in constant time.<br>
   Iterates in the sequence in which the entries were inserted in the map.<br>
+  May hog memory, because deleted elements are replaced by tomb stone objects.<br>
   This is one of the fastest implementation except for iteration.
 * **scala.TreeSeqMap** <br>
   Uses a CHAMP trie and a red-black tree and as its underlying data structures.<br>
@@ -105,9 +106,11 @@ This cuts off the elapsed times of functions that run in linear times.
   Performs all operations in constant time.<br>
   Iterates in an unspecified sequence.<br>
 * **vavr.SequencedChampMap**<br>
-  Uses a CHAMP trie as its underlying data structure.<br>
+  Uses two CHAMP tries as its underlying data structure.<br>
   Performs all operations in constant time.<br>
   Iterates in the sequence in which the entries were inserted in the map.<br>
-  This is one of the slower implementations.
+  This class has the same design trade-offs like scala.TreeSeqMap.<br>
+  This is one of the slower implementations - it beats scala.TreeSeqMap
+  except for head() and tail() operations.
  
 
