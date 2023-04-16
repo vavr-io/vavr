@@ -111,7 +111,7 @@ tasks.named('check') {
 
 tasks.named('jar') {
     from('.') {
-        include 'COPYRIGHT'
+        include 'LICENSE'
     }
 
     manifest {
