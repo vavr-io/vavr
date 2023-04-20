@@ -190,7 +190,7 @@ public class HashArrayMappedTrieTest {
         }
     }
 
-    private class Comparator<K, V> {
+    private final class Comparator<K, V> {
         private final java.util.Map<K, V> classic = new java.util.HashMap<>();
         private Map<K, V> hamt = HashMap.empty();
 

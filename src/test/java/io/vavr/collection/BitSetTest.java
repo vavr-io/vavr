@@ -589,7 +589,7 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     // -- classes
 
-    private static class Mapper<T> implements Serializable {
+    private static final class Mapper<T> implements Serializable {
 
         private static final long serialVersionUID = 1L;
 
