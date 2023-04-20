@@ -571,6 +571,22 @@ public class EitherTest extends AbstractValueTest {
         assertThat(validation.getError()).isEqualTo("vavr");
     }
 
+    // -- toTry
+
+    @Test
+    public void shouldConvertToSuccessTry() {
+        final Try<Integer> actual = Either.right(42).toTry(left -> new IllegalStateException(Objects.toString(left)));
+        assertThat(actual.isSuccess()).isTrue();
+        assertThat(actual.get()).isEqualTo(42);
+    }
+
+    @Test
+    public void shouldConvertToFailureTry() {
+        final Try<?> actual = Either.left("vavr").toTry(left->new IllegalStateException(left));
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(actual.getCause().getMessage()).isEqualTo("vavr");
+    }
+
     // hashCode
 
     @Test
