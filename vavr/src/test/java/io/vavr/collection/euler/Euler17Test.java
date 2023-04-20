@@ -121,7 +121,7 @@ public class Euler17Test {
     /**
      * Solution using Vavr Pattern Matching.
      */
-    private static class SolutionA implements SolutionProblem17 {
+    private static final class SolutionA implements SolutionProblem17 {
         @Override
         public int letterCount(int num) {
             return Match(num).of( /*@formatter:off*/
@@ -143,7 +143,7 @@ public class Euler17Test {
     /**
      * A more general solution using functionality of the Vavr Collections.
      */
-    private static class SolutionB implements SolutionProblem17 {
+    private static final class SolutionB implements SolutionProblem17 {
         @Override
         public int letterCount(int number) {
             return asText(number).length();
