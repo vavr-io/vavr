@@ -40,9 +40,9 @@ import java.util.concurrent.TimeUnit;
  * ScalaVectorMapJmh.mRemoveThenAdd     1000000  avgt    4       1212.184 ±      27.835  ns/op * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 4)
-@Warmup(iterations = 4)
-@Fork(value = 1)
+@Measurement(iterations = 0)
+@Warmup(iterations = 0)
+@Fork(value = 0)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @SuppressWarnings("unchecked")
@@ -76,15 +76,16 @@ public class ScalaVectorMapJmh {
     }
 
     @Benchmark
-    public void mRemoveThenAdd() {
+    public VectorMap<Key, Boolean> mRemoveThenAdd() {
         Key key = data.nextKeyInA();
-        mapA.$minus(key).$plus(new Tuple2<>(key, Boolean.TRUE));
+        return (VectorMap<Key, Boolean>) mapA.$minus(key).$plus(new Tuple2<>(key, Boolean.TRUE));
+
     }
 
     @Benchmark
-    public void mPut() {
+    public VectorMap<Key, Boolean> mPut() {
         Key key = data.nextKeyInA();
-        mapA.$plus(new Tuple2<>(key, Boolean.FALSE));
+        return (VectorMap<Key, Boolean>) mapA.$plus(new Tuple2<>(key, Boolean.FALSE));
     }
 
     @Benchmark
@@ -103,4 +104,5 @@ public class ScalaVectorMapJmh {
     public Key mHead() {
         return mapA.head()._1;
     }
+
 }
