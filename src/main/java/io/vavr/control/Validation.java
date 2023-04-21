@@ -2,26 +2,36 @@
  * \   \/   /      \   \/   /   __/   /      \   \/   /      \
  *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
+ * The MIT License (MIT)
+ *
  * Copyright 2023 Vavr, https://vavr.io
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 package io.vavr.control;
 
 import io.vavr.*;
+import io.vavr.collection.Array;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
+import io.vavr.collection.Traversable;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -185,6 +195,52 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
             }
         }
         return errors.isEmpty() ? valid(list.reverse()) : invalid(errors.reverse());
+    }
+
+    /**
+     * A wrapper to {@link #all(Traversable)}.
+     * <p/>
+     * Usage example :
+     *
+     * <pre>{@code
+     *  Validation<String, Path> isDirectory(Path path){
+     *      [...]
+     *  }
+     *
+     *  Validation<String, Path> isWritable(Path path){
+     *      [...]
+     *  }
+     *
+     *  Validation<Seq<String>, Path> checkWritableDirectory = Validation.all(
+     *                 isDirectory(path),
+     *                 isWritable(path)
+     *  );
+     * }</pre>
+     *
+     * @see #all(Traversable)
+     */
+    @SuppressWarnings("varargs")
+    @SafeVarargs
+    public static <E, T> Validation<Seq<E>, T> all(final Validation <? extends E, ? extends T>... values) {
+        Objects.requireNonNull(values, "values is null");
+        return all(Array.of(values));
+    }
+
+    /**
+     * Combine many {@code Validation} of the same type into a single {@code Validation} with a list of invalid values.
+     *
+     *
+     * @param <E>    value type in the case of invalid
+     * @param <T>    value type in the case of valid
+     * @param values An iterable of Validation instances.
+     * @return A valid Validation of the last value if all Validation instances are valid
+     * or an invalid Validation containing an accumulated List of errors.
+     * @throws NullPointerException if values is null
+     */
+    public static <E, T> Validation<Seq<E>, T> all(Traversable<? extends Validation <? extends E, ? extends T>> values) {
+        Objects.requireNonNull(values, "values is null");
+        Iterable<Validation<List<? extends E>, ? extends T>> mapped = values.map(v -> v.mapError(List::of));
+        return sequence(mapped).map(Traversable::last);
     }
 
     /**
