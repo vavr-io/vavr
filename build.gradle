@@ -111,7 +111,7 @@ tasks.named('check') {
 
 tasks.named('jar') {
     from('.') {
-        include 'COPYRIGHT'
+        include 'LICENSE'
     }
 
     manifest {
@@ -152,8 +152,8 @@ publishing {
                 inceptionYear = '2014'
                 licenses {
                     license {
-                        name = 'The Apache Software License, Version 2.0'
-                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                        name = 'The MIT License (MIT)'
+                        url = 'https://mit-license.org'
                     }
                 }
                 developers {
