@@ -4,6 +4,7 @@ import io.vavr.collection.Collections;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Set;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,12 +65,13 @@ import java.util.stream.Collector;
  *
  * @param <E> the element type
  */
-public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E, ChampSet<E>>, Serializable {
+public class HashSet<E> extends ChampPackage.BitmapIndexedNode<E> implements ChampPackage.VavrSetMixin<E, HashSet<E>>, Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
-    private static final ChampSet<?> EMPTY = new ChampSet<>(BitmapIndexedNode.emptyNode(), 0);
+    private static final HashSet<?> EMPTY = new HashSet<>(ChampPackage.BitmapIndexedNode.emptyNode(), 0);
     final int size;
 
-    ChampSet(BitmapIndexedNode<E> root, int size) {
+    HashSet(ChampPackage.BitmapIndexedNode<E> root, int size) {
         super(root.nodeMap(), root.dataMap(), root.mixed);
         this.size = size;
     }
@@ -81,8 +83,8 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
      * @return an empty immutable set
      */
     @SuppressWarnings("unchecked")
-    public static <E> ChampSet<E> empty() {
-        return ((ChampSet<E>) ChampSet.EMPTY);
+    public static <E> HashSet<E> empty() {
+        return ((HashSet<E>) HashSet.EMPTY);
     }
 
     /**
@@ -92,7 +94,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
      * @return a new empty set.
      */
     @Override
-    public <R> ChampSet<R> create() {
+    public <R> HashSet<R> create() {
         return empty();
     }
 
@@ -105,31 +107,31 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
      * @return a new set that contains the specified elements.
      */
     @Override
-    public <R> ChampSet<R> createFromElements(Iterable<? extends R> elements) {
-        return ChampSet.<R>empty().addAll(elements);
+    public <R> HashSet<R> createFromElements(Iterable<? extends R> elements) {
+        return HashSet.<R>empty().addAll(elements);
     }
 
     @Override
-    public ChampSet<E> add(E key) {
+    public HashSet<E> add(E key) {
         int keyHash = Objects.hashCode(key);
-        ChangeEvent<E> details = new ChangeEvent<>();
-        BitmapIndexedNode<E> newRootNode = update(null, key, keyHash, 0, details, getUpdateFunction(), Objects::equals, Objects::hashCode);
+        ChampPackage.ChangeEvent<E> details = new ChampPackage.ChangeEvent<>();
+        ChampPackage.BitmapIndexedNode<E> newRootNode = update(null, key, keyHash, 0, details, getUpdateFunction(), Objects::equals, Objects::hashCode);
         if (details.isModified()) {
-            return new ChampSet<>(newRootNode, size + 1);
+            return new HashSet<>(newRootNode, size + 1);
         }
         return this;
     }
 
     @Override
     @SuppressWarnings({"unchecked"})
-    public ChampSet<E> addAll(Iterable<? extends E> set) {
-        if (set == this || isEmpty() && (set instanceof ChampSet<?>)) {
-            return (ChampSet<E>) set;
+    public HashSet<E> addAll(Iterable<? extends E> set) {
+        if (set == this || isEmpty() && (set instanceof HashSet<?>)) {
+            return (HashSet<E>) set;
         }
-        if (isEmpty() && (set instanceof MutableChampSet)) {
-            return ((MutableChampSet<E>) set).toImmutable();
+        if (isEmpty() && (set instanceof MutableHashSet)) {
+            return ((MutableHashSet<E>) set).toImmutable();
         }
-        MutableChampSet<E> t = toMutable();
+        MutableHashSet<E> t = toMutable();
         boolean modified = false;
         for (E key : set) {
             modified |= t.add(key);
@@ -139,7 +141,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
 
     @Override
     public boolean contains(E o) {
-        return find(o, Objects.hashCode(o), 0, Objects::equals) != Node.NO_DATA;
+        return find(o, Objects.hashCode(o), 0, Objects::equals) != ChampPackage.Node.NO_DATA;
     }
 
     private BiFunction<E, E, E> getUpdateFunction() {
@@ -148,7 +150,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
 
     @Override
     public Iterator<E> iterator() {
-        return new KeyIterator<E>(this, null);
+        return new ChampPackage.KeyIterator<E>(this, null);
     }
 
     @Override
@@ -159,10 +161,10 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
     @Override
     public Set<E> remove(E key) {
         int keyHash = Objects.hashCode(key);
-        ChangeEvent<E> details = new ChangeEvent<>();
-        BitmapIndexedNode<E> newRootNode = remove(null, key, keyHash, 0, details, Objects::equals);
+        ChampPackage.ChangeEvent<E> details = new ChampPackage.ChangeEvent<>();
+        ChampPackage.BitmapIndexedNode<E> newRootNode = remove(null, key, keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
-            return new ChampSet<>(newRootNode, size - 1);
+            return new HashSet<>(newRootNode, size - 1);
         }
         return this;
     }
@@ -172,19 +174,19 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
      *
      * @return a mutable copy of this set.
      */
-    MutableChampSet<E> toMutable() {
-        return new MutableChampSet<>(this);
+    MutableHashSet<E> toMutable() {
+        return new MutableHashSet<>(this);
     }
 
     /**
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link ChampSet}.
+     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link HashSet}.
      *
      * @param <T> Component type of the HashSet.
      * @return A io.vavr.collection.ChampSet Collector.
      */
-    public static <T> Collector<T, ArrayList<T>, ChampSet<T>> collector() {
-        return Collections.toListAndThen(iterable -> ChampSet.<T>empty().addAll(iterable));
+    public static <T> Collector<T, ArrayList<T>, HashSet<T>> collector() {
+        return Collections.toListAndThen(iterable -> HashSet.<T>empty().addAll(iterable));
     }
 
     @Override
@@ -195,8 +197,8 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
         if (other == null) {
             return false;
         }
-        if (other instanceof ChampSet) {
-            ChampSet<?> that = (ChampSet<?>) other;
+        if (other instanceof HashSet) {
+            HashSet<?> that = (HashSet<?>) other;
             return size == that.size && equivalent(that);
         }
         return Collections.equals(this, other);
@@ -219,9 +221,9 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public static <T> ChampSet<T> of(T... elements) {
+    public static <T> HashSet<T> of(T... elements) {
         //Arrays.asList throws a NullPointerException for us.
-        return ChampSet.<T>empty().addAll(Arrays.asList(elements));
+        return HashSet.<T>empty().addAll(Arrays.asList(elements));
     }
 
     /**
@@ -232,12 +234,12 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
      * @return A new ChampSet containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <T> ChampSet<T> ofAll(Iterable<? extends T> elements) {
+    public static <T> HashSet<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof ChampSet) {
-            return (ChampSet<T>) elements;
+        if (elements instanceof HashSet) {
+            return (HashSet<T>) elements;
         } else {
-            return ChampSet.<T>of().addAll(elements);
+            return HashSet.<T>of().addAll(elements);
         }
     }
 
@@ -246,35 +248,38 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    static class SerializationProxy<E> extends SetSerializationProxy<E> {
+    static class SerializationProxy<E> extends ChampPackage.SetSerializationProxy<E> {
+        @Serial
         private final static long serialVersionUID = 0L;
 
         public SerializationProxy(java.util.Set<E> target) {
             super(target);
         }
 
+        @Serial
         @Override
         protected Object readResolve() {
-            return ChampSet.<E>empty().addAll(deserialized);
+            return HashSet.<E>empty().addAll(deserialized);
         }
     }
 
+    @Serial
     private Object writeReplace() {
         return new SerializationProxy<E>(this.toMutable());
     }
 
     @Override
-    public ChampSet<E> dropRight(int n) {
+    public HashSet<E> dropRight(int n) {
         return drop(n);
     }
 
     @Override
-    public ChampSet<E> takeRight(int n) {
+    public HashSet<E> takeRight(int n) {
         return take(n);
     }
 
     @Override
-    public ChampSet<E> init() {
+    public HashSet<E> init() {
         return tail();
     }
 
@@ -286,12 +291,12 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
 
     /**
      * Creates a mutable copy of this set.
-     * The copy is an instance of {@link MutableChampSet}.
+     * The copy is an instance of {@link MutableHashSet}.
      *
      * @return a mutable copy of this set.
      */
     @Override
-    public MutableChampSet<E> toJavaSet() {
+    public MutableHashSet<E> toJavaSet() {
         return toMutable();
     }
 
@@ -305,7 +310,7 @@ public class ChampSet<E> extends BitmapIndexedNode<E> implements VavrSetMixin<E,
      * @return the given {@code ChampSet} instance as narrowed type {@code HashSet<T>}.
      */
     @SuppressWarnings("unchecked")
-    public static <T> ChampSet<T> narrow(ChampSet<? extends T> hashSet) {
-        return (ChampSet<T>) hashSet;
+    public static <T> HashSet<T> narrow(HashSet<? extends T> hashSet) {
+        return (HashSet<T>) hashSet;
     }
 }

@@ -2,6 +2,7 @@ package io.vavr.collection.champ;
 
 import io.vavr.Tuple2;
 
+import java.io.Serial;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.Objects;
@@ -72,42 +73,43 @@ import java.util.function.ToIntFunction;
  * @param <K> the key type
  * @param <V> the value type
  */
-public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.SimpleImmutableEntry<K, V>> {
+public class MutableHashMap<K, V> extends ChampPackage.AbstractChampMap<K, V, AbstractMap.SimpleImmutableEntry<K, V>> {
+    @Serial
     private final static long serialVersionUID = 0L;
 
-    public MutableChampMap() {
-        root = BitmapIndexedNode.emptyNode();
+    public MutableHashMap() {
+        root = ChampPackage.BitmapIndexedNode.emptyNode();
     }
 
-    public MutableChampMap(Map<? extends K, ? extends V> m) {
-        if (m instanceof MutableChampMap) {
+    public MutableHashMap(Map<? extends K, ? extends V> m) {
+        if (m instanceof MutableHashMap) {
             @SuppressWarnings("unchecked")
-            MutableChampMap<K, V> that = (MutableChampMap<K, V>) m;
+            MutableHashMap<K, V> that = (MutableHashMap<K, V>) m;
             this.mutator = null;
             that.mutator = null;
             this.root = that.root;
             this.size = that.size;
             this.modCount = 0;
         } else {
-            this.root = BitmapIndexedNode.emptyNode();
+            this.root = ChampPackage.BitmapIndexedNode.emptyNode();
             this.putAll(m);
         }
     }
 
-    public MutableChampMap(io.vavr.collection.Map<? extends K, ? extends V> m) {
-        if (m instanceof ChampMap) {
+    public MutableHashMap(io.vavr.collection.Map<? extends K, ? extends V> m) {
+        if (m instanceof HashMap) {
             @SuppressWarnings("unchecked")
-            ChampMap<K, V> that = (ChampMap<K, V>) m;
+            HashMap<K, V> that = (HashMap<K, V>) m;
             this.root = that;
             this.size = that.size();
         } else {
-            this.root = BitmapIndexedNode.emptyNode();
+            this.root = ChampPackage.BitmapIndexedNode.emptyNode();
             this.putAll(m);
         }
     }
 
-    public MutableChampMap(Iterable<? extends Entry<? extends K, ? extends V>> m) {
-        this.root = BitmapIndexedNode.emptyNode();
+    public MutableHashMap(Iterable<? extends Entry<? extends K, ? extends V>> m) {
+        this.root = ChampPackage.BitmapIndexedNode.emptyNode();
         for (Entry<? extends K, ? extends V> e : m) {
             this.put(e.getKey(), e.getValue());
         }
@@ -118,7 +120,7 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
      */
     @Override
     public void clear() {
-        root = BitmapIndexedNode.emptyNode();
+        root = ChampPackage.BitmapIndexedNode.emptyNode();
         size = 0;
         modCount++;
     }
@@ -127,8 +129,8 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
      * Returns a shallow copy of this map.
      */
     @Override
-    public MutableChampMap<K, V> clone() {
-        return (MutableChampMap<K, V>) super.clone();
+    public MutableHashMap<K, V> clone() {
+        return (MutableHashMap<K, V>) super.clone();
     }
 
 
@@ -137,7 +139,7 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
     public boolean containsKey(Object o) {
         return root.find(new AbstractMap.SimpleImmutableEntry<>((K) o, null),
                 Objects.hashCode(o), 0,
-                getEqualsFunction()) != Node.NO_DATA;
+                getEqualsFunction()) != ChampPackage.Node.NO_DATA;
     }
 
     /**
@@ -147,17 +149,17 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
      */
     @Override
     public Set<Entry<K, V>> entrySet() {
-        return new JavaSetFacade<>(
-                () -> new MappedIterator<>(new FailFastIterator<>(new KeyIterator<>(
+        return new ChampPackage.JavaSetFacade<>(
+                () -> new ChampPackage.MappedIterator<>(new ChampPackage.FailFastIterator<>(new ChampPackage.KeyIterator<>(
                         root,
                         this::iteratorRemove),
                         () -> this.modCount),
-                        e -> new MutableMapEntry<>(this::iteratorPutIfPresent, e.getKey(), e.getValue())),
-                MutableChampMap.this::size,
-                MutableChampMap.this::containsEntry,
-                MutableChampMap.this::clear,
+                        e -> new ChampPackage.MutableMapEntry<>(this::iteratorPutIfPresent, e.getKey(), e.getValue())),
+                MutableHashMap.this::size,
+                MutableHashMap.this::containsEntry,
+                MutableHashMap.this::clear,
                 null,
-                MutableChampMap.this::removeEntry
+                MutableHashMap.this::removeEntry
         );
     }
 
@@ -173,7 +175,7 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
     public V get(Object o) {
         Object result = root.find(new AbstractMap.SimpleImmutableEntry<>((K) o, null),
                 Objects.hashCode(o), 0, getEqualsFunction());
-        return result == Node.NO_DATA || result == null ? null : ((SimpleImmutableEntry<K, V>) result).getValue();
+        return result == ChampPackage.Node.NO_DATA || result == null ? null : ((SimpleImmutableEntry<K, V>) result).getValue();
     }
 
 
@@ -209,9 +211,9 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
         return oldValue == null ? null : oldValue.getValue();
     }
 
-    ChangeEvent<SimpleImmutableEntry<K, V>> putAndGiveDetails(K key, V val) {
+    ChampPackage.ChangeEvent<SimpleImmutableEntry<K, V>> putAndGiveDetails(K key, V val) {
         int keyHash = Objects.hashCode(key);
-        ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChangeEvent<>();
+        ChampPackage.ChangeEvent<SimpleImmutableEntry<K, V>> details = new ChampPackage.ChangeEvent<>();
         root = root.update(getOrCreateIdentity(), new AbstractMap.SimpleImmutableEntry<>(key, val), keyHash, 0, details,
                 getUpdateFunction(),
                 getEqualsFunction(),
@@ -253,9 +255,9 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
         return oldValue == null ? null : oldValue.getValue();
     }
 
-    ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> removeAndGiveDetails(final K key) {
+    ChampPackage.ChangeEvent<SimpleImmutableEntry<K, V>> removeAndGiveDetails(final K key) {
         final int keyHash = Objects.hashCode(key);
-        final ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChangeEvent<>();
+        final ChampPackage.ChangeEvent<SimpleImmutableEntry<K, V>> details = new ChampPackage.ChangeEvent<>();
         root = root.remove(getOrCreateIdentity(), new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
                 getEqualsFunction());
         if (details.isModified()) {
@@ -281,25 +283,28 @@ public class MutableChampMap<K, V> extends AbstractChampMap<K, V, AbstractMap.Si
      *
      * @return an immutable copy
      */
-    public ChampMap<K, V> toImmutable() {
+    public HashMap<K, V> toImmutable() {
         mutator = null;
-        return size == 0 ? ChampMap.empty() : new ChampMap<>(root, size);
+        return size == 0 ? HashMap.empty() : new HashMap<>(root, size);
     }
 
+    @Serial
     private Object writeReplace() {
         return new SerializationProxy<>(this);
     }
 
-    private static class SerializationProxy<K, V> extends MapSerializationProxy<K, V> {
+    private static class SerializationProxy<K, V> extends ChampPackage.MapSerializationProxy<K, V> {
+        @Serial
         private final static long serialVersionUID = 0L;
 
         protected SerializationProxy(Map<K, V> target) {
             super(target);
         }
 
+        @Serial
         @Override
         protected Object readResolve() {
-            return new MutableChampMap<>(deserialized);
+            return new MutableHashMap<>(deserialized);
         }
     }
 }

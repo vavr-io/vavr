@@ -20,16 +20,16 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Tests {@link MutableSequencedChampSet} with the Guava test suite.
+ * Tests {@link MutableLinkedHashSet} with the Guava test suite.
  */
-public class MutableSequencedChampSetGuavaTests {
+public class MutableLinkedHashSetGuavaTests {
 
     public static Test suite() {
-        return new MutableSequencedChampSetGuavaTests().allTests();
+        return new MutableLinkedHashSetGuavaTests().allTests();
     }
 
     public Test allTests() {
-        TestSuite suite = new TestSuite(MutableSequencedChampSet.class.getSimpleName());
+        TestSuite suite = new TestSuite(MutableLinkedHashSet.class.getSimpleName());
         suite.addTest(testsForTrieSet());
         return suite;
     }
@@ -39,10 +39,10 @@ public class MutableSequencedChampSetGuavaTests {
                         new TestStringSetGenerator() {
                             @Override
                             public Set<String> create(String[] elements) {
-                                return new MutableSequencedChampSet<>(MinimalCollection.of(elements));
+                                return new MutableLinkedHashSet<>(MinimalCollection.of(elements));
                             }
                         })
-                .named(MutableSequencedChampSet.class.getSimpleName())
+                .named(MutableLinkedHashSet.class.getSimpleName())
                 .withFeatures(
                         SetFeature.GENERAL_PURPOSE,
                         CollectionFeature.KNOWN_ORDER,

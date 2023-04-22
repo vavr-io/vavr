@@ -5,6 +5,7 @@ import io.vavr.collection.Iterator;
 import io.vavr.collection.Set;
 import io.vavr.control.Option;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,8 +15,8 @@ import java.util.Spliterator;
 import java.util.function.BiFunction;
 import java.util.stream.Collector;
 
-import static io.vavr.collection.champ.SequencedData.mustRenumber;
-import static io.vavr.collection.champ.SequencedData.seqHash;
+import static io.vavr.collection.champ.ChampPackage.SequencedData.mustRenumber;
+import static io.vavr.collection.champ.ChampPackage.SequencedData.seqHash;
 
 /**
  * Implements a mutable set using two Compressed Hash-Array Mapped Prefix-trees
@@ -95,12 +96,13 @@ import static io.vavr.collection.champ.SequencedData.seqHash;
  *
  * @param <E> the element type
  */
-public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>> implements VavrSetMixin<E, SequencedChampSet<E>>, Serializable {
+public class LinkedHashSet<E> extends ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> implements ChampPackage.VavrSetMixin<E, LinkedHashSet<E>>, Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
-    private static final SequencedChampSet<?> EMPTY = new SequencedChampSet<>(
-            BitmapIndexedNode.emptyNode(), BitmapIndexedNode.emptyNode(), 0, -1, 0);
+    private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(
+            ChampPackage.BitmapIndexedNode.emptyNode(), ChampPackage.BitmapIndexedNode.emptyNode(), 0, -1, 0);
 
-    final @NonNull BitmapIndexedNode<SequencedElement<E>> sequenceRoot;
+    final @ChampPackage.NonNull ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> sequenceRoot;
     final int size;
 
     /**
@@ -116,9 +118,9 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
      */
     final int first;
 
-    SequencedChampSet(
-            @NonNull BitmapIndexedNode<SequencedElement<E>> root,
-            @NonNull BitmapIndexedNode<SequencedElement<E>> sequenceRoot,
+    LinkedHashSet(
+            @ChampPackage.NonNull ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> root,
+            @ChampPackage.NonNull ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> sequenceRoot,
             int size, int first, int last) {
         super(root.nodeMap(), root.dataMap(), root.mixed);
         assert (long) last - first >= size : "size=" + size + " first=" + first + " last=" + last;
@@ -128,13 +130,13 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         this.sequenceRoot = Objects.requireNonNull(sequenceRoot);
     }
 
-    static <E> BitmapIndexedNode<SequencedElement<E>> buildSequenceRoot(@NonNull BitmapIndexedNode<SequencedElement<E>> root, @NonNull IdentityObject mutator) {
-        BitmapIndexedNode<SequencedElement<E>> seqRoot = emptyNode();
-        ChangeEvent<SequencedElement<E>> details = new ChangeEvent<>();
-        for (KeyIterator<SequencedElement<E>> i = new KeyIterator<>(root, null); i.hasNext(); ) {
-            SequencedElement<E> elem = i.next();
-            seqRoot = seqRoot.update(mutator, elem, SequencedData.seqHash(elem.getSequenceNumber()),
-                    0, details, (oldK, newK) -> oldK, SequencedData::seqEquals, SequencedData::seqHash);
+    static <E> ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> buildSequenceRoot(@ChampPackage.NonNull ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> root, @ChampPackage.NonNull ChampPackage.IdentityObject mutator) {
+        ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> seqRoot = emptyNode();
+        ChampPackage.ChangeEvent<ChampPackage.SequencedElement<E>> details = new ChampPackage.ChangeEvent<>();
+        for (ChampPackage.KeyIterator<ChampPackage.SequencedElement<E>> i = new ChampPackage.KeyIterator<>(root, null); i.hasNext(); ) {
+            ChampPackage.SequencedElement<E> elem = i.next();
+            seqRoot = seqRoot.update(mutator, elem, ChampPackage.SequencedData.seqHash(elem.getSequenceNumber()),
+                    0, details, (oldK, newK) -> oldK, ChampPackage.SequencedData::seqEquals, ChampPackage.SequencedData::seqHash);
         }
         return seqRoot;
     }
@@ -146,8 +148,8 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
      * @return an empty immutable set
      */
     @SuppressWarnings("unchecked")
-    public static <E> SequencedChampSet<E> empty() {
-        return ((SequencedChampSet<E>) SequencedChampSet.EMPTY);
+    public static <E> LinkedHashSet<E> empty() {
+        return ((LinkedHashSet<E>) LinkedHashSet.EMPTY);
     }
 
     /**
@@ -158,8 +160,8 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
      * @return a LinkedChampSet set of the provided elements
      */
     @SuppressWarnings("unchecked")
-    public static <E> SequencedChampSet<E> ofAll(Iterable<? extends E> iterable) {
-        return ((SequencedChampSet<E>) SequencedChampSet.EMPTY).addAll(iterable);
+    public static <E> LinkedHashSet<E> ofAll(Iterable<? extends E> iterable) {
+        return ((LinkedHashSet<E>) LinkedHashSet.EMPTY).addAll(iterable);
     }
 
 
@@ -171,24 +173,24 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
      * @param size    the size of the trie
      * @param first   the estimated first sequence number
      * @param last    the estimated last sequence number
-     * @return a new {@link SequencedChampSet} instance
+     * @return a new {@link LinkedHashSet} instance
      */
-    @NonNull
-    private SequencedChampSet<E> renumber(
-            BitmapIndexedNode<SequencedElement<E>> root,
-            BitmapIndexedNode<SequencedElement<E>> seqRoot,
+    @ChampPackage.NonNull
+    private LinkedHashSet<E> renumber(
+            ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> root,
+            ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> seqRoot,
             int size, int first, int last) {
         if (mustRenumber(size, first, last)) {
-            IdentityObject mutator = new IdentityObject();
-            BitmapIndexedNode<SequencedElement<E>> renumberedRoot = SequencedData.renumber(
+            ChampPackage.IdentityObject mutator = new ChampPackage.IdentityObject();
+            ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> renumberedRoot = ChampPackage.SequencedData.renumber(
                     size, root, seqRoot, mutator, Objects::hashCode, Objects::equals,
-                    (e, seq) -> new SequencedElement<>(e.getElement(), seq));
-            BitmapIndexedNode<SequencedElement<E>> renumberedSeqRoot = buildSequenceRoot(renumberedRoot, mutator);
-            return new SequencedChampSet<>(
+                    (e, seq) -> new ChampPackage.SequencedElement<>(e.getElement(), seq));
+            ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> renumberedSeqRoot = buildSequenceRoot(renumberedRoot, mutator);
+            return new LinkedHashSet<>(
                     renumberedRoot, renumberedSeqRoot,
                     size, -1, size);
         }
-        return new SequencedChampSet<>(root, seqRoot, size, first, last);
+        return new LinkedHashSet<>(root, seqRoot, size, first, last);
     }
 
     /**
@@ -211,19 +213,19 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
      * @return a new set that contains the specified elements.
      */
     @Override
-    public <R> SequencedChampSet<R> createFromElements(Iterable<? extends R> elements) {
+    public <R> LinkedHashSet<R> createFromElements(Iterable<? extends R> elements) {
         return ofAll(elements);
     }
 
     @Override
-    public SequencedChampSet<E> add(E key) {
+    public LinkedHashSet<E> add(E key) {
         return addLast(key, false);
     }
 
-    private @NonNull SequencedChampSet<E> addLast(@Nullable E e,
-                                                  boolean moveToLast) {
-        ChangeEvent<SequencedElement<E>> details = new ChangeEvent<>();
-        SequencedElement<E> newElem = new SequencedElement<>(e, last);
+    private @ChampPackage.NonNull LinkedHashSet<E> addLast(@ChampPackage.Nullable E e,
+                                                           boolean moveToLast) {
+        ChampPackage.ChangeEvent<ChampPackage.SequencedElement<E>> details = new ChampPackage.ChangeEvent<>();
+        ChampPackage.SequencedElement<E> newElem = new ChampPackage.SequencedElement<>(e, last);
         var newRoot = update(
                 null, newElem, Objects.hashCode(e), 0,
                 details,
@@ -234,17 +236,17 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         int newLast = last;
         int newSize = size;
         if (details.isModified()) {
-            IdentityObject mutator = new IdentityObject();
-            SequencedElement<E> oldElem = details.getData();
+            ChampPackage.IdentityObject mutator = new ChampPackage.IdentityObject();
+            ChampPackage.SequencedElement<E> oldElem = details.getData();
             boolean isReplaced = details.isReplaced();
             newSeqRoot = newSeqRoot.update(mutator,
                     newElem, seqHash(last), 0, details,
                     getUpdateFunction(),
-                    SequencedData::seqEquals, SequencedData::seqHash);
+                    ChampPackage.SequencedData::seqEquals, ChampPackage.SequencedData::seqHash);
             if (isReplaced) {
                 newSeqRoot = newSeqRoot.remove(mutator,
                         oldElem, seqHash(oldElem.getSequenceNumber()), 0, details,
-                        SequencedData::seqEquals);
+                        ChampPackage.SequencedData::seqEquals);
 
                 newFirst = details.getData().getSequenceNumber() == newFirst - 1 ? newFirst - 1 : newFirst;
                 newLast = details.getData().getSequenceNumber() == newLast ? newLast : newLast + 1;
@@ -259,14 +261,14 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
 
     @Override
     @SuppressWarnings({"unchecked"})
-    public SequencedChampSet<E> addAll(Iterable<? extends E> set) {
-        if (set == this || isEmpty() && (set instanceof SequencedChampSet<?>)) {
-            return (SequencedChampSet<E>) set;
+    public LinkedHashSet<E> addAll(Iterable<? extends E> set) {
+        if (set == this || isEmpty() && (set instanceof LinkedHashSet<?>)) {
+            return (LinkedHashSet<E>) set;
         }
-        if (isEmpty() && (set instanceof MutableSequencedChampSet)) {
-            return ((MutableSequencedChampSet<E>) set).toImmutable();
+        if (isEmpty() && (set instanceof MutableLinkedHashSet)) {
+            return ((MutableLinkedHashSet<E>) set).toImmutable();
         }
-        final MutableSequencedChampSet<E> t = this.toMutable();
+        final MutableLinkedHashSet<E> t = this.toMutable();
         boolean modified = false;
         for (final E key : set) {
             modified |= t.add(key);
@@ -276,25 +278,25 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
 
     @Override
     public boolean contains(E o) {
-        return find(new SequencedElement<>(o), Objects.hashCode(o), 0, Objects::equals) != Node.NO_DATA;
+        return find(new ChampPackage.SequencedElement<>(o), Objects.hashCode(o), 0, Objects::equals) != ChampPackage.Node.NO_DATA;
     }
 
 
-    private BiFunction<SequencedElement<E>, SequencedElement<E>, SequencedElement<E>> getUpdateFunction() {
+    private BiFunction<ChampPackage.SequencedElement<E>, ChampPackage.SequencedElement<E>, ChampPackage.SequencedElement<E>> getUpdateFunction() {
         return (oldK, newK) -> oldK;
     }
 
-    private BiFunction<SequencedElement<E>, SequencedElement<E>, SequencedElement<E>> getForceUpdateFunction() {
+    private BiFunction<ChampPackage.SequencedElement<E>, ChampPackage.SequencedElement<E>, ChampPackage.SequencedElement<E>> getForceUpdateFunction() {
         return (oldK, newK) -> newK;
     }
 
 
-    private BiFunction<SequencedElement<E>, SequencedElement<E>, SequencedElement<E>> getUpdateAndMoveToLastFunction() {
+    private BiFunction<ChampPackage.SequencedElement<E>, ChampPackage.SequencedElement<E>, ChampPackage.SequencedElement<E>> getUpdateAndMoveToLastFunction() {
         return (oldK, newK) -> oldK.getSequenceNumber() == newK.getSequenceNumber() - 1 ? oldK : newK;
     }
 
 
-    private BiFunction<SequencedElement<E>, SequencedElement<E>, SequencedElement<E>> getUpdateAndMoveToFirstFunction() {
+    private BiFunction<ChampPackage.SequencedElement<E>, ChampPackage.SequencedElement<E>, ChampPackage.SequencedElement<E>> getUpdateAndMoveToFirstFunction() {
         return (oldK, newK) -> oldK.getSequenceNumber() == newK.getSequenceNumber() + 1 ? oldK : newK;
     }
 
@@ -303,14 +305,14 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         return iterator(false);
     }
 
-    private @NonNull Iterator<E> iterator(boolean reversed) {
-        Enumerator<E> i;
+    private @ChampPackage.NonNull Iterator<E> iterator(boolean reversed) {
+        ChampPackage.Enumerator<E> i;
         if (reversed) {
-            i = new ReversedKeySpliterator<>(sequenceRoot, SequencedElement::getElement, Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE, size());
+            i = new ChampPackage.ReversedKeySpliterator<>(sequenceRoot, ChampPackage.SequencedElement::getElement, Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE, size());
         } else {
-            i = new KeySpliterator<>(sequenceRoot, SequencedElement::getElement, Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE, size());
+            i = new ChampPackage.KeySpliterator<>(sequenceRoot, ChampPackage.SequencedElement::getElement, Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE, size());
         }
-        return new VavrIteratorFacade<>(i, null);
+        return new ChampPackage.VavrIteratorFacade<>(i, null);
     }
 
     @Override
@@ -319,23 +321,23 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
     }
 
     @Override
-    public SequencedChampSet<E> remove(final E key) {
+    public LinkedHashSet<E> remove(final E key) {
         return remove(key, first, last);
     }
 
-    private @NonNull SequencedChampSet<E> remove(@Nullable E key, int newFirst, int newLast) {
+    private @ChampPackage.NonNull LinkedHashSet<E> remove(@ChampPackage.Nullable E key, int newFirst, int newLast) {
         int keyHash = Objects.hashCode(key);
-        ChangeEvent<SequencedElement<E>> details = new ChangeEvent<>();
-        BitmapIndexedNode<SequencedElement<E>> newRoot = remove(null,
-                new SequencedElement<>(key),
+        ChampPackage.ChangeEvent<ChampPackage.SequencedElement<E>> details = new ChampPackage.ChangeEvent<>();
+        ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> newRoot = remove(null,
+                new ChampPackage.SequencedElement<>(key),
                 keyHash, 0, details, Objects::equals);
-        BitmapIndexedNode<SequencedElement<E>> newSeqRoot = sequenceRoot;
+        ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> newSeqRoot = sequenceRoot;
         if (details.isModified()) {
             var oldElem = details.getData();
             int seq = oldElem.getSequenceNumber();
             newSeqRoot = newSeqRoot.remove(null,
                     oldElem,
-                    seqHash(seq), 0, details, SequencedData::seqEquals);
+                    seqHash(seq), 0, details, ChampPackage.SequencedData::seqEquals);
             if (seq == newFirst) {
                 newFirst++;
             }
@@ -352,19 +354,19 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
      *
      * @return a mutable sequenced CHAMP set
      */
-    MutableSequencedChampSet<E> toMutable() {
-        return new MutableSequencedChampSet<>(this);
+    MutableLinkedHashSet<E> toMutable() {
+        return new MutableLinkedHashSet<>(this);
     }
 
     /**
      * Returns a {@link Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(Collector)} to obtain a {@link SequencedChampSet}.
+     * {@link java.util.stream.Stream#collect(Collector)} to obtain a {@link LinkedHashSet}.
      *
      * @param <T> Component type of the HashSet.
      * @return A io.vavr.collection.LinkedChampSet Collector.
      */
-    public static <T> Collector<T, ArrayList<T>, SequencedChampSet<T>> collector() {
-        return Collections.toListAndThen(SequencedChampSet::ofAll);
+    public static <T> Collector<T, ArrayList<T>, LinkedHashSet<T>> collector() {
+        return Collections.toListAndThen(LinkedHashSet::ofAll);
     }
 
     /**
@@ -374,8 +376,8 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
      * @param <T>     The component type
      * @return A new HashSet instance containing the given element
      */
-    public static <T> SequencedChampSet<T> of(T element) {
-        return SequencedChampSet.<T>empty().add(element);
+    public static <T> LinkedHashSet<T> of(T element) {
+        return LinkedHashSet.<T>empty().add(element);
     }
 
     @Override
@@ -386,8 +388,8 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         if (other == null) {
             return false;
         }
-        if (other instanceof SequencedChampSet) {
-            SequencedChampSet<?> that = (SequencedChampSet<?>) other;
+        if (other instanceof LinkedHashSet) {
+            LinkedHashSet<?> that = (LinkedHashSet<?>) other;
             return size == that.size && equivalent(that);
         }
         return Collections.equals(this, other);
@@ -410,9 +412,9 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
      */
     @SafeVarargs
     @SuppressWarnings("varargs")
-    public static <T> SequencedChampSet<T> of(T... elements) {
+    public static <T> LinkedHashSet<T> of(T... elements) {
         //Arrays.asList throws a NullPointerException for us.
-        return SequencedChampSet.<T>empty().addAll(Arrays.asList(elements));
+        return LinkedHashSet.<T>empty().addAll(Arrays.asList(elements));
     }
 
     /**
@@ -425,8 +427,8 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
      * @return the given {@code LinkedChampSet} instance as narrowed type {@code HashSet<T>}.
      */
     @SuppressWarnings("unchecked")
-    public static <T> SequencedChampSet<T> narrow(SequencedChampSet<? extends T> hashSet) {
-        return (SequencedChampSet<T>) hashSet;
+    public static <T> LinkedHashSet<T> narrow(LinkedHashSet<? extends T> hashSet) {
+        return (LinkedHashSet<T>) hashSet;
     }
 
     @Override
@@ -434,35 +436,38 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    static class SerializationProxy<E> extends SetSerializationProxy<E> {
+    static class SerializationProxy<E> extends ChampPackage.SetSerializationProxy<E> {
+        @Serial
         private final static long serialVersionUID = 0L;
 
         public SerializationProxy(java.util.Set<E> target) {
             super(target);
         }
 
+        @Serial
         @Override
         protected Object readResolve() {
-            return SequencedChampSet.ofAll(deserialized);
+            return LinkedHashSet.ofAll(deserialized);
         }
     }
 
+    @Serial
     private Object writeReplace() {
-        return new SequencedChampSet.SerializationProxy<E>(this.toMutable());
+        return new LinkedHashSet.SerializationProxy<E>(this.toMutable());
     }
 
     @Override
-    public SequencedChampSet<E> replace(E currentElement, E newElement) {
+    public LinkedHashSet<E> replace(E currentElement, E newElement) {
         // currentElement and newElem are the same => do nothing
         if (Objects.equals(currentElement, newElement)) {
             return this;
         }
 
         // try to remove currentElem from the 'root' trie
-        final ChangeEvent<SequencedElement<E>> detailsCurrent = new ChangeEvent<>();
-        IdentityObject mutator = new IdentityObject();
-        BitmapIndexedNode<SequencedElement<E>> newRoot = remove(mutator,
-                new SequencedElement<>(currentElement),
+        final ChampPackage.ChangeEvent<ChampPackage.SequencedElement<E>> detailsCurrent = new ChampPackage.ChangeEvent<>();
+        ChampPackage.IdentityObject mutator = new ChampPackage.IdentityObject();
+        ChampPackage.BitmapIndexedNode<ChampPackage.SequencedElement<E>> newRoot = remove(mutator,
+                new ChampPackage.SequencedElement<>(currentElement),
                 Objects.hashCode(currentElement), 0, detailsCurrent, Objects::equals);
         // currentElement was not in the 'root' trie => do nothing
         if (!detailsCurrent.isModified()) {
@@ -472,13 +477,13 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         // currentElement was in the 'root' trie, and we have just removed it
         // => also remove its entry from the 'sequenceRoot' trie
         var newSeqRoot = sequenceRoot;
-        SequencedElement<E> currentData = detailsCurrent.getData();
+        ChampPackage.SequencedElement<E> currentData = detailsCurrent.getData();
         int seq = currentData.getSequenceNumber();
-        newSeqRoot = newSeqRoot.remove(mutator, currentData, seqHash(seq), 0, detailsCurrent, SequencedData::seqEquals);
+        newSeqRoot = newSeqRoot.remove(mutator, currentData, seqHash(seq), 0, detailsCurrent, ChampPackage.SequencedData::seqEquals);
 
         // try to update the trie with the newElement
-        ChangeEvent<SequencedElement<E>> detailsNew = new ChangeEvent<>();
-        SequencedElement<E> newData = new SequencedElement<>(newElement, seq);
+        ChampPackage.ChangeEvent<ChampPackage.SequencedElement<E>> detailsNew = new ChampPackage.ChangeEvent<>();
+        ChampPackage.SequencedElement<E> newData = new ChampPackage.SequencedElement<>(newElement, seq);
         newRoot = newRoot.update(mutator,
                 newData, Objects.hashCode(newElement), 0, detailsNew,
                 getForceUpdateFunction(),
@@ -488,8 +493,8 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         // there already was an element with key newElement._1 in the trie, and we have just replaced it
         // => remove the replaced entry from the 'sequenceRoot' trie
         if (isReplaced) {
-            SequencedElement<E> replacedEntry = detailsNew.getData();
-            newSeqRoot = newSeqRoot.remove(mutator, replacedEntry, seqHash(replacedEntry.getSequenceNumber()), 0, detailsNew, SequencedData::seqEquals);
+            ChampPackage.SequencedElement<E> replacedEntry = detailsNew.getData();
+            newSeqRoot = newSeqRoot.remove(mutator, replacedEntry, seqHash(replacedEntry.getSequenceNumber()), 0, detailsNew, ChampPackage.SequencedData::seqEquals);
         }
 
         // we have just successfully added or replaced the newElement
@@ -497,14 +502,14 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         newSeqRoot = newSeqRoot.update(mutator,
                 newData, seqHash(seq), 0, detailsNew,
                 getForceUpdateFunction(),
-                SequencedData::seqEquals, SequencedData::seqHash);
+                ChampPackage.SequencedData::seqEquals, ChampPackage.SequencedData::seqHash);
 
         if (isReplaced) {
             // we reduced the size of the map by one => renumbering may be necessary
             return renumber(newRoot, newSeqRoot, size - 1, first, last);
         } else {
             // we did not change the size of the map => no renumbering is needed
-            return new SequencedChampSet<>(newRoot, newSeqRoot, size, first, last);
+            return new LinkedHashSet<>(newRoot, newSeqRoot, size, first, last);
         }
     }
 
@@ -524,7 +529,7 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         if (n >= size) {
             return this;
         }
-        MutableSequencedChampSet<E> set = new MutableSequencedChampSet<>();
+        MutableLinkedHashSet<E> set = new MutableLinkedHashSet<>();
         for (Iterator<E> i = iterator(true); i.hasNext() && n > 0; n--) {
             set.addFirst(i.next());
         }
@@ -536,7 +541,7 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         if (n <= 0) {
             return this;
         }
-        MutableSequencedChampSet<E> set = toMutable();
+        MutableLinkedHashSet<E> set = toMutable();
         for (Iterator<E> i = iterator(true); i.hasNext() && n > 0; n--) {
             set.remove(i.next());
         }
@@ -544,13 +549,13 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
     }
 
     @Override
-    public SequencedChampSet<E> tail() {
+    public LinkedHashSet<E> tail() {
         // XXX LinkedChampSetTest wants us to throw UnsupportedOperationException
         //     instead of NoSuchElementException when this set is empty.
         if (isEmpty()) {
             throw new UnsupportedOperationException();
         }
-        SequencedElement<E> k = Node.getFirst(this);
+        ChampPackage.SequencedElement<E> k = ChampPackage.Node.getFirst(this);
         return remove(k.getElement(), k.getSequenceNumber() + 1, last);
     }
 
@@ -559,11 +564,11 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         if (isEmpty()) {
             throw new NoSuchElementException();
         }
-        return Node.getFirst(this).getElement();
+        return ChampPackage.Node.getFirst(this).getElement();
     }
 
     @Override
-    public SequencedChampSet<E> init() {
+    public LinkedHashSet<E> init() {
         // XXX Traversable.init() specifies that we must throw
         //     UnsupportedOperationException instead of NoSuchElementException
         //     when this set is empty.
@@ -573,8 +578,8 @@ public class SequencedChampSet<E> extends BitmapIndexedNode<SequencedElement<E>>
         return removeLast();
     }
 
-    private SequencedChampSet<E> removeLast() {
-        SequencedElement<E> k = Node.getLast(this);
+    private LinkedHashSet<E> removeLast() {
+        ChampPackage.SequencedElement<E> k = ChampPackage.Node.getLast(this);
         return remove(k.getElement(), first, k.getSequenceNumber());
     }
 

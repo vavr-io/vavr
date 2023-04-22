@@ -1,6 +1,6 @@
 package io.vavr.jmh;
 
-import io.vavr.collection.champ.SequencedChampSet;
+import io.vavr.collection.champ.LinkedHashSet;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -37,13 +37,13 @@ public class VavrSequencedChampSetJmh {
     private final int mask = ~64;
 
     private BenchmarkData data;
-    private SequencedChampSet<Key> setA;
+    private LinkedHashSet<Key> setA;
 
 
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-        setA = SequencedChampSet.ofAll(data.setA);
+        setA = LinkedHashSet.ofAll(data.setA);
     }
 
     @Benchmark
@@ -67,7 +67,7 @@ public class VavrSequencedChampSetJmh {
     }
 
     @Benchmark
-    public SequencedChampSet<Key> mTail() {
+    public LinkedHashSet<Key> mTail() {
         return setA.tail();
     }
 

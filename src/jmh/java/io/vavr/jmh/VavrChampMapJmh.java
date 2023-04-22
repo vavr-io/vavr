@@ -1,7 +1,7 @@
 package io.vavr.jmh;
 
 import io.vavr.collection.Map;
-import io.vavr.collection.champ.ChampMap;
+import io.vavr.collection.champ.HashMap;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -52,13 +52,13 @@ public class VavrChampMapJmh {
     private final int mask = ~64;
 
     private BenchmarkData data;
-    private ChampMap<Key, Boolean> mapA;
+    private HashMap<Key, Boolean> mapA;
 
 
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-        mapA = ChampMap.empty();
+        mapA = HashMap.empty();
         for (Key key : data.setA) {
             mapA = mapA.put(key, Boolean.TRUE);
         }
