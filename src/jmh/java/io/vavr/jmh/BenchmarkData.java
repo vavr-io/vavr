@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+/**
+ * This class provides collections that can be used in JMH benchmarks.
+ */
 @SuppressWarnings("JmhInspections")
 public class BenchmarkData {
     /**
@@ -57,6 +60,7 @@ private final int size;
             indicesA.add(indexMap.get(k));
         }
     }
+
     private Key createKey(Random rng, Set<Integer> preventDuplicates, int mask) {
         int candidate = rng.nextInt();
         while (!preventDuplicates.add(candidate)) {
