@@ -2,6 +2,7 @@ package io.vavr.collection.champ;
 
 import io.vavr.collection.Set;
 
+import java.io.Serial;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
@@ -73,14 +74,15 @@ import java.util.function.Function;
  *
  * @param <E> the element type
  */
-public class MutableChampSet<E> extends AbstractChampSet<E, E> {
+public class MutableHashSet<E> extends ChampPackage.AbstractChampSet<E, E> {
+    @Serial
     private final static long serialVersionUID = 0L;
 
     /**
      * Constructs an empty set.
      */
-    public MutableChampSet() {
-        root = BitmapIndexedNode.emptyNode();
+    public MutableHashSet() {
+        root = ChampPackage.BitmapIndexedNode.emptyNode();
     }
 
     /**
@@ -89,23 +91,23 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
      * @param c an iterable
      */
     @SuppressWarnings("unchecked")
-    public MutableChampSet(Iterable<? extends E> c) {
-        if (c instanceof MutableChampSet<?>) {
-            c = ((MutableChampSet<? extends E>) c).toImmutable();
+    public MutableHashSet(Iterable<? extends E> c) {
+        if (c instanceof MutableHashSet<?>) {
+            c = ((MutableHashSet<? extends E>) c).toImmutable();
         }
-        if (c instanceof ChampSet<?>) {
-            ChampSet<E> that = (ChampSet<E>) c;
+        if (c instanceof HashSet<?>) {
+            HashSet<E> that = (HashSet<E>) c;
             this.root = that;
             this.size = that.size;
         } else {
-            this.root = BitmapIndexedNode.emptyNode();
+            this.root = ChampPackage.BitmapIndexedNode.emptyNode();
             addAll(c);
         }
     }
 
     @Override
     public boolean add(final E e) {
-        ChangeEvent<E> details = new ChangeEvent<>();
+        ChampPackage.ChangeEvent<E> details = new ChampPackage.ChangeEvent<>();
         root = root.update(getOrCreateIdentity(),
                 e, Objects.hashCode(e), 0, details,
                 (oldk, newk) -> oldk,
@@ -119,7 +121,7 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
 
     @Override
     public void clear() {
-        root = BitmapIndexedNode.emptyNode();
+        root = ChampPackage.BitmapIndexedNode.emptyNode();
         size = 0;
         modCount++;
     }
@@ -128,21 +130,21 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
      * Returns a shallow copy of this set.
      */
     @Override
-    public MutableChampSet<E> clone() {
-        return (MutableChampSet<E>) super.clone();
+    public MutableHashSet<E> clone() {
+        return (MutableHashSet<E>) super.clone();
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public boolean contains(final Object o) {
-        return Node.NO_DATA != root.find((E) o, Objects.hashCode(o), 0,
+        return ChampPackage.Node.NO_DATA != root.find((E) o, Objects.hashCode(o), 0,
                 Objects::equals);
     }
 
     @Override
     public Iterator<E> iterator() {
-        return new FailFastIterator<>(
-                new KeyIterator<>(root, this::iteratorRemove),
+        return new ChampPackage.FailFastIterator<>(
+                new ChampPackage.KeyIterator<>(root, this::iteratorRemove),
                 () -> this.modCount);
     }
 
@@ -154,7 +156,7 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
     @Override
     @SuppressWarnings("unchecked")
     public boolean remove(Object o) {
-        ChangeEvent<E> details = new ChangeEvent<>();
+        ChampPackage.ChangeEvent<E> details = new ChampPackage.ChangeEvent<>();
         root = root.remove(
                 getOrCreateIdentity(), (E) o, Objects.hashCode(o), 0, details,
                 Objects::equals);
@@ -170,25 +172,28 @@ public class MutableChampSet<E> extends AbstractChampSet<E, E> {
      *
      * @return an immutable copy
      */
-    public ChampSet<E> toImmutable() {
+    public HashSet<E> toImmutable() {
         mutator = null;
-        return size == 0 ? ChampSet.empty() : new ChampSet<>(root, size);
+        return size == 0 ? HashSet.empty() : new HashSet<>(root, size);
     }
 
+    @Serial
     private Object writeReplace() {
         return new SerializationProxy<>(this);
     }
 
-    private static class SerializationProxy<E> extends SetSerializationProxy<E> {
+    private static class SerializationProxy<E> extends ChampPackage.SetSerializationProxy<E> {
+        @Serial
         private final static long serialVersionUID = 0L;
 
         protected SerializationProxy(java.util.Set<E> target) {
             super(target);
         }
 
+        @Serial
         @Override
         protected Object readResolve() {
-            return new MutableChampSet<>(deserialized);
+            return new MutableHashSet<>(deserialized);
         }
     }
 

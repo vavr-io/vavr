@@ -20,17 +20,17 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Tests {@link MutableSequencedChampMap} with the Guava test suite.
+ * Tests {@link MutableLinkedHashMap} with the Guava test suite.
  */
 
-public class MutableSequencedChampMapGuavaTests {
+public class MutableLinkedHashMapGuavaTests {
 
     public static Test suite() {
-        return new MutableSequencedChampMapGuavaTests().allTests();
+        return new MutableLinkedHashMapGuavaTests().allTests();
     }
 
     public Test allTests() {
-        TestSuite suite = new TestSuite(MutableSequencedChampMap.class.getSimpleName());
+        TestSuite suite = new TestSuite(MutableLinkedHashMap.class.getSimpleName());
         suite.addTest(testsForLinkedTrieMap());
         return suite;
     }
@@ -40,10 +40,10 @@ public class MutableSequencedChampMapGuavaTests {
                         new TestStringMapGenerator() {
                             @Override
                             protected Map<String, String> create(Map.Entry<String, String>[] entries) {
-                                return new MutableSequencedChampMap<String, String>(Arrays.asList(entries));
+                                return new MutableLinkedHashMap<String, String>(Arrays.asList(entries));
                             }
                         })
-                .named(MutableSequencedChampMap.class.getSimpleName())
+                .named(MutableLinkedHashMap.class.getSimpleName())
                 .withFeatures(
                         MapFeature.GENERAL_PURPOSE,
                         MapFeature.ALLOWS_NULL_KEYS,

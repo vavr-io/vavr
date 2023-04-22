@@ -1,7 +1,7 @@
 package io.vavr.jmh;
 
 import io.vavr.collection.Map;
-import io.vavr.collection.champ.SequencedChampMap;
+import io.vavr.collection.champ.LinkedHashMap;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -38,13 +38,13 @@ public class VavrSequencedChampMapJmh {
     private final int mask = ~64;
 
     private BenchmarkData data;
-    private SequencedChampMap<Key, Boolean> mapA;
+    private LinkedHashMap<Key, Boolean> mapA;
 
 
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-        mapA = SequencedChampMap.empty();
+        mapA = LinkedHashMap.empty();
         for (Key key : data.setA) {
             mapA=mapA.put(key,Boolean.TRUE);
         }

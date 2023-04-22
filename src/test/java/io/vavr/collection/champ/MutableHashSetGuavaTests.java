@@ -20,17 +20,17 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Tests {@link MutableChampSet} with the Guava test suite.
+ * Tests {@link MutableHashSet} with the Guava test suite.
  */
 
-public class MutableChampSetGuavaTests {
+public class MutableHashSetGuavaTests {
 
     public static Test suite() {
-        return new MutableChampSetGuavaTests().allTests();
+        return new MutableHashSetGuavaTests().allTests();
     }
 
     public Test allTests() {
-        TestSuite suite = new TestSuite(MutableChampSet.class.getSimpleName());
+        TestSuite suite = new TestSuite(MutableHashSet.class.getSimpleName());
         suite.addTest(testsForTrieSet());
         return suite;
     }
@@ -40,10 +40,10 @@ public class MutableChampSetGuavaTests {
                         new TestStringSetGenerator() {
                             @Override
                             public Set<String> create(String[] elements) {
-                                return new MutableChampSet<>(MinimalCollection.of(elements));
+                                return new MutableHashSet<>(MinimalCollection.of(elements));
                             }
                         })
-                .named(MutableChampSet.class.getSimpleName())
+                .named(MutableHashSet.class.getSimpleName())
                 .withFeatures(
                         SetFeature.GENERAL_PURPOSE,
                         CollectionFeature.ALLOWS_NULL_VALUES,

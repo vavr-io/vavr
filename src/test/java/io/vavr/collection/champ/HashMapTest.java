@@ -39,21 +39,21 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
 
-public class ChampMapTest extends AbstractMapTest {
+public class HashMapTest extends AbstractMapTest {
 
     @Override
     protected String className() {
-        return ChampMap.class.getSimpleName();
+        return HashMap.class.getSimpleName();
     }
 
     @Override
     protected <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
-        return new MutableChampMap<>();
+        return new MutableHashMap<>();
     }
 
     @Override
-    protected <T1 extends Comparable<? super T1>, T2> ChampMap<T1, T2> emptyMap() {
-        return ChampMap.empty();
+    protected <T1 extends Comparable<? super T1>, T2> HashMap<T1, T2> emptyMap() {
+        return HashMap.empty();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class ChampMapTest extends AbstractMapTest {
         Function<? super T, ? extends V> valueMapper = v -> v;
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        return Collections.toListAndThen(arr -> ChampMap.<K, V>ofTuples(Iterator.ofAll(arr)
+        return Collections.toListAndThen(arr -> HashMap.<K, V>ofTuples(Iterator.ofAll(arr)
                 .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
 
@@ -70,84 +70,84 @@ public class ChampMapTest extends AbstractMapTest {
     protected <K extends Comparable<? super K>, V, T> Collector<T, ArrayList<T>, ? extends Map<K, V>> collectorWithMappers(Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
-        return Collections.toListAndThen(arr -> ChampMap.<K, V>ofTuples(Iterator.ofAll(arr)
+        return Collections.toListAndThen(arr -> HashMap.<K, V>ofTuples(Iterator.ofAll(arr)
                 .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
 
     @Override
     protected <T> Collector<Tuple2<Integer, T>, ArrayList<Tuple2<Integer, T>>, ? extends Map<Integer, T>> mapCollector() {
-        return Collections.toListAndThen(entries -> ChampMap.<Integer, T>ofTuples(entries));
+        return Collections.toListAndThen(entries -> HashMap.<Integer, T>ofTuples(entries));
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K extends Comparable<? super K>, V> ChampMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
-        return ChampMap.<K, V>ofTuples(Arrays.asList(entries));
+    protected final <K extends Comparable<? super K>, V> HashMap<K, V> mapOfTuples(Tuple2<? extends K, ? extends V>... entries) {
+        return HashMap.<K, V>ofTuples(Arrays.asList(entries));
     }
 
     @Override
     protected <K extends Comparable<? super K>, V> Map<K, V> mapOfTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        return ChampMap.<K, V>ofTuples(entries);
+        return HashMap.<K, V>ofTuples(entries);
     }
 
     @SuppressWarnings("varargs")
     @SafeVarargs
     @Override
-    protected final <K extends Comparable<? super K>, V> ChampMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        return ChampMap.ofEntries(Arrays.asList(entries));
+    protected final <K extends Comparable<? super K>, V> HashMap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
+        return HashMap.ofEntries(Arrays.asList(entries));
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapOf(K k1, V v1) {
-        return ChampMap.ofEntries(MapEntries.of(k1, v1));
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOf(K k1, V v1) {
+        return HashMap.ofEntries(MapEntries.of(k1, v1));
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapOf(K k1, V v1, K k2, V v2) {
-        return ChampMap.ofEntries(MapEntries.of(k1, v1, k2, v2));
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOf(K k1, V v1, K k2, V v2) {
+        return HashMap.ofEntries(MapEntries.of(k1, v1, k2, v2));
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
-        return ChampMap.ofEntries(MapEntries.of(k1, v1, k2, v2, k3, v3));
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3) {
+        return HashMap.ofEntries(MapEntries.of(k1, v1, k2, v2, k3, v3));
     }
 
     @Override
     protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        return Maps.ofStream(ChampMap.empty(), stream, keyMapper, valueMapper);
+        return Maps.ofStream(HashMap.empty(), stream, keyMapper, valueMapper);
     }
 
     @Override
     protected <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(Stream<? extends T> stream, Function<? super T, Tuple2<? extends K, ? extends V>> f) {
-        return Maps.ofStream(ChampMap.empty(), stream, f);
+        return Maps.ofStream(HashMap.empty(), stream, f);
     }
 
-    protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2) {
         return mapOf(k1, v1, k2, v2);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3) {
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapOfNullKey(K k1, V v1, K k2, V v2, K k3, V v3) {
         return mapOf(k1, v1, k2, v2, k3, v3);
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        return ChampMap.<K, V>ofTuples(Collections.tabulate(n, f));
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapTabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+        return HashMap.<K, V>ofTuples(Collections.tabulate(n, f));
     }
 
     @Override
-    protected <K extends Comparable<? super K>, V> ChampMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        return ChampMap.<K, V>ofTuples(Collections.fill(n, s));
+    protected <K extends Comparable<? super K>, V> HashMap<K, V> mapFill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+        return HashMap.<K, V>ofTuples(Collections.fill(n, s));
     }
 
     // -- static narrow
 
     @Test
     public void shouldNarrowHashMap() {
-        final ChampMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
-        final ChampMap<Number, Number> number2numberMap = ChampMap.narrow(int2doubleMap);
+        final HashMap<Integer, Double> int2doubleMap = mapOf(1, 1.0d);
+        final HashMap<Number, Number> number2numberMap = HashMap.narrow(int2doubleMap);
         final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);
     }
@@ -157,22 +157,22 @@ public class ChampMapTest extends AbstractMapTest {
         final java.util.Map<Integer, Integer> source = new java.util.HashMap<>();
         source.put(1, 2);
         source.put(3, 4);
-        assertThat(SequencedChampMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
+        assertThat(LinkedHashMap.ofAll(source)).isEqualTo(emptyIntInt().put(1, 2).put(3, 4));
     }
 
     // -- specific
 
     @Test
     public void shouldCalculateHashCodeOfCollision() {
-        Assertions.assertThat(ChampMap.empty().put(null, 1).put(0, 2).hashCode())
-                .isEqualTo(ChampMap.empty().put(0, 2).put(null, 1).hashCode());
-        Assertions.assertThat(ChampMap.empty().put(null, 1).put(0, 2).hashCode())
-                .isEqualTo(ChampMap.empty().put(null, 1).put(0, 2).hashCode());
+        Assertions.assertThat(HashMap.empty().put(null, 1).put(0, 2).hashCode())
+                .isEqualTo(HashMap.empty().put(0, 2).put(null, 1).hashCode());
+        Assertions.assertThat(HashMap.empty().put(null, 1).put(0, 2).hashCode())
+                .isEqualTo(HashMap.empty().put(null, 1).put(0, 2).hashCode());
     }
 
     @Test
     public void shouldCheckHashCodeInLeafList() {
-        ChampMap<Integer, Integer> trie = ChampMap.empty();
+        HashMap<Integer, Integer> trie = HashMap.empty();
         trie = trie.put(0, 1).put(null, 2);       // LeafList.hash == 0
         final Option<Integer> none = trie.get(1 << 6);  // (key.hash & BUCKET_BITS) == 0
         Assertions.assertThat(none).isEqualTo(Option.none());
@@ -180,8 +180,8 @@ public class ChampMapTest extends AbstractMapTest {
 
     @Test
     public void shouldCalculateBigHashCode() {
-        ChampMap<Integer, Integer> h1 = ChampMap.empty();
-        ChampMap<Integer, Integer> h2 = ChampMap.empty();
+        HashMap<Integer, Integer> h1 = HashMap.empty();
+        HashMap<Integer, Integer> h2 = HashMap.empty();
         final int count = 1234;
         for (int i = 0; i <= count; i++) {
             h1 = h1.put(i, i);
@@ -192,8 +192,8 @@ public class ChampMapTest extends AbstractMapTest {
 
     @Test
     public void shouldEqualsIgnoreOrder() {
-        ChampMap<String, Integer> map = ChampMap.<String, Integer>empty().put("Aa", 1).put("BB", 2);
-        ChampMap<String, Integer> map2 = ChampMap.<String, Integer>empty().put("BB", 2).put("Aa", 1);
+        HashMap<String, Integer> map = HashMap.<String, Integer>empty().put("Aa", 1).put("BB", 2);
+        HashMap<String, Integer> map2 = HashMap.<String, Integer>empty().put("BB", 2).put("Aa", 1);
         Assertions.assertThat(map.hashCode()).isEqualTo(map2.hashCode());
         Assertions.assertThat(map).isEqualTo(map2);
     }
