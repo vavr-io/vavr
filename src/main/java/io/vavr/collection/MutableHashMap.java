@@ -80,7 +80,7 @@ import java.util.Set;
  * @param <K> the key type
  * @param <V> the value type
  */
-public class MutableHashMap<K, V> extends AbstractChampMap<K, V, AbstractMap.SimpleImmutableEntry<K, V>> {
+class MutableHashMap<K, V> extends AbstractChampMap<K, V, AbstractMap.SimpleImmutableEntry<K, V>> {
     @Serial
     private final static long serialVersionUID = 0L;
 

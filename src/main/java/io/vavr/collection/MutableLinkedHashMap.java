@@ -112,7 +112,7 @@ import static io.vavr.collection.champ.SequencedData.seqHash;
  * @param <K> the key type
  * @param <V> the value type
  */
-public class MutableLinkedHashMap<K, V> extends AbstractChampMap<K, V, SequencedEntry<K, V>> {
+class MutableLinkedHashMap<K, V> extends AbstractChampMap<K, V, SequencedEntry<K, V>> {
     @Serial
     private final static long serialVersionUID = 0L;
     /**

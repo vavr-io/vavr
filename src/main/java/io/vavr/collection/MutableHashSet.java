@@ -80,7 +80,7 @@ import java.util.function.Function;
  *
  * @param <E> the element type
  */
-public class MutableHashSet<E> extends AbstractChampSet<E, E> {
+class MutableHashSet<E> extends AbstractChampSet<E, E> {
     @Serial
     private final static long serialVersionUID = 0L;
 
