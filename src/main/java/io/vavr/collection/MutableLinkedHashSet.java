@@ -117,7 +117,7 @@ import static io.vavr.collection.champ.SequencedData.seqHash;
  *
  * @param <E> the element type
  */
-public class MutableLinkedHashSet<E> extends AbstractChampSet<E, SequencedElement<E>> {
+class MutableLinkedHashSet<E> extends AbstractChampSet<E, SequencedElement<E>> {
     @Serial
     private final static long serialVersionUID = 0L;
 
