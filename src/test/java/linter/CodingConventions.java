@@ -3,7 +3,10 @@ package linter;
 import io.vavr.CheckedFunction1;
 import io.vavr.Function0;
 import io.vavr.collection.List;
-import org.junit.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -50,7 +53,8 @@ public class CodingConventions {
     @Test
     public void shouldHaveTransformMethodWhenIterable() {
         final int errors = vavrTypes.get()
-            .filter(type -> !type.isInterface() && Iterable.class.isAssignableFrom(type))
+                .filter(type -> !type.isInterface() && Iterable.class.isAssignableFrom(type))
+                .filter(type -> !Modifier.isAbstract(type.getModifiers()))
             .filter(type -> {
                 if (type.isAnnotationPresent(Deprecated.class)) {
                     skip(type, "deprecated");
