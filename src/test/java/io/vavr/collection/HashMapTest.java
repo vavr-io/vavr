@@ -47,7 +47,7 @@ public class HashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
+    <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
         return new java.util.HashMap<>();
     }
 

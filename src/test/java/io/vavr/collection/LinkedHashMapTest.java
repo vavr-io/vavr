@@ -21,7 +21,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
     }
 
     @Override
-    protected <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
+    <T1, T2> java.util.Map<T1, T2> javaEmptyMap() {
         return new java.util.LinkedHashMap<>();
     }
 
@@ -157,7 +157,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
         final Map<Integer, String> expected = LinkedHashMap.of(1, "2");
         assertThat(actual).isEqualTo(expected);
     }
-    
+
     // -- put
 
     @Test
