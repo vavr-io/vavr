@@ -1,182 +1,181 @@
-/* ____  ______________  ________________________  __________
- * \   \/   /      \   \/   /   __/   /      \   \/   /      \
- *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
- *
- * The MIT License (MIT)
- *
- * Copyright 2023 Vavr, https://vavr.io
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
 package io.vavr.collection;
 
-import io.vavr.*;
+import io.vavr.collection.champ.BitmapIndexedNode;
+import io.vavr.collection.champ.ChangeEvent;
+import io.vavr.collection.champ.Enumerator;
+import io.vavr.collection.champ.IdentityObject;
+import io.vavr.collection.champ.KeyIterator;
+import io.vavr.collection.champ.KeySpliterator;
+import io.vavr.collection.champ.Node;
+import io.vavr.collection.champ.NonNull;
+import io.vavr.collection.champ.Nullable;
+import io.vavr.collection.champ.ReversedKeySpliterator;
+import io.vavr.collection.champ.SequencedData;
+import io.vavr.collection.champ.SequencedElement;
+import io.vavr.collection.champ.SetSerializationProxy;
+import io.vavr.collection.champ.VavrIteratorFacade;
+import io.vavr.collection.champ.VavrSetMixin;
 import io.vavr.control.Option;
 
-import java.io.*;
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.Spliterator;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.champ.SequencedData.mustRenumber;
+import static io.vavr.collection.champ.SequencedData.seqHash;
+
 /**
- * An immutable {@code HashSet} implementation that has predictable (insertion-order) iteration.
+ * Implements a mutable set using two Compressed Hash-Array Mapped Prefix-trees
+ * (CHAMP), with predictable iteration order.
+ * <p>
+ * Features:
+ * <ul>
+ *     <li>supports up to 2<sup>30</sup> elements</li>
+ *     <li>allows null elements</li>
+ *     <li>is immutable</li>
+ *     <li>is thread-safe</li>
+ *     <li>iterates in the order, in which elements were inserted</li>
+ * </ul>
+ * <p>
+ * Performance characteristics:
+ * <ul>
+ *     <li>copyAdd: O(1) amortized due to
+ *  *     renumbering</li>
+ *     <li>copyRemove: O(1) amortized due to
+ *  *     renumbering</li>
+ *     <li>contains: O(1)</li>
+ *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in the mutable copy</li>
+ *     <li>clone: O(1)</li>
+ *     <li>iterator creation: O(1)</li>
+ *     <li>iterator.next: O(1)</li>
+ *     <li>getFirst(), getLast(): O(1)</li>
+ * </ul>
+ * <p>
+ * Implementation details:
+ * <p>
+ * This set performs read and write operations of single elements in O(1) time,
+ * and in O(1) space.
+ * <p>
+ * The CHAMP trie contains nodes that may be shared with other sets.
+ * <p>
+ * If a write operation is performed on a node, then this set creates a
+ * copy of the node and of all parent nodes up to the root (copy-path-on-write).
+ * Since the CHAMP trie has a fixed maximal height, the cost is O(1).
+ * <p>
+ * This set can create a mutable copy of itself in O(1) time and O(1) space
+ * using method {@link #toMutable()}}. The mutable copy shares its nodes
+ * with this set, until it has gradually replaced the nodes with exclusively
+ * owned nodes.
+ * <p>
+ * Insertion Order:
+ * <p>
+ * This set uses a counter to keep track of the insertion order.
+ * It stores the current value of the counter in the sequence number
+ * field of each data entry. If the counter wraps around, it must renumber all
+ * sequence numbers.
+ * <p>
+ * The renumbering is why the {@code add} and {@code remove} methods are O(1)
+ * only in an amortized sense.
+ * <p>
+ * To support iteration, a second CHAMP trie is maintained. The second CHAMP
+ * trie has the same contents as the first. However, we use the sequence number
+ * for computing the hash code of an element.
+ * <p>
+ * In this implementation, a hash code has a length of
+ * 32 bits, and is split up in little-endian order into 7 parts of
+ * 5 bits (the last part contains the remaining bits).
+ * <p>
+ * We convert the sequence number to unsigned 32 by adding Integer.MIN_VALUE
+ * to it. And then we reorder its bits from
+ * 66666555554444433333222221111100 to 00111112222233333444445555566666.
+ * <p>
+ * References:
+ * <dl>
+ *      <dt>Michael J. Steindorfer (2017).
+ *      Efficient Immutable Collections.</dt>
+ *      <dd><a href="https://michael.steindorfer.name/publications/phd-thesis-efficient-immutable-collections">michael.steindorfer.name</a>
  *
- * @param <T> Component type
+ *      <dt>The Capsule Hash Trie Collections Library.
+ *      <br>Copyright (c) Michael Steindorfer. BSD-2-Clause License</dt>
+ *      <dd><a href="https://github.com/usethesource/capsule">github.com</a>
+ * </dl>
+ *
+ * @param <E> the element type
  */
-@SuppressWarnings("deprecation")
-public final class LinkedHashSet<T> implements Set<T>, Serializable {
-
+public class LinkedHashSet<E> extends BitmapIndexedNode<SequencedElement<E>> implements VavrSetMixin<E, LinkedHashSet<E>>, Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
+    private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(
+            BitmapIndexedNode.emptyNode(), BitmapIndexedNode.emptyNode(), 0, -1, 0);
 
-    private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(LinkedHashMap.empty());
-
-    private final LinkedHashMap<T, Object> map;
-
-    private LinkedHashSet(LinkedHashMap<T, Object> map) {
-        this.map = map;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> LinkedHashSet<T> empty() {
-        return (LinkedHashSet<T>) EMPTY;
-    }
-
-    static <T> LinkedHashSet<T> wrap(LinkedHashMap<T, Object> map) {
-        return new LinkedHashSet<>(map);
-    }
+    final @NonNull BitmapIndexedNode<SequencedElement<E>> sequenceRoot;
+    final int size;
 
     /**
-     * Returns a {@link Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(Collector)} to obtain a {@link LinkedHashSet}.
-     *
-     * @param <T> Component type of the LinkedHashSet.
-     * @return A io.vavr.collection.LinkedHashSet Collector.
+     * Counter for the sequence number of the last element. The counter is
+     * incremented after a new entry has been added to the end of the sequence.
      */
-    public static <T> Collector<T, ArrayList<T>, LinkedHashSet<T>> collector() {
-        return Collections.toListAndThen(LinkedHashSet::ofAll);
-    }
+    final int last;
+
 
     /**
-     * Narrows a widened {@code LinkedHashSet<? extends T>} to {@code LinkedHashSet<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
-     *
-     * @param linkedHashSet A {@code LinkedHashSet}.
-     * @param <T>           Component type of the {@code linkedHashSet}.
-     * @return the given {@code linkedHashSet} instance as narrowed type {@code LinkedHashSet<T>}.
+     * Counter for the sequence number of the first element. The counter is
+     * decrement after a new entry has been added to the start of the sequence.
      */
-    @SuppressWarnings("unchecked")
-    public static <T> LinkedHashSet<T> narrow(LinkedHashSet<? extends T> linkedHashSet) {
-        return (LinkedHashSet<T>) linkedHashSet;
+    final int first;
+
+    LinkedHashSet(
+            @NonNull BitmapIndexedNode<SequencedElement<E>> root,
+            @NonNull BitmapIndexedNode<SequencedElement<E>> sequenceRoot,
+            int size, int first, int last) {
+        super(root.nodeMap(), root.dataMap(), root.mixed);
+        assert (long) last - first >= size : "size=" + size + " first=" + first + " last=" + last;
+        this.size = size;
+        this.first = first;
+        this.last = last;
+        this.sequenceRoot = Objects.requireNonNull(sequenceRoot);
     }
 
-    /**
-     * Returns a singleton {@code LinkedHashSet}, i.e. a {@code LinkedHashSet} of one element.
-     *
-     * @param element An element.
-     * @param <T>     The component type
-     * @return A new LinkedHashSet instance containing the given element
-     */
-    public static <T> LinkedHashSet<T> of(T element) {
-        return LinkedHashSet.<T> empty().add(element);
-    }
-
-    /**
-     * Creates a LinkedHashSet of the given elements.
-     *
-     * <pre><code>LinkedHashSet.of(1, 2, 3, 4)</code></pre>
-     *
-     * @param <T>      Component type of the LinkedHashSet.
-     * @param elements Zero or more elements.
-     * @return A set containing the given elements.
-     * @throws NullPointerException if {@code elements} is null
-     */
-    @SafeVarargs
-    public static <T> LinkedHashSet<T> of(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        LinkedHashMap<T, Object> map = LinkedHashMap.empty();
-        for (T element : elements) {
-            map = map.put(element, element);
+    static <E> BitmapIndexedNode<SequencedElement<E>> buildSequenceRoot(@NonNull BitmapIndexedNode<SequencedElement<E>> root, @NonNull IdentityObject mutator) {
+        BitmapIndexedNode<SequencedElement<E>> seqRoot = emptyNode();
+        ChangeEvent<SequencedElement<E>> details = new ChangeEvent<>();
+        for (KeyIterator<SequencedElement<E>> i = new KeyIterator<>(root, null); i.hasNext(); ) {
+            SequencedElement<E> elem = i.next();
+            seqRoot = seqRoot.update(mutator, elem, SequencedData.seqHash(elem.getSequenceNumber()),
+                    0, details, (oldK, newK) -> oldK, SequencedData::seqEquals, SequencedData::seqHash);
         }
-        return map.isEmpty() ? LinkedHashSet.empty() : new LinkedHashSet<>(map);
+        return seqRoot;
     }
 
     /**
-     * Returns a LinkedHashSet containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
+     * Returns an empty immutable set.
      *
-     * @param <T> Component type of the LinkedHashSet
-     * @param n   The number of elements in the LinkedHashSet
-     * @param f   The Function computing element values
-     * @return A LinkedHashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code f} is null
-     */
-    public static <T> LinkedHashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, LinkedHashSet.empty(), LinkedHashSet::of);
-    }
-
-    /**
-     * Returns a LinkedHashSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
-     *
-     * @param <T> Component type of the LinkedHashSet
-     * @param n   The number of elements in the LinkedHashSet
-     * @param s   The Supplier computing element values
-     * @return A LinkedHashSet of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code s} is null
-     */
-    public static <T> LinkedHashSet<T> fill(int n, Supplier<? extends T> s) {
-        Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, LinkedHashSet.empty(), LinkedHashSet::of);
-    }
-
-    /**
-     * Creates a LinkedHashSet of the given elements.
-     *
-     * @param elements Set elements
-     * @param <T>      The value type
-     * @return A new LinkedHashSet containing the given entries
+     * @param <E> the element type
+     * @return an empty immutable set
      */
     @SuppressWarnings("unchecked")
-    public static <T> LinkedHashSet<T> ofAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof LinkedHashSet) {
-            return (LinkedHashSet<T>) elements;
-        } else {
-            final LinkedHashMap<T, Object> mao = addAll(LinkedHashMap.empty(), elements);
-            return mao.isEmpty() ? empty() : new LinkedHashSet<>(mao);
-        }
+    public static <E> LinkedHashSet<E> empty() {
+        return ((LinkedHashSet<E>) LinkedHashSet.EMPTY);
     }
 
     /**
-     * Creates a LinkedHashSet that contains the elements of the given {@link java.util.stream.Stream}.
+     * Returns a LinkedChampSet set that contains the provided elements.
      *
-     * @param javaStream A {@link java.util.stream.Stream}
-     * @param <T>        Component type of the Stream.
-     * @return A LinkedHashSet containing the given elements in the same order.
+     * @param iterable an iterable
+     * @param <E>      the element type
+     * @return a LinkedChampSet set of the provided elements
      */
-    public static <T> LinkedHashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
-        Objects.requireNonNull(javaStream, "javaStream is null");
-        return ofAll(Iterator.ofAll(javaStream.iterator()));
+    @SuppressWarnings("unchecked")
+    public static <E> LinkedHashSet<E> ofAll(Iterable<? extends E> iterable) {
+        return ((LinkedHashSet<E>) LinkedHashSet.EMPTY).addAll(iterable);
     }
 
     /**
@@ -273,6 +272,47 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     public static LinkedHashSet<Short> ofAll(short... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
+    }
+
+    /**
+     * Creates a LinkedHashSet that contains the elements of the given {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A LinkedHashSet containing the given elements in the same order.
+     */
+    public static <T> LinkedHashSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+        Objects.requireNonNull(javaStream, "javaStream is null");
+        return ofAll(Iterator.ofAll(javaStream.iterator()));
+    }
+
+    /**
+     * Returns a LinkedHashSet containing {@code n} values of a given Function {@code f}
+     * over a range of integer values from 0 to {@code n - 1}.
+     *
+     * @param <T> Component type of the LinkedHashSet
+     * @param n   The number of elements in the LinkedHashSet
+     * @param f   The Function computing element values
+     * @return A LinkedHashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+     * @throws NullPointerException if {@code f} is null
+     */
+    public static <T> LinkedHashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        Objects.requireNonNull(f, "f is null");
+        return Collections.tabulate(n, f, LinkedHashSet.empty(), LinkedHashSet::of);
+    }
+
+    /**
+     * Returns a LinkedHashSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
+     *
+     * @param <T> Component type of the LinkedHashSet
+     * @param n   The number of elements in the LinkedHashSet
+     * @param s   The Supplier computing element values
+     * @return A LinkedHashSet of size {@code n}, where each element contains the result supplied by {@code s}.
+     * @throws NullPointerException if {@code s} is null
+     */
+    public static <T> LinkedHashSet<T> fill(int n, Supplier<? extends T> s) {
+        Objects.requireNonNull(s, "s is null");
+        return Collections.fill(n, s, LinkedHashSet.empty(), LinkedHashSet::of);
     }
 
     /**
@@ -483,493 +523,248 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return LinkedHashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
-    /**
-     * Add the given element to this set, doing nothing if it is already contained.
-     * <p>
-     * Note that this method has a worst-case linear complexity.
-     *
-     * @param element The element to be added.
-     * @return A new set containing all elements of this set and also {@code element}.
-     */
-    @Override
-    public LinkedHashSet<T> add(T element) {
-        return contains(element) ? this : new LinkedHashSet<>(map.put(element, element));
-    }
 
     /**
-     * Adds all of the given elements to this set, replacing existing one if they are not already contained.
-     * <p>
-     * Note that this method has a worst-case quadratic complexity.
+     * Renumbers the sequenced elements in the trie if necessary.
      *
-     * @param elements The elements to be added.
-     * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
+     * @param root    the root of the element trie
+     * @param seqRoot the root of the sequence trie
+     * @param size    the size of the trie
+     * @param first   the estimated first sequence number
+     * @param last    the estimated last sequence number
+     * @return a new {@link LinkedHashSet} instance
+     */
+    @NonNull
+    private LinkedHashSet<E> renumber(
+            BitmapIndexedNode<SequencedElement<E>> root,
+            BitmapIndexedNode<SequencedElement<E>> seqRoot,
+            int size, int first, int last) {
+        if (mustRenumber(size, first, last)) {
+            IdentityObject mutator = new IdentityObject();
+            BitmapIndexedNode<SequencedElement<E>> renumberedRoot = SequencedData.renumber(
+                    size, root, seqRoot, mutator, Objects::hashCode, Objects::equals,
+                    (e, seq) -> new SequencedElement<>(e.getElement(), seq));
+            BitmapIndexedNode<SequencedElement<E>> renumberedSeqRoot = buildSequenceRoot(renumberedRoot, mutator);
+            return new LinkedHashSet<>(
+                    renumberedRoot, renumberedSeqRoot,
+                    size, -1, size);
+        }
+        return new LinkedHashSet<>(root, seqRoot, size, first, last);
+    }
+
+    /**
+     * Creates an empty set of the specified element type.
+     *
+     * @param <R> the element type
+     * @return a new empty set.
      */
     @Override
-    public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() && elements instanceof LinkedHashSet) {
-            @SuppressWarnings("unchecked")
-            final LinkedHashSet<T> set = (LinkedHashSet<T>) elements;
-            return set;
+    public <R> Set<R> create() {
+        return empty();
+    }
+
+    /**
+     * Creates an empty set of the specified element type, and adds all
+     * the specified elements.
+     *
+     * @param elements the elements
+     * @param <R>      the element type
+     * @return a new set that contains the specified elements.
+     */
+    @Override
+    public <R> LinkedHashSet<R> createFromElements(Iterable<? extends R> elements) {
+        return ofAll(elements);
+    }
+
+    @Override
+    public LinkedHashSet<E> add(E key) {
+        return addLast(key, false);
+    }
+
+    private @NonNull LinkedHashSet<E> addLast(@Nullable E e,
+                                              boolean moveToLast) {
+        var details = new ChangeEvent<SequencedElement<E>>();
+        var newElem = new SequencedElement<E>(e, last);
+        var newRoot = update(
+                null, newElem, Objects.hashCode(e), 0,
+                details,
+                moveToLast ? SequencedElement::updateAndMoveToLast : SequencedElement::update,
+                Objects::equals, Objects::hashCode);
+        if (details.isModified()) {
+            var newSeqRoot = sequenceRoot;
+            int newFirst = first;
+            int newLast = last;
+            int newSize = size;
+            var mutator = new IdentityObject();
+            if (details.isReplaced()) {
+                var oldElem = details.getOldData();
+                newSeqRoot = SequencedData.seqRemove(newSeqRoot, mutator, oldElem, details);
+                int seq = details.getOldData().getSequenceNumber();
+                newFirst = seq == newFirst - 1 ? newFirst - 1 : newFirst;
+                newLast = seq == newLast ? newLast : newLast + 1;
+            } else {
+                newSize++;
+                newLast++;
+            }
+            newSeqRoot = SequencedData.seqUpdate(newSeqRoot, mutator, newElem, details, SequencedElement::update);
+            return renumber(newRoot, newSeqRoot, newSize, newFirst, newLast);
         }
-        final LinkedHashMap<T, Object> that = addAll(map, elements);
-        if (that.size() == map.size()) {
-            return this;
-        } else {
-            return new LinkedHashSet<>(that);
-        }
-    }
-
-    @Override
-    public <R> LinkedHashSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        return ofAll(iterator().<R> collect(partialFunction));
-    }
-
-    @Override
-    public boolean contains(T element) {
-        return map.get(element).isDefined();
-    }
-
-    @Override
-    public LinkedHashSet<T> diff(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() || elements.isEmpty()) {
-            return this;
-        } else {
-            return removeAll(elements);
-        }
-    }
-
-    @Override
-    public LinkedHashSet<T> distinct() {
         return this;
+
     }
 
     @Override
-    public LinkedHashSet<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        return LinkedHashSet.ofAll(iterator().distinctBy(comparator));
+    @SuppressWarnings({"unchecked"})
+    public LinkedHashSet<E> addAll(Iterable<? extends E> set) {
+        if (set == this || isEmpty() && (set instanceof LinkedHashSet<?>)) {
+            return (LinkedHashSet<E>) set;
+        }
+        if (isEmpty() && (set instanceof MutableLinkedHashSet)) {
+            return ((MutableLinkedHashSet<E>) set).toImmutable();
+        }
+        final MutableLinkedHashSet<E> t = this.toMutable();
+        boolean modified = false;
+        for (final E key : set) {
+            modified |= t.add(key);
+        }
+        return modified ? t.toImmutable() : this;
     }
 
     @Override
-    public <U> LinkedHashSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return LinkedHashSet.ofAll(iterator().distinctBy(keyExtractor));
+    public boolean contains(E o) {
+        return find(new SequencedElement<>(o), Objects.hashCode(o), 0, Objects::equals) != Node.NO_DATA;
     }
 
+
     @Override
-    public LinkedHashSet<T> drop(int n) {
-        if (n <= 0) {
-            return this;
+    public Iterator<E> iterator() {
+        return iterator(false);
+    }
+
+    private @NonNull Iterator<E> iterator(boolean reversed) {
+        Enumerator<E> i;
+        if (reversed) {
+            i = new ReversedKeySpliterator<>(sequenceRoot, SequencedElement::getElement, Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE, size());
         } else {
-            return LinkedHashSet.ofAll(iterator().drop(n));
+            i = new KeySpliterator<>(sequenceRoot, SequencedElement::getElement, Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE, size());
         }
-    }
-
-    @Override
-    public LinkedHashSet<T> dropRight(int n) {
-        if (n <= 0) {
-            return this;
-        } else {
-            return LinkedHashSet.ofAll(iterator().dropRight(n));
-        }
-    }
-
-    @Override
-    public LinkedHashSet<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
-    }
-
-    @Override
-    public LinkedHashSet<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final LinkedHashSet<T> dropped = LinkedHashSet.ofAll(iterator().dropWhile(predicate));
-        return dropped.length() == length() ? this : dropped;
-    }
-
-    @Override
-    public LinkedHashSet<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final LinkedHashSet<T> filtered = LinkedHashSet.ofAll(iterator().filter(predicate));
-        return filtered.length() == length() ? this : filtered;
-    }
-
-    @Override
-    public LinkedHashSet<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
-    @Override
-    public <U> LinkedHashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final LinkedHashMap<U, Object> that = foldLeft(LinkedHashMap.empty(),
-                    (tree, t) -> addAll(tree, mapper.apply(t)));
-            return new LinkedHashSet<>(that);
-        }
-    }
-
-    @Override
-    public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return iterator().foldRight(zero, f);
-    }
-
-    @Override
-    public <C> Map<C, LinkedHashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
-        return Collections.groupBy(this, classifier, LinkedHashSet::ofAll);
-    }
-
-    @Override
-    public Iterator<LinkedHashSet<T>> grouped(int size) {
-        return sliding(size, size);
-    }
-
-    @Override
-    public boolean hasDefiniteSize() {
-        return true;
-    }
-
-    @Override
-    public T head() {
-        if (map.isEmpty()) {
-            throw new NoSuchElementException("head of empty set");
-        }
-        return map.head()._1();
-    }
-
-    @Override
-    public Option<T> headOption() {
-        return map.headOption().map(Tuple2::_1);
-    }
-
-    @Override
-    public LinkedHashSet<T> init() {
-        if (map.isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty set");
-        } else {
-            return new LinkedHashSet<>(map.init());
-        }
-    }
-
-    @Override
-    public Option<LinkedHashSet<T>> initOption() {
-        return isEmpty() ? Option.none() : Option.some(init());
-    }
-
-    @Override
-    public LinkedHashSet<T> intersect(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() || elements.isEmpty()) {
-            return empty();
-        } else {
-            return retainAll(elements);
-        }
-    }
-
-    /**
-     * An {@code LinkedHashSet}'s value is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return map.isEmpty();
-    }
-
-    /**
-     * An {@code LinkedHashSet}'s value is computed eagerly.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isLazy() {
-        return false;
-    }
-
-    @Override
-    public boolean isTraversableAgain() {
-        return true;
-    }
-
-    @Override
-    public boolean isSequential() {
-        return true;
-    }
-
-    @Override
-    public Iterator<T> iterator() {
-        return map.iterator().map(t -> t._1);
-    }
-
-    @Override
-    public T last() {
-        return map.last()._1;
+        return new VavrIteratorFacade<>(i, null);
     }
 
     @Override
     public int length() {
-        return map.size();
+        return size;
     }
 
     @Override
-    public <U> LinkedHashSet<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final LinkedHashMap<U, Object> that = foldLeft(LinkedHashMap.empty(), (tree, t) -> {
-                final U u = mapper.apply(t);
-                return tree.put(u, u);
-            });
-            return new LinkedHashSet<>(that);
-        }
+    public LinkedHashSet<E> remove(final E key) {
+        return remove(key, first, last);
     }
 
-    @Override
-    public String mkString(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
-        return iterator().mkString(prefix, delimiter, suffix);
-    }
-
-    @Override
-    public LinkedHashSet<T> orElse(Iterable<? extends T> other) {
-        return isEmpty() ? ofAll(other) : this;
-    }
-
-    @Override
-    public LinkedHashSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
-        return isEmpty() ? ofAll(supplier.get()) : this;
-    }
-
-    @Override
-    public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> partition(Predicate<? super T> predicate) {
-        return Collections.partition(this, LinkedHashSet::ofAll, predicate);
-    }
-
-    @Override
-    public LinkedHashSet<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (!isEmpty()) {
-            action.accept(iterator().head());
+    private @NonNull LinkedHashSet<E> remove(@Nullable E key, int newFirst, int newLast) {
+        int keyHash = Objects.hashCode(key);
+        ChangeEvent<SequencedElement<E>> details = new ChangeEvent<>();
+        BitmapIndexedNode<SequencedElement<E>> newRoot = remove(null,
+                new SequencedElement<>(key),
+                keyHash, 0, details, Objects::equals);
+        BitmapIndexedNode<SequencedElement<E>> newSeqRoot = sequenceRoot;
+        if (details.isModified()) {
+            var oldElem = details.getOldData();
+            int seq = oldElem.getSequenceNumber();
+            newSeqRoot = newSeqRoot.remove(null,
+                    oldElem,
+                    seqHash(seq), 0, details, SequencedData::seqEquals);
+            if (seq == newFirst) {
+                newFirst++;
+            }
+            if (seq == newLast - 1) {
+                newLast--;
+            }
+            return renumber(newRoot, newSeqRoot, size - 1, newFirst, newLast);
         }
         return this;
     }
 
-    @Override
-    public LinkedHashSet<T> remove(T element) {
-        final LinkedHashMap<T, Object> newMap = map.remove(element);
-        return (newMap == map) ? this : new LinkedHashSet<>(newMap);
-    }
-
-    @Override
-    public LinkedHashSet<T> removeAll(Iterable<? extends T> elements) {
-        return Collections.removeAll(this, elements);
-    }
-
-    @Override
-    public LinkedHashSet<T> replace(T currentElement, T newElement) {
-        if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
-            final Tuple2<T, Object> currentPair = Tuple.of(currentElement, currentElement);
-            final Tuple2<T, Object> newPair = Tuple.of(newElement, newElement);
-            final LinkedHashMap<T, Object> newMap = map.replace(currentPair, newPair);
-            return new LinkedHashSet<>(newMap);
-        } else {
-            return this;
-        }
-    }
-
-    @Override
-    public LinkedHashSet<T> replaceAll(T currentElement, T newElement) {
-        return replace(currentElement, newElement);
-    }
-
-    @Override
-    public LinkedHashSet<T> retainAll(Iterable<? extends T> elements) {
-        return Collections.retainAll(this, elements);
-    }
-
-    @Override
-    public LinkedHashSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
-        return scanLeft(zero, operation);
-    }
-
-    @Override
-    public <U> LinkedHashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
-        return Collections.scanLeft(this, zero, operation, LinkedHashSet::ofAll);
-    }
-
-    @Override
-    public <U> LinkedHashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
-        return Collections.scanRight(this, zero, operation, LinkedHashSet::ofAll);
-    }
-
-    @Override
-    public Iterator<LinkedHashSet<T>> slideBy(Function<? super T, ?> classifier) {
-        return iterator().slideBy(classifier).map(LinkedHashSet::ofAll);
-    }
-
-    @Override
-    public Iterator<LinkedHashSet<T>> sliding(int size) {
-        return sliding(size, 1);
-    }
-
-    @Override
-    public Iterator<LinkedHashSet<T>> sliding(int size, int step) {
-        return iterator().sliding(size, step).map(LinkedHashSet::ofAll);
-    }
-
-    @Override
-    public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> span(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);
-        return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2));
-    }
-
-    @Override
-    public LinkedHashSet<T> tail() {
-        if (map.isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty set");
-        }
-        return wrap(map.tail());
-    }
-
-    @Override
-    public Option<LinkedHashSet<T>> tailOption() {
-        return isEmpty() ? Option.none() : Option.some(tail());
-    }
-
-    @Override
-    public LinkedHashSet<T> take(int n) {
-        if (map.size() <= n) {
-            return this;
-        }
-        return LinkedHashSet.ofAll(() -> iterator().take(n));
-    }
-
-    @Override
-    public LinkedHashSet<T> takeRight(int n) {
-        if (map.size() <= n) {
-            return this;
-        }
-        return LinkedHashSet.ofAll(() -> iterator().takeRight(n));
-    }
-
-    @Override
-    public LinkedHashSet<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return takeWhile(predicate.negate());
-    }
-
-    @Override
-    public LinkedHashSet<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final LinkedHashSet<T> taken = LinkedHashSet.ofAll(iterator().takeWhile(predicate));
-        return taken.length() == length() ? this : taken;
+    /**
+     * Creates a mutable copy of this set.
+     *
+     * @return a mutable sequenced CHAMP set
+     */
+    MutableLinkedHashSet<E> toMutable() {
+        return new MutableLinkedHashSet<>(this);
     }
 
     /**
-     * Transforms this {@code LinkedHashSet}.
+     * Returns a {@link Collector} which may be used in conjunction with
+     * {@link java.util.stream.Stream#collect(Collector)} to obtain a {@link LinkedHashSet}.
      *
-     * @param f   A transformation
-     * @param <U> Type of transformation result
-     * @return An instance of type {@code U}
-     * @throws NullPointerException if {@code f} is null
+     * @param <T> Component type of the HashSet.
+     * @return A io.vavr.collection.LinkedChampSet Collector.
      */
-    public <U> U transform(Function<? super LinkedHashSet<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return f.apply(this);
-    }
-
-    @Override
-    public java.util.LinkedHashSet<T> toJavaSet() {
-        return toJavaSet(java.util.LinkedHashSet::new);
+    public static <T> Collector<T, ArrayList<T>, LinkedHashSet<T>> collector() {
+        return Collections.toListAndThen(LinkedHashSet::ofAll);
     }
 
     /**
-     * Adds all of the elements of {@code elements} to this set, replacing existing ones if they already present.
-     * <p>
-     * Note that this method has a worst-case quadratic complexity.
-     * <p>
-     * See also {@link #addAll(Iterable)}.
+     * Returns a singleton {@code HashSet}, i.e. a {@code HashSet} of one element.
      *
-     * @param elements The set to form the union with.
-     * @return A new set that contains all distinct elements of this and {@code elements} set.
+     * @param element An element.
+     * @param <T>     The component type
+     * @return A new HashSet instance containing the given element
      */
-    @SuppressWarnings("unchecked")
+    public static <T> LinkedHashSet<T> of(T element) {
+        return LinkedHashSet.<T>empty().add(element);
+    }
+
     @Override
-    public LinkedHashSet<T> union(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            if (elements instanceof LinkedHashSet) {
-                return (LinkedHashSet<T>) elements;
-            } else {
-                return LinkedHashSet.ofAll(elements);
-            }
-        } else if (elements.isEmpty()) {
-            return this;
-        } else {
-            final LinkedHashMap<T, Object> that = addAll(map, elements);
-            if (that.size() == map.size()) {
-                return this;
-            } else {
-                return new LinkedHashSet<>(that);
-            }
+    public boolean equals(final Object other) {
+        if (other == this) {
+            return true;
         }
-    }
-
-    @Override
-    public <U> LinkedHashSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
-        return zipWith(that, Tuple::of);
-    }
-
-    @Override
-    public <U, R> LinkedHashSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
-        return LinkedHashSet.ofAll(iterator().zipWith(that, mapper));
-    }
-
-    @Override
-    public <U> LinkedHashSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
-        return LinkedHashSet.ofAll(iterator().zipAll(that, thisElem, thatElem));
-    }
-
-    @Override
-    public LinkedHashSet<Tuple2<T, Integer>> zipWithIndex() {
-        return zipWithIndex(Tuple::of);
-    }
-
-    @Override
-    public <U> LinkedHashSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return LinkedHashSet.ofAll(iterator().zipWithIndex(mapper));
-    }
-
-    // -- Object
-
-    @Override
-    public boolean equals(Object o) {
-        return Collections.equals(this, o);
+        if (other == null) {
+            return false;
+        }
+        if (other instanceof LinkedHashSet) {
+            LinkedHashSet<?> that = (LinkedHashSet<?>) other;
+            return size == that.size && equivalent(that);
+        }
+        return Collections.equals(this, other);
     }
 
     @Override
     public int hashCode() {
-        return Collections.hashUnordered(this);
+        return Collections.hashUnordered(iterator());
     }
 
-    @Override
-    public String stringPrefix() {
-        return "LinkedHashSet";
+    /**
+     * Creates a LinkedChampSet of the given elements.
+     *
+     * <pre><code>LinkedChampSet.of(1, 2, 3, 4)</code></pre>
+     *
+     * @param <T>      Component type of the LinkedChampSet.
+     * @param elements Zero or more elements.
+     * @return A set containing the given elements.
+     * @throws NullPointerException if {@code elements} is null
+     */
+    @SafeVarargs
+    @SuppressWarnings("varargs")
+    public static <T> LinkedHashSet<T> of(T... elements) {
+        //Arrays.asList throws a NullPointerException for us.
+        return LinkedHashSet.<T>empty().addAll(Arrays.asList(elements));
+    }
+
+    /**
+     * Narrows a widened {@code LinkedChampSet<? extends T>} to {@code LinkedChampSet<T>}
+     * by performing a type-safe cast. This is eligible because immutable/read-only
+     * collections are covariant.
+     *
+     * @param hashSet A {@code LinkedChampSet}.
+     * @param <T>     Component type of the {@code LinkedChampSet}.
+     * @return the given {@code LinkedChampSet} instance as narrowed type {@code HashSet<T>}.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> LinkedHashSet<T> narrow(LinkedHashSet<? extends T> hashSet) {
+        return (LinkedHashSet<T>) hashSet;
     }
 
     @Override
@@ -977,116 +772,166 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static <T> LinkedHashMap<T, Object> addAll(LinkedHashMap<T, Object> initial,
-            Iterable<? extends T> additional) {
-        LinkedHashMap<T, Object> that = initial;
-        for (T t : additional) {
-            that = that.put(t, t);
+    static class SerializationProxy<E> extends SetSerializationProxy<E> {
+        @Serial
+        private final static long serialVersionUID = 0L;
+
+        public SerializationProxy(java.util.Set<E> target) {
+            super(target);
         }
-        return that;
+
+        @Serial
+        @Override
+        protected Object readResolve() {
+            return LinkedHashSet.ofAll(deserialized);
+        }
     }
 
-    // -- Serialization
-
-    /**
-     * {@code writeReplace} method for the serialization proxy pattern.
-     * <p>
-     * The presence of this method causes the serialization system to emit a SerializationProxy instance instead of
-     * an instance of the enclosing class.
-     *
-     * @return A SerializationProxy for this enclosing class.
-     */
+    @Serial
     private Object writeReplace() {
-        return new SerializationProxy<>(this.map);
+        return new LinkedHashSet.SerializationProxy<E>(this.toMutable());
     }
 
-    /**
-     * {@code readObject} method for the serialization proxy pattern.
-     * <p>
-     * Guarantees that the serialization system will never generate a serialized instance of the enclosing class.
-     *
-     * @param stream An object serialization stream.
-     * @throws InvalidObjectException This method will throw with the message "Proxy required".
-     */
-    private void readObject(ObjectInputStream stream) throws InvalidObjectException {
-        throw new InvalidObjectException("Proxy required");
+    @Override
+    public LinkedHashSet<E> replace(E currentElement, E newElement) {
+        // currentElement and newElem are the same => do nothing
+        if (Objects.equals(currentElement, newElement)) {
+            return this;
+        }
+
+        // try to remove currentElem from the 'root' trie
+        final ChangeEvent<SequencedElement<E>> detailsCurrent = new ChangeEvent<>();
+        IdentityObject mutator = new IdentityObject();
+        BitmapIndexedNode<SequencedElement<E>> newRoot = remove(mutator,
+                new SequencedElement<>(currentElement),
+                Objects.hashCode(currentElement), 0, detailsCurrent, Objects::equals);
+        // currentElement was not in the 'root' trie => do nothing
+        if (!detailsCurrent.isModified()) {
+            return this;
+        }
+
+        // currentElement was in the 'root' trie, and we have just removed it
+        // => also remove its entry from the 'sequenceRoot' trie
+        var newSeqRoot = sequenceRoot;
+        SequencedElement<E> currentData = detailsCurrent.getOldData();
+        int seq = currentData.getSequenceNumber();
+        newSeqRoot = newSeqRoot.remove(mutator, currentData, seqHash(seq), 0, detailsCurrent, SequencedData::seqEquals);
+
+        // try to update the trie with the newElement
+        ChangeEvent<SequencedElement<E>> detailsNew = new ChangeEvent<>();
+        SequencedElement<E> newData = new SequencedElement<>(newElement, seq);
+        newRoot = newRoot.update(mutator,
+                newData, Objects.hashCode(newElement), 0, detailsNew,
+                SequencedElement::forceUpdate,
+                Objects::equals, Objects::hashCode);
+        boolean isReplaced = detailsNew.isReplaced();
+
+        // there already was an element with key newElement._1 in the trie, and we have just replaced it
+        // => remove the replaced entry from the 'sequenceRoot' trie
+        if (isReplaced) {
+            SequencedElement<E> replacedEntry = detailsNew.getOldData();
+            newSeqRoot = newSeqRoot.remove(mutator, replacedEntry, seqHash(replacedEntry.getSequenceNumber()), 0, detailsNew, SequencedData::seqEquals);
+        }
+
+        // we have just successfully added or replaced the newElement
+        // => insert the new entry in the 'sequenceRoot' trie
+        newSeqRoot = newSeqRoot.update(mutator,
+                newData, seqHash(seq), 0, detailsNew,
+                SequencedElement::forceUpdate,
+                SequencedData::seqEquals, SequencedData::seqHash);
+
+        if (isReplaced) {
+            // we reduced the size of the map by one => renumbering may be necessary
+            return renumber(newRoot, newSeqRoot, size - 1, first, last);
+        } else {
+            // we did not change the size of the map => no renumbering is needed
+            return new LinkedHashSet<>(newRoot, newSeqRoot, size, first, last);
+        }
     }
 
-    /**
-     * A serialization proxy which, in this context, is used to deserialize immutable, linked Lists with final
-     * instance fields.
-     *
-     * @param <T> The component type of the underlying list.
-     */
-    // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
-    // classes. Also, it may not be compatible with circular object graphs.
-    private static final class SerializationProxy<T> implements Serializable {
 
-        private static final long serialVersionUID = 1L;
+    @Override
+    public boolean isSequential() {
+        return true;
+    }
 
-        // the instance to be serialized/deserialized
-        private transient LinkedHashMap<T, Object> map;
+    @Override
+    public Set<E> toLinkedSet() {
+        return this;
+    }
 
-        /**
-         * Constructor for the case of serialization, called by {@link LinkedHashSet#writeReplace()}.
-         * <p/>
-         * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
-         * an instance of the enclosing class.
-         *
-         * @param map a Cons
-         */
-        SerializationProxy(LinkedHashMap<T, Object> map) {
-            this.map = map;
+    @Override
+    public Set<E> takeRight(int n) {
+        if (n >= size) {
+            return this;
         }
-
-        /**
-         * Write an object to a serialization stream.
-         *
-         * @param s An object serialization stream.
-         * @throws IOException If an error occurs writing to the stream.
-         */
-        private void writeObject(ObjectOutputStream s) throws IOException {
-            s.defaultWriteObject();
-            s.writeInt(map.size());
-            for (Tuple2<T, Object> e : map) {
-                s.writeObject(e._1);
-            }
+        MutableLinkedHashSet<E> set = new MutableLinkedHashSet<>();
+        for (Iterator<E> i = iterator(true); i.hasNext() && n > 0; n--) {
+            set.addFirst(i.next());
         }
+        return set.toImmutable();
+    }
 
-        /**
-         * Read an object from a deserialization stream.
-         *
-         * @param s An object deserialization stream.
-         * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
-         * @throws InvalidObjectException If the stream contains no list elements.
-         * @throws IOException            If an error occurs reading from the stream.
-         */
-        private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
-            s.defaultReadObject();
-            final int size = s.readInt();
-            if (size < 0) {
-                throw new InvalidObjectException("No elements");
-            }
-            LinkedHashMap<T, Object> temp = LinkedHashMap.empty();
-            for (int i = 0; i < size; i++) {
-                @SuppressWarnings("unchecked")
-                final T element = (T) s.readObject();
-                temp = temp.put(element, element);
-            }
-            map = temp;
+    @Override
+    public Set<E> dropRight(int n) {
+        if (n <= 0) {
+            return this;
         }
+        MutableLinkedHashSet<E> set = toMutable();
+        for (Iterator<E> i = iterator(true); i.hasNext() && n > 0; n--) {
+            set.remove(i.next());
+        }
+        return set.toImmutable();
+    }
 
-        /**
-         * {@code readResolve} method for the serialization proxy pattern.
-         * <p>
-         * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
-         * serialization system to translate the serialization proxy back into an instance of the enclosing class
-         * upon deserialization.
-         *
-         * @return A deserialized instance of the enclosing class.
-         */
-        private Object readResolve() {
-            return map.isEmpty() ? LinkedHashSet.empty() : new LinkedHashSet<>(map);
+    @Override
+    public LinkedHashSet<E> tail() {
+        // XXX LinkedChampSetTest wants us to throw UnsupportedOperationException
+        //     instead of NoSuchElementException when this set is empty.
+        if (isEmpty()) {
+            throw new UnsupportedOperationException();
         }
+        SequencedElement<E> k = Node.getFirst(this);
+        return remove(k.getElement(), k.getSequenceNumber() + 1, last);
+    }
+
+    @Override
+    public E head() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        return Node.getFirst(this).getElement();
+    }
+
+    @Override
+    public LinkedHashSet<E> init() {
+        // XXX Traversable.init() specifies that we must throw
+        //     UnsupportedOperationException instead of NoSuchElementException
+        //     when this set is empty.
+        if (isEmpty()) {
+            throw new UnsupportedOperationException();
+        }
+        return removeLast();
+    }
+
+    private LinkedHashSet<E> removeLast() {
+        SequencedElement<E> k = Node.getLast(this);
+        return remove(k.getElement(), first, k.getSequenceNumber());
+    }
+
+
+    @Override
+    public Option<? extends Set<E>> initOption() {
+        return isEmpty() ? Option.none() : Option.some(removeLast());
+    }
+
+    @Override
+    public <U> U foldRight(U zero, BiFunction<? super E, ? super U, ? extends U> combine) {
+        Objects.requireNonNull(combine, "combine is null");
+        U xs = zero;
+        for (Iterator<E> i = iterator(true); i.hasNext(); ) {
+            xs = combine.apply(i.next(), xs);
+        }
+        return xs;
     }
 }
