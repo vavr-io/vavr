@@ -9,17 +9,13 @@
 
 [![vavr-logo](https://user-images.githubusercontent.com/743833/62367542-486f0500-b52a-11e9-815e-e9788d4c8c8d.png)](http://vavr.io/)
 
-Vavr is an object-functional language extension to Java 8, which aims to reduce the lines of code and increase code
-quality.
-It provides persistent collections, functional abstractions for error handling, concurrent programming, pattern matching
-and much more.
+Vavr is an object-functional language extension to Java 8, which aims to reduce the lines of code and increase code quality.
+It provides persistent collections, functional abstractions for error handling, concurrent programming, pattern matching and much more.
 
 Vavr fuses the power of object-oriented programming with the elegance and robustness of functional programming.
-The most interesting part is a feature-rich, persistent collection library that smoothly integrates with Java's standard
-collections.
+The most interesting part is a feature-rich, persistent collection library that smoothly integrates with Java's standard collections.
 
-Because Vavr does not depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your
-classpath.
+Because Vavr does not depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
 
 To stay up to date please follow the [blog](http://blog.vavr.io).
 
@@ -36,5 +32,4 @@ See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc
 
 ### Contributing
 
-A small number of users have reported problems building Vavr. Read our [contribution guide](./CONTRIBUTING.md) for
-details.
+A small number of users have reported problems building Vavr. Read our [contribution guide](./CONTRIBUTING.md) for details.
