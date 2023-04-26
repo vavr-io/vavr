@@ -295,4 +295,9 @@ public class LinkedHashMapTest extends AbstractMapTest {
         assertThat(LinkedHashMap.of(1, 2, 3, 4).isSequential()).isTrue();
     }
 
+    @Test
+    public void shouldHashcodeOrdered() {
+        assertThat(LinkedHashMap.of("a", 1, "b", 2).hashCode()).isNotEqualTo(LinkedHashMap.of("a", 2, "b", 1).hashCode());
+    }
+
 }

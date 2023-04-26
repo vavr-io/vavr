@@ -971,7 +971,7 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public int hashCode() {
-        return Collections.hashUnordered(this);
+        return Collections.hashOrdered(this);
     }
 
     private Object readResolve() {
