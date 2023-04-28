@@ -1,0 +1,24 @@
+name: Build and test
+
+on: [push]
+
+jobs:
+  build-gradle-project:
+    strategy:
+      matrix:
+        java_version: [8, 11, 17]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout project sources
+      uses: actions/checkout@v2
+    - name: Set up JDK ${{ matrix.java_version }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java_version }}
+        distribution: 'temurin'
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v2
+    - name: Build and test
+      run: ./gradlew check --info
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
