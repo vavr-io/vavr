@@ -11,7 +11,7 @@ jobs:
     steps:
     - name: Checkout project sources
       uses: actions/checkout@v2
-    - name: Set up JDK 17
+    - name: Set up JDK ${{ matrix.java_version }}
       uses: actions/setup-java@v3
       with:
         java-version: ${{ matrix.java_version }}
@@ -20,3 +20,5 @@ jobs:
       uses: gradle/gradle-build-action@v2
     - name: Build and test
       run: ./gradlew check --info
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
