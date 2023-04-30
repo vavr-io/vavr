@@ -126,4 +126,11 @@ import java.util.Objects;
     public boolean isReplaced() {
         return type == Type.REPLACED;
     }
+
+    /**
+     * Returns true if the data element has been added.
+     */
+    public boolean isAdded() {
+        return type == Type.ADDED;
+    }
 }

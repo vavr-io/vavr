@@ -37,9 +37,64 @@ import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
- * An immutable {@code HashSet} implementation.
+ * Implements an immutable set using a Compressed Hash-Array Mapped Prefix-tree
+ * (CHAMP).
+ * <p>
+ * Features:
+ * <ul>
+ *     <li>supports up to 2<sup>30</sup> entries</li>
+ *     <li>allows null elements</li>
+ *     <li>is immutable</li>
+ *     <li>is thread-safe</li>
+ *     <li>does not guarantee a specific iteration order</li>
+ * </ul>
+ * <p>
+ * Performance characteristics:
+ * <ul>
+ *     <li>add: O(1)</li>
+ *     <li>remove: O(1)</li>
+ *     <li>contains: O(1)</li>
+ *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in the mutable copy</li>
+ *     <li>clone: O(1)</li>
+ *     <li>iterator.next(): O(1)</li>
+ * </ul>
+ * <p>
+ * Implementation details:
+ * <p>
+ * This set performs read and write operations of single elements in O(1) time,
+ * and in O(1) space.
+ * <p>
+ * The CHAMP trie contains nodes that may be shared with other sets.
+ * <p>
+ * If a write operation is performed on a node, then this set creates a
+ * copy of the node and of all parent nodes up to the root (copy-path-on-write).
+ * Since the CHAMP trie has a fixed maximal height, the cost is O(1).
+ * <p>
+ * The immutable version of this set extends from the non-public class
+ * {@code ChampBitmapIndexNode}. This design safes 16 bytes for every instance,
+ * and reduces the number of redirections for finding an element in the
+ * collection by 1.
+ * <p>
+ * References:
+ * <p>
+ * Portions of the code in this class have been derived from 'The Capsule Hash Trie Collections Library', and from
+ * 'JHotDraw 8'.
+ * <dl>
+ *     <dt>Michael J. Steindorfer (2017).
+ *     Efficient Immutable Collections.</dt>
+ *     <dd><a href="https://michael.steindorfer.name/publications/phd-thesis-efficient-immutable-collections">michael.steindorfer.name</a>
+ *     </dd>
+ *     <dt>The Capsule Hash Trie Collections Library.
+ *     <br>Copyright (c) Michael Steindorfer. <a href="https://github.com/usethesource/capsule/blob/3856cd65fa4735c94bcfa94ec9ecf408429b54f4/LICENSE">BSD-2-Clause License</a></dt>
+ *     <dd><a href="https://github.com/usethesource/capsule">github.com</a>
+ *     </dd>
+ *     <dt>JHotDraw 8. Copyright © 2023 The authors and contributors of JHotDraw.
+ *     <a href="https://github.com/wrandelshofer/jhotdraw8/blob/8c1a98b70bc23a0c63f1886334d5b568ada36944/LICENSE">MIT License</a>.</dt>
+ *     <dd><a href="https://github.com/wrandelshofer/jhotdraw8">github.com</a>
+ *     </dd>
+ * </dl>
  *
- * @param <T> Component type
+ * @param <T> the element type
  */
 @SuppressWarnings("deprecation")
 public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T>, Serializable {
@@ -53,7 +108,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
      */
     final int size;
 
-    HashSet(ChampBitmapIndexedNode<T> root, int size) {
+    private HashSet(ChampBitmapIndexedNode<T> root, int size) {
         super(root.nodeMap(), root.dataMap(), root.mixed);
         this.size = size;
     }
@@ -477,7 +532,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     public HashSet<T> add(T element) {
         int keyHash = Objects.hashCode(element);
         ChampChangeEvent<T> details = new ChampChangeEvent<>();
-        ChampBitmapIndexedNode<T> newRootNode = update(null, element, keyHash, 0, details, HashSet::updateFunction, Objects::equals, Objects::hashCode);
+        ChampBitmapIndexedNode<T> newRootNode = update(null, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, Objects::hashCode);
         if (details.isModified()) {
             return new HashSet<>(newRootNode, size + 1);
         }
@@ -492,7 +547,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
      * @param <E>        the element type
      * @return always returns the old element
      */
-    private static <E> E updateFunction(E oldElement, E newElement) {
+    private static <E> E updateElement(E oldElement, E newElement) {
         return oldElement;
     }
 
@@ -512,7 +567,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
         for (var element : elements) {
             int keyHash = Objects.hashCode(element);
             details.reset();
-            newRootNode = newRootNode.update(mutator, element, keyHash, 0, details, HashSet::updateFunction, Objects::equals, Objects::hashCode);
+            newRootNode = newRootNode.update(mutator, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, Objects::hashCode);
             if (details.isModified()) {newSize++;}
         }
         return newSize == size ? this : new HashSet<>(newRootNode, newSize);
@@ -1053,7 +1108,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
             for (int i = 0; i < size; i++) {
                 @SuppressWarnings("unchecked") final T element = (T) s.readObject();
                 int keyHash = Objects.hashCode(element);
-                newRoot = newRoot.update(mutator, element, keyHash, 0, details, HashSet::updateFunction, Objects::equals, Objects::hashCode);
+                newRoot = newRoot.update(mutator, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, Objects::hashCode);
                 if (details.isModified()) newSize++;
             }
             tree = newSize == 0 ? empty() : new HashSet<>(newRoot, newSize);
