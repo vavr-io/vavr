@@ -1,12 +1,34 @@
-/*
- * @(#)Tombstone.java
- * Copyright © 2023 The authors and contributors of JHotDraw. MIT License.
+/* ____  ______________  ________________________  __________
+ * \   \/   /      \   \/   /   __/   /      \   \/   /      \
+ *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright 2023 Vavr, https://vavr.io
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
  */
 
 package io.vavr.collection;
 
 /**
- * A tombstone is used by {@link VectorSet} to mark a deleted slot in its Vector.
+ * A tombstone is used by {@code VectorSet} to mark a deleted slot in its Vector.
  * <p>
  * A tombstone stores the minimal number of neighbors 'before' and 'after' it in the
  * Vector.
@@ -56,6 +78,21 @@ package io.vavr.collection;
  *
  * After deletion of element 9:          'a' 'b' 'c' 'd' 'e'
  * </pre>
+ * References:
+ * <p>
+ * The code in this class has been derived from JHotDraw 8.
+ * <p>
+ * The design of this class is inspired by 'VectorMap.scala'.
+ * <dl>
+ *     <dt>JHotDraw 8. Copyright © 2023 The authors and contributors of JHotDraw.
+ *     <a href="https://github.com/wrandelshofer/jhotdraw8/blob/8c1a98b70bc23a0c63f1886334d5b568ada36944/LICENSE">MIT License</a>.</dt>
+ *     <dd><a href="https://github.com/wrandelshofer/jhotdraw8">github.com</a>
+ *     </dd>
+ *     <dt>VectorMap.scala
+ *     <br>The Scala library. Copyright EPFL and Lightbend, Inc. Apache License 2.0.</dt>
+ *     <dd><a href="https://github.com/scala/scala/blob/28eef15f3cc46f6d3dd1884e94329d7601dc20ee/src/library/scala/collection/immutable/VectorMap.scala">github.com</a>
+ *     </dd>
+ * </dl>
  *
  * @param before minimal number of neighboring tombstones before this one
  * @param after  minimal number of neighboring tombstones after this one
