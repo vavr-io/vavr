@@ -763,7 +763,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public Iterator<T> iterator() {
-        return new ChampIteratorAdapter<>(spliterator());
+        return new ChampIteratorFacade<>(spliterator());
     }
 
     @Override

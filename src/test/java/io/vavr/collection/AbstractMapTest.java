@@ -761,7 +761,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         if (map.isOrdered()) {
             assertThat(this.<Integer, String> emptyMap().merge(map)).isEqualTo(map);
         } else {
-            assertThat(this.<Integer, String> emptyMap().merge(map)).isSameAs(map);
+            Map<Integer, String> actual = this.<Integer, String>emptyMap().merge(map);
+            assertThat(actual).isSameAs(map);
         }
     }
 

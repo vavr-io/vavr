@@ -45,10 +45,10 @@ import java.util.function.Consumer;
  * </dl>
  * @param <E> the element type
  */
-class ChampIteratorAdapter<E> implements Iterator<E>, Consumer<E> {
+class ChampIteratorFacade<E> implements Iterator<E>, Consumer<E> {
     private final Spliterator<E> spliterator;
 
-    public ChampIteratorAdapter(Spliterator<E> spliterator) {
+    public ChampIteratorFacade(Spliterator<E> spliterator) {
         this.spliterator = spliterator;
     }
 

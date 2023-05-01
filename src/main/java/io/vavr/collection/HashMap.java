@@ -722,7 +722,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public Iterator<Tuple2<K, V>> iterator() {
-        return new ChampIteratorAdapter<>(spliterator());
+        return new ChampIteratorFacade<>(spliterator());
     }
 
     @Override
@@ -738,7 +738,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public Iterator<K> keysIterator() {
-        return new ChampIteratorAdapter<>(keysSpliterator());
+        return new ChampIteratorFacade<>(keysSpliterator());
     }
 
     private Spliterator<K> keysSpliterator() {
@@ -1037,7 +1037,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public Iterator<V> valuesIterator() {
-        return new ChampIteratorAdapter<>(valuesSpliterator());
+        return new ChampIteratorFacade<>(valuesSpliterator());
     }
 
     private Spliterator<V> valuesSpliterator() {
@@ -1129,7 +1129,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
-        private transient HashMap<K, V> tree;
+        private transient HashMap<K, V> map;
 
         /**
          * Constructor for the case of serialization, called by {@link HashMap#writeReplace()}.
@@ -1137,10 +1137,10 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
-         * @param tree a Cons
+         * @param map a map
          */
-        SerializationProxy(HashMap<K, V> tree) {
-            this.tree = tree;
+        SerializationProxy(HashMap<K, V> map) {
+            this.map = map;
         }
 
         /**
@@ -1151,8 +1151,8 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
          */
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
-            s.writeInt(tree.size());
-            for (var e : tree) {
+            s.writeInt(map.size());
+            for (var e : map) {
                 s.writeObject(e._1);
                 s.writeObject(e._2);
             }
@@ -1184,7 +1184,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
                 newRoot = newRoot.update(mutator, new AbstractMap.SimpleImmutableEntry<K, V>(key, value), keyHash, 0, details, HashMap::updateEntry, Objects::equals, Objects::hashCode);
                 if (details.isModified()) newSize++;
             }
-            tree = newSize == 0 ? empty() : new HashMap<>(newRoot, newSize);
+            map = newSize == 0 ? empty() : new HashMap<>(newRoot, newSize);
         }
 
         /**
@@ -1197,7 +1197,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
          * @return A deserialized instance of the enclosing class.
          */
         private Object readResolve() {
-            return tree;
+            return map;
         }
     }
 }

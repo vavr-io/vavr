@@ -34,7 +34,7 @@ import java.util.AbstractMap;
 import java.util.Objects;
 
 /**
- * A {@code SequencedEntry} stores an entry of a map and a sequence number.
+ * A {@code ChampSequencedEntry} stores an entry of a map and a sequence number.
  * <p>
  * {@code hashCode} and {@code equals} are based on the key and the value
  * of the entry - the sequence number is not included.
@@ -59,13 +59,24 @@ import java.util.Objects;
         sequenceNumber = NO_SEQUENCE_NUMBER;
     }
 
+    public ChampSequencedEntry(K key, V value) {
+        super(key, value);
+        sequenceNumber = NO_SEQUENCE_NUMBER;
+    }
     public ChampSequencedEntry(K key, V value, int sequenceNumber) {
         super(key, value);
         this.sequenceNumber = sequenceNumber;
     }
 
+    public static <K, V> ChampSequencedEntry<K, V> forceUpdate( ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
+        return newK;
+    }
     public static <K, V> boolean keyEquals(ChampSequencedEntry<K, V> a, ChampSequencedEntry<K, V> b) {
         return Objects.equals(a.getKey(), b.getKey());
+    }
+
+    public static <K, V> boolean keyAndValueEquals(ChampSequencedEntry<K, V> a,  ChampSequencedEntry<K, V> b) {
+        return Objects.equals(a.getKey(), b.getKey()) && Objects.equals(a.getValue(), b.getValue());
     }
 
     public static <V, K> int keyHash( ChampSequencedEntry<K, V> a) {
@@ -90,6 +101,17 @@ import java.util.Objects;
                 && oldK.getSequenceNumber() == newK.getSequenceNumber() - 1 ? oldK : newK;
     }
 
+    // FIXME This behavior is enforced by AbstractMapTest.shouldPutExistingKeyAndNonEqualValue().<br>
+    //     This behavior replaces the existing key with the new one if it has not the same identity.<br>
+    //     This behavior does not match the behavior of java.util.HashMap.put().
+    //     This behavior violates the contract of the map: we do create a new instance of the map,
+    //     although it is equal to the previous instance.
+    public static <K, V> ChampSequencedEntry<K, V> updateWithNewKey( ChampSequencedEntry<K, V> oldK,  ChampSequencedEntry<K, V> newK) {
+        return Objects.equals(oldK.getValue(), newK.getValue())
+                && oldK.getKey() == newK.getKey()
+                ? oldK
+                : new ChampSequencedEntry<>(newK.getKey(), newK.getValue(), oldK.getSequenceNumber());
+    }
     public int getSequenceNumber() {
         return sequenceNumber;
     }
