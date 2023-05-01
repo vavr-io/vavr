@@ -60,7 +60,11 @@ import java.util.Objects;
         this.sequenceNumber = sequenceNumber;
     }
 
-    
+
+    public static <E> ChampSequencedElement<E> forceUpdate( ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
+        return newK;
+    }
+
     public static <E> ChampSequencedElement<E> update(ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
         return oldK;
     }

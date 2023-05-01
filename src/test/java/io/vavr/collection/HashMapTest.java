@@ -212,18 +212,18 @@ public class HashMapTest extends AbstractMapTest {
         assertThat(of(1, 2, 3).isSequential()).isFalse();
     }
 
-    @Ignore("XXX I believe that the test in the super class is in error. HashMap does not guarantee an iteration order, so we must accept any of (1, 2), (1, 3), (2, 3) here.")
     @Test
     public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
+    //XXX I believe that the test in the super class is in error. HashMap does not guarantee an iteration order, so we must accept any of (1, 2), (1, 3), (2, 3) here.")
         Option<? extends IntMap<Integer>> actual = of(1, 2, 3).initOption();
         assertTrue(actual.equals(Option.some(of(1, 2)))
                 || actual.equals(Option.some(of(2, 3)))
                 || actual.equals(Option.some(of(1, 3))));
     }
 
-    @Ignore("XXX I believe that the test in the super class is in error. HashMap does not guarantee an iteration order, so we must accept any of (1, 2), (1, 3), (2, 3) here.")
     @Test
     public void shouldGetInitOfNonNil() {
+    //"XXX I believe that the test in the super class is in error. HashMap does not guarantee an iteration order, so we must accept any of (1, 2), (1, 3), (2, 3) here.")
         Option<? extends  IntMap<Integer>> actual = of(1, 2, 3).initOption();
         assertTrue(actual.equals(Option.some(of(1, 2)))
                 || actual.equals(Option.some(of(2, 3)))

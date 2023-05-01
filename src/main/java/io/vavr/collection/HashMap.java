@@ -673,16 +673,21 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     public Tuple2<K, V> head() {
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty HashMap");
-        } else {
-            return iterator().next();
         }
+        AbstractMap.SimpleImmutableEntry<K, V> entry = ChampNode.getFirst(this);
+        return new Tuple2<>(entry.getKey(), entry.getValue());
     }
 
-    /** XXX We return tail() here. I believe that this is correct.
-     * See identical code in {@link HashSet#init} */
+    /**
+     * XXX We return tail() here. I believe that this is correct.
+     * See identical code in {@link HashSet#init}
+     */
     @Override
     public HashMap<K, V> init() {
-        return tail();
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty HashMap");
+        }
+        return remove(last()._1);
     }
 
     @Override
@@ -743,7 +748,11 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public Tuple2<K, V> last() {
-        return Collections.last(this);
+        if (isEmpty()) {
+            throw new NoSuchElementException("last of empty HashMap");
+        }
+        AbstractMap.SimpleImmutableEntry<K, V> entry = ChampNode.getLast(this);
+        return new Tuple2<>(entry.getKey(), entry.getValue());
     }
 
     @Override
@@ -987,9 +996,8 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     public HashMap<K, V> tail() {
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty HashMap");
-        } else {
-            return remove(head()._1);
         }
+        return remove(head()._1);
     }
 
     @Override

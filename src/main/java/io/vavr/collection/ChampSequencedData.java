@@ -27,6 +27,8 @@
 
 package io.vavr.collection;
 
+import io.vavr.Tuple2;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
@@ -165,7 +167,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
     /**
      * Renumbers the sequence numbers in all nodes from {@code 0} to {@code size}.
      * <p>
-     * Afterwards the sequence number for the next inserted entry must be
+     * Afterward, the sequence number for the next inserted entry must be
      * set to the value {@code size};
      *
      * @param <K>
@@ -176,36 +178,35 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
      * @param hashFunction    the hash function for data elements
      * @param equalsFunction  the equals function for data elements
      * @param factoryFunction the factory function for data elements
-     * @return a new renumbered root
+     * @return a new renumbered root and a new vector with matching entries
      */
     @SuppressWarnings("unchecked")
-    static <K extends ChampSequencedData> ChampBitmapIndexedNode<K> vecRenumber(int size,
-                                                                                ChampBitmapIndexedNode<K> root,
-                                                                                Vector<Object> vector, ChampIdentityObject mutator,
-                                                                                ToIntFunction<K> hashFunction,
-                                                                                BiPredicate<K, K> equalsFunction,
-                                                                                BiFunction<K, Integer, K> factoryFunction) {
+    static <K extends ChampSequencedData> Tuple2<ChampBitmapIndexedNode<K>, Vector<Object>> vecRenumber(
+            int size,
+             ChampBitmapIndexedNode<K> root,
+             Vector<Object> vector,
+             ChampIdentityObject mutator,
+             ToIntFunction<K> hashFunction,
+             BiPredicate<K, K> equalsFunction,
+             BiFunction<K, Integer, K> factoryFunction) {
         if (size == 0) {
-            return root;
+            new Tuple2<>(root, vector);
         }
-        ChampBitmapIndexedNode<K> newRoot = root;
+        ChampBitmapIndexedNode<K> renumberedRoot = root;
+        Vector<Object> renumberedVector = Vector.of();
         ChampChangeEvent<K> details = new ChampChangeEvent<>();
+        BiFunction<K, K, K> forceUpdate = (oldk, newk) -> newk;
         int seq = 0;
+        for (var i = new ChampSequencedVectorSpliterator<K>(vector, o -> (K) o, 0, Long.MAX_VALUE, 0); i.moveNext(); ) {
+            K current = i.current();
+            K data = factoryFunction.apply(current, seq++);
+            renumberedVector = renumberedVector.append(data);
+            renumberedRoot = renumberedRoot.update(mutator, data, hashFunction.applyAsInt(current), 0, details, forceUpdate, equalsFunction, hashFunction);
+        }
 
-        //FIXME Implement me
-        /*
-        for (var i = new ChampSequencedVectorSpliterator<K>(vector, o -> (K) o, 0, 0); i.moveNext(); ) {
-            K e = i.current();
-            K newElement = factoryFunction.apply(e, seq);
-            newRoot = newRoot.update(mutator,
-                    newElement,
-                    Objects.hashCode(e), 0, details,
-                    (oldk, newk) -> oldk.getSequenceNumber() == newk.getSequenceNumber() ? oldk : newk,
-                    equalsFunction, hashFunction);
-            seq++;
-        }*/
-        return newRoot;
+        return new Tuple2<>(renumberedRoot, renumberedVector);
     }
+
 
     static <K extends ChampSequencedData> boolean seqEquals(K a, K b) {
         return a.getSequenceNumber() == b.getSequenceNumber();
@@ -255,7 +256,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
 
     final static ChampTombstone TOMB_ZERO_ZERO = new ChampTombstone(0, 0);
 
-    static <K extends ChampSequencedData> Vector<Object> vecRemove(Vector<Object> vector, ChampIdentityObject mutator, K oldElem, ChampChangeEvent<K> details, int offset) {
+    static <K extends ChampSequencedData> Tuple2<Vector<Object>, Integer> vecRemove(Vector<Object> vector, ChampIdentityObject mutator, K oldElem, ChampChangeEvent<K> details, int offset) {
         // If the element is the first, we can remove it and its neighboring tombstones from the vector.
         int size = vector.size();
         int index = oldElem.getSequenceNumber() + offset;
@@ -263,19 +264,19 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
             if (size > 1) {
                 Object o = vector.get(1);
                 if (o instanceof ChampTombstone t) {
-                    return removeRange(vector,0, 2 + t.after());
+                    return new Tuple2<>(vector.removeRange(0, 2 + t.after()), offset - 2 - t.after());
                 }
             }
-            return vector.init();
+            return new Tuple2<>(vector.tail(), offset - 1);
         }
 
         // If the element is the last , we can remove it and its neighboring tombstones from the vector.
         if (index == size - 1) {
             Object o = vector.get(size - 2);
             if (o instanceof ChampTombstone t) {
-                return removeRange(vector,size - 2 - t.before(), size);
+                return new Tuple2<>(vector.removeRange(size - 2 - t.before(), size), offset);
             }
-            return vector.init();
+            return new Tuple2<>(vector.init(), offset);
         }
 
         // Otherwise, we replace the element with a tombstone, and we update before/after skip counts
@@ -295,7 +296,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
         } else {
             vector = vector.update(index, TOMB_ZERO_ZERO);
         }
-        return vector;
+        return new Tuple2<>(vector, offset);
     }
 
 
