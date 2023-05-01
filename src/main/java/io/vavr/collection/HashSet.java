@@ -108,7 +108,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
      */
     final int size;
 
-    private HashSet(ChampBitmapIndexedNode<T> root, int size) {
+     HashSet(ChampBitmapIndexedNode<T> root, int size) {
         super(root.nodeMap(), root.dataMap(), root.mixed);
         this.size = size;
     }
@@ -554,24 +554,8 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> addAll(Iterable<? extends T> elements) {
-        if (elements == this || isEmpty() && (elements instanceof HashSet<?>)) {
-            return (HashSet<T>) elements;
-        }
-        // XXX if the other set is a HashSet, we should merge the trees
-        // See kotlinx collections:
-        // https://github.com/Kotlin/kotlinx.collections.immutable/blob/d7b83a13fed459c032dab1b4665eda20a04c740f/core/commonMain/src/implementations/immutableSet/TrieNode.kt#L338
-        ChampIdentityObject mutator = new ChampIdentityObject();
-        ChampBitmapIndexedNode<T> newRootNode = this;
-        int newSize = size;
-        ChampChangeEvent<T> details = new ChampChangeEvent<>();
-        for (var element : elements) {
-            int keyHash = Objects.hashCode(element);
-            details.reset();
-            newRootNode = newRootNode.update(mutator, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, Objects::hashCode);
-            if (details.isModified()) {newSize++;}
-        }
-        return newSize == size ? this : new HashSet<>(newRootNode, newSize);
-
+        var t = toTransient();
+        return t.addAll(elements) ? t.toImmutable() : this;
     }
 
     @Override
@@ -832,7 +816,8 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> removeAll(Iterable<? extends T> elements) {
-        return Collections.removeAll(this, elements);
+        var t = toTransient();
+        return t.removeAll(elements) ? t.toImmutable() : this;
     }
 
     @Override
@@ -953,7 +938,9 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     public java.util.HashSet<T> toJavaSet() {
         return toJavaSet(java.util.HashSet::new);
     }
-
+    TransientHashSet<T> toTransient() {
+        return new TransientHashSet<>(this);
+    }
     @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> union(Set<? extends T> elements) {
