@@ -73,8 +73,7 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientCollection<Cham
         }
         boolean modified = false;
         for (var e : c) {
-            var oldValue = put(e.getKey(), e.getValue());
-            modified = modified || !Objects.equals(oldValue, e);
+            modified|= putLast(e.getKey(), e.getValue(),false).isModified();
         }
         return modified;
     }
@@ -85,8 +84,7 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientCollection<Cham
         }
         boolean modified = false;
         for (var e : c) {
-            var oldValue = put(e._1, e._2);
-            modified = modified || !Objects.equals(oldValue, e);
+            modified|= putLast(e._1, e._2,false).isModified();
         }
         return modified;
     }
@@ -125,13 +123,13 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientCollection<Cham
         }
         boolean modified = false;
         for (K key : c) {
-            ChampChangeEvent<ChampSequencedEntry<K, V>> details = removeAndGiveDetails(key);
+            ChampChangeEvent<ChampSequencedEntry<K, V>> details = removeKey(key);
             modified |= details.isModified();
         }
         return modified;
     }
 
-    ChampChangeEvent<ChampSequencedEntry<K, V>> removeAndGiveDetails(K key) {
+    ChampChangeEvent<ChampSequencedEntry<K, V>> removeKey(K key) {
         var details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
         root = root.remove(null,
                 new ChampSequencedEntry<>(key),
@@ -160,8 +158,10 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientCollection<Cham
         }
     }
 
-    public LinkedHashMap<K, V> toImmutable() {
+    public LinkedHashMap<K,V> toImmutable() {
         mutator = null;
-        return isEmpty()?LinkedHashMap.empty():new LinkedHashMap<>(root, vector, size, offset);
+        return isEmpty()
+                ? LinkedHashMap.empty()
+                : root instanceof LinkedHashMap<K,V> h ? h : new LinkedHashMap<>(root, vector,size,offset);
     }
 }

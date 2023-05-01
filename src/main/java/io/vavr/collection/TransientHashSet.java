@@ -28,9 +28,79 @@
 
 package io.vavr.collection;
 
+import java.util.Objects;
+
 /**
  * Supports efficient bulk-operations on a set through transience.
- * @param <E>the element type
+ *
+ * @param <T>the element type
  */
-class TransientHashSet<E> {
+class TransientHashSet<T> extends ChampAbstractTransientCollection<T> {
+    TransientHashSet(HashSet<T> s) {
+        root = s;
+        size = s.size;
+    }
+
+    TransientHashSet() {
+        this(HashSet.empty());
+    }
+
+    public HashSet<T> toImmutable() {
+        mutator = null;
+        return isEmpty()
+                ? HashSet.empty()
+                : root instanceof HashSet<T> h ? h : new HashSet<>(root, size);
+    }
+
+    boolean add(T e) {
+        ChampChangeEvent<T> details = new ChampChangeEvent<>();
+        root = root.update(getOrCreateIdentity(),
+                e, Objects.hashCode(e), 0, details,
+                (oldKey, newKey) -> oldKey,
+                Objects::equals, Objects::hashCode);
+        if (details.isModified()) {
+            size++;
+            modCount++;
+        }
+        return details.isModified();
+    }
+
+    @SuppressWarnings("unchecked")
+    boolean addAll(Iterable<? extends T> c) {
+        if (c == root) {
+            return false;
+        }
+        if (isEmpty() && (c instanceof HashSet<?> cc)) {
+            root = (ChampBitmapIndexedNode<T>) cc;
+            size = cc.size;
+            return true;
+        }
+        boolean modified = false;
+        for (T e : c) {
+            modified |= add(e);
+        }
+        return modified;
+    }
+
+    boolean remove(T key) {
+        int keyHash = Objects.hashCode(key);
+        ChampChangeEvent<T> details = new ChampChangeEvent<>();
+        root = root.remove(mutator, key, keyHash, 0, details, Objects::equals);
+        if (details.isModified()) {
+            size--;
+            return true;
+        }
+        return false;
+    }
+
+    boolean removeAll(Iterable<? extends T> c) {
+        if (isEmpty()||c == root) {
+            return false;
+        }
+        boolean modified = false;
+        for (T e : c) {
+            modified |= remove(e);
+        }
+        return modified;
+    }
 }
