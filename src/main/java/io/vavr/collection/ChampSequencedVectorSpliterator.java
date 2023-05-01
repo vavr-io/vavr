@@ -28,8 +28,8 @@
 package io.vavr.collection;
 
 
-
 import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -46,18 +46,30 @@ import java.util.function.Function;
  *
  * @param <K> the key type
  */
- abstract class ChampSequencedVectorSpliterator<K> extends Spliterators.AbstractSpliterator<K> {
-   // private final  BitMappedTrie.MySpliterator<Object> vector;
-    private final  Function<Object, K> mapper;
-    private int index;
+class ChampSequencedVectorSpliterator<K> extends Spliterators.AbstractSpliterator<K> {
+    private final BitMappedTrie.BitMappedTrieSpliterator<Object> vector;
+    private final Function<Object, K> mapper;
+    private K current;
 
-    public ChampSequencedVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, long est, int additionalCharacteristics) {
+    public ChampSequencedVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, int fromIndex, long est, int additionalCharacteristics) {
         super(est, additionalCharacteristics);
-  //      this.vector = new BitMappedTrie.MySpliterator<>(vector, 0, 0);
+        this.vector = new BitMappedTrie.BitMappedTrieSpliterator<>(vector.trie, fromIndex, 0);
         this.mapper = mapper;
     }
-/*
+
     @Override
+    public boolean tryAdvance(Consumer<? super K> action) {
+        if (moveNext()) {
+            action.accept(current);
+            return true;
+        }
+        return false;
+    }
+
+    public K current() {
+        return current;
+    }
+
     public boolean moveNext() {
         boolean success = vector.moveNext();
         if (!success) return false;
@@ -68,5 +80,4 @@ import java.util.function.Function;
         current = mapper.apply(vector.current());
         return true;
     }
-    */
 }

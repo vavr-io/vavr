@@ -28,6 +28,7 @@ package io.vavr.collection;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.control.Option;
 import org.assertj.core.api.*;
 import org.junit.Test;
 
@@ -340,7 +341,11 @@ public class HashSetTest extends AbstractSetTest {
 
     @Override
     public void shouldGetInitOfNonNil() {
-        assertThat(of(1, 2, 3).init()).isEqualTo(of(2, 3));
+        // XXX The test in the super-class is in error. Since HashSet is not ordered, we must accept any of (1,2),(2,3),(1,3) here.
+        var actual = of(1, 2, 3).initOption();
+        assertTrue(actual.equals(Option.some(of(1, 2)))
+                || actual.equals(Option.some(of(2, 3)))
+                || actual.equals(Option.some(of(1, 3))));
     }
 
     @Override

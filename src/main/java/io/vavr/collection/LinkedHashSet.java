@@ -26,33 +26,143 @@
  */
 package io.vavr.collection;
 
-import io.vavr.*;
+import io.vavr.PartialFunction;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.control.Option;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
+
 /**
- * An immutable {@code HashSet} implementation that has predictable (insertion-order) iteration.
+ * Implements a mutable set using a Compressed Hash-Array Mapped Prefix-tree
+ * (CHAMP) and a bit-mapped trie (Vector).
+ * <p>
+ * Features:
+ * <ul>
+ *     <li>supports up to 2<sup>30</sup> elements</li>
+ *     <li>allows null elements</li>
+ *     <li>is immutable</li>
+ *     <li>is thread-safe</li>
+ *     <li>iterates in the order, in which elements were inserted</li>
+ * </ul>
+ * <p>
+ * Performance characteristics:
+ * <ul>
+ *     <li>add: O(log N) in an amortized sense, because we sometimes have to
+ *     renumber the elements.</li>
+ *     <li>remove: O(log N) in an amortized sense, because we sometimes have to
+ *     renumber the elements.</li>
+ *     <li>contains: O(1)</li>
+ *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in
+ *     the mutable copy</li>
+ *     <li>clone: O(1)</li>
+ *     <li>iterator creation: O(1)</li>
+ *     <li>iterator.next: O(log N)</li>
+ *     <li>getFirst(), getLast(): O(log N)</li>
+ * </ul>
+ * <p>
+ * Implementation details:
+ * <p>
+ * This set performs read and write operations of single elements in O(log N) time,
+ * and in O(log N) space, where N is the number of elements in the set.
+ * <p>
+ * The CHAMP trie contains nodes that may be shared with other sets.
+ * <p>
+ * If a write operation is performed on a node, then this set creates a
+ * copy of the node and of all parent nodes up to the root (copy-path-on-write).
+ * Since the CHAMP trie has a fixed maximal height, the cost is O(1).
+ * <p>
+ * Insertion Order:
+ * <p>
+ * This set uses a counter to keep track of the insertion order.
+ * It stores the current value of the counter in the sequence number
+ * field of each data entry. If the counter wraps around, it must renumber all
+ * sequence numbers.
+ * <p>
+ * The renumbering is why the {@code add} and {@code remove} methods are O(1)
+ * only in an amortized sense.
+ * <p>
+ * To support iteration, we use a Vector. The Vector has the same contents
+ * as the CHAMP trie. However, its elements are stored in insertion order.
+ * <p>
+ * If an element is removed from the CHAMP trie that is not the first or the
+ * last element of the Vector, we replace its corresponding element in
+ * the Vector by a tombstone. If the element is at the start or end of the Vector,
+ * we remove the element and all its neighboring tombstones from the Vector.
+ * <p>
+ * A tombstone can store the number of neighboring tombstones in ascending and in descending
+ * direction. We use these numbers to skip tombstones when we iterate over the vector.
+ * Since we only allow iteration in ascending or descending order from one of the ends of
+ * the vector, we do not need to keep the number of neighbors in all tombstones up to date.
+ * It is sufficient, if we update the neighbor with the lowest index and the one with the
+ * highest index.
+ * <p>
+ * If the number of tombstones exceeds half of the size of the collection, we renumber all
+ * sequence numbers, and we create a new Vector.
+ * <p>
+ * The immutable version of this set extends from the non-public class
+ * {@code ChampBitmapIndexNode}. This design safes 16 bytes for every instance,
+ * and reduces the number of redirections for finding an element in the
+ * collection by 1.
+ * <p>
+ * References:
+ * <p>
+ * Portions of the code in this class has been derived from 'vavr' Vector.java.
+ * <p>
+ * The design of this class is inspired by 'VectorMap.scala'.
+ * <dl>
+ *      <dt>Michael J. Steindorfer (2017).
+ *      Efficient Immutable Collections.</dt>
+ *      <dd><a href="https://michael.steindorfer.name/publications/phd-thesis-efficient-immutable-collections">michael.steindorfer.name</a>
+ *      </dd>
+ *      <dt>The Capsule Hash Trie Collections Library.
+ *      <br>Copyright (c) Michael Steindorfer. <a href="https://github.com/usethesource/capsule/blob/3856cd65fa4735c94bcfa94ec9ecf408429b54f4/LICENSE">BSD-2-Clause License</a></dt>
+ *      <dd><a href="https://github.com/usethesource/capsule">github.com</a>
+ *      </dd>
+ *      <dt>VectorMap.scala
+ *      <br>The Scala library. Copyright EPFL and Lightbend, Inc. Apache License 2.0.</dt>
+ *      <dd><a href="https://github.com/scala/scala/blob/28eef15f3cc46f6d3dd1884e94329d7601dc20ee/src/library/scala/collection/immutable/VectorMap.scala">github.com</a>
+ *      </dd>
+ * </dl>
  *
- * @param <T> Component type
+ * @param <T> the element type
  */
-@SuppressWarnings("deprecation")
-public final class LinkedHashSet<T> implements Set<T>, Serializable {
+public final class LinkedHashSet<T>
+        extends ChampBitmapIndexedNode<ChampSequencedElement<T>>
+        implements Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(LinkedHashMap.empty());
+    private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(
+            ChampBitmapIndexedNode.emptyNode(), Vector.of(), 0, 0);
 
-    private final LinkedHashMap<T, Object> map;
+    /**
+     * Offset of sequence numbers to vector indices.
+     *
+     * <pre>vector index = sequence number + offset</pre>
+     */
+    final int offset;
+    /**
+     * The size of the set.
+     */
+    final int size;
+    /**
+     * In this vector we store the elements in the order in which they were inserted.
+     */
+    final Vector<Object> vector;
 
-    private LinkedHashSet(LinkedHashMap<T, Object> map) {
-        this.map = map;
+    private LinkedHashSet(
+            ChampBitmapIndexedNode<ChampSequencedElement<T>> root,
+            Vector<Object> vector,
+            int size, int offset) {
+        super(root.nodeMap(), root.dataMap(), root.mixed);
+        this.size = size;
+        this.offset = offset;
+        this.vector = Objects.requireNonNull(vector);
     }
 
     @SuppressWarnings("unchecked")
@@ -60,9 +170,6 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return (LinkedHashSet<T>) EMPTY;
     }
 
-    static <T> LinkedHashSet<T> wrap(LinkedHashMap<T, Object> map) {
-        return new LinkedHashSet<>(map);
-    }
 
     /**
      * Returns a {@link Collector} which may be used in conjunction with
@@ -97,7 +204,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet instance containing the given element
      */
     public static <T> LinkedHashSet<T> of(T element) {
-        return LinkedHashSet.<T> empty().add(element);
+        return LinkedHashSet.<T>empty().add(element);
     }
 
     /**
@@ -111,13 +218,10 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <T> LinkedHashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        LinkedHashMap<T, Object> map = LinkedHashMap.empty();
-        for (T element : elements) {
-            map = map.put(element, element);
-        }
-        return map.isEmpty() ? LinkedHashSet.empty() : new LinkedHashSet<>(map);
+        return LinkedHashSet.<T>empty().addAll(Arrays.asList(elements));
     }
 
     /**
@@ -159,12 +263,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     @SuppressWarnings("unchecked")
     public static <T> LinkedHashSet<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof LinkedHashSet) {
-            return (LinkedHashSet<T>) elements;
-        } else {
-            final LinkedHashMap<T, Object> mao = addAll(LinkedHashMap.empty(), elements);
-            return mao.isEmpty() ? empty() : new LinkedHashSet<>(mao);
-        }
+        return LinkedHashSet.<T>empty().addAll(elements);
     }
 
     /**
@@ -493,7 +592,34 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      */
     @Override
     public LinkedHashSet<T> add(T element) {
-        return contains(element) ? this : new LinkedHashSet<>(map.put(element, element));
+        return addLast(element, false);
+    }
+
+    private LinkedHashSet<T> addLast(T e, boolean moveToLast) {
+        var details = new ChampChangeEvent<ChampSequencedElement<T>>();
+        var newElem = new ChampSequencedElement<T>(e, vector.size() - offset);
+        var newRoot = update(null, newElem,
+                Objects.hashCode(e), 0, details,
+                moveToLast ? ChampSequencedElement::updateAndMoveToLast : ChampSequencedElement::update,
+                Objects::equals, Objects::hashCode);
+        if (details.isModified()) {
+            var newVector = vector;
+            int newOffset = offset;
+            int newSize = size;
+            if (details.isReplaced()) {
+                if (moveToLast) {
+                    var oldElem = details.getOldData();
+                    var result = ChampSequencedData.vecRemove(newVector, new ChampIdentityObject(), oldElem, details, newOffset);
+                    newVector = result._1;
+                    newOffset = result._2;
+                }
+            } else {
+                newSize++;
+            }
+            newVector = newVector.append(newElem);
+            return renumber(newRoot, newVector, newSize, newOffset);
+        }
+        return this;
     }
 
     /**
@@ -504,30 +630,51 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param elements The elements to be added.
      * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() && elements instanceof LinkedHashSet) {
-            @SuppressWarnings("unchecked")
-            final LinkedHashSet<T> set = (LinkedHashSet<T>) elements;
-            return set;
+        if (elements == this || isEmpty() && (elements instanceof LinkedHashSet<?>)) {
+            return (LinkedHashSet<T>) elements;
         }
-        final LinkedHashMap<T, Object> that = addAll(map, elements);
-        if (that.size() == map.size()) {
-            return this;
-        } else {
-            return new LinkedHashSet<>(that);
+
+        var details = new ChampChangeEvent<ChampSequencedElement<T>>();
+        var newVector = vector;
+        int newOffset = offset;
+        int newSize = size;
+        var mutator = new ChampIdentityObject();
+        ChampBitmapIndexedNode<ChampSequencedElement<T>> newRoot = this;
+        for (var e : elements) {
+            var newElem = new ChampSequencedElement<T>(e, newVector.size() - newOffset);
+            details.reset();
+            newRoot = newRoot.update(mutator, newElem,
+                    Objects.hashCode(e), 0, details,
+                    ChampSequencedElement::update,
+                    Objects::equals, Objects::hashCode);
+            if (details.isModified()) {
+                if (!details.isReplaced()) {
+                    newSize++;
+                }
+                newVector = newVector.append(newElem);
+                if (ChampSequencedData.vecMustRenumber(size, offset, this.vector.size())) {
+                    LinkedHashSet<T> renumbered = renumber(newRoot, newVector, newSize, newOffset);
+                    newRoot = renumbered;
+                    newVector = renumbered.vector;
+                    newOffset = 0;
+                }
+            }
         }
+        return newRoot == this ? this : new LinkedHashSet<>(newRoot, newVector, newSize, newOffset);
     }
 
     @Override
     public <R> LinkedHashSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        return ofAll(iterator().<R> collect(partialFunction));
+        return ofAll(iterator().<R>collect(partialFunction));
     }
 
     @Override
     public boolean contains(T element) {
-        return map.get(element).isDefined();
+        return find(new ChampSequencedElement<>(element), Objects.hashCode(element), 0, Objects::equals) != ChampNode.NO_DATA;
     }
 
     @Override
@@ -604,13 +751,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> LinkedHashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final LinkedHashMap<U, Object> that = foldLeft(LinkedHashMap.empty(),
-                    (tree, t) -> addAll(tree, mapper.apply(t)));
-            return new LinkedHashSet<>(that);
+        LinkedHashSet<U> flatMapped = empty();
+        for (T t : this) {
+            for (U u : mapper.apply(t)) {
+                flatMapped = flatMapped.add(u);
+            }
         }
+        return flatMapped;
     }
 
     @Override
@@ -636,24 +783,23 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public T head() {
-        if (map.isEmpty()) {
-            throw new NoSuchElementException("head of empty set");
-        }
-        return map.head()._1();
+        return iterator().next();
     }
 
     @Override
     public Option<T> headOption() {
-        return map.headOption().map(Tuple2::_1);
+        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
     public LinkedHashSet<T> init() {
-        if (map.isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty set");
-        } else {
-            return new LinkedHashSet<>(map.init());
+        // XXX Traversable.init() specifies that we must throw
+        //     UnsupportedOperationException instead of NoSuchElementException
+        //     when this set is empty.
+        if (isEmpty()) {
+            throw new UnsupportedOperationException();
         }
+        return remove(last());
     }
 
     @Override
@@ -683,7 +829,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public boolean isEmpty() {
-        return map.isEmpty();
+        return size == 0;
     }
 
     /**
@@ -708,31 +854,27 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        return map.iterator().map(t -> t._1);
+        return new ChampIteratorAdapter<>(spliterator());
     }
 
     @Override
     public T last() {
-        return map.last()._1;
+        return reversedIterator().next();
     }
 
     @Override
     public int length() {
-        return map.size();
+        return size;
     }
 
     @Override
     public <U> LinkedHashSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final LinkedHashMap<U, Object> that = foldLeft(LinkedHashMap.empty(), (tree, t) -> {
-                final U u = mapper.apply(t);
-                return tree.put(u, u);
-            });
-            return new LinkedHashSet<>(that);
+        LinkedHashSet<U> mapped = empty();
+        for (T t : this) {
+            mapped = mapped.add(mapper.apply(t));
         }
+        return mapped;
     }
 
     @Override
@@ -766,8 +908,18 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> remove(T element) {
-        final LinkedHashMap<T, Object> newMap = map.remove(element);
-        return (newMap == map) ? this : new LinkedHashSet<>(newMap);
+        int keyHash = Objects.hashCode(element);
+        var details = new ChampChangeEvent<ChampSequencedElement<T>>();
+        ChampBitmapIndexedNode<ChampSequencedElement<T>> newRoot = remove(null,
+                new ChampSequencedElement<>(element),
+                keyHash, 0, details, Objects::equals);
+        if (details.isModified()) {
+            var oldElem = details.getOldDataNonNull();
+            var result = ChampSequencedData.vecRemove(vector, null, oldElem, details, offset);
+            return renumber(newRoot, result._1, size - 1,
+                    result._2);
+        }
+        return this;
     }
 
     @Override
@@ -775,15 +927,88 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return Collections.removeAll(this, elements);
     }
 
+    /**
+     * Renumbers the sequenced elements in the trie if necessary.
+     *
+     * @param root   the root of the trie
+     * @param vector the root of the vector
+     * @param size   the size of the trie
+     * @param offset the offset that must be added to a sequence number to get the index into the vector
+     * @return a new {@link LinkedHashSet} instance
+     */
+    private LinkedHashSet<T> renumber(
+            ChampBitmapIndexedNode<ChampSequencedElement<T>> root,
+            Vector<Object> vector,
+            int size, int offset) {
+
+        if (ChampSequencedData.vecMustRenumber(size, offset, this.vector.size())) {
+            var mutator = new ChampIdentityObject();
+            var result = ChampSequencedData.<ChampSequencedElement<T>>vecRenumber(
+                    size, root, vector, mutator, Objects::hashCode, Objects::equals,
+                    (e, seq) -> new ChampSequencedElement<>(e.getElement(), seq));
+            return new LinkedHashSet<>(
+                    result._1(), result._2(),
+                    size, 0);
+        }
+        return new LinkedHashSet<>(root, vector, size, offset);
+    }
+
     @Override
     public LinkedHashSet<T> replace(T currentElement, T newElement) {
-        if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
-            final Tuple2<T, Object> currentPair = Tuple.of(currentElement, currentElement);
-            final Tuple2<T, Object> newPair = Tuple.of(newElement, newElement);
-            final LinkedHashMap<T, Object> newMap = map.replace(currentPair, newPair);
-            return new LinkedHashSet<>(newMap);
-        } else {
+        // currentElement and newElem are the same => do nothing
+        if (Objects.equals(currentElement, newElement)) {
             return this;
+        }
+
+        // try to remove currentElem from the 'root' trie
+        final ChampChangeEvent<ChampSequencedElement<T>> detailsCurrent = new ChampChangeEvent<>();
+        ChampIdentityObject mutator = new ChampIdentityObject();
+        ChampBitmapIndexedNode<ChampSequencedElement<T>> newRoot = remove(mutator,
+                new ChampSequencedElement<>(currentElement),
+                Objects.hashCode(currentElement), 0, detailsCurrent, Objects::equals);
+        // currentElement was not in the 'root' trie => do nothing
+        if (!detailsCurrent.isModified()) {
+            return this;
+        }
+
+        // currentElement was in the 'root' trie, and we have just removed it
+        // => also remove its entry from the 'sequenceRoot' trie
+        var newVector = vector;
+        var newOffset = offset;
+        ChampSequencedElement<T> currentData = detailsCurrent.getOldData();
+        int seq = currentData.getSequenceNumber();
+        var result = ChampSequencedData.vecRemove(newVector, mutator, currentData, detailsCurrent, newOffset);
+        newVector = result._1;
+        newOffset = result._2;
+
+        // try to update the trie with the newElement
+        ChampChangeEvent<ChampSequencedElement<T>> detailsNew = new ChampChangeEvent<>();
+        ChampSequencedElement<T> newData = new ChampSequencedElement<>(newElement, seq);
+        newRoot = newRoot.update(mutator,
+                newData, Objects.hashCode(newElement), 0, detailsNew,
+                ChampSequencedElement::forceUpdate,
+                Objects::equals, Objects::hashCode);
+        boolean isReplaced = detailsNew.isReplaced();
+
+        // there already was an element with key newElement._1 in the trie, and we have just replaced it
+        // => remove the replaced entry from the 'sequenceRoot' trie
+        if (isReplaced) {
+            ChampSequencedElement<T> replacedEntry = detailsNew.getOldData();
+            result = ChampSequencedData.vecRemove(newVector, mutator, replacedEntry, detailsCurrent, newOffset);
+            newVector = result._1;
+            newOffset = result._2;
+        }
+
+        // we have just successfully added or replaced the newElement
+        // => insert the new entry in the 'sequenceRoot' trie
+        newVector = seq + newOffset < newVector.size() ? newVector.update(seq + newOffset, newData) : newVector.append(newData);
+
+        if (isReplaced) {
+            // we reduced the size of the map by one => renumbering may be necessary
+            return renumber(newRoot, newVector, size - 1, newOffset);
+        } else {
+            // we did not change the size of the map => no renumbering is needed
+            return new LinkedHashSet<>(newRoot, newVector, size, newOffset);
         }
     }
 
@@ -795,6 +1020,18 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     @Override
     public LinkedHashSet<T> retainAll(Iterable<? extends T> elements) {
         return Collections.retainAll(this, elements);
+    }
+
+
+    private Iterator<T> reversedIterator() {
+        return new ChampIteratorAdapter<>(reversedSpliterator());
+    }
+
+    @SuppressWarnings("unchecked")
+    private Spliterator<T> reversedSpliterator() {
+        return new ChampReversedSequencedVectorSpliterator<>(vector,
+                e -> ((ChampSequencedElement<T>) e).getElement(),
+                size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override
@@ -834,12 +1071,19 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2));
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Spliterator<T> spliterator() {
+        return new ChampSequencedVectorSpliterator<>(vector,
+                e -> ((ChampSequencedElement<T>) e).getElement(),
+                0, size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
+
     @Override
     public LinkedHashSet<T> tail() {
-        if (map.isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty set");
-        }
-        return wrap(map.tail());
+        // XXX AbstractTraversableTest.shouldThrowWhenTailOnNil requires that we throw UnsupportedOperationException instead of NoSuchElementException.
+        if (isEmpty()) throw new UnsupportedOperationException();
+        return remove(head());
     }
 
     @Override
@@ -849,7 +1093,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> take(int n) {
-        if (map.size() <= n) {
+        if (size() <= n) {
             return this;
         }
         return LinkedHashSet.ofAll(() -> iterator().take(n));
@@ -857,7 +1101,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> takeRight(int n) {
-        if (map.size() <= n) {
+        if (size() <= n) {
             return this;
         }
         return LinkedHashSet.ofAll(() -> iterator().takeRight(n));
@@ -895,35 +1139,14 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Adds all of the elements of {@code elements} to this set, replacing existing ones if they already present.
-     * <p>
-     * Note that this method has a worst-case quadratic complexity.
-     * <p>
-     * See also {@link #addAll(Iterable)}.
+     * Adds all of the elements of {@code that} set to this set, if not already present.
      *
      * @param elements The set to form the union with.
      * @return A new set that contains all distinct elements of this and {@code elements} set.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public LinkedHashSet<T> union(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            if (elements instanceof LinkedHashSet) {
-                return (LinkedHashSet<T>) elements;
-            } else {
-                return LinkedHashSet.ofAll(elements);
-            }
-        } else if (elements.isEmpty()) {
-            return this;
-        } else {
-            final LinkedHashMap<T, Object> that = addAll(map, elements);
-            if (that.size() == map.size()) {
-                return this;
-            } else {
-                return new LinkedHashSet<>(that);
-            }
-        }
+        return addAll(elements);
     }
 
     @Override
@@ -977,15 +1200,6 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static <T> LinkedHashMap<T, Object> addAll(LinkedHashMap<T, Object> initial,
-            Iterable<? extends T> additional) {
-        LinkedHashMap<T, Object> that = initial;
-        for (T t : additional) {
-            that = that.put(t, t);
-        }
-        return that;
-    }
-
     // -- Serialization
 
     /**
@@ -997,7 +1211,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A SerializationProxy for this enclosing class.
      */
     private Object writeReplace() {
-        return new SerializationProxy<>(this.map);
+        return new SerializationProxy<>(this);
     }
 
     /**
@@ -1025,7 +1239,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
-        private transient LinkedHashMap<T, Object> map;
+        private transient LinkedHashSet<T> set;
 
         /**
          * Constructor for the case of serialization, called by {@link LinkedHashSet#writeReplace()}.
@@ -1033,10 +1247,10 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
-         * @param map a Cons
+         * @param set a Cons
          */
-        SerializationProxy(LinkedHashMap<T, Object> map) {
-            this.map = map;
+        SerializationProxy(LinkedHashSet<T> set) {
+            this.set = set;
         }
 
         /**
@@ -1047,9 +1261,9 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          */
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
-            s.writeInt(map.size());
-            for (Tuple2<T, Object> e : map) {
-                s.writeObject(e._1);
+            s.writeInt(set.size());
+            for (T e : set) {
+                s.writeObject(e);
             }
         }
 
@@ -1067,13 +1281,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            LinkedHashMap<T, Object> temp = LinkedHashMap.empty();
+            LinkedHashSet<T> temp = LinkedHashSet.empty();
             for (int i = 0; i < size; i++) {
-                @SuppressWarnings("unchecked")
-                final T element = (T) s.readObject();
-                temp = temp.put(element, element);
+                @SuppressWarnings("unchecked") final T element = (T) s.readObject();
+                temp = temp.add(element);
             }
-            map = temp;
+            set = temp;
         }
 
         /**
@@ -1086,7 +1299,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          * @return A deserialized instance of the enclosing class.
          */
         private Object readResolve() {
-            return map.isEmpty() ? LinkedHashSet.empty() : new LinkedHashSet<>(map);
+            return LinkedHashSet.empty().addAll(set);
         }
     }
 }

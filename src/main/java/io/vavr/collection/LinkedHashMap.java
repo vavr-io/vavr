@@ -698,10 +698,9 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
         return list.iterator();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Set<K> keySet() {
-        return LinkedHashSet.wrap((LinkedHashMap<K, Object>) this);
+        return LinkedHashSet.ofAll(iterator().map(Tuple2::_1));
     }
 
     @Override

@@ -694,7 +694,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty set");
         }
-        return iterator().next();
+        return ChampNode.getFirst(this);
     }
 
     @Override
@@ -704,7 +704,10 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> init() {
-        return tail();
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("init of empty set");
+        }
+        return remove(last());
     }
 
     @Override
@@ -764,14 +767,8 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     }
 
     @Override
-    public Spliterator<T> spliterator() {
-        return new ChampSpliterator<>(this, Function.identity(),
-                Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
-    }
-
-    @Override
     public T last() {
-        return Collections.last(this);
+        return ChampNode.getLast(this);
     }
 
     @Override
@@ -889,6 +886,12 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
+    }
+
+    @Override
+    public Spliterator<T> spliterator() {
+        return new ChampSpliterator<>(this, Function.identity(),
+                Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
     }
 
     @Override
