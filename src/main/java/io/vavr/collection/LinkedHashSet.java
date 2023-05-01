@@ -781,9 +781,10 @@ public final class LinkedHashSet<T>
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public T head() {
-        return iterator().next();
+        return ((ChampSequencedElement<T>) vector.head()).getElement();
     }
 
     @Override
@@ -854,12 +855,13 @@ public final class LinkedHashSet<T>
 
     @Override
     public Iterator<T> iterator() {
-        return new ChampIteratorAdapter<>(spliterator());
+        return new ChampIteratorFacade<>(spliterator());
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public T last() {
-        return reversedIterator().next();
+        return ((ChampSequencedElement<T>) vector.last()).getElement();
     }
 
     @Override
@@ -1024,7 +1026,7 @@ public final class LinkedHashSet<T>
 
 
     private Iterator<T> reversedIterator() {
-        return new ChampIteratorAdapter<>(reversedSpliterator());
+        return new ChampIteratorFacade<>(reversedSpliterator());
     }
 
     @SuppressWarnings("unchecked")
