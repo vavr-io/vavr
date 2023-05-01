@@ -13,17 +13,17 @@ import java.util.function.Function;
 /**
  * @param <K>
  */
-class ChampReversedSequencedVectorSpliterator<K> extends Spliterators.AbstractSpliterator<K> {
+class ChampReverseVectorSpliterator<K> extends Spliterators.AbstractSpliterator<K> {
     private final Vector<Object> vector;
     private final Function<Object, K> mapper;
     private int index;
     private K current;
 
-    public ChampReversedSequencedVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, int additionalCharacteristics, long est) {
+    public ChampReverseVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, int fromIndex, int additionalCharacteristics, long est) {
         super(est, additionalCharacteristics);
         this.vector = vector;
         this.mapper = mapper;
-        index = vector.size() - 1;
+        index = vector.size() - 1-fromIndex;
     }
 
     @Override

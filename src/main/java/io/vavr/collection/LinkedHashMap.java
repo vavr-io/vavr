@@ -1101,6 +1101,17 @@ return        t.removeAll(keys)?t.toImmutable():this;
         return result;
     }
 
+    Iterator<Tuple2<K, V>> reverseIterator() {
+        return new ChampIteratorFacade<>(reverseSpliterator());
+    }
+
+    @SuppressWarnings("unchecked")
+    Spliterator<Tuple2<K, V>> reverseSpliterator() {
+        return new ChampReverseVectorSpliterator<>(vector,
+                e -> new Tuple2<K,V> (((java.util.Map.Entry<K, V>) e).getKey(),((java.util.Map.Entry<K, V>) e).getValue()),
+                0, size(),Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
+
     @Override
     public LinkedHashMap<K, V> scan(
             Tuple2<K, V> zero,
@@ -1136,7 +1147,7 @@ return        t.removeAll(keys)?t.toImmutable():this;
     @SuppressWarnings("unchecked")
     @Override
     public Spliterator<Tuple2<K, V>> spliterator() {
-        return new ChampSequencedVectorSpliterator<>(vector,
+        return new ChampVectorSpliterator<>(vector,
                 e -> new Tuple2<K,V> (((java.util.Map.Entry<K, V>) e).getKey(),((java.util.Map.Entry<K, V>) e).getValue()),
                0, size(),Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }

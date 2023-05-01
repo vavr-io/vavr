@@ -1025,15 +1025,15 @@ public final class LinkedHashSet<T>
     }
 
 
-    private Iterator<T> reversedIterator() {
-        return new ChampIteratorFacade<>(reversedSpliterator());
+    private Iterator<T> reverseIterator() {
+        return new ChampIteratorFacade<>(reverseSpliterator());
     }
 
     @SuppressWarnings("unchecked")
-    private Spliterator<T> reversedSpliterator() {
-        return new ChampReversedSequencedVectorSpliterator<>(vector,
+    private Spliterator<T> reverseSpliterator() {
+        return new ChampReverseVectorSpliterator<>(vector,
                 e -> ((ChampSequencedElement<T>) e).getElement(),
-                size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
+                0, size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override
@@ -1076,7 +1076,7 @@ public final class LinkedHashSet<T>
     @SuppressWarnings("unchecked")
     @Override
     public Spliterator<T> spliterator() {
-        return new ChampSequencedVectorSpliterator<>(vector,
+        return new ChampVectorSpliterator<>(vector,
                 e -> ((ChampSequencedElement<T>) e).getElement(),
                 0, size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
