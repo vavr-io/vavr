@@ -46,12 +46,12 @@ import java.util.function.Function;
  *
  * @param <K> the key type
  */
-class ChampSequencedVectorSpliterator<K> extends Spliterators.AbstractSpliterator<K> {
+class ChampVectorSpliterator<K> extends Spliterators.AbstractSpliterator<K> {
     private final BitMappedTrie.BitMappedTrieSpliterator<Object> vector;
     private final Function<Object, K> mapper;
     private K current;
 
-    public ChampSequencedVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, int fromIndex, long est, int additionalCharacteristics) {
+    public ChampVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, int fromIndex, long est, int additionalCharacteristics) {
         super(est, additionalCharacteristics);
         this.vector = new BitMappedTrie.BitMappedTrieSpliterator<>(vector.trie, fromIndex, 0);
         this.mapper = mapper;
