@@ -155,7 +155,7 @@ public final class LinkedHashSet<T>
      */
     final Vector<Object> vector;
 
-    private LinkedHashSet(
+     LinkedHashSet(
             ChampBitmapIndexedNode<ChampSequencedElement<T>> root,
             Vector<Object> vector,
             int size, int offset) {
@@ -633,38 +633,8 @@ public final class LinkedHashSet<T>
     @SuppressWarnings("unchecked")
     @Override
     public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (elements == this || isEmpty() && (elements instanceof LinkedHashSet<?>)) {
-            return (LinkedHashSet<T>) elements;
-        }
-
-        var details = new ChampChangeEvent<ChampSequencedElement<T>>();
-        var newVector = vector;
-        int newOffset = offset;
-        int newSize = size;
-        var mutator = new ChampIdentityObject();
-        ChampBitmapIndexedNode<ChampSequencedElement<T>> newRoot = this;
-        for (var e : elements) {
-            var newElem = new ChampSequencedElement<T>(e, newVector.size() - newOffset);
-            details.reset();
-            newRoot = newRoot.update(mutator, newElem,
-                    Objects.hashCode(e), 0, details,
-                    ChampSequencedElement::update,
-                    Objects::equals, Objects::hashCode);
-            if (details.isModified()) {
-                if (!details.isReplaced()) {
-                    newSize++;
-                }
-                newVector = newVector.append(newElem);
-                if (ChampSequencedData.vecMustRenumber(size, offset, this.vector.size())) {
-                    LinkedHashSet<T> renumbered = renumber(newRoot, newVector, newSize, newOffset);
-                    newRoot = renumbered;
-                    newVector = renumbered.vector;
-                    newOffset = 0;
-                }
-            }
-        }
-        return newRoot == this ? this : new LinkedHashSet<>(newRoot, newVector, newSize, newOffset);
+        var t = toTransient();
+        return t.addAll(elements) ? t.toImmutable() : this;
     }
 
     @Override
@@ -916,8 +886,8 @@ public final class LinkedHashSet<T>
                 new ChampSequencedElement<>(element),
                 keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
-            var oldElem = details.getOldDataNonNull();
-            var result = ChampSequencedData.vecRemove(vector, null, oldElem, details, offset);
+            var removedElem = details.getOldDataNonNull();
+            var result = ChampSequencedData.vecRemove(vector, null, removedElem, details, offset);
             return renumber(newRoot, result._1, size - 1,
                     result._2);
         }
@@ -926,7 +896,8 @@ public final class LinkedHashSet<T>
 
     @Override
     public LinkedHashSet<T> removeAll(Iterable<? extends T> elements) {
-        return Collections.removeAll(this, elements);
+        var t = toTransient();
+        return t.removeAll(elements) ? t.toImmutable() : this;
     }
 
     /**
@@ -1138,6 +1109,10 @@ public final class LinkedHashSet<T>
     @Override
     public java.util.LinkedHashSet<T> toJavaSet() {
         return toJavaSet(java.util.LinkedHashSet::new);
+    }
+
+    TransientLinkedHashSet<T> toTransient() {
+        return new TransientLinkedHashSet<>(this);
     }
 
     /**

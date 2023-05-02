@@ -1,17 +1,7 @@
 package io.vavr.jmh;
 
 import io.vavr.collection.HashSet;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.annotations.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -21,7 +11,23 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark                               (mask)    (size)  Mode  Cnt          Score   Error  Units
+ * Benchmark                       (mask)    (size)  Mode  Cnt           Score   Error  Units
+ * VavrHashSetJmh.mAddAll             -65        10  avgt              333.421          ns/op
+ * VavrHashSetJmh.mAddAll             -65      1000  avgt            75065.071          ns/op
+ * VavrHashSetJmh.mAddAll             -65    100000  avgt         17047511.761          ns/op
+ * VavrHashSetJmh.mAddAll             -65  10000000  avgt       4858104338.667          ns/op
+ * VavrHashSetJmh.mAddOneByOne        -65        10  avgt              279.495          ns/op
+ * VavrHashSetJmh.mAddOneByOne        -65      1000  avgt            91640.610          ns/op
+ * VavrHashSetJmh.mAddOneByOne        -65    100000  avgt         24110705.034          ns/op
+ * VavrHashSetJmh.mAddOneByOne        -65  10000000  avgt       6494104454.500          ns/op
+ * VavrHashSetJmh.mRemoveAll          -65        10  avgt              243.695          ns/op
+ * VavrHashSetJmh.mRemoveAll          -65      1000  avgt           100452.008          ns/op
+ * VavrHashSetJmh.mRemoveAll          -65    100000  avgt         23237449.239          ns/op
+ * VavrHashSetJmh.mRemoveAll          -65  10000000  avgt       6311906939.000          ns/op
+ * VavrHashSetJmh.mRemoveOneByOne     -65        10  avgt              247.507          ns/op
+ * VavrHashSetJmh.mRemoveOneByOne     -65      1000  avgt           105832.777          ns/op
+ * VavrHashSetJmh.mRemoveOneByOne     -65    100000  avgt         26077578.885          ns/op
+ * VavrHashSetJmh.mRemoveOneByOne     -65  10000000  avgt       6345551732.000          ns/op
  * VavrHashSetJmh.mContainsFound              -65      1000  avgt              19.979          ns/op
  * VavrHashSetJmh.mContainsFound              -65    100000  avgt              68.201          ns/op
  * VavrHashSetJmh.mContainsFound              -65  10000000  avgt             297.289          ns/op
@@ -54,11 +60,11 @@ import java.util.concurrent.TimeUnit;
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class VavrHashSetJmh {
-    @Param({"10","1000","100000","10000000"})
+    @Param({"10", "1000", "100000", "10000000"})
     private int size;
 
     @Param({"-65"})
-    private  int mask;
+    private int mask;
 
     private BenchmarkData data;
     private HashSet<Key> setA;
@@ -66,9 +72,40 @@ public class VavrHashSetJmh {
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-        setA =  HashSet.ofAll(data.setA);
+        setA = HashSet.ofAll(data.setA);
     }
 
+    @Benchmark
+    public HashSet<Key> mAddAll() {
+        return HashSet.ofAll(data.listA);
+    }
+
+    @Benchmark
+    public HashSet<Key> mAddOneByOne() {
+        HashSet<Key> set = HashSet.of();
+        for (Key key : data.listA) {
+            set = set.add(key);
+        }
+        return set;
+    }
+
+    @Benchmark
+    public HashSet<Key> mRemoveOneByOne() {
+        HashSet<Key> set = setA;
+        for (Key key : data.listA) {
+            set = set.remove(key);
+        }
+        return set;
+    }
+
+    //DISABLED - Loops endlessly with (mask = -65, size = 10000000)
+    //@Benchmark
+    public HashSet<Key> mRemoveAll() {
+        HashSet<Key> set = setA;
+        return set.removeAll(data.listA);
+    }
+    
+/*
     @Benchmark
     public int mIterate() {
         int sum = 0;
@@ -103,4 +140,6 @@ public class VavrHashSetJmh {
         Key key = data.nextKeyInB();
         return setA.contains(key);
     }
+    
+ */
 }

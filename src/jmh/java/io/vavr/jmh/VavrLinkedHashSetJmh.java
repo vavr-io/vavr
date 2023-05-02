@@ -22,6 +22,23 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
  * Benchmark                               (mask)    (size)  Mode  Cnt          Score   Error  Units
+ * Benchmark                             (mask)    (size)  Mode  Cnt            Score   Error  Units
+ * VavrLinkedHashSetJmh.mAddAll             -65        10  avgt               977.393          ns/op
+ * VavrLinkedHashSetJmh.mAddAll             -65      1000  avgt            198221.760          ns/op
+ * VavrLinkedHashSetJmh.mAddAll             -65    100000  avgt          35429322.314          ns/op
+ * VavrLinkedHashSetJmh.mAddAll             -65  10000000  avgt        7755345733.000          ns/op
+ * VavrLinkedHashSetJmh.mAddOneByOne        -65        10  avgt               809.518          ns/op
+ * VavrLinkedHashSetJmh.mAddOneByOne        -65      1000  avgt            178117.088          ns/op
+ * VavrLinkedHashSetJmh.mAddOneByOne        -65    100000  avgt          41538622.162          ns/op
+ * VavrLinkedHashSetJmh.mAddOneByOne        -65  10000000  avgt        8207656477.500          ns/op
+ * VavrLinkedHashSetJmh.mRemoveAll          -65        10  avgt               546.006          ns/op
+ * VavrLinkedHashSetJmh.mRemoveAll          -65      1000  avgt            113494.907          ns/op
+ * VavrLinkedHashSetJmh.mRemoveAll          -65    100000  avgt          29366083.795          ns/op
+ * VavrLinkedHashSetJmh.mRemoveAll          -65  10000000  avgt        8929774581.500          ns/op
+ * VavrLinkedHashSetJmh.mRemoveOneByOne     -65        10  avgt               936.830          ns/op
+ * VavrLinkedHashSetJmh.mRemoveOneByOne     -65      1000  avgt            322820.093          ns/op
+ * VavrLinkedHashSetJmh.mRemoveOneByOne     -65    100000  avgt          85707601.060          ns/op
+ * VavrLinkedHashSetJmh.mRemoveOneByOne     -65  10000000  avgt       20218899949.000          ns/op
  * VavrLinkedHashSetJmh.mContainsFound        -65        10  avgt               5.347          ns/op
  * VavrLinkedHashSetJmh.mContainsFound        -65      1000  avgt              18.177          ns/op
  * VavrLinkedHashSetJmh.mContainsFound        -65    100000  avgt              83.205          ns/op
@@ -49,9 +66,10 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 0)
-@Warmup(iterations = 0)
-@Fork(value = 0, jvmArgsAppend = {"-Xmx28g"})
+@Measurement(iterations = 1)
+@Warmup(iterations = 1)
+@Fork(value = 1, jvmArgsAppend = {"-Xmx28g"})
+
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class VavrLinkedHashSetJmh {
@@ -70,6 +88,35 @@ public class VavrLinkedHashSetJmh {
         setA =  LinkedHashSet.ofAll(data.setA);
     }
 
+    @Benchmark
+    public LinkedHashSet<Key> mAddAll() {
+        return LinkedHashSet.ofAll(data.listA);
+    }
+
+    @Benchmark
+    public LinkedHashSet<Key> mAddOneByOne() {
+        LinkedHashSet<Key> set = LinkedHashSet.of();
+        for (Key key : data.listA) {
+            set=set.add(key);
+        }
+        return set;
+    }
+
+    @Benchmark
+    public LinkedHashSet<Key> mRemoveOneByOne() {
+        LinkedHashSet<Key> set = setA;
+        for (Key key : data.listA) {
+            set=set.remove(key);
+        }
+        return set;
+    }
+
+    @Benchmark
+    public LinkedHashSet<Key> mRemoveAll() {
+        LinkedHashSet<Key> set = setA;
+        return set.removeAll(data.listA);
+    }
+/*
     @Benchmark
     public int mIterate() {
         int sum = 0;
@@ -104,4 +151,5 @@ public class VavrLinkedHashSetJmh {
         Key key = data.nextKeyInB();
         return setA.contains(key);
     }
+    */
 }

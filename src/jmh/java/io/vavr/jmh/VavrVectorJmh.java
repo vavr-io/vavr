@@ -22,9 +22,20 @@ import java.util.concurrent.TimeUnit;
  * # JMH version: 1.36
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
- * # org.scala-lang:scala-library:2.13.8
  *
  * Benchmark                         (size)  Mode  Cnt         Score   Error  Units
+ * VavrVectorJmh.mAddAll                 -65        10  avgt                60.704          ns/op
+ * VavrVectorJmh.mAddAll                 -65      1000  avgt              3797.950          ns/op
+ * VavrVectorJmh.mAddAll                 -65    100000  avgt           1217961.885          ns/op
+ * VavrVectorJmh.mAddOneByOne            -65        10  avgt               478.864          ns/op
+ * VavrVectorJmh.mAddOneByOne            -65      1000  avgt             72287.227          ns/op
+ * VavrVectorJmh.mAddOneByOne            -65    100000  avgt          14675402.151          ns/op
+ * VavrVectorJmh.mRemoveAll              -65        10  avgt               372.183          ns/op
+ * VavrVectorJmh.mRemoveAll              -65      1000  avgt             94281.357          ns/op
+ * VavrVectorJmh.mRemoveAll              -65    100000  avgt          25100217.195          ns/op
+ * VavrVectorJmh.mRemoveOneByOne         -65        10  avgt               574.894          ns/op
+ * VavrVectorJmh.mRemoveOneByOne         -65      1000  avgt           2458636.840          ns/op
+ * VavrVectorJmh.mRemoveOneByOne         -65    100000  avgt       45182726826.000          ns/op
  * VavrVectorJmh.mAddFirst               10  avgt            174.163          ns/op
  * VavrVectorJmh.mAddFirst          1000000  avgt            529.346          ns/op
  * VavrVectorJmh.mAddLast                10  avgt             68.351          ns/op
@@ -49,12 +60,11 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 @Measurement(iterations = 0)
 @Warmup(iterations = 0)
-@Fork(value = 0)
+@Fork(value = 0, jvmArgsAppend = {"-Xmx28g"})
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
-@SuppressWarnings("unchecked")
 public class VavrVectorJmh {
-    @Param({"10","1000","1000000","1000000000"})
+    @Param({"10","1000","100000"})
     private int size;
 
     @Param({"-65"})
@@ -72,6 +82,32 @@ public class VavrVectorJmh {
             listA = listA.append(key);
         }
     }
+    @Benchmark
+    public Vector<Key> mAddAll() {
+        return Vector.ofAll(data.setA);
+    }
+    @Benchmark
+    public Vector<Key> mAddOneByOne() {
+        Vector<Key> set = Vector.of();
+        for (Key key : data.listA) {
+            set = set.append(key);
+        }
+        return set;
+    }    @Benchmark
+    public Vector<Key> mRemoveOneByOne() {
+        var map = listA;
+        for (var e : data.listA) {
+            map = map.remove(e);
+        }
+        if (!map.isEmpty()) throw new AssertionError("map: " + map);
+        return map;
+    }
+    @Benchmark
+    public Vector<Key> mRemoveAll() {
+        Vector<Key> set = listA;
+        return set.removeAll(data.listA);
+    }
+    /*
 
     @Benchmark
     public int mIterate() {
@@ -136,5 +172,7 @@ public class VavrVectorJmh {
         Key key = data.nextKeyInB();
         return listA.update(index, key);
     }
+    
+     */
 
 }

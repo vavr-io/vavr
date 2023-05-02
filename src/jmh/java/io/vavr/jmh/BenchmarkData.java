@@ -26,6 +26,10 @@ public class BenchmarkData {
      * Set 'a'.
      */
     public final Set<Key> setA;
+    /**
+     * Map 'a'.
+     */
+    public final Map<Key, Boolean> mapA;
     /** List 'b'.
      * <p>
      * The elements have been shuffled, so that they
@@ -35,18 +39,20 @@ public class BenchmarkData {
 
 
     private int index;
-private final int size;
+    private final int size;
 
     public BenchmarkData(int size, int mask) {
         this.size=size;
         Random rng = new Random(0);
         Set<Integer> preventDuplicates=new HashSet<>(size*2);
         ArrayList<Key> keysInSet=new ArrayList<>(size);
+        mapA=new HashMap<>(size*2);
         ArrayList<Key> keysNotInSet = new ArrayList<>(size);
         Map<Key, Integer> indexMap = new HashMap<>(size*2);
         for (int i = 0; i < size; i++) {
             Key key = createKey(rng, preventDuplicates, mask);
             keysInSet.add(key);
+            mapA.put(key,Boolean.TRUE);
             indexMap.put(key, i);
             keysNotInSet.add(createKey(rng, preventDuplicates, mask));
         }

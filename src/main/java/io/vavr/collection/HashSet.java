@@ -108,7 +108,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
      */
     final int size;
 
-     HashSet(ChampBitmapIndexedNode<T> root, int size) {
+    HashSet(ChampBitmapIndexedNode<T> root, int size) {
         super(root.nodeMap(), root.dataMap(), root.mixed);
         this.size = size;
     }
@@ -938,9 +938,11 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     public java.util.HashSet<T> toJavaSet() {
         return toJavaSet(java.util.HashSet::new);
     }
+
     TransientHashSet<T> toTransient() {
         return new TransientHashSet<>(this);
     }
+
     @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> union(Set<? extends T> elements) {
