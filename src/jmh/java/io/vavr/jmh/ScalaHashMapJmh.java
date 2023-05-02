@@ -1,31 +1,42 @@
 package io.vavr.jmh;
 
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.annotations.*;
 import scala.Tuple2;
 import scala.collection.Iterator;
 import scala.collection.immutable.HashMap;
+import scala.collection.immutable.Map;
+import scala.collection.immutable.Vector;
 import scala.collection.mutable.Builder;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.concurrent.TimeUnit;
 
 /**
  * <pre>
- * # JMH version: 1.28
+ * # JMH version: 1.36
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  * # org.scala-lang:scala-library:2.13.8
  *
- * Benchmark                             (size)  Mode  Cnt          Score         Error  Units
+ * Benchmark                          (mask)    (size)  Mode  Cnt            Score   Error  Units
+ * ScalaHashMapJmh.mAddAll               -65        10  avgt               467.142          ns/op
+ * ScalaHashMapJmh.mAddAll               -65      1000  avgt            114499.940          ns/op
+ * ScalaHashMapJmh.mAddAll               -65    100000  avgt          23510614.310          ns/op
+ * ScalaHashMapJmh.mAddAll               -65  10000000  avgt        7447239207.500          ns/op
+ * ScalaHashMapJmh.mAddOneByOne          -65        10  avgt               432.536          ns/op
+ * ScalaHashMapJmh.mAddOneByOne          -65      1000  avgt            138463.447          ns/op
+ * ScalaHashMapJmh.mAddOneByOne          -65    100000  avgt          35389172.339          ns/op
+ * ScalaHashMapJmh.mAddOneByOne          -65  10000000  avgt       10663694719.000          ns/op
+ * ScalaHashMapJmh.mRemoveAll            -65        10  avgt               384.790          ns/op
+ * ScalaHashMapJmh.mRemoveAll            -65      1000  avgt            126641.616          ns/op
+ * ScalaHashMapJmh.mRemoveAll            -65    100000  avgt          32877551.174          ns/op
+ * ScalaHashMapJmh.mRemoveAll            -65  10000000  avgt       14457074260.000          ns/op
+ * ScalaHashMapJmh.mRemoveOneByOne       -65        10  avgt               373.129          ns/op
+ * ScalaHashMapJmh.mRemoveOneByOne       -65      1000  avgt            134244.683          ns/op
+ * ScalaHashMapJmh.mRemoveOneByOne       -65    100000  avgt          34034988.668          ns/op
+ * ScalaHashMapJmh.mRemoveOneByOne       -65  10000000  avgt       12629623452.000          ns/op
+ *
  * ScalaHashMapJmh.mContainsFound            10  avgt    4          6.163 ±       0.096  ns/op
  * ScalaHashMapJmh.mContainsFound       1000000  avgt    4        271.014 ±      11.496  ns/op
  * ScalaHashMapJmh.mContainsNotFound         10  avgt    4          6.169 ±       0.107  ns/op
@@ -44,28 +55,77 @@ import java.util.concurrent.TimeUnit;
 @State(Scope.Benchmark)
 @Measurement(iterations = 0)
 @Warmup(iterations = 0)
-@Fork(value = 0)
+@Fork(value = 0, jvmArgsAppend = {"-Xmx28g"})
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 @SuppressWarnings("unchecked")
 public class ScalaHashMapJmh {
-    @Param({"10", "1000000"})
+    @Param({"10", "1000", "100000", "10000000"})
     private int size;
 
-    private final int mask = ~64;
+    @Param({"-65"})
+    private int mask;
 
     private BenchmarkData data;
     private HashMap<Key, Boolean> mapA;
+    private Vector<Tuple2<Key, Boolean>> listA;
+    private Vector<Key> listAKeys;
+    private Method appended;
 
 
+    @SuppressWarnings("unchecked")
     @Setup
-    public void setup() {
+    public void setup() throws InvocationTargetException, IllegalAccessException {
+        try {
+            appended = Vector.class.getDeclaredMethod("appended", Object.class);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
         data = new BenchmarkData(size, mask);
         Builder<Tuple2<Key, Boolean>, HashMap<Key, Boolean>> b = HashMap.newBuilder();
         for (Key key : data.setA) {
-            b.addOne(new Tuple2<>(key,Boolean.TRUE));
+            Tuple2<Key, Boolean> elem = new Tuple2<>(key, Boolean.TRUE);
+            b.addOne(elem);
+        }
+        listA = Vector.<Tuple2<Key, Boolean>>newBuilder().result();
+        listAKeys = Vector.<Key>newBuilder().result();
+        for (Key key : data.listA) {
+            Tuple2<Key, Boolean> elem = new Tuple2<>(key, Boolean.TRUE);
+            listA = (Vector<Tuple2<Key, Boolean>>) appended.invoke(listA, elem);
+            listAKeys = (Vector<Key>) appended.invoke(listAKeys, key);
         }
         mapA = b.result();
+
+    }
+
+    @Benchmark
+    public HashMap<Key, Boolean> mAddAll() {
+        return HashMap.from(listA);
+    }
+
+    @Benchmark
+    public HashMap<Key, Boolean> mAddOneByOne() {
+        HashMap<Key, Boolean> set = HashMap.<Key, Boolean>newBuilder().result();
+        for (Key key : data.listA) {
+            set = set.updated(key, Boolean.TRUE);
+        }
+        return set;
+    }
+
+    @Benchmark
+    public HashMap<Key, Boolean> mRemoveOneByOne() {
+        HashMap<Key, Boolean> set = mapA;
+        for (Key key : data.listA) {
+            set = set.removed(key);
+        }
+        return set;
+    }
+
+    @Benchmark
+    public Map<Key, Boolean> mRemoveAll() {
+        HashMap<Key, Boolean> set = mapA;
+        return set.removedAll(listAKeys);
     }
 
     @Benchmark

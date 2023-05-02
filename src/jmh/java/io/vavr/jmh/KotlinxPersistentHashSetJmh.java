@@ -1,5 +1,6 @@
 package io.vavr.jmh;
 
+
 import kotlinx.collections.immutable.ExtensionsKt;
 import kotlinx.collections.immutable.PersistentSet;
 import org.openjdk.jmh.annotations.Benchmark;
@@ -32,16 +33,17 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 0)
-@Warmup(iterations = 0)
-@Fork(value = 0)
+@Measurement(iterations = 1)
+@Warmup(iterations = 1)
+@Fork(value = 1)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class KotlinxPersistentHashSetJmh {
-    @Param({"10", "1000000"})
+    @Param({"10","1000","100000","10000000"})
     private int size;
 
-    private final int mask = ~64;
+    @Param({"-65"})
+    private  int mask;
 
     private BenchmarkData data;
     private PersistentSet<Key> setA;
@@ -52,6 +54,36 @@ public class KotlinxPersistentHashSetJmh {
         setA =  ExtensionsKt.toPersistentHashSet(data.setA);
     }
 
+
+    @Benchmark
+    public PersistentSet<Key> mAddAll() {
+        return ExtensionsKt.toPersistentHashSet(data.listA);
+    }
+
+    @Benchmark
+    public PersistentSet<Key> mAddOneByOne() {
+        PersistentSet<Key> set = ExtensionsKt.persistentSetOf();
+        for (Key key : data.listA) {
+            set = set.add(key);
+        }
+        return set;
+    }
+
+    @Benchmark
+    public PersistentSet<Key> mRemoveOneByOne() {
+        PersistentSet<Key> set = setA;
+        for (Key key : data.listA) {
+            set = set.remove(key);
+        }
+        return set;
+    }
+
+    @Benchmark
+    public PersistentSet<Key> mRemoveAll() {
+        PersistentSet<Key> set = setA;
+        return set.removeAll(data.listA);
+    }    
+/*
     @Benchmark
     public int mIterate() {
         int sum = 0;
@@ -87,4 +119,6 @@ public class KotlinxPersistentHashSetJmh {
         Key key = data.nextKeyInB();
         return setA.contains(key);
     }
+    
+ */
 }
