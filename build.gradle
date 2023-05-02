@@ -38,6 +38,9 @@ plugins {
     id 'signing'
     id 'net.researchgate.release' version '2.8.1'
     id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
+
+    // jmh
+    id "me.champeau.jmh" version "0.7.0"
 }
 
 ext.ammoniteScalaVersion = '2.13'
@@ -47,6 +50,14 @@ ext.junitVersion = '4.13.2'
 
 // JAVA_VERSION used for CI build matrix, may be provided as env variable
 def javaVersion = Integer.parseInt(System.getenv('JAVA_VERSION') ?: '17')
+
+sourceSets {
+    jmh {
+        java.srcDirs = ['src/jmh/java']
+        resources.srcDirs = ['src/jmh/resources']
+        compileClasspath += sourceSets.main.runtimeClasspath
+    }
+}
 
 repositories {
     mavenCentral()
@@ -59,6 +70,12 @@ repositories {
 dependencies {
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation 'com.google.guava:guava-testlib:31.1-jre'
+
+    jmhImplementation 'org.openjdk.jmh:jmh-core:1.36'
+    jmhImplementation 'org.openjdk.jmh:jmh-generator-annprocess:1.36'
+    jmhImplementation 'org.scala-lang:scala-library:2.13.11-M1'
+    jmhImplementation 'org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.5'
 }
 
 java {
@@ -67,6 +84,9 @@ java {
     }
     withSourcesJar()
     withJavadocJar()
+}
+javadoc {
+    options.encoding = 'UTF-8'
 }
 
 sourceSets.main.java.srcDirs += ['src-gen/main/java']
@@ -187,7 +207,7 @@ nexusPublishing {
     repositories {
         sonatype {
             username.set(providers.systemProperty("ossrhUsername").orElse("").forUseAtConfigurationTime())
-            password.set(providers.systemProperty("ossrhPassword").orElse("").forUseAtConfigurationTime())        
+            password.set(providers.systemProperty("ossrhPassword").orElse("").forUseAtConfigurationTime())
         }
     }
 }
@@ -206,3 +226,12 @@ release {
         pushToCurrentBranch = true
     }
 }
+
+
+/*
+task jmh(type: JavaExec, dependsOn: jmhClasses) {
+    main = 'org.openjdk.jmh.Main'
+    classpath = sourceSets.jmh.compileClasspath + sourceSets.jmh.runtimeClasspath
+}*/
+
+classes.finalizedBy(jmhClasses)
