@@ -12,22 +12,22 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
  * Benchmark                       (mask)    (size)  Mode  Cnt           Score   Error  Units
- * VavrHashSetJmh.mAddAll             -65        10  avgt              333.421          ns/op
- * VavrHashSetJmh.mAddAll             -65      1000  avgt            75065.071          ns/op
- * VavrHashSetJmh.mAddAll             -65    100000  avgt         17047511.761          ns/op
- * VavrHashSetJmh.mAddAll             -65  10000000  avgt       4858104338.667          ns/op
- * VavrHashSetJmh.mAddOneByOne        -65        10  avgt              279.495          ns/op
- * VavrHashSetJmh.mAddOneByOne        -65      1000  avgt            91640.610          ns/op
- * VavrHashSetJmh.mAddOneByOne        -65    100000  avgt         24110705.034          ns/op
- * VavrHashSetJmh.mAddOneByOne        -65  10000000  avgt       6494104454.500          ns/op
- * VavrHashSetJmh.mRemoveAll          -65        10  avgt              243.695          ns/op
- * VavrHashSetJmh.mRemoveAll          -65      1000  avgt           100452.008          ns/op
- * VavrHashSetJmh.mRemoveAll          -65    100000  avgt         23237449.239          ns/op
- * VavrHashSetJmh.mRemoveAll          -65  10000000  avgt       6311906939.000          ns/op
- * VavrHashSetJmh.mRemoveOneByOne     -65        10  avgt              247.507          ns/op
- * VavrHashSetJmh.mRemoveOneByOne     -65      1000  avgt           105832.777          ns/op
- * VavrHashSetJmh.mRemoveOneByOne     -65    100000  avgt         26077578.885          ns/op
- * VavrHashSetJmh.mRemoveOneByOne     -65  10000000  avgt       6345551732.000          ns/op
+ * VavrHashSetJmh.mAddAll                     -65        10  avgt   16          332.874 ±         4.633  ns/op
+ * VavrHashSetJmh.mAddAll                     -65      1000  avgt   16        77583.470 ±      2078.256  ns/op
+ * VavrHashSetJmh.mAddAll                     -65    100000  avgt   16     19841008.500 ±    815127.202  ns/op
+ * VavrHashSetJmh.mAddAll                     -65  10000000  avgt   16   6190978393.063 ± 328308314.639  ns/op
+ * VavrHashSetJmh.mAddOneByOne                -65        10  avgt   16          313.264 ±        31.004  ns/op
+ * VavrHashSetJmh.mAddOneByOne                -65      1000  avgt   16        94356.095 ±      2588.337  ns/op
+ * VavrHashSetJmh.mAddOneByOne                -65    100000  avgt   16     26843105.717 ±    441404.246  ns/op
+ * VavrHashSetJmh.mAddOneByOne                -65  10000000  avgt   16   7017683006.750 ±  63056251.543  ns/op
+ * VavrHashSetJmh.mRemoveOneByOne             -65        10  avgt   16          281.586 ±         9.203  ns/op
+ * VavrHashSetJmh.mRemoveOneByOne             -65      1000  avgt   16       108863.083 ±      2609.270  ns/op
+ * VavrHashSetJmh.mRemoveOneByOne             -65    100000  avgt   16     27474319.084 ±    829255.059  ns/op
+ * VavrHashSetJmh.mRemoveOneByOne             -65  10000000  avgt   16   7259914131.938 ± 145325048.495  ns/op
+ * VavrHashSetJmh.mRemoveAll                  -65        10  avgt   16          293.929 ±        11.756  ns/op
+ * VavrHashSetJmh.mRemoveAll                  -65      1000  avgt   16       104000.892 ±       767.568  ns/op
+ * VavrHashSetJmh.mRemoveAll                  -65    100000  avgt   16     25738857.731 ±    753412.641  ns/op
+ * VavrHashSetJmh.mRemoveAll                  -65  10000000  avgt   16   6725573003.375 ± 116210556.487  ns/op
  * VavrHashSetJmh.mContainsFound              -65      1000  avgt              19.979          ns/op
  * VavrHashSetJmh.mContainsFound              -65    100000  avgt              68.201          ns/op
  * VavrHashSetJmh.mContainsFound              -65  10000000  avgt             297.289          ns/op
@@ -54,9 +54,9 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 0)
-@Warmup(iterations = 0)
-@Fork(value = 0, jvmArgsAppend = {"-Xmx28g"})
+@Measurement(iterations = 4)
+@Warmup(iterations = 4)
+@Fork(value = 4, jvmArgsAppend = {"-Xmx28g"})
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class VavrHashSetJmh {
@@ -75,37 +75,35 @@ public class VavrHashSetJmh {
         setA = HashSet.ofAll(data.setA);
     }
 
-    @Benchmark
-    public HashSet<Key> mAddAll() {
-        return HashSet.ofAll(data.listA);
-    }
-
-    @Benchmark
-    public HashSet<Key> mAddOneByOne() {
-        HashSet<Key> set = HashSet.of();
-        for (Key key : data.listA) {
-            set = set.add(key);
+        @Benchmark
+        public HashSet<Key> mAddAll() {
+            return HashSet.ofAll(data.listA);
         }
-        return set;
-    }
+
+        @Benchmark
+        public HashSet<Key> mAddOneByOne() {
+            HashSet<Key> set = HashSet.of();
+            for (Key key : data.listA) {
+                set = set.add(key);
+            }
+            return set;
+        }
+
+        @Benchmark
+        public HashSet<Key> mRemoveOneByOne() {
+            HashSet<Key> set = setA;
+            for (Key key : data.listA) {
+                set = set.remove(key);
+            }
+            return set;
+        }
 
     @Benchmark
-    public HashSet<Key> mRemoveOneByOne() {
-        HashSet<Key> set = setA;
-        for (Key key : data.listA) {
-            set = set.remove(key);
-        }
-        return set;
-    }
-
-    //DISABLED - Loops endlessly with (mask = -65, size = 10000000)
-    //@Benchmark
     public HashSet<Key> mRemoveAll() {
         HashSet<Key> set = setA;
         return set.removeAll(data.listA);
     }
-    
-/*
+
     @Benchmark
     public int mIterate() {
         int sum = 0;
@@ -140,6 +138,4 @@ public class VavrHashSetJmh {
         Key key = data.nextKeyInB();
         return setA.contains(key);
     }
-    
- */
 }

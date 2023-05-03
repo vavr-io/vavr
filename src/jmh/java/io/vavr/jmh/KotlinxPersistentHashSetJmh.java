@@ -3,25 +3,29 @@ package io.vavr.jmh;
 
 import kotlinx.collections.immutable.ExtensionsKt;
 import kotlinx.collections.immutable.PersistentSet;
-import org.openjdk.jmh.annotations.Benchmark;
-import org.openjdk.jmh.annotations.BenchmarkMode;
-import org.openjdk.jmh.annotations.Fork;
-import org.openjdk.jmh.annotations.Measurement;
-import org.openjdk.jmh.annotations.Mode;
-import org.openjdk.jmh.annotations.OutputTimeUnit;
-import org.openjdk.jmh.annotations.Param;
-import org.openjdk.jmh.annotations.Scope;
-import org.openjdk.jmh.annotations.Setup;
-import org.openjdk.jmh.annotations.State;
-import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.annotations.*;
 
 import java.util.concurrent.TimeUnit;
 
 /**
  * <pre>
- * # JMH version: 1.28
+ * # JMH version: 1.36
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
+ *
+ * Benchmark                                    (mask)    (size)  Mode  Cnt    _        Score           Error  Units
+ * KotlinxPersistentHashSetJmh.mAddAll             -65        10  avgt         _      314.606                  ns/op
+ * KotlinxPersistentHashSetJmh.mAddAll             -65      1000  avgt         _    44389.022                  ns/op
+ * KotlinxPersistentHashSetJmh.mAddAll             -65    100000  avgt         _ 17258612.386                  ns/op
+ * KotlinxPersistentHashSetJmh.mAddAll             -65  10000000  avgt        6_543269527.000                  ns/op
+ * KotlinxPersistentHashSetJmh.mAddOneByOne        -65        10  avgt         _      658.427                  ns/op
+ * KotlinxPersistentHashSetJmh.mAddOneByOne        -65      1000  avgt         _   207562.899                  ns/op
+ * KotlinxPersistentHashSetJmh.mAddOneByOne        -65    100000  avgt         _ 47867380.737                  ns/op
+ * KotlinxPersistentHashSetJmh.mAddOneByOne        -65  10000000  avgt       10_085283626.000                  ns/op
+ * KotlinxPersistentHashSetJmh.mRemoveOneByOne     -65        10  avgt         _      308.915                  ns/op
+ * KotlinxPersistentHashSetJmh.mRemoveOneByOne     -65      1000  avgt         _    77775.838                  ns/op
+ * KotlinxPersistentHashSetJmh.mRemoveOneByOne     -65    100000  avgt         _ 27273753.703                  ns/op
+ * KotlinxPersistentHashSetJmh.mRemoveOneByOne     -65  10000000  avgt        7_240761155.500                  ns/op
  *
  * Benchmark           (size)  Mode  Cnt    _     Score         Error  Units
  * mContainsFound     1000000  avgt    4    _   165.449 ±      13.209  ns/op
@@ -33,17 +37,17 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 1)
-@Warmup(iterations = 1)
-@Fork(value = 1)
+@Measurement(iterations = 0)
+@Warmup(iterations = 0)
+@Fork(value = 0)
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class KotlinxPersistentHashSetJmh {
-    @Param({"10","1000","100000","10000000"})
+    @Param({"10", "1000", "100000", "10000000"})
     private int size;
 
     @Param({"-65"})
-    private  int mask;
+    private int mask;
 
     private BenchmarkData data;
     private PersistentSet<Key> setA;
@@ -51,10 +55,18 @@ public class KotlinxPersistentHashSetJmh {
     @Setup
     public void setup() {
         data = new BenchmarkData(size, mask);
-        setA =  ExtensionsKt.toPersistentHashSet(data.setA);
+        setA = ExtensionsKt.toPersistentHashSet(data.setA);
     }
 
+public static void main (String...args){
+    KotlinxPersistentHashSetJmh t = new KotlinxPersistentHashSetJmh();
+    t.size=10;
+    t.mask=-65;
+    t.setup();
+    PersistentSet<Key> keys = t.mAddAll();
+    System.out.println(keys);
 
+}
     @Benchmark
     public PersistentSet<Key> mAddAll() {
         return ExtensionsKt.toPersistentHashSet(data.listA);
@@ -78,7 +90,8 @@ public class KotlinxPersistentHashSetJmh {
         return set;
     }
 
-    @Benchmark
+    //FIXME We get endless loops here - or it is quadratic somehow
+    //@Benchmark
     public PersistentSet<Key> mRemoveAll() {
         PersistentSet<Key> set = setA;
         return set.removeAll(data.listA);
