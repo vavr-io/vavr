@@ -93,7 +93,8 @@ final class FutureImpl<T> implements Future<T> {
 
     // single constructor
     private FutureImpl(Executor executor, Option<Try<T>> value, Queue<Consumer<Try<T>>> actions, Queue<Thread> waiters, Computation<T> computation) {
-        this.executor = executor;
+        // #2711: null check necessary
+        this.executor = Objects.requireNonNull(executor, "executor");
         synchronized (lock) {
             this.cancelled = false;
             this.value = value;

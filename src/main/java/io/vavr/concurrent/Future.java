@@ -839,6 +839,8 @@ public interface Future<T> extends Iterable<T>, Value<T> {
      * @throws NullPointerException if {@code partialFunction} is null
      */
     default <R> Future<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        // #2711: CRITICAL: without this null check the future might never complete.
+        Objects.requireNonNull(partialFunction, "partialFunction");
         return run(executor(), complete ->
             onComplete(result -> complete.with(result.collect(partialFunction)))
         );

@@ -404,7 +404,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNPEWhenExecutorIsNullUsingCallable() {
-        Future.ofCallable(null, () -> 1);
+        Future.ofCallable(null, () -> 1).await();
     }
 
     @Test(expected = NullPointerException.class)
@@ -781,7 +781,7 @@ public class FutureTest extends AbstractValueTest {
     @Test(expected = NullPointerException.class)
     public void shouldThrowExceptionOnNullCollectPartialFunction() {
         final PartialFunction<Integer, String> pf = null;
-        Future.of(zZz(3)).collect(pf);
+        Future.of(zZz(3)).collect(pf).get();
     }
 
     // -- executorService()
