@@ -1033,7 +1033,11 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     // -- Additional methods of Iterator
 
     @Override
+    @SuppressWarnings("unchecked")
     default <R> Iterator<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+        if (!hasNext()) {
+            return (Iterator<R>)this;
+        }
         return filter(partialFunction::isDefinedAt).map(partialFunction);
     }
 
