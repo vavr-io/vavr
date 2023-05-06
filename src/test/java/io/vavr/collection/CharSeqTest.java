@@ -943,7 +943,12 @@ public class CharSeqTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldNullOperator() {
-        CharSeq.empty().fold(null, null);
+        CharSeq.of('a').fold(null, null);
+    }
+
+    @Test
+    public void shouldIgnoreFoldNullOperatorWhenNotRequired() {
+        assertThat(CharSeq.empty().fold('0', null)).isEqualTo('0');
     }
 
     @Test
@@ -958,8 +963,8 @@ public class CharSeqTest {
         assertThat(CharSeq.empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowWhenFoldLeftNullOperator() {
+    @Test
+    public void shouldIgnoreNullOperatorWhenEmpty() {
         CharSeq.empty().foldLeft(null, null);
     }
 
@@ -977,7 +982,7 @@ public class CharSeqTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFoldRightNullOperator() {
-        CharSeq.empty().foldRight(null, null);
+        CharSeq.of('a').foldRight(null, null);
     }
 
     @Test
@@ -1224,7 +1229,12 @@ public class CharSeqTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenPartitionNilAndPredicateIsNull() {
-        CharSeq.empty().partition(null);
+        CharSeq.of('a').partition(null);
+    }
+
+    @Test
+    public void shouldNotThrowWhenPredicateNullNotRequired() {
+        assertThat(CharSeq.empty().partition(null)).isEqualTo(Tuple.of(Array.empty(), Array.empty()));
     }
 
     @Test
@@ -1277,7 +1287,12 @@ public class CharSeqTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMaxByWithNullComparator() {
-        CharSeq.of('1').maxBy((Comparator<Character>) null);
+        CharSeq.of('1', '2').maxBy((Comparator<Character>) null);
+    }
+
+    @Test
+    public void shouldNotThrowWhenMaxByAndNotRequired() {
+        assertThat(CharSeq.of('1').maxBy((Comparator<Character>)null)).isEqualTo(Option.some('1'));
     }
 
     @Test
@@ -1333,7 +1348,12 @@ public class CharSeqTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenMinByWithNullComparator() {
-        CharSeq.of('1').minBy((Comparator<Character>) null);
+        CharSeq.of('1', '2').minBy((Comparator<Character>) null);
+    }
+
+    @Test
+    public void shouldIgnoreNullComparatorWhenMinByAndOneElement() {
+        assertThat(CharSeq.of('1').minBy((Comparator<Character>) null)).isEqualTo(Option.some('1'));
     }
 
     @Test
@@ -1402,9 +1422,14 @@ public class CharSeqTest {
         CharSeq.empty().reduce((a, b) -> a);
     }
 
+    @Test
+    public void shouldNotThrowWhenReduceNullOperatorNotRequired() {
+        assertThat(CharSeq.of('a').reduce(null)).isEqualTo('a');
+    }
+
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceNullOperator() {
-        CharSeq.empty().reduce(null);
+        CharSeq.of('a', 'b').reduce(null);
     }
 
     @Test
@@ -1419,9 +1444,14 @@ public class CharSeqTest {
         CharSeq.empty().reduceLeft((a, b) -> a);
     }
 
+    @Test
+    public void shouldNotThrowWhenReduceLeftNullOperatorNotRequired() {
+        CharSeq.of('a').reduceLeft(null);
+    }
+
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceLeftNullOperator() {
-        CharSeq.empty().reduceLeft(null);
+        CharSeq.of('a', 'b').reduceLeft(null);
     }
 
     @Test
@@ -1436,9 +1466,14 @@ public class CharSeqTest {
         CharSeq.empty().reduceRight((a, b) -> a);
     }
 
+    @Test
+    public void shouldNotThrowWhenReduceRightNullOperatorNotRequired() {
+        assertThat(CharSeq.of('a').reduceRight(null)).isEqualTo('a');
+    }
+
     @Test(expected = NullPointerException.class)
     public void shouldThrowWhenReduceRightNullOperator() {
-        CharSeq.empty().reduceRight(null);
+        CharSeq.of('a', 'b').reduceRight(null);
     }
 
     @Test
