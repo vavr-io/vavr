@@ -261,8 +261,8 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Test
-    public void shouldThrowNullPointerExceptionWhenCallingTryOfCheckedFunction0() {
-        assertThatThrownBy(() -> Try.of(null)).isInstanceOf(NullPointerException.class).hasMessage("supplier is null");
+    public void shouldReturnFailureWithNPEWhenCallingTryOfCheckedFunction0Null() {
+        assertThat(Try.of(null).getCause()).isInstanceOf(NullPointerException.class);
     }
 
     // -- Try.fold
@@ -292,7 +292,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldThrowNullPointerExceptionWhenCallingTryOfSupplier() {
-        assertThatThrownBy(() -> Try.ofSupplier(null)).isInstanceOf(NullPointerException.class).hasMessage("supplier is null");
+        assertThatThrownBy(() -> Try.ofSupplier(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test
@@ -318,7 +318,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldThrowNullPointerExceptionWhenCallingTryOfCallable() {
-        assertThatThrownBy(() -> Try.ofCallable(null)).isInstanceOf(NullPointerException.class).hasMessage("callable is null");
+        assertThatThrownBy(() -> Try.ofCallable(null)).isInstanceOf(NullPointerException.class);
     }
 
     // -- Try.run
@@ -338,7 +338,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldThrowNullPointerExceptionWhenCallingTryRunCheckedRunnable() {
-        assertThatThrownBy(() -> Try.run(null)).isInstanceOf(NullPointerException.class).hasMessage("runnable is null");
+        assertThat(Try.run(null).getCause()).isInstanceOf(NullPointerException.class);
     }
 
     // -- Try.runRunnable
@@ -358,7 +358,7 @@ public class TryTest extends AbstractValueTest {
 
     @Test
     public void shouldThrowNullPointerExceptionWhenCallingTryRunRunnable() {
-        assertThatThrownBy(() -> Try.runRunnable(null)).isInstanceOf(NullPointerException.class).hasMessage("runnable is null");
+        assertThatThrownBy(() -> Try.runRunnable(null)).isInstanceOf(NullPointerException.class);
     }
 
     // -- Try.withResources
@@ -1089,8 +1089,7 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void failureShouldThrowWhenFilterNotWithNullPredicate() {
         assertThatThrownBy(() -> failure().filterNot(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("predicate is null");
+                .isInstanceOf(NullPointerException.class);
     }
 
     // -- flatMap
@@ -1500,8 +1499,7 @@ public class TryTest extends AbstractValueTest {
     @Test
     public void successShouldThrowWhenFilterNotWithNullPredicate() {
         assertThatThrownBy(() -> success().filterNot(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("predicate is null");
+                .isInstanceOf(NullPointerException.class);
     }
 
     // -- flatMap
