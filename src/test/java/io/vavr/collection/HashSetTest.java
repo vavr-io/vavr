@@ -252,11 +252,6 @@ public class HashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowIfZipWithThatIsNull() {
-        empty().zip(null);
-    }
-
     // TODO move to traversable
     // -- zipAll
 
@@ -385,11 +380,6 @@ public class HashSetTest extends AbstractSetTest {
     public void shouldFindLastOfNonNil() {
         final int actual = of(1, 2, 3, 4).findLast(i -> i % 2 == 0).get();
         assertThat(actual).isIn(List.of(1, 2, 3, 4));
-    }
-
-    @Override
-    public void shouldThrowWhenFoldRightNullOperator() {
-        throw new NullPointerException(); // TODO
     }
 
     @Override

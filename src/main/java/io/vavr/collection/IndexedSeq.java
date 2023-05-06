@@ -130,7 +130,6 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     default boolean endsWith(Seq<? extends T> that) {
-        Objects.requireNonNull(that, "that is null");
         if (that instanceof IndexedSeq) {
             int i = length() - 1;
             int j = that.length() - 1;
@@ -171,7 +170,6 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     default int indexWhere(Predicate<? super T> predicate, int from) {
-        Objects.requireNonNull(predicate, "predicate is null");
         int start = Math.max(from, 0);
         int n = start + segmentLength(predicate.negate(), start);
         return (n >= length()) ? -1 : n;
@@ -179,7 +177,6 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     default int indexOfSlice(Iterable<? extends T> that, int from) {
-        Objects.requireNonNull(that, "that is null");
         return IndexedSeqModule.Slice.indexOfSlice(this, that, from);
     }
 
@@ -215,13 +212,11 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     default int lastIndexOfSlice(Iterable<? extends T> that, int end) {
-        Objects.requireNonNull(that, "that is null");
         return IndexedSeqModule.Slice.lastIndexOfSlice(this, that, end);
     }
 
     @Override
     default int lastIndexWhere(Predicate<? super T> predicate, int end) {
-        Objects.requireNonNull(predicate, "predicate is null");
         int i = Math.min(end, length() - 1);
         while (i >= 0 && !predicate.test(this.get(i))) {
             i--;
@@ -326,7 +321,6 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     default int segmentLength(Predicate<? super T> predicate, int from) {
-        Objects.requireNonNull(predicate, "predicate is null");
         int len = length();
         int i = from;
         while (i < len && predicate.test(this.get(i))) {
@@ -370,7 +364,6 @@ public interface IndexedSeq<T> extends Seq<T> {
 
     @Override
     default boolean startsWith(Iterable<? extends T> that, int offset) {
-        Objects.requireNonNull(that, "that is null");
         if (offset < 0) { return false; }
         if (that instanceof IndexedSeq) {
             IndexedSeq<? extends T> thatIndexedSeq = (IndexedSeq<? extends T>) that;
@@ -484,7 +477,6 @@ public interface IndexedSeq<T> extends Seq<T> {
      */
     @Override
     default int search(T element, Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         IntUnaryOperator comparison = midIndex -> {
             T midVal = get(midIndex);
             return comparator.compare(midVal, element);

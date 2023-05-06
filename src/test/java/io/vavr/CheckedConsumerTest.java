@@ -81,9 +81,10 @@ public class CheckedConsumerTest {
     // -- andThen
 
     @Test
-    public void shouldThrowWhenComposingCheckedConsumerUsingAndThenWithNullParameter() {
+    public void shouldThrowWhenComposingCheckedConsumerUsingAndThenWithNullParameterButOnlyUponInvokingTheResultingConsumer() {
         final CheckedConsumer<?> f = t -> {};
-        assertThatThrownBy(() -> f.andThen(null)).isInstanceOf(NullPointerException.class);
+        final CheckedConsumer<?> fAndThenNull = f.andThen(null);
+        assertThatThrownBy(() -> fAndThenNull.accept(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test

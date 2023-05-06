@@ -311,7 +311,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
      * @throws NullPointerException if {@code action} is null
      */
     default void forEach(BiConsumer<K, V> action) {
-        Objects.requireNonNull(action, "action is null");
         for (Tuple2<K, V> t : this) {
             action.accept(t._1, t._2);
         }
@@ -376,7 +375,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
      * @return An iterator through the mapped elements.
      */
     default <U> Iterator<U> iterator(BiFunction<K, V, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return iterator().map(t -> mapper.apply(t._1, t._2));
     }
 
@@ -415,7 +413,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     @SuppressWarnings("unchecked")
     @Override
     default <U> Seq<U> map(Function<? super Tuple2<K, V>, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         // don't remove cast, doesn't compile in Eclipse without it
         return (Seq<U>) iterator().map(mapper).toStream();
     }
@@ -534,7 +531,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
      * @throws NullPointerException if {@code f} is null
      */
     default <U> U transform(Function<? super Multimap<K, V>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -547,14 +543,11 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
 
     @Override
     default <U> Seq<Tuple2<Tuple2<K, V>, U>> zipAll(Iterable<? extends U> that, Tuple2<K, V> thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
     @Override
     default <U, R> Seq<R> zipWith(Iterable<? extends U> that, BiFunction<? super Tuple2<K, V>, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWith(that, mapper));
     }
 
@@ -565,7 +558,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
 
     @Override
     default <U> Seq<U> zipWithIndex(BiFunction<? super Tuple2<K, V>, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWithIndex(mapper));
     }
 
@@ -610,14 +602,12 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     @SuppressWarnings("unchecked")
     @Override
     default <U> Seq<U> flatMap(Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         // don't remove cast, doesn't compile in Eclipse without it
         return (Seq<U>) iterator().flatMap(mapper).toStream();
     }
 
     @Override
     default <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
 

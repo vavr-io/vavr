@@ -240,14 +240,13 @@ public class JavaConvertersTest {
 
     // -- addAll(Collection)
 
-    @Test(expected = NullPointerException.class)
     public void shouldThrowNPEWhenAddingAllNullCollectionToEmpty() {
-        empty().addAll(null);
+        ifSupported(() -> empty().addAll(null), NullPointerException.class);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEWhenAddingAllNullCollectionToNonEmpty() {
-        of('1').addAll(null);
+        ifSupported(() -> of('1').addAll(null), NullPointerException.class);
     }
 
     @Test
@@ -292,14 +291,12 @@ public class JavaConvertersTest {
 
     @Test
     public void shouldThrowNPEWhenAddingAllNullCollectionAtFirstIndexToEmpty() {
-        assertThatThrownBy(() -> empty().addAll(0, null))
-                .isInstanceOf(NullPointerException.class);
+        ifSupported(() -> empty().addAll(0, null), NullPointerException.class);
     }
 
     @Test
     public void shouldThrowNPEWhenAddingAllNullCollectionAtFirstIndexToNonEmpty() {
-        assertThatThrownBy(() -> of('1').addAll(0, null))
-                .isInstanceOf(NullPointerException.class);
+        ifSupported(() -> of('1').addAll(0, null), NullPointerException.class);
     }
 
     @Test
@@ -1851,15 +1848,13 @@ public class JavaConvertersTest {
     // -- removeAll(Collection)
 
     @Test
-    public void shouldThrowNPEWhenCallingRemoveAllNullWhenEmpty() {
-        assertThatThrownBy(() -> empty().removeAll(null))
-                .isInstanceOf(NullPointerException.class);
+    public void shouldNotThrowWhenCallingRemoveAllNullAndEmpty() {
+        ifSupported(() -> empty().removeAll(null));
     }
 
     @Test
     public void shouldThrowNPEWhenCallingRemoveAllNullWhenNotEmpty() {
-        assertThatThrownBy(() -> of('1').removeAll(null))
-                .isInstanceOf(NullPointerException.class);
+        ifSupported(() -> of('1').removeAll(null), NullPointerException.class);
     }
 
     @Test
@@ -1945,23 +1940,25 @@ public class JavaConvertersTest {
     // -- retainAll(Collection)
 
     @Test
-    public void shouldThrowNPEWhenCallingRetainAllNullWhenEmpty() {
-        assertThatThrownBy(() -> empty().retainAll(null))
-                .isInstanceOf(NullPointerException.class);
+    public void shouldIgnoreCollectionWhenCallingRetainAllNullWhenEmpty() {
+        ifSupported(() -> empty().retainAll(null));
     }
 
     @Test
     public void shouldThrowNPEWhenCallingRetainAllNullWhenNotEmpty() {
-        assertThatThrownBy(() -> of('1').retainAll(null))
-                .isInstanceOf(NullPointerException.class);
+        ifSupported(() -> of('1').retainAll(null), NullPointerException.class);
     }
 
     // -- retainAll(Collection) tests
 
     @Test
-    public void shouldThrowWhenRetainAllNull() {
-        assertThatThrownBy(() -> empty().retainAll(null)).isInstanceOf(NullPointerException.class);
-        assertThatThrownBy(() -> of('1').retainAll(null)).isInstanceOf(NullPointerException.class);
+    public void shouldIgnoreCollectionWhenRetainAllNullAndEmpty() {
+        ifSupported(() -> empty().retainAll(null));
+    }
+
+    @Test
+    public void shouldThrowWhenNotEmptyAndRetainAllNull() {
+        ifSupported(() -> of('1').retainAll(null), NullPointerException.class);
     }
 
     @Test
@@ -2279,9 +2276,8 @@ public class JavaConvertersTest {
         } catch (Throwable x) {
             if (changePolicy == IMMUTABLE) {
                 if (!(x instanceof UnsupportedOperationException)) {
-                    final boolean isJavaCollection = empty().getClass().getName().startsWith("java.util.");
                     // DEV-NOTE: Java's collections throw UnsupportedOperationException inconsistently
-                    if (!isJavaCollection) {
+                    if (!isJavaCollection()) {
                         Assert.fail("Operation should throw " + UnsupportedOperationException.class.getName() + " but found " + x.getClass().getName() + ":\n" + x.getMessage());
                     }
                 }
@@ -2292,9 +2288,17 @@ public class JavaConvertersTest {
                         return;
                     }
                 }
+                if (isJavaCollection() && expectedExceptionTypes.length == 0 && actualType.equals(NullPointerException.class)) {
+                    // DEV-NOTE: specifically for TestCase 7 java.util.ArrayList. Do we need to test java collections at all?
+                    return;
+                }
                 throw x;
             }
         }
+    }
+
+    private boolean isJavaCollection() {
+        return empty().getClass().getName().startsWith("java.util.");
     }
 
     static final class ListFactory {

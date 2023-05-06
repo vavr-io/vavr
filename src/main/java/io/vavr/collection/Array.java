@@ -129,7 +129,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     @SuppressWarnings("varargs")
     @SafeVarargs
     public static <T> Array<T> of(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return wrap(copyOf(elements, elements.length));
     }
 
@@ -151,7 +150,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <T> Array<T> ofAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Array) {
             return (Array<T>) elements;
         }
@@ -175,7 +173,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return An Array containing the given elements in the same order.
      */
     public static <T> Array<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
-        Objects.requireNonNull(javaStream, "javaStream is null");
         return wrap(javaStream.toArray());
     }
 
@@ -191,7 +188,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static Array<Boolean> ofAll(boolean... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -207,7 +203,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static Array<Byte> ofAll(byte... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -223,7 +218,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static Array<Character> ofAll(char... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -238,7 +232,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static Array<Double> ofAll(double... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -254,7 +247,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static Array<Float> ofAll(float... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -270,7 +262,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static Array<Integer> ofAll(int... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -286,7 +277,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static Array<Long> ofAll(long... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -302,7 +292,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if elements is null
      */
     public static Array<Short> ofAll(short... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -321,7 +310,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if {@code f} is null
      */
     public static <T> Array<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Array::of);
     }
 
@@ -335,7 +323,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if {@code s} is null
      */
     public static <T> Array<T> fill(int n, Supplier<? extends T> s) {
-        Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Array::of);
     }
 
@@ -673,7 +660,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> appendAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() && elements instanceof Array) {
             @SuppressWarnings("unchecked")
             final Array<T> array = (Array<T>) elements;
@@ -793,14 +779,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
         return filter(seen::add);
     }
 
     @Override
     public <U> Array<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
@@ -825,7 +809,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropUntil(predicate.negate());
     }
 
@@ -847,13 +830,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> dropRightWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropRightUntil(predicate.negate());
     }
 
     @Override
     public Array<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> list = new ArrayList<>();
         for (T t : this) {
             if (predicate.test(t)) {
@@ -871,13 +852,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> filterNot(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return Collections.filterNot(this, predicate);
     }
 
     @Override
     public <U> Array<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
         } else {
@@ -1015,7 +994,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public <U> Array<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         final Object[] arr = new Object[length()];
         for (int i = 0; i < delegate.length; i++) {
             arr[i] = mapper.apply(get(i));
@@ -1065,7 +1043,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Tuple2<Array<T>, Array<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
         for (T t : this) {
             (predicate.test(t) ? left : right).add(t);
@@ -1075,7 +1052,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
         }
@@ -1126,7 +1102,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> removeFirst(Predicate<T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         int found = -1;
         for (int i = 0; i < length(); i++) {
             final T value = get(i);
@@ -1144,7 +1119,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> removeLast(Predicate<T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         int found = -1;
         for (int i = length() - 1; i >= 0; i--) {
             final T value = get(i);
@@ -1336,14 +1310,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Tuple2<Array<T>, Array<T>> splitAt(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final Array<T> init = takeWhile(predicate.negate());
         return Tuple.of(init, drop(init.length()));
     }
 
     @Override
     public Tuple2<Array<T>, Array<T>> splitAtInclusive(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < delegate.length; i++) {
             final T value = get(i);
             if (predicate.test(value)) {
@@ -1359,7 +1331,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Tuple2<Array<T>, Array<T>> span(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
 
@@ -1420,7 +1391,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return takeUntil(predicate.negate());
     }
 
@@ -1444,7 +1414,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> takeRightWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return takeRightUntil(predicate.negate());
     }
 
@@ -1457,7 +1426,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if {@code f} is null
      */
     public <U> U transform(Function<? super Array<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -1474,7 +1442,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public Array<T> update(int index, Function<? super T, ? extends T> updater) {
-        Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }
 
@@ -1485,14 +1452,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public <U, R> Array<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
     public <U> Array<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
@@ -1503,7 +1467,6 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public <U> Array<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWithIndex(mapper));
     }
 

@@ -220,7 +220,6 @@ public abstract class List<T> implements LinearSeq<T> {
      */
     @SafeVarargs
     public static <T> List<T> of(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         List<T> result = Nil.instance();
         for (int i = elements.length - 1; i >= 0; i--) {
             result = result.prepend(elements[i]);
@@ -241,7 +240,6 @@ public abstract class List<T> implements LinearSeq<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> List<T> ofAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof List) {
             return (List<T>) elements;
         } else if (elements instanceof ListView
@@ -279,7 +277,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @return A List containing the given elements in the same order.
      */
     public static <T> List<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
-        Objects.requireNonNull(javaStream, "javaStream is null");
         final java.util.Iterator<? extends T> iterator = javaStream.iterator();
         List<T> list = List.empty();
         while (iterator.hasNext()) {
@@ -296,7 +293,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if elements is null
      */
     public static List<Boolean> ofAll(boolean... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -308,7 +304,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if elements is null
      */
     public static List<Byte> ofAll(byte... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -320,7 +315,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if elements is null
      */
     public static List<Character> ofAll(char... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -332,7 +326,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if elements is null
      */
     public static List<Double> ofAll(double... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -344,7 +337,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if elements is null
      */
     public static List<Float> ofAll(float... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -356,7 +348,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if elements is null
      */
     public static List<Integer> ofAll(int... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -368,7 +359,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if elements is null
      */
     public static List<Long> ofAll(long... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -380,7 +370,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if elements is null
      */
     public static List<Short> ofAll(short... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
 
@@ -395,7 +384,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if {@code f} is null
      */
     public static <T> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f, empty(), List::of);
     }
 
@@ -409,7 +397,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if {@code s} is null
      */
     public static <T> List<T> fill(int n, Supplier<? extends T> s) {
-        Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, empty(), List::of);
     }
 
@@ -744,7 +731,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> appendAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return List.<T> ofAll(elements).prependAll(this);
     }
 
@@ -795,14 +781,12 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> distinctBy(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
         return filter(seen::add);
     }
 
     @Override
     public final <U> List<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
@@ -824,13 +808,11 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> dropUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
     public final List<T> dropWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         List<T> list = this;
         while (!list.isEmpty() && predicate.test(list.head())) {
             list = list.tail();
@@ -851,19 +833,16 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> dropRightUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return reverse().dropUntil(predicate).reverse();
     }
 
     @Override
     public final List<T> dropRightWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropRightUntil(predicate.negate());
     }
 
     @Override
     public final List<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return this;
         } else {
@@ -880,13 +859,11 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> filterNot(Predicate<? super T> predicate){
-        Objects.requireNonNull(predicate, "predicate is null");
         return Collections.filterNot(this, predicate);
     }
 
     @Override
     public final <U> List<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         List<U> list = empty();
         for (T t : this) {
             for (U u : mapper.apply(t)) {
@@ -981,7 +958,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> insertAll(int index, Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
         }
@@ -1028,7 +1004,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final <U> List<U> map(Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         List<U> list = empty();
         for (T t : this) {
             list = list.prepend(mapper.apply(t));
@@ -1078,7 +1053,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final Tuple2<List<T>, List<T>> partition(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         List<T> left = empty(), right = empty();
         for (T t : this) {
             if (predicate.test(t)) {
@@ -1124,7 +1098,6 @@ public abstract class List<T> implements LinearSeq<T> {
      */
     @Override
     public final List<T> peek(Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
         }
@@ -1208,7 +1181,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> prependAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return isEmpty() ? ofAll(elements) : ofAll(elements).reverse().foldLeft(this, List::prepend);
     }
 
@@ -1236,7 +1208,6 @@ public abstract class List<T> implements LinearSeq<T> {
     @Deprecated
     @SuppressWarnings("unchecked")
     public final List<T> push(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         List<T> result = this;
         for (T element : elements) {
             result = result.prepend(element);
@@ -1255,7 +1226,6 @@ public abstract class List<T> implements LinearSeq<T> {
      */
     @Deprecated
     public final List<T> pushAll(Iterable<T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         List<T> result = this;
         for (T element : elements) {
             result = result.prepend(element);
@@ -1288,7 +1258,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> removeFirst(Predicate<T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         List<T> init = empty();
         List<T> tail = this;
         while (!tail.isEmpty() && !predicate.test(tail.head())) {
@@ -1304,7 +1273,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> removeLast(Predicate<T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final List<T> removedAndReversed = reverse().removeFirst(predicate);
         return removedAndReversed.length() == length() ? this : removedAndReversed.reverse();
     }
@@ -1461,7 +1429,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> sorted(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(collector());
     }
 
@@ -1477,7 +1444,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final Tuple2<List<T>, List<T>> span(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> itt = iterator().span(predicate);
         return Tuple.of(ofAll(itt._1), ofAll(itt._2));
     }
@@ -1585,13 +1551,11 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> takeUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
     public final List<T> takeWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         List<T> result = Nil.instance();
         for (List<T> list = this; !list.isEmpty() && predicate.test(list.head()); list = list.tail()) {
             result = result.prepend(list.head());
@@ -1612,13 +1576,11 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> takeRightUntil(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return takeRightWhile(predicate.negate());
     }
 
     @Override
     public final List<T> takeRightWhile(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return reverse().takeWhile(predicate).reverse();
     }
 
@@ -1631,7 +1593,6 @@ public abstract class List<T> implements LinearSeq<T> {
      * @throws NullPointerException if {@code f} is null
      */
     public final <U> U transform(Function<? super List<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
@@ -1664,7 +1625,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final List<T> update(int index, Function<? super T, ? extends T> updater) {
-        Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }
 
@@ -1675,14 +1635,11 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final <U, R> List<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
     public final <U> List<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
         return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
 
@@ -1693,7 +1650,6 @@ public abstract class List<T> implements LinearSeq<T> {
 
     @Override
     public final <U> List<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWithIndex(mapper));
     }
 
@@ -1953,7 +1909,6 @@ public abstract class List<T> implements LinearSeq<T> {
     private interface SplitAt {
 
         static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
-            Objects.requireNonNull(predicate, "predicate is null");
             List<T> init = Nil.instance();
             List<T> tail = source;
             while (!tail.isEmpty() && !predicate.test(tail.head())) {

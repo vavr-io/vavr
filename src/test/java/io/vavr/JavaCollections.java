@@ -35,7 +35,6 @@ final class JavaCollections {
 
     @SuppressWarnings("unchecked")
     static <K, V> Map<K, V> javaMap(Object... pairs) {
-        Objects.requireNonNull(pairs, "pairs is null");
         if ((pairs.length & 1) != 0) {
             throw new IllegalArgumentException("Odd length of key-value pairs list");
         }
@@ -48,7 +47,6 @@ final class JavaCollections {
 
     @SuppressWarnings("unchecked")
     static <T> Set<T> javaSet(T... elements) {
-        Objects.requireNonNull(elements, "elements is null");
         final Set<T> set = new HashSet<>();
         Collections.addAll(set, elements);
         return set;

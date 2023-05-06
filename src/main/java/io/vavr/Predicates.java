@@ -64,7 +64,6 @@ public final class Predicates {
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <T> Predicate<T> allOf(Predicate<T>... predicates) {
-        Objects.requireNonNull(predicates, "predicates is null");
         return t -> List.of(predicates).foldLeft(true, (bool, pred) -> bool && pred.test(t));
     }
 
@@ -88,7 +87,6 @@ public final class Predicates {
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <T> Predicate<T> anyOf(Predicate<T>... predicates) {
-        Objects.requireNonNull(predicates, "predicates is null");
         return t -> List.of(predicates).find(pred -> pred.test(t)).isDefined();
     }
 
@@ -108,7 +106,6 @@ public final class Predicates {
      * @throws NullPointerException if {@code predicate} is null
      */
     public static <T> Predicate<Iterable<T>> exists(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return iterable -> Iterator.ofAll(iterable).exists(predicate);
     }
 
@@ -128,7 +125,6 @@ public final class Predicates {
      * @throws NullPointerException if {@code predicate} is null
      */
     public static <T> Predicate<Iterable<T>> forAll(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return iterable -> Iterator.ofAll(iterable).forAll(predicate);
     }
 
@@ -148,7 +144,6 @@ public final class Predicates {
      */
     // DEV-NOTE: We need Class<? extends T> instead of Class<T>, see {@link TryTest#shouldRecoverSuccessUsingCase()}
     public static <T> Predicate<T> instanceOf(Class<? extends T> type) {
-        Objects.requireNonNull(type, "type is null");
         return obj -> obj != null && type.isAssignableFrom(obj.getClass());
     }
 
@@ -188,7 +183,6 @@ public final class Predicates {
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <T> Predicate<T> isIn(T... values) {
-        Objects.requireNonNull(values, "values is null");
         return obj -> List.of(values).find(value -> Objects.equals(value, obj)).isDefined();
     }
 
@@ -245,7 +239,6 @@ public final class Predicates {
     @SuppressWarnings({ "unchecked", "varargs" })
     @SafeVarargs
     public static <T> Predicate<T> noneOf(Predicate<T>... predicates) {
-        Objects.requireNonNull(predicates, "predicates is null");
         return anyOf(predicates).negate();
     }
 
@@ -271,7 +264,6 @@ public final class Predicates {
      */
     @SuppressWarnings("unchecked")
     public static <T> Predicate<T> not(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return (Predicate<T>) predicate.negate();
     }
 
