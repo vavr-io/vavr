@@ -195,7 +195,6 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     /**
      * A wrapper to {@link #all(Traversable)}.
-     * <p/>
      * Usage example :
      *
      * <pre>{@code
