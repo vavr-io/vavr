@@ -1262,6 +1262,9 @@ public abstract class Stream<T> implements LinearSeq<T> {
 
     @Override
     public final Tuple2<Stream<T>, Stream<T>> partition(Predicate<? super T> predicate) {
+        if (isEmpty()) {
+            return Tuple.of(empty(), empty());
+        }
         return Tuple.of(filter(predicate), filter(predicate.negate()));
     }
 
