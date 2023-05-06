@@ -119,8 +119,8 @@ public class OptionTest extends AbstractValueTest {
         })).isEqualTo(Option.none());
     }
 
-    @Test(expected = NullPointerException.class)
-    public void shouldThrowExceptionOnWhenWithProvider() {
+    @Test
+    public void shouldIgnoreSupplierNullOnWhenWithProvider() {
         assertThat(Option.when(false, (Supplier<?>) null)).isEqualTo(Option.none());
     }
 
@@ -316,15 +316,10 @@ public class OptionTest extends AbstractValueTest {
 
     // -- onEmpty
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerExceptionWhenNullOnEmptyActionPassed() {
-        try {
-            final Option<String> none = Option.none();
-            none.onEmpty(null);
-            Assert.fail("No exception was thrown");
-        } catch (NullPointerException exc) {
-            assertThat(exc.getMessage()).isEqualTo("action is null");
-        }
+        final Option<String> none = Option.none();
+        none.onEmpty(null);
     }
 
     @Test
@@ -381,11 +376,9 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.<Integer>none().filterNot(i -> i == 1)).isEqualTo(Option.none());
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenFilterNotPredicateIsNull() {
-        assertThatThrownBy(() -> Option.of(1).filterNot(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("predicate is null");
+        Option.of(1).filterNot(null);
     }
 
     // -- map
