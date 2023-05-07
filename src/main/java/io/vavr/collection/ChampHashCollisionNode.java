@@ -46,11 +46,17 @@ import static io.vavr.collection.ChampNodeFactory.newHashCollisionNode;
  * <p>
  * References:
  * <p>
- * This class has been derived from 'The Capsule Hash Trie Collections Library'.
+ * Portions of the code in this class have been derived from 'The Capsule Hash Trie Collections Library', and from
+ * 'JHotDraw 8'.
  * <dl>
- *      <dt>The Capsule Hash Trie Collections Library.
- *      <br>Copyright (c) Michael Steindorfer. <a href="https://github.com/usethesource/capsule/blob/3856cd65fa4735c94bcfa94ec9ecf408429b54f4/LICENSE">BSD-2-Clause License</a></dt>
- *      <dd><a href="https://github.com/usethesource/capsule">github.com</a>
+ *     <dt>The Capsule Hash Trie Collections Library.
+ *     <br>Copyright (c) Michael Steindorfer. <a href="https://github.com/usethesource/capsule/blob/3856cd65fa4735c94bcfa94ec9ecf408429b54f4/LICENSE">BSD-2-Clause License</a></dt>
+ *     <dd><a href="https://github.com/usethesource/capsule">github.com</a>
+ *     </dd>
+ *     <dt>JHotDraw 8. Copyright © 2023 The authors and contributors of JHotDraw.
+ *     <a href="https://github.com/wrandelshofer/jhotdraw8/blob/8c1a98b70bc23a0c63f1886334d5b568ada36944/LICENSE">MIT License</a>.</dt>
+ *     <dd><a href="https://github.com/wrandelshofer/jhotdraw8">github.com</a>
+ *     </dd>
  * </dl>
  *
  * @param <D> the data type
@@ -58,9 +64,9 @@ import static io.vavr.collection.ChampNodeFactory.newHashCollisionNode;
 class ChampHashCollisionNode<D> extends ChampNode<D> {
     private static final ChampHashCollisionNode<?> EMPTY = new ChampHashCollisionNode<>(0, new Object[0]);
     private final int hash;
-     Object[] data;
+    Object[] data;
 
-    ChampHashCollisionNode(int hash, Object  [] data) {
+    ChampHashCollisionNode(int hash, Object[] data) {
         this.data = data;
         this.hash = hash;
     }
@@ -77,18 +83,18 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    boolean equivalent( Object other) {
+    boolean equivalent(Object other) {
         if (this == other) {
             return true;
         }
         ChampHashCollisionNode<?> that = (ChampHashCollisionNode<?>) other;
-         Object[] thatEntries = that.data;
+        Object[] thatEntries = that.data;
         if (hash != that.hash || thatEntries.length != data.length) {
             return false;
         }
 
         // Linear scan for each key, because of arbitrary element order.
-         Object[] thatEntriesCloned = thatEntries.clone();
+        Object[] thatEntriesCloned = thatEntries.clone();
         int remainingLength = thatEntriesCloned.length;
         outerLoop:
         for (Object key : data) {
@@ -112,8 +118,7 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    
-    Object find(D key, int dataHash, int shift,  BiPredicate<D, D> equalsFunction) {
+    Object find(D key, int dataHash, int shift, BiPredicate<D, D> equalsFunction) {
         for (Object entry : data) {
             if (equalsFunction.test(key, (D) entry)) {
                 return entry;
@@ -124,7 +129,6 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @Override
     @SuppressWarnings("unchecked")
-    
     D getData(int index) {
         return (D) data[index];
     }
@@ -225,39 +229,38 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected  ChampNode<D> putAll( ChampIdentityObject owner, ChampNode<D> otherNode, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+    protected ChampNode<D> putAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift, ChampBulkChangeEvent bulkChange, BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction, ToIntFunction<D> hashFunction, ChampChangeEvent<D> details) {
         if (otherNode == this) {
             bulkChange.inBoth += dataArity();
             return this;
         }
         ChampHashCollisionNode<D> that = (ChampHashCollisionNode<D>) otherNode;
 
+        // XXX HashSetTest requires that we use a specific iteration sequence. We could use a more performant
+        //     algorithm, if we would not have to care about the iteration sequence.
+
         // The buffer initially contains all data elements from this node.
-        // Every time we find a matching data element in both nodes, we do not need to ever look at that data element again.
-        // So, we swap it out with a data element from the end of unprocessed data elements, and subtract 1 from unprocessedSize.
-        // If that node contains a data element that is not in this node, we add it to the end, and add 1 to bufferSize.
+        // Every time we find a data element in that node, that is not in this node, we add it to the end
+        // of the buffer.
         // Buffer content:
-        // 0..unprocessedSize-1 = unprocessed data elements from this node
-        // unprocessedSize..resultSize-1 = data elements that we have updated from that node, or that we have added from that node.
+        // 0..thisSize-1 = data elements from this node
+        // thisSize..resultSize-1 = data elements from that node that are not also contained in this node
         final int thisSize = this.dataArity();
         final int thatSize = that.dataArity();
         Object[] buffer = Arrays.copyOf(this.data, thisSize + thatSize);
         System.arraycopy(this.data, 0, buffer, 0, this.data.length);
         Object[] thatArray = that.data;
         int resultSize = thisSize;
-        int unprocessedSize = thisSize;
         boolean updated = false;
         outer:
         for (int i = 0; i < thatSize; i++) {
             D thatData = (D) thatArray[i];
-            for (int j = 0; j < unprocessedSize; j++) {
+            for (int j = 0; j < thisSize; j++) {
                 D thisData = (D) buffer[j];
                 if (equalsFunction.test(thatData, thisData)) {
-                    D swap = (D) buffer[--unprocessedSize];
                     D updatedData = updateFunction.apply(thisData, thatData);
+                    buffer[j] = updatedData;
                     updated |= updatedData != thisData;
-                    buffer[unprocessedSize] = updatedData;
-                    buffer[j] = swap;
                     bulkChange.inBoth++;
                     continue outer;
                 }
@@ -269,16 +272,18 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected  ChampNode<D> removeAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+    protected ChampNode<D> removeAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift, ChampBulkChangeEvent bulkChange, BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction, ToIntFunction<D> hashFunction, ChampChangeEvent<D> details) {
         if (otherNode == this) {
             bulkChange.removed += dataArity();
             return (ChampNode<D>) EMPTY;
         }
         ChampHashCollisionNode<D> that = (ChampHashCollisionNode<D>) otherNode;
 
+        // XXX HashSetTest requires that we use a specific iteration sequence. We could use a more performant
+        //     algorithm, if we would not have to care about the iteration sequence.
+
         // The buffer initially contains all data elements from this node.
-        // Every time we find a data element that must be removed, we replace it with the last element from the
-        // result part of the buffer, and reduce resultSize by 1.
+        // Every time we find a data element that must be removed, we remove it from the buffer.
         // Buffer content:
         // 0..resultSize-1 = data elements from this node that have not been removed
         final int thisSize = this.dataArity();
@@ -292,7 +297,8 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
             for (int j = 0; j < resultSize; j++) {
                 D thisData = (D) buffer[j];
                 if (equalsFunction.test(thatData, thisData)) {
-                    buffer[j] = buffer[--resultSize];
+                    System.arraycopy(buffer, j + 1, buffer, j, resultSize - j - 1);
+                    resultSize--;
                     bulkChange.removed++;
                     continue outer;
                 }
@@ -301,7 +307,7 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
         return newCroppedHashCollisionNode(thisSize != resultSize, buffer, resultSize);
     }
 
-    
+
     private ChampHashCollisionNode<D> newCroppedHashCollisionNode(boolean changed, Object[] buffer, int size) {
         if (changed) {
             if (buffer.length != size) {
@@ -314,31 +320,31 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected  ChampNode<D> retainAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+    protected ChampNode<D> retainAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift, ChampBulkChangeEvent bulkChange, BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction, ToIntFunction<D> hashFunction, ChampChangeEvent<D> details) {
         if (otherNode == this) {
             bulkChange.removed += dataArity();
             return (ChampNode<D>) EMPTY;
         }
         ChampHashCollisionNode<D> that = (ChampHashCollisionNode<D>) otherNode;
 
+        // XXX HashSetTest requires that we use a specific iteration sequence. We could use a more performant
+        //     algorithm, if we would not have to care about the iteration sequence.
+
         // The buffer initially contains all data elements from this node.
-        // Every time we find a data element that must be retained, we swap it into the result-part of the buffer.
-        // 0..resultSize-1 = data elements from this node that must be retained
-        // resultSize..thisSize-1 = data elements that might need to be retained
+        // Every time we find a data element that must be retained, we add it to the buffer.
         final int thisSize = this.dataArity();
         final int thatSize = that.dataArity();
         int resultSize = 0;
         Object[] buffer = this.data.clone();
         Object[] thatArray = that.data;
+        Object[] thisArray = this.data;
         outer:
-        for (int i = 0; i < thatSize && thisSize != resultSize; i++) {
+        for (int i = 0; i < thatSize; i++) {
             D thatData = (D) thatArray[i];
             for (int j = resultSize; j < thisSize; j++) {
-                D thisData = (D) buffer[j];
+                D thisData = (D) thisArray[j];
                 if (equalsFunction.test(thatData, thisData)) {
-                    D swap = (D) buffer[resultSize];
                     buffer[resultSize++] = thisData;
-                    buffer[j] = swap;
                     continue outer;
                 }
             }
@@ -349,7 +355,7 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected  ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
+    protected ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
         final int thisSize = this.dataArity();
         int resultSize = 0;
         Object[] buffer = new Object[thisSize];
