@@ -53,7 +53,7 @@ import java.util.function.Function;
  * </dl>
  */
  class ChampSpliterator<K, E> extends ChampAbstractChampSpliterator<K, E> {
-    public ChampSpliterator(ChampNode<K> root, Function<K, E> mappingFunction, int characteristics, long size) {
+     ChampSpliterator(ChampNode<K> root, Function<K, E> mappingFunction, int characteristics, long size) {
         super(root, mappingFunction, characteristics, size);
     }
 

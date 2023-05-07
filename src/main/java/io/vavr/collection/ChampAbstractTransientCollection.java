@@ -52,22 +52,22 @@ abstract class ChampAbstractTransientCollection<E> {
      * If this owner id is null, then this map does not own any nodes.
      */
 
-    protected ChampIdentityObject owner;
+     ChampIdentityObject owner;
 
     /**
      * The root of this CHAMP trie.
      */
-    protected ChampBitmapIndexedNode<E> root;
+     ChampBitmapIndexedNode<E> root;
 
     /**
      * The number of entries in this map.
      */
-    protected int size;
+     int size;
 
     /**
      * The number of times this map has been structurally modified.
      */
-    protected int modCount;
+     int modCount;
 
     int size() {
         return size;

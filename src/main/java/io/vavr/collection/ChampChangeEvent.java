@@ -48,14 +48,14 @@ class ChampChangeEvent<D> {
     private  D oldData;
     private  D newData;
 
-    public ChampChangeEvent() {
+     ChampChangeEvent() {
     }
 
-    public boolean isUnchanged() {
+     boolean isUnchanged() {
         return type == Type.UNCHANGED;
     }
 
-    public boolean isAdded() {
+     boolean isAdded() {
         return type==Type.ADDED;
     }
 
@@ -71,19 +71,19 @@ class ChampChangeEvent<D> {
         this.oldData = data;
     }
 
-    public  D getOldData() {
+      D getOldData() {
         return oldData;
     }
 
-    public  D getNewData() {
+      D getNewData() {
         return newData;
     }
 
-    public  D getOldDataNonNull() {
+      D getOldDataNonNull() {
         return Objects.requireNonNull(oldData);
     }
 
-    public  D getNewDataNonNull() {
+      D getNewDataNonNull() {
         return Objects.requireNonNull(newData);
     }
 
@@ -112,14 +112,14 @@ class ChampChangeEvent<D> {
     /**
      * Returns true if the CHAMP trie has been modified.
      */
-    public boolean isModified() {
+     boolean isModified() {
         return type != Type.UNCHANGED;
     }
 
     /**
      * Returns true if the data element has been replaced.
      */
-    public boolean isReplaced() {
+     boolean isReplaced() {
         return type == Type.REPLACED;
     }
 

@@ -63,7 +63,7 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
     private final int nodeMap;
     private final int dataMap;
 
-    protected ChampBitmapIndexedNode(int nodeMap,
+     ChampBitmapIndexedNode(int nodeMap,
                                      int dataMap, Object  [] mixed) {
         this.nodeMap = nodeMap;
         this.dataMap = dataMap;
@@ -153,7 +153,7 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
 
     @SuppressWarnings("unchecked")
     @Override
-    protected boolean equivalent( Object other) {
+     boolean equivalent( Object other) {
         if (this == other) {
             return true;
         }
@@ -347,7 +347,7 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
     @SuppressWarnings("unchecked")
     @Override
     
-    public ChampBitmapIndexedNode<D> putAll(ChampIdentityObject owner, ChampNode<D> other, int shift,
+     ChampBitmapIndexedNode<D> putAll(ChampIdentityObject owner, ChampNode<D> other, int shift,
                                         ChampBulkChangeEvent bulkChange,
                                         BiFunction<D, D, D> updateFunction,
                                         BiPredicate<D, D> equalsFunction,
@@ -438,7 +438,7 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
 
     @Override
     
-    public ChampBitmapIndexedNode<D> removeAll( ChampIdentityObject owner, ChampNode<D> other, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+     ChampBitmapIndexedNode<D> removeAll( ChampIdentityObject owner, ChampNode<D> other, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
         var that = (ChampBitmapIndexedNode<D>) other;
         if (this == that) {
             bulkChange.inBoth += this.calculateSize();
@@ -542,7 +542,7 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
 
     @Override
     
-    public ChampBitmapIndexedNode<D> retainAll(ChampIdentityObject owner, ChampNode<D> other, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+     ChampBitmapIndexedNode<D> retainAll(ChampIdentityObject owner, ChampNode<D> other, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
         var that = (ChampBitmapIndexedNode<D>) other;
         if (this == that) {
             bulkChange.inBoth += this.calculateSize();
@@ -630,7 +630,7 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
 
     @Override
     
-    public ChampBitmapIndexedNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
+     ChampBitmapIndexedNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
         var newBitMap = nodeMap | dataMap;
         var buffer = new Object[Integer.bitCount(newBitMap)];
         int newDataMap = this.dataMap;
@@ -664,7 +664,7 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
         return newCroppedBitmapIndexedNode(buffer, newDataMap, newNodeMap);
     }
 
-    protected int calculateSize() {
+     int calculateSize() {
         int size = dataArity();
         for (int i = 0, n = nodeArity(); i < n; i++) {
             ChampNode<D> node = getNode(i);

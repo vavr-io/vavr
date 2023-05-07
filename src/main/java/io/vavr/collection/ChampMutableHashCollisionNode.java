@@ -51,7 +51,7 @@ class ChampMutableHashCollisionNode<K> extends ChampHashCollisionNode<K> {
     }
 
     @Override
-    protected ChampIdentityObject getOwner() {
+     ChampIdentityObject getOwner() {
         return owner;
     }
 }

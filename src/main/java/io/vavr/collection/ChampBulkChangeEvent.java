@@ -1,7 +1,7 @@
 package io.vavr.collection;
 
-public class ChampBulkChangeEvent {
-    public int inBoth;
-    public boolean replaced;
-    public int removed;
+ class ChampBulkChangeEvent {
+     int inBoth;
+     boolean replaced;
+     int removed;
 }

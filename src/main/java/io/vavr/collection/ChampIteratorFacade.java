@@ -48,7 +48,7 @@ import java.util.function.Consumer;
 class ChampIteratorFacade<E> implements Iterator<E>, Consumer<E> {
     private final Spliterator<E> spliterator;
 
-    public ChampIteratorFacade(Spliterator<E> spliterator) {
+     ChampIteratorFacade(Spliterator<E> spliterator) {
         this.spliterator = spliterator;
     }
 

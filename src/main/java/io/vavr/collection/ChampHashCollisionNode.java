@@ -223,13 +223,13 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
     }
 
     @Override
-    protected int calculateSize() {
+     int calculateSize() {
         return dataArity();
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    protected ChampNode<D> putAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift, ChampBulkChangeEvent bulkChange, BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction, ToIntFunction<D> hashFunction, ChampChangeEvent<D> details) {
+     ChampNode<D> putAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift, ChampBulkChangeEvent bulkChange, BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction, ToIntFunction<D> hashFunction, ChampChangeEvent<D> details) {
         if (otherNode == this) {
             bulkChange.inBoth += dataArity();
             return this;
@@ -272,7 +272,7 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected ChampNode<D> removeAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift, ChampBulkChangeEvent bulkChange, BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction, ToIntFunction<D> hashFunction, ChampChangeEvent<D> details) {
+     ChampNode<D> removeAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift, ChampBulkChangeEvent bulkChange, BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction, ToIntFunction<D> hashFunction, ChampChangeEvent<D> details) {
         if (otherNode == this) {
             bulkChange.removed += dataArity();
             return (ChampNode<D>) EMPTY;
@@ -320,7 +320,7 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected ChampNode<D> retainAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift, ChampBulkChangeEvent bulkChange, BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction, ToIntFunction<D> hashFunction, ChampChangeEvent<D> details) {
+     ChampNode<D> retainAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift, ChampBulkChangeEvent bulkChange, BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction, ToIntFunction<D> hashFunction, ChampChangeEvent<D> details) {
         if (otherNode == this) {
             bulkChange.removed += dataArity();
             return (ChampNode<D>) EMPTY;
@@ -355,7 +355,7 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
+     ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
         final int thisSize = this.dataArity();
         int resultSize = 0;
         Object[] buffer = new Object[thisSize];

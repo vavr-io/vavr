@@ -50,32 +50,32 @@ import java.util.Objects;
     private final  E element;
     private final int sequenceNumber;
 
-    public ChampSequencedElement(E element) {
+     ChampSequencedElement(E element) {
         this.element = element;
         this.sequenceNumber = NO_SEQUENCE_NUMBER;
     }
 
-    public ChampSequencedElement(E element, int sequenceNumber) {
+     ChampSequencedElement(E element, int sequenceNumber) {
         this.element = element;
         this.sequenceNumber = sequenceNumber;
     }
 
 
-    public static <E> ChampSequencedElement<E> forceUpdate( ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
+     static <E> ChampSequencedElement<E> forceUpdate( ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
         return newK;
     }
 
-    public static <E> ChampSequencedElement<E> update(ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
+     static <E> ChampSequencedElement<E> update(ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
         return oldK;
     }
 
     
-    public static <E> ChampSequencedElement<E> updateAndMoveToFirst(ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
+     static <E> ChampSequencedElement<E> updateAndMoveToFirst(ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
         return oldK.getSequenceNumber() == newK.getSequenceNumber() + 1 ? oldK : newK;
     }
 
     
-    public static <E> ChampSequencedElement<E> updateAndMoveToLast(ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
+     static <E> ChampSequencedElement<E> updateAndMoveToLast(ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {
         return oldK.getSequenceNumber() == newK.getSequenceNumber() - 1 ? oldK : newK;
     }
 
@@ -96,7 +96,7 @@ import java.util.Objects;
         return Objects.hashCode(element);
     }
 
-    public  E getElement() {
+      E getElement() {
         return element;
     }
 

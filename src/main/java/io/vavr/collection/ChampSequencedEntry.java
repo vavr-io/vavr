@@ -54,49 +54,49 @@ import java.util.Objects;
     private static final long serialVersionUID = 0L;
     private final int sequenceNumber;
 
-    public ChampSequencedEntry(K key) {
+     ChampSequencedEntry(K key) {
         super(key, null);
         sequenceNumber = NO_SEQUENCE_NUMBER;
     }
 
-    public ChampSequencedEntry(K key, V value) {
+     ChampSequencedEntry(K key, V value) {
         super(key, value);
         sequenceNumber = NO_SEQUENCE_NUMBER;
     }
-    public ChampSequencedEntry(K key, V value, int sequenceNumber) {
+     ChampSequencedEntry(K key, V value, int sequenceNumber) {
         super(key, value);
         this.sequenceNumber = sequenceNumber;
     }
 
-    public static <K, V> ChampSequencedEntry<K, V> forceUpdate( ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
+     static <K, V> ChampSequencedEntry<K, V> forceUpdate( ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
         return newK;
     }
-    public static <K, V> boolean keyEquals(ChampSequencedEntry<K, V> a, ChampSequencedEntry<K, V> b) {
+     static <K, V> boolean keyEquals(ChampSequencedEntry<K, V> a, ChampSequencedEntry<K, V> b) {
         return Objects.equals(a.getKey(), b.getKey());
     }
 
-    public static <K, V> boolean keyAndValueEquals(ChampSequencedEntry<K, V> a,  ChampSequencedEntry<K, V> b) {
+     static <K, V> boolean keyAndValueEquals(ChampSequencedEntry<K, V> a,  ChampSequencedEntry<K, V> b) {
         return Objects.equals(a.getKey(), b.getKey()) && Objects.equals(a.getValue(), b.getValue());
     }
 
-    public static <V, K> int keyHash( ChampSequencedEntry<K, V> a) {
+     static <V, K> int keyHash( ChampSequencedEntry<K, V> a) {
         return Objects.hashCode(a.getKey());
     }
 
     
-    public static <K, V> ChampSequencedEntry<K, V> update(ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
+     static <K, V> ChampSequencedEntry<K, V> update(ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
         return Objects.equals(oldK.getValue(), newK.getValue()) ? oldK :
                 new ChampSequencedEntry<>(oldK.getKey(), newK.getValue(), oldK.getSequenceNumber());
     }
 
     
-    public static <K, V> ChampSequencedEntry<K, V> updateAndMoveToFirst(ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
+     static <K, V> ChampSequencedEntry<K, V> updateAndMoveToFirst(ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
         return Objects.equals(oldK.getValue(), newK.getValue())
                 && oldK.getSequenceNumber() == newK.getSequenceNumber() + 1 ? oldK : newK;
     }
 
     
-    public static <K, V> ChampSequencedEntry<K, V> updateAndMoveToLast(ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
+     static <K, V> ChampSequencedEntry<K, V> updateAndMoveToLast(ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
         return Objects.equals(oldK.getValue(), newK.getValue())
                 && oldK.getSequenceNumber() == newK.getSequenceNumber() - 1 ? oldK : newK;
     }
@@ -106,7 +106,7 @@ import java.util.Objects;
     //     This behavior does not match the behavior of java.util.HashMap.put().
     //     This behavior violates the contract of the map: we do create a new instance of the map,
     //     although it is equal to the previous instance.
-    public static <K, V> ChampSequencedEntry<K, V> updateWithNewKey( ChampSequencedEntry<K, V> oldK,  ChampSequencedEntry<K, V> newK) {
+     static <K, V> ChampSequencedEntry<K, V> updateWithNewKey( ChampSequencedEntry<K, V> oldK,  ChampSequencedEntry<K, V> newK) {
         return Objects.equals(oldK.getValue(), newK.getValue())
                 && oldK.getKey() == newK.getKey()
                 ? oldK
