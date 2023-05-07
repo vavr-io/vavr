@@ -29,7 +29,7 @@
 package io.vavr.collection;
 
 /**
- * Abstract base class for a transient CHAMP collection.
+ * Abstract base class for a transient CHAMP set.
  * <p>
  * References:
  * <p>
@@ -42,45 +42,21 @@ package io.vavr.collection;
  *
  * @param <E> the element type
  */
-abstract class ChampAbstractTransientCollection<E> {
-    /**
-     * The current owner id of this map.
-     * <p>
-     * All nodes that have the same non-null owner id, are exclusively owned
-     * by this map, and therefore can be mutated without affecting other map.
-     * <p>
-     * If this owner id is null, then this map does not own any nodes.
-     */
-
-    protected ChampIdentityObject owner;
-
-    /**
-     * The root of this CHAMP trie.
-     */
-    protected ChampBitmapIndexedNode<E> root;
-
-    /**
-     * The number of entries in this map.
-     */
-    protected int size;
-
-    /**
-     * The number of times this map has been structurally modified.
-     */
-    protected int modCount;
-
-    int size() {
-        return size;
-    }
-
-    boolean isEmpty() {
-        return size == 0;
-    }
-
-    ChampIdentityObject getOrCreateOwner() {
-        if (owner == null) {
-            owner = new ChampIdentityObject();
+abstract class ChampAbstractTransientSet<E> extends ChampAbstractTransientCollection<E>{
+    abstract void clear();
+    abstract boolean remove(Object o);
+    boolean removeAll( Iterable<?> c) {
+        if (isEmpty()) {
+            return false;
         }
-        return owner;
+        if (c == this) {
+            clear();
+            return true;
+        }
+        boolean modified = false;
+        for (Object o : c) {
+            modified |= remove(o);
+        }
+        return modified;
     }
 }

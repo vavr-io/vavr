@@ -107,6 +107,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
      * The size of the set.
      */
     final int size;
+
     /**
      * We do not guarantee an iteration order. Make sure that nobody accidentally relies on it.
      * <p>

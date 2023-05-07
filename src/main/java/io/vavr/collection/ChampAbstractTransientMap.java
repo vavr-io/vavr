@@ -28,8 +28,12 @@
 
 package io.vavr.collection;
 
+import io.vavr.Tuple2;
+
+import java.util.Objects;
+
 /**
- * Abstract base class for a transient CHAMP collection.
+ * Abstract base class for a transient CHAMP map.
  * <p>
  * References:
  * <p>
@@ -42,45 +46,31 @@ package io.vavr.collection;
  *
  * @param <E> the element type
  */
-abstract class ChampAbstractTransientCollection<E> {
-    /**
-     * The current owner id of this map.
-     * <p>
-     * All nodes that have the same non-null owner id, are exclusively owned
-     * by this map, and therefore can be mutated without affecting other map.
-     * <p>
-     * If this owner id is null, then this map does not own any nodes.
-     */
-
-    protected ChampIdentityObject owner;
-
-    /**
-     * The root of this CHAMP trie.
-     */
-    protected ChampBitmapIndexedNode<E> root;
-
-    /**
-     * The number of entries in this map.
-     */
-    protected int size;
-
-    /**
-     * The number of times this map has been structurally modified.
-     */
-    protected int modCount;
-
-    int size() {
-        return size;
-    }
-
-    boolean isEmpty() {
-        return size == 0;
-    }
-
-    ChampIdentityObject getOrCreateOwner() {
-        if (owner == null) {
-            owner = new ChampIdentityObject();
+abstract class ChampAbstractTransientMap<K,V,E> extends ChampAbstractTransientCollection<E>{
+    @SuppressWarnings("unchecked")
+    boolean removeAll(Iterable<?> c) {
+        if (isEmpty()) {
+            return false;
         }
-        return owner;
+        boolean modified = false;
+        for (Object key : c) {
+            var details = removeKey((K)key);
+            modified |= details.isModified();
+        }
+        return modified;
+    }
+
+    abstract ChampChangeEvent<E> removeKey(K key);
+    abstract void clear();
+    abstract V put(K key, V value);
+
+   boolean putAllTuples(Iterable<? extends Tuple2<? extends K,? extends V>> c) {
+        boolean modified = false;
+        for (var e : c) {
+            var oldValue = put(e._1,e._2);
+            modified = modified || !Objects.equals(oldValue, e);
+        }
+        return modified;
+
     }
 }
