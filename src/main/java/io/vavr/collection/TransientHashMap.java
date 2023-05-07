@@ -65,7 +65,7 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
         boolean modified = false;
         for (var e : c) {
             var oldValue = put(e.getKey(), e.getValue());
-            modified = modified || !Objects.equals(oldValue, e);
+            modified = modified || !Objects.equals(oldValue, e.getValue());
         }
         return modified;
     }
