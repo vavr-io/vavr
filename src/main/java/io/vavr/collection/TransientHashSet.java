@@ -28,15 +28,17 @@
 
 package io.vavr.collection;
 
+import java.util.Collection;
 import java.util.Objects;
+
 
 /**
  * Supports efficient bulk-operations on a set through transience.
  *
- * @param <T>the element type
+ * @param <E>the element type
  */
-class TransientHashSet<T> extends ChampAbstractTransientCollection<T> {
-    TransientHashSet(HashSet<T> s) {
+class TransientHashSet<E> extends ChampAbstractTransientCollection<E> {
+    TransientHashSet(HashSet<E> s) {
         root = s;
         size = s.size;
     }
@@ -45,19 +47,19 @@ class TransientHashSet<T> extends ChampAbstractTransientCollection<T> {
         this(HashSet.empty());
     }
 
-    public HashSet<T> toImmutable() {
-        mutator = null;
+    public HashSet<E> toImmutable() {
+        owner = null;
         return isEmpty()
                 ? HashSet.empty()
-                : root instanceof HashSet<T> h ? h : new HashSet<>(root, size);
+                : root instanceof HashSet<E> h ? h : new HashSet<>(root, size);
     }
 
-    boolean add(T e) {
-        ChampChangeEvent<T> details = new ChampChangeEvent<>();
-        root = root.update(getOrCreateIdentity(),
-                e, Objects.hashCode(e), 0, details,
+    boolean add(E e) {
+        ChampChangeEvent<E> details = new ChampChangeEvent<>();
+        root = root.put(getOrCreateOwner(),
+                e, HashSet.keyHash(e), 0, details,
                 (oldKey, newKey) -> oldKey,
-                Objects::equals, Objects::hashCode);
+                Objects::equals, HashSet::keyHash);
         if (details.isModified()) {
             size++;
             modCount++;
@@ -66,26 +68,37 @@ class TransientHashSet<T> extends ChampAbstractTransientCollection<T> {
     }
 
     @SuppressWarnings("unchecked")
-    boolean addAll(Iterable<? extends T> c) {
+    boolean addAll(Iterable<? extends E> c) {
         if (c == root) {
             return false;
         }
         if (isEmpty() && (c instanceof HashSet<?> cc)) {
-            root = (ChampBitmapIndexedNode<T>) cc;
+            root = (ChampBitmapIndexedNode<E>) cc;
             size = cc.size;
             return true;
         }
-        boolean modified = false;
-        for (T e : c) {
-            modified |= add(e);
+        if (c instanceof HashSet<?> that) {
+            var bulkChange = new ChampBulkChangeEvent();
+            var newRootNode = root.putAll(getOrCreateOwner(), (ChampNode<E>) that, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampChangeEvent<>());
+            if (bulkChange.inBoth == that.size()) {
+                return false;
+            }
+            root = newRootNode;
+            size += that.size - bulkChange.inBoth;
+            modCount++;
+            return true;
         }
-        return modified;
+        boolean added = false;
+        for (E e : c) {
+            added |= add(e);
+        }
+        return added;
     }
 
-    boolean remove(T key) {
-        int keyHash = Objects.hashCode(key);
-        ChampChangeEvent<T> details = new ChampChangeEvent<>();
-        root = root.remove(mutator, key, keyHash, 0, details, Objects::equals);
+    boolean remove(E key) {
+        int keyHash = HashSet.keyHash(key);
+        ChampChangeEvent<E> details = new ChampChangeEvent<>();
+        root = root.remove(owner, key, keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
             size--;
             return true;
@@ -93,14 +106,47 @@ class TransientHashSet<T> extends ChampAbstractTransientCollection<T> {
         return false;
     }
 
-    boolean removeAll(Iterable<? extends T> c) {
+    boolean removeAll(Iterable<? extends E> c) {
         if (isEmpty()||c == root) {
             return false;
         }
         boolean modified = false;
-        for (T e : c) {
+        for (E e : c) {
             modified |= remove(e);
         }
         return modified;
+    }
+    void clear() {
+        root =ChampBitmapIndexedNode.emptyNode();
+        size = 0;
+        modCount++;
+    }
+    @SuppressWarnings("unchecked")
+     boolean retainAll( Iterable<?> c) {
+        if (isEmpty()) {
+            return false;
+        }
+        if ((c instanceof Collection<?> cc && cc.isEmpty())) {
+            clear();
+            return true;
+        }
+        ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
+        ChampBitmapIndexedNode<E> newRootNode;
+        if (c instanceof HashSet<?> that) {
+            newRootNode = root.retainAll(getOrCreateOwner(), (ChampBitmapIndexedNode<E>) that, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampChangeEvent<>());
+        } else if (c instanceof Collection<?> that) {
+            newRootNode = root.filterAll(getOrCreateOwner(), that::contains, 0, bulkChange);
+        } else {
+            java.util.HashSet<Object> that = new java.util.HashSet<>();
+            c.forEach(that::add);
+            newRootNode = root.filterAll(getOrCreateOwner(), that::contains, 0, bulkChange);
+        }
+        if (bulkChange.removed == 0) {
+            return false;
+        }
+        root = newRootNode;
+        size -= bulkChange.removed;
+        modCount++;
+        return true;
     }
 }

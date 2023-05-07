@@ -92,8 +92,8 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientCollection<Cham
     ChampChangeEvent<ChampSequencedEntry<K, V>> putLast(final K key, V value, boolean moveToLast) {
         var details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
         var newEntry = new ChampSequencedEntry<>(key, value, vector.size() - offset);
-        var mutator = getOrCreateIdentity();
-        root = root.update(mutator, newEntry,
+        var owner = getOrCreateOwner();
+        root = root.put(owner, newEntry,
                 Objects.hashCode(key), 0, details,
                 moveToLast ? ChampSequencedEntry::updateAndMoveToLast : ChampSequencedEntry::updateWithNewKey,
                 ChampSequencedEntry::keyEquals, ChampSequencedEntry::keyHash);
@@ -104,7 +104,7 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientCollection<Cham
         }
         if (details.isModified()) {
             if (details.isReplaced()) {
-                var result = ChampSequencedData.vecRemove(vector, mutator, details.getOldDataNonNull(), new ChampChangeEvent<ChampSequencedEntry<K, V>>(), offset);
+                var result = ChampSequencedData.vecRemove(vector, owner, details.getOldDataNonNull(), new ChampChangeEvent<ChampSequencedEntry<K, V>>(), offset);
                 vector = result._1;
                 offset = result._2;
             } else {
@@ -148,8 +148,8 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientCollection<Cham
 
     void renumber() {
         if (ChampSequencedData.vecMustRenumber(size, offset, vector.size())) {
-            ChampIdentityObject mutator = getOrCreateIdentity();
-            var result = ChampSequencedData.vecRenumber(size, root, vector, mutator,
+            ChampIdentityObject owner = getOrCreateOwner();
+            var result = ChampSequencedData.vecRenumber(size, root, vector, owner,
                     ChampSequencedEntry::keyHash, ChampSequencedEntry::keyEquals,
                     (e, seq) -> new ChampSequencedEntry<>(e.getKey(), e.getValue(), seq));
             root = result._1;
@@ -159,7 +159,7 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientCollection<Cham
     }
 
     public LinkedHashMap<K,V> toImmutable() {
-        mutator = null;
+        owner = null;
         return isEmpty()
                 ? LinkedHashMap.empty()
                 : root instanceof LinkedHashMap<K,V> h ? h : new LinkedHashMap<>(root, vector,size,offset);

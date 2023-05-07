@@ -817,7 +817,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     @Override
     public HashMap<K, V> put(K key, V value) {
         final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = update(null, new AbstractMap.SimpleImmutableEntry<>(key, value),
+        final ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = put(null, new AbstractMap.SimpleImmutableEntry<>(key, value),
                 Objects.hashCode(key), 0, details,
                 HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::keyHash);
         if (details.isModified()) {
@@ -842,13 +842,13 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     private HashMap<K, V> putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> entries) {
         final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampIdentityObject mutator = new ChampIdentityObject();
+        final ChampIdentityObject owner = new ChampIdentityObject();
         ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = this;
         int newSize = size;
         for (var e : entries) {
             final int keyHash = Objects.hashCode(e.getKey());
             details.reset();
-            newRootNode = newRootNode.update(mutator, new AbstractMap.SimpleImmutableEntry<>(e.getKey(), e.getValue()),
+            newRootNode = newRootNode.put(owner, new AbstractMap.SimpleImmutableEntry<>(e.getKey(), e.getValue()),
                     keyHash, 0, details,
                     HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::keyHash);
             if (details.isAdded()) {
@@ -864,13 +864,13 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
             return (HashMap<K, V>) tuples;
         }
         final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampIdentityObject mutator = new ChampIdentityObject();
+        final ChampIdentityObject owner = new ChampIdentityObject();
         ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = this;
         int newSize = size;
         for (var e : tuples) {
             final int keyHash = Objects.hashCode(e._1);
             details.reset();
-            newRootNode = newRootNode.update(mutator, new AbstractMap.SimpleImmutableEntry<>(e._1, e._2),
+            newRootNode = newRootNode.put(owner, new AbstractMap.SimpleImmutableEntry<>(e._1, e._2),
                     keyHash, 0, details,
                     HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::keyHash);
             if (details.isAdded()) {
@@ -900,13 +900,13 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
             return this;
         }
         final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampIdentityObject mutator = new ChampIdentityObject();
+        final ChampIdentityObject owner = new ChampIdentityObject();
         ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = this;
         int newSize = size;
         for (K key : keys) {
             final int keyHash = Objects.hashCode(key);
             details.reset();
-            newRootNode = newRootNode.remove(mutator, new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
+            newRootNode = newRootNode.remove(owner, new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
                     HashMap::keyEquals);
             if (details.isModified()) {
                 newSize--;
@@ -945,11 +945,11 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         Objects.requireNonNull(elements, "elements is null");
         ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRoot = ChampBitmapIndexedNode.emptyNode();
         final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampIdentityObject mutator = new ChampIdentityObject();
+        final ChampIdentityObject owner = new ChampIdentityObject();
         int newSize = 0;
         for (Tuple2<K, V> entry : elements) {
             if (contains(entry)) {
-                newRoot = newRoot.update(mutator, new AbstractMap.SimpleImmutableEntry<>(entry._1, entry._2),
+                newRoot = newRoot.put(owner, new AbstractMap.SimpleImmutableEntry<>(entry._1, entry._2),
                         Objects.hashCode(entry._1), 0, details,
                         HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::keyHash);
                 if (details.isAdded()) {
@@ -1173,7 +1173,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            var mutator = new ChampIdentityObject();
+            var owner = new ChampIdentityObject();
             ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRoot = emptyNode();
             ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
             int newSize = 0;
@@ -1181,7 +1181,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
                 final K key = (K) s.readObject();
                 final V value = (V) s.readObject();
                 int keyHash = Objects.hashCode(key);
-                newRoot = newRoot.update(mutator, new AbstractMap.SimpleImmutableEntry<K, V>(key, value), keyHash, 0, details, HashMap::updateEntry, Objects::equals, Objects::hashCode);
+                newRoot = newRoot.put(owner, new AbstractMap.SimpleImmutableEntry<K, V>(key, value), keyHash, 0, details, HashMap::updateEntry, Objects::equals, Objects::hashCode);
                 if (details.isModified()) newSize++;
             }
             map = newSize == 0 ? empty() : new HashMap<>(newRoot, newSize);

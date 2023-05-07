@@ -43,14 +43,7 @@ import java.util.Objects;
  *
  * @param <D> the data type
  */
- class ChampChangeEvent<D> {
-    enum Type {
-        UNCHANGED,
-        ADDED,
-        REMOVED,
-        REPLACED
-    }
-
+class ChampChangeEvent<D> {
     private  Type type = Type.UNCHANGED;
     private  D oldData;
     private  D newData;
@@ -58,11 +51,22 @@ import java.util.Objects;
     public ChampChangeEvent() {
     }
 
-    void reset(){
-        type=Type.UNCHANGED;
-        oldData=null;
-        newData=null;
+    public boolean isUnchanged() {
+        return type == Type.UNCHANGED;
     }
+
+    public boolean isAdded() {
+        return type==Type.ADDED;
+    }
+
+    /**
+     * Call this method to indicate that a data element has been added.
+     */
+    void setAdded( D newData) {
+        this.newData = newData;
+        this.type = Type.ADDED;
+    }
+
     void found(D data) {
         this.oldData = data;
     }
@@ -106,14 +110,6 @@ import java.util.Objects;
     }
 
     /**
-     * Call this method to indicate that a data element has been added.
-     */
-    void setAdded( D newData) {
-        this.newData = newData;
-        this.type = Type.ADDED;
-    }
-
-    /**
      * Returns true if the CHAMP trie has been modified.
      */
     public boolean isModified() {
@@ -127,10 +123,16 @@ import java.util.Objects;
         return type == Type.REPLACED;
     }
 
-    /**
-     * Returns true if the data element has been added.
-     */
-    public boolean isAdded() {
-        return type == Type.ADDED;
+    void reset() {
+        type = Type.UNCHANGED;
+        oldData = null;
+        newData = null;
+    }
+
+    enum Type {
+        UNCHANGED,
+        ADDED,
+        REMOVED,
+        REPLACED
     }
 }

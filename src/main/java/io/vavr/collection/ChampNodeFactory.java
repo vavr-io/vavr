@@ -48,17 +48,17 @@ class ChampNodeFactory {
     }
 
     static <K> ChampBitmapIndexedNode<K> newBitmapIndexedNode(
-            ChampIdentityObject mutator, int nodeMap,
+            ChampIdentityObject owner, int nodeMap,
             int dataMap, Object[] nodes) {
-        return mutator == null
+        return owner == null
                 ? new ChampBitmapIndexedNode<>(nodeMap, dataMap, nodes)
-                : new ChampMutableBitmapIndexedNode<>(mutator, nodeMap, dataMap, nodes);
+                : new ChampMutableBitmapIndexedNode<>(owner, nodeMap, dataMap, nodes);
     }
 
     static <K> ChampHashCollisionNode<K> newHashCollisionNode(
-            ChampIdentityObject mutator, int hash, Object  [] entries) {
-        return mutator == null
+            ChampIdentityObject owner, int hash, Object  [] entries) {
+        return owner == null
                 ? new ChampHashCollisionNode<>(hash, entries)
-                : new ChampMutableHashCollisionNode<>(mutator, hash, entries);
+                : new ChampMutableHashCollisionNode<>(owner, hash, entries);
     }
 }

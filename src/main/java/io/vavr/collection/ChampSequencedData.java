@@ -73,12 +73,12 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
      */
     int NO_SEQUENCE_NUMBER = Integer.MIN_VALUE;
 
-    static <K extends ChampSequencedData> ChampBitmapIndexedNode<K> buildSequencedTrie(ChampBitmapIndexedNode<K> root, ChampIdentityObject mutator) {
+    static <K extends ChampSequencedData> ChampBitmapIndexedNode<K> buildSequencedTrie(ChampBitmapIndexedNode<K> root, ChampIdentityObject owner) {
         ChampBitmapIndexedNode<K> seqRoot = emptyNode();
         ChampChangeEvent<K> details = new ChampChangeEvent<>();
         for (ChampSpliterator<K, K> i = new ChampSpliterator<K, K>(root, null, 0, 0); i.moveNext(); ) {
             K elem = i.current();
-            seqRoot = seqRoot.update(mutator, elem, seqHash(elem.getSequenceNumber()),
+            seqRoot = seqRoot.put(owner, elem, seqHash(elem.getSequenceNumber()),
                     0, details, (oldK, newK) -> oldK, ChampSequencedData::seqEquals, ChampSequencedData::seqHash);
         }
         return seqRoot;
@@ -103,7 +103,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
                 || first < Integer.MIN_VALUE + 2;
     }
 
-    static <K extends ChampSequencedData> Vector<Object> vecBuildSequencedTrie(ChampBitmapIndexedNode<K> root, ChampIdentityObject mutator, int size) {
+    static <K extends ChampSequencedData> Vector<Object> vecBuildSequencedTrie(ChampBitmapIndexedNode<K> root, ChampIdentityObject owner, int size) {
         ArrayList<K> list = new ArrayList<>(size);
         for (var i = new ChampSpliterator<K, K>(root, Function.identity(), 0, Long.MAX_VALUE); i.moveNext(); ) {
             list.add(i.current());
@@ -128,7 +128,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
      * @param size            the size of the trie
      * @param root            the root of the trie
      * @param sequenceRoot    the sequence root of the trie
-     * @param mutator         the mutator that will own the renumbered trie
+     * @param owner         the owner that will own the renumbered trie
      * @param hashFunction    the hash function for data elements
      * @param equalsFunction  the equals function for data elements
      * @param factoryFunction the factory function for data elements
@@ -138,7 +138,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
     static <K extends ChampSequencedData> ChampBitmapIndexedNode<K> renumber(int size,
                                                                              ChampBitmapIndexedNode<K> root,
                                                                              ChampBitmapIndexedNode<K> sequenceRoot,
-                                                                             ChampIdentityObject mutator,
+                                                                             ChampIdentityObject owner,
                                                                              ToIntFunction<K> hashFunction,
                                                                              BiPredicate<K, K> equalsFunction,
                                                                              BiFunction<K, Integer, K> factoryFunction
@@ -154,7 +154,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
         for (var i = new ChampSpliterator<>(sequenceRoot, Function.identity(), 0, 0); i.moveNext(); ) {
             K e = i.current();
             K newElement = factoryFunction.apply(e, seq);
-            newRoot = newRoot.update(mutator,
+            newRoot = newRoot.put(owner,
                     newElement,
                     Objects.hashCode(e), 0, details,
                     (oldk, newk) -> oldk.getSequenceNumber() == newk.getSequenceNumber() ? oldk : newk,
@@ -174,7 +174,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
      * @param size            the size of the trie
      * @param root            the root of the trie
      * @param vector          the sequence root of the trie
-     * @param mutator         the mutator that will own the renumbered trie
+     * @param owner         the owner that will own the renumbered trie
      * @param hashFunction    the hash function for data elements
      * @param equalsFunction  the equals function for data elements
      * @param factoryFunction the factory function for data elements
@@ -185,7 +185,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
             int size,
              ChampBitmapIndexedNode<K> root,
              Vector<Object> vector,
-             ChampIdentityObject mutator,
+             ChampIdentityObject owner,
              ToIntFunction<K> hashFunction,
              BiPredicate<K, K> equalsFunction,
              BiFunction<K, Integer, K> factoryFunction) {
@@ -201,7 +201,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
             K current = i.current();
             K data = factoryFunction.apply(current, seq++);
             renumberedVector = renumberedVector.append(data);
-            renumberedRoot = renumberedRoot.update(mutator, data, hashFunction.applyAsInt(current), 0, details, forceUpdate, equalsFunction, hashFunction);
+            renumberedRoot = renumberedRoot.put(owner, data, hashFunction.applyAsInt(current), 0, details, forceUpdate, equalsFunction, hashFunction);
         }
 
         return new Tuple2<>(renumberedRoot, renumberedVector);
@@ -238,17 +238,17 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
                 | ((u & 0b00000_00000_00000_00000_00000_00000_11) << 30);
     }
 
-    static <K extends ChampSequencedData> ChampBitmapIndexedNode<K> seqRemove(ChampBitmapIndexedNode<K> seqRoot, ChampIdentityObject mutator,
+    static <K extends ChampSequencedData> ChampBitmapIndexedNode<K> seqRemove(ChampBitmapIndexedNode<K> seqRoot, ChampIdentityObject owner,
                                                                               K key, ChampChangeEvent<K> details) {
-        return seqRoot.remove(mutator,
+        return seqRoot.remove(owner,
                 key, seqHash(key.getSequenceNumber()), 0, details,
                 ChampSequencedData::seqEquals);
     }
 
-    static <K extends ChampSequencedData> ChampBitmapIndexedNode<K> seqUpdate(ChampBitmapIndexedNode<K> seqRoot, ChampIdentityObject mutator,
+    static <K extends ChampSequencedData> ChampBitmapIndexedNode<K> seqUpdate(ChampBitmapIndexedNode<K> seqRoot, ChampIdentityObject owner,
                                                                               K key, ChampChangeEvent<K> details,
                                                                               BiFunction<K, K, K> replaceFunction) {
-        return seqRoot.update(mutator,
+        return seqRoot.put(owner,
                 key, seqHash(key.getSequenceNumber()), 0, details,
                 replaceFunction,
                 ChampSequencedData::seqEquals, ChampSequencedData::seqHash);
@@ -256,7 +256,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
 
     final static ChampTombstone TOMB_ZERO_ZERO = new ChampTombstone(0, 0);
 
-    static <K extends ChampSequencedData> Tuple2<Vector<Object>, Integer> vecRemove(Vector<Object> vector, ChampIdentityObject mutator, K oldElem, ChampChangeEvent<K> details, int offset) {
+    static <K extends ChampSequencedData> Tuple2<Vector<Object>, Integer> vecRemove(Vector<Object> vector, ChampIdentityObject owner, K oldElem, ChampChangeEvent<K> details, int offset) {
         // If the element is the first, we can remove it and its neighboring tombstones from the vector.
         int size = vector.size();
         int index = oldElem.getSequenceNumber() + offset;
@@ -314,7 +314,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
     }
 
 
-    static <K extends ChampSequencedData> Vector<Object> vecUpdate(Vector<Object> newSeqRoot, ChampIdentityObject mutator, K newElem, ChampChangeEvent<K> details,
+    static <K extends ChampSequencedData> Vector<Object> vecUpdate(Vector<Object> newSeqRoot, ChampIdentityObject owner, K newElem, ChampChangeEvent<K> details,
                                                                    BiFunction<K, K, K> replaceFunction) {
         return newSeqRoot;
     }
