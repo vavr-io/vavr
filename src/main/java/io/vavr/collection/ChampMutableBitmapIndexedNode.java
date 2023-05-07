@@ -50,7 +50,7 @@ class ChampMutableBitmapIndexedNode<K> extends ChampBitmapIndexedNode<K> {
     }
 
     @Override
-    protected ChampIdentityObject getOwner() {
+     ChampIdentityObject getOwner() {
         return owner;
     }
 }

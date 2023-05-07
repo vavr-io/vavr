@@ -20,10 +20,10 @@ import java.util.concurrent.TimeUnit;
  * # org.scala-lang:scala-library:2.13.8
  *
  * Benchmark                          (mask)    (size)  Mode  Cnt    _        Score   Error  Units
- * ScalaHashMapJmh.mAddAll               -65        10  avgt         _      467.142          ns/op
- * ScalaHashMapJmh.mAddAll               -65      1000  avgt         _   114499.940          ns/op
- * ScalaHashMapJmh.mAddAll               -65    100000  avgt         _ 23510614.310          ns/op
- * ScalaHashMapJmh.mAddAll               -65  10000000  avgt        7_447239207.500          ns/op
+ * ScalaHashMapJmh.mOfAll                -65        10  avgt         _      467.142          ns/op
+ * ScalaHashMapJmh.mOfAll                -65      1000  avgt         _   114499.940          ns/op
+ * ScalaHashMapJmh.mOfAll                -65    100000  avgt         _ 23510614.310          ns/op
+ * ScalaHashMapJmh.mOfAll                -65  10000000  avgt        7_447239207.500          ns/op
  * ScalaHashMapJmh.mAddOneByOne          -65        10  avgt         _      432.536          ns/op
  * ScalaHashMapJmh.mAddOneByOne          -65      1000  avgt         _   138463.447          ns/op
  * ScalaHashMapJmh.mAddOneByOne          -65    100000  avgt         _ 35389172.339          ns/op
@@ -100,7 +100,7 @@ public class ScalaHashMapJmh {
     }
 
     @Benchmark
-    public HashMap<Key, Boolean> mAddAll() {
+    public HashMap<Key, Boolean> mOfAll() {
         return HashMap.from(listA);
     }
 

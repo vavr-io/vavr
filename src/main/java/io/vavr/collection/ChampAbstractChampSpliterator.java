@@ -60,7 +60,7 @@ abstract class ChampAbstractChampSpliterator<K, E> extends Spliterators.Abstract
     private final  Deque<StackElement<K>> stack = new ArrayDeque<>(ChampNode.MAX_DEPTH);
     private K current;
     @SuppressWarnings("unchecked")
-    public ChampAbstractChampSpliterator(ChampNode<K> root, Function<K, E> mappingFunction, int characteristics, long size) {
+     ChampAbstractChampSpliterator(ChampNode<K> root, Function<K, E> mappingFunction, int characteristics, long size) {
         super(size,characteristics);
         if (root.nodeArity() + root.dataArity() > 0) {
             stack.push(new StackElement<>(root, isReverse()));
@@ -68,7 +68,7 @@ abstract class ChampAbstractChampSpliterator<K, E> extends Spliterators.Abstract
         this.mappingFunction = mappingFunction == null ? i -> (E) i : mappingFunction;
     }
 
-    public E current() {
+     E current() {
         return mappingFunction.apply(current);
     }
 
@@ -80,7 +80,7 @@ abstract class ChampAbstractChampSpliterator<K, E> extends Spliterators.Abstract
 
     abstract int moveIndex( StackElement<K> elem);
 
-    public boolean moveNext() {
+     boolean moveNext() {
         while (!stack.isEmpty()) {
             StackElement<K> elem = stack.peek();
             ChampNode<K> node = elem.node;
@@ -124,7 +124,7 @@ abstract class ChampAbstractChampSpliterator<K, E> extends Spliterators.Abstract
         int index;
         int map;
 
-        public StackElement(ChampNode<K> node, boolean reverse) {
+         StackElement(ChampNode<K> node, boolean reverse) {
             this.node = node;
             this.size = node.nodeArity() + node.dataArity();
             this.index = reverse ? size - 1 : 0;

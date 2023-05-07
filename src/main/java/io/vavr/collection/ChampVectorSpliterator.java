@@ -51,7 +51,7 @@ class ChampVectorSpliterator<K> extends Spliterators.AbstractSpliterator<K> {
     private final Function<Object, K> mapper;
     private K current;
 
-    public ChampVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, int fromIndex, long est, int additionalCharacteristics) {
+     ChampVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, int fromIndex, long est, int additionalCharacteristics) {
         super(est, additionalCharacteristics);
         this.vector = new BitMappedTrie.BitMappedTrieSpliterator<>(vector.trie, fromIndex, 0);
         this.mapper = mapper;
@@ -66,11 +66,11 @@ class ChampVectorSpliterator<K> extends Spliterators.AbstractSpliterator<K> {
         return false;
     }
 
-    public K current() {
+     K current() {
         return current;
     }
 
-    public boolean moveNext() {
+     boolean moveNext() {
         boolean success = vector.moveNext();
         if (!success) return false;
         if (vector.current() instanceof ChampTombstone t) {

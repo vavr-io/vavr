@@ -79,7 +79,7 @@ import java.util.function.ToIntFunction;
      * We can not use {@code null}, because we allow storing null-data in the
      * trie.
      */
-    public static final Object NO_DATA = new Object();
+     static final Object NO_DATA = new Object();
     static final int HASH_CODE_LENGTH = 32;
     /**
      * Bit partition size in the range [1,5].
@@ -111,7 +111,7 @@ import java.util.function.ToIntFunction;
         return 1 << mask;
     }
 
-    public static <E>  E getFirst( ChampNode<E> node) {
+     static <E>  E getFirst( ChampNode<E> node) {
         while (node instanceof ChampBitmapIndexedNode<E> bxn) {
             int nodeMap = bxn.nodeMap();
             int dataMap = bxn.dataMap();
@@ -132,7 +132,7 @@ import java.util.function.ToIntFunction;
         throw new NoSuchElementException();
     }
 
-    public static <E>  E getLast( ChampNode<E> node) {
+     static <E>  E getLast( ChampNode<E> node) {
         while (node instanceof ChampBitmapIndexedNode<E> bxn) {
             int nodeMap = bxn.nodeMap();
             int dataMap = bxn.dataMap();
@@ -315,7 +315,7 @@ import java.util.function.ToIntFunction;
      * @param details        the change event for single elements
      * @return the updated trie
      */
-    protected abstract  ChampNode<D> putAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,
+     abstract  ChampNode<D> putAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,
                                                 ChampBulkChangeEvent bulkChange,
                                                 BiFunction<D, D, D> updateFunction,
                                                 BiPredicate<D, D> equalsFunction,
@@ -335,7 +335,7 @@ import java.util.function.ToIntFunction;
      * @param details        the change event for single elements
      * @return the updated trie
      */
-    protected abstract  ChampNode<D> removeAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,
+     abstract  ChampNode<D> removeAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,
                                                    ChampBulkChangeEvent bulkChange,
                                                    BiFunction<D, D, D> updateFunction,
                                                    BiPredicate<D, D> equalsFunction,
@@ -355,7 +355,7 @@ import java.util.function.ToIntFunction;
      * @param details        the change event for single elements
      * @return the updated trie
      */
-    protected abstract  ChampNode<D> retainAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,
+     abstract  ChampNode<D> retainAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,
                                                    ChampBulkChangeEvent bulkChange,
                                                    BiFunction<D, D, D> updateFunction,
                                                    BiPredicate<D, D> equalsFunction,
@@ -371,7 +371,7 @@ import java.util.function.ToIntFunction;
      * @param bulkChange updates the field {@link ChampBulkChangeEvent#removed}
      * @return the updated trie
      */
-    protected abstract  ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift,
+     abstract  ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift,
                                                ChampBulkChangeEvent bulkChange);
 
-    protected abstract int calculateSize();}
+     abstract int calculateSize();}

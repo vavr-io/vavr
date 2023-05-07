@@ -11,56 +11,27 @@ import java.util.concurrent.TimeUnit;
  * # VM version: JDK 17, OpenJDK 64-Bit Server VM, 17+35-2724
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  *
- * Benchmark                       (mask)    (size)  Mode  Cnt           Score   Error  Units
- * VavrHashSetJmh.mAddAll                     -65        10  avgt   16          332.874 ±         4.633  ns/op
- * VavrHashSetJmh.mAddAll                     -65      1000  avgt   16        77583.470 ±      2078.256  ns/op
- * VavrHashSetJmh.mAddAll                     -65    100000  avgt   16     19841008.500 ±    815127.202  ns/op
- * VavrHashSetJmh.mAddAll                     -65  10000000  avgt   16   6190978393.063 ± 328308314.639  ns/op
- * VavrHashSetJmh.mAddOneByOne                -65        10  avgt   16          313.264 ±        31.004  ns/op
- * VavrHashSetJmh.mAddOneByOne                -65      1000  avgt   16        94356.095 ±      2588.337  ns/op
- * VavrHashSetJmh.mAddOneByOne                -65    100000  avgt   16     26843105.717 ±    441404.246  ns/op
- * VavrHashSetJmh.mAddOneByOne                -65  10000000  avgt   16   7017683006.750 ±  63056251.543  ns/op
- * VavrHashSetJmh.mRemoveOneByOne             -65        10  avgt   16          281.586 ±         9.203  ns/op
- * VavrHashSetJmh.mRemoveOneByOne             -65      1000  avgt   16       108863.083 ±      2609.270  ns/op
- * VavrHashSetJmh.mRemoveOneByOne             -65    100000  avgt   16     27474319.084 ±    829255.059  ns/op
- * VavrHashSetJmh.mRemoveOneByOne             -65  10000000  avgt   16   7259914131.938 ± 145325048.495  ns/op
- * VavrHashSetJmh.mRemoveAll                  -65        10  avgt   16          293.929 ±        11.756  ns/op
- * VavrHashSetJmh.mRemoveAll                  -65      1000  avgt   16       104000.892 ±       767.568  ns/op
- * VavrHashSetJmh.mRemoveAll                  -65    100000  avgt   16     25738857.731 ±    753412.641  ns/op
- * VavrHashSetJmh.mRemoveAll                  -65  10000000  avgt   16   6725573003.375 ± 116210556.487  ns/op
- * VavrHashSetJmh.mContainsFound              -65      1000  avgt              19.979          ns/op
- * VavrHashSetJmh.mContainsFound              -65    100000  avgt              68.201          ns/op
- * VavrHashSetJmh.mContainsFound              -65  10000000  avgt             297.289          ns/op
- * VavrHashSetJmh.mContainsNotFound           -65        10  avgt               4.701          ns/op
- * VavrHashSetJmh.mContainsNotFound           -65      1000  avgt              18.683          ns/op
- * VavrHashSetJmh.mContainsNotFound           -65    100000  avgt              57.650          ns/op
- * VavrHashSetJmh.mContainsNotFound           -65  10000000  avgt             294.516          ns/op
- * VavrHashSetJmh.mHead                       -65        10  avgt               1.417          ns/op
- * VavrHashSetJmh.mHead                       -65      1000  avgt               3.624          ns/op
- * VavrHashSetJmh.mHead                       -65    100000  avgt               8.269          ns/op
- * VavrHashSetJmh.mHead                       -65  10000000  avgt              10.851          ns/op
- * VavrHashSetJmh.mIterate                    -65        10  avgt              77.806          ns/op
- * VavrHashSetJmh.mIterate                    -65      1000  avgt           15320.315          ns/op
- * VavrHashSetJmh.mIterate                    -65    100000  avgt         1574129.072          ns/op
- * VavrHashSetJmh.mIterate                    -65  10000000  avgt       601405168.353          ns/op
- * VavrHashSetJmh.mRemoveThenAdd              -65        10  avgt              67.765          ns/op
- * VavrHashSetJmh.mRemoveThenAdd              -65      1000  avgt             179.879          ns/op
- * VavrHashSetJmh.mRemoveThenAdd              -65    100000  avgt             313.706          ns/op
- * VavrHashSetJmh.mRemoveThenAdd              -65  10000000  avgt             714.447          ns/op
- * VavrHashSetJmh.mTail                       -65        10  avgt              30.410          ns/op
- * VavrHashSetJmh.mTail                       -65      1000  avgt              50.203          ns/op
- * VavrHashSetJmh.mTail                       -65    100000  avgt              88.762          ns/op
- * VavrHashSetJmh.mTail                       -65  10000000  avgt             113.403          ns/op
+ * Benchmark      (mask)    (size)  Mode  Cnt           Score   Error  Units
+ * mAddOneByOne          -65  100000  avgt       28603515.989          ns/op
+ * mContainsFound        -65  100000  avgt             71.910          ns/op
+ * mContainsNotFound     -65  100000  avgt            101.819          ns/op
+ * mHead                 -65  100000  avgt             10.082          ns/op
+ * mIterate              -65  100000  avgt        6150139.070          ns/op
+ * mOfAll                -65  100000  avgt       20939278.918          ns/op
+ * mRemoveAll            -65  100000  avgt       26670647.515          ns/op
+ * mRemoveOneByOne       -65  100000  avgt       31792853.537          ns/op
+ * mRemoveThenAdd        -65  100000  avgt            658.193          ns/op
+ * mTail                 -65  100000  avgt            134.754          ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 4)
-@Warmup(iterations = 4)
-@Fork(value = 4, jvmArgsAppend = {"-Xmx28g"})
+@Measurement(iterations = 1)
+@Warmup(iterations = 1)
+@Fork(value = 1, jvmArgsAppend = {"-Xmx28g"})
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class VavrHashSetJmh {
-    @Param({"10", "1000", "100000", "10000000"})
+    @Param({/*"10", "1000",*/ "100000"/*, "10000000"*/})
     private int size;
 
     @Param({"-65"})
@@ -76,7 +47,7 @@ public class VavrHashSetJmh {
     }
 
         @Benchmark
-        public HashSet<Key> mAddAll() {
+        public HashSet<Key> mOfAll() {
             return HashSet.ofAll(data.listA);
         }
 

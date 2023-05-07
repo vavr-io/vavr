@@ -19,7 +19,7 @@ class ChampReverseVectorSpliterator<K> extends Spliterators.AbstractSpliterator<
     private int index;
     private K current;
 
-    public ChampReverseVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, int fromIndex, int additionalCharacteristics, long est) {
+     ChampReverseVectorSpliterator(Vector<Object> vector, Function<Object, K> mapper, int fromIndex, int additionalCharacteristics, long est) {
         super(est, additionalCharacteristics);
         this.vector = vector;
         this.mapper = mapper;
@@ -35,7 +35,7 @@ class ChampReverseVectorSpliterator<K> extends Spliterators.AbstractSpliterator<
         return false;
     }
 
-    public boolean moveNext() {
+     boolean moveNext() {
         if (index < 0) {
             return false;
         }
@@ -48,7 +48,7 @@ class ChampReverseVectorSpliterator<K> extends Spliterators.AbstractSpliterator<
         return true;
     }
 
-    public K current() {
+     K current() {
         return current;
     }
 }
