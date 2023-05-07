@@ -37,7 +37,7 @@ import java.util.Objects;
  *
  * @param <E>the element type
  */
-class TransientHashSet<E> extends ChampAbstractTransientCollection<E> {
+class TransientHashSet<E> extends ChampAbstractTransientSet<E> {
     TransientHashSet(HashSet<E> s) {
         root = s;
         size = s.size;
@@ -95,10 +95,12 @@ class TransientHashSet<E> extends ChampAbstractTransientCollection<E> {
         return added;
     }
 
-    boolean remove(E key) {
+    @SuppressWarnings("unchecked")
+    @Override
+    boolean remove(Object key) {
         int keyHash = HashSet.keyHash(key);
         ChampChangeEvent<E> details = new ChampChangeEvent<>();
-        root = root.remove(owner, key, keyHash, 0, details, Objects::equals);
+        root = root.remove(owner,(E) key, keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
             size--;
             return true;
@@ -106,16 +108,26 @@ class TransientHashSet<E> extends ChampAbstractTransientCollection<E> {
         return false;
     }
 
-    boolean removeAll(Iterable<? extends E> c) {
-        if (isEmpty()||c == root) {
+    @SuppressWarnings("unchecked")
+    boolean removeAll(Iterable<?> c) {
+        if (isEmpty()
+                || (c instanceof Collection<?> cc) && cc.isEmpty()) {
             return false;
         }
-        boolean modified = false;
-        for (E e : c) {
-            modified |= remove(e);
+        if (c instanceof HashSet<?> that) {
+            ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
+            ChampBitmapIndexedNode<E> newRootNode = root.removeAll(getOrCreateOwner(), (ChampBitmapIndexedNode<E>) that, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampChangeEvent<>());
+            if (bulkChange.removed == 0) {
+                return false;
+            }
+            root = newRootNode;
+            size -= bulkChange.removed;
+            modCount++;
+            return true;
         }
-        return modified;
+        return super.removeAll(c);
     }
+
     void clear() {
         root =ChampBitmapIndexedNode.emptyNode();
         size = 0;

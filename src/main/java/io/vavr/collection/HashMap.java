@@ -105,13 +105,18 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     private static final HashMap<?, ?> EMPTY = new HashMap<>(ChampBitmapIndexedNode.emptyNode(), 0);
 
-
+    /**
+     * We do not guarantee an iteration order. Make sure that nobody accidentally relies on it.
+     * <p>
+     * XXX HashSetTest requires a specific iteration order of HashSet! Therefore, we can not use SALT here.
+     */
+    static final int SALT = 0;//new java.util.Random().nextInt();
     /**
      * The size of the map.
      */
     final int size;
 
-    private HashMap(ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> root, int size) {
+    HashMap(ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> root, int size) {
         super(root.nodeMap(), root.dataMap(), root.mixed);
         this.size = size;
     }
@@ -596,42 +601,50 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public HashMap<K, V> filter(BiPredicate<? super K, ? super V> predicate) {
-        return Maps.filter(this, this::createFromEntries, predicate);
+        TransientHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(e.getKey(),e.getValue()));
+        return t.toImmutable();
     }
 
     @Override
     public HashMap<K, V> filterNot(BiPredicate<? super K, ? super V> predicate) {
-        return Maps.filterNot(this, this::createFromEntries, predicate);
+        return filter(predicate.negate());
     }
 
     @Override
     public HashMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.filter(this, this::createFromEntries, predicate);
+        TransientHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(new Tuple2<>(e.getKey(),e.getValue())));
+        return t.toImmutable();
     }
 
     @Override
     public HashMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.filterNot(this, this::createFromEntries, predicate);
+        return filter(predicate.negate());
     }
 
     @Override
     public HashMap<K, V> filterKeys(Predicate<? super K> predicate) {
-        return Maps.filterKeys(this, this::createFromEntries, predicate);
+        TransientHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(e.getKey()));
+        return t.toImmutable();
     }
 
     @Override
     public HashMap<K, V> filterNotKeys(Predicate<? super K> predicate) {
-        return Maps.filterNotKeys(this, this::createFromEntries, predicate);
+        return filterKeys(predicate.negate());
     }
 
     @Override
     public HashMap<K, V> filterValues(Predicate<? super V> predicate) {
-        return Maps.filterValues(this, this::createFromEntries, predicate);
+        TransientHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(e.getValue()));
+        return t.toImmutable();
     }
 
     @Override
     public HashMap<K, V> filterNotValues(Predicate<? super V> predicate) {
-        return Maps.filterNotValues(this, this::createFromEntries, predicate);
+        return filterValues(predicate.negate());
     }
 
     @Override
@@ -819,7 +832,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
         final ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = put(null, new AbstractMap.SimpleImmutableEntry<>(key, value),
                 Objects.hashCode(key), 0, details,
-                HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::keyHash);
+                HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::entryKeyHash);
         if (details.isModified()) {
             if (details.isReplaced()) {
                 return new HashMap<>(newRootNode, size);
@@ -840,44 +853,20 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         return Maps.put(this, entry, merge);
     }
 
-    private HashMap<K, V> putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> entries) {
-        final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampIdentityObject owner = new ChampIdentityObject();
-        ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = this;
-        int newSize = size;
-        for (var e : entries) {
-            final int keyHash = Objects.hashCode(e.getKey());
-            details.reset();
-            newRootNode = newRootNode.put(owner, new AbstractMap.SimpleImmutableEntry<>(e.getKey(), e.getValue()),
-                    keyHash, 0, details,
-                    HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::keyHash);
-            if (details.isAdded()) {
-                newSize++;
-            }
-        }
-        return newRootNode == this ? this : new HashMap<>(newRootNode, newSize);
+    private HashMap<K, V> putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> c) {
+        TransientHashMap<K,V> t=toTransient();
+        t.putAllEntries(c);
+        return t.toImmutable();
     }
 
     @SuppressWarnings("unchecked")
-    private HashMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> tuples) {
-        if (isEmpty() && tuples instanceof HashMap) {
-            return (HashMap<K, V>) tuples;
+    private HashMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> c) {
+        if (isEmpty()&&c instanceof HashMap<?,?> that){
+            return (HashMap<K, V>)that;
         }
-        final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampIdentityObject owner = new ChampIdentityObject();
-        ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = this;
-        int newSize = size;
-        for (var e : tuples) {
-            final int keyHash = Objects.hashCode(e._1);
-            details.reset();
-            newRootNode = newRootNode.put(owner, new AbstractMap.SimpleImmutableEntry<>(e._1, e._2),
-                    keyHash, 0, details,
-                    HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::keyHash);
-            if (details.isAdded()) {
-                newSize++;
-            }
-        }
-        return newRootNode == this ? this : new HashMap<>(newRootNode, newSize);
+        TransientHashMap<K,V> t=toTransient();
+        t.putAllTuples(c);
+        return t.toImmutable();
     }
 
     @Override
@@ -894,25 +883,10 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     }
 
     @Override
-    public HashMap<K, V> removeAll(Iterable<? extends K> keys) {
-        Objects.requireNonNull(keys, "keys is null");
-        if (this.isEmpty()) {
-            return this;
-        }
-        final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampIdentityObject owner = new ChampIdentityObject();
-        ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = this;
-        int newSize = size;
-        for (K key : keys) {
-            final int keyHash = Objects.hashCode(key);
-            details.reset();
-            newRootNode = newRootNode.remove(owner, new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
-                    HashMap::keyEquals);
-            if (details.isModified()) {
-                newSize--;
-            }
-        }
-        return newRootNode == this ? this : new HashMap<>(newRootNode, newSize);
+    public HashMap<K, V> removeAll(Iterable<? extends K> c) {
+        TransientHashMap<K,V> t=toTransient();
+        t.removeAll(c);
+        return t.toImmutable();
     }
 
     @Override
@@ -942,22 +916,9 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public HashMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRoot = ChampBitmapIndexedNode.emptyNode();
-        final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampIdentityObject owner = new ChampIdentityObject();
-        int newSize = 0;
-        for (Tuple2<K, V> entry : elements) {
-            if (contains(entry)) {
-                newRoot = newRoot.put(owner, new AbstractMap.SimpleImmutableEntry<>(entry._1, entry._2),
-                        Objects.hashCode(entry._1), 0, details,
-                        HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::keyHash);
-                if (details.isAdded()) {
-                    newSize++;
-                }
-            }
-        }
-        return newSize == size ? this : new HashMap<>(newRoot, newSize);
+        TransientHashMap<K,V> t=toTransient();
+        t.retainAllTuples(elements);
+        return t.toImmutable();
     }
 
     @Override
@@ -1030,6 +991,10 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         return toJavaMap(java.util.HashMap::new, t -> t);
     }
 
+    TransientHashMap<K,V> toTransient() {
+        return new TransientHashMap<>(this);
+    }
+
     @Override
     public Stream<V> values() {
         return valuesIterator().toStream();
@@ -1089,9 +1054,15 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     static <V, K> boolean keyEquals(AbstractMap.SimpleImmutableEntry<K, V> a, AbstractMap.SimpleImmutableEntry<K, V> b) {
         return Objects.equals(a.getKey(), b.getKey());
     }
+    static <V, K> int keyHash(Object e) {
+        return SALT ^ Objects.hashCode(e);
+    }
+    static <V, K> int entryKeyHash(AbstractMap.SimpleImmutableEntry<K, V> e) {
+        return SALT^Objects.hashCode(e.getKey());
+    }
 
-    static <V, K> int keyHash(AbstractMap.SimpleImmutableEntry<K, V> e) {
-        return Objects.hashCode(e.getKey());
+    static <V, K> boolean entryKeyEquals(AbstractMap.SimpleImmutableEntry<K, V> a, AbstractMap.SimpleImmutableEntry<K, V> b) {
+        return Objects.equals(a.getKey(), b.getKey());
     }
 
     // FIXME This behavior is enforced by AbstractMapTest.shouldPutExistingKeyAndNonEqualValue().<br>
