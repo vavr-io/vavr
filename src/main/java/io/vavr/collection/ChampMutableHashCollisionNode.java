@@ -28,7 +28,7 @@
 package io.vavr.collection;
 
 /**
- * A {@link ChampHashCollisionNode} that provides storage space for a 'mutator' identity..
+ * A {@link ChampHashCollisionNode} that provides storage space for a 'owner' identity..
  * <p>
  * References:
  * <p>
@@ -43,15 +43,15 @@ package io.vavr.collection;
  */
 class ChampMutableHashCollisionNode<K> extends ChampHashCollisionNode<K> {
     private static final long serialVersionUID = 0L;
-    private final ChampIdentityObject mutator;
+    private final ChampIdentityObject owner;
 
-    ChampMutableHashCollisionNode(ChampIdentityObject mutator, int hash, Object  [] entries) {
+    ChampMutableHashCollisionNode(ChampIdentityObject owner, int hash, Object  [] entries) {
         super(hash, entries);
-        this.mutator = mutator;
+        this.owner = owner;
     }
 
     @Override
-    protected ChampIdentityObject getMutator() {
-        return mutator;
+    protected ChampIdentityObject getOwner() {
+        return owner;
     }
 }

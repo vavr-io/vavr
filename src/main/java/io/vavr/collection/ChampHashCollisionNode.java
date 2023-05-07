@@ -27,9 +27,11 @@
 
 package io.vavr.collection;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 import static io.vavr.collection.ChampNodeFactory.newHashCollisionNode;
@@ -54,6 +56,7 @@ import static io.vavr.collection.ChampNodeFactory.newHashCollisionNode;
  * @param <D> the data type
  */
 class ChampHashCollisionNode<D> extends ChampNode<D> {
+    private static final ChampHashCollisionNode<?> EMPTY = new ChampHashCollisionNode<>(0, new Object[0]);
     private final int hash;
      Object[] data;
 
@@ -134,7 +137,7 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @Override
     boolean hasData() {
-        return true;
+        return data.length > 0;
     }
 
     @Override
@@ -150,7 +153,7 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    ChampNode<D> remove(ChampIdentityObject mutator, D data,
+    ChampNode<D> remove(ChampIdentityObject owner, D data,
                         int dataHash, int shift, ChampChangeEvent<D> details, BiPredicate<D, D> equalsFunction) {
         for (int idx = 0, i = 0; i < this.data.length; i += 1, idx++) {
             if (equalsFunction.test((D) this.data[i], data)) {
@@ -161,18 +164,18 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
                     return ChampBitmapIndexedNode.emptyNode();
                 } else if (this.data.length == 2) {
                     // Create root node with singleton element.
-                    // This node will be a) either be the new root
-                    // returned, or b) unwrapped and inlined.
-                    return ChampNodeFactory.newBitmapIndexedNode(mutator, 0, bitpos(mask(dataHash, 0)),
+                    // This node will either be the new root
+                    // returned, or be unwrapped and inlined.
+                    return ChampNodeFactory.newBitmapIndexedNode(owner, 0, bitpos(mask(dataHash, 0)),
                             new Object[]{getData(idx ^ 1)});
                 }
                 // copy keys and remove 1 element at position idx
                 Object[] entriesNew = ChampListHelper.copyComponentRemove(this.data, idx, 1);
-                if (isAllowedToUpdate(mutator)) {
+                if (isAllowedToUpdate(owner)) {
                     this.data = entriesNew;
                     return this;
                 }
-                return newHashCollisionNode(mutator, dataHash, entriesNew);
+                return newHashCollisionNode(owner, dataHash, entriesNew);
             }
         }
         return this;
@@ -180,10 +183,10 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-    ChampNode<D> update(ChampIdentityObject mutator, D newData,
-                        int dataHash, int shift, ChampChangeEvent<D> details,
-                        BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction,
-                        ToIntFunction<D> hashFunction) {
+    ChampNode<D> put(ChampIdentityObject owner, D newData,
+                     int dataHash, int shift, ChampChangeEvent<D> details,
+                     BiFunction<D, D, D> updateFunction, BiPredicate<D, D> equalsFunction,
+                     ToIntFunction<D> hashFunction) {
         assert this.hash == dataHash;
 
         for (int i = 0; i < this.data.length; i++) {
@@ -195,12 +198,12 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
                     return this;
                 }
                 details.setReplaced(oldData, updatedData);
-                if (isAllowedToUpdate(mutator)) {
+                if (isAllowedToUpdate(owner)) {
                     this.data[i] = updatedData;
                     return this;
                 }
                 final Object[] newKeys = ChampListHelper.copySet(this.data, i, updatedData);
-                return newHashCollisionNode(mutator, dataHash, newKeys);
+                return newHashCollisionNode(owner, dataHash, newKeys);
             }
         }
 
@@ -208,10 +211,158 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
         Object[] entriesNew = ChampListHelper.copyComponentAdd(this.data, this.data.length, 1);
         entriesNew[this.data.length] = newData;
         details.setAdded(newData);
-        if (isAllowedToUpdate(mutator)) {
+        if (isAllowedToUpdate(owner)) {
             this.data = entriesNew;
             return this;
         }
-        return newHashCollisionNode(mutator, dataHash, entriesNew);
+        return newHashCollisionNode(owner, dataHash, entriesNew);
+    }
+
+    @Override
+    protected int calculateSize() {
+        return dataArity();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected  ChampNode<D> putAll( ChampIdentityObject owner, ChampNode<D> otherNode, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+        if (otherNode == this) {
+            bulkChange.inBoth += dataArity();
+            return this;
+        }
+        ChampHashCollisionNode<D> that = (ChampHashCollisionNode<D>) otherNode;
+
+        // The buffer initially contains all data elements from this node.
+        // Every time we find a matching data element in both nodes, we do not need to ever look at that data element again.
+        // So, we swap it out with a data element from the end of unprocessed data elements, and subtract 1 from unprocessedSize.
+        // If that node contains a data element that is not in this node, we add it to the end, and add 1 to bufferSize.
+        // Buffer content:
+        // 0..unprocessedSize-1 = unprocessed data elements from this node
+        // unprocessedSize..resultSize-1 = data elements that we have updated from that node, or that we have added from that node.
+        final int thisSize = this.dataArity();
+        final int thatSize = that.dataArity();
+        Object[] buffer = Arrays.copyOf(this.data, thisSize + thatSize);
+        System.arraycopy(this.data, 0, buffer, 0, this.data.length);
+        Object[] thatArray = that.data;
+        int resultSize = thisSize;
+        int unprocessedSize = thisSize;
+        boolean updated = false;
+        outer:
+        for (int i = 0; i < thatSize; i++) {
+            D thatData = (D) thatArray[i];
+            for (int j = 0; j < unprocessedSize; j++) {
+                D thisData = (D) buffer[j];
+                if (equalsFunction.test(thatData, thisData)) {
+                    D swap = (D) buffer[--unprocessedSize];
+                    D updatedData = updateFunction.apply(thisData, thatData);
+                    updated |= updatedData != thisData;
+                    buffer[unprocessedSize] = updatedData;
+                    buffer[j] = swap;
+                    bulkChange.inBoth++;
+                    continue outer;
+                }
+            }
+            buffer[resultSize++] = thatData;
+        }
+        return newCroppedHashCollisionNode(updated | resultSize != thisSize, buffer, resultSize);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected  ChampNode<D> removeAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+        if (otherNode == this) {
+            bulkChange.removed += dataArity();
+            return (ChampNode<D>) EMPTY;
+        }
+        ChampHashCollisionNode<D> that = (ChampHashCollisionNode<D>) otherNode;
+
+        // The buffer initially contains all data elements from this node.
+        // Every time we find a data element that must be removed, we replace it with the last element from the
+        // result part of the buffer, and reduce resultSize by 1.
+        // Buffer content:
+        // 0..resultSize-1 = data elements from this node that have not been removed
+        final int thisSize = this.dataArity();
+        final int thatSize = that.dataArity();
+        int resultSize = thisSize;
+        Object[] buffer = this.data.clone();
+        Object[] thatArray = that.data;
+        outer:
+        for (int i = 0; i < thatSize && resultSize > 0; i++) {
+            D thatData = (D) thatArray[i];
+            for (int j = 0; j < resultSize; j++) {
+                D thisData = (D) buffer[j];
+                if (equalsFunction.test(thatData, thisData)) {
+                    buffer[j] = buffer[--resultSize];
+                    bulkChange.removed++;
+                    continue outer;
+                }
+            }
+        }
+        return newCroppedHashCollisionNode(thisSize != resultSize, buffer, resultSize);
+    }
+
+    
+    private ChampHashCollisionNode<D> newCroppedHashCollisionNode(boolean changed, Object[] buffer, int size) {
+        if (changed) {
+            if (buffer.length != size) {
+                buffer = Arrays.copyOf(buffer, size);
+            }
+            return new ChampHashCollisionNode<>(hash, buffer);
+        }
+        return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected  ChampNode<D> retainAll(ChampIdentityObject owner, ChampNode<D> otherNode, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+        if (otherNode == this) {
+            bulkChange.removed += dataArity();
+            return (ChampNode<D>) EMPTY;
+        }
+        ChampHashCollisionNode<D> that = (ChampHashCollisionNode<D>) otherNode;
+
+        // The buffer initially contains all data elements from this node.
+        // Every time we find a data element that must be retained, we swap it into the result-part of the buffer.
+        // 0..resultSize-1 = data elements from this node that must be retained
+        // resultSize..thisSize-1 = data elements that might need to be retained
+        final int thisSize = this.dataArity();
+        final int thatSize = that.dataArity();
+        int resultSize = 0;
+        Object[] buffer = this.data.clone();
+        Object[] thatArray = that.data;
+        outer:
+        for (int i = 0; i < thatSize && thisSize != resultSize; i++) {
+            D thatData = (D) thatArray[i];
+            for (int j = resultSize; j < thisSize; j++) {
+                D thisData = (D) buffer[j];
+                if (equalsFunction.test(thatData, thisData)) {
+                    D swap = (D) buffer[resultSize];
+                    buffer[resultSize++] = thisData;
+                    buffer[j] = swap;
+                    continue outer;
+                }
+            }
+            bulkChange.removed++;
+        }
+        return newCroppedHashCollisionNode(thisSize != resultSize, buffer, resultSize);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected  ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
+        final int thisSize = this.dataArity();
+        int resultSize = 0;
+        Object[] buffer = new Object[thisSize];
+        Object[] thisArray = this.data;
+        outer:
+        for (int i = 0; i < thisSize; i++) {
+            D thisData = (D) thisArray[i];
+            if (predicate.test(thisData)) {
+                buffer[resultSize++] = thisData;
+            } else {
+                bulkChange.removed++;
+            }
+        }
+        return newCroppedHashCollisionNode(thisSize != resultSize, buffer, resultSize);
     }
 }

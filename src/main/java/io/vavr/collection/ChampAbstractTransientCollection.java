@@ -28,22 +28,27 @@
 
 package io.vavr.collection;
 
-class ChampAbstractTransientCollection<X> {
+/**
+ * Abstract base class for a transient CHAMP collection. 
+ * 
+ * @param <E> the element type
+ */
+abstract class ChampAbstractTransientCollection<E> {
     /**
-     * The current mutator id of this map.
+     * The current owner id of this map.
      * <p>
-     * All nodes that have the same non-null mutator id, are exclusively owned
+     * All nodes that have the same non-null owner id, are exclusively owned
      * by this map, and therefore can be mutated without affecting other map.
      * <p>
-     * If this mutator id is null, then this map does not own any nodes.
+     * If this owner id is null, then this map does not own any nodes.
      */
 
-    protected ChampIdentityObject mutator;
+    protected ChampIdentityObject owner;
 
     /**
      * The root of this CHAMP trie.
      */
-    protected ChampBitmapIndexedNode<X> root;
+    protected ChampBitmapIndexedNode<E> root;
 
     /**
      * The number of entries in this map.
@@ -60,11 +65,10 @@ class ChampAbstractTransientCollection<X> {
     }
 boolean isEmpty(){return size==0;}
 
-    ChampIdentityObject getOrCreateIdentity() {
-        if (mutator == null) {
-            mutator = new ChampIdentityObject();
+    ChampIdentityObject getOrCreateOwner() {
+        if (owner == null) {
+            owner = new ChampIdentityObject();
         }
-        return mutator;
+        return owner;
     }
-
 }

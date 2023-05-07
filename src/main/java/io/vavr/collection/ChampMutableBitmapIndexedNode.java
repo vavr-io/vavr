@@ -28,7 +28,7 @@
 package io.vavr.collection;
 
 /**
- * A {@link ChampBitmapIndexedNode} that provides storage space for a 'mutator' identity.
+ * A {@link ChampBitmapIndexedNode} that provides storage space for a 'owner' identity.
  * <p>
  * References:
  * <p>
@@ -42,15 +42,15 @@ package io.vavr.collection;
  */
 class ChampMutableBitmapIndexedNode<K> extends ChampBitmapIndexedNode<K> {
     private static final long serialVersionUID = 0L;
-    private final ChampIdentityObject mutator;
+    private final ChampIdentityObject owner;
 
-    ChampMutableBitmapIndexedNode(ChampIdentityObject mutator, int nodeMap, int dataMap, Object  [] nodes) {
+    ChampMutableBitmapIndexedNode(ChampIdentityObject owner, int nodeMap, int dataMap, Object  [] nodes) {
         super(nodeMap, dataMap, nodes);
-        this.mutator = mutator;
+        this.owner = owner;
     }
 
     @Override
-    protected ChampIdentityObject getMutator() {
-        return mutator;
+    protected ChampIdentityObject getOwner() {
+        return owner;
     }
 }

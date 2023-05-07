@@ -931,7 +931,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
     private LinkedHashMap<K, V> putLast( K key,  V value, boolean moveToLast) {
         var details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
         var newEntry = new ChampSequencedEntry<>(key, value, vector.size() - offset);
-        var newRoot = update(null, newEntry,
+        var newRoot = put(null, newEntry,
                 Objects.hashCode(key), 0, details,
                 moveToLast ? ChampSequencedEntry::updateAndMoveToLast : ChampSequencedEntry::updateWithNewKey,
                 ChampSequencedEntry::keyEquals, ChampSequencedEntry::keyHash);
@@ -944,11 +944,11 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
             var newVector = vector;
             int newOffset = offset;
             int newSize = size;
-            var mutator = new ChampIdentityObject();
+            var owner = new ChampIdentityObject();
             if (details.isReplaced()) {
                 if (moveToLast) {
                     var oldElem = details.getOldDataNonNull();
-                    var result = ChampSequencedData.vecRemove(newVector, mutator, oldElem, details, newOffset);
+                    var result = ChampSequencedData.vecRemove(newVector, owner, oldElem, details, newOffset);
                     newVector = result._1;
                     newOffset = result._2;
                 }
@@ -1000,9 +1000,9 @@ return        t.removeAll(keys)?t.toImmutable():this;
             int size, int offset) {
 
         if (ChampSequencedData.vecMustRenumber(size, offset, this.vector.size())) {
-            var mutator = new ChampIdentityObject();
+            var owner = new ChampIdentityObject();
             var result = ChampSequencedData.<ChampSequencedEntry<K, V>>vecRenumber(
-                    size, root, vector, mutator, ChampSequencedEntry::keyHash, ChampSequencedEntry::keyEquals,
+                    size, root, vector, owner, ChampSequencedEntry::keyHash, ChampSequencedEntry::keyEquals,
                     (e, seq) -> new ChampSequencedEntry<>(e.getKey(), e.getValue(), seq));
             return new LinkedHashMap<>(
                     result._1, result._2,
@@ -1019,8 +1019,8 @@ return        t.removeAll(keys)?t.toImmutable():this;
 
         // try to remove currentEntry from the 'root' trie
         final ChampChangeEvent<ChampSequencedEntry<K, V>> detailsCurrent = new ChampChangeEvent<>();
-        ChampIdentityObject mutator = new ChampIdentityObject();
-        ChampBitmapIndexedNode<ChampSequencedEntry<K, V>> newRoot = remove(mutator,
+        ChampIdentityObject owner = new ChampIdentityObject();
+        ChampBitmapIndexedNode<ChampSequencedEntry<K, V>> newRoot = remove(owner,
                 new ChampSequencedEntry<K, V>(currentEntry._1, currentEntry._2),
                 Objects.hashCode(currentEntry._1), 0, detailsCurrent, ChampSequencedEntry::keyAndValueEquals);
         // currentElement was not in the 'root' trie => do nothing
@@ -1034,14 +1034,14 @@ return        t.removeAll(keys)?t.toImmutable():this;
         var newOffset = offset;
         ChampSequencedEntry<K, V> removedData = detailsCurrent.getOldData();
         int seq = removedData.getSequenceNumber();
-        var result = ChampSequencedData.vecRemove(newVector, mutator, removedData, detailsCurrent, offset);
+        var result = ChampSequencedData.vecRemove(newVector, owner, removedData, detailsCurrent, offset);
         newVector=result._1;
         newOffset=result._2;
 
         // try to update the trie with the newData
         ChampChangeEvent<ChampSequencedEntry<K, V>> detailsNew = new ChampChangeEvent<>();
         ChampSequencedEntry<K, V> newData = new ChampSequencedEntry<>(newEntry._1, newEntry._2, seq);
-        newRoot = newRoot.update(mutator,
+        newRoot = newRoot.put(owner,
                 newData, Objects.hashCode(newEntry._1), 0, detailsNew,
                 ChampSequencedEntry::forceUpdate,
                 ChampSequencedEntry::keyEquals, ChampSequencedEntry::keyHash);
@@ -1051,7 +1051,7 @@ return        t.removeAll(keys)?t.toImmutable():this;
         // => remove the replaced data from the vector
         if (isReplaced) {
             ChampSequencedEntry<K, V> replacedData = detailsNew.getOldData();
-            result = ChampSequencedData.vecRemove(newVector, mutator, replacedData, detailsCurrent, newOffset);
+            result = ChampSequencedData.vecRemove(newVector, owner, replacedData, detailsCurrent, newOffset);
             newVector=result._1;
             newOffset=result._2;
         }

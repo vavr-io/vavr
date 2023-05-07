@@ -51,7 +51,7 @@ class TransientLinkedHashSet<T> extends ChampAbstractTransientCollection<ChampSe
     }
 
     public LinkedHashSet<T> toImmutable() {
-        mutator = null;
+        owner = null;
         return isEmpty()
                 ? LinkedHashSet.empty()
                 : root instanceof LinkedHashSet<T> h ? h : new LinkedHashSet<>(root, vector, size, offset);
@@ -64,7 +64,7 @@ class TransientLinkedHashSet<T> extends ChampAbstractTransientCollection<ChampSe
     private boolean addLast(T e, boolean moveToLast) {
         var details = new ChampChangeEvent<ChampSequencedElement<T>>();
         var newElem = new ChampSequencedElement<T>(e, vector.size() - offset);
-        root = root.update(null, newElem,
+        root = root.put(null, newElem,
                 Objects.hashCode(e), 0, details,
                 moveToLast ? ChampSequencedElement::updateAndMoveToLast : ChampSequencedElement::update,
                 Objects::equals, Objects::hashCode);
@@ -136,9 +136,9 @@ class TransientLinkedHashSet<T> extends ChampAbstractTransientCollection<ChampSe
     private void renumber() {
 
         if (ChampSequencedData.vecMustRenumber(size, offset, vector.size())) {
-            var mutator = new ChampIdentityObject();
+            var owner = new ChampIdentityObject();
             var result = ChampSequencedData.<ChampSequencedElement<T>>vecRenumber(
-                    size, root, vector, mutator, Objects::hashCode, Objects::equals,
+                    size, root, vector, owner, Objects::hashCode, Objects::equals,
                     (e, seq) -> new ChampSequencedElement<>(e.getElement(), seq));
             root = result._1;
             vector = result._2;

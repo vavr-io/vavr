@@ -598,7 +598,7 @@ public final class LinkedHashSet<T>
     private LinkedHashSet<T> addLast(T e, boolean moveToLast) {
         var details = new ChampChangeEvent<ChampSequencedElement<T>>();
         var newElem = new ChampSequencedElement<T>(e, vector.size() - offset);
-        var newRoot = update(null, newElem,
+        var newRoot = put(null, newElem,
                 Objects.hashCode(e), 0, details,
                 moveToLast ? ChampSequencedElement::updateAndMoveToLast : ChampSequencedElement::update,
                 Objects::equals, Objects::hashCode);
@@ -915,9 +915,9 @@ public final class LinkedHashSet<T>
             int size, int offset) {
 
         if (ChampSequencedData.vecMustRenumber(size, offset, this.vector.size())) {
-            var mutator = new ChampIdentityObject();
+            var owner = new ChampIdentityObject();
             var result = ChampSequencedData.<ChampSequencedElement<T>>vecRenumber(
-                    size, root, vector, mutator, Objects::hashCode, Objects::equals,
+                    size, root, vector, owner, Objects::hashCode, Objects::equals,
                     (e, seq) -> new ChampSequencedElement<>(e.getElement(), seq));
             return new LinkedHashSet<>(
                     result._1(), result._2(),
@@ -935,8 +935,8 @@ public final class LinkedHashSet<T>
 
         // try to remove currentElem from the 'root' trie
         final ChampChangeEvent<ChampSequencedElement<T>> detailsCurrent = new ChampChangeEvent<>();
-        ChampIdentityObject mutator = new ChampIdentityObject();
-        ChampBitmapIndexedNode<ChampSequencedElement<T>> newRoot = remove(mutator,
+        ChampIdentityObject owner = new ChampIdentityObject();
+        ChampBitmapIndexedNode<ChampSequencedElement<T>> newRoot = remove(owner,
                 new ChampSequencedElement<>(currentElement),
                 Objects.hashCode(currentElement), 0, detailsCurrent, Objects::equals);
         // currentElement was not in the 'root' trie => do nothing
@@ -950,14 +950,14 @@ public final class LinkedHashSet<T>
         var newOffset = offset;
         ChampSequencedElement<T> currentData = detailsCurrent.getOldData();
         int seq = currentData.getSequenceNumber();
-        var result = ChampSequencedData.vecRemove(newVector, mutator, currentData, detailsCurrent, newOffset);
+        var result = ChampSequencedData.vecRemove(newVector, owner, currentData, detailsCurrent, newOffset);
         newVector = result._1;
         newOffset = result._2;
 
         // try to update the trie with the newElement
         ChampChangeEvent<ChampSequencedElement<T>> detailsNew = new ChampChangeEvent<>();
         ChampSequencedElement<T> newData = new ChampSequencedElement<>(newElement, seq);
-        newRoot = newRoot.update(mutator,
+        newRoot = newRoot.put(owner,
                 newData, Objects.hashCode(newElement), 0, detailsNew,
                 ChampSequencedElement::forceUpdate,
                 Objects::equals, Objects::hashCode);
@@ -967,7 +967,7 @@ public final class LinkedHashSet<T>
         // => remove the replaced entry from the 'sequenceRoot' trie
         if (isReplaced) {
             ChampSequencedElement<T> replacedEntry = detailsNew.getOldData();
-            result = ChampSequencedData.vecRemove(newVector, mutator, replacedEntry, detailsCurrent, newOffset);
+            result = ChampSequencedData.vecRemove(newVector, owner, replacedEntry, detailsCurrent, newOffset);
             newVector = result._1;
             newOffset = result._2;
         }

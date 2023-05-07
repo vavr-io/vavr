@@ -31,6 +31,7 @@ package io.vavr.collection;
 import java.util.Arrays;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
@@ -69,15 +70,15 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
         return (ChampBitmapIndexedNode<K>) EMPTY_NODE;
     }
 
-     ChampBitmapIndexedNode<D> copyAndInsertData(ChampIdentityObject mutator, int bitpos,
+     ChampBitmapIndexedNode<D> copyAndInsertData(ChampIdentityObject owner, int bitpos,
                                                  D data) {
         int idx = dataIndex(bitpos);
         Object[] dst = ChampListHelper.copyComponentAdd(this.mixed, idx, 1);
         dst[idx] = data;
-        return newBitmapIndexedNode(mutator, nodeMap, dataMap | bitpos, dst);
+        return newBitmapIndexedNode(owner, nodeMap, dataMap | bitpos, dst);
     }
 
-     ChampBitmapIndexedNode<D> copyAndMigrateFromDataToNode(ChampIdentityObject mutator,
+     ChampBitmapIndexedNode<D> copyAndMigrateFromDataToNode(ChampIdentityObject owner,
                                                             int bitpos, ChampNode<D> node) {
 
         int idxOld = dataIndex(bitpos);
@@ -92,10 +93,10 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
         System.arraycopy(src, idxOld + 1, dst, idxOld, idxNew - idxOld);
         System.arraycopy(src, idxNew + 1, dst, idxNew + 1, src.length - idxNew - 1);
         dst[idxNew] = node;
-        return newBitmapIndexedNode(mutator, nodeMap | bitpos, dataMap ^ bitpos, dst);
+        return newBitmapIndexedNode(owner, nodeMap | bitpos, dataMap ^ bitpos, dst);
     }
 
-     ChampBitmapIndexedNode<D> copyAndMigrateFromNodeToData(ChampIdentityObject mutator,
+     ChampBitmapIndexedNode<D> copyAndMigrateFromNodeToData(ChampIdentityObject owner,
                                                             int bitpos, ChampNode<D> node) {
         int idxOld = this.mixed.length - 1 - nodeIndex(bitpos);
         int idxNew = dataIndex(bitpos);
@@ -109,21 +110,21 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
         System.arraycopy(src, idxNew, dst, idxNew + 1, idxOld - idxNew);
         System.arraycopy(src, idxOld + 1, dst, idxOld + 1, src.length - idxOld - 1);
         dst[idxNew] = node.getData(0);
-        return newBitmapIndexedNode(mutator, nodeMap ^ bitpos, dataMap | bitpos, dst);
+        return newBitmapIndexedNode(owner, nodeMap ^ bitpos, dataMap | bitpos, dst);
     }
 
-     ChampBitmapIndexedNode<D> copyAndSetNode(ChampIdentityObject mutator, int bitpos,
+     ChampBitmapIndexedNode<D> copyAndSetNode(ChampIdentityObject owner, int bitpos,
                                               ChampNode<D> node) {
 
         int idx = this.mixed.length - 1 - nodeIndex(bitpos);
-        if (isAllowedToUpdate(mutator)) {
+        if (isAllowedToUpdate(owner)) {
             // no copying if already editable
             this.mixed[idx] = node;
             return this;
         } else {
             // copy 'src' and set 1 element(s) at position 'idx'
             final Object[] dst = ChampListHelper.copySet(this.mixed, idx, node);
-            return newBitmapIndexedNode(mutator, nodeMap, dataMap, dst);
+            return newBitmapIndexedNode(owner, nodeMap, dataMap, dst);
         }
     }
 
@@ -136,7 +137,11 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
         return Integer.bitCount(dataMap & (bitpos - 1));
     }
 
-     int dataMap() {
+    int index(int map, int bitpos) {
+        return Integer.bitCount(map & (bitpos - 1));
+    }
+
+    int dataMap() {
         return dataMap;
     }
 
@@ -231,22 +236,22 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
 
     @Override
     
-     ChampBitmapIndexedNode<D> remove(ChampIdentityObject mutator,
+     ChampBitmapIndexedNode<D> remove(ChampIdentityObject owner,
                                             D data,
                                             int dataHash, int shift,
                                             ChampChangeEvent<D> details, BiPredicate<D, D> equalsFunction) {
         int mask = mask(dataHash, shift);
         int bitpos = bitpos(mask);
         if ((dataMap & bitpos) != 0) {
-            return removeData(mutator, data, dataHash, shift, details, bitpos, equalsFunction);
+            return removeData(owner, data, dataHash, shift, details, bitpos, equalsFunction);
         }
         if ((nodeMap & bitpos) != 0) {
-            return removeSubNode(mutator, data, dataHash, shift, details, bitpos, equalsFunction);
+            return removeSubNode(owner, data, dataHash, shift, details, bitpos, equalsFunction);
         }
         return this;
     }
 
-    private ChampBitmapIndexedNode<D> removeData(ChampIdentityObject mutator, D data, int dataHash, int shift, ChampChangeEvent<D> details, int bitpos, BiPredicate<D, D> equalsFunction) {
+    private ChampBitmapIndexedNode<D> removeData(ChampIdentityObject owner, D data, int dataHash, int shift, ChampChangeEvent<D> details, int bitpos, BiPredicate<D, D> equalsFunction) {
         int dataIndex = dataIndex(bitpos);
         int entryLength = 1;
         if (!equalsFunction.test(getData(dataIndex), data)) {
@@ -258,19 +263,19 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
             int newDataMap =
                     (shift == 0) ? (dataMap ^ bitpos) : bitpos(mask(dataHash, 0));
             Object[] nodes = {getData(dataIndex ^ 1)};
-            return newBitmapIndexedNode(mutator, 0, newDataMap, nodes);
+            return newBitmapIndexedNode(owner, 0, newDataMap, nodes);
         }
         int idx = dataIndex * entryLength;
         Object[] dst = ChampListHelper.copyComponentRemove(this.mixed, idx, entryLength);
-        return newBitmapIndexedNode(mutator, nodeMap, dataMap ^ bitpos, dst);
+        return newBitmapIndexedNode(owner, nodeMap, dataMap ^ bitpos, dst);
     }
 
-    private ChampBitmapIndexedNode<D> removeSubNode(ChampIdentityObject mutator, D data, int dataHash, int shift,
+    private ChampBitmapIndexedNode<D> removeSubNode(ChampIdentityObject owner, D data, int dataHash, int shift,
                                                     ChampChangeEvent<D> details,
                                                     int bitpos, BiPredicate<D, D> equalsFunction) {
         ChampNode<D> subNode = nodeAt(bitpos);
         ChampNode<D> updatedSubNode =
-                subNode.remove(mutator, data, dataHash, shift + BIT_PARTITION_SIZE, details, equalsFunction);
+                subNode.remove(owner, data, dataHash, shift + BIT_PARTITION_SIZE, details, equalsFunction);
         if (subNode == updatedSubNode) {
             return this;
         }
@@ -278,20 +283,20 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
             if (!hasData() && nodeArity() == 1) {
                 return (ChampBitmapIndexedNode<D>) updatedSubNode;
             }
-            return copyAndMigrateFromNodeToData(mutator, bitpos, updatedSubNode);
+            return copyAndMigrateFromNodeToData(owner, bitpos, updatedSubNode);
         }
-        return copyAndSetNode(mutator, bitpos, updatedSubNode);
+        return copyAndSetNode(owner, bitpos, updatedSubNode);
     }
 
     @Override
     
-     ChampBitmapIndexedNode<D> update(ChampIdentityObject mutator,
-                                            D newData,
-                                            int dataHash, int shift,
-                                            ChampChangeEvent<D> details,
-                                            BiFunction<D, D, D> updateFunction,
-                                            BiPredicate<D, D> equalsFunction,
-                                            ToIntFunction<D> hashFunction) {
+     ChampBitmapIndexedNode<D> put(ChampIdentityObject owner,
+                                   D newData,
+                                   int dataHash, int shift,
+                                   ChampChangeEvent<D> details,
+                                   BiFunction<D, D, D> updateFunction,
+                                   BiPredicate<D, D> equalsFunction,
+                                   ToIntFunction<D> hashFunction) {
         int mask = mask(dataHash, shift);
         int bitpos = bitpos(mask);
         if ((dataMap & bitpos) != 0) {
@@ -304,31 +309,361 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
                     return this;
                 }
                 details.setReplaced(oldData, updatedData);
-                return copyAndSetData(mutator, dataIndex, updatedData);
+                return copyAndSetData(owner, dataIndex, updatedData);
             }
             ChampNode<D> updatedSubNode =
-                    mergeTwoDataEntriesIntoNode(mutator,
+                    mergeTwoDataEntriesIntoNode(owner,
                             oldData, hashFunction.applyAsInt(oldData),
                             newData, dataHash, shift + BIT_PARTITION_SIZE);
             details.setAdded(newData);
-            return copyAndMigrateFromDataToNode(mutator, bitpos, updatedSubNode);
+            return copyAndMigrateFromDataToNode(owner, bitpos, updatedSubNode);
         } else if ((nodeMap & bitpos) != 0) {
             ChampNode<D> subNode = nodeAt(bitpos);
             ChampNode<D> updatedSubNode = subNode
-                    .update(mutator, newData, dataHash, shift + BIT_PARTITION_SIZE, details, updateFunction, equalsFunction, hashFunction);
-            return subNode == updatedSubNode ? this : copyAndSetNode(mutator, bitpos, updatedSubNode);
+                    .put(owner, newData, dataHash, shift + BIT_PARTITION_SIZE, details, updateFunction, equalsFunction, hashFunction);
+            return subNode == updatedSubNode ? this : copyAndSetNode(owner, bitpos, updatedSubNode);
         }
         details.setAdded(newData);
-        return copyAndInsertData(mutator, bitpos, newData);
+        return copyAndInsertData(owner, bitpos, newData);
     }
 
     
-    private ChampBitmapIndexedNode<D> copyAndSetData(ChampIdentityObject mutator, int dataIndex, D updatedData) {
-        if (isAllowedToUpdate(mutator)) {
+    private ChampBitmapIndexedNode<D> copyAndSetData(ChampIdentityObject owner, int dataIndex, D updatedData) {
+        if (isAllowedToUpdate(owner)) {
             this.mixed[dataIndex] = updatedData;
             return this;
         }
         Object[] newMixed = ChampListHelper.copySet(this.mixed, dataIndex, updatedData);
-        return newBitmapIndexedNode(mutator, nodeMap, dataMap, newMixed);
+        return newBitmapIndexedNode(owner, nodeMap, dataMap, newMixed);
+    }
+
+
+    @SuppressWarnings("unchecked")
+    @Override
+    
+    public ChampBitmapIndexedNode<D> putAll(ChampIdentityObject owner, ChampNode<D> other, int shift,
+                                        ChampBulkChangeEvent bulkChange,
+                                        BiFunction<D, D, D> updateFunction,
+                                        BiPredicate<D, D> equalsFunction,
+                                        ToIntFunction<D> hashFunction,
+                                        ChampChangeEvent<D> details) {
+        var that = (ChampBitmapIndexedNode<D>) other;
+        if (this == that) {
+            bulkChange.inBoth += this.calculateSize();
+            return this;
+        }
+
+        var newBitMap = nodeMap | dataMap | that.nodeMap | that.dataMap;
+        var buffer = new Object[Integer.bitCount(newBitMap)];
+        int newDataMap = this.dataMap | that.dataMap;
+        int newNodeMap = this.nodeMap | that.nodeMap;
+        for (int mapToDo = newBitMap; mapToDo != 0; mapToDo ^= Integer.lowestOneBit(mapToDo)) {
+            int mask = Integer.numberOfTrailingZeros(mapToDo);
+            int bitpos = bitpos(mask);
+
+            boolean thisIsData = (this.dataMap & bitpos) != 0;
+            boolean thatIsData = (that.dataMap & bitpos) != 0;
+            boolean thisIsNode = (this.nodeMap & bitpos) != 0;
+            boolean thatIsNode = (that.nodeMap & bitpos) != 0;
+
+            if (!(thisIsNode || thisIsData)) {
+                // add 'mixed' (data or node) from that trie
+                if (thatIsData) {
+                    buffer[index(newDataMap, bitpos)] = that.getData(that.dataIndex(bitpos));
+                } else {
+                    buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = that.getNode(that.nodeIndex(bitpos));
+                }
+            } else if (!(thatIsNode || thatIsData)) {
+                // add 'mixed' (data or node) from this trie
+                if (thisIsData) {
+                    buffer[index(newDataMap, bitpos)] = this.getData(dataIndex(bitpos));
+                } else {
+                    buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = this.getNode(nodeIndex(bitpos));
+                }
+            } else if (thisIsNode && thatIsNode) {
+                // add a new node that joins this node and that node
+                ChampNode<D> thisNode = this.getNode(this.nodeIndex(bitpos));
+                ChampNode<D> thatNode = that.getNode(that.nodeIndex(bitpos));
+                buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = thisNode.putAll(owner, thatNode, shift + BIT_PARTITION_SIZE, bulkChange,
+                        updateFunction, equalsFunction, hashFunction, details);
+            } else if (thisIsData && thatIsNode) {
+                // add a new node that joins this data and that node
+                D thisData = this.getData(this.dataIndex(bitpos));
+                ChampNode<D> thatNode = that.getNode(that.nodeIndex(bitpos));
+                details.reset();
+                buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = thatNode.put(null, thisData, hashFunction.applyAsInt(thisData), shift + BIT_PARTITION_SIZE, details,
+                        (a, b) -> updateFunction.apply(b, a),
+                        equalsFunction, hashFunction);
+                if (details.isUnchanged()) {
+                    bulkChange.inBoth++;
+                } else if (details.isReplaced()) {
+                    bulkChange.replaced = true;
+                    bulkChange.inBoth++;
+                }
+                newDataMap ^= bitpos;
+            } else if (thisIsNode) {
+                // add a new node that joins this node and that data
+                D thatData = that.getData(that.dataIndex(bitpos));
+                ChampNode<D> thisNode = this.getNode(this.nodeIndex(bitpos));
+                details.reset();
+                buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = thisNode.put(owner, thatData, hashFunction.applyAsInt(thatData), shift + BIT_PARTITION_SIZE, details, updateFunction, equalsFunction, hashFunction);
+                if (!details.isModified()) {
+                    bulkChange.inBoth++;
+                }
+                newDataMap ^= bitpos;
+            } else {
+                // add a new node that joins this data and that data
+                D thisData = this.getData(this.dataIndex(bitpos));
+                D thatData = that.getData(that.dataIndex(bitpos));
+                if (equalsFunction.test(thisData, thatData)) {
+                    bulkChange.inBoth++;
+                    D updated = updateFunction.apply(thisData, thatData);
+                    buffer[index(newDataMap, bitpos)] = updated;
+                    bulkChange.replaced |= updated != thisData;
+                } else {
+                    newDataMap ^= bitpos;
+                    newNodeMap ^= bitpos;
+                    buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = mergeTwoDataEntriesIntoNode(owner, thisData, hashFunction.applyAsInt(thisData), thatData, hashFunction.applyAsInt(thatData), shift + BIT_PARTITION_SIZE);
+                }
+            }
+        }
+        return new ChampBitmapIndexedNode<>(newNodeMap, newDataMap, buffer);
+    }
+
+    @Override
+    
+    public ChampBitmapIndexedNode<D> removeAll( ChampIdentityObject owner, ChampNode<D> other, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+        var that = (ChampBitmapIndexedNode<D>) other;
+        if (this == that) {
+            bulkChange.inBoth += this.calculateSize();
+            return this;
+        }
+
+        var newBitMap = nodeMap | dataMap;
+        var buffer = new Object[Integer.bitCount(newBitMap)];
+        int newDataMap = this.dataMap;
+        int newNodeMap = this.nodeMap;
+        for (int mapToDo = newBitMap; mapToDo != 0; mapToDo ^= Integer.lowestOneBit(mapToDo)) {
+            int mask = Integer.numberOfTrailingZeros(mapToDo);
+            int bitpos = bitpos(mask);
+
+            boolean thisIsData = (this.dataMap & bitpos) != 0;
+            boolean thatIsData = (that.dataMap & bitpos) != 0;
+            boolean thisIsNode = (this.nodeMap & bitpos) != 0;
+            boolean thatIsNode = (that.nodeMap & bitpos) != 0;
+
+            if (!(thisIsNode || thisIsData)) {
+                // programming error
+                assert false;
+            } else if (!(thatIsNode || thatIsData)) {
+                // keep 'mixed' (data or node) from this trie
+                if (thisIsData) {
+                    buffer[index(newDataMap, bitpos)] = this.getData(dataIndex(bitpos));
+                } else {
+                    buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = this.getNode(nodeIndex(bitpos));
+                }
+            } else if (thisIsNode && thatIsNode) {
+                // remove all in that node from all in this node
+                ChampNode<D> thisNode = this.getNode(this.nodeIndex(bitpos));
+                ChampNode<D> thatNode = that.getNode(that.nodeIndex(bitpos));
+                ChampNode<D> result = thisNode.removeAll(owner, thatNode, shift + BIT_PARTITION_SIZE, bulkChange, updateFunction, equalsFunction, hashFunction, details);
+                if (result.isNodeEmpty()) {
+                    newNodeMap ^= bitpos;
+                } else if (result.hasMany()) {
+                    buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = result;
+                } else {
+                    newNodeMap ^= bitpos;
+                    newDataMap ^= bitpos;
+                    buffer[index(newDataMap, bitpos)] = result.getData(0);
+                }
+            } else if (thisIsData && thatIsNode) {
+                // remove this data if it is contained in that node
+                D thisData = this.getData(this.dataIndex(bitpos));
+                ChampNode<D> thatNode = that.getNode(that.nodeIndex(bitpos));
+                Object result = thatNode.find(thisData, hashFunction.applyAsInt(thisData), shift + BIT_PARTITION_SIZE, equalsFunction);
+                if (result == NO_DATA) {
+                    buffer[index(newDataMap, bitpos)] = thisData;
+                } else {
+                    newDataMap ^= bitpos;
+                    bulkChange.removed++;
+                }
+            } else if (thisIsNode) {
+                // remove that data from this node
+                D thatData = that.getData(that.dataIndex(bitpos));
+                ChampNode<D> thisNode = this.getNode(this.nodeIndex(bitpos));
+                details.reset();
+                ChampNode<D> result = thisNode.remove(owner, thatData, hashFunction.applyAsInt(thatData), shift + BIT_PARTITION_SIZE, details, equalsFunction);
+                if (details.isModified()) {
+                    bulkChange.removed++;
+                }
+                if (result.isNodeEmpty()) {
+                    newNodeMap ^= bitpos;
+                } else if (result.hasMany()) {
+                    buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = result;
+                } else {
+                    newDataMap ^= bitpos;
+                    newNodeMap ^= bitpos;
+                    buffer[index(newDataMap, bitpos)] = result.getData(0);
+                }
+            } else {
+                // remove this data if it is equal to that data
+                D thisData = this.getData(this.dataIndex(bitpos));
+                D thatData = that.getData(that.dataIndex(bitpos));
+                if (equalsFunction.test(thisData, thatData)) {
+                    bulkChange.removed++;
+                    newDataMap ^= bitpos;
+                } else {
+                    buffer[index(newDataMap, bitpos)] = thisData;
+                }
+            }
+        }
+        return newCroppedBitmapIndexedNode(buffer, newDataMap, newNodeMap);
+    }
+
+    
+    private ChampBitmapIndexedNode<D> newCroppedBitmapIndexedNode(Object[] buffer, int newDataMap, int newNodeMap) {
+        int newLength = Integer.bitCount(newNodeMap | newDataMap);
+        if (newLength != buffer.length) {
+            Object[] temp = buffer;
+            buffer = new Object[newLength];
+            int dataCount = Integer.bitCount(newDataMap);
+            int nodeCount = Integer.bitCount(newNodeMap);
+            System.arraycopy(temp, 0, buffer, 0, dataCount);
+            System.arraycopy(temp, temp.length - nodeCount, buffer, dataCount, nodeCount);
+        }
+        return new ChampBitmapIndexedNode<>(newNodeMap, newDataMap, buffer);
+    }
+
+    @Override
+    
+    public ChampBitmapIndexedNode<D> retainAll(ChampIdentityObject owner, ChampNode<D> other, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
+        var that = (ChampBitmapIndexedNode<D>) other;
+        if (this == that) {
+            bulkChange.inBoth += this.calculateSize();
+            return this;
+        }
+
+        var newBitMap = nodeMap | dataMap;
+        var buffer = new Object[Integer.bitCount(newBitMap)];
+        int newDataMap = this.dataMap;
+        int newNodeMap = this.nodeMap;
+        for (int mapToDo = newBitMap; mapToDo != 0; mapToDo ^= Integer.lowestOneBit(mapToDo)) {
+            int mask = Integer.numberOfTrailingZeros(mapToDo);
+            int bitpos = bitpos(mask);
+
+            boolean thisIsData = (this.dataMap & bitpos) != 0;
+            boolean thatIsData = (that.dataMap & bitpos) != 0;
+            boolean thisIsNode = (this.nodeMap & bitpos) != 0;
+            boolean thatIsNode = (that.nodeMap & bitpos) != 0;
+
+            if (!(thisIsNode || thisIsData)) {
+                // programming error
+                assert false;
+            } else if (!(thatIsNode || thatIsData)) {
+                // remove 'mixed' (data or node) from this trie
+                if (thisIsData) {
+                    newDataMap ^= bitpos;
+                    bulkChange.removed++;
+                } else {
+                    newNodeMap ^= bitpos;
+                    bulkChange.removed += this.getNode(this.nodeIndex(bitpos)).calculateSize();
+                }
+            } else if (thisIsNode && thatIsNode) {
+                // retain all in that node from all in this node
+                ChampNode<D> thisNode = this.getNode(this.nodeIndex(bitpos));
+                ChampNode<D> thatNode = that.getNode(that.nodeIndex(bitpos));
+                ChampNode<D> result = thisNode.retainAll(owner, thatNode, shift + BIT_PARTITION_SIZE, bulkChange, updateFunction, equalsFunction, hashFunction, details);
+                if (result.isNodeEmpty()) {
+                    newNodeMap ^= bitpos;
+                } else if (result.hasMany()) {
+                    buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = result;
+                } else {
+                    newNodeMap ^= bitpos;
+                    newDataMap ^= bitpos;
+                    buffer[index(newDataMap, bitpos)] = result.getData(0);
+                }
+            } else if (thisIsData && thatIsNode) {
+                // retain this data if it is contained in that node
+                D thisData = this.getData(this.dataIndex(bitpos));
+                ChampNode<D> thatNode = that.getNode(that.nodeIndex(bitpos));
+                Object result = thatNode.find(thisData, hashFunction.applyAsInt(thisData), shift + BIT_PARTITION_SIZE, equalsFunction);
+                if (result == NO_DATA) {
+                    newDataMap ^= bitpos;
+                    bulkChange.removed++;
+                } else {
+                    buffer[index(newDataMap, bitpos)] = thisData;
+                }
+            } else if (thisIsNode) {
+                // retain this data if that data is contained in this node
+                D thatData = that.getData(that.dataIndex(bitpos));
+                ChampNode<D> thisNode = this.getNode(this.nodeIndex(bitpos));
+                Object result = thisNode.find(thatData, hashFunction.applyAsInt(thatData), shift + BIT_PARTITION_SIZE, equalsFunction);
+                if (result == NO_DATA) {
+                    bulkChange.removed += this.getNode(this.nodeIndex(bitpos)).calculateSize();
+                    newNodeMap ^= bitpos;
+                } else {
+                    newDataMap ^= bitpos;
+                    newNodeMap ^= bitpos;
+                    buffer[index(newDataMap, bitpos)] = result;
+                    bulkChange.removed += this.getNode(this.nodeIndex(bitpos)).calculateSize() - 1;
+                }
+            } else {
+                // retain this data if it is equal to that data
+                D thisData = this.getData(this.dataIndex(bitpos));
+                D thatData = that.getData(that.dataIndex(bitpos));
+                if (equalsFunction.test(thisData, thatData)) {
+                    buffer[index(newDataMap, bitpos)] = thisData;
+                } else {
+                    bulkChange.removed++;
+                    newDataMap ^= bitpos;
+                }
+            }
+        }
+        return newCroppedBitmapIndexedNode(buffer, newDataMap, newNodeMap);
+    }
+
+    @Override
+    
+    public ChampBitmapIndexedNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
+        var newBitMap = nodeMap | dataMap;
+        var buffer = new Object[Integer.bitCount(newBitMap)];
+        int newDataMap = this.dataMap;
+        int newNodeMap = this.nodeMap;
+        for (int mapToDo = newBitMap; mapToDo != 0; mapToDo ^= Integer.lowestOneBit(mapToDo)) {
+            int mask = Integer.numberOfTrailingZeros(mapToDo);
+            int bitpos = bitpos(mask);
+            boolean thisIsNode = (this.nodeMap & bitpos) != 0;
+            if (thisIsNode) {
+                ChampNode<D> thisNode = this.getNode(this.nodeIndex(bitpos));
+                ChampNode<D> result = thisNode.filterAll(owner, predicate, shift + BIT_PARTITION_SIZE, bulkChange);
+                if (result.isNodeEmpty()) {
+                    newNodeMap ^= bitpos;
+                } else if (result.hasMany()) {
+                    buffer[buffer.length - 1 - index(newNodeMap, bitpos)] = result;
+                } else {
+                    newNodeMap ^= bitpos;
+                    newDataMap ^= bitpos;
+                    buffer[index(newDataMap, bitpos)] = result.getData(0);
+                }
+            } else {
+                D thisData = this.getData(this.dataIndex(bitpos));
+                if (predicate.test(thisData)) {
+                    buffer[index(newDataMap, bitpos)] = thisData;
+                } else {
+                    newDataMap ^= bitpos;
+                    bulkChange.removed++;
+                }
+            }
+        }
+        return newCroppedBitmapIndexedNode(buffer, newDataMap, newNodeMap);
+    }
+
+    protected int calculateSize() {
+        int size = dataArity();
+        for (int i = 0, n = nodeArity(); i < n; i++) {
+            ChampNode<D> node = getNode(i);
+            size += node.calculateSize();
+        }
+        return size;
     }
 }

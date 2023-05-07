@@ -30,6 +30,7 @@ package io.vavr.collection;
 import java.util.NoSuchElementException;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 /**
@@ -154,7 +155,7 @@ import java.util.function.ToIntFunction;
         return (dataHash >>> shift) & BIT_PARTITION_MASK;
     }
 
-    static <K> ChampNode<K> mergeTwoDataEntriesIntoNode(ChampIdentityObject mutator,
+    static <K> ChampNode<K> mergeTwoDataEntriesIntoNode(ChampIdentityObject owner,
                                                         K k0, int keyHash0,
                                                         K k1, int keyHash1,
                                                         int shift) {
@@ -162,7 +163,7 @@ import java.util.function.ToIntFunction;
             Object[] entries = new Object[2];
             entries[0] = k0;
             entries[1] = k1;
-            return ChampNodeFactory.newHashCollisionNode(mutator, keyHash0, entries);
+            return ChampNodeFactory.newHashCollisionNode(owner, keyHash0, entries);
         }
 
         int mask0 = mask(keyHash0, shift);
@@ -180,16 +181,16 @@ import java.util.function.ToIntFunction;
                 entries[0] = k1;
                 entries[1] = k0;
             }
-            return ChampNodeFactory.newBitmapIndexedNode(mutator, (0), dataMap, entries);
+            return ChampNodeFactory.newBitmapIndexedNode(owner, (0), dataMap, entries);
         } else {
-            ChampNode<K> node = mergeTwoDataEntriesIntoNode(mutator,
+            ChampNode<K> node = mergeTwoDataEntriesIntoNode(owner,
                     k0, keyHash0,
                     k1, keyHash1,
                     shift + BIT_PARTITION_SIZE);
             // values fit on next level
 
             int nodeMap = bitpos(mask0);
-            return ChampNodeFactory.newBitmapIndexedNode(mutator, nodeMap, (0), new Object[]{node});
+            return ChampNodeFactory.newBitmapIndexedNode(owner, nodeMap, (0), new Object[]{node});
         }
     }
 
@@ -218,7 +219,7 @@ import java.util.function.ToIntFunction;
 
     abstract  D getData(int index);
 
-     ChampIdentityObject getMutator() {
+     ChampIdentityObject getOwner() {
         return null;
     }
 
@@ -226,12 +227,20 @@ import java.util.function.ToIntFunction;
 
     abstract boolean hasData();
 
+    boolean isNodeEmpty() {
+        return !hasData() && !hasNodes();
+    }
+
+    boolean hasMany() {
+        return hasNodes() || dataArity() > 1;
+    }
+
     abstract boolean hasDataArityOne();
 
     abstract boolean hasNodes();
 
     boolean isAllowedToUpdate( ChampIdentityObject y) {
-        ChampIdentityObject x = getMutator();
+        ChampIdentityObject x = getOwner();
         return x != null && x == y;
     }
 
@@ -240,7 +249,7 @@ import java.util.function.ToIntFunction;
     /**
      * Removes a data object from the trie.
      *
-     * @param mutator        A non-null value means, that this method may update
+     * @param owner        A non-null value means, that this method may update
      *                       nodes that are marked with the same unique id,
      *                       and that this method may create new mutable nodes
      *                       with this unique id.
@@ -254,7 +263,7 @@ import java.util.function.ToIntFunction;
      * @param equalsFunction a function that tests data objects for equality
      * @return the updated trie
      */
-    abstract ChampNode<D> remove(ChampIdentityObject mutator, D data,
+    abstract ChampNode<D> remove(ChampIdentityObject owner, D data,
                                  int dataHash, int shift,
                                  ChampChangeEvent<D> details,
                                  BiPredicate<D, D> equalsFunction);
@@ -262,7 +271,7 @@ import java.util.function.ToIntFunction;
     /**
      * Inserts or replaces a data object in the trie.
      *
-     * @param mutator        A non-null value means, that this method may update
+     * @param owner        A non-null value means, that this method may update
      *                       nodes that are marked with the same unique id,
      *                       and that this method may create new mutable nodes
      *                       with this unique id.
@@ -288,9 +297,81 @@ import java.util.function.ToIntFunction;
      *                       object
      * @return the updated trie
      */
-    abstract ChampNode<D> update(ChampIdentityObject mutator, D newData,
-                                 int dataHash, int shift, ChampChangeEvent<D> details,
-                                 BiFunction<D, D, D> updateFunction,
-                                 BiPredicate<D, D> equalsFunction,
-                                 ToIntFunction<D> hashFunction);
-}
+    abstract ChampNode<D> put(ChampIdentityObject owner, D newData,
+                              int dataHash, int shift, ChampChangeEvent<D> details,
+                              BiFunction<D, D, D> updateFunction,
+                              BiPredicate<D, D> equalsFunction,
+                              ToIntFunction<D> hashFunction);
+   /**
+     * Inserts or replaces data elements from the specified other trie in this trie.
+     *
+     * @param owner
+     * @param otherNode      a node with the same shift as this node from the other trie
+     * @param shift          the shift of this node and the other node
+     * @param bulkChange     updates the field {@link ChampBulkChangeEvent#inBoth}
+     * @param updateFunction the update function for data elements
+     * @param equalsFunction the equals function for data elements
+     * @param hashFunction   the hash function for data elements
+     * @param details        the change event for single elements
+     * @return the updated trie
+     */
+    protected abstract  ChampNode<D> putAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,
+                                                ChampBulkChangeEvent bulkChange,
+                                                BiFunction<D, D, D> updateFunction,
+                                                BiPredicate<D, D> equalsFunction,
+                                                ToIntFunction<D> hashFunction,
+                                                ChampChangeEvent<D> details);
+
+    /**
+     * Removes data elements in the specified other trie from this trie.
+     *
+     * @param owner
+     * @param otherNode      a node with the same shift as this node from the other trie
+     * @param shift          the shift of this node and the other node
+     * @param bulkChange     updates the field {@link ChampBulkChangeEvent#removed}
+     * @param updateFunction the update function for data elements
+     * @param equalsFunction the equals function for data elements
+     * @param hashFunction   the hash function for data elements
+     * @param details        the change event for single elements
+     * @return the updated trie
+     */
+    protected abstract  ChampNode<D> removeAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,
+                                                   ChampBulkChangeEvent bulkChange,
+                                                   BiFunction<D, D, D> updateFunction,
+                                                   BiPredicate<D, D> equalsFunction,
+                                                   ToIntFunction<D> hashFunction,
+                                                   ChampChangeEvent<D> details);
+
+    /**
+     * Retains data elements in this trie that are also in the other trie - removes the rest.
+     *
+     * @param owner
+     * @param otherNode      a node with the same shift as this node from the other trie
+     * @param shift          the shift of this node and the other node
+     * @param bulkChange     updates the field {@link ChampBulkChangeEvent#removed}
+     * @param updateFunction the update function for data elements
+     * @param equalsFunction the equals function for data elements
+     * @param hashFunction   the hash function for data elements
+     * @param details        the change event for single elements
+     * @return the updated trie
+     */
+    protected abstract  ChampNode<D> retainAll( ChampIdentityObject owner,  ChampNode<D> otherNode, int shift,
+                                                   ChampBulkChangeEvent bulkChange,
+                                                   BiFunction<D, D, D> updateFunction,
+                                                   BiPredicate<D, D> equalsFunction,
+                                                   ToIntFunction<D> hashFunction,
+                                                   ChampChangeEvent<D> details);
+
+    /**
+     * Retains data elements in this trie for which the provided predicate returns true.
+     *
+     * @param owner
+     * @param predicate  a predicate that returns true for data elements that should be retained
+     * @param shift      the shift of this node and the other node
+     * @param bulkChange updates the field {@link ChampBulkChangeEvent#removed}
+     * @return the updated trie
+     */
+    protected abstract  ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift,
+                                               ChampBulkChangeEvent bulkChange);
+
+    protected abstract int calculateSize();}

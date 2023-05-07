@@ -107,6 +107,13 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
      * The size of the set.
      */
     final int size;
+    /**
+     * We do not guarantee an iteration order. Make sure that nobody accidentally relies on it.
+     * <p>
+     * FIXME HashSetTest relies on iteration order! OMG, we have to replicate the existing iteration order
+     *       with CHAMP collections. This is hard if there is a hash collision!
+     */
+    static final int SALT = 0;//new Random().nextInt();
 
     HashSet(ChampBitmapIndexedNode<T> root, int size) {
         super(root.nodeMap(), root.dataMap(), root.mixed);
@@ -530,9 +537,9 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> add(T element) {
-        int keyHash = Objects.hashCode(element);
+        int keyHash = keyHash(element);
         ChampChangeEvent<T> details = new ChampChangeEvent<>();
-        ChampBitmapIndexedNode<T> newRootNode = update(null, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, Objects::hashCode);
+        ChampBitmapIndexedNode<T> newRootNode = put(null, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, HashSet::keyHash);
         if (details.isModified()) {
             return new HashSet<>(newRootNode, size + 1);
         }
@@ -547,7 +554,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
      * @param <E>        the element type
      * @return always returns the old element
      */
-    private static <E> E updateElement(E oldElement, E newElement) {
+    static <E> E updateElement(E oldElement, E newElement) {
         return oldElement;
     }
 
@@ -555,7 +562,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     @Override
     public HashSet<T> addAll(Iterable<? extends T> elements) {
         var t = toTransient();
-        return t.addAll(elements) ? t.toImmutable() : this;
+        t.addAll(elements);return t.toImmutable();
     }
 
     @Override
@@ -565,7 +572,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public boolean contains(T element) {
-        return find(element, Objects.hashCode(element), 0, Objects::equals) != ChampNode.NO_DATA;
+        return find(element, keyHash(element), 0, Objects::equals) != ChampNode.NO_DATA;
     }
 
     @Override
@@ -749,7 +756,9 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     public Iterator<T> iterator() {
         return new ChampIteratorFacade<>(spliterator());
     }
-
+    static int keyHash(Object e) {
+        return SALT ^ Objects.hashCode(e);
+    }
     @Override
     public T last() {
         return ChampNode.getLast(this);
@@ -805,11 +814,11 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> remove(T key) {
-        int keyHash = Objects.hashCode(key);
+        int keyHash = keyHash(key);
         ChampChangeEvent<T> details = new ChampChangeEvent<>();
         ChampBitmapIndexedNode<T> newRootNode = remove(null, key, keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
-            return new HashSet<>(newRootNode, size - 1);
+            return size == 1 ? HashSet.empty() : new HashSet<>(newRootNode, size - 1);
         }
         return this;
     }
@@ -817,7 +826,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     @Override
     public HashSet<T> removeAll(Iterable<? extends T> elements) {
         var t = toTransient();
-        return t.removeAll(elements) ? t.toImmutable() : this;
+        t.removeAll(elements);return t.toImmutable();
     }
 
     @Override
@@ -833,7 +842,9 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> retainAll(Iterable<? extends T> elements) {
-        return Collections.retainAll(this, elements);
+        var t = toTransient();
+        t.retainAll(elements);
+        return t.toImmutable();
     }
 
     @Override
@@ -1093,14 +1104,14 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            var mutator = new ChampIdentityObject();
+            var owner = new ChampIdentityObject();
             ChampBitmapIndexedNode<T> newRoot = emptyNode();
             ChampChangeEvent<T> details = new ChampChangeEvent<>();
             int newSize = 0;
             for (int i = 0; i < size; i++) {
                 @SuppressWarnings("unchecked") final T element = (T) s.readObject();
-                int keyHash = Objects.hashCode(element);
-                newRoot = newRoot.update(mutator, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, Objects::hashCode);
+                int keyHash = keyHash(element);
+                newRoot = newRoot.put(owner, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, HashSet::keyHash);
                 if (details.isModified()) newSize++;
             }
             tree = newSize == 0 ? empty() : new HashSet<>(newRoot, newSize);
