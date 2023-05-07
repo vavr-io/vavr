@@ -41,11 +41,17 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
  * <p>
  * References:
  * <p>
- * This class has been derived from 'The Capsule Hash Trie Collections Library'.
+ * Portions of the code in this class have been derived from 'The Capsule Hash Trie Collections Library', and from
+ * 'JHotDraw 8'.
  * <dl>
- *      <dt>The Capsule Hash Trie Collections Library.
- *      <br>Copyright (c) Michael Steindorfer. <a href="https://github.com/usethesource/capsule/blob/3856cd65fa4735c94bcfa94ec9ecf408429b54f4/LICENSE">BSD-2-Clause License</a></dt>
- *      <dd><a href="https://github.com/usethesource/capsule">github.com</a>
+ *     <dt>The Capsule Hash Trie Collections Library.
+ *     <br>Copyright (c) Michael Steindorfer. <a href="https://github.com/usethesource/capsule/blob/3856cd65fa4735c94bcfa94ec9ecf408429b54f4/LICENSE">BSD-2-Clause License</a></dt>
+ *     <dd><a href="https://github.com/usethesource/capsule">github.com</a>
+ *     </dd>
+ *     <dt>JHotDraw 8. Copyright © 2023 The authors and contributors of JHotDraw.
+ *     <a href="https://github.com/wrandelshofer/jhotdraw8/blob/8c1a98b70bc23a0c63f1886334d5b568ada36944/LICENSE">MIT License</a>.</dt>
+ *     <dd><a href="https://github.com/wrandelshofer/jhotdraw8">github.com</a>
+ *     </dd>
  * </dl>
  *
  * @param <D> the data type

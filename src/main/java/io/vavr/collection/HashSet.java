@@ -110,8 +110,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     /**
      * We do not guarantee an iteration order. Make sure that nobody accidentally relies on it.
      * <p>
-     * FIXME HashSetTest relies on iteration order! OMG, we have to replicate the existing iteration order
-     *       with CHAMP collections. This is hard if there is a hash collision!
+     * XXX HashSetTest requires a specific iteration order of HashSet! Therefore, we can not use SALT here.
      */
     static final int SALT = 0;//new Random().nextInt();
 

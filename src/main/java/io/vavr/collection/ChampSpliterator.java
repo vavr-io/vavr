@@ -39,6 +39,10 @@ import java.util.function.Function;
  * create a new version of the trie, so that iterator does not have
  * to deal with structural changes of the trie.
  * <p>
+ * XXX This iterator carefully replicates the iteration sequence of the original HAMT-based
+ *     HashSet class. We can not use a more performant implementation, because HashSetTest
+ *     requires that we use a specific iteration sequence.
+ * <p>
  * References:
  * <p>
  * The code in this class has been derived from JHotDraw 8.
