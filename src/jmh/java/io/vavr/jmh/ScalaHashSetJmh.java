@@ -24,13 +24,12 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  * # org.scala-lang:scala-library:2.13.10
  *
- *                    (size)  Mode  Cnt         Score   Error  Units
- * ContainsFound     1000000  avgt            489.190          ns/op
- * ContainsNotFound  1000000  avgt            485.937          ns/op
- * Head              1000000  avgt             34.219          ns/op
- * Iterate           1000000  avgt       81562133.967          ns/op
- * RemoveThenAdd     1000000  avgt           1342.959          ns/op
- * Tail              1000000  avgt            251.892          ns/op
+ * ScalaHashSetJmh.mContainsFound          -65  100000  avgt            101.833          ns/op
+ * ScalaHashSetJmh.mContainsNotFound       -65  100000  avgt            101.225          ns/op
+ * ScalaHashSetJmh.mHead                   -65  100000  avgt             19.545          ns/op
+ * ScalaHashSetJmh.mIterate                -65  100000  avgt        3504486.602          ns/op
+ * ScalaHashSetJmh.mRemoveThenAdd          -65  100000  avgt            398.521          ns/op
+ * ScalaHashSetJmh.mTail                   -65  100000  avgt             98.564          ns/op
  * </pre>
  */
 @State(Scope.Benchmark)
@@ -41,10 +40,11 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @SuppressWarnings("unchecked")
 public class ScalaHashSetJmh {
-    @Param({"10", "1000000"})
+    @Param({/*"10","1000",*/"100000"/*,"10000000"*/})
     private int size;
 
-    private final int mask = ~64;
+    @Param({"-65"})
+    private int mask;
 
     private BenchmarkData data;
     private HashSet<Key> setA;

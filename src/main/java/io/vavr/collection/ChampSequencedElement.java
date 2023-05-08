@@ -59,6 +59,9 @@ import java.util.Objects;
         this.element = element;
         this.sequenceNumber = sequenceNumber;
     }
+    public static int keyHash( Object a) {
+        return Objects.hashCode(a);
+    }
 
 
      static <E> ChampSequencedElement<E> forceUpdate( ChampSequencedElement<E> oldK, ChampSequencedElement<E> newK) {

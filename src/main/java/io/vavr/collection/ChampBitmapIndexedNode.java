@@ -630,7 +630,7 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
 
     @Override
     
-     ChampBitmapIndexedNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
+     ChampBitmapIndexedNode<D> filterAll(ChampIdentityObject owner, Predicate<? super D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
         var newBitMap = nodeMap | dataMap;
         var buffer = new Object[Integer.bitCount(newBitMap)];
         int newDataMap = this.dataMap;

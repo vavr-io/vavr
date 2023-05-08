@@ -28,6 +28,11 @@
 
 package io.vavr.collection;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.function.Predicate;
+
 /**
  * Abstract base class for a transient CHAMP set.
  * <p>
@@ -41,8 +46,9 @@ package io.vavr.collection;
  * </dl>
  *
  * @param <E> the element type
+ * @param <D> the data type of the CHAMP trie
  */
-abstract class ChampAbstractTransientSet<E> extends ChampAbstractTransientCollection<E>{
+abstract class ChampAbstractTransientSet<E,D> extends ChampAbstractTransientCollection<D>{
     abstract void clear();
     abstract boolean remove(Object o);
     boolean removeAll( Iterable<?> c) {
@@ -58,5 +64,33 @@ abstract class ChampAbstractTransientSet<E> extends ChampAbstractTransientCollec
             modified |= remove(o);
         }
         return modified;
+    }
+
+    abstract Iterator<E> iterator();
+    boolean retainAll( Iterable<?> c) {
+        if (isEmpty()) {
+            return false;
+        }
+        if (c instanceof Collection<?> cc && cc.isEmpty()) {
+            clear();
+            return true;
+        }
+        Predicate<E> predicate;
+        if (c instanceof Collection<?> that) {
+            predicate = that::contains;
+        } else {
+            HashSet<Object> that = new HashSet<>();
+            c.forEach(that::add);
+            predicate = that::contains;
+        }
+        boolean removed = false;
+        for (Iterator<E> i = iterator(); i.hasNext(); ) {
+            E e = i.next();
+            if (!predicate.test(e)) {
+                remove(e);
+                removed = true;
+            }
+        }
+        return removed;
     }
 }

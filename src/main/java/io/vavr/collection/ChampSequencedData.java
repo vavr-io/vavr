@@ -256,7 +256,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
 
     final static ChampTombstone TOMB_ZERO_ZERO = new ChampTombstone(0, 0);
 
-    static <K extends ChampSequencedData> Tuple2<Vector<Object>, Integer> vecRemove(Vector<Object> vector, ChampIdentityObject owner, K oldElem, ChampChangeEvent<K> details, int offset) {
+    static <K extends ChampSequencedData> Tuple2<Vector<Object>, Integer> vecRemove(Vector<Object> vector, K oldElem, int offset) {
         // If the element is the first, we can remove it and its neighboring tombstones from the vector.
         int size = vector.size();
         int index = oldElem.getSequenceNumber() + offset;

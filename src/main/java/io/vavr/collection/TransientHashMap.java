@@ -74,7 +74,7 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
     boolean putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> c) {
         if (c instanceof HashMap<?, ?> that) {
             var bulkChange = new ChampBulkChangeEvent();
-            var newRootNode = root.putAll(getOrCreateOwner(), (ChampNode<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampNode<?>) that, 0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
+            var newRootNode = root.putAll(makeOwner(), (ChampNode<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampNode<?>) that, 0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
                     HashMap::entryKeyHash, new ChampChangeEvent<>());
             if (bulkChange.inBoth == that.size() && !bulkChange.replaced) {
                 return false;
@@ -90,7 +90,7 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
     ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> putEntry(final K key, V value, boolean moveToLast) {
         int keyHash = HashMap.keyHash(key);
         ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        root = root.put(getOrCreateOwner(), new AbstractMap.SimpleImmutableEntry<>(key, value), keyHash, 0, details,
+        root = root.put(makeOwner(), new AbstractMap.SimpleImmutableEntry<>(key, value), keyHash, 0, details,
                 HashMap::updateEntry,
                 HashMap::entryKeyEquals,
                 HashMap::entryKeyHash);
@@ -107,7 +107,7 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
     ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> removeKey(K key) {
         int keyHash = HashMap.keyHash(key);
         ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        root = root.remove(getOrCreateOwner(), new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
+        root = root.remove(makeOwner(), new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
                 HashMap::entryKeyEquals);
         if (details.isModified()) {
             size = size - 1;
@@ -141,11 +141,11 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
         ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
         ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode;
         if (c instanceof Collection<?> that) {
-            newRootNode = root.filterAll(getOrCreateOwner(), e -> that.contains(e.getKey()), 0, bulkChange);
+            newRootNode = root.filterAll(makeOwner(), e -> that.contains(e.getKey()), 0, bulkChange);
         } else {
             java.util.HashSet<Object> that = new HashSet<>();
             c.forEach(that::add);
-            newRootNode = root.filterAll(getOrCreateOwner(), that::contains, 0, bulkChange);
+            newRootNode = root.filterAll(makeOwner(), that::contains, 0, bulkChange);
         }
         if (bulkChange.removed == 0) {
             return false;
@@ -160,7 +160,7 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
     boolean retainAllTuples(Iterable<? extends Tuple2<K, V>> c) {
         if (c instanceof HashMap<?, ?> that) {
             var bulkChange = new ChampBulkChangeEvent();
-            var newRootNode = root.retainAll(getOrCreateOwner(),
+            var newRootNode = root.retainAll(makeOwner(),
                     (ChampNode<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampNode<?>) that,
                     0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
                     HashMap::entryKeyHash, new ChampChangeEvent<>());
@@ -194,7 +194,7 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
     @SuppressWarnings("unchecked")
     boolean filterAll(Predicate<AbstractMap.SimpleImmutableEntry<K, V>> predicate) {
         ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
-        ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.filterAll(getOrCreateOwner(), predicate, 0, bulkChange);
+        ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.filterAll(makeOwner(), predicate, 0, bulkChange);
         if (bulkChange.removed == 0) {
             return false;
         }

@@ -1,7 +1,19 @@
 package io.vavr.jmh;
 
+import io.vavr.Tuple2;
 import io.vavr.collection.HashSet;
-import org.openjdk.jmh.annotations.*;
+import io.vavr.collection.LinkedHashSet;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
 
 import java.util.concurrent.TimeUnit;
 
@@ -16,7 +28,9 @@ import java.util.concurrent.TimeUnit;
  * mContainsFound        -65  100000  avgt             71.910          ns/op
  * mContainsNotFound     -65  100000  avgt            101.819          ns/op
  * mHead                 -65  100000  avgt             10.082          ns/op
- * mIterate              -65  100000  avgt        6150139.070          ns/op
+ * mFilter50Percent      -65  100000  avgt        1792088.871          ns/op
+ * mPartition50Percent   -65  100000  avgt        3916662.907          ns/op
+ * mIterate              -65  100000  avgt        2056757.660          ns/op
  * mOfAll                -65  100000  avgt       20939278.918          ns/op
  * mRemoveAll            -65  100000  avgt       26670647.515          ns/op
  * mRemoveOneByOne       -65  100000  avgt       31792853.537          ns/op
@@ -46,28 +60,39 @@ public class VavrHashSetJmh {
         setA = HashSet.ofAll(data.setA);
     }
 
-        @Benchmark
-        public HashSet<Key> mOfAll() {
-            return HashSet.ofAll(data.listA);
-        }
+    @Benchmark
+    public HashSet<Key> mFilter50Percent() {
+        HashSet<Key> set = setA;
+        return set.filter(e->(e.value&1)==0);
+    }
+    @Benchmark
+    public Tuple2<HashSet<Key>,HashSet<Key>> mPartition50Percent() {
+        HashSet<Key> set = setA;
+        return set.partition(e -> (e.value & 1) == 0);
+    }
+/*
+    @Benchmark
+    public HashSet<Key> mOfAll() {
+        return HashSet.ofAll(data.listA);
+    }
 
-        @Benchmark
-        public HashSet<Key> mAddOneByOne() {
-            HashSet<Key> set = HashSet.of();
-            for (Key key : data.listA) {
-                set = set.add(key);
-            }
-            return set;
+    @Benchmark
+    public HashSet<Key> mAddOneByOne() {
+        HashSet<Key> set = HashSet.of();
+        for (Key key : data.listA) {
+            set = set.add(key);
         }
+        return set;
+    }
 
-        @Benchmark
-        public HashSet<Key> mRemoveOneByOne() {
-            HashSet<Key> set = setA;
-            for (Key key : data.listA) {
-                set = set.remove(key);
-            }
-            return set;
+    @Benchmark
+    public HashSet<Key> mRemoveOneByOne() {
+        HashSet<Key> set = setA;
+        for (Key key : data.listA) {
+            set = set.remove(key);
         }
+        return set;
+    }
 
     @Benchmark
     public HashSet<Key> mRemoveAll() {
@@ -86,13 +111,15 @@ public class VavrHashSetJmh {
 
     @Benchmark
     public void mRemoveThenAdd() {
-        Key key =data.nextKeyInA();
+        Key key = data.nextKeyInA();
         setA.remove(key).add(key);
     }
+
     @Benchmark
     public Key mHead() {
         return setA.head();
     }
+
     @Benchmark
     public HashSet<Key> mTail() {
         return setA.tail();
@@ -109,4 +136,5 @@ public class VavrHashSetJmh {
         Key key = data.nextKeyInB();
         return setA.contains(key);
     }
+*/
 }

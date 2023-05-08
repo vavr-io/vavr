@@ -355,7 +355,7 @@ class ChampHashCollisionNode<D> extends ChampNode<D> {
 
     @SuppressWarnings("unchecked")
     @Override
-     ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
+     ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<? super D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
         final int thisSize = this.dataArity();
         int resultSize = 0;
         Object[] buffer = new Object[thisSize];
