@@ -50,22 +50,22 @@ public class CodingConventions {
     @Test
     public void shouldHaveTransformMethodWhenIterable() {
         final int errors = vavrTypes.get()
-                .filter(type -> !type.isInterface() && Iterable.class.isAssignableFrom(type))
-                .filter(type -> {
-                    if (type.isAnnotationPresent(Deprecated.class)) {
-                        skip(type, "deprecated");
+            .filter(type -> !type.isInterface() && Iterable.class.isAssignableFrom(type))
+            .filter(type -> {
+                if (type.isAnnotationPresent(Deprecated.class)) {
+                    skip(type, "deprecated");
+                    return false;
+                } else {
+                    try {
+                        type.getMethod("transform", Function.class);
+                        System.out.println("✅ " + type + ".transform(Function)");
                         return false;
-                    } else {
-                        try {
-                            type.getMethod("transform", Function.class);
-                            System.out.println("✅ " + type + ".transform(Function)");
-                            return false;
-                        } catch(NoSuchMethodException x) {
-                            System.out.println("⛔ transform method missing in " + type);
-                            return true;
-                        }
+                    } catch(NoSuchMethodException x) {
+                        System.out.println("⛔ transform method missing in " + type);
+                        return true;
                     }
-                }).length();
+                }
+        }).length();
         assertThat(errors).isZero();
     }
 
@@ -83,9 +83,9 @@ public class CodingConventions {
                     final Path startPath = Paths.get(startDir);
                     final String fileExtension = ".java";
                     return Files.find(startPath, Integer.MAX_VALUE, (path, basicFileAttributes) ->
-                                    basicFileAttributes.isRegularFile() &&
-                                            path.getName(path.getNameCount() - 1).toString().endsWith(fileExtension)
-                            )
+                            basicFileAttributes.isRegularFile() &&
+                                    path.getName(path.getNameCount() - 1).toString().endsWith(fileExtension)
+                    )
                             .map(Object::toString)
                             .map(path -> path.substring(startDir.length() + 1, path.length() - fileExtension.length()))
                             .filter(path -> !path.endsWith(File.separator + "package-info"))

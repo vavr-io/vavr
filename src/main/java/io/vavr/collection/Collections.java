@@ -32,32 +32,14 @@ import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.NoSuchElementException;
-import java.util.Objects;
-import java.util.Random;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.IntBinaryOperator;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.*;
+import java.util.function.*;
 import java.util.stream.Collector;
 
 /**
  * Internal class, containing helpers.
- * <p>
- * XXX The javadoc states that this class is internal, however when this class
- * is not public, then vavr is not open for extension. Ideally, it should
- * be possible to add new collection implementations to vavr without
- * having to change existing code and packages of vavr.
  */
-public final class Collections {
+final class Collections {
 
     // checks, if the *elements* of the given iterables are equal
     static boolean areEqual(Iterable<?> iterable1, Iterable<?> iterable2) {
@@ -117,7 +99,7 @@ public final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V> boolean equals(Map<K, V> source, Object object) {
+    static <K, V> boolean equals(Map<K, V> source, Object object) {
         if (source == object) {
             return true;
         } else if (source != null && object instanceof Map) {
@@ -169,7 +151,7 @@ public final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    public static <V> boolean equals(Set<V> source, Object object) {
+    static <V> boolean equals(Set<V> source, Object object) {
         if (source == object) {
             return true;
         } else if (source != null && object instanceof Set) {
@@ -188,12 +170,12 @@ public final class Collections {
         }
     }
 
-    public static <T> Iterator<T> fill(int n, Supplier<? extends T> supplier) {
+    static <T> Iterator<T> fill(int n, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return tabulate(n, ignored -> supplier.get());
     }
 
-    public static <T, R> Collector<T, ArrayList<T>, R> toListAndThen(Function<ArrayList<T>, R> finisher) {
+    static <T, R> Collector<T, ArrayList<T>, R> toListAndThen(Function<ArrayList<T>, R> finisher) {
         final Supplier<ArrayList<T>> supplier = ArrayList::new;
         final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
         final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
@@ -207,7 +189,7 @@ public final class Collections {
         return n <= 0 ? Iterator.empty() : Iterator.continually(element).take(n);
     }
 
-    public static <C extends Traversable<T>, T> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
+    static <C extends Traversable<T>, T> C fill(int n, Supplier<? extends T> s, C empty, Function<T[], C> of) {
         Objects.requireNonNull(s, "s is null");
         Objects.requireNonNull(empty, "empty is null");
         Objects.requireNonNull(of, "of is null");
@@ -244,7 +226,7 @@ public final class Collections {
                 .map(entry -> entry._2);
     }
 
-    public static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
+    static <T, C, R extends Iterable<T>> Map<C, R> groupBy(Traversable<T> source, Function<? super T, ? extends C> classifier, Function<? super Iterable<T>, R> mapper) {
         Objects.requireNonNull(classifier, "classifier is null");
         Objects.requireNonNull(mapper, "mapper is null");
         Map<C, R> results = LinkedHashMap.empty();
@@ -270,7 +252,7 @@ public final class Collections {
     }
 
     // hashes the elements regardless of their order
-    public static int hashUnordered(Iterable<?> iterable) {
+    static int hashUnordered(Iterable<?> iterable) {
         return hash(iterable, Integer::sum);
     }
 
@@ -302,7 +284,7 @@ public final class Collections {
                 (iterable instanceof Traversable && ((Traversable<?>) iterable).isTraversableAgain());
     }
 
-    public static <T> T last(Traversable<T> source) {
+    static <T> T last(Traversable<T> source){
         if (source.isEmpty()) {
             throw new NoSuchElementException("last of empty " + source.stringPrefix());
         } else {
@@ -316,7 +298,7 @@ public final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    public static <K, V, K2, U extends Map<K2, V>> U mapKeys(Map<K, V> source, U zero, Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
+    static <K, V, K2, U extends Map<K2, V>> U mapKeys(Map<K, V> source, U zero, Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge) {
         Objects.requireNonNull(zero, "zero is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMerge, "valueMerge is null");
@@ -329,8 +311,8 @@ public final class Collections {
         });
     }
 
-    public static <C extends Traversable<T>, T> Tuple2<C, C> partition(C collection, Function<Iterable<T>, C> creator,
-                                                                       Predicate<? super T> predicate) {
+    static <C extends Traversable<T>, T> Tuple2<C, C> partition(C collection, Function<Iterable<T>, C> creator,
+                                                                Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new java.util.ArrayList<>();
         final java.util.List<T> right = new java.util.ArrayList<>();
@@ -341,7 +323,7 @@ public final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    public static <C extends Traversable<T>, T> C removeAll(C source, Iterable<? extends T> elements) {
+    static <C extends Traversable<T>, T> C removeAll(C source, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (source.isEmpty()) {
             return source;
@@ -361,7 +343,7 @@ public final class Collections {
     }
 
     @SuppressWarnings("unchecked")
-    public static <C extends Traversable<T>, T> C retainAll(C source, Iterable<? extends T> elements) {
+    static <C extends Traversable<T>, T> C retainAll(C source, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (source.isEmpty()) {
             return source;
@@ -431,15 +413,15 @@ public final class Collections {
         }
     }
 
-    public static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,
-                                                              U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
+    static <T, U, R extends Traversable<U>> R scanLeft(Traversable<? extends T> source,
+                                                       U zero, BiFunction<? super U, ? super T, ? extends U> operation, Function<Iterator<U>, R> finisher) {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<U> iterator = source.iterator().scanLeft(zero, operation);
         return finisher.apply(iterator);
     }
 
-    public static <T, U, R extends Traversable<U>> R scanRight(Traversable<? extends T> source,
-                                                               U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
+    static <T, U, R extends Traversable<U>> R scanRight(Traversable<? extends T> source,
+                                                        U zero, BiFunction<? super T, ? super U, ? extends U> operation, Function<Iterator<U>, R> finisher) {
         Objects.requireNonNull(operation, "operation is null");
         final Iterator<? extends T> reversedElements = reverseIterator(source);
         return scanLeft(reversedElements, zero, (u, t) -> operation.apply(t, u), us -> finisher.apply(reverseIterator(us)));
@@ -481,7 +463,7 @@ public final class Collections {
         }
     }
 
-    public static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    static <T> Iterator<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         if (n <= 0) {
             return Iterator.empty();
@@ -506,14 +488,15 @@ public final class Collections {
         }
     }
 
-    public static <C extends Traversable<T>, T> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {
+    static <C extends Traversable<T>, T> C tabulate(int n, Function<? super Integer, ? extends T> f, C empty, Function<T[], C> of) {
         Objects.requireNonNull(f, "f is null");
         Objects.requireNonNull(empty, "empty is null");
         Objects.requireNonNull(of, "of is null");
         if (n <= 0) {
             return empty;
         } else {
-            @SuppressWarnings("unchecked") final T[] elements = (T[]) new Object[n];
+            @SuppressWarnings("unchecked")
+            final T[] elements = (T[]) new Object[n];
             for (int i = 0; i < n; i++) {
                 elements[i] = f.apply(i);
             }
