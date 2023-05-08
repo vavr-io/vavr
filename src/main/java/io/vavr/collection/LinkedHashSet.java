@@ -609,7 +609,7 @@ public final class LinkedHashSet<T>
             if (details.isReplaced()) {
                 if (moveToLast) {
                     var oldElem = details.getOldData();
-                    var result = ChampSequencedData.vecRemove(newVector, new ChampIdentityObject(), oldElem, details, newOffset);
+                    var result = ChampSequencedData.vecRemove(newVector,  oldElem,  newOffset);
                     newVector = result._1;
                     newOffset = result._2;
                 }
@@ -634,7 +634,7 @@ public final class LinkedHashSet<T>
     @Override
     public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
         var t = toTransient();
-        return t.addAll(elements) ? t.toImmutable() : this;
+        t.addAll(elements);return t.toImmutable();
     }
 
     @Override
@@ -649,12 +649,7 @@ public final class LinkedHashSet<T>
 
     @Override
     public LinkedHashSet<T> diff(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() || elements.isEmpty()) {
-            return this;
-        } else {
             return removeAll(elements);
-        }
     }
 
     @Override
@@ -679,7 +674,7 @@ public final class LinkedHashSet<T>
         if (n <= 0) {
             return this;
         } else {
-            return LinkedHashSet.ofAll(iterator().drop(n));
+            return LinkedHashSet.ofAll(iterator(n));
         }
     }
 
@@ -707,9 +702,9 @@ public final class LinkedHashSet<T>
 
     @Override
     public LinkedHashSet<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final LinkedHashSet<T> filtered = LinkedHashSet.ofAll(iterator().filter(predicate));
-        return filtered.length() == length() ? this : filtered;
+       var t=toTransient();
+       t.filterAll(predicate);
+       return t.toImmutable();
     }
 
     @Override
@@ -780,12 +775,7 @@ public final class LinkedHashSet<T>
 
     @Override
     public LinkedHashSet<T> intersect(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() || elements.isEmpty()) {
-            return empty();
-        } else {
             return retainAll(elements);
-        }
     }
 
     /**
@@ -826,6 +816,9 @@ public final class LinkedHashSet<T>
     @Override
     public Iterator<T> iterator() {
         return new ChampIteratorFacade<>(spliterator());
+    }
+    Iterator<T> iterator(int startIndex) {
+        return new ChampIteratorFacade<>(spliterator(startIndex));
     }
 
     @SuppressWarnings("unchecked")
@@ -887,7 +880,7 @@ public final class LinkedHashSet<T>
                 keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
             var removedElem = details.getOldDataNonNull();
-            var result = ChampSequencedData.vecRemove(vector, null, removedElem, details, offset);
+            var result = ChampSequencedData.vecRemove(vector, removedElem,  offset);
             return renumber(newRoot, result._1, size - 1,
                     result._2);
         }
@@ -897,7 +890,7 @@ public final class LinkedHashSet<T>
     @Override
     public LinkedHashSet<T> removeAll(Iterable<? extends T> elements) {
         var t = toTransient();
-        return t.removeAll(elements) ? t.toImmutable() : this;
+         t.removeAll(elements) ;return t.toImmutable() ;
     }
 
     /**
@@ -950,7 +943,7 @@ public final class LinkedHashSet<T>
         var newOffset = offset;
         ChampSequencedElement<T> currentData = detailsCurrent.getOldData();
         int seq = currentData.getSequenceNumber();
-        var result = ChampSequencedData.vecRemove(newVector, owner, currentData, detailsCurrent, newOffset);
+        var result = ChampSequencedData.vecRemove(newVector,  currentData, newOffset);
         newVector = result._1;
         newOffset = result._2;
 
@@ -967,7 +960,7 @@ public final class LinkedHashSet<T>
         // => remove the replaced entry from the 'sequenceRoot' trie
         if (isReplaced) {
             ChampSequencedElement<T> replacedEntry = detailsNew.getOldData();
-            result = ChampSequencedData.vecRemove(newVector, owner, replacedEntry, detailsCurrent, newOffset);
+            result = ChampSequencedData.vecRemove(newVector,  replacedEntry, newOffset);
             newVector = result._1;
             newOffset = result._2;
         }
@@ -992,7 +985,9 @@ public final class LinkedHashSet<T>
 
     @Override
     public LinkedHashSet<T> retainAll(Iterable<? extends T> elements) {
-        return Collections.retainAll(this, elements);
+        var t =toTransient();
+        t.retainAll(elements);
+        return t.toImmutable();
     }
 
 
@@ -1047,9 +1042,14 @@ public final class LinkedHashSet<T>
     @SuppressWarnings("unchecked")
     @Override
     public Spliterator<T> spliterator() {
+        return spliterator(0);
+    }
+
+    @SuppressWarnings("unchecked")
+     Spliterator<T> spliterator(int startIndex) {
         return new ChampVectorSpliterator<>(vector,
                 e -> ((ChampSequencedElement<T>) e).getElement(),
-                0, size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
+                startIndex, size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override
@@ -1108,6 +1108,8 @@ public final class LinkedHashSet<T>
 
     @Override
     public java.util.LinkedHashSet<T> toJavaSet() {
+        // XXX If the return value was not required to be a java.util.LinkedHashSet
+        //     we could provide a mutable LinkedHashSet in O(1)
         return toJavaSet(java.util.LinkedHashSet::new);
     }
 

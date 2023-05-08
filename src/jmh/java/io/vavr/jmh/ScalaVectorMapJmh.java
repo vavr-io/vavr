@@ -30,6 +30,17 @@ import java.util.concurrent.TimeUnit;
  * # Intel(R) Core(TM) i7-8700B CPU @ 3.20GHz
  * # org.scala-lang:scala-library:2.13.8
  *
+ * ScalaVectorMapJmh.mAddAll               -65  100000  avgt       26372880.482          ns/op
+ * ScalaVectorMapJmh.mAddOneByOne          -65  100000  avgt       37832317.713          ns/op
+ * ScalaVectorMapJmh.mContainsFound        -65  100000  avgt             74.736          ns/op
+ * ScalaVectorMapJmh.mContainsNotFound     -65  100000  avgt             70.944          ns/op
+ * ScalaVectorMapJmh.mHead                 -65  100000  avgt             29.242          ns/op
+ * ScalaVectorMapJmh.mIterate              -65  100000  avgt       12124569.507          ns/op
+ * ScalaVectorMapJmh.mPut                  -65  100000  avgt            274.753          ns/op
+ * ScalaVectorMapJmh.mRemoveAll            -65  100000  avgt       77682581.264          ns/op
+ * ScalaVectorMapJmh.mRemoveOneByOne       -65  100000  avgt       78537704.391          ns/op
+ * ScalaVectorMapJmh.mRemoveThenAdd        -65  100000  avgt            822.708          ns/op
+ *
  * Benchmark                             (size)  Mode  Cnt          Score         Error  Units
  * ScalaVectorMapJmh.mAddAll             -65        10  avgt         _      891.588          ns/op
  * ScalaVectorMapJmh.mAddAll             -65      1000  avgt         _   131598.312          ns/op
@@ -68,11 +79,12 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @SuppressWarnings("unchecked")
 public class ScalaVectorMapJmh {
-    @Param({"10","1000","100000","10000000"})
+    @Param({/*"10","1000",*/"100000"/*,"10000000"*/})
     private int size;
 
     @Param({"-65"})
-    private  int mask;
+    private int mask;
+
 
     private BenchmarkData data;
     private VectorMap<Key, Boolean> mapA;

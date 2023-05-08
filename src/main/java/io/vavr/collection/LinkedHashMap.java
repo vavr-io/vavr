@@ -948,7 +948,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
             if (details.isReplaced()) {
                 if (moveToLast) {
                     var oldElem = details.getOldDataNonNull();
-                    var result = ChampSequencedData.vecRemove(newVector, owner, oldElem, details, newOffset);
+                    var result = ChampSequencedData.vecRemove(newVector,  oldElem,  newOffset);
                     newVector = result._1;
                     newOffset = result._2;
                 }
@@ -981,7 +981,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
                 keyHash, 0, details, ChampSequencedEntry::keyEquals);
         if (details.isModified()) {
             var oldElem = details.getOldDataNonNull();
-            var result = ChampSequencedData.vecRemove(vector, null, oldElem, details, offset);
+            var result = ChampSequencedData.vecRemove(vector,  oldElem,  offset);
             return renumber(newRoot, result._1, size - 1, result._2);
         }
         return this;
@@ -1034,7 +1034,7 @@ return        t.removeAll(keys)?t.toImmutable():this;
         var newOffset = offset;
         ChampSequencedEntry<K, V> removedData = detailsCurrent.getOldData();
         int seq = removedData.getSequenceNumber();
-        var result = ChampSequencedData.vecRemove(newVector, owner, removedData, detailsCurrent, offset);
+        var result = ChampSequencedData.vecRemove(newVector,  removedData,  offset);
         newVector=result._1;
         newOffset=result._2;
 
@@ -1051,7 +1051,7 @@ return        t.removeAll(keys)?t.toImmutable():this;
         // => remove the replaced data from the vector
         if (isReplaced) {
             ChampSequencedEntry<K, V> replacedData = detailsNew.getOldData();
-            result = ChampSequencedData.vecRemove(newVector, owner, replacedData, detailsCurrent, newOffset);
+            result = ChampSequencedData.vecRemove(newVector,  replacedData,  newOffset);
             newVector=result._1;
             newOffset=result._2;
         }

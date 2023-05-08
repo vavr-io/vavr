@@ -371,7 +371,7 @@ import java.util.function.ToIntFunction;
      * @param bulkChange updates the field {@link ChampBulkChangeEvent#removed}
      * @return the updated trie
      */
-     abstract  ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<D> predicate, int shift,
+     abstract  ChampNode<D> filterAll(ChampIdentityObject owner, Predicate<? super D> predicate, int shift,
                                                ChampBulkChangeEvent bulkChange);
 
      abstract int calculateSize();}

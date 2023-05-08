@@ -739,12 +739,6 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     }
 
     @Override
-    public Spliterator<Tuple2<K, V>> spliterator() {
-        return new ChampSpliterator<>(this, entry -> new Tuple2<>(entry.getKey(), entry.getValue()),
-                Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
-    }
-
-    @Override
     public Set<K> keySet() {
         return HashSet.ofAll(iterator().map(Tuple2::_1));
     }
@@ -951,6 +945,12 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     @Override
     public Tuple2<HashMap<K, V>, HashMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate) {
         return Maps.span(this, this::createFromEntries, predicate);
+    }
+
+    @Override
+    public Spliterator<Tuple2<K, V>> spliterator() {
+        return new ChampSpliterator<>(this, entry -> new Tuple2<>(entry.getKey(), entry.getValue()),
+                Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
     }
 
     @Override

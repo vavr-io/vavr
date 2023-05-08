@@ -40,9 +40,9 @@ package io.vavr.collection;
  *     <dd><a href="https://github.com/wrandelshofer/jhotdraw8">github.com</a></dd>
  * </dl>
  *
- * @param <E> the element type
+ * @param <D> the data type of the CHAMP trie
  */
-abstract class ChampAbstractTransientCollection<E> {
+abstract class ChampAbstractTransientCollection<D> {
     /**
      * The current owner id of this map.
      * <p>
@@ -57,7 +57,7 @@ abstract class ChampAbstractTransientCollection<E> {
     /**
      * The root of this CHAMP trie.
      */
-     ChampBitmapIndexedNode<E> root;
+     ChampBitmapIndexedNode<D> root;
 
     /**
      * The number of entries in this map.
@@ -77,7 +77,7 @@ abstract class ChampAbstractTransientCollection<E> {
         return size == 0;
     }
 
-    ChampIdentityObject getOrCreateOwner() {
+    ChampIdentityObject makeOwner() {
         if (owner == null) {
             owner = new ChampIdentityObject();
         }

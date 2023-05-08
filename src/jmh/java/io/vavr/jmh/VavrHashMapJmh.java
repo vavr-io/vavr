@@ -1,6 +1,7 @@
 package io.vavr.jmh;
 
 import io.vavr.collection.HashMap;
+import io.vavr.collection.HashSet;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
  * VavrHashMapJmh.mContainsFound        -65  100000  avgt             96.954          ns/op
  * VavrHashMapJmh.mContainsNotFound     -65  100000  avgt             71.149          ns/op
  * VavrHashMapJmh.mHead                 -65  100000  avgt              9.249          ns/op
+ * VavrHashMapJmh.mFilter50Percent      -65  100000  avgt        2044801.990          ns/op
  * VavrHashMapJmh.mIterate              -65  100000  avgt        2898172.970          ns/op
  * VavrHashMapJmh.mMerge                -65  100000  avgt        9478240.737          ns/op
  * VavrHashMapJmh.mOfAll                -65  100000  avgt       24415008.346          ns/op
@@ -35,9 +37,9 @@ import java.util.concurrent.TimeUnit;
  * </pre>
  */
 @State(Scope.Benchmark)
-@Measurement(iterations = 1)
-@Warmup(iterations = 1)
-@Fork(value = 1, jvmArgsAppend = {"-Xmx28g"})
+@Measurement(iterations = 0)
+@Warmup(iterations = 0)
+@Fork(value = 0, jvmArgsAppend = {"-Xmx28g"})
 @OutputTimeUnit(TimeUnit.NANOSECONDS)
 @BenchmarkMode(Mode.AverageTime)
 public class VavrHashMapJmh {
@@ -67,7 +69,7 @@ public class VavrHashMapJmh {
             mapB=mapB.put(key,Boolean.TRUE);
         }
     }
-
+/*
     @Benchmark
     public HashMap<Key, Boolean> mOfAll() {
         return HashMap.<Key, Boolean>ofAll(data.mapA);
@@ -84,7 +86,7 @@ public class VavrHashMapJmh {
     public HashMap<Key, Boolean> mRetainAll() {
         return mapATrue.retainAll(mapB);
     }
-
+*/
     @Benchmark
     public int mIterate() {
         int sum = 0;
@@ -93,7 +95,7 @@ public class VavrHashMapJmh {
         }
         return sum;
     }
-
+/*
     @Benchmark
     public void mRemoveThenAdd() {
         Key key =data.nextKeyInA();
@@ -122,4 +124,11 @@ public class VavrHashMapJmh {
     public Key mHead() {
         return mapATrue.head()._1;
     }
+
+@Benchmark
+public HashMap<Key,Boolean> mFilter50Percent() {
+    HashMap<Key,Boolean> map = mapATrue;
+    return map.filter(e->(e._1.value&1)==0);
+}
+ */
 }

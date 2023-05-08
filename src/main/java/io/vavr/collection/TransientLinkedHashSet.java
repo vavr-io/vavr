@@ -28,18 +28,25 @@
 
 package io.vavr.collection;
 
+import io.vavr.Tuple2;
+
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.Spliterator;
+import java.util.function.Predicate;
+
+import static io.vavr.collection.ChampSequencedData.vecRemove;
 
 /**
  * Supports efficient bulk-operations on a linked hash set through transience.
  *
- * @param <T>the element type
+ * @param <E>the element type
  */
-class TransientLinkedHashSet<T> extends ChampAbstractTransientCollection<ChampSequencedElement<T>> {
+class TransientLinkedHashSet<E> extends ChampAbstractTransientSet<E,ChampSequencedElement<E>> {
     int offset;
     Vector<Object> vector;
 
-    TransientLinkedHashSet(LinkedHashSet<T> s) {
+    TransientLinkedHashSet(LinkedHashSet<E> s) {
         root = s;
         size = s.size;
         this.vector = s.vector;
@@ -50,21 +57,32 @@ class TransientLinkedHashSet<T> extends ChampAbstractTransientCollection<ChampSe
         this(LinkedHashSet.empty());
     }
 
-    public LinkedHashSet<T> toImmutable() {
+    @Override
+    void clear() {
+        root = ChampBitmapIndexedNode.emptyNode();
+        vector = Vector.empty();
+        size = 0;
+        modCount++;
+        offset = -1;
+    }
+
+
+
+    public LinkedHashSet<E> toImmutable() {
         owner = null;
         return isEmpty()
                 ? LinkedHashSet.empty()
-                : root instanceof LinkedHashSet<T> h ? h : new LinkedHashSet<>(root, vector, size, offset);
+                : root instanceof LinkedHashSet<E> h ? h : new LinkedHashSet<>(root, vector, size, offset);
     }
 
-    boolean add(T element) {
+    boolean add(E element) {
         return addLast(element, false);
     }
 
-    private boolean addLast(T e, boolean moveToLast) {
-        var details = new ChampChangeEvent<ChampSequencedElement<T>>();
-        var newElem = new ChampSequencedElement<T>(e, vector.size() - offset);
-        root = root.put(null, newElem,
+    private boolean addLast(E e, boolean moveToLast) {
+        var details = new ChampChangeEvent<ChampSequencedElement<E>>();
+        var newElem = new ChampSequencedElement<E>(e, vector.size() - offset);
+        root = root.put(makeOwner(), newElem,
                 Objects.hashCode(e), 0, details,
                 moveToLast ? ChampSequencedElement::updateAndMoveToLast : ChampSequencedElement::update,
                 Objects::equals, Objects::hashCode);
@@ -73,7 +91,7 @@ class TransientLinkedHashSet<T> extends ChampAbstractTransientCollection<ChampSe
             if (details.isReplaced()) {
                 if (moveToLast) {
                     var oldElem = details.getOldData();
-                    var result = ChampSequencedData.vecRemove(vector, new ChampIdentityObject(), oldElem, details, offset);
+                    var result = vecRemove(vector,  oldElem,  offset);
                     vector = result._1;
                     offset = result._2;
                 }
@@ -88,31 +106,42 @@ class TransientLinkedHashSet<T> extends ChampAbstractTransientCollection<ChampSe
     }
 
     @SuppressWarnings("unchecked")
-    boolean addAll(Iterable<? extends T> c) {
+    boolean addAll(Iterable<? extends E> c) {
         if (c == root) {
             return false;
         }
         if (isEmpty() && (c instanceof LinkedHashSet<?> cc)) {
-            root = (ChampBitmapIndexedNode<ChampSequencedElement<T>>)(ChampBitmapIndexedNode<?>)  cc;
+            root = (ChampBitmapIndexedNode<ChampSequencedElement<E>>)(ChampBitmapIndexedNode<?>)  cc;
             size = cc.size;
             return true;
         }
         boolean modified = false;
-        for (T e : c) {
+        for (E e : c) {
             modified |= add(e);
         }
         return modified;
     }
-
-    boolean remove(T element) {
+    @Override
+     Iterator<E> iterator() {
+        return new ChampIteratorFacade<>(spliterator());
+    }
+    @SuppressWarnings("unchecked")
+    Spliterator<E> spliterator() {
+        return new ChampVectorSpliterator<>(vector,
+                (Object o) -> ((ChampSequencedElement<E>) o).getElement(),0,
+                size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED);
+    }
+    @SuppressWarnings("unchecked")
+    @Override
+    boolean remove(Object element) {
         int keyHash = Objects.hashCode(element);
-        var details = new ChampChangeEvent<ChampSequencedElement<T>>();
-        root = root.remove(null,
-                new ChampSequencedElement<>(element),
+        var details = new ChampChangeEvent<ChampSequencedElement<E>>();
+        root = root.remove(makeOwner(),
+                new ChampSequencedElement<>((E)element),
                 keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
             var removedElem = details.getOldDataNonNull();
-            var result = ChampSequencedData.vecRemove(vector, null, removedElem, details, offset);
+            var result = vecRemove(vector,  removedElem,  offset);
             vector=result._1;
             offset=result._2;
             size--;
@@ -122,27 +151,47 @@ class TransientLinkedHashSet<T> extends ChampAbstractTransientCollection<ChampSe
         return false;
     }
 
-    boolean removeAll(Iterable<? extends T> c) {
-        if (isEmpty() || c == root) {
-            return false;
-        }
-        boolean modified = false;
-        for (T e : c) {
-            modified |= remove(e);
-        }
-        return modified;
-    }
+
 
     private void renumber() {
-
         if (ChampSequencedData.vecMustRenumber(size, offset, vector.size())) {
             var owner = new ChampIdentityObject();
-            var result = ChampSequencedData.<ChampSequencedElement<T>>vecRenumber(
+            var result = ChampSequencedData.<ChampSequencedElement<E>>vecRenumber(
                     size, root, vector, owner, Objects::hashCode, Objects::equals,
                     (e, seq) -> new ChampSequencedElement<>(e.getElement(), seq));
             root = result._1;
             vector = result._2;
             offset = 0;
         }
+    }
+
+    boolean filterAll(Predicate<? super E> predicate) {
+        class VectorPredicate implements Predicate<ChampSequencedElement<E>> {
+            Vector<Object> newVector = vector;
+            int newOffset = offset;
+
+            @Override
+            public boolean test(ChampSequencedElement<E> e) {
+                if (!predicate.test(e.getElement())) {
+                    Tuple2<Vector<Object>, Integer> result = vecRemove(newVector, e, newOffset);
+                    newVector = result._1;
+                    newOffset = result._2;
+                    return false;
+                }
+                return true;
+            }
+        }
+        VectorPredicate vp = new VectorPredicate();
+       ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
+        ChampBitmapIndexedNode<ChampSequencedElement<E>> newRootNode = root.filterAll(makeOwner(), vp, 0, bulkChange);
+        if (bulkChange.removed == 0) {
+            return false;
+        }
+        root = newRootNode;
+        vector = vp.newVector;
+        offset = vp.newOffset;
+        size -= bulkChange.removed;
+        modCount++;
+        return true;
     }
 }

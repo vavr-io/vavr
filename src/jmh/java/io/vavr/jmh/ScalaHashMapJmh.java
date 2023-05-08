@@ -20,6 +20,18 @@ import java.util.concurrent.TimeUnit;
  * # org.scala-lang:scala-library:2.13.8
  *
  * Benchmark                          (mask)    (size)  Mode  Cnt    _        Score   Error  Units
+ * ScalaHashMapJmh.mAddOneByOne            -65  100000  avgt       28625869.234          ns/op
+ * ScalaHashMapJmh.mContainsFound          -65  100000  avgt             58.588          ns/op
+ * ScalaHashMapJmh.mContainsNotFound       -65  100000  avgt             56.384          ns/op
+ * ScalaHashMapJmh.mHead                   -65  100000  avgt             20.119          ns/op
+ * ScalaHashMapJmh.mIterate                -65  100000  avgt        1076670.691          ns/op
+ * ScalaHashMapJmh.mOfAll                  -65  100000  avgt       22845183.468          ns/op
+ * ScalaHashMapJmh.mPut                    -65  100000  avgt            206.268          ns/op
+ * ScalaHashMapJmh.mRemoveAll              -65  100000  avgt       31380818.834          ns/op
+ * ScalaHashMapJmh.mRemoveOneByOne         -65  100000  avgt       31261428.956          ns/op
+ * ScalaHashMapJmh.mRemoveThenAdd          -65  100000  avgt            446.391          ns/op
+ * ScalaHashMapJmh.mTail                   -65  100000  avgt             98.274          ns/op
+ *
  * ScalaHashMapJmh.mOfAll                -65        10  avgt         _      467.142          ns/op
  * ScalaHashMapJmh.mOfAll                -65      1000  avgt         _   114499.940          ns/op
  * ScalaHashMapJmh.mOfAll                -65    100000  avgt         _ 23510614.310          ns/op
@@ -60,7 +72,7 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @SuppressWarnings("unchecked")
 public class ScalaHashMapJmh {
-    @Param({"10", "1000", "100000", "10000000"})
+    @Param({/*"10","1000",*/"100000"/*,"10000000"*/})
     private int size;
 
     @Param({"-65"})

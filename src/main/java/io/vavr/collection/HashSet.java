@@ -631,16 +631,9 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final HashSet<T> filtered = HashSet.ofAll(iterator().filter(predicate));
-
-        if (filtered.isEmpty()) {
-            return empty();
-        } else if (filtered.length() == length()) {
-            return this;
-        } else {
-            return filtered;
-        }
+        var t=toTransient();
+        t.filterAll(predicate);
+        return t.toImmutable();
     }
 
     @Override
@@ -708,18 +701,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> intersect(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() || elements.isEmpty()) {
-            return empty();
-        } else {
-            final int size = size();
-            if (size <= elements.size()) {
                 return retainAll(elements);
-            } else {
-                final HashSet<T> results = HashSet.<T>ofAll(elements).retainAll(this);
-                return (size == results.size()) ? this : results;
-            }
-        }
     }
 
     /**
@@ -800,6 +782,10 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
+        //XXX HashSetTest#shouldPartitionInOneIteration prevents that we can use a faster implementation
+        //XXX HashSetTest#partitionShouldBeUnique prevents that we can use a faster implementation
+        //XXX I believe that these tests are wrong, because predicates should not have side effects!
+        //return new Tuple2<>(filter(predicate),filter(predicate.negate()));
         return Collections.partition(this, HashSet::ofAll, predicate);
     }
 
@@ -947,6 +933,8 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public java.util.HashSet<T> toJavaSet() {
+        // XXX If the return value was not required to be a java.util.HashSet
+        //     we could provide a mutable HashSet in O(1)
         return toJavaSet(java.util.HashSet::new);
     }
 
@@ -957,18 +945,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> union(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            if (elements instanceof HashSet) {
-                return (HashSet<T>) elements;
-            } else {
-                return HashSet.ofAll(elements);
-            }
-        } else if (elements.isEmpty()) {
-            return this;
-        } else {
             return addAll(elements);
-        }
     }
 
     @Override
