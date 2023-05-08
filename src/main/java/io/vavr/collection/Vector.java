@@ -1000,6 +1000,20 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return io.vavr.collection.Collections.removeAll(this, elements);
     }
 
+     Vector<T> removeRange(int fromIndex, int toIndex) {
+        Objects.checkIndex(fromIndex, toIndex + 1);
+         int size = size();
+         Objects.checkIndex(toIndex, size + 1);
+        if (fromIndex == 0) {
+            return slice(toIndex, size);
+        }
+        if (toIndex == size) {
+            return slice(0, fromIndex);
+        }
+        final Vector<T> begin = slice(0, fromIndex);
+        return begin.appendAll(() -> slice(toIndex, size).iterator());
+    }
+
     @Override
     public Vector<T> replace(T currentElement, T newElement) {
         return indexOfOption(currentElement)
