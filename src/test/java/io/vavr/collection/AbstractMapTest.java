@@ -173,11 +173,11 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOf(K k1, V v1, K k2, V v2, K k3, V v3);
 
     protected abstract <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
-                                                                               Function<? super T, ? extends K> keyMapper,
-                                                                               Function<? super T, ? extends V> valueMapper);
+            Function<? super T, ? extends K> keyMapper,
+            Function<? super T, ? extends V> valueMapper);
 
     protected abstract <T, K extends Comparable<? super K>, V> Map<K, V> mapOf(java.util.stream.Stream<? extends T> stream,
-                                                                               Function<? super T, Tuple2<? extends K, ? extends V>> f);
+            Function<? super T, Tuple2<? extends K, ? extends V>> f);
 
     protected abstract <K extends Comparable<? super K>, V> Map<K, V> mapOfNullKey(K k1, V v1, K k2, V v2);
 
@@ -1416,7 +1416,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
     public void shouldSpanNonNil() {
         assertThat(of(0, 1, 2, 3).span(i -> i < 2))
                 .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0, 0), Tuple.of(1, 1)),
-                        mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 3))));
+                mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 3))));
     }
 
     @Override
@@ -1430,7 +1430,7 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(of(1, 1, 2, 2, 4, 4).span(x -> x == 1))
                 .isEqualTo(Tuple.of(mapOfTuples(Tuple.of(0,1), Tuple.of(1, 1)),
                         mapOfTuples(Tuple.of(2, 2), Tuple.of(3, 2),
-                                Tuple.of(4, 4), Tuple.of(5, 4))));
+                        Tuple.of(4, 4), Tuple.of(5, 4))));
     }
 
     @Override

@@ -157,7 +157,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
         final Map<Integer, String> expected = LinkedHashMap.of(1, "2");
         assertThat(actual).isEqualTo(expected);
     }
-
+    
     // -- put
 
     @Test
