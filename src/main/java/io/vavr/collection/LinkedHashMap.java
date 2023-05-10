@@ -248,11 +248,9 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      */
     public static <K, V> LinkedHashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
         Objects.requireNonNull(map, "map is null");
-        LinkedHashMap<K, V> result = LinkedHashMap.empty();
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
-            result = result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
+        TransientLinkedHashMap<K, V> m = new TransientLinkedHashMap<>();
+        m.putAllEntries(map.entrySet());
+        return m.toImmutable();
     }
 
     /**
@@ -613,9 +611,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      */
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        var t = new TransientLinkedHashMap<K,V>();
-        t.putAll(Arrays.asList(entries));
-        return t.toImmutable();
+        return LinkedHashMap.<K, V>empty().putAllEntries(Arrays.asList(entries));
     }
 
     /**
@@ -628,9 +624,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      */
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
-        var t = new TransientLinkedHashMap<K,V>();
-        t.putAllTuples(Arrays.asList(entries));
-        return t.toImmutable();
+        return LinkedHashMap.<K, V>empty().putAllTuples(Arrays.asList(entries));
     }
 
     /**
@@ -644,12 +638,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
-        if (entries instanceof LinkedHashMap) {
-            return (LinkedHashMap<K, V>) entries;
-        }
-        var t = new TransientLinkedHashMap<K,V>();
-        t.putAllTuples(entries);
-        return t.toImmutable();
+        return LinkedHashMap.<K, V>empty().putAllTuples(entries);
     }
 
     @Override
@@ -672,7 +661,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
 
     @Override
     public boolean containsKey(K key) {
-        return find(new ChampSequencedEntry<>(key), Objects.hashCode(key), 0,
+        return find(new ChampSequencedEntry<>(key), ChampSequencedEntry.keyHash(key), 0,
                 ChampSequencedEntry::keyEquals) != ChampNode.NO_DATA;
     }
 
@@ -693,7 +682,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
 
     @Override
     public LinkedHashMap<K, V> drop(int n) {
-        return Maps.drop(this, this::createFromEntries, LinkedHashMap::empty, n);
+        return n<=0?this:ofEntries(iterator(n));
     }
 
     @Override
@@ -713,42 +702,50 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
 
     @Override
     public LinkedHashMap<K, V> filter(BiPredicate<? super K, ? super V> predicate) {
-        return Maps.filter(this, this::createFromEntries, predicate);
+        TransientLinkedHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(e.getKey(),e.getValue()));
+        return t.toImmutable();
     }
 
     @Override
     public LinkedHashMap<K, V> filterNot(BiPredicate<? super K, ? super V> predicate) {
-        return Maps.filterNot(this, this::createFromEntries, predicate);
+        return filter(predicate.negate());
     }
 
     @Override
     public LinkedHashMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.filter(this, this::createFromEntries, predicate);
+        TransientLinkedHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(new Tuple2<>(e.getKey(),e.getValue())));
+        return t.toImmutable();
     }
 
     @Override
     public LinkedHashMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.filterNot(this, this::createFromEntries, predicate);
+        return filter(predicate.negate());
     }
 
     @Override
     public LinkedHashMap<K, V> filterKeys(Predicate<? super K> predicate) {
-        return Maps.filterKeys(this, this::createFromEntries, predicate);
+        TransientLinkedHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(e.getKey()));
+        return t.toImmutable();
     }
 
     @Override
     public LinkedHashMap<K, V> filterNotKeys(Predicate<? super K> predicate) {
-        return Maps.filterNotKeys(this, this::createFromEntries, predicate);
+        return filterKeys(predicate.negate());
     }
 
     @Override
     public LinkedHashMap<K, V> filterValues(Predicate<? super V> predicate) {
-        return Maps.filterValues(this, this::createFromEntries, predicate);
+        TransientLinkedHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(e.getValue()));
+        return t.toImmutable();
     }
 
     @Override
     public LinkedHashMap<K, V> filterNotValues(Predicate<? super V> predicate) {
-        return Maps.filterNotValues(this, this::createFromEntries, predicate);
+        return filterValues(predicate.negate());
     }
 
     @Override
@@ -767,7 +764,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
     public Option<V> get(K key) {
         Object result = find(
                 new ChampSequencedEntry<>(key),
-                Objects.hashCode(key), 0, ChampSequencedEntry::keyEquals);
+                ChampSequencedEntry.keyHash(key), 0, ChampSequencedEntry::keyEquals);
         return ((result instanceof ChampSequencedEntry<?, ?> entry) ? Option.some((V) entry.getValue()) : Option.none());
     }
 
@@ -841,6 +838,10 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
         return new ChampIteratorFacade<>(spliterator());
     }
 
+    Iterator<Tuple2<K, V>> iterator(int startIndex) {
+        return new ChampIteratorFacade<>(spliterator(startIndex));
+    }
+
     @Override
     public Set<K> keySet() {
         return LinkedHashSet.ofAll(iterator().map(Tuple2::_1));
@@ -878,7 +879,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
 
     @Override
     public LinkedHashMap<K, V> merge(Map<? extends K, ? extends V> that) {
-        return Maps.merge(this, this::createFromEntries, that);
+        return putAllTuples(that);
     }
 
     @Override
@@ -928,13 +929,27 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
         return putLast(key, value, false);
     }
 
+    private LinkedHashMap<K, V> putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> c) {
+        TransientLinkedHashMap<K,V> t=toTransient();
+        t.putAllEntries(c);
+        return t.toImmutable();
+    }
+    @SuppressWarnings("unchecked")
+    private LinkedHashMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> c) {
+        if (isEmpty()&&c instanceof LinkedHashMap<?,?> that){
+            return (LinkedHashMap<K, V>)that;
+        }
+        TransientLinkedHashMap<K,V> t=toTransient();
+        t.putAllTuples(c);
+        return t.toImmutable();
+    }
     private LinkedHashMap<K, V> putLast( K key,  V value, boolean moveToLast) {
         var details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
         var newEntry = new ChampSequencedEntry<>(key, value, vector.size() - offset);
         var newRoot = put(null, newEntry,
-                Objects.hashCode(key), 0, details,
+                ChampSequencedEntry.keyHash(key), 0, details,
                 moveToLast ? ChampSequencedEntry::updateAndMoveToLast : ChampSequencedEntry::updateWithNewKey,
-                ChampSequencedEntry::keyEquals, ChampSequencedEntry::keyHash);
+                ChampSequencedEntry::keyEquals, ChampSequencedEntry::entryKeyHash);
         if (details.isReplaced()
                 && details.getOldDataNonNull().getSequenceNumber() == details.getNewDataNonNull().getSequenceNumber()) {
             var newVector = vector.update(details.getNewDataNonNull().getSequenceNumber() - offset, details.getNewDataNonNull());
@@ -944,7 +959,6 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
             var newVector = vector;
             int newOffset = offset;
             int newSize = size;
-            var owner = new ChampIdentityObject();
             if (details.isReplaced()) {
                 if (moveToLast) {
                     var oldElem = details.getOldDataNonNull();
@@ -974,7 +988,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
 
     @Override
     public LinkedHashMap<K, V> remove(K key) {
-        int keyHash = Objects.hashCode(key);
+        int keyHash = ChampSequencedEntry.keyHash(key);
         var details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
         ChampBitmapIndexedNode<ChampSequencedEntry<K, V>> newRoot = remove(null,
                 new ChampSequencedEntry<>(key),
@@ -1002,7 +1016,7 @@ return        t.removeAll(keys)?t.toImmutable():this;
         if (ChampSequencedData.vecMustRenumber(size, offset, this.vector.size())) {
             var owner = new ChampIdentityObject();
             var result = ChampSequencedData.<ChampSequencedEntry<K, V>>vecRenumber(
-                    size, root, vector, owner, ChampSequencedEntry::keyHash, ChampSequencedEntry::keyEquals,
+                    size, root, vector, owner, ChampSequencedEntry::entryKeyHash, ChampSequencedEntry::keyEquals,
                     (e, seq) -> new ChampSequencedEntry<>(e.getKey(), e.getValue(), seq));
             return new LinkedHashMap<>(
                     result._1, result._2,
@@ -1044,7 +1058,7 @@ return        t.removeAll(keys)?t.toImmutable():this;
         newRoot = newRoot.put(owner,
                 newData, Objects.hashCode(newEntry._1), 0, detailsNew,
                 ChampSequencedEntry::forceUpdate,
-                ChampSequencedEntry::keyEquals, ChampSequencedEntry::keyHash);
+                ChampSequencedEntry::keyEquals, ChampSequencedEntry::entryKeyHash);
         boolean isReplaced = detailsNew.isReplaced();
 
         // there already was data with key newData.getKey() in the trie, and we have just replaced it
@@ -1091,14 +1105,9 @@ return        t.removeAll(keys)?t.toImmutable():this;
 
     @Override
     public LinkedHashMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        LinkedHashMap<K, V> result = empty();
-        for (Tuple2<K, V> entry : elements) {
-            if (contains(entry)) {
-                result = result.put(entry._1, entry._2);
-            }
-        }
-        return result;
+        TransientLinkedHashMap<K,V> t=toTransient();
+        t.retainAllTuples(elements);
+        return t.toImmutable();
     }
 
     Iterator<Tuple2<K, V>> reverseIterator() {
@@ -1147,9 +1156,13 @@ return        t.removeAll(keys)?t.toImmutable():this;
     @SuppressWarnings("unchecked")
     @Override
     public Spliterator<Tuple2<K, V>> spliterator() {
+        return spliterator(0);
+    }
+    @SuppressWarnings("unchecked")
+    Spliterator<Tuple2<K, V>> spliterator(int startIndex) {
         return new ChampVectorSpliterator<>(vector,
                 e -> new Tuple2<K,V> (((java.util.Map.Entry<K, V>) e).getKey(),((java.util.Map.Entry<K, V>) e).getValue()),
-               0, size(),Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
+                startIndex, size(),Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override

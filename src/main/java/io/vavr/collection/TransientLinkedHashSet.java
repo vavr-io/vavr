@@ -164,24 +164,30 @@ class TransientLinkedHashSet<E> extends ChampAbstractTransientSet<E,ChampSequenc
             offset = 0;
         }
     }
+    static        class VectorSideEffectPredicate<E> implements Predicate<ChampSequencedElement<E>> {
+        Vector<Object> newVector ;
+        int newOffset;
+        Predicate<? super E> predicate;
+        public VectorSideEffectPredicate(Predicate<? super E> predicate, Vector<Object> vector, int offset) {
+            this.predicate=predicate;
+            this.newVector=vector;
+            this.newOffset=offset;
+        }
+
+        @Override
+        public boolean test(ChampSequencedElement<E> e) {
+            if (!predicate.test(e.getElement())) {
+                Tuple2<Vector<Object>, Integer> result = vecRemove(newVector, e, newOffset);
+                newVector = result._1;
+                newOffset = result._2;
+                return false;
+            }
+            return true;
+        }
+    }
 
     boolean filterAll(Predicate<? super E> predicate) {
-        class VectorPredicate implements Predicate<ChampSequencedElement<E>> {
-            Vector<Object> newVector = vector;
-            int newOffset = offset;
-
-            @Override
-            public boolean test(ChampSequencedElement<E> e) {
-                if (!predicate.test(e.getElement())) {
-                    Tuple2<Vector<Object>, Integer> result = vecRemove(newVector, e, newOffset);
-                    newVector = result._1;
-                    newOffset = result._2;
-                    return false;
-                }
-                return true;
-            }
-        }
-        VectorPredicate vp = new VectorPredicate();
+        VectorSideEffectPredicate<E> vp = new VectorSideEffectPredicate<>(predicate,vector,offset);
        ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
         ChampBitmapIndexedNode<ChampSequencedElement<E>> newRootNode = root.filterAll(makeOwner(), vp, 0, bulkChange);
         if (bulkChange.removed == 0) {

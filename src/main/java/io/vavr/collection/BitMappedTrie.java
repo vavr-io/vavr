@@ -383,10 +383,10 @@ final class BitMappedTrie<T> implements Serializable {
       private  T current;
 
         public BitMappedTrieSpliterator(BitMappedTrie<T> root, int fromIndex, int characteristics) {
-            super(root.length - fromIndex, characteristics);
+            super(Math.max(0,root.length - fromIndex), characteristics);
             this.root = root;
             globalLength = root.length;
-            globalIndex = fromIndex;
+            globalIndex = Math.max(0,fromIndex);
             index = lastDigit(root.offset + globalIndex);
             leaf = root.getLeaf(globalIndex);
             length = root.type.lengthOf(leaf);

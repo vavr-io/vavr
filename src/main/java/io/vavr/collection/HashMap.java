@@ -534,7 +534,6 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
      * @param <V>     The value type
      * @return A new Map containing the given entries
      */
-    @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
         return HashMap.<K, V>empty().putAllTuples(entries);
@@ -787,7 +786,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public HashMap<K, V> merge(Map<? extends K, ? extends V> that) {
-        return Maps.merge(this, this::createFromEntries, that);
+       return putAllTuples(that);
     }
 
     @Override
