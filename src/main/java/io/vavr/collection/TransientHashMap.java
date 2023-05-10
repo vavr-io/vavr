@@ -63,7 +63,7 @@ class TransientHashMap<K, V> extends ChampAbstractTransientMap<K, V, AbstractMap
             return false;
         }
         boolean modified = false;
-        for (var e : c) {
+        for (Map.Entry<? extends K, ? extends V> e : c) {
             V oldValue = put(e.getKey(), e.getValue());
             modified = modified || !Objects.equals(oldValue, e.getValue());
         }
@@ -127,7 +127,7 @@ class TransientHashMap<K, V> extends ChampAbstractTransientMap<K, V, AbstractMap
         owner = null;
         return isEmpty()
                 ? HashMap.empty()
-                : root instanceof HashMap<K, V> ? (HashMap<K, V>) root : new HashMap<>(root, size);
+                : root instanceof HashMap ? (HashMap<K, V>) root : new HashMap<>(root, size);
     }
 
     @SuppressWarnings("unchecked")

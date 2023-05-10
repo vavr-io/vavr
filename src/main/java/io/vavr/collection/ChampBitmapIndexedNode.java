@@ -34,6 +34,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import static io.vavr.collection.ChampListHelper.arrayEquals;
 import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
 
 /**
@@ -164,9 +165,9 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
         int splitAt = dataArity();
         return nodeMap() == that.nodeMap()
                 && dataMap() == that.dataMap()
-                && Arrays.equals(mixed, 0, splitAt, thatNodes, 0, splitAt)
-                && Arrays.equals(mixed, splitAt, mixed.length, thatNodes, splitAt, thatNodes.length,
-                (a, b) -> ((ChampNode<D>) a).equivalent(b) ? 0 : 1);
+                && arrayEquals(mixed, 0, splitAt, thatNodes, 0, splitAt)
+                && arrayEquals(mixed, splitAt, mixed.length, thatNodes, splitAt, thatNodes.length,
+                (a, b) -> ((ChampNode<D>) a).equivalent(b) );
     }
 
 

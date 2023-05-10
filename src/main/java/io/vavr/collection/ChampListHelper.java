@@ -28,11 +28,11 @@
 package io.vavr.collection;
 
 
-
 import java.lang.reflect.Array;
 import java.util.Arrays;
-
-import static java.lang.Integer.max;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.function.BiPredicate;
 
 /**
  * Provides helper methods for lists that are based on arrays.
@@ -48,7 +48,7 @@ import static java.lang.Integer.max;
  *
  * @author Werner Randelshofer
  */
- class ChampListHelper {
+class ChampListHelper {
     /**
      * Don't let anyone instantiate this class.
      */
@@ -68,7 +68,7 @@ import static java.lang.Integer.max;
      * @param <T>           the array type
      * @return a new array
      */
-     static <T>  T  [] copyComponentAdd( T  [] src, int index, int numComponents) {
+    static <T> T[] copyComponentAdd(T[] src, int index, int numComponents) {
         if (index == src.length) {
             return Arrays.copyOf(src, src.length + numComponents);
         }
@@ -87,7 +87,7 @@ import static java.lang.Integer.max;
      * @param <T>           the array type
      * @return a new array
      */
-     static <T>  T  [] copyComponentRemove( T  [] src, int index, int numComponents) {
+    static <T> T[] copyComponentRemove(T[] src, int index, int numComponents) {
         if (index == src.length - numComponents) {
             return Arrays.copyOf(src, src.length - numComponents);
         }
@@ -106,9 +106,66 @@ import static java.lang.Integer.max;
      * @param <T>   the array type
      * @return a new array
      */
-     static <T>  T  [] copySet( T  [] src, int index, T value) {
+    static <T> T[] copySet(T[] src, int index, T value) {
         final T[] dst = Arrays.copyOf(src, src.length);
         dst[index] = value;
         return dst;
     }
- }
+
+    /**
+     * Checks if the specified array ranges are equal.
+     *
+     * @param a     array a
+     * @param aFrom from index in array a
+     * @param aTo   to index in array a
+     * @param b     array b
+     * @param bFrom from index in array b
+     * @param bTo   to index in array b
+     * @return true if equal
+     */
+    static boolean arrayEquals(Object[] a, int aFrom, int aTo,
+                               Object[] b, int bFrom, int bTo) {
+        if (aTo - aFrom != bTo - bFrom) return false;
+        int bOffset = bFrom - aFrom;
+        for (int i = aFrom; i < aTo; i++) {
+            if (!Objects.equals(a[i], b[i + bOffset])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    /**
+     * Checks if the specified array ranges are equal.
+     *
+     * @param a     array a
+     * @param aFrom from index in array a
+     * @param aTo   to index in array a
+     * @param b     array b
+     * @param bFrom from index in array b
+     * @param bTo   to index in array b
+     * @return true if equal
+     */
+    static boolean arrayEquals(Object[] a, int aFrom, int aTo,
+                               Object[] b, int bFrom, int bTo,
+                               BiPredicate<Object,Object> c) {
+        if (aTo - aFrom != bTo - bFrom) return false;
+        int bOffset = bFrom - aFrom;
+        for (int i = aFrom; i < aTo; i++) {
+            if (!c.test(a[i], b[i + bOffset])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Checks if the provided index is {@literal >= 0} and {@literal <=} size;
+     *
+     * @param index the index
+     * @param size  the size
+     * @throws IndexOutOfBoundsException if index is out of bounds
+     */
+    static void checkIndex(int index, int size) {
+        if (index < 0 || index >= size) throw new IndexOutOfBoundsException("index=" + index + " size=" + size);
+    }
+}

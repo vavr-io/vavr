@@ -85,14 +85,14 @@ abstract class ChampAbstractChampSpliterator<K, E> extends Spliterators.Abstract
             StackElement<K> elem = stack.peek();
             ChampNode<K> node = elem.node;
 
-            if (node instanceof ChampHashCollisionNode<K>) {
+            if (node instanceof ChampHashCollisionNode) {
                 ChampHashCollisionNode<K> hcn = (ChampHashCollisionNode<K>) node;
                 current = hcn.getData(moveIndex(elem));
                 if (isDone(elem)) {
                     stack.pop();
                 }
                 return true;
-            } else if (node instanceof ChampBitmapIndexedNode<K>) {
+            } else if (node instanceof ChampBitmapIndexedNode) {
                 ChampBitmapIndexedNode<K> bin = (ChampBitmapIndexedNode<K>) node;
                 int bitpos = getNextBitpos(elem);
                 elem.map ^= bitpos;
@@ -130,7 +130,7 @@ abstract class ChampAbstractChampSpliterator<K, E> extends Spliterators.Abstract
             this.node = node;
             this.size = node.nodeArity() + node.dataArity();
             this.index = reverse ? size - 1 : 0;
-            this.map = (node instanceof ChampBitmapIndexedNode<K>)
+            this.map = (node instanceof ChampBitmapIndexedNode)
                     ? (((ChampBitmapIndexedNode<K>) node).dataMap() | ((ChampBitmapIndexedNode<K>) node).nodeMap()) : 0;
         }
     }

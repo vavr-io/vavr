@@ -12,6 +12,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import scala.Tuple2;
+import scala.collection.Iterator;
 import scala.collection.immutable.TreeSeqMap;
 import scala.collection.mutable.Builder;
 
@@ -62,7 +63,7 @@ public class ScalaTreeSeqMapJmh {
     @Benchmark
     public int mIterate() {
         int sum = 0;
-        for (var i = mapA.keysIterator(); i.hasNext(); ) {
+        for (Iterator<Key> i = mapA.keysIterator(); i.hasNext(); ) {
             sum += i.next().value;
         }
         return sum;

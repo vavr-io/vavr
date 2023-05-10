@@ -130,8 +130,7 @@ import static io.vavr.collection.ChampSequencedData.seqHash;
 @SuppressWarnings("exports")
 public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEntry<K, V>>
         implements Map<K, V>, Serializable {
-    @Serial
-    private static final long serialVersionUID = 1L;
+        private static final long serialVersionUID = 1L;
     private static final LinkedHashMap<?, ?> EMPTY = new LinkedHashMap<>(
             ChampBitmapIndexedNode.emptyNode(), Vector.empty(), 0, 0);
     /**
@@ -1242,8 +1241,7 @@ return        t.removeAll(keys)?t.toImmutable():this;
         return LinkedHashMap.ofEntries(tuples);
     }
 
-    @Serial
-    private Object writeReplace() throws ObjectStreamException {
+        private Object writeReplace() throws ObjectStreamException {
         return new LinkedHashMap.SerializationProxy<>(this);
     }
 

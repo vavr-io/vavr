@@ -1081,8 +1081,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         return Objects.equals(oldv.getValue(), newv.getValue()) ? oldv : newv;
     }
 
-    @Serial
-    private Object writeReplace() throws ObjectStreamException {
+        private Object writeReplace() throws ObjectStreamException {
         return new SerializationProxy<>(this);
     }
 
