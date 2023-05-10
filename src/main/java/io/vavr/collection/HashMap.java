@@ -99,11 +99,11 @@ import java.util.stream.Collector;
  * @param <K> the key type
  * @param <V> the value type
  */
-public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> implements Map<K, V>, Serializable {
+public final class HashMap<K, V> extends ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> implements Map<K, V>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final HashMap<?, ?> EMPTY = new HashMap<>(ChampBitmapIndexedNode.emptyNode(), 0);
+    private static final HashMap<?, ?> EMPTY = new HashMap<>(ChampTrie.BitmapIndexedNode.emptyNode(), 0);
 
     /**
      * We do not guarantee an iteration order. Make sure that nobody accidentally relies on it.
@@ -116,7 +116,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
      */
     final int size;
 
-    HashMap(ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> root, int size) {
+    HashMap(ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> root, int size) {
         super(root.nodeMap(), root.dataMap(), root.mixed);
         this.size = size;
     }
@@ -560,7 +560,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     @Override
     public boolean containsKey(K key) {
         return find(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0,
-                HashMap::keyEquals) != ChampNode.NO_DATA;
+                HashMap::keyEquals) != ChampTrie.Node.NO_DATA;
     }
 
     @Override
@@ -661,7 +661,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     @SuppressWarnings("unchecked")
     public Option<V> get(K key) {
         Object result = find(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0, HashMap::keyEquals);
-        return result == ChampNode.NO_DATA || result == null
+        return result == ChampTrie.Node.NO_DATA || result == null
                 ? Option.none()
                 : Option.some(((AbstractMap.SimpleImmutableEntry<K, V>) result).getValue());
     }
@@ -686,7 +686,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty HashMap");
         }
-        AbstractMap.SimpleImmutableEntry<K, V> entry = ChampNode.getFirst(this);
+        AbstractMap.SimpleImmutableEntry<K, V> entry = ChampTrie.Node.getFirst(this);
         return new Tuple2<>(entry.getKey(), entry.getValue());
     }
 
@@ -734,7 +734,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public Iterator<Tuple2<K, V>> iterator() {
-        return new ChampIteratorFacade<>(spliterator());
+        return new ChampIteration.IteratorFacade<>(spliterator());
     }
 
     @Override
@@ -744,11 +744,11 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public Iterator<K> keysIterator() {
-        return new ChampIteratorFacade<>(keysSpliterator());
+        return new ChampIteration.IteratorFacade<>(keysSpliterator());
     }
 
     private Spliterator<K> keysSpliterator() {
-        return new ChampSpliterator<>(this, AbstractMap.SimpleImmutableEntry::getKey,
+        return new ChampIteration.ChampSpliterator<>(this, AbstractMap.SimpleImmutableEntry::getKey,
                 Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
     }
 
@@ -757,7 +757,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         if (isEmpty()) {
             throw new NoSuchElementException("last of empty HashMap");
         }
-        AbstractMap.SimpleImmutableEntry<K, V> entry = ChampNode.getLast(this);
+        AbstractMap.SimpleImmutableEntry<K, V> entry = ChampTrie.Node.getLast(this);
         return new Tuple2<>(entry.getKey(), entry.getValue());
     }
 
@@ -822,8 +822,8 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public HashMap<K, V> put(K key, V value) {
-        final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = put(null, new AbstractMap.SimpleImmutableEntry<>(key, value),
+        final ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
+        final ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = put(null, new AbstractMap.SimpleImmutableEntry<>(key, value),
                 Objects.hashCode(key), 0, details,
                 HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::entryKeyHash);
         if (details.isModified()) {
@@ -866,8 +866,8 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
     @Override
     public HashMap<K, V> remove(K key) {
         final int keyHash = Objects.hashCode(key);
-        final ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
-        final ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode =
+        final ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
+        final ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode =
                 remove(null, new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
                         HashMap::keyEquals);
         if (details.isModified()) {
@@ -949,7 +949,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public Spliterator<Tuple2<K, V>> spliterator() {
-        return new ChampSpliterator<>(this, entry -> new Tuple2<>(entry.getKey(), entry.getValue()),
+        return new ChampIteration.ChampSpliterator<>(this, entry -> new Tuple2<>(entry.getKey(), entry.getValue()),
                 Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
     }
 
@@ -1002,11 +1002,11 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @Override
     public Iterator<V> valuesIterator() {
-        return new ChampIteratorFacade<>(valuesSpliterator());
+        return new ChampIteration.IteratorFacade<>(valuesSpliterator());
     }
 
     private Spliterator<V> valuesSpliterator() {
-        return new ChampSpliterator<>(this, AbstractMap.SimpleImmutableEntry::getValue,
+        return new ChampIteration.ChampSpliterator<>(this, AbstractMap.SimpleImmutableEntry::getValue,
                 Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
     }
 
@@ -1143,9 +1143,9 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            ChampIdentityObject owner = new ChampIdentityObject();
-            ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRoot = emptyNode();
-            ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
+            ChampTrie.IdentityObject owner = new ChampTrie.IdentityObject();
+            ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRoot = emptyNode();
+            ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
             int newSize = 0;
             for (int i = 0; i < size; i++) {
                 final K key = (K) s.readObject();
@@ -1168,6 +1168,142 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
          */
         private Object readResolve() {
             return map;
+        }
+    }
+
+    /**
+     * Supports efficient bulk-operations on a hash map through transience.
+     *
+     * @param <K>the key type
+     * @param <V>the value type
+     */
+    static class TransientHashMap<K, V> extends ChampTransience.ChampAbstractTransientMap<K, V, AbstractMap.SimpleImmutableEntry<K, V>> {
+
+        TransientHashMap(HashMap<K, V> m) {
+            root = m;
+            size = m.size;
+        }
+
+        TransientHashMap() {
+            this(empty());
+        }
+
+        public V put(K key, V value) {
+            AbstractMap.SimpleImmutableEntry<K, V> oldData = putEntry(key, value, false).getOldData();
+            return oldData == null ? null : oldData.getValue();
+        }
+
+        boolean putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> c) {
+            if (c == this) {
+                return false;
+            }
+            boolean modified = false;
+            for (java.util.Map.Entry<? extends K, ? extends V> e : c) {
+                V oldValue = put(e.getKey(), e.getValue());
+                modified = modified || !Objects.equals(oldValue, e.getValue());
+            }
+            return modified;
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> c) {
+            if (c instanceof HashMap<?, ?>) {
+                HashMap<?, ?> that = (HashMap<?, ?>) c;
+                ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+                ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.putAll(makeOwner(), (ChampTrie.Node<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampTrie.Node<?>) that, 0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
+                        HashMap::entryKeyHash, new ChampTrie.ChangeEvent<>());
+                if (bulkChange.inBoth == that.size() && !bulkChange.replaced) {
+                    return false;
+                }
+                root = newRootNode;
+                size += that.size - bulkChange.inBoth;
+                modCount++;
+                return true;
+            }
+            return super.putAllTuples(c);
+        }
+
+        ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> putEntry(final K key, V value, boolean moveToLast) {
+            int keyHash = keyHash(key);
+            ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
+            root = root.put(makeOwner(), new AbstractMap.SimpleImmutableEntry<>(key, value), keyHash, 0, details,
+                    HashMap::updateEntry,
+                    HashMap::entryKeyEquals,
+                    HashMap::entryKeyHash);
+            if (details.isModified() && !details.isReplaced()) {
+                size += 1;
+                modCount++;
+            }
+            return details;
+        }
+
+
+        @SuppressWarnings("unchecked")
+        ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> removeKey(K key) {
+            int keyHash = keyHash(key);
+            ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
+            root = root.remove(makeOwner(), new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
+                    HashMap::entryKeyEquals);
+            if (details.isModified()) {
+                size = size - 1;
+                modCount++;
+            }
+            return details;
+        }
+
+        @Override
+        void clear() {
+            root = emptyNode();
+            size = 0;
+            modCount++;
+        }
+
+        public HashMap<K, V> toImmutable() {
+            owner = null;
+            return isEmpty()
+                    ? empty()
+                    : root instanceof HashMap ? (HashMap<K, V>) root : new HashMap<>(root, size);
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean retainAllTuples(Iterable<? extends Tuple2<K, V>> c) {
+            if (isEmpty()) {
+                return false;
+            }
+            if (c instanceof Collection<?> && ((Collection<?>) c).isEmpty()
+                    || c instanceof Traversable<?> && ((Traversable<?>) c).isEmpty()) {
+                clear();
+                return true;
+            }
+            if (c instanceof HashMap<?, ?>) {
+                HashMap<?, ?> that = (HashMap<?, ?>) c;
+                ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+                ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.retainAll(makeOwner(),
+                        (ChampTrie.Node<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampTrie.Node<?>) that,
+                        0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
+                        HashMap::entryKeyHash, new ChampTrie.ChangeEvent<>());
+                if (bulkChange.removed == 0) {
+                    return false;
+                }
+                root = newRootNode;
+                size -= bulkChange.removed;
+                modCount++;
+                return true;
+            }
+            return super.retainAllTuples(c);
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean filterAll(Predicate<java.util.Map.Entry<K, V>> predicate) {
+            ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+            ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.filterAll(makeOwner(), predicate, 0, bulkChange);
+            if (bulkChange.removed == 0) {
+                return false;
+            }
+            root = newRootNode;
+            size -= bulkChange.removed;
+            modCount++;
+            return true;
         }
     }
 }
