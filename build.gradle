@@ -46,7 +46,7 @@ ext.assertjVersion = '3.19.0'
 ext.junitVersion = '4.13.2'
 
 // JAVA_VERSION used for CI build matrix, may be provided as env variable
-def javaVersion = Integer.parseInt(System.getenv('JAVA_VERSION') ?: '17')
+def javaVersion = Integer.parseInt(System.getenv('JAVA_VERSION') ?: '8')
 
 repositories {
     mavenCentral()
@@ -59,7 +59,6 @@ repositories {
 dependencies {
     testImplementation "junit:junit:$junitVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
-    testImplementation 'com.google.guava:guava-testlib:31.1-jre'
 }
 
 java {
@@ -68,9 +67,6 @@ java {
     }
     withSourcesJar()
     withJavadocJar()
-}
-javadoc {
-    options.encoding = 'UTF-8'
 }
 
 sourceSets.main.java.srcDirs += ['src-gen/main/java']
