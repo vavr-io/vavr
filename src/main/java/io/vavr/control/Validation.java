@@ -199,7 +199,7 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     /**
      * A wrapper to {@link #all(Traversable)}.
-     * <p>
+     * <p/>
      * Usage example :
      *
      * <pre>{@code
@@ -732,12 +732,12 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * @throws X if the projected Validation is an Invalid
      */
     public final <X extends Throwable> T getOrElseThrow(Function<? super E, X> exceptionFunction) throws X {
-      Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
-      if (isValid()) {
-        return get();
-      } else {
-        throw exceptionFunction.apply(getError());
-      }
+        Objects.requireNonNull(exceptionFunction, "exceptionFunction is null");
+        if (isValid()) {
+            return get();
+        } else {
+            throw exceptionFunction.apply(getError());
+        }
     }
 
     /**
