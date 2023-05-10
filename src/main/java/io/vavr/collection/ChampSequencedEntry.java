@@ -79,11 +79,13 @@ import java.util.Objects;
         return Objects.equals(a.getKey(), b.getKey()) && Objects.equals(a.getValue(), b.getValue());
     }
 
-     static <V, K> int keyHash( ChampSequencedEntry<K, V> a) {
+     static <V, K> int entryKeyHash(ChampSequencedEntry<K, V> a) {
         return Objects.hashCode(a.getKey());
     }
 
-    
+    static <V, K> int keyHash( Object key) {
+        return Objects.hashCode(key);
+    }
      static <K, V> ChampSequencedEntry<K, V> update(ChampSequencedEntry<K, V> oldK, ChampSequencedEntry<K, V> newK) {
         return Objects.equals(oldK.getValue(), newK.getValue()) ? oldK :
                 new ChampSequencedEntry<>(oldK.getKey(), newK.getValue(), oldK.getSequenceNumber());
