@@ -32,17 +32,17 @@ import io.vavr.Tuple2;
 
 import java.util.AbstractMap;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
 
 /**
  * Supports efficient bulk-operations on a hash map through transience.
+ *
  * @param <K>the key type
  * @param <V>the value type
  */
-class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.SimpleImmutableEntry<K, V>> {
+class TransientHashMap<K, V> extends ChampAbstractTransientMap<K, V, AbstractMap.SimpleImmutableEntry<K, V>> {
 
     TransientHashMap(HashMap<K, V> m) {
         root = m;
@@ -102,7 +102,6 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
     }
 
 
-
     @SuppressWarnings("unchecked")
     ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> removeKey(K key) {
         int keyHash = HashMap.keyHash(key);
@@ -123,48 +122,30 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
         modCount++;
     }
 
-    public HashMap<K,V> toImmutable() {
+    public HashMap<K, V> toImmutable() {
         owner = null;
         return isEmpty()
                 ? HashMap.empty()
-                : root instanceof HashMap<K,V> h ? h : new HashMap<>(root, size);
-    }
-
-    boolean retainAll( Iterable<?> c) {
-        if (isEmpty()) {
-            return false;
-        }
-        if ((c instanceof Collection<?> cc && cc.isEmpty())) {
-            clear();
-            return true;
-        }
-        ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
-        ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode;
-        if (c instanceof Collection<?> that) {
-            newRootNode = root.filterAll(makeOwner(), e -> that.contains(e.getKey()), 0, bulkChange);
-        } else {
-            java.util.HashSet<Object> that = new HashSet<>();
-            c.forEach(that::add);
-            newRootNode = root.filterAll(makeOwner(), that::contains, 0, bulkChange);
-        }
-        if (bulkChange.removed == 0) {
-            return false;
-        }
-        root = newRootNode;
-        size -= bulkChange.removed;
-        modCount++;
-        return true;
+                : root instanceof HashMap<K, V> h ? h : new HashMap<>(root, size);
     }
 
     @SuppressWarnings("unchecked")
     boolean retainAllTuples(Iterable<? extends Tuple2<K, V>> c) {
+        if (isEmpty()) {
+            return false;
+        }
+        if (c instanceof Collection<?> cc && cc.isEmpty()
+                || c instanceof Traversable<?> tr && tr.isEmpty()) {
+            clear();
+            return true;
+        }
         if (c instanceof HashMap<?, ?> that) {
             var bulkChange = new ChampBulkChangeEvent();
             var newRootNode = root.retainAll(makeOwner(),
                     (ChampNode<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampNode<?>) that,
                     0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
                     HashMap::entryKeyHash, new ChampChangeEvent<>());
-            if (bulkChange.removed==0) {
+            if (bulkChange.removed == 0) {
                 return false;
             }
             root = newRootNode;
@@ -172,27 +153,11 @@ class TransientHashMap<K,V> extends ChampAbstractTransientMap<K, V, AbstractMap.
             modCount++;
             return true;
         }
-       if (isEmpty()) {
-            return false;
-        }
-        if ((c instanceof Collection<?> cc && cc.isEmpty())) {
-            clear();
-            return true;
-        }
-        ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
-        ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode;
-        if (c instanceof Collection<?> that) {
-            return filterAll(e -> that.contains(e.getKey()));
-        }else if (c instanceof Map<?,?> that) {
-            return filterAll(e -> that.containsKey(e.getKey()));
-        } else {
-            java.util.HashSet<Object> that = new HashSet<>();
-            c.forEach(that::add);
-            return filterAll(that::contains);
-        }
+        return super.retainAllTuples(c);
     }
+
     @SuppressWarnings("unchecked")
-    boolean filterAll(Predicate<AbstractMap.SimpleImmutableEntry<K, V>> predicate) {
+    boolean filterAll(Predicate<Map.Entry<K, V>> predicate) {
         ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
         ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.filterAll(makeOwner(), predicate, 0, bulkChange);
         if (bulkChange.removed == 0) {

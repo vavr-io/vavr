@@ -30,7 +30,12 @@ package io.vavr.collection;
 
 import io.vavr.Tuple2;
 
+import java.util.AbstractMap;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Abstract base class for a transient CHAMP map.
@@ -71,6 +76,28 @@ abstract class ChampAbstractTransientMap<K,V,E> extends ChampAbstractTransientCo
             modified = modified || !Objects.equals(oldValue, e);
         }
         return modified;
-
     }
+
+    @SuppressWarnings("unchecked")
+    boolean retainAllTuples(Iterable<? extends Tuple2<K, V>> c) {
+        if (isEmpty()) {
+            return false;
+        }
+        if (c instanceof Collection<?> cc && cc.isEmpty()
+                || c instanceof Traversable<?> tr && tr.isEmpty()) {
+            clear();
+            return true;
+        }
+        if (c instanceof Collection<?> that) {
+            return filterAll(e -> that.contains(e.getKey()));
+        }else if (c instanceof Map<?,?> that) {
+            return filterAll(e -> that.containsKey(e.getKey())&&Objects.equals(e.getValue(),that.get(e.getKey())));
+        } else {
+            java.util.HashSet<Object> that = new HashSet<>();
+            c.forEach(t->that.add(new AbstractMap.SimpleImmutableEntry<>(t._1,t._2)));
+            return filterAll(that::contains);
+        }
+    }
+
+    abstract boolean filterAll(Predicate<Map.Entry<K, V>> predicate);
 }
