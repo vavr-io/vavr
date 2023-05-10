@@ -47,7 +47,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static io.vavr.collection.ChampListHelper.checkIndex;
+import static io.vavr.collection.ChampTrie.ChampListHelper.checkIndex;
 import static io.vavr.collection.Collections.withSize;
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
