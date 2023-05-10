@@ -27,6 +27,8 @@
 
 package io.vavr.collection;
 
+import java.util.Objects;
+
 /**
  * A tombstone is used by {@code VectorSet} to mark a deleted slot in its Vector.
  * <p>
@@ -93,10 +95,48 @@ package io.vavr.collection;
  *     <dd><a href="https://github.com/scala/scala/blob/28eef15f3cc46f6d3dd1884e94329d7601dc20ee/src/library/scala/collection/immutable/VectorMap.scala">github.com</a>
  *     </dd>
  * </dl>
- *
- * @param before minimal number of neighboring tombstones before this one
- * @param after  minimal number of neighboring tombstones after this one
  */
-record ChampTombstone(int before, int after) {
+final class ChampTombstone {
+    private final int before;
+    private final int after;
+
+    /**
+     * @param before minimal number of neighboring tombstones before this one
+     * @param after  minimal number of neighboring tombstones after this one
+     */
+    ChampTombstone(int before, int after) {
+        this.before = before;
+        this.after = after;
+    }
+
+    public int before() {
+        return before;
+    }
+
+    public int after() {
+        return after;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) return true;
+        if (obj == null || obj.getClass() != this.getClass()) return false;
+        var that = (ChampTombstone) obj;
+        return this.before == that.before &&
+                this.after == that.after;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(before, after);
+    }
+
+    @Override
+    public String toString() {
+        return "ChampTombstone[" +
+                "before=" + before + ", " +
+                "after=" + after + ']';
+    }
+
 
 }
