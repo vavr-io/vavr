@@ -307,8 +307,8 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
 
 
     static <T> Vector<T> removeRange(Vector<T> v, int fromIndex, int toIndex) {
-        Objects.checkIndex(fromIndex, toIndex + 1);
-        Objects.checkIndex(toIndex, v.size() + 1);
+        ChampListHelper.checkIndex(fromIndex, toIndex + 1);
+        ChampListHelper.checkIndex(toIndex, v.size() + 1);
         if (fromIndex == 0) {
             return v.slice(toIndex, v.size());
         }

@@ -28,8 +28,6 @@
 package io.vavr.collection;
 
 
-
-import java.io.Serial;
 import java.util.AbstractMap;
 import java.util.Objects;
 
@@ -50,7 +48,7 @@ import java.util.Objects;
  */
  class ChampSequencedEntry<K, V> extends AbstractMap.SimpleImmutableEntry<K, V>
         implements ChampSequencedData {
-    @Serial
+
     private static final long serialVersionUID = 0L;
     private final int sequenceNumber;
 

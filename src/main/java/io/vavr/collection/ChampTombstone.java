@@ -121,7 +121,7 @@ final class ChampTombstone {
     public boolean equals(Object obj) {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (ChampTombstone) obj;
+        ChampTombstone that = (ChampTombstone) obj;
         return this.before == that.before &&
                 this.after == that.after;
     }

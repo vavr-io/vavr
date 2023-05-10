@@ -62,7 +62,7 @@ public class BenchmarkData {
         this.listA = Collections.unmodifiableList(keysInSet);
         this.listB = Collections.unmodifiableList(keysNotInSet);
         indicesA = new ArrayList<>(keysInSet.size());
-        for (var k : keysInSet) {
+        for (Key k : keysInSet) {
             indicesA.add(indexMap.get(k));
         }
     }

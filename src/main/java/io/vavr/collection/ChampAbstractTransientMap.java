@@ -71,7 +71,7 @@ abstract class ChampAbstractTransientMap<K,V,E> extends ChampAbstractTransientCo
 
    boolean putAllTuples(Iterable<? extends Tuple2<? extends K,? extends V>> c) {
         boolean modified = false;
-        for (var e : c) {
+        for (Tuple2<? extends K,? extends V> e : c) {
             V oldValue = put(e._1,e._2);
             modified = modified || !Objects.equals(oldValue, e);
         }

@@ -72,7 +72,7 @@ class TransientLinkedHashSet<E> extends ChampAbstractTransientSet<E,ChampSequenc
         owner = null;
         return isEmpty()
                 ? LinkedHashSet.empty()
-                : root instanceof LinkedHashSet<E> ? (LinkedHashSet<E>) root : new LinkedHashSet<>(root, vector, size, offset);
+                : root instanceof LinkedHashSet ? (LinkedHashSet<E>) root : new LinkedHashSet<>(root, vector, size, offset);
     }
 
     boolean add(E element) {

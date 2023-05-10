@@ -75,7 +75,7 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientMap<K, V, Champ
             return false;
         }
         boolean modified = false;
-        for (var e : c) {
+        for (Map.Entry<? extends K, ? extends V> e : c) {
             modified |= putLast(e.getKey(), e.getValue(), false).isModified();
         }
         return modified;
@@ -86,7 +86,7 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientMap<K, V, Champ
             return false;
         }
         boolean modified = false;
-        for (var e : c) {
+        for (Tuple2<? extends K, ? extends V> e : c) {
             modified |= putLast(e._1, e._2, false).isModified();
         }
         return modified;
@@ -174,7 +174,7 @@ size=0;
         owner = null;
         return isEmpty()
                 ? LinkedHashMap.empty()
-                : root instanceof LinkedHashMap<K, V> ? (LinkedHashMap<K, V>) root : new LinkedHashMap<>(root, vector, size, offset);
+                : root instanceof LinkedHashMap ? (LinkedHashMap<K, V>) root : new LinkedHashMap<>(root, vector, size, offset);
     }
 
     static class VectorSideEffectPredicate<K, V> implements Predicate<ChampSequencedEntry<K, V>> {

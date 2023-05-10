@@ -26,16 +26,28 @@
  */
 package io.vavr.collection;
 
-import io.vavr.*;
+import io.vavr.PartialFunction;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.collection.VectorModule.Combinations;
 import io.vavr.control.Option;
 
 import java.io.Serializable;
-import java.util.*;
-import java.util.function.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Random;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.ChampListHelper.checkIndex;
 import static io.vavr.collection.Collections.withSize;
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
@@ -43,7 +55,7 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
 /**
  * Vector is the default Seq implementation that provides effectively constant time access to any element.
  * Many other operations (e.g. `tail`, `drop`, `slice`) are also effectively constant.
- *
+ * <p>
  * The implementation is based on a `bit-mapped trie`, a very wide and shallow tree (i.e. depth ≤ 6).
  *
  * @param <T> Component type of the Vector.
@@ -54,19 +66,22 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     private static final Vector<?> EMPTY = new Vector<>(BitMappedTrie.empty());
 
     final BitMappedTrie<T> trie;
-    private Vector(BitMappedTrie<T> trie) { this.trie = trie; }
+
+    private Vector(BitMappedTrie<T> trie) {
+        this.trie = trie;
+    }
 
     @SuppressWarnings("ObjectEquality")
     private Vector<T> wrap(BitMappedTrie<T> trie) {
         return (trie == this.trie)
-               ? this
-               : ofAll(trie);
+                ? this
+                : ofAll(trie);
     }
 
     private static <T> Vector<T> ofAll(BitMappedTrie<T> trie) {
         return (trie.length() == 0)
-               ? empty()
-               : new Vector<>(trie);
+                ? empty()
+                : new Vector<>(trie);
     }
 
     /**
@@ -76,7 +91,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return The empty Vector.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Vector<T> empty() { return (Vector<T>) EMPTY; }
+    public static <T> Vector<T> empty() {
+        return (Vector<T>) EMPTY;
+    }
 
     /**
      * Returns a {@link Collector} which may be used in conjunction with
@@ -100,7 +117,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return the given {@code vector} instance as narrowed type {@code Vector<T>}.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Vector<T> narrow(Vector<? extends T> vector) { return (Vector<T>) vector; }
+    public static <T> Vector<T> narrow(Vector<? extends T> vector) {
+        return (Vector<T>) vector;
+    }
 
     /**
      * Returns a singleton {@code Vector}, i.e. a {@code Vector} of one element.
@@ -306,15 +325,15 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     public static Vector<Character> range(char from, char toExclusive) {
-        return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.range(from, toExclusive)));
+        return ofAll(ArrayType.<char[]>asPrimitives(char.class, Iterator.range(from, toExclusive)));
     }
 
     public static Vector<Character> rangeBy(char from, char toExclusive, int step) {
-        return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.rangeBy(from, toExclusive, step)));
+        return ofAll(ArrayType.<char[]>asPrimitives(char.class, Iterator.rangeBy(from, toExclusive, step)));
     }
 
     public static Vector<Double> rangeBy(double from, double toExclusive, double step) {
-        return ofAll(ArrayType.<double[]> asPrimitives(double.class, Iterator.rangeBy(from, toExclusive, step)));
+        return ofAll(ArrayType.<double[]>asPrimitives(double.class, Iterator.rangeBy(from, toExclusive, step)));
     }
 
     /**
@@ -334,7 +353,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
      */
     public static Vector<Integer> range(int from, int toExclusive) {
-        return ofAll(ArrayType.<int[]> asPrimitives(int.class, Iterator.range(from, toExclusive)));
+        return ofAll(ArrayType.<int[]>asPrimitives(int.class, Iterator.range(from, toExclusive)));
     }
 
     /**
@@ -360,7 +379,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Integer> rangeBy(int from, int toExclusive, int step) {
-        return ofAll(ArrayType.<int[]> asPrimitives(int.class, Iterator.rangeBy(from, toExclusive, step)));
+        return ofAll(ArrayType.<int[]>asPrimitives(int.class, Iterator.rangeBy(from, toExclusive, step)));
     }
 
     /**
@@ -380,7 +399,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
      */
     public static Vector<Long> range(long from, long toExclusive) {
-        return ofAll(ArrayType.<long[]> asPrimitives(long.class, Iterator.range(from, toExclusive)));
+        return ofAll(ArrayType.<long[]>asPrimitives(long.class, Iterator.range(from, toExclusive)));
     }
 
     /**
@@ -406,19 +425,19 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Long> rangeBy(long from, long toExclusive, long step) {
-        return ofAll(ArrayType.<long[]> asPrimitives(long.class, Iterator.rangeBy(from, toExclusive, step)));
+        return ofAll(ArrayType.<long[]>asPrimitives(long.class, Iterator.rangeBy(from, toExclusive, step)));
     }
 
     public static Vector<Character> rangeClosed(char from, char toInclusive) {
-        return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.rangeClosed(from, toInclusive)));
+        return ofAll(ArrayType.<char[]>asPrimitives(char.class, Iterator.rangeClosed(from, toInclusive)));
     }
 
     public static Vector<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.rangeClosedBy(from, toInclusive, step)));
+        return ofAll(ArrayType.<char[]>asPrimitives(char.class, Iterator.rangeClosedBy(from, toInclusive, step)));
     }
 
     public static Vector<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        return ofAll(ArrayType.<double[]> asPrimitives(double.class, Iterator.rangeClosedBy(from, toInclusive, step)));
+        return ofAll(ArrayType.<double[]>asPrimitives(double.class, Iterator.rangeClosedBy(from, toInclusive, step)));
     }
 
     /**
@@ -438,7 +457,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a range of int values as specified or the empty range if {@code from > toInclusive}
      */
     public static Vector<Integer> rangeClosed(int from, int toInclusive) {
-        return ofAll(ArrayType.<int[]> asPrimitives(int.class, Iterator.rangeClosed(from, toInclusive)));
+        return ofAll(ArrayType.<int[]>asPrimitives(int.class, Iterator.rangeClosed(from, toInclusive)));
     }
 
     /**
@@ -464,7 +483,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return ofAll(ArrayType.<int[]> asPrimitives(int.class, Iterator.rangeClosedBy(from, toInclusive, step)));
+        return ofAll(ArrayType.<int[]>asPrimitives(int.class, Iterator.rangeClosedBy(from, toInclusive, step)));
     }
 
     /**
@@ -484,7 +503,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a range of long values as specified or the empty range if {@code from > toInclusive}
      */
     public static Vector<Long> rangeClosed(long from, long toInclusive) {
-        return ofAll(ArrayType.<long[]> asPrimitives(long.class, Iterator.rangeClosed(from, toInclusive)));
+        return ofAll(ArrayType.<long[]>asPrimitives(long.class, Iterator.rangeClosed(from, toInclusive)));
     }
 
     /**
@@ -510,20 +529,20 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static Vector<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return ofAll(ArrayType.<long[]> asPrimitives(long.class, Iterator.rangeClosedBy(from, toInclusive, step)));
+        return ofAll(ArrayType.<long[]>asPrimitives(long.class, Iterator.rangeClosedBy(from, toInclusive, step)));
     }
 
     /**
      * Transposes the rows and columns of a {@link Vector} matrix.
      *
-     * @param <T> matrix element type
+     * @param <T>    matrix element type
      * @param matrix to be transposed.
      * @return a transposed {@link Vector} matrix.
      * @throws IllegalArgumentException if the row lengths of {@code matrix} differ.
-     * <p>
-     * ex: {@code
-     * Vector.transpose(Vector(Vector(1,2,3), Vector(4,5,6))) → Vector(Vector(1,4), Vector(2,5), Vector(3,6))
-     * }
+     *                                  <p>
+     *                                  ex: {@code
+     *                                  Vector.transpose(Vector(Vector(1,2,3), Vector(4,5,6))) → Vector(Vector(1,4), Vector(2,5), Vector(3,6))
+     *                                  }
      */
     public static <T> Vector<Vector<T>> transpose(Vector<Vector<T>> matrix) {
         return io.vavr.collection.Collections.transpose(matrix, Vector::ofAll, Vector::of);
@@ -616,7 +635,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> append(T element) { return appendAll(io.vavr.collection.List.of(element)); }
+    public Vector<T> append(T element) {
+        return appendAll(io.vavr.collection.List.of(element));
+    }
 
     @Override
     public Vector<T> appendAll(Iterable<? extends T> iterable) {
@@ -624,7 +645,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (isEmpty()) {
             return ofAll(iterable);
         }
-        if (io.vavr.collection.Collections.isEmpty(iterable)){
+        if (io.vavr.collection.Collections.isEmpty(iterable)) {
             return this;
         }
         return new Vector<>(trie.appendAll(iterable));
@@ -652,20 +673,28 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public <R> Vector<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        return ofAll(iterator().<R> collect(partialFunction));
+        return ofAll(iterator().<R>collect(partialFunction));
     }
 
     @Override
-    public Vector<Vector<T>> combinations() { return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity()); }
+    public Vector<Vector<T>> combinations() {
+        return rangeClosed(0, length()).map(this::combinations).flatMap(Function.identity());
+    }
 
     @Override
-    public Vector<Vector<T>> combinations(int k) { return Combinations.apply(this, Math.max(k, 0)); }
+    public Vector<Vector<T>> combinations(int k) {
+        return Combinations.apply(this, Math.max(k, 0));
+    }
 
     @Override
-    public Iterator<Vector<T>> crossProduct(int power) { return io.vavr.collection.Collections.crossProduct(empty(), this, power); }
+    public Iterator<Vector<T>> crossProduct(int power) {
+        return io.vavr.collection.Collections.crossProduct(empty(), this, power);
+    }
 
     @Override
-    public Vector<T> distinct() { return distinctBy(Function.identity()); }
+    public Vector<T> distinct() {
+        return distinctBy(Function.identity());
+    }
 
     @Override
     public Vector<T> distinctBy(Comparator<? super T> comparator) {
@@ -752,13 +781,19 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <C> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) { return io.vavr.collection.Collections.groupBy(this, classifier, Vector::ofAll); }
+    public <C> Map<C, Vector<T>> groupBy(Function<? super T, ? extends C> classifier) {
+        return io.vavr.collection.Collections.groupBy(this, classifier, Vector::ofAll);
+    }
 
     @Override
-    public Iterator<Vector<T>> grouped(int size) { return sliding(size, size); }
+    public Iterator<Vector<T>> grouped(int size) {
+        return sliding(size, size);
+    }
 
     @Override
-    public boolean hasDefiniteSize() { return true; }
+    public boolean hasDefiniteSize() {
+        return true;
+    }
 
     @Override
     public int indexOf(T element, int from) {
@@ -780,10 +815,14 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Option<Vector<T>> initOption() { return isEmpty() ? Option.none() : Option.some(init()); }
+    public Option<Vector<T>> initOption() {
+        return isEmpty() ? Option.none() : Option.some(init());
+    }
 
     @Override
-    public Vector<T> insert(int index, T element) { return insertAll(index, Iterator.of(element)); }
+    public Vector<T> insert(int index, T element) {
+        return insertAll(index, Iterator.of(element));
+    }
 
     @Override
     public Vector<T> insertAll(int index, Iterable<? extends T> elements) {
@@ -792,15 +831,17 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             final Vector<T> begin = take(index).appendAll(elements);
             final Vector<T> end = drop(index);
             return (begin.size() > end.size())
-                   ? begin.appendAll(end)
-                   : end.prependAll(begin);
+                    ? begin.appendAll(end)
+                    : end.prependAll(begin);
         } else {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Vector of length " + length());
         }
     }
 
     @Override
-    public Vector<T> intersperse(T element) { return ofAll(iterator().intersperse(element)); }
+    public Vector<T> intersperse(T element) {
+        return ofAll(iterator().intersperse(element));
+    }
 
     /**
      * A {@code Vector} is computed synchronously.
@@ -813,7 +854,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public boolean isEmpty() { return length() == 0; }
+    public boolean isEmpty() {
+        return length() == 0;
+    }
 
     /**
      * A {@code Vector} is computed eagerly.
@@ -826,12 +869,14 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public boolean isTraversableAgain() { return true; }
+    public boolean isTraversableAgain() {
+        return true;
+    }
 
     @Override
     public Iterator<T> iterator() {
         return isEmpty() ? Iterator.empty()
-                         : trie.iterator();
+                : trie.iterator();
     }
 
     @Override
@@ -845,7 +890,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public int length() { return trie.length(); }
+    public int length() {
+        return trie.length();
+    }
 
     @Override
     public <U> Vector<U> map(Function<? super T, ? extends U> mapper) {
@@ -867,8 +914,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public Vector<T> padTo(int length, T element) {
         final int actualLength = length();
         return (length <= actualLength)
-               ? this
-               : appendAll(Iterator.continually(element)
+                ? this
+                : appendAll(Iterator.continually(element)
                 .take(length - actualLength));
     }
 
@@ -931,7 +978,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> prepend(T element) { return prependAll(io.vavr.collection.List.of(element)); }
+    public Vector<T> prepend(T element) {
+        return prependAll(io.vavr.collection.List.of(element));
+    }
 
     @Override
     public Vector<T> prependAll(Iterable<? extends T> iterable) {
@@ -939,7 +988,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (isEmpty()) {
             return ofAll(iterable);
         }
-        if (io.vavr.collection.Collections.isEmpty(iterable)){
+        if (io.vavr.collection.Collections.isEmpty(iterable)) {
             return this;
         }
         return new Vector<>(trie.prependAll(iterable));
@@ -983,8 +1032,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             final Vector<T> begin = take(index);
             final Vector<T> end = drop(index + 1);
             return (begin.size() > end.size())
-                   ? begin.appendAll(end)
-                   : end.prependAll(begin);
+                    ? begin.appendAll(end)
+                    : end.prependAll(begin);
         } else {
             throw new IndexOutOfBoundsException("removeAt(" + index + ")");
         }
@@ -1000,10 +1049,10 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return io.vavr.collection.Collections.removeAll(this, elements);
     }
 
-     Vector<T> removeRange(int fromIndex, int toIndex) {
-        Objects.checkIndex(fromIndex, toIndex + 1);
-         int size = size();
-         Objects.checkIndex(toIndex, size + 1);
+    Vector<T> removeRange(int fromIndex, int toIndex) {
+        int size = size();
+        checkIndex(fromIndex, toIndex + 1);
+        checkIndex(toIndex, size + 1);
         if (fromIndex == 0) {
             return slice(toIndex, size);
         }
@@ -1110,8 +1159,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         if (isEmpty()) {
             return this;
         } else {
-            @SuppressWarnings("unchecked")
-            final T[] list = (T[]) toJavaArray();
+            @SuppressWarnings("unchecked") final T[] list = (T[]) toJavaArray();
             Arrays.sort(list);
             return Vector.of(list);
         }
@@ -1158,7 +1206,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
             final T value = get(i);
             if (predicate.test(value)) {
                 return (i == (length() - 1)) ? Tuple.of(this, empty())
-                                             : Tuple.of(take(i + 1), drop(i + 1));
+                        : Tuple.of(take(i + 1), drop(i + 1));
             }
         }
         return Tuple.of(this, empty());
@@ -1189,7 +1237,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Option<Vector<T>> tailOption() { return isEmpty() ? Option.none() : Option.some(tail()); }
+    public Option<Vector<T>> tailOption() {
+        return isEmpty() ? Option.none() : Option.some(tail());
+    }
 
     @Override
     public Vector<T> take(int n) {
@@ -1280,7 +1330,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return ofAll(iterator().zipWithIndex(mapper));
     }
 
-    private Object readResolve() { return isEmpty() ? EMPTY : this; }
+    private Object readResolve() {
+        return isEmpty() ? EMPTY : this;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -1293,18 +1345,22 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public String stringPrefix() { return "Vector"; }
+    public String stringPrefix() {
+        return "Vector";
+    }
 
     @Override
-    public String toString() { return mkString(stringPrefix() + "(", ", ", ")"); }
+    public String toString() {
+        return mkString(stringPrefix() + "(", ", ", ")");
+    }
 }
 
 interface VectorModule {
     final class Combinations {
         static <T> Vector<Vector<T>> apply(Vector<T> elements, int k) {
             return (k == 0)
-                   ? Vector.of(Vector.empty())
-                   : elements.zipWithIndex().flatMap(
+                    ? Vector.of(Vector.empty())
+                    : elements.zipWithIndex().flatMap(
                     t -> apply(elements.drop(t._2 + 1), (k - 1)).map((Vector<T> c) -> c.prepend(t._1)));
         }
     }

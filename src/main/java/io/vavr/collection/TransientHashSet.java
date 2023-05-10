@@ -55,7 +55,7 @@ class TransientHashSet<E> extends ChampAbstractTransientSet<E, E> {
         owner = null;
         return isEmpty()
                 ? HashSet.empty()
-                : root instanceof HashSet<E> ? (HashSet<E>) root : new HashSet<>(root, size);
+                : root instanceof HashSet ? (HashSet<E>) root : new HashSet<>(root, size);
     }
 
     boolean add(E e) {

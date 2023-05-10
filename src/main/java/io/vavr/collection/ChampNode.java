@@ -112,7 +112,7 @@ import java.util.function.ToIntFunction;
     }
 
      static <E>  E getFirst( ChampNode<E> node) {
-        while (node instanceof ChampBitmapIndexedNode<E>) {
+        while (node instanceof ChampBitmapIndexedNode) {
             ChampBitmapIndexedNode<E> bxn = (ChampBitmapIndexedNode<E>) node;
             int nodeMap = bxn.nodeMap();
             int dataMap = bxn.dataMap();
@@ -127,7 +127,7 @@ import java.util.function.ToIntFunction;
                 return node.getData(0);
             }
         }
-        if (node instanceof ChampHashCollisionNode<E>) {
+        if (node instanceof ChampHashCollisionNode) {
             ChampHashCollisionNode<E> hcn = (ChampHashCollisionNode<E>) node;
             return hcn.getData(0);
         }
@@ -135,7 +135,7 @@ import java.util.function.ToIntFunction;
     }
 
      static <E>  E getLast( ChampNode<E> node) {
-        while (node instanceof ChampBitmapIndexedNode<E>) {
+        while (node instanceof ChampBitmapIndexedNode) {
             ChampBitmapIndexedNode<E> bxn = (ChampBitmapIndexedNode<E>) node;
             int nodeMap = bxn.nodeMap();
             int dataMap = bxn.dataMap();
@@ -148,7 +148,7 @@ import java.util.function.ToIntFunction;
                 return node.getData(node.dataArity() - 1);
             }
         }
-        if (node instanceof ChampHashCollisionNode<E>) {
+        if (node instanceof ChampHashCollisionNode) {
             ChampHashCollisionNode<E> hcn = (ChampHashCollisionNode<E>) node;
             return hcn.getData(hcn.dataArity() - 1);
         }

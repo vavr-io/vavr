@@ -95,8 +95,8 @@ public class VavrVectorJmh {
         return set;
     }    @Benchmark
     public Vector<Key> mRemoveOneByOne() {
-        var map = listA;
-        for (var e : data.listA) {
+        Vector<Key> map = listA;
+        for (Key e : data.listA) {
             map = map.remove(e);
         }
         if (!map.isEmpty()) throw new AssertionError("map: " + map);
