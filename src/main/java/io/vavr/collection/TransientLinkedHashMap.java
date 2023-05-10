@@ -66,7 +66,7 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientMap<K, V, Champ
     }
 
     public V put(K key, V value) {
-        var oldData = putLast(key, value, false).getOldData();
+        ChampSequencedEntry<K, V> oldData = putLast(key, value, false).getOldData();
         return oldData == null ? null : oldData.getValue();
     }
 
@@ -93,9 +93,9 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientMap<K, V, Champ
     }
 
     ChampChangeEvent<ChampSequencedEntry<K, V>> putLast(final K key, V value, boolean moveToLast) {
-        var details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
-        var newEntry = new ChampSequencedEntry<>(key, value, vector.size() - offset);
-        var owner = makeOwner();
+        ChampChangeEvent<ChampSequencedEntry<K, V>> details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
+        ChampSequencedEntry<K, V> newEntry = new ChampSequencedEntry<>(key, value, vector.size() - offset);
+        ChampIdentityObject owner = makeOwner();
         root = root.put(owner, newEntry,
                 Objects.hashCode(key), 0, details,
                 moveToLast ? ChampSequencedEntry::updateAndMoveToLast : ChampSequencedEntry::updateWithNewKey,
@@ -107,7 +107,7 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientMap<K, V, Champ
         }
         if (details.isModified()) {
             if (details.isReplaced()) {
-                var result = ChampSequencedData.vecRemove(vector, details.getOldDataNonNull(), offset);
+                Tuple2<Vector<Object>, Integer> result = ChampSequencedData.vecRemove(vector, details.getOldDataNonNull(), offset);
                 vector = result._1;
                 offset = result._2;
             } else {
@@ -134,13 +134,13 @@ class TransientLinkedHashMap<K, V> extends ChampAbstractTransientMap<K, V, Champ
     }
 
     ChampChangeEvent<ChampSequencedEntry<K, V>> removeKey(K key) {
-        var details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
+        ChampChangeEvent<ChampSequencedEntry<K, V>> details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
         root = root.remove(null,
                 new ChampSequencedEntry<>(key),
                 Objects.hashCode(key), 0, details, ChampSequencedEntry::keyEquals);
         if (details.isModified()) {
-            var oldElem = details.getOldDataNonNull();
-            var result = ChampSequencedData.vecRemove(vector, oldElem, offset);
+            ChampSequencedEntry<K, V> oldElem = details.getOldDataNonNull();
+            Tuple2<Vector<Object>, Integer> result = ChampSequencedData.vecRemove(vector, oldElem, offset);
             vector = result._1;
             offset = result._2;
             size--;
@@ -161,7 +161,7 @@ size=0;
     void renumber() {
         if (ChampSequencedData.vecMustRenumber(size, offset, vector.size())) {
             ChampIdentityObject owner = makeOwner();
-            var result = ChampSequencedData.vecRenumber(size, root, vector, owner,
+            Tuple2<ChampBitmapIndexedNode<ChampSequencedEntry<K, V>>, Vector<Object>> result = ChampSequencedData.vecRenumber(size, root, vector, owner,
                     ChampSequencedEntry::entryKeyHash, ChampSequencedEntry::keyEquals,
                     (e, seq) -> new ChampSequencedEntry<>(e.getKey(), e.getValue(), seq));
             root = result._1;
@@ -174,7 +174,7 @@ size=0;
         owner = null;
         return isEmpty()
                 ? LinkedHashMap.empty()
-                : root instanceof LinkedHashMap<K, V> h ? h : new LinkedHashMap<>(root, vector, size, offset);
+                : root instanceof LinkedHashMap<K, V> ? (LinkedHashMap<K, V>) root : new LinkedHashMap<>(root, vector, size, offset);
     }
 
     static class VectorSideEffectPredicate<K, V> implements Predicate<ChampSequencedEntry<K, V>> {

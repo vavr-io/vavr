@@ -40,7 +40,8 @@ class ChampReverseVectorSpliterator<K> extends Spliterators.AbstractSpliterator<
             return false;
         }
         Object o = vector.get(index--);
-        if (o instanceof ChampTombstone t) {
+        if (o instanceof ChampTombstone) {
+            ChampTombstone t = (ChampTombstone) o;
             index -= t.before();
             o = vector.get(index--);
         }

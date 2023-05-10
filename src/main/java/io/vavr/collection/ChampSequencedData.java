@@ -105,7 +105,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
 
     static <K extends ChampSequencedData> Vector<Object> vecBuildSequencedTrie(ChampBitmapIndexedNode<K> root, ChampIdentityObject owner, int size) {
         ArrayList<K> list = new ArrayList<>(size);
-        for (var i = new ChampSpliterator<K, K>(root, Function.identity(), 0, Long.MAX_VALUE); i.moveNext(); ) {
+        for (ChampSpliterator<K, K> i = new ChampSpliterator<K, K>(root, Function.identity(), 0, Long.MAX_VALUE); i.moveNext(); ) {
             list.add(i.current());
         }
         list.sort(Comparator.comparing(ChampSequencedData::getSequenceNumber));
@@ -151,7 +151,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
         ChampChangeEvent<K> details = new ChampChangeEvent<>();
         int seq = 0;
 
-        for (var i = new ChampSpliterator<>(sequenceRoot, Function.identity(), 0, 0); i.moveNext(); ) {
+        for (ChampSpliterator<K, K> i = new ChampSpliterator<>(sequenceRoot, Function.identity(), 0, 0); i.moveNext(); ) {
             K e = i.current();
             K newElement = factoryFunction.apply(e, seq);
             newRoot = newRoot.put(owner,
@@ -197,7 +197,7 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
         ChampChangeEvent<K> details = new ChampChangeEvent<>();
         BiFunction<K, K, K> forceUpdate = (oldk, newk) -> newk;
         int seq = 0;
-        for (var i = new ChampVectorSpliterator<K>(vector, o -> (K) o, 0, Long.MAX_VALUE, 0); i.moveNext(); ) {
+        for (ChampVectorSpliterator<K> i = new ChampVectorSpliterator<K>(vector, o -> (K) o, 0, Long.MAX_VALUE, 0); i.moveNext(); ) {
             K current = i.current();
             K data = factoryFunction.apply(current, seq++);
             renumberedVector = renumberedVector.append(data);
@@ -263,7 +263,8 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
         if (index == 0) {
             if (size > 1) {
                 Object o = vector.get(1);
-                if (o instanceof ChampTombstone t) {
+                if (o instanceof ChampTombstone) {
+                    ChampTombstone t = (ChampTombstone) o;
                     return new Tuple2<>(vector.removeRange(0, 2 + t.after()), offset - 2 - t.after());
                 }
             }
@@ -273,7 +274,8 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
         // If the element is the last , we can remove it and its neighboring tombstones from the vector.
         if (index == size - 1) {
             Object o = vector.get(size - 2);
-            if (o instanceof ChampTombstone t) {
+            if (o instanceof ChampTombstone) {
+                ChampTombstone t = (ChampTombstone) o;
                 return new Tuple2<>(vector.removeRange(size - 2 - t.before(), size), offset);
             }
             return new Tuple2<>(vector.init(), offset);
@@ -283,14 +285,18 @@ import static io.vavr.collection.ChampBitmapIndexedNode.emptyNode;
         assert index > 0 && index < size - 1;
         Object before = vector.get(index - 1);
         Object after = vector.get(index + 1);
-        if (before instanceof ChampTombstone tb && after instanceof ChampTombstone ta) {
+        if (before instanceof ChampTombstone && after instanceof ChampTombstone) {
+            ChampTombstone tb = (ChampTombstone) before;
+            ChampTombstone ta = (ChampTombstone) after;
             vector = vector.update(index - 1 - tb.before(), new ChampTombstone(0, 2 + tb.before() + ta.after()));
             vector = vector.update(index, TOMB_ZERO_ZERO);
             vector = vector.update(index + 1 + ta.after(), new ChampTombstone(2 + tb.before() + ta.after(), 0));
-        } else if (before instanceof ChampTombstone tb) {
+        } else if (before instanceof ChampTombstone) {
+            ChampTombstone tb = (ChampTombstone) before;
             vector = vector.update(index - 1 - tb.before(), new ChampTombstone(0, 1 + tb.before()));
             vector = vector.update(index, new ChampTombstone(1 + tb.before(), 0));
-        } else if (after instanceof ChampTombstone ta) {
+        } else if (after instanceof ChampTombstone) {
+            ChampTombstone ta = (ChampTombstone) after;
             vector = vector.update(index, new ChampTombstone(0, 1 + ta.after()));
             vector = vector.update(index + 1 + ta.after(), new ChampTombstone(1 + ta.after(), 0));
         } else {

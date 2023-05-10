@@ -348,7 +348,7 @@ final class Collections {
         if (source.isEmpty()) {
             return source;
         } else {
-            final Set<T> retained = elements instanceof Set<?> e ? (Set<T>) e : HashSet.ofAll(elements);
+            final Set<T> retained = elements instanceof Set<?> ? (Set<T>) (Set<?>) elements : HashSet.ofAll(elements);
             return (C) source.filter(retained::contains);
         }
     }

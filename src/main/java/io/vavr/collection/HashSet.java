@@ -561,7 +561,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
     @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> addAll(Iterable<? extends T> elements) {
-        var t = toTransient();
+        TransientHashSet<T> t = toTransient();
         t.addAll(elements);return t.toImmutable();
     }
 
@@ -631,7 +631,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> filter(Predicate<? super T> predicate) {
-        var t=toTransient();
+        TransientHashSet<T> t=toTransient();
         t.filterAll(predicate);
         return t.toImmutable();
     }
@@ -811,7 +811,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> removeAll(Iterable<? extends T> elements) {
-        var t = toTransient();
+        TransientHashSet<T> t = toTransient();
         t.removeAll(elements);return t.toImmutable();
     }
 
@@ -828,7 +828,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
 
     @Override
     public HashSet<T> retainAll(Iterable<? extends T> elements) {
-        var t = toTransient();
+        TransientHashSet<T> t = toTransient();
         t.retainAll(elements);
         return t.toImmutable();
     }
@@ -1081,7 +1081,7 @@ public final class HashSet<T> extends ChampBitmapIndexedNode<T> implements Set<T
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            var owner = new ChampIdentityObject();
+            ChampIdentityObject owner = new ChampIdentityObject();
             ChampBitmapIndexedNode<T> newRoot = emptyNode();
             ChampChangeEvent<T> details = new ChampChangeEvent<>();
             int newSize = 0;
