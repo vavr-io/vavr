@@ -310,7 +310,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      * @return A new Map containing the given entries
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2) {
-        var t = new TransientLinkedHashMap<K,V>();
+        TransientLinkedHashMap<K, V> t = new TransientLinkedHashMap<K,V>();
         t.put(k1,v1);
         t.put(k2,v2);
         return t.toImmutable();
@@ -330,7 +330,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      * @return A new Map containing the given entries
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
-        var t = new TransientLinkedHashMap<K,V>();
+        TransientLinkedHashMap<K, V> t = new TransientLinkedHashMap<K,V>();
         t.put(k1,v1);
         t.put(k2,v2);
         t.put(k3,v3);
@@ -353,7 +353,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      * @return A new Map containing the given entries
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
-        var t = new TransientLinkedHashMap<K,V>();
+        TransientLinkedHashMap<K, V> t = new TransientLinkedHashMap<K,V>();
         t.put(k1,v1);
         t.put(k2,v2);
         t.put(k3,v3);
@@ -379,7 +379,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      * @return A new Map containing the given entries
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
-        var t = new TransientLinkedHashMap<K,V>();
+        TransientLinkedHashMap<K, V> t = new TransientLinkedHashMap<K,V>();
         t.put(k1,v1);
         t.put(k2,v2);
         t.put(k3,v3);
@@ -408,7 +408,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      * @return A new Map containing the given entries
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
-        var t = new TransientLinkedHashMap<K,V>();
+        TransientLinkedHashMap<K, V> t = new TransientLinkedHashMap<K,V>();
         t.put(k1,v1);
         t.put(k2,v2);
         t.put(k3,v3);
@@ -440,7 +440,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      * @return A new Map containing the given entries
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
-        var t = new TransientLinkedHashMap<K,V>();
+        TransientLinkedHashMap<K, V> t = new TransientLinkedHashMap<K,V>();
         t.put(k1,v1);
         t.put(k2,v2);
         t.put(k3,v3);
@@ -475,7 +475,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      * @return A new Map containing the given entries
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
-        var t = new TransientLinkedHashMap<K,V>();
+        TransientLinkedHashMap<K, V> t = new TransientLinkedHashMap<K,V>();
         t.put(k1,v1);
         t.put(k2,v2);
         t.put(k3,v3);
@@ -513,7 +513,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      * @return A new Map containing the given entries
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
-        var t = new TransientLinkedHashMap<K,V>();
+        TransientLinkedHashMap<K, V> t = new TransientLinkedHashMap<K,V>();
         t.put(k1,v1);
         t.put(k2,v2);
         t.put(k3,v3);
@@ -554,7 +554,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
      * @return A new Map containing the given entries
      */
     public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
-        var t = new TransientLinkedHashMap<K,V>();
+        TransientLinkedHashMap<K, V> t = new TransientLinkedHashMap<K,V>();
         t.put(k1,v1);
         t.put(k2,v2);
         t.put(k3,v3);
@@ -765,7 +765,7 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
         Object result = find(
                 new ChampSequencedEntry<>(key),
                 ChampSequencedEntry.keyHash(key), 0, ChampSequencedEntry::keyEquals);
-        return ((result instanceof ChampSequencedEntry<?, ?> entry) ? Option.some((V) entry.getValue()) : Option.none());
+        return ((result instanceof ChampSequencedEntry<?, ?>) ? Option.some((V) ((ChampSequencedEntry<?, ?>) result).getValue()) : Option.none());
     }
 
     @Override
@@ -936,7 +936,8 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
     }
     @SuppressWarnings("unchecked")
     private LinkedHashMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> c) {
-        if (isEmpty()&&c instanceof LinkedHashMap<?,?> that){
+        if (isEmpty()&& c instanceof LinkedHashMap<?, ?>){
+            LinkedHashMap<?, ?> that = (LinkedHashMap<?, ?>) c;
             return (LinkedHashMap<K, V>)that;
         }
         TransientLinkedHashMap<K,V> t=toTransient();
@@ -944,25 +945,25 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
         return t.toImmutable();
     }
     private LinkedHashMap<K, V> putLast( K key,  V value, boolean moveToLast) {
-        var details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
-        var newEntry = new ChampSequencedEntry<>(key, value, vector.size() - offset);
-        var newRoot = put(null, newEntry,
+        ChampChangeEvent<ChampSequencedEntry<K, V>> details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
+        ChampSequencedEntry<K, V> newEntry = new ChampSequencedEntry<>(key, value, vector.size() - offset);
+        ChampBitmapIndexedNode<ChampSequencedEntry<K, V>> newRoot = put(null, newEntry,
                 ChampSequencedEntry.keyHash(key), 0, details,
                 moveToLast ? ChampSequencedEntry::updateAndMoveToLast : ChampSequencedEntry::updateWithNewKey,
                 ChampSequencedEntry::keyEquals, ChampSequencedEntry::entryKeyHash);
         if (details.isReplaced()
                 && details.getOldDataNonNull().getSequenceNumber() == details.getNewDataNonNull().getSequenceNumber()) {
-            var newVector = vector.update(details.getNewDataNonNull().getSequenceNumber() - offset, details.getNewDataNonNull());
+            Vector<Object> newVector = vector.update(details.getNewDataNonNull().getSequenceNumber() - offset, details.getNewDataNonNull());
             return new LinkedHashMap<>(newRoot, newVector, size, offset);
         }
         if (details.isModified()) {
-            var newVector = vector;
+            Vector<Object> newVector = vector;
             int newOffset = offset;
             int newSize = size;
             if (details.isReplaced()) {
                 if (moveToLast) {
-                    var oldElem = details.getOldDataNonNull();
-                    var result = ChampSequencedData.vecRemove(newVector,  oldElem,  newOffset);
+                    ChampSequencedEntry<K, V> oldElem = details.getOldDataNonNull();
+                    Tuple2<Vector<Object>, Integer> result = ChampSequencedData.vecRemove(newVector,  oldElem,  newOffset);
                     newVector = result._1;
                     newOffset = result._2;
                 }
@@ -989,13 +990,13 @@ public class LinkedHashMap<K, V> extends ChampBitmapIndexedNode<ChampSequencedEn
     @Override
     public LinkedHashMap<K, V> remove(K key) {
         int keyHash = ChampSequencedEntry.keyHash(key);
-        var details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
+        ChampChangeEvent<ChampSequencedEntry<K, V>> details = new ChampChangeEvent<ChampSequencedEntry<K, V>>();
         ChampBitmapIndexedNode<ChampSequencedEntry<K, V>> newRoot = remove(null,
                 new ChampSequencedEntry<>(key),
                 keyHash, 0, details, ChampSequencedEntry::keyEquals);
         if (details.isModified()) {
-            var oldElem = details.getOldDataNonNull();
-            var result = ChampSequencedData.vecRemove(vector,  oldElem,  offset);
+            ChampSequencedEntry<K, V> oldElem = details.getOldDataNonNull();
+            Tuple2<Vector<Object>, Integer> result = ChampSequencedData.vecRemove(vector,  oldElem,  offset);
             return renumber(newRoot, result._1, size - 1, result._2);
         }
         return this;
@@ -1014,8 +1015,8 @@ return        t.removeAll(keys)?t.toImmutable():this;
             int size, int offset) {
 
         if (ChampSequencedData.vecMustRenumber(size, offset, this.vector.size())) {
-            var owner = new ChampIdentityObject();
-            var result = ChampSequencedData.<ChampSequencedEntry<K, V>>vecRenumber(
+            ChampIdentityObject owner = new ChampIdentityObject();
+            Tuple2<ChampBitmapIndexedNode<ChampSequencedEntry<K, V>>, Vector<Object>> result = ChampSequencedData.<ChampSequencedEntry<K, V>>vecRenumber(
                     size, root, vector, owner, ChampSequencedEntry::entryKeyHash, ChampSequencedEntry::keyEquals,
                     (e, seq) -> new ChampSequencedEntry<>(e.getKey(), e.getValue(), seq));
             return new LinkedHashMap<>(
@@ -1044,11 +1045,11 @@ return        t.removeAll(keys)?t.toImmutable():this;
 
         // removedData was in the 'root' trie, and we have just removed it
         // => also remove its entry from the 'sequenceRoot' trie
-        var newVector = vector;
-        var newOffset = offset;
+        Vector<Object> newVector = vector;
+        int newOffset = offset;
         ChampSequencedEntry<K, V> removedData = detailsCurrent.getOldData();
         int seq = removedData.getSequenceNumber();
-        var result = ChampSequencedData.vecRemove(newVector,  removedData,  offset);
+        Tuple2<Vector<Object>, Integer> result = ChampSequencedData.vecRemove(newVector,  removedData,  offset);
         newVector=result._1;
         newOffset=result._2;
 
@@ -1283,7 +1284,7 @@ return        t.removeAll(keys)?t.toImmutable():this;
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeInt(map.size());
-            for (var e : map) {
+            for (Tuple2<K, V> e : map) {
                 s.writeObject(e._1);
                 s.writeObject(e._2);
             }

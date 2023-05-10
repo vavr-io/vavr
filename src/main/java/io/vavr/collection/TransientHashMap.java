@@ -54,7 +54,7 @@ class TransientHashMap<K, V> extends ChampAbstractTransientMap<K, V, AbstractMap
     }
 
     public V put(K key, V value) {
-        var oldData = putEntry(key, value, false).getOldData();
+        AbstractMap.SimpleImmutableEntry<K, V> oldData = putEntry(key, value, false).getOldData();
         return oldData == null ? null : oldData.getValue();
     }
 
@@ -64,7 +64,7 @@ class TransientHashMap<K, V> extends ChampAbstractTransientMap<K, V, AbstractMap
         }
         boolean modified = false;
         for (var e : c) {
-            var oldValue = put(e.getKey(), e.getValue());
+            V oldValue = put(e.getKey(), e.getValue());
             modified = modified || !Objects.equals(oldValue, e.getValue());
         }
         return modified;
@@ -72,9 +72,10 @@ class TransientHashMap<K, V> extends ChampAbstractTransientMap<K, V, AbstractMap
 
     @SuppressWarnings("unchecked")
     boolean putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> c) {
-        if (c instanceof HashMap<?, ?> that) {
-            var bulkChange = new ChampBulkChangeEvent();
-            var newRootNode = root.putAll(makeOwner(), (ChampNode<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampNode<?>) that, 0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
+        if (c instanceof HashMap<?, ?>) {
+            HashMap<?, ?> that = (HashMap<?, ?>) c;
+            ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
+            ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.putAll(makeOwner(), (ChampNode<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampNode<?>) that, 0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
                     HashMap::entryKeyHash, new ChampChangeEvent<>());
             if (bulkChange.inBoth == that.size() && !bulkChange.replaced) {
                 return false;
@@ -126,7 +127,7 @@ class TransientHashMap<K, V> extends ChampAbstractTransientMap<K, V, AbstractMap
         owner = null;
         return isEmpty()
                 ? HashMap.empty()
-                : root instanceof HashMap<K, V> h ? h : new HashMap<>(root, size);
+                : root instanceof HashMap<K, V> ? (HashMap<K, V>) root : new HashMap<>(root, size);
     }
 
     @SuppressWarnings("unchecked")
@@ -134,14 +135,15 @@ class TransientHashMap<K, V> extends ChampAbstractTransientMap<K, V, AbstractMap
         if (isEmpty()) {
             return false;
         }
-        if (c instanceof Collection<?> cc && cc.isEmpty()
-                || c instanceof Traversable<?> tr && tr.isEmpty()) {
+        if (c instanceof Collection<?> && ((Collection<?>) c).isEmpty()
+                || c instanceof Traversable<?> && ((Traversable<?>) c).isEmpty()) {
             clear();
             return true;
         }
-        if (c instanceof HashMap<?, ?> that) {
-            var bulkChange = new ChampBulkChangeEvent();
-            var newRootNode = root.retainAll(makeOwner(),
+        if (c instanceof HashMap<?, ?>) {
+            HashMap<?, ?> that = (HashMap<?, ?>) c;
+            ChampBulkChangeEvent bulkChange = new ChampBulkChangeEvent();
+            ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.retainAll(makeOwner(),
                     (ChampNode<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampNode<?>) that,
                     0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
                     HashMap::entryKeyHash, new ChampChangeEvent<>());

@@ -112,7 +112,8 @@ import java.util.function.ToIntFunction;
     }
 
      static <E>  E getFirst( ChampNode<E> node) {
-        while (node instanceof ChampBitmapIndexedNode<E> bxn) {
+        while (node instanceof ChampBitmapIndexedNode<E>) {
+            ChampBitmapIndexedNode<E> bxn = (ChampBitmapIndexedNode<E>) node;
             int nodeMap = bxn.nodeMap();
             int dataMap = bxn.dataMap();
             if ((nodeMap | dataMap) == 0) {
@@ -126,14 +127,16 @@ import java.util.function.ToIntFunction;
                 return node.getData(0);
             }
         }
-        if (node instanceof ChampHashCollisionNode<E> hcn) {
+        if (node instanceof ChampHashCollisionNode<E>) {
+            ChampHashCollisionNode<E> hcn = (ChampHashCollisionNode<E>) node;
             return hcn.getData(0);
         }
         throw new NoSuchElementException();
     }
 
      static <E>  E getLast( ChampNode<E> node) {
-        while (node instanceof ChampBitmapIndexedNode<E> bxn) {
+        while (node instanceof ChampBitmapIndexedNode<E>) {
+            ChampBitmapIndexedNode<E> bxn = (ChampBitmapIndexedNode<E>) node;
             int nodeMap = bxn.nodeMap();
             int dataMap = bxn.dataMap();
             if ((nodeMap | dataMap) == 0) {
@@ -145,7 +148,8 @@ import java.util.function.ToIntFunction;
                 return node.getData(node.dataArity() - 1);
             }
         }
-        if (node instanceof ChampHashCollisionNode<E> hcn) {
+        if (node instanceof ChampHashCollisionNode<E>) {
+            ChampHashCollisionNode<E> hcn = (ChampHashCollisionNode<E>) node;
             return hcn.getData(hcn.dataArity() - 1);
         }
         throw new NoSuchElementException();

@@ -59,7 +59,7 @@ abstract class ChampAbstractTransientMap<K,V,E> extends ChampAbstractTransientCo
         }
         boolean modified = false;
         for (Object key : c) {
-            var details = removeKey((K)key);
+            ChampChangeEvent<E> details = removeKey((K)key);
             modified |= details.isModified();
         }
         return modified;
@@ -72,7 +72,7 @@ abstract class ChampAbstractTransientMap<K,V,E> extends ChampAbstractTransientCo
    boolean putAllTuples(Iterable<? extends Tuple2<? extends K,? extends V>> c) {
         boolean modified = false;
         for (var e : c) {
-            var oldValue = put(e._1,e._2);
+            V oldValue = put(e._1,e._2);
             modified = modified || !Objects.equals(oldValue, e);
         }
         return modified;
@@ -83,14 +83,16 @@ abstract class ChampAbstractTransientMap<K,V,E> extends ChampAbstractTransientCo
         if (isEmpty()) {
             return false;
         }
-        if (c instanceof Collection<?> cc && cc.isEmpty()
-                || c instanceof Traversable<?> tr && tr.isEmpty()) {
+        if (c instanceof Collection<?> && ((Collection<?>) c).isEmpty()
+                || c instanceof Traversable<?> && ((Traversable<?>) c).isEmpty()) {
             clear();
             return true;
         }
-        if (c instanceof Collection<?> that) {
+        if (c instanceof Collection<?>) {
+            Collection<?> that = (Collection<?>) c;
             return filterAll(e -> that.contains(e.getKey()));
-        }else if (c instanceof Map<?,?> that) {
+        }else if (c instanceof Map<?, ?>) {
+            Map<?, ?> that = (Map<?, ?>) c;
             return filterAll(e -> that.containsKey(e.getKey())&&Objects.equals(e.getValue(),that.get(e.getKey())));
         } else {
             java.util.HashSet<Object> that = new HashSet<>();

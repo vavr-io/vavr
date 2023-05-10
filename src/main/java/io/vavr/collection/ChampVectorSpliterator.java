@@ -73,7 +73,8 @@ class ChampVectorSpliterator<K> extends Spliterators.AbstractSpliterator<K> {
      boolean moveNext() {
         boolean success = vector.moveNext();
         if (!success) return false;
-        if (vector.current() instanceof ChampTombstone t) {
+        if (vector.current() instanceof ChampTombstone) {
+            ChampTombstone t = (ChampTombstone) vector.current();
             vector.skip(t.after());
             vector.moveNext();
         }
