@@ -596,20 +596,20 @@ public final class LinkedHashSet<T>
     }
 
     private LinkedHashSet<T> addLast(T e, boolean moveToLast) {
-        var details = new ChampChangeEvent<ChampSequencedElement<T>>();
-        var newElem = new ChampSequencedElement<T>(e, vector.size() - offset);
-        var newRoot = put(null, newElem,
+        ChampChangeEvent<ChampSequencedElement<T>> details = new ChampChangeEvent<ChampSequencedElement<T>>();
+        ChampSequencedElement<T> newElem = new ChampSequencedElement<T>(e, vector.size() - offset);
+        ChampBitmapIndexedNode<ChampSequencedElement<T>> newRoot = put(null, newElem,
                 Objects.hashCode(e), 0, details,
                 moveToLast ? ChampSequencedElement::updateAndMoveToLast : ChampSequencedElement::update,
                 Objects::equals, Objects::hashCode);
         if (details.isModified()) {
-            var newVector = vector;
+            Vector<Object> newVector = vector;
             int newOffset = offset;
             int newSize = size;
             if (details.isReplaced()) {
                 if (moveToLast) {
-                    var oldElem = details.getOldData();
-                    var result = ChampSequencedData.vecRemove(newVector,  oldElem,  newOffset);
+                    ChampSequencedElement<T> oldElem = details.getOldData();
+                    Tuple2<Vector<Object>, Integer> result = ChampSequencedData.vecRemove(newVector,  oldElem,  newOffset);
                     newVector = result._1;
                     newOffset = result._2;
                 }
@@ -633,7 +633,7 @@ public final class LinkedHashSet<T>
     @SuppressWarnings("unchecked")
     @Override
     public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
-        var t = toTransient();
+        TransientLinkedHashSet<T> t = toTransient();
         t.addAll(elements);return t.toImmutable();
     }
 
@@ -702,7 +702,7 @@ public final class LinkedHashSet<T>
 
     @Override
     public LinkedHashSet<T> filter(Predicate<? super T> predicate) {
-       var t=toTransient();
+        TransientLinkedHashSet<T> t=toTransient();
        t.filterAll(predicate);
        return t.toImmutable();
     }
@@ -874,13 +874,13 @@ public final class LinkedHashSet<T>
     @Override
     public LinkedHashSet<T> remove(T element) {
         int keyHash = Objects.hashCode(element);
-        var details = new ChampChangeEvent<ChampSequencedElement<T>>();
+        ChampChangeEvent<ChampSequencedElement<T>> details = new ChampChangeEvent<ChampSequencedElement<T>>();
         ChampBitmapIndexedNode<ChampSequencedElement<T>> newRoot = remove(null,
                 new ChampSequencedElement<>(element),
                 keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
-            var removedElem = details.getOldDataNonNull();
-            var result = ChampSequencedData.vecRemove(vector, removedElem,  offset);
+            ChampSequencedElement<T> removedElem = details.getOldDataNonNull();
+            Tuple2<Vector<Object>, Integer> result = ChampSequencedData.vecRemove(vector, removedElem,  offset);
             return renumber(newRoot, result._1, size - 1,
                     result._2);
         }
@@ -889,7 +889,7 @@ public final class LinkedHashSet<T>
 
     @Override
     public LinkedHashSet<T> removeAll(Iterable<? extends T> elements) {
-        var t = toTransient();
+        TransientLinkedHashSet<T> t = toTransient();
          t.removeAll(elements) ;return t.toImmutable() ;
     }
 
@@ -908,8 +908,8 @@ public final class LinkedHashSet<T>
             int size, int offset) {
 
         if (ChampSequencedData.vecMustRenumber(size, offset, this.vector.size())) {
-            var owner = new ChampIdentityObject();
-            var result = ChampSequencedData.<ChampSequencedElement<T>>vecRenumber(
+            ChampIdentityObject owner = new ChampIdentityObject();
+            Tuple2<ChampBitmapIndexedNode<ChampSequencedElement<T>>, Vector<Object>> result = ChampSequencedData.<ChampSequencedElement<T>>vecRenumber(
                     size, root, vector, owner, Objects::hashCode, Objects::equals,
                     (e, seq) -> new ChampSequencedElement<>(e.getElement(), seq));
             return new LinkedHashSet<>(
@@ -939,11 +939,11 @@ public final class LinkedHashSet<T>
 
         // currentElement was in the 'root' trie, and we have just removed it
         // => also remove its entry from the 'sequenceRoot' trie
-        var newVector = vector;
-        var newOffset = offset;
+        Vector<Object> newVector = vector;
+        int newOffset = offset;
         ChampSequencedElement<T> currentData = detailsCurrent.getOldData();
         int seq = currentData.getSequenceNumber();
-        var result = ChampSequencedData.vecRemove(newVector,  currentData, newOffset);
+        Tuple2<Vector<Object>, Integer> result = ChampSequencedData.vecRemove(newVector,  currentData, newOffset);
         newVector = result._1;
         newOffset = result._2;
 
@@ -985,7 +985,7 @@ public final class LinkedHashSet<T>
 
     @Override
     public LinkedHashSet<T> retainAll(Iterable<? extends T> elements) {
-        var t =toTransient();
+        TransientLinkedHashSet<T> t =toTransient();
         t.retainAll(elements);
         return t.toImmutable();
     }

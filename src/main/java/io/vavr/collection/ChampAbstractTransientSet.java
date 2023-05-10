@@ -71,12 +71,14 @@ abstract class ChampAbstractTransientSet<E,D> extends ChampAbstractTransientColl
         if (isEmpty()) {
             return false;
         }
-        if (c instanceof Collection<?> cc && cc.isEmpty()) {
+        if (c instanceof Collection<?> && ((Collection<?>) c).isEmpty()) {
+            Collection<?> cc = (Collection<?>) c;
             clear();
             return true;
         }
         Predicate<E> predicate;
-        if (c instanceof Collection<?> that) {
+        if (c instanceof Collection<?>) {
+            Collection<?> that = (Collection<?>) c;
             predicate = that::contains;
         } else {
             HashSet<Object> that = new HashSet<>();

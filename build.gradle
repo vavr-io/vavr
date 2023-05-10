@@ -49,7 +49,7 @@ ext.assertjVersion = '3.19.0'
 ext.junitVersion = '4.13.2'
 
 // JAVA_VERSION used for CI build matrix, may be provided as env variable
-def javaVersion = Integer.parseInt(System.getenv('JAVA_VERSION') ?: '17')
+def javaVersion = Integer.parseInt(System.getenv('JAVA_VERSION') ?: '8')
 
 sourceSets {
     jmh {

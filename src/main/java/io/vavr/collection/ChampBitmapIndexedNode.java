@@ -34,6 +34,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
+import static io.vavr.collection.ChampListHelper.arrayEquals;
 import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
 
 /**
@@ -164,9 +165,9 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
         int splitAt = dataArity();
         return nodeMap() == that.nodeMap()
                 && dataMap() == that.dataMap()
-                && Arrays.equals(mixed, 0, splitAt, thatNodes, 0, splitAt)
-                && Arrays.equals(mixed, splitAt, mixed.length, thatNodes, splitAt, thatNodes.length,
-                (a, b) -> ((ChampNode<D>) a).equivalent(b) ? 0 : 1);
+                && arrayEquals(mixed, 0, splitAt, thatNodes, 0, splitAt)
+                && arrayEquals(mixed, splitAt, mixed.length, thatNodes, splitAt, thatNodes.length,
+                (a, b) -> ((ChampNode<D>) a).equivalent(b) );
     }
 
 
@@ -353,14 +354,14 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
                                         BiPredicate<D, D> equalsFunction,
                                         ToIntFunction<D> hashFunction,
                                         ChampChangeEvent<D> details) {
-        var that = (ChampBitmapIndexedNode<D>) other;
+        ChampBitmapIndexedNode<D> that = (ChampBitmapIndexedNode<D>) other;
         if (this == that) {
             bulkChange.inBoth += this.calculateSize();
             return this;
         }
 
-        var newBitMap = nodeMap | dataMap | that.nodeMap | that.dataMap;
-        var buffer = new Object[Integer.bitCount(newBitMap)];
+        int newBitMap = nodeMap | dataMap | that.nodeMap | that.dataMap;
+        Object[] buffer = new Object[Integer.bitCount(newBitMap)];
         int newDataMap = this.dataMap | that.dataMap;
         int newNodeMap = this.nodeMap | that.nodeMap;
         for (int mapToDo = newBitMap; mapToDo != 0; mapToDo ^= Integer.lowestOneBit(mapToDo)) {
@@ -439,14 +440,14 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
     @Override
     
      ChampBitmapIndexedNode<D> removeAll( ChampIdentityObject owner, ChampNode<D> other, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
-        var that = (ChampBitmapIndexedNode<D>) other;
+        ChampBitmapIndexedNode<D> that = (ChampBitmapIndexedNode<D>) other;
         if (this == that) {
             bulkChange.inBoth += this.calculateSize();
             return this;
         }
 
-        var newBitMap = nodeMap | dataMap;
-        var buffer = new Object[Integer.bitCount(newBitMap)];
+        int newBitMap = nodeMap | dataMap;
+        Object[] buffer = new Object[Integer.bitCount(newBitMap)];
         int newDataMap = this.dataMap;
         int newNodeMap = this.nodeMap;
         for (int mapToDo = newBitMap; mapToDo != 0; mapToDo ^= Integer.lowestOneBit(mapToDo)) {
@@ -543,14 +544,14 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
     @Override
     
      ChampBitmapIndexedNode<D> retainAll(ChampIdentityObject owner, ChampNode<D> other, int shift,  ChampBulkChangeEvent bulkChange,  BiFunction<D, D, D> updateFunction,  BiPredicate<D, D> equalsFunction,  ToIntFunction<D> hashFunction,  ChampChangeEvent<D> details) {
-        var that = (ChampBitmapIndexedNode<D>) other;
+        ChampBitmapIndexedNode<D> that = (ChampBitmapIndexedNode<D>) other;
         if (this == that) {
             bulkChange.inBoth += this.calculateSize();
             return this;
         }
 
-        var newBitMap = nodeMap | dataMap;
-        var buffer = new Object[Integer.bitCount(newBitMap)];
+        int newBitMap = nodeMap | dataMap;
+        Object[] buffer = new Object[Integer.bitCount(newBitMap)];
         int newDataMap = this.dataMap;
         int newNodeMap = this.nodeMap;
         for (int mapToDo = newBitMap; mapToDo != 0; mapToDo ^= Integer.lowestOneBit(mapToDo)) {
@@ -630,8 +631,8 @@ import static io.vavr.collection.ChampNodeFactory.newBitmapIndexedNode;
 
     @Override
      ChampBitmapIndexedNode<D> filterAll(ChampIdentityObject owner, Predicate<? super D> predicate, int shift, ChampBulkChangeEvent bulkChange) {
-        var newBitMap = nodeMap | dataMap;
-        var buffer = new Object[Integer.bitCount(newBitMap)];
+        int newBitMap = nodeMap | dataMap;
+        Object[] buffer = new Object[Integer.bitCount(newBitMap)];
         int newDataMap = this.dataMap;
         int newNodeMap = this.nodeMap;
         for (int mapToDo = newBitMap; mapToDo != 0; mapToDo ^= Integer.lowestOneBit(mapToDo)) {

@@ -854,7 +854,8 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
 
     @SuppressWarnings("unchecked")
     private HashMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> c) {
-        if (isEmpty()&&c instanceof HashMap<?,?> that){
+        if (isEmpty()&& c instanceof HashMap<?, ?>){
+            HashMap<?, ?> that = (HashMap<?, ?>) c;
             return (HashMap<K, V>)that;
         }
         TransientHashMap<K,V> t=toTransient();
@@ -1080,8 +1081,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         return Objects.equals(oldv.getValue(), newv.getValue()) ? oldv : newv;
     }
 
-    @Serial
-    private Object writeReplace() throws ObjectStreamException {
+        private Object writeReplace() throws ObjectStreamException {
         return new SerializationProxy<>(this);
     }
 
@@ -1122,7 +1122,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeInt(map.size());
-            for (var e : map) {
+            for (Tuple2<K, V> e : map) {
                 s.writeObject(e._1);
                 s.writeObject(e._2);
             }
@@ -1143,7 +1143,7 @@ public final class HashMap<K, V> extends ChampBitmapIndexedNode<AbstractMap.Simp
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            var owner = new ChampIdentityObject();
+            ChampIdentityObject owner = new ChampIdentityObject();
             ChampBitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRoot = emptyNode();
             ChampChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampChangeEvent<>();
             int newSize = 0;

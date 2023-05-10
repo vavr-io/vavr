@@ -72,7 +72,7 @@ class TransientLinkedHashSet<E> extends ChampAbstractTransientSet<E,ChampSequenc
         owner = null;
         return isEmpty()
                 ? LinkedHashSet.empty()
-                : root instanceof LinkedHashSet<E> h ? h : new LinkedHashSet<>(root, vector, size, offset);
+                : root instanceof LinkedHashSet ? (LinkedHashSet<E>) root : new LinkedHashSet<>(root, vector, size, offset);
     }
 
     boolean add(E element) {
@@ -80,8 +80,8 @@ class TransientLinkedHashSet<E> extends ChampAbstractTransientSet<E,ChampSequenc
     }
 
     private boolean addLast(E e, boolean moveToLast) {
-        var details = new ChampChangeEvent<ChampSequencedElement<E>>();
-        var newElem = new ChampSequencedElement<E>(e, vector.size() - offset);
+        ChampChangeEvent<ChampSequencedElement<E>> details = new ChampChangeEvent<ChampSequencedElement<E>>();
+        ChampSequencedElement<E> newElem = new ChampSequencedElement<E>(e, vector.size() - offset);
         root = root.put(makeOwner(), newElem,
                 Objects.hashCode(e), 0, details,
                 moveToLast ? ChampSequencedElement::updateAndMoveToLast : ChampSequencedElement::update,
@@ -90,8 +90,8 @@ class TransientLinkedHashSet<E> extends ChampAbstractTransientSet<E,ChampSequenc
 
             if (details.isReplaced()) {
                 if (moveToLast) {
-                    var oldElem = details.getOldData();
-                    var result = vecRemove(vector,  oldElem,  offset);
+                    ChampSequencedElement<E> oldElem = details.getOldData();
+                    Tuple2<Vector<Object>, Integer> result = vecRemove(vector,  oldElem,  offset);
                     vector = result._1;
                     offset = result._2;
                 }
@@ -110,7 +110,8 @@ class TransientLinkedHashSet<E> extends ChampAbstractTransientSet<E,ChampSequenc
         if (c == root) {
             return false;
         }
-        if (isEmpty() && (c instanceof LinkedHashSet<?> cc)) {
+        if (isEmpty() && (c instanceof LinkedHashSet<?>)) {
+            LinkedHashSet<?> cc = (LinkedHashSet<?>) c;
             root = (ChampBitmapIndexedNode<ChampSequencedElement<E>>)(ChampBitmapIndexedNode<?>)  cc;
             size = cc.size;
             return true;
@@ -135,13 +136,13 @@ class TransientLinkedHashSet<E> extends ChampAbstractTransientSet<E,ChampSequenc
     @Override
     boolean remove(Object element) {
         int keyHash = Objects.hashCode(element);
-        var details = new ChampChangeEvent<ChampSequencedElement<E>>();
+        ChampChangeEvent<ChampSequencedElement<E>> details = new ChampChangeEvent<ChampSequencedElement<E>>();
         root = root.remove(makeOwner(),
                 new ChampSequencedElement<>((E)element),
                 keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
-            var removedElem = details.getOldDataNonNull();
-            var result = vecRemove(vector,  removedElem,  offset);
+            ChampSequencedElement<E> removedElem = details.getOldDataNonNull();
+            Tuple2<Vector<Object>, Integer> result = vecRemove(vector,  removedElem,  offset);
             vector=result._1;
             offset=result._2;
             size--;
@@ -155,8 +156,8 @@ class TransientLinkedHashSet<E> extends ChampAbstractTransientSet<E,ChampSequenc
 
     private void renumber() {
         if (ChampSequencedData.vecMustRenumber(size, offset, vector.size())) {
-            var owner = new ChampIdentityObject();
-            var result = ChampSequencedData.<ChampSequencedElement<E>>vecRenumber(
+            ChampIdentityObject owner = new ChampIdentityObject();
+            Tuple2<ChampBitmapIndexedNode<ChampSequencedElement<E>>, Vector<Object>> result = ChampSequencedData.<ChampSequencedElement<E>>vecRenumber(
                     size, root, vector, owner, Objects::hashCode, Objects::equals,
                     (e, seq) -> new ChampSequencedElement<>(e.getElement(), seq));
             root = result._1;

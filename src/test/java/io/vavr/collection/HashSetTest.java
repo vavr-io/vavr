@@ -342,7 +342,7 @@ public class HashSetTest extends AbstractSetTest {
     @Override
     public void shouldGetInitOfNonNil() {
         // XXX The test in the super-class is in error. Since HashSet is not ordered, we must accept any of (1,2),(2,3),(1,3) here.
-        var actual = of(1, 2, 3).initOption();
+        Option<HashSet<Integer>> actual = of(1, 2, 3).initOption();
         assertTrue(actual.equals(Option.some(of(1, 2)))
                 || actual.equals(Option.some(of(2, 3)))
                 || actual.equals(Option.some(of(1, 3))));
