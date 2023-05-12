@@ -540,7 +540,7 @@ public class ChampTrie {
          Object find(D key, int dataHash, int shift,  BiPredicate<D, D> equalsFunction) {
             int bitpos = bitpos(mask(dataHash, shift));
             if ((nodeMap & bitpos) != 0) {
-                return nodeAt(bitpos).find(key, dataHash, shift + BIT_PARTITION_SIZE, equalsFunction);
+                return getNode(nodeIndex(bitpos)).find(key, dataHash, shift + BIT_PARTITION_SIZE, equalsFunction);
             }
             if ((dataMap & bitpos) != 0) {
                 D k = getData(dataIndex(bitpos));
@@ -584,17 +584,6 @@ public class ChampTrie {
         @Override
         int nodeArity() {
             return Integer.bitCount(nodeMap);
-        }
-
-        @SuppressWarnings("unchecked")
-        Node<D> nodeAt(int bitpos) {
-            return (Node<D>) mixed[mixed.length - 1 - nodeIndex(bitpos)];
-        }
-
-        @SuppressWarnings("unchecked")
-
-        D dataAt(int bitpos) {
-            return (D) mixed[dataIndex(bitpos)];
         }
 
         int nodeIndex(int bitpos) {
@@ -643,7 +632,7 @@ public class ChampTrie {
         private BitmapIndexedNode<D> removeSubNode(IdentityObject owner, D data, int dataHash, int shift,
                                                    ChangeEvent<D> details,
                                                    int bitpos, BiPredicate<D, D> equalsFunction) {
-            Node<D> subNode = nodeAt(bitpos);
+            Node<D> subNode = getNode(nodeIndex(bitpos));
             Node<D> updatedSubNode =
                     subNode.remove(owner, data, dataHash, shift + BIT_PARTITION_SIZE, details, equalsFunction);
             if (subNode == updatedSubNode) {
@@ -687,7 +676,7 @@ public class ChampTrie {
                 details.setAdded(newData);
                 return copyAndMigrateFromDataToNode(owner, bitpos, updatedSubNode);
             } else if ((nodeMap & bitpos) != 0) {
-                Node<D> subNode = nodeAt(bitpos);
+                Node<D> subNode = getNode(nodeIndex(bitpos));
                 Node<D> updatedSubNode = subNode
                         .put(owner, newData, dataHash, shift + BIT_PARTITION_SIZE, details, updateFunction, equalsFunction, hashFunction);
                 return subNode == updatedSubNode ? this : copyAndSetNode(owner, bitpos, updatedSubNode);

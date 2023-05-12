@@ -173,9 +173,9 @@ class ChampIteration {
                         stack.pop();
                     }
                     if ((bin.nodeMap() & bitpos) != 0) {
-                        stack.push(new StackElement<>(bin.nodeAt(bitpos)));
+                        stack.push(new StackElement<>(bin.getNode(bin.nodeIndex(bitpos))));
                     } else {
-                        current = bin.dataAt(bitpos);
+                        current = bin.getData(bin.dataIndex(bitpos));
                         return true;
                     }
                 }
