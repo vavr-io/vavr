@@ -105,14 +105,7 @@ class ChampIteration {
     }
 
     /**
-     * Key iterator over a CHAMP trie.
-     * <p>
-     * Uses a stack with a fixed maximal depth.
-     * Iterates over keys in preorder sequence.
-     * <p>
-     * Supports the {@code remove} operation. The remove function must
-     * create a new version of the trie, so that iterator does not have
-     * to deal with structural changes of the trie.
+     * Data iterator over a CHAMP trie.
      * <p>
      * XXX This iterator carefully replicates the iteration sequence of the original HAMT-based
      * HashSet class. We can not use a more performant implementation, because HashSetTest
