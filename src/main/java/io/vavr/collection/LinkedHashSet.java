@@ -113,23 +113,19 @@ import static io.vavr.collection.ChampSequenced.ChampSequencedData.vecRemove;
  * <p>
  * References:
  * <p>
- * Portions of the code in this class has been derived from 'vavr' Vector.java.
+ * Portions of the code in this class have been derived from JHotDraw8 'VectorSet.java'.
  * <p>
- * The design of this class is inspired by 'VectorMap.scala'.
+ * For a similar design, see 'VectorMap.scala'. Note, that this code is not a derivative
+ * of that code.
  * <dl>
- *      <dt>Michael J. Steindorfer (2017).
- *      Efficient Immutable Collections.</dt>
- *      <dd><a href="https://michael.steindorfer.name/publications/phd-thesis-efficient-immutable-collections">michael.steindorfer.name</a>
- *      </dd>
- *      <dt>The Capsule Hash Trie Collections Library.
- *      <br>Copyright (c) Michael Steindorfer. <a href="https://github.com/usethesource/capsule/blob/3856cd65fa4735c94bcfa94ec9ecf408429b54f4/LICENSE">BSD-2-Clause License</a></dt>
- *      <dd><a href="https://github.com/usethesource/capsule">github.com</a>
- *      </dd>
- *      <dt>VectorMap.scala
- *      <br>The Scala library. Copyright EPFL and Lightbend, Inc. Apache License 2.0.</dt>
- *      <dd><a href="https://github.com/scala/scala/blob/28eef15f3cc46f6d3dd1884e94329d7601dc20ee/src/library/scala/collection/immutable/VectorMap.scala">github.com</a>
- *      </dd>
+ *     <dt>JHotDraw 8. VectorSet.java. Copyright © 2023 The authors and contributors of JHotDraw.
+ *     <a href="https://github.com/wrandelshofer/jhotdraw8/blob/8c1a98b70bc23a0c63f1886334d5b568ada36944/LICENSE">MIT License</a>.</dt>
+ *     <dd><a href="https://github.com/wrandelshofer/jhotdraw8">github.com</a></dd>
+ *     <dt>The Scala library. VectorMap.scala. Copyright EPFL and Lightbend, Inc. Apache License 2.0.</dt>
+ *     <dd><a href="https://github.com/scala/scala/blob/28eef15f3cc46f6d3dd1884e94329d7601dc20ee/src/library/scala/collection/immutable/VectorMap.scala">github.com</a>
+ *     </dd>
  * </dl>
+
  *
  * @param <T> the element type
  */
