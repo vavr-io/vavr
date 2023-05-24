@@ -38,6 +38,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class HashSetTest extends AbstractSetTest {
@@ -399,7 +400,7 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldBeEqual() {
-        assertTrue(HashSet.of(1).equals(HashSet.of(1)));
+        assertEquals(HashSet.of(1), HashSet.of(1));
     }
 
     //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class

@@ -79,7 +79,7 @@ public class FutureTest extends AbstractValueTest {
             printInfo("[FINISHED]", desc);
         }
         private void printInfo(String prefix, Description desc) {
-            System.out.println(String.format("%s %s %s", prefix, LocalDateTime.now(), desc.getDisplayName()));
+            System.out.printf("%s %s %s%n", prefix, LocalDateTime.now(), desc.getDisplayName());
         }
         private void printForkJoinPoolInfo() {
             final ForkJoinPool pool = ForkJoinPool.commonPool();
@@ -464,7 +464,7 @@ public class FutureTest extends AbstractValueTest {
 
     @Test(expected = NoSuchElementException.class)
     public void shouldFailReduceEmptySequence() {
-        Future.<Integer> reduce(List.empty(), (i1, i2) -> i1 + i2);
+        Future.reduce(List.empty(), Integer::sum);
     }
 
     @Test
@@ -480,7 +480,7 @@ public class FutureTest extends AbstractValueTest {
     public void shouldReduceWithErrorIfSequenceOfFuturesContainsOneError() {
         final Future<Integer> future = Future.reduce(
                 List.of(Future.of(zZz(13)), Future.of(zZz(new Error()))),
-                (i1, i2) -> i1 + i2
+                Integer::sum
         ).await();
         assertFailed(future, Error.class);
     }
@@ -685,21 +685,21 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldFoldEmptyIterable() {
         final Seq<Future<Integer>> futures = Stream.empty();
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
+        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
         assertThat(testee.getValue().get()).isEqualTo(Try.success(0));
     }
 
     @Test
     public void shouldFoldNonEmptyIterableOfSucceedingFutures() {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(zZz(i))).take(5);
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
+        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
         assertThat(testee.getValue().get()).isEqualTo(Try.success(15));
     }
 
     @Test
     public void shouldFoldNonEmptyIterableOfFailingFutures() {
-        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer> of(zZz(new Error()))).take(5);
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
+        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer> of(zZz(new Error())).await()).take(5);
+        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
         assertFailed(testee, Error.class);
     }
 
