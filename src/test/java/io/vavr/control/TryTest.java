@@ -35,8 +35,7 @@ import io.vavr.*;
 import io.vavr.collection.Seq;
 
 import org.assertj.core.api.Assertions;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.lang.reflect.Proxy;
@@ -47,6 +46,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TryTest extends AbstractValueTest {
 
@@ -82,9 +83,9 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Override
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldGetEmpty() {
-        empty().get();
+        assertThrows(NoSuchElementException.class, () -> empty().get());
     }
 
     // -- Try
@@ -154,10 +155,12 @@ public class TryTest extends AbstractValueTest {
         assertThat(Try.success(3).collect(pf).isFailure());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionOnNullCollectPartialFunction() {
-        final PartialFunction<Integer, String> pf = null;
-        Try.success(3).collect(pf);
+        assertThrows(NullPointerException.class, () -> {
+            final PartialFunction<Integer, String> pf = null;
+            Try.success(3).collect(pf);
+        });
     }
 
     // -- exists
@@ -177,11 +180,11 @@ public class TryTest extends AbstractValueTest {
         assertThat(failure().exists(e -> true)).isFalse();
     }
 
-    @Test(expected = Error.class)
+    @Test
     public void shouldNotHoldPropertyExistsWhenPredicateThrows() {
-        Try.success(1).exists(e -> {
+        assertThrows(Error.class, () -> Try.success(1).exists(e -> {
             throw new Error("error");
-        });
+        }));
     }
 
     // -- forall
@@ -201,11 +204,11 @@ public class TryTest extends AbstractValueTest {
         assertThat(failure().forAll(e -> true)).isTrue();
     }
 
-    @Test(expected = Error.class)
+    @Test
     public void shouldNotHoldPropertyForAllWhenPredicateThrows() {
-        Try.success(1).forAll(e -> {
+        assertThrows(Error.class, () -> Try.success(1).forAll(e -> {
             throw new Error("error");
-        });
+        }));
     }
 
     // -- orElse
@@ -625,14 +628,14 @@ public class TryTest extends AbstractValueTest {
 
     // -- Failure.Cause
 
-    @Test(expected = InterruptedException.class)
+    @Test
     public void shouldRethrowInterruptedException() {
-        Try.failure(new InterruptedException());
+        assertThrows(InterruptedException.class, () -> Try.failure(new InterruptedException()));
     }
 
-    @Test(expected = OutOfMemoryError.class)
+    @Test
     public void shouldRethrowOutOfMemoryError() {
-        Try.failure(new OutOfMemoryError());
+        assertThrows(OutOfMemoryError.class, () -> Try.failure(new OutOfMemoryError()));
     }
 
     @Test
@@ -712,11 +715,11 @@ public class TryTest extends AbstractValueTest {
         }).isFailure()).isTrue();
     }
 
-    @Test(expected = UnknownError.class)
+    @Test
     public void shouldPassThroughFatalException() {
-        Try.of(() -> {
+        assertThrows(UnknownError.class, () -> Try.of(() -> {
             throw new UnknownError();
-        });
+        }));
     }
 
     // -- isFailure
@@ -735,9 +738,9 @@ public class TryTest extends AbstractValueTest {
 
     // -- get
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowWhenGetOnFailure() {
-        failure().get();
+        assertThrows(RuntimeException.class, () -> failure().get());
     }
 
     @Test
@@ -767,9 +770,9 @@ public class TryTest extends AbstractValueTest {
 
     // -- getOrElseThrow
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldThrowOtherWhenGetOrElseThrowOnFailure() {
-        failure().getOrElseThrow(x -> new IllegalStateException(OK));
+        assertThrows(IllegalStateException.class, () -> failure().getOrElseThrow(x -> new IllegalStateException(OK)));
     }
 
     // -- orElseRun
@@ -935,9 +938,9 @@ public class TryTest extends AbstractValueTest {
 
     // -- transform
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenTransformationIsNull() {
-        Success(1).transform(null);
+        assertThrows(NullPointerException.class, () -> Success(1).transform(null));
     }
 
     @Test
@@ -1447,11 +1450,11 @@ public class TryTest extends AbstractValueTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldFilterWithExceptionOnSuccess() {
-        success().filter(s -> {
+        assertThrows(RuntimeException.class, () -> success().filter(s -> {
             throw new RuntimeException("xxx");
-        }).get();
+        }).get());
     }
 
     // -- filterNot
@@ -1490,11 +1493,11 @@ public class TryTest extends AbstractValueTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldFilterNotWithExceptionOnSuccess() {
-        success().filterNot(s -> {
+        assertThrows(RuntimeException.class, () -> success().filterNot(s -> {
             throw new RuntimeException("xxx");
-        }).get();
+        }).get());
     }
 
     @Test
@@ -1523,11 +1526,11 @@ public class TryTest extends AbstractValueTest {
         assertThat(success().flatMap(ignored -> failure)).isEqualTo(failure);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldFlatMapWithExceptionOnSuccess() {
-        success().flatMap(s -> {
+        assertThrows(RuntimeException.class, () -> success().flatMap(s -> {
             throw new RuntimeException("xxx");
-        }).get();
+        }).get());
     }
 
     @Test
@@ -1556,9 +1559,9 @@ public class TryTest extends AbstractValueTest {
         assertThatThrownBy(testee::get).isInstanceOf(NoSuchElementException.class);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowWhenCallingGetCauseOnSuccess() {
-        success().getCause();
+        assertThrows(UnsupportedOperationException.class, () -> success().getCause());
     }
 
     @Test
@@ -1588,9 +1591,9 @@ public class TryTest extends AbstractValueTest {
         assertThat(list.isEmpty()).isFalse();
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldPeekSuccessAndThrow() {
-        success().peek(t -> failure().get());
+        assertThrows(RuntimeException.class, () -> success().peek(t -> failure().get()));
     }
 
     // equals
@@ -1658,7 +1661,7 @@ public class TryTest extends AbstractValueTest {
             assertThat(greaterThanZero.test(num)).isTrue();
             assertThat(greaterThanZero.negate().test(-num)).isTrue();
         } catch(Throwable x) {
-            Assert.fail("should not throw");
+            Assertions.fail("should not throw");
         }
     }
 

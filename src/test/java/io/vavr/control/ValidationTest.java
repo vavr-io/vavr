@@ -31,12 +31,14 @@ import io.vavr.collection.CharSeq;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Traversable;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ValidationTest extends AbstractValueTest {
 
@@ -137,9 +139,9 @@ public class ValidationTest extends AbstractValueTest {
 
     // -- Validation.sequence
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenSequencingNull() {
-        Validation.sequence(null);
+        assertThrows(NullPointerException.class, () -> Validation.sequence(null));
     }
 
     @Test
@@ -164,9 +166,9 @@ public class ValidationTest extends AbstractValueTest {
 
     // -- Validation.all
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenAllCombiningNull() {
-        Validation.all((Traversable<? extends Validation<?, ?>>) null);
+        assertThrows(NullPointerException.class, () -> Validation.all((Traversable<? extends Validation<?, ?>>) null));
     }
 
     @Test
@@ -189,9 +191,9 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(Validation.invalid(List.of("error1", "error2")));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenAllCombiningVargNull() {
-        Validation.all((Validation<?, ?>) null);
+        assertThrows(NullPointerException.class, () -> Validation.all((Validation<?, ?>) null));
     }
 
     @Test
@@ -216,9 +218,9 @@ public class ValidationTest extends AbstractValueTest {
 
     // -- Validation.traverse
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenTraversingNull() {
-        Validation.traverse(null, null);
+        assertThrows(NullPointerException.class, () -> Validation.traverse(null, null));
     }
 
     @Test
@@ -370,19 +372,19 @@ public class ValidationTest extends AbstractValueTest {
       assertThat(actual).isEqualTo(1);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowWhenGetOrElseThrowWithFunctionOnInvalid() {
-      Validation.<String, Integer> invalid("some error").getOrElseThrow(s -> new RuntimeException(s));
+        assertThrows(RuntimeException.class, () -> Validation.<String, Integer>invalid("some error").getOrElseThrow(s -> new RuntimeException(s)));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerExceptionWhenGetOrElseThrowNullWithFunctionOnValid() {
-      Validation.<String, Integer> valid(1).getOrElseThrow((Function<? super String, RuntimeException>) null);
+        assertThrows(NullPointerException.class, () -> Validation.<String, Integer>valid(1).getOrElseThrow((Function<? super String, RuntimeException>) null));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNullPointerExceptionWhenGetOrElseThrowNullWithFunctionOnInvalid() {
-      Validation.<String, Integer> invalid("some error").getOrElseThrow((Function<? super String, RuntimeException>) null);
+        assertThrows(NullPointerException.class, () -> Validation.<String, Integer>invalid("some error").getOrElseThrow((Function<? super String, RuntimeException>) null));
     }
 
     // -- swap
@@ -411,9 +413,9 @@ public class ValidationTest extends AbstractValueTest {
         assertThat(invalid().map(s -> 2).getError()).isEqualTo(ERRORS);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldMapFailureErrorOnGet() {
-        assertThat(invalid().map(s -> 2).get()).isEqualTo(ERRORS);
+        assertThrows(RuntimeException.class, () -> assertThat(invalid().map(s -> 2).get()).isEqualTo(ERRORS));
     }
 
     // -- bimap
@@ -565,10 +567,12 @@ public class ValidationTest extends AbstractValueTest {
 
     // -- miscellaneous
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowErrorOnGetErrorValid() {
-        Validation<String, String> v1 = valid();
-        v1.getError();
+        assertThrows(RuntimeException.class, () -> {
+            Validation<String, String> v1 = valid();
+            v1.getError();
+        });
     }
 
     @Test
@@ -787,9 +791,9 @@ public class ValidationTest extends AbstractValueTest {
 
     // -- transform
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionOnNullTransformFunction() {
-        Validation.valid(1).transform(null);
+        assertThrows(NullPointerException.class, () -> Validation.valid(1).transform(null));
     }
 
     @Test

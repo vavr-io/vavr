@@ -30,7 +30,7 @@ import io.vavr.Function1;
 import io.vavr.collection.CharSeq;
 import io.vavr.collection.Stream;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Predicate;
 

@@ -33,7 +33,7 @@ import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
 import org.assertj.core.api.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -43,6 +43,7 @@ import java.util.function.Supplier;
 import static io.vavr.OutputTester.*;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CharSeqTest {
 
@@ -534,14 +535,14 @@ public class CharSeqTest {
 
     // step == 0
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitCharRangeByStepZero() {
-        CharSeq.rangeBy('a', 'b', 0);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.rangeBy('a', 'b', 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitCharRangeClosedByStepZero() {
-        CharSeq.rangeClosedBy('a', 'b', 0);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.rangeClosedBy('a', 'b', 0));
     }
 
     // -- average
@@ -551,9 +552,9 @@ public class CharSeqTest {
         assertThat(CharSeq.empty().average()).isEqualTo(Option.none());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowWhenComputingAverageOfStrings() {
-        CharSeq.of('a', 'b', 'c').average();
+        assertThrows(UnsupportedOperationException.class, () -> CharSeq.of('a', 'b', 'c').average());
     }
 
     // -- contains
@@ -941,9 +942,9 @@ public class CharSeqTest {
         assertThat(CharSeq.empty().fold('0', (a, b) -> b)).isEqualTo('0');
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenFoldNullOperator() {
-        CharSeq.empty().fold(null, null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().fold(null, null));
     }
 
     @Test
@@ -958,9 +959,9 @@ public class CharSeqTest {
         assertThat(CharSeq.empty().foldLeft("", (xs, x) -> xs + x)).isEqualTo("");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenFoldLeftNullOperator() {
-        CharSeq.empty().foldLeft(null, null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().foldLeft(null, null));
     }
 
     @Test
@@ -975,9 +976,9 @@ public class CharSeqTest {
         assertThat(CharSeq.empty().foldRight("", (x, xs) -> x + xs)).isEqualTo("");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenFoldRightNullOperator() {
-        CharSeq.empty().foldRight(null, null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().foldRight(null, null));
     }
 
     @Test
@@ -987,9 +988,9 @@ public class CharSeqTest {
 
     // -- head
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowWhenHeadOnNil() {
-        CharSeq.empty().head();
+        assertThrows(NoSuchElementException.class, () -> CharSeq.empty().head());
     }
 
     @Test
@@ -1039,9 +1040,9 @@ public class CharSeqTest {
 
     // -- init
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowWhenInitOfNil() {
-        CharSeq.empty().init();
+        assertThrows(UnsupportedOperationException.class, () -> CharSeq.empty().init());
     }
 
     @Test
@@ -1096,9 +1097,9 @@ public class CharSeqTest {
         assertThat(CharSeq.empty().iterator().hasNext()).isFalse();
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowOnNextWhenNilIterator() {
-        CharSeq.empty().iterator().next();
+        assertThrows(NoSuchElementException.class, () -> CharSeq.empty().iterator().next());
     }
 
     @Test
@@ -1155,9 +1156,9 @@ public class CharSeqTest {
 
     // -- last
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowWhenLastOnNil() {
-        CharSeq.empty().last();
+        assertThrows(NoSuchElementException.class, () -> CharSeq.empty().last());
     }
 
     @Test
@@ -1222,9 +1223,9 @@ public class CharSeqTest {
 
     // -- partition
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenPartitionNilAndPredicateIsNull() {
-        CharSeq.empty().partition(null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().partition(null));
     }
 
     @Test
@@ -1275,9 +1276,9 @@ public class CharSeqTest {
 
     // -- maxBy(Comparator)
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenMaxByWithNullComparator() {
-        CharSeq.of('1').maxBy((Comparator<Character>) null);
+        assertThrows(NullPointerException.class, () -> CharSeq.of('1').maxBy((Comparator<Character>) null));
     }
 
     @Test
@@ -1297,9 +1298,9 @@ public class CharSeqTest {
 
     // -- maxBy(Function)
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenMaxByWithNullFunction() {
-        CharSeq.of('1').maxBy((Function<Character, Character>) null);
+        assertThrows(NullPointerException.class, () -> CharSeq.of('1').maxBy((Function<Character, Character>) null));
     }
 
     @Test
@@ -1331,9 +1332,9 @@ public class CharSeqTest {
 
     // -- minBy(Comparator)
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenMinByWithNullComparator() {
-        CharSeq.of('1').minBy((Comparator<Character>) null);
+        assertThrows(NullPointerException.class, () -> CharSeq.of('1').minBy((Comparator<Character>) null));
     }
 
     @Test
@@ -1353,9 +1354,9 @@ public class CharSeqTest {
 
     // -- minBy(Function)
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenMinByWithNullFunction() {
-        CharSeq.of('1').minBy((Function<Character, Character>) null);
+        assertThrows(NullPointerException.class, () -> CharSeq.of('1').minBy((Function<Character, Character>) null));
     }
 
     @Test
@@ -1390,21 +1391,21 @@ public class CharSeqTest {
         assertThat(CharSeq.empty().product()).isEqualTo(1);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowWhenComputingProductOfStrings() {
-        CharSeq.of('1', '2', '3').product();
+        assertThrows(UnsupportedOperationException.class, () -> CharSeq.of('1', '2', '3').product());
     }
 
     // -- reduce
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowWhenReduceNil() {
-        CharSeq.empty().reduce((a, b) -> a);
+        assertThrows(NoSuchElementException.class, () -> CharSeq.empty().reduce((a, b) -> a));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenReduceNullOperator() {
-        CharSeq.empty().reduce(null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().reduce(null));
     }
 
     @Test
@@ -1414,14 +1415,14 @@ public class CharSeqTest {
 
     // -- reduceLeft
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowWhenReduceLeftNil() {
-        CharSeq.empty().reduceLeft((a, b) -> a);
+        assertThrows(NoSuchElementException.class, () -> CharSeq.empty().reduceLeft((a, b) -> a));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenReduceLeftNullOperator() {
-        CharSeq.empty().reduceLeft(null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().reduceLeft(null));
     }
 
     @Test
@@ -1431,14 +1432,14 @@ public class CharSeqTest {
 
     // -- reduceRight
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowWhenReduceRightNil() {
-        CharSeq.empty().reduceRight((a, b) -> a);
+        assertThrows(NoSuchElementException.class, () -> CharSeq.empty().reduceRight((a, b) -> a));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenReduceRightNullOperator() {
-        CharSeq.empty().reduceRight(null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().reduceRight(null));
     }
 
     @Test
@@ -1599,24 +1600,24 @@ public class CharSeqTest {
 
     // -- sliding(size)
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenSlidingNilByZeroSize() {
-        CharSeq.empty().sliding(0);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.empty().sliding(0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenSlidingNilByNegativeSize() {
-        CharSeq.empty().sliding(-1);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.empty().sliding(-1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenSlidingNonNilByZeroSize() {
-        CharSeq.of('1').sliding(0);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.of('1').sliding(0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenSlidingNonNilByNegativeSize() {
-        CharSeq.of('1').sliding(-1);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.of('1').sliding(-1));
     }
 
     @Test
@@ -1772,9 +1773,9 @@ public class CharSeqTest {
                 "3\n");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldHandleStderrIOException() {
-        withFailingErrOut(()->CharSeq.of('0').stderr());
+        assertThrows(IllegalStateException.class, () -> withFailingErrOut(()->CharSeq.of('0').stderr()));
     }
 
     // -- stdout
@@ -1786,9 +1787,9 @@ public class CharSeqTest {
                 "3\n");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldHandleStdoutIOException() {
-        withFailingStdOut(()->CharSeq.of('0').stdout());
+        assertThrows(IllegalStateException.class, () -> withFailingStdOut(()->CharSeq.of('0').stdout()));
     }
 
     // -- sum
@@ -1798,9 +1799,9 @@ public class CharSeqTest {
         assertThat(CharSeq.empty().sum()).isEqualTo(0);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowWhenComputingSumOfStrings() {
-        CharSeq.of('1', '2', '3').sum();
+        assertThrows(UnsupportedOperationException.class, () -> CharSeq.of('1', '2', '3').sum());
     }
 
     // -- tabulate
@@ -1974,9 +1975,9 @@ public class CharSeqTest {
 
     // -- tail
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowWhenTailOnNil() {
-        CharSeq.empty().tail();
+        assertThrows(UnsupportedOperationException.class, () -> CharSeq.empty().tail());
     }
 
     @Test
@@ -2212,9 +2213,9 @@ public class CharSeqTest {
 
     // -- appendAll
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowOnAppendAllOfNull() {
-        CharSeq.empty().appendAll(null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().appendAll(null));
     }
 
     @Test
@@ -2365,31 +2366,31 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCalculatingCrossProductAndThatIsNull() {
-        CharSeq.empty().crossProduct(null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().crossProduct(null));
     }
 
     // -- get
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenGetWithNegativeIndexOnNil() {
-        CharSeq.empty().get(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().get(-1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenGetWithNegativeIndexOnNonNil() {
-        CharSeq.of('1').get(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1').get(-1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenGetOnNil() {
-        CharSeq.empty().get(0);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().get(0));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenGetWithTooBigIndexOnNonNil() {
-        CharSeq.of('1').get(1);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1').get(1));
     }
 
     @Test
@@ -2473,14 +2474,14 @@ public class CharSeqTest {
         assertThat(CharSeq.empty().grouped(1).isEmpty()).isTrue();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenGroupedWithSizeZero() {
-        CharSeq.empty().grouped(0);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.empty().grouped(0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenGroupedWithNegativeSize() {
-        CharSeq.empty().grouped(-1);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.empty().grouped(-1));
     }
 
     @Test
@@ -2688,19 +2689,19 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenInsertOnNonNilWithNegativeIndex() {
-        CharSeq.of('1').insert(-1, null);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1').insert(-1, null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenInsertOnNilWithNegativeIndex() {
-        CharSeq.empty().insert(-1, null);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().insert(-1, null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnInsertWhenExceedingUpperBound() {
-        CharSeq.empty().insert(1, null);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().insert(1, null));
     }
 
     @Test
@@ -2738,24 +2739,24 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowOnInsertAllWithNil() {
-        CharSeq.empty().insertAll(0, null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().insertAll(0, null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenInsertOnNonNilAllWithNegativeIndex() {
-        CharSeq.of('1').insertAll(-1, CharSeq.empty());
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1').insertAll(-1, CharSeq.empty()));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenInsertOnNilAllWithNegativeIndex() {
-        CharSeq.empty().insertAll(-1, CharSeq.empty());
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().insertAll(-1, CharSeq.empty()));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnInsertAllWhenExceedingUpperBound() {
-        CharSeq.empty().insertAll(1, CharSeq.empty());
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().insertAll(1, CharSeq.empty()));
     }
 
     @Test
@@ -2787,9 +2788,9 @@ public class CharSeqTest {
 
     // -- iterator(int)
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenNilIteratorStartingAtIndex() {
-        CharSeq.empty().iterator(1);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().iterator(1));
     }
 
     @Test
@@ -2829,9 +2830,9 @@ public class CharSeqTest {
 
     // -- prependAll
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowOnPrependAllOfNull() {
-        CharSeq.empty().prependAll(null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().prependAll(null));
     }
 
     @Test
@@ -3139,29 +3140,29 @@ public class CharSeqTest {
 
     // -- update
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdateWithNegativeIndexOnNil() {
-        CharSeq.empty().update(-1, (Character) null);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().update(-1, (Character) null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdateWithNegativeIndexOnNonNil() {
-        CharSeq.of('1').update(-1, '2');
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1').update(-1, '2'));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdateOnNil() {
-        CharSeq.empty().update(0, (Character) null);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().update(0, (Character) null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdateWithIndexExceedingByOneOnNonNil() {
-        CharSeq.of('1').update(1, '2');
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1').update(1, '2'));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdateWithIndexExceedingByTwoOnNonNil() {
-        CharSeq.of('1').update(2, '2');
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1').update(2, '2'));
     }
 
     @Test
@@ -3337,9 +3338,9 @@ public class CharSeqTest {
 
     // -- removeAt(index)
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldRemoveIndexAtNil() {
-        CharSeq.empty().removeAt(1);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().removeAt(1));
     }
 
     @Test
@@ -3362,14 +3363,14 @@ public class CharSeqTest {
         assertThat(CharSeq.of('1', '2', '3').removeAt(2)).isEqualTo(CharSeq.of('1', '2'));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldRemoveIndxOutOfBoundsLeft() {
-        assertThat(CharSeq.of('1', '2', '3').removeAt(-1)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThrows(IndexOutOfBoundsException.class, () -> assertThat(CharSeq.of('1', '2', '3').removeAt(-1)).isEqualTo(CharSeq.of('1', '2', '3')));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldRemoveIndxOutOfBoundsRight() {
-        assertThat(CharSeq.of('1', '2', '3').removeAt(5)).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThrows(IndexOutOfBoundsException.class, () -> assertThat(CharSeq.of('1', '2', '3').removeAt(5)).isEqualTo(CharSeq.of('1', '2', '3')));
     }
 
     // -- repeat
@@ -3465,19 +3466,19 @@ public class CharSeqTest {
         assertThat(actual).isSameAs(CharSeq.empty());
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSubSequenceOnNil() {
-        CharSeq.empty().subSequence(1);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().subSequence(1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSubSequenceWithOutOfLowerBound() {
-        CharSeq.of('1', '2', '3').subSequence(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1', '2', '3').subSequence(-1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSubSequenceWithOutOfUpperBound() {
-        CharSeq.of('1', '2', '3').subSequence(4);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1', '2', '3').subSequence(4));
     }
 
     // -- subSequence(beginIndex, endIndex)
@@ -3518,34 +3519,34 @@ public class CharSeqTest {
         assertThat(actual).isSameAs(CharSeq.empty());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
-        CharSeq.of('1', '2', '3').subSequence(1, 0);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.of('1', '2', '3').subSequence(1, 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowOnSubSequenceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
-        CharSeq.empty().subSequence(1, 0);
+        assertThrows(IllegalArgumentException.class, () -> CharSeq.empty().subSequence(1, 0));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        CharSeq.of('1', '2', '3').subSequence(-1, 2);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1', '2', '3').subSequence(-1, 2));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSubSequenceOnNilWhenBeginIndexExceedsLowerBound() {
-        CharSeq.empty().subSequence(-1, 2);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().subSequence(-1, 2));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSubSequence2OnNil() {
-        CharSeq.empty().subSequence(0, 1);
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.empty().subSequence(0, 1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSubSequenceWhenEndIndexExceedsUpperBound() {
-        CharSeq.of('1', '2', '3').subSequence(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
+        assertThrows(IndexOutOfBoundsException.class, () -> CharSeq.of('1', '2', '3').subSequence(1, 4).mkString()); // force computation of last element, e.g. because Stream is lazy
     }
 
     // -- zip
@@ -3589,9 +3590,9 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowIfZipWithThatIsNull() {
-        CharSeq.empty().zip(null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().zip(null));
     }
 
     // -- zipAll
@@ -3637,9 +3638,9 @@ public class CharSeqTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowIfZipAllWithThatIsNull() {
-        CharSeq.empty().zipAll(null, null, null);
+        assertThrows(NullPointerException.class, () -> CharSeq.empty().zipAll(null, null, null));
     }
 
     // -- zipWithIndex
@@ -3781,9 +3782,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").decodeByte()).isEqualTo(Byte.decode("1"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotDecodeByteGivenEmptyCharSeq() {
-        CharSeq.empty().decodeByte();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().decodeByte());
     }
 
     @Test
@@ -3791,9 +3792,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").decodeInteger()).isEqualTo(Integer.decode("1"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotDecodeIntegerGivenEmptyCharSeq() {
-        CharSeq.empty().decodeInteger();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().decodeInteger());
     }
 
     @Test
@@ -3801,9 +3802,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").decodeLong()).isEqualTo(Long.decode("1"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotDecodeLongGivenEmptyCharSeq() {
-        CharSeq.empty().decodeLong();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().decodeLong());
     }
 
     @Test
@@ -3811,9 +3812,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").decodeShort()).isEqualTo(Short.decode("1"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotDecodeShortGivenEmptyCharSeq() {
-        CharSeq.empty().decodeShort();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().decodeShort());
     }
 
     // parse*
@@ -3833,9 +3834,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").parseByte()).isEqualTo((byte) 1);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseByteGivenEmptyCharSeq() {
-        CharSeq.empty().parseByte();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseByte());
     }
 
     @Test
@@ -3843,9 +3844,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("11").parseByte(2)).isEqualTo((byte) 3);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseByteUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().parseByte(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseByte(2));
     }
 
     @Test
@@ -3853,9 +3854,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1.0").parseDouble()).isEqualTo(1.0d);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseDoubleGivenEmptyCharSeq() {
-        CharSeq.empty().parseDouble();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseDouble());
     }
 
     @Test
@@ -3863,9 +3864,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1.0").parseFloat()).isEqualTo(1.0f);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseFloatGivenEmptyCharSeq() {
-        CharSeq.empty().parseFloat();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseFloat());
     }
 
     @Test
@@ -3873,9 +3874,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").parseInt()).isEqualTo(1);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseIntGivenEmptyCharSeq() {
-        CharSeq.empty().parseInt();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseInt());
     }
 
     @Test
@@ -3883,9 +3884,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("11").parseInt(2)).isEqualTo(3);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseIntUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().parseInt(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseInt(2));
     }
 
     @Test
@@ -3893,14 +3894,14 @@ public class CharSeqTest {
         assertThat(CharSeq.of("+1").parseUnsignedInt()).isEqualTo(1);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseUnsignedIntGivenNegativeNumber() {
-        CharSeq.of("-1").parseUnsignedInt();
+        assertThrows(NumberFormatException.class, () -> CharSeq.of("-1").parseUnsignedInt());
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseUnsignedIntGivenEmptyCharSeq() {
-        CharSeq.empty().parseUnsignedInt();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseUnsignedInt());
     }
 
     @Test
@@ -3908,14 +3909,14 @@ public class CharSeqTest {
         assertThat(CharSeq.of("+11").parseUnsignedInt(2)).isEqualTo(3);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseUnsignedIntUsingRadixGivenNegativeNumber() {
-        CharSeq.of("-1").parseUnsignedInt(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.of("-1").parseUnsignedInt(2));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseUnsignedIntUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().parseUnsignedInt(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseUnsignedInt(2));
     }
 
     @Test
@@ -3923,9 +3924,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").parseLong()).isEqualTo(1L);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseLongGivenEmptyCharSeq() {
-        CharSeq.empty().parseLong();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseLong());
     }
 
     @Test
@@ -3933,9 +3934,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("11").parseLong(2)).isEqualTo(3L);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseLongUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().parseLong(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseLong(2));
     }
 
     @Test
@@ -3943,14 +3944,14 @@ public class CharSeqTest {
         assertThat(CharSeq.of("+1").parseUnsignedLong()).isEqualTo(1);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseUnsignedLongGivenNegativeNumber() {
-        CharSeq.of("-1").parseUnsignedLong();
+        assertThrows(NumberFormatException.class, () -> CharSeq.of("-1").parseUnsignedLong());
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseUnsignedLongGivenEmptyCharSeq() {
-        CharSeq.empty().parseUnsignedLong();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseUnsignedLong());
     }
 
     @Test
@@ -3958,14 +3959,14 @@ public class CharSeqTest {
         assertThat(CharSeq.of("+11").parseUnsignedLong(2)).isEqualTo(3);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseUnsignedLongUsingRadixGivenNegativeNumber() {
-        CharSeq.of("-1").parseUnsignedLong(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.of("-1").parseUnsignedLong(2));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseUnsignedLongUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().parseUnsignedLong(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseUnsignedLong(2));
     }
 
     @Test
@@ -3973,9 +3974,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").parseShort()).isEqualTo((short) 1);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseShortGivenEmptyCharSeq() {
-        CharSeq.empty().parseShort();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseShort());
     }
 
     @Test
@@ -3983,9 +3984,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("11").parseShort(2)).isEqualTo((short) 3);
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotParseShortUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().parseShort(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().parseShort(2));
     }
 
     // to*
@@ -4005,9 +4006,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").toByte()).isEqualTo(Byte.valueOf("1"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToByteGivenEmptyCharSeq() {
-        CharSeq.empty().toByte();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toByte());
     }
 
     @Test
@@ -4015,9 +4016,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("11").toByte(2)).isEqualTo(Byte.valueOf("11", 2));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToByteUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().toByte(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toByte(2));
     }
 
     @Test
@@ -4025,9 +4026,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1.0").toDouble()).isEqualTo(Double.valueOf("1.0"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToDoubleGivenEmptyCharSeq() {
-        CharSeq.empty().toDouble();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toDouble());
     }
 
     @Test
@@ -4035,9 +4036,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1.0").toFloat()).isEqualTo(Float.valueOf("1.0"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToFloatGivenEmptyCharSeq() {
-        CharSeq.empty().toFloat();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toFloat());
     }
 
     @Test
@@ -4045,9 +4046,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").toInteger()).isEqualTo(Integer.valueOf("1"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToIntegerGivenEmptyCharSeq() {
-        CharSeq.empty().toInteger();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toInteger());
     }
 
     @Test
@@ -4055,9 +4056,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("11").toInteger(2)).isEqualTo(Integer.valueOf("11", 2));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToIntegerUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().toInteger(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toInteger(2));
     }
 
     @Test
@@ -4065,9 +4066,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").toLong()).isEqualTo(Long.valueOf("1"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToLongGivenEmptyCharSeq() {
-        CharSeq.empty().toLong();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toLong());
     }
 
     @Test
@@ -4075,9 +4076,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("11").toLong(2)).isEqualTo(Long.valueOf("11", 2));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToLongUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().toLong(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toLong(2));
     }
 
     @Test
@@ -4085,9 +4086,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("1").toShort()).isEqualTo(Short.valueOf("1"));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToShortGivenEmptyCharSeq() {
-        CharSeq.empty().toShort();
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toShort());
     }
 
     @Test
@@ -4095,9 +4096,9 @@ public class CharSeqTest {
         assertThat(CharSeq.of("11").toShort(2)).isEqualTo(Short.valueOf("11", 2));
     }
 
-    @Test(expected = NumberFormatException.class)
+    @Test
     public void shouldNotConvertToShortUsingRadixGivenEmptyCharSeq() {
-        CharSeq.empty().toShort(2);
+        assertThrows(NumberFormatException.class, () -> CharSeq.empty().toShort(2));
     }
 
     @Test

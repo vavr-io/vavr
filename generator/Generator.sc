@@ -2627,7 +2627,7 @@ def generateTestClasses(): Unit = {
     genVavrFile("io.vavr", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-      val test = im.getType("org.junit.Test")
+      val test = im.getType("org.junit.jupiter.api.Test")
 
       val API = im.getType("io.vavr.API")
       val AssertionsExtensions = im.getType("io.vavr.AssertionsExtensions")
@@ -2844,7 +2844,7 @@ def generateTestClasses(): Unit = {
 
       def genShortcutsTests(im: ImportManager, packageName: String, className: String): String = {
 
-        val fail = im.getStatic("org.junit.Assert.fail")
+        val fail = im.getStatic("org.junit.jupiter.api.Assertions.fail")
         val captureStdOut = im.getStatic("io.vavr.OutputTester.captureStdOut")
 
         xs"""
@@ -3090,7 +3090,8 @@ def generateTestClasses(): Unit = {
         val functionArgs = (1 to i).gen(j => s"o$j")(", ")
         val generics = (1 to i + 1).gen(j => "Object")(", ")
 
-        val test = im.getType("org.junit.Test")
+        val test = im.getType("org.junit.jupiter.api.Test")
+        val assertThrows = im.getStatic("org.junit.jupiter.api.Assertions.assertThrows")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val recFuncF1 = if (i == 0) "11;" else s"i1 <= 0 ? i1 : $className.recurrent2.apply(${(1 to i).gen(j => s"i$j" + (j == 1).gen(s" - 1"))(", ")}) + 1;"
 
@@ -3315,11 +3316,13 @@ def generateTestClasses(): Unit = {
                       assertThat(md5.getDigestLength()).isEqualTo(16);
                   }
 
-                  @$test(expected = ${im.getType("java.security.NoSuchAlgorithmException")}.class)
+                  @$test
                   public void shouldThrowCheckedExceptionWhenUnchecked() {
-                      $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance("Unknown");
-                      Function$i<MessageDigest> unchecked = digest.unchecked();
-                      unchecked.apply(); // Look ma, we throw an undeclared checked exception!
+                      $assertThrows(${im.getType("java.security.NoSuchAlgorithmException")}.class, () -> {
+                          $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance("Unknown");
+                          Function$i<MessageDigest> unchecked = digest.unchecked();
+                          unchecked.apply(); // Look ma, we throw an undeclared checked exception!
+                      });
                   }
 
                   @$test
@@ -3381,10 +3384,12 @@ def generateTestClasses(): Unit = {
                           assertThat(md5.getDigestLength()).isEqualTo(16);
                       }
 
-                      @$test(expected = ${im.getType("java.security.NoSuchAlgorithmException")}.class)
+                      @$test
                       public void shouldUncheckedThrowIllegalState() {
-                          final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
-                          unchecked.apply(${toArgList("Unknown")}); // Look ma, we throw an undeclared checked exception!
+                          $assertThrows(${im.getType("java.security.NoSuchAlgorithmException")}.class, () -> {
+                              final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
+                              unchecked.apply(${toArgList("Unknown")}); // Look ma, we throw an undeclared checked exception!
+                          });
                       }
 
                       @$test
@@ -3464,7 +3469,7 @@ def generateTestClasses(): Unit = {
     def genAllArity(im: ImportManager,
                 mapName: String, mapBuilder: String,
                 builderComparator: Boolean, keyComparator: Boolean): String = {
-      val test = im.getType("org.junit.Test")
+      val test = im.getType("org.junit.jupiter.api.Test")
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
       val naturalComparator = if (builderComparator || keyComparator) im.getStatic(s"io.vavr.collection.Comparators.naturalComparator") else null
       val map = im.getType(s"io.vavr.collection.$mapName")
@@ -3523,7 +3528,7 @@ def generateTestClasses(): Unit = {
 
       genVavrFile("io.vavr", s"Tuple${i}Test", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
-        val test = im.getType("org.junit.Test")
+        val test = im.getType("org.junit.jupiter.api.Test")
         val seq = im.getType("io.vavr.collection.Seq")
         val list = im.getType("io.vavr.collection.List")
         val stream = if (i == 0) "" else im.getType("io.vavr.collection.Stream")

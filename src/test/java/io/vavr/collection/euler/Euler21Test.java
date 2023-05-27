@@ -29,7 +29,7 @@ package io.vavr.collection.euler;
 import io.vavr.Function1;
 import io.vavr.Tuple;
 import io.vavr.collection.Stream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 

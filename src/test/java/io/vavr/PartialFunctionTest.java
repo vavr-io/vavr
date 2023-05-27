@@ -28,7 +28,7 @@ package io.vavr;
 
 import io.vavr.collection.HashMap;
 import io.vavr.control.Option;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -28,8 +28,8 @@ package io.vavr.collection;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -361,9 +361,9 @@ public class TreeSetTest extends AbstractSortedSetTest {
         final Traversable<Tuple2<Integer, String>> expected = of(Tuple2.comparator(naturalComparator(), naturalComparator()), Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "z"));
         assertThat(actual).isEqualTo(expected);
     }
-    
+
     // -- removeAll
-    
+
     @Test
     public void shouldKeepComparatorOnRemoveAll() {
         final TreeSet<Integer> ts = TreeSet.of(naturalComparator()
@@ -482,20 +482,20 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void shouldCalculateAverageOfDoubleAndFloat() {
         // it is not possible to create a TreeSet containing unrelated types
     }
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void shouldZipAllEmptyAndNonNil() {
     }
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void shouldZipAllNonEmptyAndNil() {
     }
 }

@@ -30,7 +30,7 @@ import io.vavr.Function1;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.*;
 import static org.assertj.core.api.Assertions.assertThat;

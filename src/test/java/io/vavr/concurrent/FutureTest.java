@@ -34,14 +34,15 @@ import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.assertj.core.api.IterableAssert;
-import org.junit.AfterClass;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import java.util.Spliterator;
@@ -54,32 +55,34 @@ import static io.vavr.concurrent.Concurrent.waitUntil;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static io.vavr.concurrent.Concurrent.zZz;
 import static org.assertj.core.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings("deprecation")
+@ExtendWith(FutureTest.TraceUnitExtension.class)
 public class FutureTest extends AbstractValueTest {
 
     static final Executor TRIVIAL_EXECUTOR = Runnable::run;
 
     private static final Executor REJECTING_EXECUTOR = ignored -> { throw new RejectedExecutionException(); };
 
-    @AfterClass
+    @AfterAll
     public static void gracefullyFinishThreads() throws TimeoutException {
         Concurrent.gracefullyFinishThreads();
     }
 
-    @Rule
-    public TestRule watcher = new TestWatcher() {
+    static class TraceUnitExtension implements AfterEachCallback, BeforeEachCallback {
+
         @Override
-        protected void starting(Description desc) {
-            printInfo("[STARTING]", desc);
+        public void beforeEach(ExtensionContext context) {
+            printInfo("[STARTING]", context);
             printForkJoinPoolInfo();
         }
         @Override
-        protected void finished(Description desc) {
-            printInfo("[FINISHED]", desc);
+        public void afterEach(ExtensionContext context) {
+            printInfo("[FINISHED]", context);
         }
-        private void printInfo(String prefix, Description desc) {
-            System.out.printf("%s %s %s%n", prefix, LocalDateTime.now(), desc.getDisplayName());
+        private void printInfo(String prefix, ExtensionContext context) {
+            System.out.printf("%s %s %s%n", prefix, LocalDateTime.now(), context.getTestMethod().map(Method::getName).orElse("?"));
         }
         private void printForkJoinPoolInfo() {
             final ForkJoinPool pool = ForkJoinPool.commonPool();
@@ -97,7 +100,7 @@ public class FutureTest extends AbstractValueTest {
             );
             System.out.println(info);
         }
-    };
+    }
 
     @Override
     protected <T> IterableAssert<T> assertThat(Iterable<T> actual) {
@@ -370,14 +373,14 @@ public class FutureTest extends AbstractValueTest {
         assertCompleted(future, 1);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEWhenExecutorIsNullUsingSupplier() {
-        Future.ofSupplier(null, () -> 1);
+        assertThrows(NullPointerException.class, () -> Future.ofSupplier(null, () -> 1));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEWhenSupplierIsNull() {
-        Future.ofSupplier(TRIVIAL_EXECUTOR, null);
+        assertThrows(NullPointerException.class, () -> Future.ofSupplier(TRIVIAL_EXECUTOR, null));
     }
 
     @Test
@@ -388,9 +391,9 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.get()).isEqualTo(1);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEUsingDefaultExecutorWhenSupplierIsNull() {
-        Future.ofSupplier(null);
+        assertThrows(NullPointerException.class, () -> Future.ofSupplier(null));
     }
 
     // -- static ofCallable()
@@ -402,14 +405,14 @@ public class FutureTest extends AbstractValueTest {
         assertCompleted(future, 1);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEWhenExecutorIsNullUsingCallable() {
-        Future.ofCallable(null, () -> 1);
+        assertThrows(NullPointerException.class, () -> Future.ofCallable(null, () -> 1));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEWhenCallableIsNull() {
-        Future.ofCallable(TRIVIAL_EXECUTOR, null);
+        assertThrows(NullPointerException.class, () -> Future.ofCallable(TRIVIAL_EXECUTOR, null));
     }
 
     @Test
@@ -420,9 +423,9 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.get()).isEqualTo(1);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEUsingDefaultExecutorWhenCallableIsNull() {
-        Future.ofCallable(null);
+        assertThrows(NullPointerException.class, () -> Future.ofCallable(null));
     }
 
     // -- static runRunnable()
@@ -436,14 +439,14 @@ public class FutureTest extends AbstractValueTest {
         assertThat(sideEffect[0]).isEqualTo(42);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEWhenExecutorIsNullUsingRunnable() {
-        Future.runRunnable(null, () -> {});
+        assertThrows(NullPointerException.class, () -> Future.runRunnable(null, () -> {}));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEWhenRunnableIsNull() {
-        Future.runRunnable(TRIVIAL_EXECUTOR, null);
+        assertThrows(NullPointerException.class, () -> Future.runRunnable(TRIVIAL_EXECUTOR, null));
     }
 
     @Test
@@ -455,16 +458,16 @@ public class FutureTest extends AbstractValueTest {
         assertThat(sideEffect[0]).isEqualTo(42);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEUsingDefaultExecutorWhenRunnableIsNull() {
-        Future.runRunnable(null);
+        assertThrows(NullPointerException.class, () -> Future.runRunnable(null));
     }
 
     // -- static reduce()
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailReduceEmptySequence() {
-        Future.reduce(List.empty(), Integer::sum);
+        assertThrows(NoSuchElementException.class, () -> Future.reduce(List.empty(), Integer::sum));
     }
 
     @Test
@@ -480,7 +483,7 @@ public class FutureTest extends AbstractValueTest {
     public void shouldReduceWithErrorIfSequenceOfFuturesContainsOneError() {
         final Future<Integer> future = Future.reduce(
                 List.of(Future.of(zZz(13)), Future.of(zZz(new Error()))),
-                Integer::sum
+                (i1, i2) -> i1 + i2
         ).await();
         assertFailed(future, Error.class);
     }
@@ -616,7 +619,7 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.getCause().get()).isInstanceOf(TimeoutException.class);
         assertThat(future.getCause().get().getMessage()).isEqualTo("timeout after 100 milliseconds");
     }
-    
+
     @Test
     public void shouldHandleInterruptedExceptionCorrectlyInAwait() {
         // the Future should never be completed as long as the InterruptedException is rethrown by the Try...
@@ -685,21 +688,21 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldFoldEmptyIterable() {
         final Seq<Future<Integer>> futures = Stream.empty();
-        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
+        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
         assertThat(testee.getValue().get()).isEqualTo(Try.success(0));
     }
 
     @Test
     public void shouldFoldNonEmptyIterableOfSucceedingFutures() {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(zZz(i))).take(5);
-        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
+        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
         assertThat(testee.getValue().get()).isEqualTo(Try.success(15));
     }
 
     @Test
     public void shouldFoldNonEmptyIterableOfFailingFutures() {
-        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer> of(zZz(new Error())).await()).take(5);
-        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
+        final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer> of(zZz(new Error()))).take(5);
+        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
         assertFailed(testee, Error.class);
     }
 
@@ -722,23 +725,25 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.isCancelled()).isTrue();
     }
 
-    @Test(expected = CancellationException.class)
+    @Test
     public void shouldThrowOnGetAfterCancellation() {
-        final Object monitor = new Object();
-        final AtomicBoolean running = new AtomicBoolean(false);
-        final Future<?> future = blocking(() -> {
+        assertThrows(CancellationException.class, () -> {
+            final Object monitor = new Object();
+            final AtomicBoolean running = new AtomicBoolean(false);
+            final Future<?> future = blocking(() -> {
+                synchronized (monitor) {
+                    running.set(true);
+                    monitor.wait(); // wait forever
+                }
+            });
+            waitUntil(running::get);
             synchronized (monitor) {
-                running.set(true);
-                monitor.wait(); // wait forever
+                future.cancel();
             }
+            assertThat(future.isCancelled()).isTrue();
+            future.get();
+            fail("Future was expected to throw on get() after cancellation!");
         });
-        waitUntil(running::get);
-        synchronized (monitor) {
-            future.cancel();
-        }
-        assertThat(future.isCancelled()).isTrue();
-        future.get();
-        fail("Future was expected to throw on get() after cancellation!");
     }
 
     @Test
@@ -778,10 +783,12 @@ public class FutureTest extends AbstractValueTest {
         assertThat(future.getValue().get().isFailure()).isTrue();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionOnNullCollectPartialFunction() {
-        final PartialFunction<Integer, String> pf = null;
-        Future.of(zZz(3)).collect(pf);
+        assertThrows(NullPointerException.class, () -> {
+            final PartialFunction<Integer, String> pf = null;
+            Future.of(zZz(3)).collect(pf);
+        });
     }
 
     // -- executorService()
@@ -820,9 +827,9 @@ public class FutureTest extends AbstractValueTest {
         assertThat(Future.failed(error).getCause()).isEqualTo(Option.some(error));
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowWhenGettingCauseOfSucceededFuture() {
-        Future.successful("ok").getCause();
+        assertThrows(UnsupportedOperationException.class, () -> Future.successful("ok").getCause());
     }
 
     // -- getValue()
@@ -894,7 +901,7 @@ public class FutureTest extends AbstractValueTest {
     public void shouldBeFailed() {
         assertThat(Future.failed(new Exception()).isFailure()).isTrue();
     }
-    
+
     // -- onComplete()
 
     @Test

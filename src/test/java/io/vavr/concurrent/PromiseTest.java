@@ -27,16 +27,17 @@
 package io.vavr.concurrent;
 
 import io.vavr.control.Try;
-import org.junit.AfterClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PromiseTest {
 
-    @AfterClass
+    @AfterAll
     public static void gracefullyFinishThreads() throws TimeoutException {
         Concurrent.gracefullyFinishThreads();
     }
@@ -68,9 +69,9 @@ public class PromiseTest {
         assertThat(promise.future().isSuccess()).isTrue();
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldFailWhenCompleteAgain() {
-        Promise.successful(42).complete(Try.success(0));
+        assertThrows(IllegalStateException.class, () -> Promise.successful(42).complete(Try.success(0)));
     }
 
     @Test

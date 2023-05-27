@@ -28,7 +28,7 @@ package io.vavr.collection.euler;
 
 import io.vavr.API;
 import io.vavr.concurrent.Future;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.TimeUnit;
 

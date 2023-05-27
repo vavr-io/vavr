@@ -28,7 +28,7 @@ package io.vavr.collection.euler;
 
 import io.vavr.collection.Stream;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.util.Comparator.reverseOrder;
 import static io.vavr.collection.euler.Utils.isPrime;

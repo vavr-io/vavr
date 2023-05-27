@@ -3,10 +3,12 @@ package linter;
 import io.vavr.CheckedFunction1;
 import io.vavr.Function0;
 import io.vavr.collection.List;
-import org.junit.*;
-import org.junit.rules.TestRule;
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import java.io.File;
 import java.lang.reflect.Modifier;
@@ -20,32 +22,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CodingConventions {
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         System.out.println("[LINTER] Start");
     }
 
-    @AfterClass
+    @AfterAll
     public static void afterClass() {
         System.out.println("[LINTER] Finished");
     }
 
-    @Rule
-    public TestRule watcher = new TestWatcher() {
+    static class TraceUnitExtension implements AfterEachCallback, BeforeEachCallback {
+
         @Override
-        protected void starting(Description desc) {
-            printInfo("[LINTER] Checking rule", desc);
+        public void beforeEach(ExtensionContext context) {
+            printInfo("[LINTER] Checking rule", context);
         }
 
         @Override
-        protected void finished(Description desc) {
-            printInfo("[LINTER] Finished rule", desc);
+        public void afterEach(ExtensionContext context) {
+            printInfo("[LINTER] Finished rule", context);
         }
 
-        private void printInfo(String prefix, Description desc) {
-            System.out.println(prefix + " " + desc.getDisplayName());
+        private void printInfo(String prefix, ExtensionContext context) {
+            System.out.println(prefix + " " + context.getDisplayName());
         }
-    };
+
+    }
 
     @Test
     public void shouldHaveTransformMethodWhenIterable() {

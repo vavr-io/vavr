@@ -39,7 +39,7 @@ import java.util.AbstractMap;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Objects;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class Tuple2Test {
 

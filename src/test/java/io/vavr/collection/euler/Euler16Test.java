@@ -27,7 +27,7 @@
 package io.vavr.collection.euler;
 
 import io.vavr.collection.CharSeq;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
 

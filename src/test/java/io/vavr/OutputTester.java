@@ -26,7 +26,7 @@
  */
 package io.vavr;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.nio.charset.Charset;

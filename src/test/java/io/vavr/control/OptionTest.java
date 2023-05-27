@@ -28,8 +28,8 @@ package io.vavr.control;
 
 import io.vavr.*;
 import io.vavr.collection.Seq;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +38,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class OptionTest extends AbstractValueTest {
 
@@ -119,9 +120,9 @@ public class OptionTest extends AbstractValueTest {
         })).isEqualTo(Option.none());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionOnWhenWithProvider() {
-        assertThat(Option.when(false, (Supplier<?>) null)).isEqualTo(Option.none());
+        assertThrows(NullPointerException.class, () -> assertThat(Option.when(false, (Supplier<?>) null)).isEqualTo(Option.none()));
     }
 
     @Test
@@ -134,9 +135,9 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.ofOptional(Optional.of(1))).isEqualTo(Option.of(1));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionOnNullOptional() {
-        assertThat(Option.ofOptional(null)).isEqualTo(Option.none());
+        assertThrows(NullPointerException.class, () -> assertThat(Option.ofOptional(null)).isEqualTo(Option.none()));
     }
 
     // -- sequence
@@ -197,9 +198,9 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.of(1).get()).isEqualTo(1);
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowOnGetWhenValueIsNotDefined() {
-        Option.none().get();
+        assertThrows(NoSuchElementException.class, () -> Option.none().get());
     }
 
     // -- orElse
@@ -271,9 +272,9 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.of(1).getOrElseThrow(() -> new RuntimeException("none"))).isEqualTo(1);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowOnGetOrElseThrowWhenValueIsNotDefined() {
-        Option.none().getOrElseThrow(() -> new RuntimeException("none"));
+        assertThrows(RuntimeException.class, () -> Option.none().getOrElseThrow(() -> new RuntimeException("none")));
     }
 
     // -- toJavaOptional
@@ -321,7 +322,7 @@ public class OptionTest extends AbstractValueTest {
         try {
             final Option<String> none = Option.none();
             none.onEmpty(null);
-            Assert.fail("No exception was thrown");
+            Assertions.fail("No exception was thrown");
         } catch (NullPointerException exc) {
             assertThat(exc.getMessage()).isEqualTo("action is null");
         }
@@ -343,7 +344,7 @@ public class OptionTest extends AbstractValueTest {
                 throw new RuntimeException("Exception from empty option!");
             });
         } catch (RuntimeException exc) {
-            Assert.fail("No exception should be thrown!");
+            Assertions.fail("No exception should be thrown!");
         }
     }
 
@@ -528,9 +529,9 @@ public class OptionTest extends AbstractValueTest {
 
     // -- transform
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionOnNullTransformFunction() {
-        Option.some(1).transform(null);
+        assertThrows(NullPointerException.class, () -> Option.some(1).transform(null));
     }
 
     @Test
@@ -565,10 +566,12 @@ public class OptionTest extends AbstractValueTest {
         assertThat(Option.<Integer>none().collect(pf)).isEqualTo(Option.none());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowExceptionOnNullCollectPartialFunction() {
-        final PartialFunction<Integer, String> pf = null;
-        Option.some(1).collect(pf);
+        assertThrows(NullPointerException.class, () -> {
+            final PartialFunction<Integer, String> pf = null;
+            Option.some(1).collect(pf);
+        });
     }
 
     @Test

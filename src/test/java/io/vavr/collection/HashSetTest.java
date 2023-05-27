@@ -29,17 +29,18 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import org.assertj.core.api.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class HashSetTest extends AbstractSetTest {
 
@@ -253,9 +254,9 @@ public class HashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowIfZipWithThatIsNull() {
-        empty().zip(null);
+        assertThrows(NullPointerException.class, () -> empty().zip(null));
     }
 
     // TODO move to traversable
@@ -299,9 +300,9 @@ public class HashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowIfZipAllWithThatIsNull() {
-        empty().zipAll(null, null, null);
+        assertThrows(NullPointerException.class, () -> empty().zipAll(null, null, null));
     }
 
     // TODO move to traversable
@@ -330,21 +331,25 @@ public class HashSetTest extends AbstractSetTest {
     // HashSet special cases
 
     @Override
+    @Test
     public void shouldDropRightAsExpectedIfCountIsLessThanSize() {
         assertThat(of(1, 2, 3).dropRight(2)).isEqualTo(of(3));
     }
 
     @Override
+    @Test
     public void shouldTakeRightAsExpectedIfCountIsLessThanSize() {
         assertThat(of(1, 2, 3).takeRight(2)).isEqualTo(of(1, 2));
     }
 
     @Override
+    @Test
     public void shouldGetInitOfNonNil() {
         assertThat(of(1, 2, 3).init()).isEqualTo(of(2, 3));
     }
 
     @Override
+    @Test
     public void shouldFoldRightNonNil() {
         final String actual = of('a', 'b', 'c').foldRight("", (x, xs) -> x + xs);
         final List<String> expected = List.of('a', 'b', 'c').permutations().map(List::mkString);
@@ -352,6 +357,7 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
+    @Test
     public void shouldReduceRightNonNil() {
         final String actual = of("a", "b", "c").reduceRight((x, xs) -> x + xs);
         final List<String> expected = List.of("a", "b", "c").permutations().map(List::mkString);
@@ -359,6 +365,7 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
+    @Test
     public void shouldMkStringWithDelimiterNonNil() {
         final String actual = of('a', 'b', 'c').mkString(",");
         final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString(","));
@@ -366,6 +373,7 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
+    @Test
     public void shouldMkStringWithDelimiterAndPrefixAndSuffixNonNil() {
         final String actual = of('a', 'b', 'c').mkString("[", ",", "]");
         final List<String> expected = List.of('a', 'b', 'c').permutations().map(l -> l.mkString("[", ",", "]"));
@@ -373,34 +381,39 @@ public class HashSetTest extends AbstractSetTest {
     }
 
     @Override
+    @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingComparator() {
         // TODO
     }
 
     @Override
+    @Test
     public void shouldComputeDistinctByOfNonEmptyTraversableUsingKeyExtractor() {
         // TODO
     }
 
     @Override
+    @Test
     public void shouldFindLastOfNonNil() {
         final int actual = of(1, 2, 3, 4).findLast(i -> i % 2 == 0).get();
         assertThat(actual).isIn(List.of(1, 2, 3, 4));
     }
 
     @Override
+    @Test
     public void shouldThrowWhenFoldRightNullOperator() {
-        throw new NullPointerException(); // TODO
+        assertThrows(NullPointerException.class, () -> Objects.requireNonNull(null)); // TODO
     }
 
     @Override
+    @Test
     public void shouldReturnSomeInitWhenCallingInitOptionOnNonNil() {
         // TODO
     }
 
     @Test
     public void shouldBeEqual() {
-        assertEquals(HashSet.of(1), HashSet.of(1));
+        assertTrue(HashSet.of(1).equals(HashSet.of(1)));
     }
 
     //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class

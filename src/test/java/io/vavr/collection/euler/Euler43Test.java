@@ -30,7 +30,7 @@ import io.vavr.collection.CharSeq;
 import io.vavr.collection.Seq;
 import io.vavr.collection.List;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
