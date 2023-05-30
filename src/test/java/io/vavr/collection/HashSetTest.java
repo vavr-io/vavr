@@ -51,8 +51,8 @@ public class HashSetTest extends AbstractSetTest {
                 final Iterable<T> expected = (Iterable<T>) obj;
                 final java.util.Map<T, Integer> actualMap = countMap(actual);
                 final java.util.Map<T, Integer> expectedMap = countMap(expected);
-                assertThat(actualMap.size()).isEqualTo(expectedMap.size());
-                actualMap.keySet().forEach(k -> assertThat(actualMap.get(k)).isEqualTo(expectedMap.get(k)));
+                HashSetTest.this.assertThat(actualMap.size()).isEqualTo(expectedMap.size());
+                actualMap.keySet().forEach(k -> HashSetTest.this.assertThat(actualMap.get(k)).isEqualTo(expectedMap.get(k)));
                 return this;
             }
 
