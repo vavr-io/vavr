@@ -1399,6 +1399,19 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     }
 
     /**
+     * Creates a {@code Try}-with-resources builder that operates on two {@link AutoCloseable} chained (dependent) resources.
+     *
+     * @param t1Supplier The supplier of the 1st resource.
+     * @param t2Function A function which takes the supply of t1 and supplies the 2nd resource.
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @return a new {@link WithThreadedResources2} instance.
+     */
+    public static <T1 extends AutoCloseable, T2 extends AutoCloseable> WithThreadedResources2<T1, T2> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction1<T1, ? extends T2> t2Function) {
+        return new WithThreadedResources2<>(t1Supplier, t2Function);
+    }
+
+    /**
      * Creates a {@code Try}-with-resources builder that operates on three {@link AutoCloseable} resources.
      *
      * @param t1Supplier The supplier of the 1st resource.
@@ -1411,6 +1424,21 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
      */
     public static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> WithResources3<T1, T2, T3> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier) {
         return new WithResources3<>(t1Supplier, t2Supplier, t3Supplier);
+    }
+
+    /**
+     * Creates a {@code Try}-with-resources builder that operates on three {@link AutoCloseable} chained (dependent) resources.
+     *
+     * @param t1Supplier The supplier of the 1st resource.
+     * @param t2Function A function which takes a supply of the 1st resource and supplies the 2nd resource.
+     * @param t3Function A function which takes a supply of the 2nd resource and supplies the 3rd resource.
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     * @return a new {@link WithThreadedResources3} instance.
+     */
+    public static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> WithThreadedResources3<T1, T2, T3> withResources(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction1<T1, ? extends T2> t2Function, CheckedFunction1<T2, ? extends T3> t3Function) {
+        return new WithThreadedResources3<>(t1Supplier, t2Function, t3Function);
     }
 
     /**
@@ -1582,6 +1610,39 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     }
 
     /**
+     * A {@code Try}-with-resources builder that operates on two {@link AutoCloseable} threaded (dependent) resources.
+     *
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     */
+    public static final class WithThreadedResources2<T1 extends AutoCloseable, T2 extends AutoCloseable> {
+
+        private final CheckedFunction0<? extends T1> t1Supplier;
+        private final CheckedFunction1<T1, ? extends T2> t2Function;
+
+        private WithThreadedResources2(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction1<T1, ? extends T2> t2Function) {
+            this.t1Supplier = t1Supplier;
+            this.t2Function = t2Function;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f   A computation that takes two {@code AutoClosable} resources.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+        public <R> Try<R> of(CheckedFunction1<? super T2, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Function.apply(t1)) {
+                    return f.apply(t2);
+                }
+            });
+        }
+    }
+
+    /**
      * A {@code Try}-with-resources builder that operates on three {@link AutoCloseable} resources.
      *
      * @param <T1> Type of the 1st resource.
@@ -1612,6 +1673,42 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
             return Try.of(() -> {
                 try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Supplier.apply(); T3 t3 = t3Supplier.apply()) {
                     return f.apply(t1, t2, t3);
+                }
+            });
+        }
+    }
+
+    /**
+     * A {@code Try}-with-resources builder that operates on three {@link AutoCloseable} threaded (dependent) resources.
+     *
+     * @param <T1> Type of the 1st resource.
+     * @param <T2> Type of the 2nd resource.
+     * @param <T3> Type of the 3rd resource.
+     */
+    public static final class WithThreadedResources3<T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> {
+
+        private final CheckedFunction0<? extends T1> t1Supplier;
+        private final CheckedFunction1<T1, ? extends T2> t2Function;
+        private final CheckedFunction1<T2, ? extends T3> t3Function;
+
+        private WithThreadedResources3(CheckedFunction0<? extends T1> t1Supplier, CheckedFunction1<T1, ? extends T2> t2Function, CheckedFunction1<T2, ? extends T3> t3Function) {
+            this.t1Supplier = t1Supplier;
+            this.t2Function = t2Function;
+            this.t3Function = t3Function;
+        }
+
+        /**
+         * Wraps the result of a computation that may fail in a {@code Try}.
+         *
+         * @param f A computation that takes three {@code AutoClosable} resources.
+         * @param <R> Result type of the computation.
+         * @return A new {@code Try} instance.
+         */
+        @SuppressWarnings("try")/* https://bugs.openjdk.java.net/browse/JDK-8155591 */
+        public <R> Try<R> of(CheckedFunction1<? super T3, ? extends R> f) {
+            return Try.of(() -> {
+                try (T1 t1 = t1Supplier.apply(); T2 t2 = t2Function.apply(t1); T3 t3 = t3Function.apply(t2)) {
+                    return f.apply(t3);
                 }
             });
         }
