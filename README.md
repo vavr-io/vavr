@@ -17,7 +17,9 @@ The most interesting part is a feature-rich, persistent collection library that 
 
 Because Vavr does not depend on any libraries (other than the JVM) you can easily add it as standalone .jar to your classpath.
 
-To stay up to date please follow the [blog](http://blog.vavr.io).
+As of December 7, 2023, the Vavr blog and web site have been removed and are no longer maintained. This project needs a new owner.
+Please visit https://github.com/vavr-io/vavr/issues/2756 if you are interested in becoming part of the community of maintainers
+or the new owner of this project.
 
 ## Using Vavr
 
