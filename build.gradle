@@ -85,8 +85,8 @@ task generateSources() {
             ant.get(src: ammoniteReleaseUrl, dest: ammoniteJar)
         }
         javaexec {
-            main = "-jar"
-            args = [ammoniteJar, "generator/Generator.sc"]
+            classpath = project.files(ammoniteJar)
+            args = ["generator/Generator.sc"]
         }
     }
 }
@@ -100,7 +100,7 @@ tasks.withType(JavaCompile).configureEach {
 
 tasks.named('jacocoTestReport') {
     reports {
-        xml.enabled = true
+        xml.required = true
     }
 }
 
@@ -110,6 +110,10 @@ tasks.named('check') {
 }
 
 tasks.named('jar') {
+    from('.') {
+        include 'LICENSE'
+    }
+
     manifest {
         attributes('Automatic-Module-Name': 'io.vavr')
     }
@@ -148,8 +152,8 @@ publishing {
                 inceptionYear = '2014'
                 licenses {
                     license {
-                        name = 'The Apache Software License, Version 2.0'
-                        url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                        name = 'The MIT License (MIT)'
+                        url = 'https://mit-license.org'
                     }
                 }
                 developers {
