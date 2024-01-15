@@ -28,6 +28,7 @@ package io.vavr.control;
 
 import static io.vavr.API.*;
 import static io.vavr.Predicates.instanceOf;
+import static org.assertj.core.api.Assertions.assertThatNullPointerException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.Assertions.fail;
 
@@ -1156,7 +1157,7 @@ public class TryTest extends AbstractValueTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldMapFailureWhenSuccess() {
+    public void shouldMapFailuresCaseWhenSuccess() {
         final Try<Integer> testee = Success(1);
         final Try<Integer> actual = testee.mapFailure(
                 Case($(instanceOf(RuntimeException.class)), (Function<RuntimeException, Error>) Error::new)
@@ -1166,7 +1167,7 @@ public class TryTest extends AbstractValueTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldMapFailureWhenFailureAndMatches() {
+    public void shouldMapFailureCasesWhenFailureAndMatches() {
         final Try<Integer> testee = Failure(new IOException());
         final Try<Integer> actual = testee.mapFailure(
                 Case($(instanceOf(IOException.class)), (Function<IOException, Error>) Error::new)
@@ -1176,12 +1177,33 @@ public class TryTest extends AbstractValueTest {
 
     @SuppressWarnings("unchecked")
     @Test
-    public void shouldMapFailureWhenFailureButDoesNotMatch() {
+    public void shouldMapFailureCasesWhenFailureButDoesNotMatch() {
         final Try<Integer> testee = Failure(new IOException());
         final Try<Integer> actual = testee.mapFailure(
                 Case($(instanceOf(RuntimeException.class)), (Function<RuntimeException, Error>) Error::new)
         );
         assertThat(actual).isSameAs(testee);
+    }
+
+    @Test
+    public void shouldMapFailureWhenSuccess() {
+        final Try<Integer> testee = Success(1);
+        final Try<Integer> actual = testee.mapFailure(Error::new);
+        assertThat(actual).isSameAs(testee);
+    }
+
+    @Test
+    public void shouldMapFailureWhenFailure() {
+        final Try<Object> actual = failure().mapFailure(Error::new);
+        assertThat(actual.getCause()).isInstanceOf(Error.class);
+    }
+
+    @Test
+    public void mapFailureShouldThrowWithNullMapper() {
+        assertThatNullPointerException()
+            .isThrownBy(() ->
+                success().mapFailure((Function<? super Throwable, ? extends Throwable>) null)
+            ).withMessage("mapper is null");
     }
 
     // -- andThen
