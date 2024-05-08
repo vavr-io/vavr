@@ -34,6 +34,7 @@ import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * <strong>INTERNAL API - This class is subject to change.</strong>
@@ -100,7 +101,12 @@ final class FutureImpl<T> implements Future<T> {
             this.actions = actions;
             this.waiters = waiters;
             try {
-                computation.execute(this::tryComplete, this::updateThread);
+                computation.execute(this::tryComplete, this::updateThread, () -> {
+                    // Synchronize as the future could be in the process of cancelling
+                    synchronized (lock) {
+                        return isCompleted();
+                    }
+                });
             } catch (Throwable x) {
                 tryComplete(Try.failure(x));
             }
@@ -115,7 +121,7 @@ final class FutureImpl<T> implements Future<T> {
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> of(Executor executor) {
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (complete, updateThread) -> {});
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (complete, updateThread, isCompleted) -> {});
     }
 
     /**
@@ -127,7 +133,7 @@ final class FutureImpl<T> implements Future<T> {
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> of(Executor executor, Try<? extends T> value) {
-        return new FutureImpl<>(executor, Option.some(Try.narrow(value)), null, null, (complete, updateThread) -> {});
+        return new FutureImpl<>(executor, Option.some(Try.narrow(value)), null, null, (complete, updateThread, isCompleted) -> {});
     }
 
     /**
@@ -140,7 +146,7 @@ final class FutureImpl<T> implements Future<T> {
      * @return a new {@code FutureImpl} instance
      */
     static <T> FutureImpl<T> sync(Executor executor, Task<? extends T> task) {
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (complete, updateThread) ->
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (complete, updateThread, isCompleted) ->
             task.run(complete::with)
         );
     }
@@ -156,8 +162,12 @@ final class FutureImpl<T> implements Future<T> {
      */
     static <T> FutureImpl<T> async(Executor executor, Task<? extends T> task) {
         // In a single-threaded context this Future may already have been completed during initialization.
-        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (complete, updateThread) ->
+        return new FutureImpl<>(executor, Option.none(), Queue.empty(), Queue.empty(), (complete, updateThread, isCompleted) ->
                 executor.execute(() -> {
+                    // Avoid performing work, if future is already complete (normally by cancellation)
+                    if (isCompleted.get()) {
+                        return;
+                    }
                     updateThread.run();
                     try {
                         task.run(complete::with);
@@ -414,6 +424,6 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     private interface Computation<T> {
-        void execute(Task.Complete<T> complete, Runnable updateThread) throws Throwable;
+        void execute(Task.Complete<T> complete, Runnable updateThread, Supplier<Boolean> isCompleted) throws Throwable;
     }
 }
