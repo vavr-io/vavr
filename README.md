@@ -1,5 +1,4 @@
-# THE VAVR PROJECT IS ARCHIVED!
-# PLEASE READ THE [OFFICIAL STATEMENT](https://danieldietrich.dev/blog/2024/06/07/statement-on-vavrs-future)
+# If you need [Sponsored Work on Vavr](https://danieldietrich.dev/blog/2024/06/07/sponsored-work-on-vavr/) please [contact us](mailto:cafebab3@gmail.com).
 
 [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod&style=flat-square)](https://gitpod.io/#https://github.com/vavr-io/vavr)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
