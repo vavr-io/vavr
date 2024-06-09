@@ -1290,6 +1290,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         return takeRightUntil(predicate.negate());
     }
 
+    @Override
+    public Queue<T> tapEach(Consumer<? super T> action) {
+        return Collections.tapEach(this, action);
+    }
+
     /**
      * Transforms this {@code Queue}.
      *
