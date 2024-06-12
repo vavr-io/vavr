@@ -53,20 +53,16 @@ import static io.vavr.collection.RedBlackTree.Color.RED;
 interface RedBlackTree<T> extends Iterable<T> {
 
     static <T> RedBlackTree<T> empty(Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return new Empty<>(comparator);
     }
 
     static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T value) {
-        Objects.requireNonNull(comparator, "comparator is null");
         final Empty<T> empty = new Empty<>(comparator);
         return new Node<>(BLACK, 1, empty, value, empty, empty);
     }
 
     @SafeVarargs
     static <T> RedBlackTree<T> of(Comparator<? super T> comparator, T... values) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(values, "values is null");
         RedBlackTree<T> tree = empty(comparator);
         for (T value : values) {
             tree = tree.insert(value);
@@ -76,8 +72,6 @@ interface RedBlackTree<T> extends Iterable<T> {
 
     @SuppressWarnings("unchecked")
     static <T> RedBlackTree<T> ofAll(Comparator<? super T> comparator, Iterable<? extends T> values) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(values, "values is null");
         // function equality is not computable => same object check
         if (values instanceof RedBlackTree && ((RedBlackTree<T>) values).comparator() == comparator) {
             return (RedBlackTree<T>) values;
@@ -136,7 +130,6 @@ interface RedBlackTree<T> extends Iterable<T> {
     }
 
     default RedBlackTree<T> difference(RedBlackTree<T> tree) {
-        Objects.requireNonNull(tree, "tree is null");
         if (isEmpty() || tree.isEmpty()) {
             return this;
         } else {
@@ -166,7 +159,6 @@ interface RedBlackTree<T> extends Iterable<T> {
     Option<T> find(T value);
 
     default RedBlackTree<T> intersection(RedBlackTree<T> tree) {
-        Objects.requireNonNull(tree, "tree is null");
         if (isEmpty()) {
             return this;
         } else if (tree.isEmpty()) {
@@ -237,7 +229,6 @@ interface RedBlackTree<T> extends Iterable<T> {
      * @return A new RedBlackTree that contains all distinct elements of this and the given {@code tree}.
      */
     default RedBlackTree<T> union(RedBlackTree<T> tree) {
-        Objects.requireNonNull(tree, "tree is null");
         if (tree.isEmpty()) {
             return this;
         } else {

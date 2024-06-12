@@ -265,7 +265,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @throws NullPointerException if {@code that} is null.
      */
     default boolean containsSlice(Iterable<? extends T> that) {
-        Objects.requireNonNull(that, "that is null");
         return indexOfSlice(that) >= 0;
     }
 
@@ -329,7 +328,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @throws NullPointerException if that is null
      */
     default <U> Iterator<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
-        Objects.requireNonNull(that, "that is null");
         final Stream<U> other = Stream.ofAll(that);
         return Iterator.ofAll(this).flatMap(a -> other.map(b -> Tuple.of(a, b)));
     }
@@ -343,7 +341,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return true if this sequence has that as a suffix, false otherwise.
      */
     default boolean endsWith(Seq<? extends T> that) {
-        Objects.requireNonNull(that, "that is null");
         final Iterator<T> i = this.iterator().drop(length() - that.length());
         final Iterator<? extends T> j = that.iterator();
         while (i.hasNext() && j.hasNext()) {
@@ -1026,7 +1023,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return true if that is empty or that is prefix of this collection starting from the given offset, false otherwise.
      */
     default boolean startsWith(Iterable<? extends T> that, int offset) {
-        Objects.requireNonNull(that, "that is null");
         if (offset < 0) { return false; }
         final Iterator<T> i = this.iterator().drop(offset);
         final java.util.Iterator<? extends T> j = that.iterator();
@@ -1200,7 +1196,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
 
     @Override
     default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
     }
 

@@ -96,7 +96,6 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @return A new HashMultimap containing the given entries.
          */
         public <K, V2 extends V> HashMultimap<K, V2> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
-            Objects.requireNonNull(entries, "entries is null");
             HashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry._1, entry._2);
@@ -114,7 +113,6 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          */
         @SafeVarargs
         public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(Tuple2<? extends K, ? extends V2>... entries) {
-            Objects.requireNonNull(entries, "entries is null");
             HashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry._1, entry._2);
@@ -132,7 +130,6 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          */
         @SafeVarargs
         public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(java.util.Map.Entry<? extends K, ? extends V2>... entries) {
-            Objects.requireNonNull(entries, "entries is null");
             HashMultimap<K, V2> result = empty();
             for (java.util.Map.Entry<? extends K, ? extends V2> entry : entries) {
                 result = result.put(entry.getKey(), entry.getValue());
@@ -197,7 +194,6 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          */
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> HashMultimap<K, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
-            Objects.requireNonNull(f, "f is null");
             return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
         }
 
@@ -213,7 +209,6 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          */
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> HashMultimap<K, V2> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
-            Objects.requireNonNull(s, "s is null");
             return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
         }
 

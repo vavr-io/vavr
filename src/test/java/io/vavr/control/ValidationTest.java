@@ -377,7 +377,12 @@ public class ValidationTest extends AbstractValueTest {
 
     @Test(expected = NullPointerException.class)
     public void shouldThrowNullPointerExceptionWhenGetOrElseThrowNullWithFunctionOnValid() {
-      Validation.<String, Integer> valid(1).getOrElseThrow((Function<? super String, RuntimeException>) null);
+      Validation.<String, Integer> invalid("some error").getOrElseThrow((Function<? super String, RuntimeException>) null);
+    }
+
+    @Test
+    public void shouldIgnoreExceptionSupplierWhenGetOrElseAndNotRequired() {
+        Validation.<String, Integer> valid(1).getOrElseThrow((Function<? super String, RuntimeException>) null);
     }
 
     @Test(expected = NullPointerException.class)

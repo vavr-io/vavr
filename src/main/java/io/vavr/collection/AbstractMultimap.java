@@ -86,8 +86,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public <K2, V2> Multimap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
         return createFromEntries(entries);
     }
@@ -104,7 +102,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public <K2, V2> Multimap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(this.emptyInstance(), (acc, entry) -> {
             for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
                 acc = acc.put(mappedEntry);
@@ -131,13 +128,11 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public <K2, V2> Multimap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(this.emptyInstance(), (acc, entry) -> acc.put(mapper.apply(entry._1, entry._2)));
     }
 
     @Override
     public <V2> Multimap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return map((k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
@@ -151,7 +146,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public M put(Tuple2<? extends K, ? extends V> entry) {
-        Objects.requireNonNull(entry, "entry is null");
         return put(entry._1, entry._2);
     }
 
@@ -201,14 +195,12 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public M distinctBy(Comparator<? super Tuple2<K, V>> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
         return (M) (isEmpty() ? this : createFromEntries(iterator().distinctBy(comparator)));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <U> M distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return (M) (isEmpty() ? this : createFromEntries(iterator().distinctBy(keyExtractor)));
     }
 
@@ -238,21 +230,18 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public M dropUntil(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M dropWhile(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return (M) (isEmpty() ? this : createFromEntries(iterator().dropWhile(predicate)));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M filter(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return (M) this;
         } else {
@@ -263,43 +252,36 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public M filterNot(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
     @Override
     public M filter(BiPredicate<? super K, ? super V> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filter(t -> predicate.test(t._1, t._2));
     }
 
     @Override
     public M filterNot(BiPredicate<? super K, ? super V> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filterNot(t -> predicate.test(t._1, t._2));
     }
 
     @Override
     public M filterKeys(Predicate<? super K> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filter(t -> predicate.test(t._1));
     }
 
     @Override
     public M filterNotKeys(Predicate<? super K> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filterNot(t -> predicate.test(t._1));
     }
 
     @Override
     public M filterValues(Predicate<? super V> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filter(t -> predicate.test(t._2));
     }
 
     @Override
     public M filterNotValues(Predicate<? super V> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return filterNot(t -> predicate.test(t._2));
     }
 
@@ -369,7 +351,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public M merge(Multimap<? extends K, ? extends V> that) {
-        Objects.requireNonNull(that, "that is null");
         if (isEmpty()) {
             return (M) createFromEntries(that);
         } else if (that.isEmpty()) {
@@ -382,8 +363,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public <K2 extends K, V2 extends V> M merge(Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
             return (M) createFromEntries(that);
         } else if (that.isEmpty()) {
@@ -430,7 +409,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public Tuple2<M, M> partition(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<Tuple2<K, V>> left = new java.util.ArrayList<>();
         final java.util.List<Tuple2<K, V>> right = new java.util.ArrayList<>();
         for (Tuple2<K, V> entry : this) {
@@ -442,7 +420,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public M peek(Consumer<? super Tuple2<K, V>> action) {
-        Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
         }
@@ -452,8 +429,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public M replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
-        Objects.requireNonNull(currentElement, "currentElement is null");
-        Objects.requireNonNull(newElement, "newElement is null");
         return (M) (containsKey(currentElement._1) ? remove(currentElement._1, currentElement._2).put(newElement) : this);
     }
 
@@ -483,7 +458,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public M retainAll(Iterable<? extends Tuple2<K, V>> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         return (M) createFromEntries(back.flatMap(t -> t._2.map(v -> Tuple.of(t._1, v))).retainAll(elements));
     }
 
@@ -513,7 +487,6 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     @SuppressWarnings("unchecked")
     @Override
     public Tuple2<M, M> span(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<Tuple2<K, V>>, Iterator<Tuple2<K, V>>> t = iterator().span(predicate);
         return Tuple.of((M) createFromEntries(t._1), (M) createFromEntries(t._2));
     }
@@ -559,14 +532,12 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @Override
     public M takeUntil(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public M takeWhile(Predicate<? super Tuple2<K, V>> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
         final Multimap<K, V> taken = createFromEntries(iterator().takeWhile(predicate));
         return (M) (taken.length() == length() ? this : taken);
     }

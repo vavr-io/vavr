@@ -83,7 +83,6 @@ public interface Foldable<T> {
      * @throws NullPointerException if {@code combine} is null
      */
     default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> combine) {
-        Objects.requireNonNull(combine, "combine is null");
         return foldLeft(zero, combine);
     }
 
@@ -133,7 +132,6 @@ public interface Foldable<T> {
      * @throws NullPointerException   if {@code op} is null
      */
     default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         return reduceLeft(op);
     }
 
@@ -146,7 +144,6 @@ public interface Foldable<T> {
      * @throws NullPointerException if {@code op} is null
      */
     default Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op) {
-        Objects.requireNonNull(op, "op is null");
         return reduceLeftOption(op);
     }
 

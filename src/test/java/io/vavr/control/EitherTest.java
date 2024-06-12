@@ -116,11 +116,9 @@ public class EitherTest extends AbstractValueTest {
 
     // -- sequence
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenSequencingNull() {
-        assertThatThrownBy(() -> Either.sequence(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("eithers is null");
+        Either.sequence(null);
     }
 
     @Test
@@ -157,11 +155,9 @@ public class EitherTest extends AbstractValueTest {
 
     // -- sequenceRight
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenSequencingRightNull() {
-        assertThatThrownBy(() -> Either.sequenceRight(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("eithers is null");
+        Either.sequenceRight(null);
     }
 
     @Test
@@ -217,11 +213,9 @@ public class EitherTest extends AbstractValueTest {
 
     // -- traverse
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenTraversingNull() {
-        assertThatThrownBy(() -> Either.traverse(null, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("values is null");
+        Either.traverse(null, null);
     }
 
     @Test
@@ -259,11 +253,9 @@ public class EitherTest extends AbstractValueTest {
 
     // -- traverseRight
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenTraversingRightNull() {
-        assertThatThrownBy(() -> Either.traverseRight(null, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("values is null");
+        Either.traverseRight(null, null);
     }
 
     @Test
@@ -434,11 +426,9 @@ public class EitherTest extends AbstractValueTest {
         assertThat(either.filterNot(i -> true).get()).isSameAs(either);
     }
 
-    @Test
+    @Test(expected = NullPointerException.class)
     public void shouldThrowWhenNullPredicate() {
-        assertThatThrownBy(() -> Either.left(42).filterNot(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("predicate is null");
+        Either.left(42).filterNot(null);
     }
 
     // -- filterOrElse

@@ -77,7 +77,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A {@link HashMap} Collector.
      */
     public static <K, V, T extends V> Collector<T, ArrayList<T>, HashMap<K, V>> collector(Function<? super T, ? extends K> keyMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
         return HashMap.collector(keyMapper, v -> v);
     }
 
@@ -94,8 +93,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      */
     public static <K, V, T> Collector<T, ArrayList<T>, HashMap<K, V>> collector(
             Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return Collections.toListAndThen(arr -> HashMap.ofEntries(Iterator.ofAll(arr)
                 .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)))));
     }
@@ -141,7 +138,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given map
      */
     public static <K, V> HashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
-        Objects.requireNonNull(map, "map is null");
         HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
         for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
             tree = tree.put(entry.getKey(), entry.getValue());
@@ -414,7 +410,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
         return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
     }
 
@@ -430,7 +425,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        Objects.requireNonNull(s, "s is null");
         return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
     }
 
@@ -444,7 +438,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      */
     @SafeVarargs
     public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
-        Objects.requireNonNull(entries, "entries is null");
         HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
         for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
             trie = trie.put(entry.getKey(), entry.getValue());
@@ -462,7 +455,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      */
     @SafeVarargs
     public static <K, V> HashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
-        Objects.requireNonNull(entries, "entries is null");
         HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
         for (Tuple2<? extends K, ? extends V> entry : entries) {
             trie = trie.put(entry._1, entry._2);
@@ -480,7 +472,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      */
     @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        Objects.requireNonNull(entries, "entries is null");
         if (entries instanceof HashMap) {
             return (HashMap<K, V>) entries;
         } else {
@@ -494,8 +485,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <K2, V2> HashMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
         return HashMap.ofEntries(entries);
     }
@@ -592,7 +581,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <K2, V2> HashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.<K2, V2> empty(), (acc, entry) -> {
             for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
                 acc = acc.put(mappedEntry);
@@ -691,13 +679,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <K2, V2> HashMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
         return foldLeft(HashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
     }
 
     @Override
     public <K2> HashMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
         return map((k, v) -> Tuple.of(keyMapper.apply(k), v));
     }
 
@@ -708,7 +694,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <V2> HashMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper) {
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
         return map((k, v) -> Tuple.of(k, valueMapper.apply(v)));
     }
 
@@ -772,7 +757,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> removeAll(Iterable<? extends K> keys) {
-        Objects.requireNonNull(keys, "keys is null");
         HashArrayMappedTrie<K, V> result = trie;
         for (K key : keys) {
             result = result.remove(key);
@@ -814,7 +798,6 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
-        Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
         for (Tuple2<K, V> entry : elements) {
             if (contains(entry)) {

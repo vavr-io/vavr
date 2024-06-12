@@ -93,7 +93,6 @@ public interface Promise<T> {
      * @throws NullPointerException if exception is null
      */
     static <T> Promise<T> failed(Throwable exception) {
-        Objects.requireNonNull(exception, "exception is null");
         return failed(DEFAULT_EXECUTOR, exception);
     }
 
@@ -107,8 +106,6 @@ public interface Promise<T> {
      * @throws NullPointerException if executor or exception is null
      */
     static <T> Promise<T> failed(Executor executor, Throwable exception) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(exception, "exception is null");
         return Promise.<T> make(executor).failure(exception);
     }
 
@@ -134,8 +131,6 @@ public interface Promise<T> {
      * @throws NullPointerException if executor or result is null
      */
     static <T> Promise<T> fromTry(Executor executor, Try<? extends T> result) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(result, "result is null");
         return Promise.<T> make(executor).complete(result);
     }
 
@@ -159,7 +154,6 @@ public interface Promise<T> {
      * @throws NullPointerException if executor is null
      */
     static <T> Promise<T> make(Executor executor) {
-        Objects.requireNonNull(executor, "executor is null");
         return new PromiseImpl<>(FutureImpl.of(executor));
     }
 
@@ -198,7 +192,6 @@ public interface Promise<T> {
      * @throws NullPointerException if executor is null
      */
     static <T> Promise<T> successful(Executor executor, T result) {
-        Objects.requireNonNull(executor, "executor is null");
         return Promise.<T> make(executor).success(result);
     }
 
