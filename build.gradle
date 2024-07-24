@@ -163,6 +163,12 @@ publishing {
                         organization = 'Vavr'
                         organizationUrl = 'https://github.com/vavr-io'
                     }
+                    developer {
+                        name = 'Grzegorz Piwowarek'
+                        email = 'gpiwowarek@gmail.com'
+                        organization = 'Vavr'
+                        organizationUrl = 'https://github.com/vavr-io'
+                    }
                 }
                 scm {
                     connection = 'scm:git:https://github.com/vavr-io/vavr.git'
