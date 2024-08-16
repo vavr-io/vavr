@@ -42,7 +42,7 @@ plugins {
 
 ext.ammoniteScalaVersion = '2.13'
 ext.ammoniteVersion = '2.3.8'
-ext.assertjVersion = '3.19.0'
+ext.assertjVersion = '3.26.3'
 ext.junitVersion = '4.13.2'
 
 // JAVA_VERSION used for CI build matrix, may be provided as env variable
