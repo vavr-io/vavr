@@ -37,7 +37,7 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'net.researchgate.release' version '2.8.1'
-    id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
+    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 ext.ammoniteScalaVersion = '2.13'
