@@ -114,8 +114,8 @@
     </build>
     <repositories>
         <repository>
-            <id>useTheSource</id>
-            <url>http://nexus.usethesource.io/content/repositories/public/</url>
+            <id>usethesource</id>
+            <url>https://releases.usethesource.io/maven/</url>
         </repository>
     </repositories>
 </project>
