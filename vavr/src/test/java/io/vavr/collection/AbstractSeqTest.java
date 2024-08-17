@@ -229,6 +229,16 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     }
 
     @Test
+    public void shouldAppendAllWhenUsedWithTypeHierarchy() {
+        final Seq<SomeInterface> empty = of();
+        final Seq<SomeInterface> all = empty
+          .appendAll(of(OneEnum.values()))
+          .appendAll(of(SecondEnum.values()));
+
+        assertThat(all).isEqualTo(this.<SomeInterface>of(OneEnum.A1, OneEnum.A2, OneEnum.A3, SecondEnum.A1, SecondEnum.A2, SecondEnum.A3));
+    }
+
+    @Test
     public void shouldReturnSameSeqWhenEmptyAppendAllEmpty() {
         final Seq<Integer> empty = empty();
         assertThat(empty.appendAll(empty())).isSameAs(empty);
@@ -2276,4 +2286,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
     }
 
+    private interface SomeInterface {
+    }
+
+    enum OneEnum implements SomeInterface {
+        A1, A2, A3;
+    }
+
+    enum SecondEnum implements SomeInterface {
+        A1, A2, A3;
+    }
 }
