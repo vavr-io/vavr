@@ -838,7 +838,7 @@ def generateMainClasses(): Unit = {
                      * @return an {@code Iterator} of mapped results
                      */
                     public $rtype<T1> yield() {
-                        return yield(Function.identity());
+                        return this.yield(Function.identity());
                     }
                   """)}
               }
