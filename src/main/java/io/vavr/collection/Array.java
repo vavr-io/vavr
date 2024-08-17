@@ -683,7 +683,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         if (source.length == 0) {
             return this;
         } else {
-            final Object[] arr = copyOf(delegate, delegate.length + source.length);
+            final Object[] arr = copyOf(delegate, delegate.length + source.length, Object[].class);
             System.arraycopy(source, 0, arr, delegate.length, source.length);
             return wrap(arr);
         }
