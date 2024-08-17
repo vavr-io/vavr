@@ -1,0 +1,29 @@
+name: build-version
+on:
+  push:
+    branches:
+      - version/**
+  pull_request:
+    branches:
+      - version/**
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '8', '11', '17']
+        architecture: [ 'x64' ]
+    name: Build with JDK ${{ matrix.java }} on ${{ matrix.architecture }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'adopt'
+          java-version: ${{ matrix.java }}
+          architecture: ${{ matrix.architecture }}
+          cache: 'maven'
+
+      - name: Build with Maven
+        run: mvn test
