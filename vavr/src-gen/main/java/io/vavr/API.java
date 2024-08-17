@@ -3260,7 +3260,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           */
          public Iterator<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
@@ -3559,7 +3559,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           */
          public Option<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
@@ -3858,7 +3858,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           */
          public Future<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
@@ -4157,7 +4157,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           */
          public Try<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
@@ -4456,7 +4456,7 @@ public final class API {
           * @return an {@code Iterator} of mapped results
           */
          public List<T1> yield() {
-             return yield(Function.identity());
+             return this.yield(Function.identity());
          }
      }
 
