@@ -9,7 +9,7 @@
     <artifactId>vavr-benchmark</artifactId>
     <name>Vavr Benchmark</name>
     <description>Benchmarks for Vavr.</description>
-    <url>http://vavr.io</url>
+    <url>https://vavr.io</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
