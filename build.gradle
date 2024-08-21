@@ -37,12 +37,12 @@ plugins {
     id 'maven-publish'
     id 'signing'
     id 'net.researchgate.release' version '3.0.2'
-    id 'io.github.gradle-nexus.publish-plugin' version '1.3.0'
+    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 ext.ammoniteScalaVersion = '2.13'
-ext.ammoniteVersion = '2.5.8'
-ext.assertjVersion = '3.24.2'
+ext.ammoniteVersion = '2.5.11'
+ext.assertjVersion = '3.26.3'
 ext.junitVersion = '4.13.2'
 
 // JAVA_VERSION used for CI build matrix, may be provided as env variable
