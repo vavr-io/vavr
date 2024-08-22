@@ -36,13 +36,13 @@ plugins {
     // publishing
     id 'maven-publish'
     id 'signing'
-    id 'net.researchgate.release' version '2.8.1'
-    id 'io.github.gradle-nexus.publish-plugin' version '1.0.0'
+    id 'net.researchgate.release' version '3.0.2'
+    id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 ext.ammoniteScalaVersion = '2.13'
-ext.ammoniteVersion = '2.3.8'
-ext.assertjVersion = '3.19.0'
+ext.ammoniteVersion = '2.5.11'
+ext.assertjVersion = '3.26.3'
 ext.junitVersion = '4.13.2'
 
 // JAVA_VERSION used for CI build matrix, may be provided as env variable
@@ -72,7 +72,7 @@ java {
 sourceSets.main.java.srcDirs += ['src-gen/main/java']
 sourceSets.test.java.srcDirs += ['src-gen/test/java']
 
-task generateSources() {
+tasks.register('generateSources') {
     doLast {
         delete 'src-gen'
         def ammoniteDir = file("generator/bin")
@@ -97,6 +97,8 @@ tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
     options.compilerArgs = [ '-Werror', '-Xlint:all', '-Xlint:-deprecation' ]
 }
+
+javadoc {options.encoding = "UTF-8"} // error: unmappable character for encoding ASCII
 
 tasks.named('jacocoTestReport') {
     reports {
@@ -193,7 +195,7 @@ nexusPublishing {
     repositories {
         sonatype {
             username.set(providers.systemProperty("ossrhUsername").orElse("").forUseAtConfigurationTime())
-            password.set(providers.systemProperty("ossrhPassword").orElse("").forUseAtConfigurationTime())        
+            password.set(providers.systemProperty("ossrhPassword").orElse("").forUseAtConfigurationTime())
         }
     }
 }
@@ -207,8 +209,7 @@ release {
     buildTasks = ['build']
     tagTemplate = '$name-$version'
     git {
-        requireBranch = ''
-        pushToRemote = 'origin'
-        pushToCurrentBranch = true
+        requireBranch.set('')
+        pushToRemote.set('origin')
     }
 }
