@@ -3726,8 +3726,6 @@ def generateTestClasses(): Unit = {
                   $assertThat(actual).isEqualTo(expected);
               }
 
-              private $comparator<Tuple$i$intGenerics> intTupleComparator = Tuple$i.comparator(${(1 to i).gen($j => s"Integer::compare")(", ")});
-
               private Tuple$i$generics createTuple() {
                   return ${if (i == 0) "Tuple0.instance()" else s"new Tuple$i<>($nullArgs)"};
               }
