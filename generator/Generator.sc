@@ -2236,7 +2236,7 @@ def generateMainClasses(): Unit = {
 
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else if (i == 1) "Objects.hashCode(_1)" else s"""Objects.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else if (i == 1) "Objects.hashCode(_1)" else if (i == 2) "Objects.hashCode(_1) ^ Objects.hashCode(_2)" else s"""Objects.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override
@@ -3715,7 +3715,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldComputeCorrectHashCode() {
                   final int actual = createTuple().hashCode();
-                  final int expected = ${im.getType("java.util.Objects")}.${if (i == 1) "hashCode" else "hash"}($nullArgs);
+                  final int expected = ${if (i == 2) s"new ${im.getType("java.util.AbstractMap.SimpleEntry")}<>($nullArgs)" else im.getType("java.util.Objects")}.${if (i == 2) "hashCode()" else if (i == 1) s"hashCode($nullArgs)" else s"hash($nullArgs)"};
                   $assertThat(actual).isEqualTo(expected);
               }
 

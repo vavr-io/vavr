@@ -36,9 +36,9 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.Objects;
 import org.junit.Test;
 
 public class Tuple2Test {
@@ -237,7 +237,7 @@ public class Tuple2Test {
     @Test
     public void shouldComputeCorrectHashCode() {
         final int actual = createTuple().hashCode();
-        final int expected = Objects.hash(null, null);
+        final int expected = new SimpleEntry<>(null, null).hashCode();
         assertThat(actual).isEqualTo(expected);
     }
 

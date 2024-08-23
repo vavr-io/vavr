@@ -394,7 +394,7 @@ public final class Tuple2<T1, T2> implements Tuple, Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(_1, _2);
+        return Objects.hashCode(_1) ^ Objects.hashCode(_2);
     }
 
     @Override
