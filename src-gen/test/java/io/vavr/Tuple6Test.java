@@ -346,8 +346,6 @@ public class Tuple6Test {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Comparator<Tuple6<Integer, Integer, Integer, Integer, Integer, Integer>> intTupleComparator = Tuple6.comparator(Integer::compare, Integer::compare, Integer::compare, Integer::compare, Integer::compare, Integer::compare);
-
     private Tuple6<Object, Object, Object, Object, Object, Object> createTuple() {
         return new Tuple6<>(null, null, null, null, null, null);
     }

@@ -163,8 +163,6 @@ public class Tuple0Test {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Comparator<Tuple0> intTupleComparator = Tuple0.comparator();
-
     private Tuple0 createTuple() {
         return Tuple0.instance();
     }
