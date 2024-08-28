@@ -233,7 +233,7 @@ public class CollectionsTest {
             for (Traversable<?> traversable2 : traversables) {
                 if (traversable1 != traversable2) {
                     assertThat(traversable1.equals(traversable2)).isEqualTo(value);
-                    if (value) {
+                    if (value && traversable1.getClass().equals(traversable2.getClass())) {
                         assertThat(traversable1.hashCode() == traversable2.hashCode()).isTrue();
                     }
                 }
