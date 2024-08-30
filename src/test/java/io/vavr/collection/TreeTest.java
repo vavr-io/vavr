@@ -4,7 +4,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright 2023 Vavr, https://vavr.io
+ * Copyright 2024 Vavr, https://vavr.io
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -80,7 +80,7 @@ public class TreeTest extends AbstractTraversableTest {
                     final Map<?, ?> map2 = (Map<?, ?>) expected;
                     Assertions.assertThat(convMap(map1)).isEqualTo(convMap(map2));
                 } else if (expected instanceof Tree) {
-                    assertThat(Stream.ofAll(actual)).isEqualTo(Stream.ofAll((Tree<?>) expected));
+                    TreeTest.this.assertThat(Stream.ofAll(actual)).isEqualTo(Stream.ofAll((Tree<?>) expected));
                 } else {
                     Assertions.assertThat(actual).isEqualTo((Iterable<T>) expected);
                 }

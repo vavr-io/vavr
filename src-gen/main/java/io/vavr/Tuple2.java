@@ -4,7 +4,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright 2023 Vavr, https://vavr.io
+ * Copyright 2024 Vavr, https://vavr.io
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -394,7 +394,7 @@ public final class Tuple2<T1, T2> implements Tuple, Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(_1, _2);
+        return Objects.hashCode(_1) ^ Objects.hashCode(_2);
     }
 
     @Override

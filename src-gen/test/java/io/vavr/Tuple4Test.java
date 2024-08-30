@@ -4,7 +4,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright 2023 Vavr, https://vavr.io
+ * Copyright 2024 Vavr, https://vavr.io
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -281,8 +281,6 @@ public class Tuple4Test {
         final String expected = "(null, null, null, null)";
         assertThat(actual).isEqualTo(expected);
     }
-
-    private Comparator<Tuple4<Integer, Integer, Integer, Integer>> intTupleComparator = Tuple4.comparator(Integer::compare, Integer::compare, Integer::compare, Integer::compare);
 
     private Tuple4<Object, Object, Object, Object> createTuple() {
         return new Tuple4<>(null, null, null, null);

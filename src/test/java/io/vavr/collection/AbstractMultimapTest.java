@@ -4,7 +4,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright 2023 Vavr, https://vavr.io
+ * Copyright 2024 Vavr, https://vavr.io
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -67,8 +67,8 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
                 final Iterable<T> expected = (Iterable<T>) obj;
                 final java.util.Map<T, Integer> actualMap = countMap(actual);
                 final java.util.Map<T, Integer> expectedMap = countMap(expected);
-                assertThat(actualMap.size()).isEqualTo(expectedMap.size());
-                actualMap.forEach((k, v) -> assertThat(v).isEqualTo(expectedMap.get(k)));
+                AbstractMultimapTest.this.assertThat(actualMap.size()).isEqualTo(expectedMap.size());
+                actualMap.forEach((k, v) -> AbstractMultimapTest.this.assertThat(v).isEqualTo(expectedMap.get(k)));
                 return this;
             }
 
@@ -182,6 +182,8 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOfEntries(java.util.Map.Entry<? extends K, ? extends V>... entries);
 
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOfPairs(K k1, V v1, K k, V v2, K k3, V v3);
+
+    abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K k1, V v1, K k2, V v2);
 
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K key, V value);
 
@@ -1198,4 +1200,11 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         //   java.lang.ClassCastException: io.vavr.collection.List$Cons cannot be cast to java.lang.Comparable
     }
 
+    // -- hashCode
+
+    @Override
+    @Test
+    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+        assertThat(mapOf("a", 2, "b", 1).hashCode()).isNotEqualTo(mapOf("a", 1, "b", 2).hashCode());
+    }
 }

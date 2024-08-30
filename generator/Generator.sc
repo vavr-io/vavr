@@ -4,7 +4,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright 2023 Vavr, https://vavr.io
+ * Copyright 2024 Vavr, https://vavr.io
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2236,7 +2236,7 @@ def generateMainClasses(): Unit = {
 
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else if (i == 1) "Objects.hashCode(_1)" else s"""Objects.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else if (i == 1) "Objects.hashCode(_1)" else if (i == 2) "Objects.hashCode(_1) ^ Objects.hashCode(_2)" else s"""Objects.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
 
             @Override
@@ -3715,7 +3715,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldComputeCorrectHashCode() {
                   final int actual = createTuple().hashCode();
-                  final int expected = ${im.getType("java.util.Objects")}.${if (i == 1) "hashCode" else "hash"}($nullArgs);
+                  final int expected = ${if (i == 2) s"new ${im.getType("java.util.AbstractMap.SimpleEntry")}<>($nullArgs)" else im.getType("java.util.Objects")}.${if (i == 2) "hashCode()" else if (i == 1) s"hashCode($nullArgs)" else s"hash($nullArgs)"};
                   $assertThat(actual).isEqualTo(expected);
               }
 
@@ -3725,8 +3725,6 @@ def generateTestClasses(): Unit = {
                   final String expected = "($nullArgs)";
                   $assertThat(actual).isEqualTo(expected);
               }
-
-              private $comparator<Tuple$i$intGenerics> intTupleComparator = Tuple$i.comparator(${(1 to i).gen($j => s"Integer::compare")(", ")});
 
               private Tuple$i$generics createTuple() {
                   return ${if (i == 0) "Tuple0.instance()" else s"new Tuple$i<>($nullArgs)"};
@@ -3757,7 +3755,7 @@ def genVavrFile(packageName: String, className: String, baseDir: String = TARGET
      *
      * The MIT License (MIT)
      *
-     * Copyright 2023 Vavr, https://vavr.io
+     * Copyright 2024 Vavr, https://vavr.io
      *
      * Permission is hereby granted, free of charge, to any person obtaining a copy
      * of this software and associated documentation files (the "Software"), to deal

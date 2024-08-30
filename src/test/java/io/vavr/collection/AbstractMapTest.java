@@ -4,7 +4,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright 2023 Vavr, https://vavr.io
+ * Copyright 2024 Vavr, https://vavr.io
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -57,8 +57,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 final Iterable<T> expected = (Iterable<T>) obj;
                 final java.util.Map<T, Integer> actualMap = countMap(actual);
                 final java.util.Map<T, Integer> expectedMap = countMap(expected);
-                assertThat(actualMap.size()).isEqualTo(expectedMap.size());
-                actualMap.forEach((k, v) -> assertThat(v).isEqualTo(expectedMap.get(k)));
+                AbstractMapTest.this.assertThat(actualMap.size()).isEqualTo(expectedMap.size());
+                actualMap.forEach((k, v) -> AbstractMapTest.this.assertThat(v).isEqualTo(expectedMap.get(k)));
                 return this;
             }
 
@@ -1441,4 +1441,11 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
+    // -- hashCode
+
+    @Override
+    @Test
+    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+        assertThat(mapOf('a', 2, 'b', 1).hashCode()).isNotEqualTo(mapOf('a', 1, 'b', 2).hashCode());
+    }
 }

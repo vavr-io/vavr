@@ -4,7 +4,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright 2023 Vavr, https://vavr.io
+ * Copyright 2024 Vavr, https://vavr.io
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,8 +27,8 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
-import io.vavr.control.Option;
 import io.vavr.Tuple2;
+import io.vavr.control.Option;
 import org.junit.Test;
 
 import java.math.BigDecimal;
@@ -149,8 +149,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldReturnManyAfterFillWithConstantSupplier() {
         assertThat(fill(17, () -> 7))
-                .hasSize(17)
-                .containsOnly(7);
+          .hasSize(17)
+          .containsOnly(7);
     }
 
     // -- fill(int, T)
@@ -168,22 +168,22 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldReturnManyAfterFillWithConstant() {
         assertThat(fill(17, 7))
-                .hasSize(17)
-                .containsOnly(7);
+          .hasSize(17)
+          .containsOnly(7);
     }
 
     // -- append
 
     @Test
     public void shouldAppendElementToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().append(1);
+        final Seq<Integer> actual = this.<Integer>empty().append(1);
         final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldAppendNullElementToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().append(null);
+        final Seq<Integer> actual = this.<Integer>empty().append(null);
         final Seq<Integer> expected = this.of((Integer) null);
         assertThat(actual).isEqualTo(expected);
     }
@@ -216,7 +216,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldAppendAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().appendAll(of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer>empty().appendAll(of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -233,6 +233,16 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         final Seq<Integer> actual = of(1, 2, 3).appendAll(of(4, 5, 6));
         final Seq<Integer> expected = of(1, 2, 3, 4, 5, 6);
         assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    public void shouldAppendAllWhenUsedWithTypeHierarchy() {
+        final Seq<SomeInterface> empty = of();
+        final Seq<SomeInterface> all = empty
+          .appendAll(of(OneEnum.values()))
+          .appendAll(of(SecondEnum.values()));
+
+        assertThat(all).isEqualTo(this.<SomeInterface>of(OneEnum.A1, OneEnum.A2, OneEnum.A3, SecondEnum.A1, SecondEnum.A2, SecondEnum.A3));
     }
 
     @Test
@@ -305,7 +315,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldComputeCombinationsOfNonEmptyList() {
         assertThat(of(1, 2, 3).combinations())
-                .isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
+          .isEqualTo(of(empty(), of(1), of(2), of(3), of(1, 2), of(1, 3), of(2, 3), of(1, 2, 3)));
     }
 
     // -- asJavaMutable*
@@ -328,9 +338,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldConvertAsJavaAndRethrowException() {
-        assertThatThrownBy(() -> of(1, 2, 3).asJavaMutable(list -> { throw new RuntimeException("test");}))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("test");
+        assertThatThrownBy(() -> of(1, 2, 3).asJavaMutable(list -> {throw new RuntimeException("test");}))
+          .isInstanceOf(RuntimeException.class)
+          .hasMessage("test");
     }
 
     @Test
@@ -351,9 +361,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldConvertAsJavaImmutableAndRethrowException() {
-        assertThatThrownBy(() -> of(1, 2, 3).asJava(list -> { throw new RuntimeException("test");}))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("test");
+        assertThatThrownBy(() -> of(1, 2, 3).asJava(list -> {throw new RuntimeException("test");}))
+          .isInstanceOf(RuntimeException.class)
+          .hasMessage("test");
     }
 
     // -- combinations(k)
@@ -407,7 +417,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldCalculateCrossProductOfNonNil() {
         final List<Tuple2<Integer, Integer>> actual = of(1, 2, 3).crossProduct().toList();
         final List<Tuple2<Integer, Integer>> expected = List.of(Tuple.of(1, 1), Tuple.of(1, 2), Tuple.of(1, 3),
-                Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3), Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
+          Tuple.of(2, 1), Tuple.of(2, 2), Tuple.of(2, 3), Tuple.of(3, 1), Tuple.of(3, 2), Tuple.of(3, 3));
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -455,7 +465,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldCalculateCrossProductOfNonNilAndNonNil() {
         final List<Tuple2<Integer, Character>> actual = of(1, 2, 3).crossProduct(of('a', 'b')).toList();
         final List<Tuple2<Integer, Character>> expected = of(Tuple.of(1, 'a'), Tuple.of(1, 'b'),
-                Tuple.of(2, 'a'), Tuple.of(2, 'b'), Tuple.of(3, 'a'), Tuple.of(3, 'b')).toList();
+          Tuple.of(2, 'a'), Tuple.of(2, 'b'), Tuple.of(3, 'a'), Tuple.of(3, 'b')).toList();
         assertThat(actual).isEqualTo(expected);
     }
 
@@ -463,7 +473,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldThrowWhenCalculatingCrossProductAndThatIsNull() {
         empty().crossProduct(null);
     }
-
 
     // -- dropRightUntil
 
@@ -887,7 +896,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldInsertIntoNil() {
-        final Seq<Integer> actual = this.<Integer> empty().insert(0, 1);
+        final Seq<Integer> actual = this.<Integer>empty().insert(0, 1);
         final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -932,7 +941,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldInsertAllIntoNil() {
-        final Seq<Integer> actual = this.<Integer> empty().insertAll(0, of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer>empty().insertAll(0, of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -1000,7 +1009,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldIntersperseNil() {
-        assertThat(this.<Character> empty().intersperse(',')).isEmpty();
+        assertThat(this.<Character>empty().intersperse(',')).isEmpty();
     }
 
     @Test
@@ -1178,7 +1187,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldComputePermutationsOfNonEmptySeq() {
         assertThat(of(1, 2, 3).permutations())
-                .isEqualTo(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1)));
+          .isEqualTo(of(of(1, 2, 3), of(1, 3, 2), of(2, 1, 3), of(2, 3, 1), of(3, 1, 2), of(3, 2, 1)));
     }
 
     // -- map
@@ -1186,9 +1195,10 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldMapTransformedSeq() {
         final Function<Integer, Integer> mapper = o -> o + 1;
-        assertThat(this.<Integer> empty().map(mapper)).isEmpty();
+        assertThat(this.<Integer>empty().map(mapper)).isEmpty();
         assertThat(of(3, 1, 4, 1, 5).map(mapper)).isEqualTo(of(4, 2, 5, 2, 6));
-        assertThat(of(3, 1, 4, 1, 5, 9, 2).sorted().distinct().drop(1).init().remove(5).map(mapper).tail()).isEqualTo(of(4, 5));
+        assertThat(of(3, 1, 4, 1, 5, 9, 2).sorted().distinct().drop(1).init().remove(5).map(mapper)
+          .tail()).isEqualTo(of(4, 5));
     }
 
     // -- prefixLength
@@ -1226,7 +1236,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPrependElementToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().prepend(1);
+        final Seq<Integer> actual = this.<Integer>empty().prepend(1);
         final Seq<Integer> expected = of(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -1247,7 +1257,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPrependAllNilToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().prependAll(empty());
+        final Seq<Integer> actual = this.<Integer>empty().prependAll(empty());
         final Seq<Integer> expected = empty();
         assertThat(actual).isEqualTo(expected);
     }
@@ -1261,7 +1271,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldPrependAllNonNilToNil() {
-        final Seq<Integer> actual = this.<Integer> empty().prependAll(of(1, 2, 3));
+        final Seq<Integer> actual = this.<Integer>empty().prependAll(of(1, 2, 3));
         final Seq<Integer> expected = of(1, 2, 3);
         assertThat(actual).isEqualTo(expected);
     }
@@ -1482,7 +1492,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldRemoveMultipleTimes() {
-        assertThat(of(3, 1, 4, 1, 5, 9, 2).removeAt(0).removeAt(0).removeAt(4).removeAt(3).removeAt(1)).isEqualTo(of(4, 5));
+        assertThat(of(3, 1, 4, 1, 5, 9, 2).removeAt(0).removeAt(0).removeAt(4).removeAt(3)
+          .removeAt(1)).isEqualTo(of(4, 5));
     }
 
     @Test(expected = IndexOutOfBoundsException.class)
@@ -1721,7 +1732,6 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(1, 2, 3).update(2, 4)).isEqualTo(of(1, 2, 4));
     }
 
-
     // -- higher order update
 
     @Test
@@ -1735,7 +1745,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnNilWhenSliceFrom0To0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().slice(0, 0);
+        final Seq<Integer> actual = this.<Integer>empty().slice(0, 0);
         assertThat(actual).isEmpty();
     }
 
@@ -1825,7 +1835,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortNilUsingComparator() {
-        assertThat(this.<Integer> empty().sorted((i, j) -> j - i)).isEmpty();
+        assertThat(this.<Integer>empty().sorted((i, j) -> j - i)).isEmpty();
     }
 
     @Test
@@ -1837,7 +1847,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortByNilUsingFunction() {
-        assertThat(this.<String> empty().sortBy(String::length)).isEmpty();
+        assertThat(this.<String>empty().sortBy(String::length)).isEmpty();
     }
 
     @Test
@@ -1863,7 +1873,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSortByNilUsingComparatorAndFunction() {
-        assertThat(this.<String> empty().sortBy(String::length)).isEmpty();
+        assertThat(this.<String>empty().sortBy(String::length)).isEmpty();
     }
 
     @Test
@@ -2052,7 +2062,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnNilWhenSubSequenceFrom0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().subSequence(0);
+        final Seq<Integer> actual = this.<Integer>empty().subSequence(0);
         assertThat(actual).isEmpty();
     }
 
@@ -2105,7 +2115,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldReturnNilWhenSubSequenceFrom0To0OnNil() {
-        final Seq<Integer> actual = this.<Integer> empty().subSequence(0, 0);
+        final Seq<Integer> actual = this.<Integer>empty().subSequence(0, 0);
         assertThat(actual).isEmpty();
     }
 
@@ -2202,7 +2212,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     @Test
     public void shouldSearchNegatedInsertionPointMinusOneForAbsentElementsUsingComparator() {
-        assertThat(this.<Integer> empty().search(42, Integer::compareTo)).isEqualTo(-1);
+        assertThat(this.<Integer>empty().search(42, Integer::compareTo)).isEqualTo(-1);
         assertThat(of(10, 20, 30).search(25, Integer::compareTo)).isEqualTo(-3);
     }
 
@@ -2253,13 +2263,13 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     public void shouldTransposeIfMultiValuedIfSymmetric() {
         final Seq<Seq<Integer>> actual = of(
-                of(1, 2, 3),
-                of(4, 5, 6),
-                of(7, 8, 9));
+          of(1, 2, 3),
+          of(4, 5, 6),
+          of(7, 8, 9));
         final Seq<Seq<Integer>> expected = of(
-                of(1, 4, 7),
-                of(2, 5, 8),
-                of(3, 6, 9));
+          of(1, 4, 7),
+          of(2, 5, 8),
+          of(3, 6, 9));
         assertThat(transpose(actual)).isEqualTo(expected);
     }
 
@@ -2267,12 +2277,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     public void shouldTransposeIfMultiValuedWithMoreColumnsThanRows() {
         final Seq<Seq<Integer>> actual = of(
-                of(1, 2, 3),
-                of(4, 5, 6));
+          of(1, 2, 3),
+          of(4, 5, 6));
         final Seq<Seq<Integer>> expected = of(
-                of(1, 4),
-                of(2, 5),
-                of(3, 6));
+          of(1, 4),
+          of(2, 5),
+          of(3, 6));
         assertThat(transpose(actual)).isEqualTo(expected);
     }
 
@@ -2280,12 +2290,12 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     public void shouldTransposeIfMultiValuedWithMoreRowsThanColumns() {
         final Seq<Seq<Integer>> actual = of(
-                of(1, 2),
-                of(3, 4),
-                of(5, 6));
+          of(1, 2),
+          of(3, 4),
+          of(5, 6));
         final Seq<Seq<Integer>> expected = of(
-                of(1, 3, 5),
-                of(2, 4, 6));
+          of(1, 3, 5),
+          of(2, 4, 6));
         assertThat(transpose(actual)).isEqualTo(expected);
     }
 
@@ -2293,8 +2303,8 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     public void shouldBeEqualIfTransposedTwice() {
         final Seq<Seq<Integer>> actual = of(
-                of(1, 2, 3),
-                of(4, 5, 6));
+          of(1, 2, 3),
+          of(4, 5, 6));
         final Seq<? extends Seq<Integer>> transposed = transpose(actual);
         assertThat(transpose(transposed)).isEqualTo(actual);
     }
@@ -2303,11 +2313,11 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @SuppressWarnings("unchecked")
     public void shouldNotTransposeForMissingOrEmptyValues() {
         final Seq<Seq<Integer>> actual = of(
-                of(),
-                of(0, 1),
-                of(2, 3, 4, 5),
-                of(),
-                of(6, 7, 8));
+          of(),
+          of(0, 1),
+          of(2, 3, 4, 5),
+          of(),
+          of(6, 7, 8));
         transpose(actual);
     }
 
@@ -2329,8 +2339,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     @Test
     public void shouldGroupElementsInSeq() {
         assertThat(of(1, 2, 1, 2, 3, 3, 3, 2).group()).isEqualTo(List.of(
-                of(1, 1),
-                of(2, 2, 2),
-                of(3, 3, 3)));
+          of(1, 1),
+          of(2, 2, 2),
+          of(3, 3, 3)));
+    }
+
+    private interface SomeInterface {
+    }
+
+    enum OneEnum implements SomeInterface {
+        A1, A2, A3;
+    }
+
+    enum SecondEnum implements SomeInterface {
+        A1, A2, A3;
     }
 }
