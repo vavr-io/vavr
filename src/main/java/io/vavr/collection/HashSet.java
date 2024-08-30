@@ -31,9 +31,23 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
 
-import java.io.*;
-import java.util.*;
-import java.util.function.*;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
@@ -97,12 +111,12 @@ import java.util.stream.Collector;
  * @param <T> the element type
  */
 @SuppressWarnings("deprecation")
-public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements Set<T>, Serializable {
+public final class HashSet<T> implements Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     private static final HashSet<?> EMPTY = new HashSet<>(ChampTrie.BitmapIndexedNode.emptyNode(), 0);
-
+    private final ChampTrie.BitmapIndexedNode<T> root;
     /**
      * The size of the set.
      */
@@ -116,7 +130,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
     static final int SALT = 0;//new Random().nextInt();
 
     HashSet(ChampTrie.BitmapIndexedNode<T> root, int size) {
-        super(root.nodeMap(), root.dataMap(), root.mixed);
+        this.root = root;
         this.size = size;
     }
 
@@ -214,9 +228,10 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
      * @param <T>      The value type
      * @return A new HashSet containing the given entries
      */
+    @SuppressWarnings("unchecked")
     public static <T> HashSet<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        return HashSet.<T>of().addAll(elements);
+        return elements instanceof HashSet? (HashSet<T>) elements :HashSet.<T>of().addAll(elements);
     }
 
     /**
@@ -539,7 +554,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
     public HashSet<T> add(T element) {
         int keyHash = keyHash(element);
         ChampTrie.ChangeEvent<T> details = new ChampTrie.ChangeEvent<>();
-        ChampTrie.BitmapIndexedNode<T> newRootNode = put(null, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, HashSet::keyHash);
+        ChampTrie.BitmapIndexedNode<T> newRootNode = root.put(null, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, HashSet::keyHash);
         if (details.isModified()) {
             return new HashSet<>(newRootNode, size + 1);
         }
@@ -558,11 +573,16 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
         return oldElement;
     }
 
+
     @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> addAll(Iterable<? extends T> elements) {
+        if(isEmpty()&&elements instanceof HashSet){
+            return (HashSet<T>) elements;
+        }
         TransientHashSet<T> t = toTransient();
-        t.addAll(elements);return t.toImmutable();
+        t.addAll(elements);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
@@ -572,7 +592,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
 
     @Override
     public boolean contains(T element) {
-        return find(element, keyHash(element), 0, Objects::equals) != ChampTrie.Node.NO_DATA;
+        return root.find(element, keyHash(element), 0, Objects::equals) != ChampTrie.Node.NO_DATA;
     }
 
     @Override
@@ -631,9 +651,9 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
 
     @Override
     public HashSet<T> filter(Predicate<? super T> predicate) {
-        TransientHashSet<T> t=toTransient();
+        TransientHashSet<T> t = toTransient();
         t.filterAll(predicate);
-        return t.toImmutable();
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
@@ -678,7 +698,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty set");
         }
-        return ChampTrie.Node.getFirst(this);
+        return ChampTrie.Node.getFirst(root);
     }
 
     @Override
@@ -703,7 +723,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
 
     @Override
     public HashSet<T> intersect(Set<? extends T> elements) {
-                return retainAll(elements);
+        return retainAll(elements);
     }
 
     /**
@@ -740,12 +760,14 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
     public Iterator<T> iterator() {
         return new ChampIteration.IteratorFacade<>(spliterator());
     }
+
     static int keyHash(Object e) {
         return SALT ^ Objects.hashCode(e);
     }
+
     @Override
     public T last() {
-        return ChampTrie.Node.getLast(this);
+        return ChampTrie.Node.getLast(root);
     }
 
     @Override
@@ -804,7 +826,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
     public HashSet<T> remove(T key) {
         int keyHash = keyHash(key);
         ChampTrie.ChangeEvent<T> details = new ChampTrie.ChangeEvent<>();
-        ChampTrie.BitmapIndexedNode<T> newRootNode = remove(null, key, keyHash, 0, details, Objects::equals);
+        ChampTrie.BitmapIndexedNode<T> newRootNode = root.remove(null, key, keyHash, 0, details, Objects::equals);
         if (details.isModified()) {
             return size == 1 ? HashSet.empty() : new HashSet<>(newRootNode, size - 1);
         }
@@ -814,7 +836,8 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
     @Override
     public HashSet<T> removeAll(Iterable<? extends T> elements) {
         TransientHashSet<T> t = toTransient();
-        t.removeAll(elements);return t.toImmutable();
+        t.removeAll(elements);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
@@ -832,7 +855,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
     public HashSet<T> retainAll(Iterable<? extends T> elements) {
         TransientHashSet<T> t = toTransient();
         t.retainAll(elements);
-        return t.toImmutable();
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
@@ -874,7 +897,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
 
     @Override
     public Spliterator<T> spliterator() {
-        return new ChampIteration.ChampSpliterator<>(this, Function.identity(),
+        return new ChampIteration.ChampSpliterator<>(root, Function.identity(),
                 Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
     }
 
@@ -947,7 +970,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
     @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> union(Set<? extends T> elements) {
-            return addAll(elements);
+        return addAll(elements);
     }
 
     @Override
@@ -1084,7 +1107,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
                 throw new InvalidObjectException("No elements");
             }
             ChampTrie.IdentityObject owner = new ChampTrie.IdentityObject();
-            ChampTrie.BitmapIndexedNode<T> newRoot = emptyNode();
+            ChampTrie.BitmapIndexedNode<T> newRoot = ChampTrie.BitmapIndexedNode.emptyNode();
             ChampTrie.ChangeEvent<T> details = new ChampTrie.ChangeEvent<>();
             int newSize = 0;
             for (int i = 0; i < size; i++) {
@@ -1117,7 +1140,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
      */
     static class TransientHashSet<E> extends ChampTransience.ChampAbstractTransientSet<E, E> {
         TransientHashSet(HashSet<E> s) {
-            root = s;
+            root = s.root;
             size = s.size;
         }
 
@@ -1129,7 +1152,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
             owner = null;
             return isEmpty()
                     ? empty()
-                    : root instanceof HashSet ? (HashSet<E>) root : new HashSet<>(root, size);
+                    : new HashSet<>(root, size);
         }
 
         boolean add(E e) {
@@ -1152,14 +1175,14 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
             }
             if (isEmpty() && (c instanceof HashSet<?>)) {
                 HashSet<?> cc = (HashSet<?>) c;
-                root = (ChampTrie.BitmapIndexedNode<E>) cc;
+                root = (ChampTrie.BitmapIndexedNode<E>) cc.root;
                 size = cc.size;
                 return true;
             }
             if (c instanceof HashSet<?>) {
                 HashSet<?> that = (HashSet<?>) c;
                 ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
-                ChampTrie.BitmapIndexedNode<E> newRootNode = root.putAll(makeOwner(), (ChampTrie.Node<E>) that, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampTrie.ChangeEvent<>());
+                ChampTrie.BitmapIndexedNode<E> newRootNode = root.putAll(makeOwner(), (ChampTrie.Node<E>) that.root, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampTrie.ChangeEvent<>());
                 if (bulkChange.inBoth == that.size()) {
                     return false;
                 }
@@ -1207,7 +1230,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
             if (c instanceof HashSet<?>) {
                 HashSet<?> that = (HashSet<?>) c;
                 ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
-                ChampTrie.BitmapIndexedNode<E> newRootNode = root.removeAll(makeOwner(), (ChampTrie.BitmapIndexedNode<E>) that, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampTrie.ChangeEvent<>());
+                ChampTrie.BitmapIndexedNode<E> newRootNode = root.removeAll(makeOwner(), (ChampTrie.BitmapIndexedNode<E>) that.root, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampTrie.ChangeEvent<>());
                 if (bulkChange.removed == 0) {
                     return false;
                 }
@@ -1220,7 +1243,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
         }
 
         void clear() {
-            root = emptyNode();
+            root = ChampTrie.BitmapIndexedNode.emptyNode();
             size = 0;
             modCount++;
         }
@@ -1239,7 +1262,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
             ChampTrie.BitmapIndexedNode<E> newRootNode;
             if (c instanceof HashSet<?>) {
                 HashSet<?> that = (HashSet<?>) c;
-                newRootNode = root.retainAll(makeOwner(), (ChampTrie.BitmapIndexedNode<E>) that, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampTrie.ChangeEvent<>());
+                newRootNode = root.retainAll(makeOwner(), (ChampTrie.BitmapIndexedNode<E>) that.root, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampTrie.ChangeEvent<>());
             } else if (c instanceof Collection<?>) {
                 Collection<?> that = (Collection<?>) c;
                 newRootNode = root.filterAll(makeOwner(), that::contains, 0, bulkChange);
@@ -1260,7 +1283,7 @@ public final class HashSet<T> extends ChampTrie.BitmapIndexedNode<T> implements 
         public boolean filterAll(Predicate<? super E> predicate) {
             ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
             ChampTrie.BitmapIndexedNode<E> newRootNode
-                = root.filterAll(makeOwner(),predicate,0,bulkChange);
+                    = root.filterAll(makeOwner(), predicate, 0, bulkChange);
             if (bulkChange.removed == 0) {
                 return false;
             }
