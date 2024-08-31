@@ -195,7 +195,7 @@ nexusPublishing {
     repositories {
         sonatype {
             username.set(providers.systemProperty("ossrhUsername").orElse("").forUseAtConfigurationTime())
-            password.set(providers.systemProperty("ossrhPassword").orElse("").forUseAtConfigurationTime())
+            password.set(providers.systemProperty("ossrhPassword").orElse("").forUseAtConfigurationTime())        
         }
     }
 }
