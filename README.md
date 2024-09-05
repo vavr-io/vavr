@@ -5,9 +5,10 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.vavr/vavr/badge.svg?style=flat-square)](http://search.maven.org/#search|gav|1|g:"io.vavr"%20AND%20a:"vavr")
 [![Build Status](https://github.com/vavr-io/vavr/actions/workflows/build.yml/badge.svg)](https://github.com/vavr-io/vavr/actions/workflows/build.yml)
 [![Code Coverage](https://codecov.io/gh/vavr-io/vavr/branch/master/graph/badge.svg)](https://codecov.io/gh/vavr-io/vavr)
-[![Gitter Chat](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/vavr-io/vavr)
 
-[![vavr-logo](https://user-images.githubusercontent.com/743833/62367542-486f0500-b52a-11e9-815e-e9788d4c8c8d.png)](http://vavr.io/)
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/743833/62367542-486f0500-b52a-11e9-815e-e9788d4c8c8d.png" alt="Vavr's custom image"/>
+</p>
 
 Vavr is an object-functional language extension to Java 8 that aims to reduce the number of lines of code and increase code quality.
 It provides persistent collections, functional abstractions for error handling, concurrent programming, pattern matching, and much more.
