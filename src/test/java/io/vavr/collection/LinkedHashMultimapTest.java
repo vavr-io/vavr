@@ -98,6 +98,20 @@ public class LinkedHashMultimapTest extends AbstractMultimapTest {
     }
 
     @Override
+    protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K k1, V v1, K k2, V v2) {
+        switch (containerType) {
+            case SEQ:
+                return LinkedHashMultimap.withSeq().of(k1, v1, k2, v2);
+            case SET:
+                return LinkedHashMultimap.withSet().of(k1, v1, k2, v2);
+            case SORTED_SET:
+                return LinkedHashMultimap.withSortedSet(Comparators.naturalComparator()).of(k1, v1, k2, v2);
+            default:
+                throw new RuntimeException();
+        }
+    }
+
+    @Override
     protected <K extends Comparable<K>, V> LinkedHashMultimap<K, V> mapOf(K key, V value) {
         switch (containerType) {
             case SEQ:

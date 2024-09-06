@@ -312,8 +312,6 @@ public class Tuple5Test {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Comparator<Tuple5<Integer, Integer, Integer, Integer, Integer>> intTupleComparator = Tuple5.comparator(Integer::compare, Integer::compare, Integer::compare, Integer::compare, Integer::compare);
-
     private Tuple5<Object, Object, Object, Object, Object> createTuple() {
         return new Tuple5<>(null, null, null, null, null);
     }

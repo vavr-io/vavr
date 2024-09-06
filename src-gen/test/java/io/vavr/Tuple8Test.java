@@ -412,8 +412,6 @@ public class Tuple8Test {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Comparator<Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer>> intTupleComparator = Tuple8.comparator(Integer::compare, Integer::compare, Integer::compare, Integer::compare, Integer::compare, Integer::compare, Integer::compare, Integer::compare);
-
     private Tuple8<Object, Object, Object, Object, Object, Object, Object, Object> createTuple() {
         return new Tuple8<>(null, null, null, null, null, null, null, null);
     }

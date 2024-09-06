@@ -212,6 +212,8 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
 
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOfPairs(K k1, V v1, K k, V v2, K k3, V v3);
 
+    abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K k1, V v1, K k2, V v2);
+
     abstract protected <K extends Comparable<K>, V> Multimap<K, V> mapOf(K key, V value);
 
     abstract protected <K extends Comparable<? super K>, V> Multimap<K, V> mapOf(java.util.Map<? extends K, ? extends V> map);
@@ -1231,4 +1233,11 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
         //   java.lang.ClassCastException: io.vavr.collection.List$Cons cannot be cast to java.lang.Comparable
     }
 
+    // -- hashCode
+
+    @Override
+    @Test
+    public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
+        assertThat(mapOf("a", 2, "b", 1).hashCode()).isNotEqualTo(mapOf("a", 1, "b", 2).hashCode());
+    }
 }

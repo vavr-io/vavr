@@ -203,8 +203,6 @@ public class Tuple1Test {
         assertThat(actual).isEqualTo(expected);
     }
 
-    private Comparator<Tuple1<Integer>> intTupleComparator = Tuple1.comparator(Integer::compare);
-
     private Tuple1<Object> createTuple() {
         return new Tuple1<>(null);
     }

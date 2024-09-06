@@ -164,7 +164,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple2() {
         final Tuple2<?, ?> t = tuple2();
-        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2));
+        assertThat(t.hashCode()).isEqualTo(new AbstractMap.SimpleEntry<>(t._1, t._2).hashCode());
     }
 
     @Test
