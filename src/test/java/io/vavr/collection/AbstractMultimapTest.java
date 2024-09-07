@@ -1236,7 +1236,7 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
     // -- hashCode
 
     @Override
-    @Test
+    @TestTemplate
     public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
         assertThat(mapOf("a", 2, "b", 1).hashCode()).isNotEqualTo(mapOf("a", 1, "b", 2).hashCode());
     }
