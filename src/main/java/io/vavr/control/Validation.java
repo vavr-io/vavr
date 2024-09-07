@@ -217,6 +217,12 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      *  );
      * }</pre>
      *
+     * @param <E>    value type in the case of invalid
+     * @param <T>    value type in the case of valid
+     * @param values An iterable of Validation instances.
+     * @return A valid Validation of the last value if all Validation instances are valid
+     * or an invalid Validation containing an accumulated List of errors.
+     * @throws NullPointerException if values is null
      * @see #all(Traversable)
      */
     @SuppressWarnings("varargs")
@@ -228,7 +234,7 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     /**
      * Combine many {@code Validation} of the same type into a single {@code Validation} with a list of invalid values.
-     *
+     * <p>
      *
      * @param <E>    value type in the case of invalid
      * @param <T>    value type in the case of valid
@@ -771,7 +777,7 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * Whereas map only performs a mapping on a valid Validation, and mapError performs a mapping on an invalid
      * Validation, bimap allows you to provide mapping actions for both, and will give you the result based
      * on what type of Validation this is. Without this, you would have to do something like:
-     *
+     * <p>
      * validation.map(...).mapError(...);
      *
      * @param <E2>        type of the mapping result if this is an invalid
@@ -1061,8 +1067,8 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     public static final class Builder<E, T1, T2> {
 
-        private Validation<E, T1> v1;
-        private Validation<E, T2> v2;
+        private final Validation<E, T1> v1;
+        private final Validation<E, T2> v2;
 
         private Builder(Validation<E, T1> v1, Validation<E, T2> v2) {
             this.v1 = v1;
@@ -1081,9 +1087,9 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     public static final class Builder3<E, T1, T2, T3> {
 
-        private Validation<E, T1> v1;
-        private Validation<E, T2> v2;
-        private Validation<E, T3> v3;
+        private final Validation<E, T1> v1;
+        private final Validation<E, T2> v2;
+        private final Validation<E, T3> v3;
 
         private Builder3(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3) {
             this.v1 = v1;
@@ -1103,10 +1109,10 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     public static final class Builder4<E, T1, T2, T3, T4> {
 
-        private Validation<E, T1> v1;
-        private Validation<E, T2> v2;
-        private Validation<E, T3> v3;
-        private Validation<E, T4> v4;
+        private final Validation<E, T1> v1;
+        private final Validation<E, T2> v2;
+        private final Validation<E, T3> v3;
+        private final Validation<E, T4> v4;
 
         private Builder4(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4) {
             this.v1 = v1;
@@ -1127,11 +1133,11 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     public static final class Builder5<E, T1, T2, T3, T4, T5> {
 
-        private Validation<E, T1> v1;
-        private Validation<E, T2> v2;
-        private Validation<E, T3> v3;
-        private Validation<E, T4> v4;
-        private Validation<E, T5> v5;
+        private final Validation<E, T1> v1;
+        private final Validation<E, T2> v2;
+        private final Validation<E, T3> v3;
+        private final Validation<E, T4> v4;
+        private final Validation<E, T5> v5;
 
         private Builder5(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5) {
             this.v1 = v1;
@@ -1153,12 +1159,12 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     public static final class Builder6<E, T1, T2, T3, T4, T5, T6> {
 
-        private Validation<E, T1> v1;
-        private Validation<E, T2> v2;
-        private Validation<E, T3> v3;
-        private Validation<E, T4> v4;
-        private Validation<E, T5> v5;
-        private Validation<E, T6> v6;
+        private final Validation<E, T1> v1;
+        private final Validation<E, T2> v2;
+        private final Validation<E, T3> v3;
+        private final Validation<E, T4> v4;
+        private final Validation<E, T5> v5;
+        private final Validation<E, T6> v6;
 
         private Builder6(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5, Validation<E, T6> v6) {
             this.v1 = v1;
@@ -1181,13 +1187,13 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     public static final class Builder7<E, T1, T2, T3, T4, T5, T6, T7> {
 
-        private Validation<E, T1> v1;
-        private Validation<E, T2> v2;
-        private Validation<E, T3> v3;
-        private Validation<E, T4> v4;
-        private Validation<E, T5> v5;
-        private Validation<E, T6> v6;
-        private Validation<E, T7> v7;
+        private final Validation<E, T1> v1;
+        private final Validation<E, T2> v2;
+        private final Validation<E, T3> v3;
+        private final Validation<E, T4> v4;
+        private final Validation<E, T5> v5;
+        private final Validation<E, T6> v6;
+        private final Validation<E, T7> v7;
 
         private Builder7(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5, Validation<E, T6> v6, Validation<E, T7> v7) {
             this.v1 = v1;
@@ -1211,14 +1217,14 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
 
     public static final class Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> {
 
-        private Validation<E, T1> v1;
-        private Validation<E, T2> v2;
-        private Validation<E, T3> v3;
-        private Validation<E, T4> v4;
-        private Validation<E, T5> v5;
-        private Validation<E, T6> v6;
-        private Validation<E, T7> v7;
-        private Validation<E, T8> v8;
+        private final Validation<E, T1> v1;
+        private final Validation<E, T2> v2;
+        private final Validation<E, T3> v3;
+        private final Validation<E, T4> v4;
+        private final Validation<E, T5> v5;
+        private final Validation<E, T6> v6;
+        private final Validation<E, T7> v7;
+        private final Validation<E, T8> v8;
 
         private Builder8(Validation<E, T1> v1, Validation<E, T2> v2, Validation<E, T3> v3, Validation<E, T4> v4, Validation<E, T5> v5, Validation<E, T6> v6, Validation<E, T7> v7, Validation<E, T8> v8) {
             this.v1 = v1;

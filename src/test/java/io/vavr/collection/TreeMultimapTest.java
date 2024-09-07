@@ -1,8 +1,7 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple2;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.TestTemplate;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -212,7 +211,7 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     // -- static narrow
 
-    @Test
+    @TestTemplate
     public void shouldNarrowMap() {
         final TreeMultimap<Integer, Number> int2doubleMap = (TreeMultimap<Integer, Number>) this.<Integer, Number> emptyMap().put(1, 1.0d);
         final TreeMultimap<Number, Number> number2numberMap = TreeMultimap.narrow(int2doubleMap);
@@ -222,19 +221,19 @@ public class TreeMultimapTest extends AbstractMultimapTest {
 
     // -- spliterator
 
-    @Test
+    @TestTemplate
     public void shouldNotHaveSortedSpliterator() {
         assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
     }
 
-    @Test
+    @TestTemplate
     public void shouldNotHaveOrderedSpliterator() {
         assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isFalse();
     }
 
     // -- isSequential()
 
-    @Test
+    @TestTemplate
     public void shouldReturnTrueWhenIsSequentialCalled() {
         assertThat(of(1, 2, 3).isSequential()).isFalse();
     }

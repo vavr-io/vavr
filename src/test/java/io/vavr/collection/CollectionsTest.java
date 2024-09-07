@@ -28,10 +28,9 @@ package io.vavr.collection;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
-import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

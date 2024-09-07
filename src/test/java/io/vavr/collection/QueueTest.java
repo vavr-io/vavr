@@ -29,7 +29,7 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -39,6 +39,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class QueueTest extends AbstractLinearSeqTest {
 
@@ -261,9 +263,9 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     // -- peek
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailPeekOfEmpty() {
-        Queue.empty().peek();
+        assertThrows(NoSuchElementException.class, () -> Queue.empty().peek());
     }
 
     @Test
@@ -279,9 +281,9 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     // -- dequeue
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailDequeueOfEmpty() {
-        Queue.empty().dequeue();
+        assertThrows(NoSuchElementException.class, () -> Queue.empty().dequeue());
     }
 
     @Test

@@ -26,11 +26,12 @@
  */
 package io.vavr.collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class RedBlackTreeTest {
 
@@ -60,19 +61,19 @@ public class RedBlackTreeTest {
         assertThat(tree.color()).isEqualTo(RedBlackTree.Color.BLACK);
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldFailLeftOfEmpty() {
-        empty().left();
+        assertThrows(UnsupportedOperationException.class, () -> empty().left());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldFailRightOfEmpty() {
-        empty().right();
+        assertThrows(UnsupportedOperationException.class, () -> empty().right());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailValueOfEmpty() {
-        empty().value();
+        assertThrows(NoSuchElementException.class, () -> empty().value());
     }
 
     // isEmpty
@@ -153,9 +154,9 @@ public class RedBlackTreeTest {
         assertThat(Collections.areEqual(actual, expected)).isTrue();
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotInsertNullTwoTimesIntoEmptyTreeBecauseComparatorCalled() {
-        RedBlackTreeTest.<Integer> empty().insert(null).insert(null);
+        assertThrows(NullPointerException.class, () -> RedBlackTreeTest.<Integer>empty().insert(null).insert(null));
     }
 
     @Test

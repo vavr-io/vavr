@@ -26,8 +26,8 @@
  */
 package io.vavr.collection;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -36,6 +36,7 @@ import java.util.Spliterator;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.reverseOrder;
 import static io.vavr.TestComparators.toStringComparator;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class AbstractSortedSetTest extends AbstractSetTest {
 
@@ -111,7 +112,7 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     public void shouldReturnInitOfNonEmptyHavingNaturalOrder() {
         assertThat(of(naturalOrder(), 1, 2, 3, 4).init()).isEqualTo(of(naturalOrder(), 1, 2, 3));
     }
-    
+
     @Test
     public void shouldReturnInitOfNonEmptyHavingReversedOrder() {
         assertThat(of(reverseOrder(), 1, 2, 3, 4).init()).isEqualTo(of(naturalOrder(), 2, 3, 4));
@@ -123,7 +124,7 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     public void shouldReturnLastOfNonEmptyHavingNaturalOrder() {
         assertThat(of(naturalOrder(), 1, 2, 3, 4).last()).isEqualTo(4);
     }
-    
+
     @Test
     public void shouldReturnLastOfNonEmptyHavingReversedOrder() {
         assertThat(of(reverseOrder(), 1, 2, 3, 4).last()).isEqualTo(1);
@@ -154,10 +155,10 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     // -- toSortedSet
 
     @Override
-    @Test(expected = ClassCastException.class)
-    @Ignore("SortedSet in test always created with working comparator, and because method toSortedSet() return same object will never throw ClassCastException")
+    @Test
+    @Disabled("SortedSet in test always created with working comparator, and because method toSortedSet() return same object will never throw ClassCastException")
     public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
-        super.shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable();
+        assertThrows(ClassCastException.class, () -> super.shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable());
     }
 
     // -- spliterator

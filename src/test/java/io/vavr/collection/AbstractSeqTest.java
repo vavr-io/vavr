@@ -29,7 +29,7 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -40,6 +40,7 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests all methods defined in {@link Seq}.
@@ -202,9 +203,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     // -- appendAll
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowOnAppendAllOfNull() {
-        empty().appendAll(null);
+        assertThrows(NullPointerException.class, () -> empty().appendAll(null));
     }
 
     @Test
@@ -469,9 +470,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCalculatingCrossProductAndThatIsNull() {
-        empty().crossProduct(null);
+        assertThrows(NullPointerException.class, () -> empty().crossProduct(null));
     }
 
     // -- dropRightUntil
@@ -527,24 +528,24 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     // -- get
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenGetWithNegativeIndexOnNil() {
-        empty().get(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().get(-1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenGetWithNegativeIndexOnNonNil() {
-        of(1).get(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1).get(-1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenGetOnNil() {
-        empty().get(0);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().get(0));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenGetWithTooBigIndexOnNonNil() {
-        of(1).get(1);
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1).get(1));
     }
 
     @Test
@@ -810,14 +811,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(0, 1, 2, -1, 0, 1, 2).indexWhereOption(i -> i == 8, 3)).isEqualTo(Option.none());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldFailIndexWhereNullPredicate() {
-        of(1).indexWhere(null);
+        assertThrows(NullPointerException.class, () -> of(1).indexWhere(null));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldFailIndexWhereNullPredicateFrom() {
-        of(1).indexWhere(null, 0);
+        assertThrows(NullPointerException.class, () -> of(1).indexWhere(null, 0));
     }
 
     // -- lastIndexWhere
@@ -843,14 +844,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(of(0, 1, 2, -1, 0, 1, 2).lastIndexWhereOption(i -> i == 8, 3)).isEqualTo(Option.none());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldFailLastIndexWhereNullPredicate() {
-        of(1).lastIndexWhere(null);
+        assertThrows(NullPointerException.class, () -> of(1).lastIndexWhere(null));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldFailLastIndexWhereNullPredicateFrom() {
-        of(1).lastIndexWhere(null, 0);
+        assertThrows(NullPointerException.class, () -> of(1).lastIndexWhere(null, 0));
     }
 
     // -- endsWith
@@ -922,19 +923,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenInsertOnNonNilWithNegativeIndex() {
-        of(1).insert(-1, null);
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1).insert(-1, null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenInsertOnNilWithNegativeIndex() {
-        empty().insert(-1, null);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().insert(-1, null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnInsertWhenExceedingUpperBound() {
-        empty().insert(1, null);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().insert(1, null));
     }
 
     // -- insertAll
@@ -967,24 +968,24 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowOnInsertAllWithNil() {
-        empty().insertAll(0, null);
+        assertThrows(NullPointerException.class, () -> empty().insertAll(0, null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenInsertOnNonNilAllWithNegativeIndex() {
-        of(1).insertAll(-1, empty());
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1).insertAll(-1, empty()));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenInsertOnNilAllWithNegativeIndex() {
-        empty().insertAll(-1, empty());
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().insertAll(-1, empty()));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnInsertAllWhenExceedingUpperBound() {
-        empty().insertAll(1, empty());
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().insertAll(1, empty()));
     }
 
     @Test
@@ -1031,9 +1032,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     // -- iterator(int)
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenNilIteratorStartingAtIndex() {
-        empty().iterator(1);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().iterator(1));
     }
 
     @Test
@@ -1211,9 +1212,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(empty().prefixLength(i -> true)).isEqualTo(0);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowPrefixLengthNullPredicate() {
-        of(1).prefixLength(null);
+        assertThrows(NullPointerException.class, () -> of(1).prefixLength(null));
     }
 
     // -- segmentLength
@@ -1227,9 +1228,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(empty().segmentLength(i -> true, 1)).isEqualTo(0);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowSegmentLengthNullPredicate() {
-        of(1).segmentLength(null, 0);
+        assertThrows(NullPointerException.class, () -> of(1).segmentLength(null, 0));
     }
 
     // -- prepend
@@ -1250,9 +1251,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     // -- prependAll
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowOnPrependAllOfNull() {
-        empty().prependAll(null);
+        assertThrows(NullPointerException.class, () -> empty().prependAll(null));
     }
 
     @Test
@@ -1470,9 +1471,9 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     // -- removeAt(index)
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldRemoveIndexAtNil() {
-        assertThat(empty().removeAt(1)).isEmpty();
+        assertThrows(IndexOutOfBoundsException.class, () -> assertThat(empty().removeAt(1)).isEmpty());
     }
 
     @Test
@@ -1496,14 +1497,14 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
           .removeAt(1)).isEqualTo(of(4, 5));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldRemoveIndexOutOfBoundsLeft() {
-        assertThat(of(1, 2, 3).removeAt(-1)).isEqualTo(of(1, 2, 3));
+        assertThrows(IndexOutOfBoundsException.class, () -> assertThat(of(1, 2, 3).removeAt(-1)).isEqualTo(of(1, 2, 3)));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldRemoveIndexOutOfBoundsRight() {
-        assertThat(of(1, 2, 3).removeAt(5)).isEqualTo(of(1, 2, 3));
+        assertThrows(IndexOutOfBoundsException.class, () -> assertThat(of(1, 2, 3).removeAt(5)).isEqualTo(of(1, 2, 3)));
     }
 
     // -- reverse
@@ -1697,29 +1698,29 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     // -- update
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdatedWithNegativeIndexOnNil() {
-        empty().update(-1, (Integer) null);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().update(-1, (Integer) null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdatedWithNegativeIndexOnNonNil() {
-        of(1).update(-1, 2);
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1).update(-1, 2));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdatedOnNil() {
-        empty().update(0, (Integer) null);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().update(0, (Integer) null));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdatedWithIndexExceedingByOneOnNonNil() {
-        of(1).update(1, 2);
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1).update(1, 2));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenUpdatedWithIndexExceedingByTwoOnNonNil() {
-        of(1).update(2, 2);
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1).update(2, 2));
     }
 
     @Test
@@ -2090,19 +2091,19 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEmpty();
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSubSequenceOnNil() {
-        empty().subSequence(1);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().subSequence(1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSubSequenceWithOutOfLowerBound() {
-        of(1, 2, 3).subSequence(-1);
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1, 2, 3).subSequence(-1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSubSequenceWithOutOfUpperBound() {
-        of(1, 2, 3).subSequence(4);
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1, 2, 3).subSequence(4));
     }
 
     @Test
@@ -2149,39 +2150,39 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(actual).isEmpty();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexIsGreaterThanEndIndex() {
-        of(1, 2, 3).subSequence(1, 0);
+        assertThrows(IllegalArgumentException.class, () -> of(1, 2, 3).subSequence(1, 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowOnSubSequenceOnNilWhenBeginIndexIsGreaterThanEndIndex() {
-        empty().subSequence(1, 0);
+        assertThrows(IllegalArgumentException.class, () -> empty().subSequence(1, 0));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSubSequenceOnNonNilWhenBeginIndexExceedsLowerBound() {
-        of(1, 2, 3).subSequence(-1, 2);
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1, 2, 3).subSequence(-1, 2));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSubSequenceOnNilWhenBeginIndexExceedsLowerBound() {
-        empty().subSequence(-1, 2);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().subSequence(-1, 2));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowWhenSubSequence2OnNil() {
-        empty().subSequence(0, 1);
+        assertThrows(IndexOutOfBoundsException.class, () -> empty().subSequence(0, 1));
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
+    @Test
     public void shouldThrowOnSubSequenceWhenEndIndexExceedsUpperBound() {
-        of(1, 2, 3).subSequence(1, 4).mkString(); // force computation of last element, e.g. because Stream is lazy
+        assertThrows(IndexOutOfBoundsException.class, () -> of(1, 2, 3).subSequence(1, 4).mkString()); // force computation of last element, e.g. because Stream is lazy
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowOnSubSequenceWhenBeginIndexIsGreaterThanEndIndex() {
-        of(1, 2, 3).subSequence(2, 1).mkString(); // force computation of last element, e.g. because Stream is lazy
+        assertThrows(IllegalArgumentException.class, () -> of(1, 2, 3).subSequence(2, 1).mkString()); // force computation of last element, e.g. because Stream is lazy
     }
 
     @Test
@@ -2309,9 +2310,10 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
         assertThat(transpose(transposed)).isEqualTo(actual);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     @SuppressWarnings("unchecked")
     public void shouldNotTransposeForMissingOrEmptyValues() {
+        assertThrows(IllegalArgumentException.class, () -> {
         final Seq<Seq<Integer>> actual = of(
           of(),
           of(0, 1),
@@ -2319,6 +2321,7 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
           of(),
           of(6, 7, 8));
         transpose(actual);
+        });
     }
 
     // -- IndexedSeq special cases

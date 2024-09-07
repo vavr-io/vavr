@@ -3,8 +3,8 @@ package io.vavr.issues;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ public class Issue2559Test {
 
     private java.util.Map<String, Eat> fruitsBeingEaten = new java.util.HashMap<>();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         fruitsBeingEaten = new java.util.HashMap<>();
     }

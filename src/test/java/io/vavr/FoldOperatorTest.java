@@ -26,7 +26,7 @@
  */
 package io.vavr;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.List;
 import static org.assertj.core.api.Assertions.assertThat;
