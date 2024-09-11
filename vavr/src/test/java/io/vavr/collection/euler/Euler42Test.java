@@ -24,7 +24,7 @@ import io.vavr.collection.CharSeq;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.collection.euler.Utils.file;
 import static io.vavr.collection.euler.Utils.readLines;

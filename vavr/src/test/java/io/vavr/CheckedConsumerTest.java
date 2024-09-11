@@ -19,8 +19,8 @@
  */
 package io.vavr;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
@@ -111,7 +111,7 @@ public class CheckedConsumerTest {
         try {
             consumer.accept(null);
         } catch(Throwable x) {
-            Assert.fail("Did not excepect an exception but received: " + x.getMessage());
+            Assertions.fail("Did not excepect an exception but received: " + x.getMessage());
         }
     }
 
@@ -120,7 +120,7 @@ public class CheckedConsumerTest {
         final Consumer<Object> consumer = CheckedConsumer.of(obj -> { throw new Error(); }).unchecked();
         try {
             consumer.accept(null);
-            Assert.fail("Did excepect an exception.");
+            Assertions.fail("Did excepect an exception.");
         } catch(Error x) {
             // ok!
         }

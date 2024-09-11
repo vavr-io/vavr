@@ -26,10 +26,11 @@ import io.vavr.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
@@ -42,6 +43,8 @@ import java.util.stream.Collector;
 
 import static io.vavr.collection.Iterator.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 public class IteratorTest extends AbstractTraversableTest {
 
@@ -199,9 +202,9 @@ public class IteratorTest extends AbstractTraversableTest {
         return 3;
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyArgList() {
-        of().next();
+        assertThrows(NoSuchElementException.class, () -> of().next());
     }
 
     // -- static narrow()
@@ -216,49 +219,49 @@ public class IteratorTest extends AbstractTraversableTest {
 
     // -- static ofAll()
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyIterable() {
-        ofAll(List.empty()).next();
+        assertThrows(NoSuchElementException.class, () -> ofAll(List.empty()).next());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyBoolean() {
-        ofAll(new boolean[0]).next();
+        assertThrows(NoSuchElementException.class, () -> ofAll(new boolean[0]).next());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyByte() {
-        ofAll(new byte[0]).next();
+        assertThrows(NoSuchElementException.class, () -> ofAll(new byte[0]).next());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyChar() {
-        ofAll(new char[0]).next();
+        assertThrows(NoSuchElementException.class, () -> ofAll(new char[0]).next());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyDouble() {
-        ofAll(new double[0]).next();
+        assertThrows(NoSuchElementException.class, () -> ofAll(new double[0]).next());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyFloat() {
-        ofAll(new float[0]).next();
+        assertThrows(NoSuchElementException.class, () -> ofAll(new float[0]).next());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyInt() {
-        ofAll(new int[0]).next();
+        assertThrows(NoSuchElementException.class, () -> ofAll(new int[0]).next());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyLong() {
-        ofAll(new long[0]).next();
+        assertThrows(NoSuchElementException.class, () -> ofAll(new long[0]).next());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailOfEmptyShort() {
-        ofAll(new short[0]).next();
+        assertThrows(NoSuchElementException.class, () -> ofAll(new short[0]).next());
     }
 
     // -- static concat()
@@ -682,30 +685,33 @@ public class IteratorTest extends AbstractTraversableTest {
         assertThat(String.join(", ", partitions._2)).isEqualTo("1, 3");
     }
 
-    @Test(timeout = 5_000L)  // avoid endless test caused by infinite iterator
+    @Test
     public void shouldPartitionLazily() {
-        final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
+        // avoid endless test caused by infinite iterator
+        assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+            final java.util.List<Integer> itemsCalled = new java.util.ArrayList<>();
 
-        // Given an infinite iterator
-        final Iterator<Integer> iterator = Iterator.iterate(1, i -> {
-            itemsCalled.add(i);
-            return i + 1;
+            // Given an infinite iterator
+            final Iterator<Integer> iterator = Iterator.iterate(1, i -> {
+                itemsCalled.add(i);
+                return i + 1;
+            });
+
+            // When partitioning it
+            // Then the partitioning is done lazily (otherwise the test will timeout)
+            final Tuple2<Iterator<Integer>, Iterator<Integer>> partitions = iterator.partition(i -> i % 2 == 0);
+            assertThat(itemsCalled).isEmpty();
+
+            // When moving forwards iterators
+            // Then the moves are done as expected
+            assertThat(partitions._1.hasNext()).isTrue();
+            assertThat(partitions._1.next()).isEqualTo(2);
+            for (int i : of(1, 3, 5)) {
+                assertThat(partitions._2.hasNext()).isTrue();
+                assertThat(partitions._2.next()).isEqualTo(i);
+            }
+            assertThat(itemsCalled).containsExactly(1, 2, 3, 4);
         });
-
-        // When partitioning it
-        // Then the partitioning is done lazily (otherwise the test will timeout)
-        final Tuple2<Iterator<Integer>, Iterator<Integer>> partitions = iterator.partition(i -> i % 2 == 0);
-        assertThat(itemsCalled).isEmpty();
-
-        // When moving forwards iterators
-        // Then the moves are done as expected
-        assertThat(partitions._1.hasNext()).isTrue();
-        assertThat(partitions._1.next()).isEqualTo(2);
-        for (int i : of(1, 3, 5)) {
-            assertThat(partitions._2.hasNext()).isTrue();
-            assertThat(partitions._2.next()).isEqualTo(i);
-        }
-        assertThat(itemsCalled).containsExactly(1, 2, 3, 4);
     }
 
     // -- unfoldRight()
@@ -754,14 +760,17 @@ public class IteratorTest extends AbstractTraversableTest {
 
     // -- class initialization (see #1773)
 
-    @Test(timeout = 5_000)
-    public void shouldNotDeadlockOnConcurrentClassInitialization() throws InterruptedException {
-        final ExecutorService executorService = Executors.newFixedThreadPool(2);
-        executorService.execute(new ClassInitializer("io.vavr.collection.Iterator"));
-        executorService.execute(new ClassInitializer("io.vavr.collection.AbstractIterator"));
-        executorService.shutdown();
-        // try to access Vavr Iterator and it will hang
-        Iterator.empty().iterator();
+    @Test
+    public void shouldNotDeadlockOnConcurrentClassInitialization() {
+        assertTimeoutPreemptively(Duration.ofSeconds(5), () -> {
+            final ExecutorService executorService = Executors.newFixedThreadPool(2);
+            executorService.execute(new ClassInitializer("io.vavr.collection.Iterator"));
+            executorService.execute(new ClassInitializer("io.vavr.collection.AbstractIterator"));
+            executorService.shutdown();
+            // try to access Vavr Iterator and it will hang
+            Iterator.empty().iterator();
+        });
+
     }
 
     static class ClassInitializer implements Runnable {
@@ -786,21 +795,21 @@ public class IteratorTest extends AbstractTraversableTest {
 
     // -- equals
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldRecognizeEqualityOfNonNils() {
         // a equals impl would enforce evaluation which is not wanted
     }
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldRecognizeEqualObjects() {
         // Iterator equality undefined
     }
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldRecognizeUnequalObjects() {
@@ -809,21 +818,21 @@ public class IteratorTest extends AbstractTraversableTest {
 
     // -- hashCode
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldCalculateHashCodeOfNonNil() {
         // a hashCode impl would enforce evaluation which is not wanted
     }
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldCalculateDifferentHashCodesForDifferentTraversables() {
         // a hashCode impl would enforce evaluation which is not wanted
     }
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldComputeHashCodeOfEmpty() {
@@ -841,7 +850,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     // -- take
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceIfTakeAll() {
@@ -850,7 +859,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     // -- takeRight
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceIfTakeRightAll() {
@@ -859,7 +868,7 @@ public class IteratorTest extends AbstractTraversableTest {
 
     // -- toString
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldHaveAReasonableToString() {

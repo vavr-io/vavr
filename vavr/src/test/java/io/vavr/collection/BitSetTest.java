@@ -7,7 +7,7 @@ import io.vavr.Value;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -18,11 +18,10 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.reverseOrder;
 import static java.util.stream.Collectors.toList;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BitSetTest extends AbstractSortedSetTest {
 
@@ -422,29 +421,29 @@ public class BitSetTest extends AbstractSortedSetTest {
         assert bs.contains(E.V3);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowAddNegativeElementToEmpty() {
-        BitSet.empty().add(-1);
+        assertThrows(IllegalArgumentException.class, () -> BitSet.empty().add(-1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowAddNegativeElementToBitSet2() {
-        BitSet.empty().add(77).add(-1);
+        assertThrows(IllegalArgumentException.class, () -> BitSet.empty().add(77).add(-1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowAddNegativeElementToBitSetN() {
-        BitSet.empty().add(777).add(-1);
+        assertThrows(IllegalArgumentException.class, () -> BitSet.empty().add(777).add(-1));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowAddNegativeElements() {
-        BitSet.empty().addAll(List.of(-1));
+        assertThrows(IllegalArgumentException.class, () -> BitSet.empty().addAll(List.of(-1)));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowContainsNegativeElements() {
-        BitSet.empty().contains(-1);
+        assertThrows(IllegalArgumentException.class, () -> BitSet.empty().contains(-1));
     }
 
     @Test

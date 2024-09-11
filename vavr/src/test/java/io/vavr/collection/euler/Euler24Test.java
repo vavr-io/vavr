@@ -22,7 +22,7 @@ package io.vavr.collection.euler;
 import io.vavr.Function1;
 import io.vavr.API;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;

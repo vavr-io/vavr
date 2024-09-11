@@ -351,8 +351,9 @@ def generateTestClasses(): Unit = {
       val tuple = im.getType("io.vavr.Tuple")
 
       // test classes
-      val test = im.getType("org.junit.Test")
+      val test = im.getType("org.junit.jupiter.api.Test")
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+      val assertThrows = im.getStatic("org.junit.jupiter.api.Assertions.assertThrows")
       val woops  = "yay! (this is a negative test)"
 
       xs"""
@@ -368,14 +369,14 @@ def generateTestClasses(): Unit = {
 
             static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
 
-            @$test(expected = NullPointerException.class)
+            @$test
             public void shouldThrowWhenPropertyNameIsNull() {
-                Property.def(null);
+                $assertThrows(${im.getType("java.lang.NullPointerException")}.class, () -> Property.def(null));
             }
 
-            @$test(expected = IllegalArgumentException.class)
+            @$test
             public void shouldThrowWhenPropertyNameIsEmpty() {
-                Property.def("");
+                $assertThrows(${im.getType("java.lang.IllegalArgumentException")}.class, () -> Property.def(""));
             }
 
             // -- Property.check methods
@@ -394,9 +395,12 @@ def generateTestClasses(): Unit = {
                 $assertThat(result.isExhausted()).isTrue();
             }
 
-            @$test(expected = IllegalArgumentException.class)
+            @$test
             public void shouldThrowOnCheckGivenNegativeTries() {
-                Property.def("test").forAll(OBJECTS).suchThat(tautology()).check(0, -1);
+                $assertThrows(${im.getType("java.lang.IllegalArgumentException")}.class, () -> Property.def("test")
+                  .forAll(OBJECTS)
+                  .suchThat(tautology())
+                  .check(0, -1));
             }
 
             @$test
@@ -577,8 +581,9 @@ def generateTestClasses(): Unit = {
         val args = (1 to i).gen(j => s"o$j")(", ")
 
         // test classes
-        val test = im.getType("org.junit.Test")
+        val test = im.getType("org.junit.jupiter.api.Test")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+        val assertThrows = im.getStatic("org.junit.jupiter.api.Assertions.assertThrows")
         val woops = "yay! (this is a negative test)"
 
         xs"""
@@ -645,12 +650,12 @@ def generateTestClasses(): Unit = {
                   $assertThat(result.isExhausted()).isTrue();
               }
 
-              @$test(expected = IllegalArgumentException.class)
+              @$test
               public void shouldThrowOnProperty${i}CheckGivenNegativeTries() {
-                  Property.def("test")
-                      .forAll($arbitraries)
-                      .suchThat(($args) -> true)
-                      .check(Checkable.RNG.get(), 0, -1);
+                  $assertThrows(${im.getType("java.lang.IllegalArgumentException")}.class, () -> Property.def("test")
+                    .forAll($arbitraries)
+                    .suchThat(($args) -> true)
+                    .check(Checkable.RNG.get(), 0, -1));
               }
 
               @$test

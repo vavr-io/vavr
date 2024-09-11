@@ -20,8 +20,8 @@
 package io.vavr.collection;
 
 import io.vavr.Value;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -397,20 +397,20 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void shouldCalculateAverageOfDoubleAndFloat() {
         // it is not possible to create a TreeSet containing unrelated types
     }
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void shouldZipAllEmptyAndNonNil() {
     }
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void shouldZipAllNonEmptyAndNil() {
     }
 }

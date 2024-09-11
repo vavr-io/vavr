@@ -20,7 +20,7 @@
 package io.vavr;
 
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.function.Predicate;

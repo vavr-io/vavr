@@ -20,10 +20,16 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
-import io.vavr.Value;
 import io.vavr.Tuple2;
-import org.assertj.core.api.*;
-import org.junit.Test;
+import io.vavr.Value;
+import org.assertj.core.api.BooleanAssert;
+import org.assertj.core.api.DoubleAssert;
+import org.assertj.core.api.IntegerAssert;
+import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.LongAssert;
+import org.assertj.core.api.ObjectAssert;
+import org.assertj.core.api.StringAssert;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -32,7 +38,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class HashSetTest extends AbstractSetTest {
 
@@ -41,8 +47,7 @@ public class HashSetTest extends AbstractSetTest {
         return new IterableAssert<T>(actual) {
             @Override
             public IterableAssert<T> isEqualTo(Object obj) {
-                @SuppressWarnings("unchecked")
-                final Iterable<T> expected = (Iterable<T>) obj;
+                @SuppressWarnings("unchecked") final Iterable<T> expected = (Iterable<T>) obj;
                 final java.util.Map<T, Integer> actualMap = countMap(actual);
                 final java.util.Map<T, Integer> expectedMap = countMap(expected);
                 assertThat(actualMap.size()).isEqualTo(expectedMap.size());
@@ -52,7 +57,7 @@ public class HashSetTest extends AbstractSetTest {
 
             private java.util.Map<T, Integer> countMap(Iterable<? extends T> it) {
                 final java.util.HashMap<T, Integer> cnt = new java.util.HashMap<>();
-                it.forEach(i -> cnt.merge(i, 1, (v1, v2) -> v1 + v2));
+                it.forEach(i -> cnt.merge(i, 1, Integer::sum));
                 return cnt;
             }
         };
@@ -246,9 +251,9 @@ public class HashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowIfZipWithThatIsNull() {
-        empty().zip(null);
+        assertThrows(NullPointerException.class, () -> empty().zip(null));
     }
 
     // TODO move to traversable
@@ -292,9 +297,9 @@ public class HashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowIfZipAllWithThatIsNull() {
-        empty().zipAll(null, null, null);
+        assertThrows(NullPointerException.class, () -> empty().zipAll(null, null, null));
     }
 
     // TODO move to traversable
@@ -302,7 +307,7 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldZipNilWithIndex() {
-        assertThat(this.<String> empty().zipWithIndex()).isEqualTo(this.<Tuple2<String, Integer>> empty());
+        assertThat(this.<String>empty().zipWithIndex()).isEqualTo(this.<Tuple2<String, Integer>>empty());
     }
 
     @Test
@@ -393,7 +398,7 @@ public class HashSetTest extends AbstractSetTest {
 
     @Test
     public void shouldBeEqual() {
-        assertTrue(HashSet.of(1).equals(HashSet.of(1)));
+        assertThat(HashSet.of(1, 2, 3)).isEqualTo(HashSet.of(3, 2, 1));
     }
 
     //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
@@ -498,5 +503,4 @@ public class HashSetTest extends AbstractSetTest {
     public void shouldReturnFalseWhenIsSequentialCalled() {
         assertThat(of(1, 2, 3).isSequential()).isFalse();
     }
-
 }

@@ -1,15 +1,16 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple2;
-import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.TestTemplate;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Map;
+import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.*;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
 
 public class HashMultimapTest extends AbstractMultimapTest {
@@ -134,7 +135,8 @@ public class HashMultimapTest extends AbstractMultimapTest {
             case SET:
                 return HashMultimap.withSet().ofAll(stream, keyMapper, valueMapper);
             case SORTED_SET:
-                return HashMultimap.withSortedSet(Comparators.naturalComparator()).ofAll(stream, keyMapper, valueMapper);
+                return HashMultimap.withSortedSet(Comparators.naturalComparator())
+                  .ofAll(stream, keyMapper, valueMapper);
             default:
                 throw new RuntimeException();
         }
@@ -198,9 +200,10 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     // -- static narrow
 
-    @Test
+    @TestTemplate
     public void shouldNarrowMap() {
-        final HashMultimap<Integer, Number> int2doubleMap = (HashMultimap<Integer, Number>) this.<Integer, Number> emptyMap().put(1, 1.0d);
+        final HashMultimap<Integer, Number> int2doubleMap = (HashMultimap<Integer, Number>) this.<Integer, Number>emptyMap()
+          .put(1, 1.0d);
         final HashMultimap<Number, Number> number2numberMap = HashMultimap.narrow(int2doubleMap);
         final int actual = number2numberMap.put(new BigDecimal("2"), new BigDecimal("2.0")).values().sum().intValue();
         assertThat(actual).isEqualTo(3);
@@ -208,22 +211,20 @@ public class HashMultimapTest extends AbstractMultimapTest {
 
     // -- spliterator
 
-    @Test
+    @TestTemplate
     public void shouldNotHaveSortedSpliterator() {
         assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SORTED)).isFalse();
     }
 
-    @Test
+    @TestTemplate
     public void shouldNotHaveOrderedSpliterator() {
         assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.ORDERED)).isFalse();
     }
 
     // -- isSequential()
 
-    @Test
+    @TestTemplate
     public void shouldReturnTrueWhenIsSequentialCalled() {
         assertThat(of(1, 2, 3).isSequential()).isFalse();
     }
-
-
 }

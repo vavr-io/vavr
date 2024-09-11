@@ -20,8 +20,8 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -32,6 +32,7 @@ import java.util.stream.Collector;
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toList;
 import static io.vavr.TestComparators.toStringComparator;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PriorityQueueTest extends AbstractTraversableTest {
     private final io.vavr.collection.List<Integer> values = io.vavr.collection.List.of(3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4, 3, 3, 8, 3, 2, 7, 9, 5, 0, 2, 8, 8, 4, 1, 9, 7, 1, 6, 9, 3, 9, 9, 3, 7, 5, 1, 0);
@@ -256,9 +257,9 @@ public class PriorityQueueTest extends AbstractTraversableTest {
 
     // -- peek
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailPeekOfEmpty() {
-        empty().peek();
+        assertThrows(NoSuchElementException.class, () -> empty().peek());
     }
 
     // -- dequeue
@@ -268,9 +269,9 @@ public class PriorityQueueTest extends AbstractTraversableTest {
         assertThat(of(3, 1, 4, 1, 5).dequeue()).isEqualTo(Tuple.of(1, of(3, 4, 1, 5)));
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailDequeueOfEmpty() {
-        empty().dequeue();
+        assertThrows(NoSuchElementException.class, () -> empty().dequeue());
     }
 
     // -- toPriorityQueue
@@ -366,7 +367,7 @@ public class PriorityQueueTest extends AbstractTraversableTest {
 
     @Override
     @Test
-    @Ignore
+    @Disabled
     public void shouldCalculateAverageOfDoubleAndFloat() {
         // it is not possible to create a PriorityQueue containing unrelated types
     }

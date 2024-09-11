@@ -24,12 +24,15 @@ package io.vavr.test;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.vavr.CheckedFunction1;
 import io.vavr.Tuple;
 import io.vavr.collection.List;
+import java.lang.IllegalArgumentException;
+import java.lang.NullPointerException;
 import java.util.Random;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class PropertyTest {
 
@@ -43,14 +46,14 @@ public class PropertyTest {
 
     static final Arbitrary<Object> OBJECTS = Gen.of(null).arbitrary();
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenPropertyNameIsNull() {
-        Property.def(null);
+        assertThrows(NullPointerException.class, () -> Property.def(null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenPropertyNameIsEmpty() {
-        Property.def("");
+        assertThrows(IllegalArgumentException.class, () -> Property.def(""));
     }
 
     // -- Property.check methods
@@ -69,9 +72,12 @@ public class PropertyTest {
         assertThat(result.isExhausted()).isTrue();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowOnCheckGivenNegativeTries() {
-        Property.def("test").forAll(OBJECTS).suchThat(tautology()).check(0, -1);
+        assertThrows(IllegalArgumentException.class, () -> Property.def("test")
+          .forAll(OBJECTS)
+          .suchThat(tautology())
+          .check(0, -1));
     }
 
     @Test

@@ -21,7 +21,7 @@ package io.vavr.collection.euler;
 
 import io.vavr.Function3;
 import io.vavr.collection.Vector;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 

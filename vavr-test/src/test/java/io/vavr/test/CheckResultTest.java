@@ -22,11 +22,12 @@ package io.vavr.test;
 import io.vavr.Tuple;
 import io.vavr.control.Option;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class CheckResultTest {
 
@@ -307,9 +308,9 @@ public class CheckResultTest {
         new CheckResult.Satisfied("test", 0, false).assertIsSatisfied();
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfied() {
-        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfied();
+        assertThrows(AssertionError.class, () -> new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfied());
     }
 
     // -- satisfiedWithExhaustion
@@ -324,24 +325,24 @@ public class CheckResultTest {
         new CheckResult.Satisfied("test", 0, false).assertIsSatisfiedWithExhaustion(false);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfiedWithExhaustionTrue() {
-        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(true);
+        assertThrows(AssertionError.class, () -> new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(true));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void shouldThrowWhenAssertThatNonSatisfiedCheckResultIsSatisfiedWithExhaustionFalse() {
-        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(false);
+        assertThrows(AssertionError.class, () -> new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsSatisfiedWithExhaustion(false));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void shouldThrowWhenAssertThatSatisfiedNonExhaustedCheckResultIsSatisfiedWithExhaustionTrue() {
-        new CheckResult.Satisfied("test", 0, false).assertIsSatisfiedWithExhaustion(true);
+        assertThrows(AssertionError.class, () -> new CheckResult.Satisfied("test", 0, false).assertIsSatisfiedWithExhaustion(true));
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void shouldThrowWhenAssertThatSatisfiedExhaustedCheckResultIsSatisfiedWithExhaustionFalse() {
-        new CheckResult.Satisfied("test", 0, true).assertIsSatisfiedWithExhaustion(false);
+        assertThrows(AssertionError.class, () -> new CheckResult.Satisfied("test", 0, true).assertIsSatisfiedWithExhaustion(false));
     }
 
     // -- falsified
@@ -351,9 +352,9 @@ public class CheckResultTest {
         new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsFalsified();
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void shouldThrowWhenAssertThatNonFalsifiedCheckResultIsFalsified() {
-        new CheckResult.Satisfied("test", 0, false).assertIsFalsified();
+        assertThrows(AssertionError.class, () -> new CheckResult.Satisfied("test", 0, false).assertIsFalsified());
     }
 
     // -- erroneous
@@ -363,9 +364,9 @@ public class CheckResultTest {
         new CheckResult.Erroneous("test", 0, new Error(), Option.none()).assertIsErroneous();
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void shouldThrowWhenAssertThatNonErroneousCheckResultIsErroneous() {
-        new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsErroneous();
+        assertThrows(AssertionError.class, () -> new CheckResult.Falsified("test", 0, Tuple.empty()).assertIsErroneous());
     }
 
 }

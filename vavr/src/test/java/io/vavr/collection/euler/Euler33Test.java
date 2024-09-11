@@ -23,7 +23,7 @@ import io.vavr.Tuple;
 import io.vavr.collection.CharSeq;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.collection.euler.Utils.factors;
 import static org.assertj.core.api.Assertions.assertThat;

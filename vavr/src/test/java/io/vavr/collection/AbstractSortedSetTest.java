@@ -19,19 +19,17 @@
  */
 package io.vavr.collection;
 
-import org.assertj.core.api.Assertions;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 import java.util.Spliterator;
 
+import static io.vavr.TestComparators.toStringComparator;
 import static java.util.Comparator.naturalOrder;
 import static java.util.Comparator.reverseOrder;
-import static io.vavr.TestComparators.toStringComparator;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class AbstractSortedSetTest extends AbstractSetTest {
 
@@ -150,10 +148,10 @@ public abstract class AbstractSortedSetTest extends AbstractSetTest {
     // -- toSortedSet
 
     @Override
-    @Test(expected = ClassCastException.class)
-    @Ignore("SortedSet in test always created with working comparator, and because method toSortedSet() return same object will never throw ClassCastException")
+    @Test
+    @Disabled("SortedSet in test always created with working comparator, and because method toSortedSet() return same object will never throw ClassCastException")
     public void shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable() {
-        super.shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable();
+        assertThrows(ClassCastException.class, super::shouldThrowOnConvertToSortedSetWithoutComparatorOnNonComparable);
     }
 
     // -- spliterator

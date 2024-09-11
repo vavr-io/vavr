@@ -23,7 +23,7 @@ import io.vavr.collection.Array;
 import io.vavr.collection.BitSet;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.BiFunction;
 

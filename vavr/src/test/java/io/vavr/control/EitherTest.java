@@ -23,7 +23,7 @@ import io.vavr.AbstractValueTest;
 import io.vavr.collection.Seq;
 import io.vavr.collection.List;
 import io.vavr.collection.Vector;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -32,6 +32,7 @@ import java.util.Spliterator;
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings("deprecation")
 public class EitherTest extends AbstractValueTest {
@@ -280,14 +281,14 @@ public class EitherTest extends AbstractValueTest {
         assertThat(actual.map(v -> { throw new IllegalStateException(); })).isSameAs(actual);
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowIfRightGetLeft() {
-        Right(1).getLeft();
+        assertThrows(NoSuchElementException.class, () -> Right(1).getLeft());
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowIfLeftGet() {
-        Left(1).get();
+        assertThrows(NoSuchElementException.class, () -> Left(1).get());
     }
 
     @Test
