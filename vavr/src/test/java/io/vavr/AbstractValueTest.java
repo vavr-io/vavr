@@ -588,9 +588,9 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         final Object[] ints = value.toJavaArray();
         if (value.isSingleValued()) {
-            assertThat(ints).isEqualTo(new int[]{1});
+            assertThat(ints).isEqualTo(new Object[]{1});
         } else {
-            assertThat(ints).isEqualTo(new int[]{1, 2, 3});
+            assertThat(ints).isEqualTo(new Object[]{1, 2, 3});
         }
     }
 

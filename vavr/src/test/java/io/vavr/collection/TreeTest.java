@@ -21,7 +21,6 @@ package io.vavr.collection;
 
 import io.vavr.*;
 import io.vavr.control.Option;
-import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Disabled;
@@ -69,15 +68,15 @@ public class TreeTest extends AbstractTraversableTest {
                 if (actual instanceof Option) {
                     final Option<?> opt1 = ((Option<?>) actual);
                     final Option<?> opt2 = (Option<?>) expected;
-                    Assertions.assertThat(convOption(opt1)).isEqualTo(convOption(opt2));
+                    TreeTest.super.assertThat(convOption(opt1)).isEqualTo(convOption(opt2));
                 } else if (expected instanceof Map) {
                     final Map<?, ?> map1 = (Map<?, ?>) actual;
                     final Map<?, ?> map2 = (Map<?, ?>) expected;
-                    Assertions.assertThat(convMap(map1)).isEqualTo(convMap(map2));
+                    TreeTest.super.assertThat(convMap(map1)).isEqualTo(convMap(map2));
                 } else if (expected instanceof Tree) {
-                    assertThat(Stream.ofAll(actual)).isEqualTo(Stream.ofAll((Tree<?>) expected));
+                    TreeTest.super.assertThat(Stream.ofAll(actual)).isEqualTo(Stream.ofAll((Tree<?>) expected));
                 } else {
-                    Assertions.assertThat(actual).isEqualTo((Iterable<T>) expected);
+                    TreeTest.super.assertThat(actual).isEqualTo((Iterable<T>) expected);
                 }
                 return this;
             }

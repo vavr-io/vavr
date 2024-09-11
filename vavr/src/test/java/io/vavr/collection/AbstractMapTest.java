@@ -57,8 +57,8 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 final Iterable<T> expected = (Iterable<T>) obj;
                 final java.util.Map<T, Integer> actualMap = countMap(actual);
                 final java.util.Map<T, Integer> expectedMap = countMap(expected);
-                assertThat(actualMap.size()).isEqualTo(expectedMap.size());
-                actualMap.forEach((k, v) -> assertThat(v).isEqualTo(expectedMap.get(k)));
+                AbstractMapTest.super.assertThat(actualMap.size()).isEqualTo(expectedMap.size());
+                actualMap.forEach((k, v) -> AbstractMapTest.super.assertThat(v).isEqualTo(expectedMap.get(k)));
                 return this;
             }
 

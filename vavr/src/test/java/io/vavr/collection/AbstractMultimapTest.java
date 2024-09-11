@@ -99,8 +99,8 @@ public abstract class AbstractMultimapTest extends AbstractTraversableTest {
                 @SuppressWarnings("unchecked") final Iterable<T> expected = (Iterable<T>) obj;
                 final java.util.Map<T, Integer> actualMap = countMap(actual);
                 final java.util.Map<T, Integer> expectedMap = countMap(expected);
-                assertThat(actualMap.size()).isEqualTo(expectedMap.size());
-                actualMap.forEach((k, v) -> assertThat(v).isEqualTo(expectedMap.get(k)));
+                AbstractMultimapTest.super.assertThat(actualMap.size()).isEqualTo(expectedMap.size());
+                actualMap.forEach((k, v) -> AbstractMultimapTest.super.assertThat(v).isEqualTo(expectedMap.get(k)));
                 return this;
             }
 

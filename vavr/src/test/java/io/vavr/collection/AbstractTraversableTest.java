@@ -289,12 +289,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @TestTemplate
     public void shouldCalculateAverageOfDoublesContainingNaN() {
-        assertThat(of(1.0, Double.NaN, 2.0).average().get()).isEqualTo(Double.NaN);
+        assertThat(of(1.0, Double.NaN, 2.0).average().get()).isNaN();
     }
 
     @TestTemplate
     public void shouldCalculateAverageOfFloatsContainingNaN() {
-        assertThat(of(1.0f, Float.NaN, 2.0f).average().get()).isEqualTo(Float.NaN);
+        assertThat(of(1.0f, Float.NaN, 2.0f).average().get()).isNaN();
     }
 
     @TestTemplate
@@ -304,12 +304,12 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @TestTemplate
     public void shouldCalculateAverageOfDoublePositiveAndNegativeInfinity() {
-        assertThat(of(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).average().get()).isEqualTo(Double.NaN);
+        assertThat(of(Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY).average().get()).isNaN();
     }
 
     @TestTemplate
     public void shouldCalculateAverageOfFloatPositiveAndNegativeInfinity() {
-        assertThat(of(Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY).average().get()).isEqualTo(Float.NaN);
+        assertThat(of(Float.POSITIVE_INFINITY, Float.NEGATIVE_INFINITY).average().get()).isNaN();
     }
 
     // -- collect
@@ -1273,7 +1273,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @TestTemplate
     public void shouldCalculateMaxOfDoublesContainingNaN() {
-        assertThat(of(1.0, Double.NaN, 2.0).max().get()).isEqualTo(Double.NaN);
+        assertThat(of(1.0, Double.NaN, 2.0).max().get()).isNaN();
     }
 
     @TestTemplate
@@ -1430,7 +1430,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
 
     @TestTemplate
     public void shouldCalculateMinOfDoublesContainingNaN() {
-        assertThat(of(1.0, Double.NaN, 2.0).min().get()).isEqualTo(Double.NaN);
+        assertThat(of(1.0, Double.NaN, 2.0).min().get()).isNaN();
     }
 
     @TestTemplate
