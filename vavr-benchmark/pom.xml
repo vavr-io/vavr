@@ -32,7 +32,7 @@
         <dependency>
             <groupId>org.clojure</groupId>
             <artifactId>clojure</artifactId>
-            <version>1.9.0-alpha14</version>
+            <version>1.12.0</version>
         </dependency>
         <dependency>
             <groupId>org.pcollections</groupId>
