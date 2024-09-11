@@ -54,6 +54,7 @@ import java.util.function.Function;
 import static io.vavr.concurrent.Concurrent.waitUntil;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static io.vavr.concurrent.Concurrent.zZz;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.fail;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -145,6 +146,31 @@ public class FutureTest extends AbstractValueTest {
     }
 
     // -- static failed()
+
+
+    @Test
+    public void shouldNotExecuteFutureThatHasBeenCancelledBeforeItStarted() throws InterruptedException {
+        ExecutorService es = Executors.newSingleThreadExecutor();
+
+        AtomicBoolean future2Executed = new AtomicBoolean(false);
+
+        // Submit f1 to the executor first
+        Future<Void> f = Future.run(es, () -> Thread.sleep(1000));
+        // Submit f2 next, it will have to wait to be executed
+        Future<Void> f2 = Future.run(es, () -> {
+                    // Should never run this
+                    future2Executed.set(true);
+                });
+
+        // Cancel f2 BEFORE it runs on the executor
+        f2.cancel(true);
+        f.cancel(true);
+        es.shutdown();
+        boolean terminated = es.awaitTermination(2, SECONDS);
+        assertThat(terminated).isTrue();
+        // f2 should never have run
+        assertThat(future2Executed.get()).isFalse();
+    }
 
     @Test
     public void shouldCreateFailureThatFailsWithRuntimeException() {
