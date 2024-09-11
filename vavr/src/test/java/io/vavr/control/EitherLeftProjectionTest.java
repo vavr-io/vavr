@@ -23,9 +23,18 @@ import io.vavr.API;
 import io.vavr.AbstractValueTest;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Spliterator;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings("deprecation")
 public class EitherLeftProjectionTest extends AbstractValueTest {
@@ -34,12 +43,12 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     @Override
     protected <T> Either.LeftProjection<T, ?> empty() {
-        return Either.<T, T> right(null).left();
+        return Either.<T, T>right(null).left();
     }
 
     @Override
     protected <T> Either.LeftProjection<T, ?> of(T element) {
-        return Either.<T, T> left(element).left();
+        return Either.<T, T>left(element).left();
     }
 
     @SafeVarargs
@@ -62,9 +71,9 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     // get
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowOnGetOnLeftProjectionOfRight() {
-        Either.right(1).left().get();
+        assertThrows(NoSuchElementException.class, () -> Either.right(1).left().get());
     }
 
     @Test
@@ -98,7 +107,7 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnOtherWhenOrElseOnLeftProjectionOfRight() {
-        final Integer actual = Either.<Integer, String> right("1").left().getOrElse(2);
+        final Integer actual = Either.<Integer, String>right("1").left().getOrElse(2);
         assertThat(actual).isEqualTo(2);
     }
 
@@ -112,7 +121,7 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnOtherWhenOrElseGetGivenFunctionOnLeftProjectionOfRight() {
-        final Integer actual = Either.<Integer, String> right("1").left().getOrElseGet(r -> 2);
+        final Integer actual = Either.<Integer, String>right("1").left().getOrElseGet(r -> 2);
         assertThat(actual).isEqualTo(2);
     }
 
@@ -120,14 +129,14 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnLeftWhenOrElseRunOnLeftProjectionOfLeft() {
-        final boolean[] actual = new boolean[] { true };
+        final boolean[] actual = new boolean[]{true};
         Either.left(1).left().orElseRun(s -> actual[0] = false);
         assertThat(actual[0]).isTrue();
     }
 
     @Test
     public void shouldReturnOtherWhenOrElseRunOnLeftProjectionOfRight() {
-        final boolean[] actual = new boolean[] { false };
+        final boolean[] actual = new boolean[]{false};
         Either.right("1").left().orElseRun(s -> {
             actual[0] = true;
         });
@@ -138,13 +147,13 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldReturnLeftWhenOrElseThrowWithFunctionOnLeftProjectionOfLeft() {
-        final Integer actual = Either.<Integer, String> left(1).left().getOrElseThrow(s -> new RuntimeException(s));
+        final Integer actual = Either.<Integer, String>left(1).left().getOrElseThrow(s -> new RuntimeException(s));
         assertThat(actual).isEqualTo(1);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowWhenOrElseThrowWithFunctionOnLeftProjectionOfRight() {
-        Either.right("1").left().getOrElseThrow(s -> new RuntimeException(s));
+        assertThrows(RuntimeException.class, () -> Either.right("1").left().getOrElseThrow(s -> new RuntimeException(s)));
     }
 
     // toOption
@@ -182,7 +191,7 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldConvertLeftProjectionOfRightToJavaOptional() {
-        assertThat(Either.<Integer, String> right("x").left().toJavaOptional()).isEqualTo(Optional.empty());
+        assertThat(Either.<Integer, String>right("x").left().toJavaOptional()).isEqualTo(Optional.empty());
     }
 
     // filter
@@ -214,13 +223,15 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldFlatMapOnLeftProjectionOfLeft() {
-        final Either<Integer, String> actual = Either.<Integer, String> left(1).left().flatMap(i -> Either.<Integer, String> left(i + 1).left()).toEither();
+        final Either<Integer, String> actual = Either.<Integer, String>left(1).left()
+          .flatMap(i -> Either.<Integer, String>left(i + 1).left()).toEither();
         assertThat(actual).isEqualTo(Either.left(2));
     }
 
     @Test
     public void shouldFlatMapOnLeftProjectionOfRight() {
-        final Either<Integer, String> actual = Either.<Integer, String> right("1").left().flatMap(i -> Either.<Integer, String> left(i + 1).left()).toEither();
+        final Either<Integer, String> actual = Either.<Integer, String>right("1").left()
+          .flatMap(i -> Either.<Integer, String>left(i + 1).left()).toEither();
         assertThat(actual).isEqualTo(Either.right("1"));
     }
 
@@ -228,9 +239,9 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
     public void shouldFlatMapLeftProjectionOfRightOnLeftProjectionOfLeft() {
         final Either<String, String> good = Either.left("good");
         final Either<String, String> bad = Either.right("bad");
-        final Either.LeftProjection<Tuple2<String, String>, String> actual = good.left().flatMap(g -> bad.left().map(b -> Tuple.of(g, b)));
+        final Either.LeftProjection<Tuple2<String, String>, String> actual = good.left()
+          .flatMap(g -> bad.left().map(b -> Tuple.of(g, b)));
         assertThat(actual.toEither()).isEqualTo(Either.right("bad"));
-
     }
 
     // -- exists
@@ -279,7 +290,7 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
     @Test
     public void shouldForEachOnLeftProjectionOfRight() {
         final List<Integer> actual = new ArrayList<>();
-        Either.<Integer, String> right("1").left().forEach(actual::add);
+        Either.<Integer, String>right("1").left().forEach(actual::add);
         assertThat(actual.isEmpty()).isTrue();
     }
 
@@ -288,7 +299,7 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
     @Test
     public void shouldPeekOnLeftProjectionOfLeft() {
         final List<Integer> actual = new ArrayList<>();
-        final Either<Integer, String> testee = Either.<Integer, String> left(1).left().peek(actual::add).toEither();
+        final Either<Integer, String> testee = Either.<Integer, String>left(1).left().peek(actual::add).toEither();
         assertThat(actual).isEqualTo(Collections.singletonList(1));
         assertThat(testee).isEqualTo(Either.left(1));
     }
@@ -296,7 +307,7 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
     @Test
     public void shouldPeekOnLeftProjectionOfRight() {
         final List<Integer> actual = new ArrayList<>();
-        final Either<Integer, String> testee = Either.<Integer, String> right("1").left().peek(actual::add).toEither();
+        final Either<Integer, String> testee = Either.<Integer, String>right("1").left().peek(actual::add).toEither();
         assertThat(actual.isEmpty()).isTrue();
         assertThat(testee).isEqualTo(Either.right("1"));
     }
@@ -305,13 +316,13 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
 
     @Test
     public void shouldMapOnLeftProjectionOfLeft() {
-        final Either<Integer, String> actual = Either.<Integer, String> left(1).left().map(i -> i + 1).toEither();
+        final Either<Integer, String> actual = Either.<Integer, String>left(1).left().map(i -> i + 1).toEither();
         assertThat(actual).isEqualTo(Either.left(2));
     }
 
     @Test
     public void shouldMapOnLeftProjectionOfRight() {
-        final Either<Integer, String> actual = Either.<Integer, String> right("1").left().map(i -> i + 1).toEither();
+        final Either<Integer, String> actual = Either.<Integer, String>right("1").left().map(i -> i + 1).toEither();
         assertThat(actual).isEqualTo(Either.right("1"));
     }
 

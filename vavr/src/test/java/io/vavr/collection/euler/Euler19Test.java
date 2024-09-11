@@ -21,7 +21,7 @@ package io.vavr.collection.euler;
 
 import io.vavr.Tuple;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

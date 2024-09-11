@@ -19,7 +19,9 @@
  */
 package io.vavr.collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class AbstractTraversableRangeTest extends AbstractTraversableTest {
 
@@ -490,75 +492,75 @@ public abstract class AbstractTraversableRangeTest extends AbstractTraversableTe
 
     // step == 0
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitCharRangeByStepZero() {
-        rangeBy('a', 'b', 0);
+        assertThrows(IllegalArgumentException.class, () -> rangeBy('a', 'b', 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitDoubleRangeByStepZero() {
-        rangeBy(0.0, 1.0, 0.0);
+        assertThrows(IllegalArgumentException.class, () -> rangeBy(0.0, 1.0, 0.0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitIntRangeByStepZero() {
-        rangeBy(0, 1, 0);
+        assertThrows(IllegalArgumentException.class, () -> rangeBy(0, 1, 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitLongRangeByStepZero() {
-        rangeBy(0L, 1L, 0L);
+        assertThrows(IllegalArgumentException.class, () -> rangeBy(0L, 1L, 0L));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitCharRangeClosedByStepZero() {
-        rangeClosedBy('a', 'b', 0);
+        assertThrows(IllegalArgumentException.class, () -> rangeClosedBy('a', 'b', 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitDoubleRangeClosedByStepZero() {
-        rangeClosedBy(0.0, 1.0, 0.0);
+        assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(0.0, 1.0, 0.0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitIntRangeClosedByStepZero() {
-        rangeClosedBy(0, 1, 0);
+        assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(0, 1, 0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitLongRangeClosedByStepZero() {
-        rangeClosedBy(0L, 1L, 0L);
+        assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(0L, 1L, 0L));
     }
 
     // double special cases
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitDoubleRangeClosedByToEqualsNaN() {
-        rangeClosedBy(0.0, Double.NaN, 1.0);
+        assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(0.0, Double.NaN, 1.0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitDoubleRangeClosedByFromEqualNaN() {
-        rangeClosedBy(Double.NaN, 0.0, 1.0);
+        assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(Double.NaN, 0.0, 1.0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitDoubleRangeClosedByStepEqualNaN() {
-        rangeClosedBy(0.0, 10.0, Double.NaN);
+        assertThrows(IllegalArgumentException.class, () -> rangeClosedBy(0.0, 10.0, Double.NaN));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitDoubleRangeByToEqualsNaN() {
-        rangeBy(0.0, Double.NaN, 1.0);
+        assertThrows(IllegalArgumentException.class, () -> rangeBy(0.0, Double.NaN, 1.0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitDoubleRangeByFromEqualNaN() {
-        rangeBy(Double.NaN, 0.0, 1.0);
+        assertThrows(IllegalArgumentException.class, () -> rangeBy(Double.NaN, 0.0, 1.0));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldProhibitDoubleRangeByStepEqualNaN() {
-        rangeBy(0.0, 10.0, Double.NaN);
+        assertThrows(IllegalArgumentException.class, () -> rangeBy(0.0, 10.0, Double.NaN));
     }
 }

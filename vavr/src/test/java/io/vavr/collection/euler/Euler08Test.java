@@ -21,7 +21,7 @@ package io.vavr.collection.euler;
 
 import io.vavr.collection.Seq;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -24,8 +24,8 @@ import io.vavr.control.Option;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
@@ -37,6 +37,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Tests all methods defined in {@link Tree}.
@@ -379,16 +381,16 @@ public class TreeTest extends AbstractTraversableTest {
         new Tree.Node<>(1, List.empty());
     }
 
-    @Test(expected = InvalidObjectException.class)
-    public void shouldNotCallReadObjectOnNodeInstance() throws Throwable {
-        Serializables.callReadObject(tree);
+    @Test
+    public void shouldNotCallReadObjectOnNodeInstance() {
+        assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(tree));
     }
 
     // -- getValue
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldNotGetValueOfNil() {
-        Tree.empty().getValue();
+        assertThrows(UnsupportedOperationException.class, () -> Tree.empty().getValue());
     }
 
     @Test
@@ -574,9 +576,9 @@ public class TreeTest extends AbstractTraversableTest {
     }
 
     @Override
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowOnNextWhenNilIterator() {
-        Tree.empty().iterator().next();
+        assertThrows(NoSuchElementException.class, () -> Tree.empty().iterator().next());
     }
 
     @Override
@@ -793,7 +795,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- distinctBy(Comparator)
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenDistinctByComparatorEmptyTraversable() {
@@ -802,7 +804,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- distinctBy(Function)
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenDistinctByFunctionEmptyTraversable() {
@@ -811,21 +813,21 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- drop
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenDropZeroCount() {
         // Tree.drop() returns a Seq
     }
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenDropNegativeCount() {
         // Tree.drop() returns a Seq
     }
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenEmptyDropOne() {
@@ -834,21 +836,21 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- dropRight
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenDropRightZeroCount() {
         // Tree.dropRight() returns a Seq
     }
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenDropRightNegativeCount() {
         // Tree.dropRight() returns a Seq
     }
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenEmptyDropRightOne() {
@@ -857,7 +859,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- dropUntil
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenEmptyDropUntil() {
@@ -866,7 +868,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- dropWhile
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenEmptyDropWhile() {
@@ -875,7 +877,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- filter
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenFilteringEmptyTraversable() {
@@ -884,7 +886,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- reject
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenRejectingEmptyTraversable() {
@@ -893,7 +895,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- take
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceIfTakeAll() {
@@ -902,7 +904,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- takeRight
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceIfTakeRightAll() {
@@ -911,7 +913,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- takeUntil
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenEmptyTakeUntil() {
@@ -920,7 +922,7 @@ public class TreeTest extends AbstractTraversableTest {
 
     // -- takeWhile
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceWhenEmptyTakeWhile() {

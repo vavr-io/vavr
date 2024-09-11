@@ -21,7 +21,7 @@ package io.vavr.idiom;
 
 import io.vavr.JmhRunner;
 import io.vavr.collection.Array;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.State;

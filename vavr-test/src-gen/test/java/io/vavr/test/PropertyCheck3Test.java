@@ -24,9 +24,11 @@ package io.vavr.test;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.vavr.CheckedFunction3;
-import org.junit.Test;
+import java.lang.IllegalArgumentException;
+import org.junit.jupiter.api.Test;
 
 public class PropertyCheck3Test {
 
@@ -91,12 +93,12 @@ public class PropertyCheck3Test {
         assertThat(result.isExhausted()).isTrue();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowOnProperty3CheckGivenNegativeTries() {
-        Property.def("test")
-            .forAll(OBJECTS, OBJECTS, OBJECTS)
-            .suchThat((o1, o2, o3) -> true)
-            .check(Checkable.RNG.get(), 0, -1);
+        assertThrows(IllegalArgumentException.class, () -> Property.def("test")
+          .forAll(OBJECTS, OBJECTS, OBJECTS)
+          .suchThat((o1, o2, o3) -> true)
+          .check(Checkable.RNG.get(), 0, -1));
     }
 
     @Test

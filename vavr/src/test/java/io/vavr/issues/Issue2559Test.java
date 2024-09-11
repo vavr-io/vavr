@@ -3,8 +3,8 @@ package io.vavr.issues;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ public class Issue2559Test {
 
     private java.util.Map<String, Eat> fruitsBeingEaten = new java.util.HashMap<>();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         fruitsBeingEaten = new java.util.HashMap<>();
     }
@@ -30,9 +30,9 @@ public class Issue2559Test {
         assertThat(partition._1).isEmpty();
         assertThat(partition._2).isEqualTo(HashSet.of("apple", "banana"));
         assertThat(fruitsBeingEaten)
-                .hasSize(2)
-                .containsEntry("apple", new Eat(1, "apple"))
-                .containsEntry("banana", new Eat(1, "banana"));
+          .hasSize(2)
+          .containsEntry("apple", new Eat(1, "apple"))
+          .containsEntry("banana", new Eat(1, "banana"));
     }
 
     private boolean biteAndCheck(String name) {
@@ -78,9 +78,9 @@ public class Issue2559Test {
         @Override
         public String toString() {
             return "Eat{" +
-                    "bites=" + bites +
-                    ", name='" + name + '\'' +
-                    '}';
+              "bites=" + bites +
+              ", name='" + name + '\'' +
+              '}';
         }
     }
 }

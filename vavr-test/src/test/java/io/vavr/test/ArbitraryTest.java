@@ -24,7 +24,7 @@ import io.vavr.Tuple;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -32,6 +32,7 @@ import java.util.Comparator;
 import java.util.Random;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ArbitraryTest {
 
@@ -211,14 +212,14 @@ public class ArbitraryTest {
     }
 
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotAcceptNullMedianLocalDateTime(){
-        Arbitrary.localDateTime(null, ChronoUnit.DAYS);
+        assertThrows(NullPointerException.class, () -> Arbitrary.localDateTime(null, ChronoUnit.DAYS));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldNotAcceptNullChronoUnit(){
-        Arbitrary.localDateTime(LocalDateTime.now(), null);
+        assertThrows(NullPointerException.class, () -> Arbitrary.localDateTime(LocalDateTime.now(), null));
     }
 
     @Test

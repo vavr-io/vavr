@@ -23,12 +23,13 @@ import io.vavr.API;
 import io.vavr.AbstractValueTest;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings("deprecation")
 public class EitherRightProjectionTest extends AbstractValueTest {
@@ -65,9 +66,9 @@ public class EitherRightProjectionTest extends AbstractValueTest {
 
     // get
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowOnGetOnRightProjectionOfLeft() {
-        Either.left(1).right().get();
+        assertThrows(NoSuchElementException.class, () -> Either.left(1).right().get());
     }
 
     @Test
@@ -147,9 +148,9 @@ public class EitherRightProjectionTest extends AbstractValueTest {
         assertThat(actual).isEqualTo(1);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowWhenOrElseThrowWithFunctionOnRightProjectionOfLeft() {
-        Either.<String, Integer> left("1").right().getOrElseThrow(i -> new RuntimeException(String.valueOf(i)));
+        assertThrows(RuntimeException.class, () -> Either.<String, Integer> left("1").right().getOrElseThrow(i -> new RuntimeException(String.valueOf(i))));
     }
 
     // toOption

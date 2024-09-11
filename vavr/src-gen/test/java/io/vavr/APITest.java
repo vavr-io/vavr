@@ -27,7 +27,8 @@ import static io.vavr.API.*;
 import static io.vavr.OutputTester.captureStdOut;
 import static io.vavr.Patterns.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
@@ -39,7 +40,7 @@ import io.vavr.control.Try;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.Executors;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation")
 public class APITest {

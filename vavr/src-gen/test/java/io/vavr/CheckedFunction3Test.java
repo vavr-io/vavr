@@ -24,13 +24,14 @@ package io.vavr;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CheckedFunction3Test {
 
@@ -161,10 +162,12 @@ public class CheckedFunction3Test {
         assertThat(md5.getDigestLength()).isEqualTo(16);
     }
 
-    @Test(expected = NoSuchAlgorithmException.class)
+    @Test
     public void shouldUncheckedThrowIllegalState() {
-        final Function3<String, String, String, MessageDigest> unchecked = digest.unchecked();
-        unchecked.apply("U", "n", "known"); // Look ma, we throw an undeclared checked exception!
+        assertThrows(NoSuchAlgorithmException.class, () -> {
+            final Function3<String, String, String, MessageDigest> unchecked = digest.unchecked();
+            unchecked.apply("U", "n", "known"); // Look ma, we throw an undeclared checked exception!
+        });
     }
 
     @Test

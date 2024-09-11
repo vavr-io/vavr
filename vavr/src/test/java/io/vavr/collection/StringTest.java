@@ -20,7 +20,7 @@
 package io.vavr.collection;
 
 import io.vavr.control.Option;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;

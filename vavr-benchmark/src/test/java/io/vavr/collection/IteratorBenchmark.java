@@ -20,26 +20,34 @@
 package io.vavr.collection;
 
 import io.vavr.JmhRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.openjdk.jmh.annotations.*;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.infra.Blackhole;
 
 import java.util.Random;
 
-import static io.vavr.JmhRunner.Includes.*;
+import static io.vavr.JmhRunner.Includes.JAVA;
+import static io.vavr.JmhRunner.Includes.SCALA;
+import static io.vavr.JmhRunner.Includes.VAVR;
 import static io.vavr.JmhRunner.getRandomValues;
 
-@SuppressWarnings({ "ALL", "unchecked", "rawtypes" })
+@SuppressWarnings({"ALL", "unchecked", "rawtypes"})
 public class IteratorBenchmark {
 
     static final Array<Class<?>> CLASSES = Array.of(
-            Sliding.class,
-            Concat.class
+      Sliding.class,
+      Concat.class
     );
 
     @Test
-    public void testAsserts() { JmhRunner.runDebugWithAsserts(CLASSES); }
+    public void testAsserts() {
+        JmhRunner.runDebugWithAsserts(CLASSES);
+    }
 
     public static void main(String... args) {
         JmhRunner.runDebugWithAsserts(CLASSES);
@@ -60,7 +68,8 @@ public class IteratorBenchmark {
         public void setup() {
             final Random random = new Random(0);
             ELEMENTS = getRandomValues(CONTAINER_SIZE, false, random);
-            scalaIterator = (scala.collection.Iterator<Integer>) (Object) scala.collection.mutable.WrappedArray$.MODULE$.make(ELEMENTS).iterator();
+            scalaIterator = (scala.collection.Iterator<Integer>) (Object) scala.collection.mutable.WrappedArray$.MODULE$.make(ELEMENTS)
+              .iterator();
             vavrIterator = Iterator.of(ELEMENTS);
         }
     }
@@ -87,32 +96,32 @@ public class IteratorBenchmark {
     @State(Scope.Benchmark)
     public static class Concat {
 
-        @Param({ "10", "20" , "100", "1000" })
+        @Param({"10", "20", "100", "1000"})
         private int size;
 
         @Benchmark
         public void vavr_persistent(Blackhole bh) {
             Iterator<Integer> iterator = Iterator.range(0, size)
-                    .foldLeft(Iterator.empty(), (result, __) -> result.concat(Iterator.of(1)));
+              .foldLeft(Iterator.empty(), (result, __) -> result.concat(Iterator.of(1)));
 
             long sum = 0;
             while (iterator.hasNext()) {
                 sum += iterator.next();
             }
-            Assert.assertEquals(size, sum);
+            Assertions.assertEquals(size, sum);
         }
 
         @Benchmark
         public void scala_persistent(Blackhole bh) {
             final scala.collection.Iterator<Integer> iterator = scala.collection.Iterator.range(0, size)
-                    .foldLeft((scala.collection.Iterator<Integer>) (Object) scala.collection.Iterator.empty(),
-                    (result, i) -> result.$plus$plus(() -> scala.collection.Iterator.single(1)));
-            
+              .foldLeft((scala.collection.Iterator<Integer>) (Object) scala.collection.Iterator.empty(),
+                (result, i) -> result.$plus$plus(() -> scala.collection.Iterator.single(1)));
+
             long sum = 0;
             while (iterator.hasNext()) {
                 sum += iterator.next();
             }
-            Assert.assertEquals(size, sum);
+            Assertions.assertEquals(size, sum);
         }
     }
 }

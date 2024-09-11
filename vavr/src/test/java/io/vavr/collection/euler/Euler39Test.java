@@ -24,7 +24,7 @@ import io.vavr.collection.Map;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static java.lang.Math.floor;
 import static java.lang.Math.hypot;

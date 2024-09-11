@@ -25,7 +25,7 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
 import org.assertj.core.api.IterableAssert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -44,6 +44,7 @@ import static java.util.Arrays.asList;
 import static io.vavr.API.Some;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class AbstractMapTest extends AbstractTraversableTest {
 
@@ -476,9 +477,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(emptyInt().put(1, 2).asPartialFunction().apply(1)).isEqualTo(2);
     }
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldApplyNonExistingKey() {
-        emptyInt().put(1, 2).asPartialFunction().apply(3);
+        assertThrows(NoSuchElementException.class, () -> emptyInt().put(1, 2).asPartialFunction().apply(3));
     }
 
     // -- equality
@@ -506,23 +507,23 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
 
     // -- head
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldThrowWhenHeadEmpty() {
-        emptyMap().head();
+        assertThrows(NoSuchElementException.class, () -> emptyMap().head());
     }
 
     // -- init
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowWhenInitEmpty() {
-        emptyMap().init();
+        assertThrows(UnsupportedOperationException.class, () -> emptyMap().init());
     }
 
     // -- tail
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void shouldThrowWhenTailEmpty() {
-        emptyMap().tail();
+        assertThrows(UnsupportedOperationException.class, () -> emptyMap().tail());
     }
 
     // -- toString
@@ -977,9 +978,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
                 Stream.of(Tuple.of(Tuple.of(0, 0), 5), Tuple.of(Tuple.of(1, 1), 6), Tuple.of(Tuple.of(2, 2), 7)));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowIfZipWithThatIsNull() {
-        emptyMap().zip(null);
+        assertThrows(NullPointerException.class, () -> emptyMap().zip(null));
     }
 
     // -- zipWithIndex
@@ -1079,9 +1080,9 @@ public abstract class AbstractMapTest extends AbstractTraversableTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowIfZipAllWithThatIsNull() {
-        emptyMap().zipAll(null, null, null);
+        assertThrows(NullPointerException.class, () -> emptyMap().zipAll(null, null, null));
     }
 
     // -- special cases

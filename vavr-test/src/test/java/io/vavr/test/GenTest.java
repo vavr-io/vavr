@@ -23,7 +23,7 @@ import io.vavr.Tuple;
 import io.vavr.collection.Stream;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -31,6 +31,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class GenTest {
 
@@ -119,34 +120,34 @@ public class GenTest {
         assertForAll(() -> Gen.choose(0.0d, 0.0d).apply(RANDOM), d -> d == 0.0d);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenChooseDoubleAndMinIsNegativeInfinite() {
-        Gen.choose(Double.NEGATIVE_INFINITY, 0.0d);
+        assertThrows(IllegalArgumentException.class, () -> Gen.choose(Double.NEGATIVE_INFINITY, 0.0d));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenChooseDoubleAndMinIsPositiveInfinite() {
-        Gen.choose(Double.POSITIVE_INFINITY, 0.0d);
+        assertThrows(IllegalArgumentException.class, () -> Gen.choose(Double.POSITIVE_INFINITY, 0.0d));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenChooseDoubleAndMinIsNotANumber() {
-        Gen.choose(Double.NaN, 0.0d);
+        assertThrows(IllegalArgumentException.class, () -> Gen.choose(Double.NaN, 0.0d));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenChooseDoubleAndMaxIsNegativeInfinite() {
-        Gen.choose(0.0d, Double.NEGATIVE_INFINITY);
+        assertThrows(IllegalArgumentException.class, () -> Gen.choose(0.0d, Double.NEGATIVE_INFINITY));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenChooseDoubleAndMaxIsPositiveInfinite() {
-        Gen.choose(0.0d, Double.POSITIVE_INFINITY);
+        assertThrows(IllegalArgumentException.class, () -> Gen.choose(0.0d, Double.POSITIVE_INFINITY));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenChooseDoubleAndMaxIsNotANumber() {
-        Gen.choose(0.0d, Double.NaN);
+        assertThrows(IllegalArgumentException.class, () -> Gen.choose(0.0d, Double.NaN));
     }
 
     // -- choose(char, char)
@@ -169,10 +170,12 @@ public class GenTest {
         assertForAll(() -> Gen.choose(i).apply(RANDOM), c -> c == 1);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldFailOnEmptyArray() throws Exception {
-        Integer[] i = {};
-        Gen.choose(i).apply(RANDOM);
+        assertThrows(RuntimeException.class, () -> {
+            Integer[] i = {};
+            Gen.choose(i).apply(RANDOM);
+        });
     }
 
     // -- Choose(enum)
@@ -202,37 +205,42 @@ public class GenTest {
         assertThat(supplier.get()).isEqualTo("test");
     }
 
-    @Test(expected = RuntimeException.class)
-    public void shouldFailOnEmptyIterable() throws Exception {
-        List<Integer> i = List.empty();
-        Gen.choose(i).apply(RANDOM);
+    @Test
+    public void shouldFailOnEmptyIterable() {
+        assertThrows(RuntimeException.class, () -> {
+            List<Integer> i = List.empty();
+            Gen.choose(i).apply(RANDOM);
+        });
     }
 
     // -- fail
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldFailAlwaysWhenCallingFailingGen() {
-        Gen.fail().apply(RANDOM);
+        assertThrows(RuntimeException.class, () -> Gen.fail().apply(RANDOM));
     }
 
     // -- frequency(VarArgs)
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCallingFrequencyOfVarArgsAndArgIsNull() {
-        Gen.frequency((Tuple2<Integer, Gen<Object>>) null);
+        assertThrows(NullPointerException.class, () -> Gen.frequency((Tuple2<Integer, Gen<Object>>) null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenCallingFrequencyOfVarArgsAndArgIsEmpty() {
-        @SuppressWarnings("unchecked")
-        final Tuple2<Integer, Gen<Object>>[] empty = (Tuple2<Integer, Gen<Object>>[]) new Tuple2<?, ?>[0];
-        Gen.frequency(empty);
+        assertThrows(IllegalArgumentException.class, () -> {
+            @SuppressWarnings("unchecked") final Tuple2<Integer, Gen<Object>>[] empty = (Tuple2<Integer, Gen<Object>>[]) new Tuple2<?, ?>[0];
+            Gen.frequency(empty);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenCallingFrequencyOfVarArgsAndAllFrequenciesAreNonPositive() {
-        final Gen<Integer> gen = Gen.frequency(Tuple.of(-1, Gen.of(-1)), Tuple.of(0, Gen.of(0)));
-        gen.apply(RANDOM);
+        assertThrows(IllegalArgumentException.class, () -> {
+            final Gen<Integer> gen = Gen.frequency(Tuple.of(-1, Gen.of(-1)), Tuple.of(0, Gen.of(0)));
+            gen.apply(RANDOM);
+        });
     }
 
     @Test
@@ -249,20 +257,22 @@ public class GenTest {
 
     // -- frequency(Iterable)
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCallingFrequencyOfIterableAndArgIsNull() {
-        Gen.frequency((Iterable<Tuple2<Integer, Gen<Object>>>) null);
+        assertThrows(NullPointerException.class, () -> Gen.frequency((Iterable<Tuple2<Integer, Gen<Object>>>) null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenCallingFrequencyOfIterableAndArgIsEmpty() {
-        Gen.frequency(List.empty());
+        assertThrows(IllegalArgumentException.class, () -> Gen.frequency(List.empty()));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenCallingFrequencyOfIterableAndAllFrequenciesAreNonPositive() {
-        final Gen<Integer> gen = Gen.frequency(List.of(Tuple.of(-1, Gen.of(-1)), Tuple.of(0, Gen.of(0))));
-        gen.apply(RANDOM);
+        assertThrows(IllegalArgumentException.class, () -> {
+            final Gen<Integer> gen = Gen.frequency(List.of(Tuple.of(-1, Gen.of(-1)), Tuple.of(0, Gen.of(0))));
+            gen.apply(RANDOM);
+        });
     }
 
     @Test
@@ -273,16 +283,18 @@ public class GenTest {
 
     // -- oneOf(VarArgs)
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCallingOneOfAndVarArgsIsNull() {
-        Gen.oneOf((Gen<Object>[]) null);
+        assertThrows(NullPointerException.class, () -> Gen.oneOf((Gen<Object>[]) null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenCallingOneOfAndVarArgsIsEmpty() {
-        @SuppressWarnings("unchecked")
-        final Gen<Object>[] empty = (Gen<Object>[]) new Gen<?>[0];
-        Gen.oneOf(empty);
+        assertThrows(IllegalArgumentException.class, () -> {
+            @SuppressWarnings("unchecked")
+            final Gen<Object>[] empty = (Gen<Object>[]) new Gen<?>[0];
+            Gen.oneOf(empty);
+        });
     }
 
     @Test
@@ -293,14 +305,14 @@ public class GenTest {
 
     // -- oneOf(Iterable)
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCallingOneOfAndIterableIsNull() {
-        Gen.oneOf((Iterable<Gen<Object>>) null);
+        assertThrows(NullPointerException.class, () ->Gen.oneOf((Iterable<Gen<Object>>) null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenCallingOneOfAndIterableIsEmpty() {
-        Gen.oneOf(List.empty());
+        assertThrows(IllegalArgumentException.class, () ->Gen.oneOf(List.empty()));
     }
 
     @Test
@@ -318,9 +330,9 @@ public class GenTest {
 
     // -- map
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCallingMapWithNullArg() {
-        Gen.of(1).map(null);
+        assertThrows(NullPointerException.class, () -> Gen.of(1).map(null));
     }
 
     @Test
@@ -331,9 +343,9 @@ public class GenTest {
 
     // -- flatMap
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCallingFlatMapWithNullArg() {
-        Gen.of(1).flatMap(null);
+        assertThrows(NullPointerException.class, () -> Gen.of(1).flatMap(null));
     }
 
     @Test
@@ -344,9 +356,9 @@ public class GenTest {
 
     // -- filter
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCallingFilterWithNullArg() {
-        Gen.of(1).filter(null);
+        assertThrows(NullPointerException.class, () -> Gen.of(1).filter(null));
     }
 
     @Test
@@ -355,9 +367,9 @@ public class GenTest {
         assertForAll(() -> gen.apply(RANDOM), i -> i == 2);
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void shouldDetectEmptyFilter() {
-        Gen.of(1).filter(ignored -> false).apply(RANDOM);
+        assertThrows(IllegalStateException.class, () -> Gen.of(1).filter(ignored -> false).apply(RANDOM));
     }
 
     // -- peek

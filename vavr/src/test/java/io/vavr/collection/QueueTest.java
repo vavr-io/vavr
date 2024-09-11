@@ -19,11 +19,11 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Value;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
+import io.vavr.Value;
 import io.vavr.control.Option;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,6 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class QueueTest extends AbstractLinearSeqTest {
 
@@ -234,7 +236,7 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
         final JavaConverters.ListView<Integer, Queue<Integer>> source = JavaConverters
-                .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
+          .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
         final Queue<Integer> target = Queue.ofAll(source);
         assertThat(target).isSameAs(source.getDelegate());
     }
@@ -255,9 +257,9 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     // -- peek
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailPeekOfEmpty() {
-        Queue.empty().peek();
+        assertThrows(NoSuchElementException.class, () -> Queue.empty().peek());
     }
 
     @Test
@@ -273,9 +275,9 @@ public class QueueTest extends AbstractLinearSeqTest {
 
     // -- dequeue
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailDequeueOfEmpty() {
-        Queue.empty().dequeue();
+        assertThrows(NoSuchElementException.class, () -> Queue.empty().dequeue());
     }
 
     @Test
@@ -410,7 +412,7 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldRightSimpleQueue() {
         assertThat(Queue.unfoldRight(10, x ->
-                x == 0 ? Option.none() : Option.of(new Tuple2<>(x, x - 1)))
+          x == 0 ? Option.none() : Option.of(new Tuple2<>(x, x - 1)))
         ).isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
     }
 
@@ -422,7 +424,7 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldLeftSimpleQueue() {
         assertThat(Queue.unfoldLeft(10, x ->
-                x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
+          x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
         ).isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
@@ -434,7 +436,7 @@ public class QueueTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldSimpleQueue() {
         assertThat(Queue.unfold(10, x ->
-                x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
+          x == 0 ? Option.none() : Option.of(new Tuple2<>(x - 1, x)))
         ).isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 

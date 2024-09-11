@@ -21,7 +21,7 @@ package io.vavr.collection;
 
 import io.vavr.Function1;
 import io.vavr.JmhRunner;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 

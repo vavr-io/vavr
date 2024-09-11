@@ -21,10 +21,10 @@ package io.vavr.collection;
 
 import io.vavr.Serializables;
 import io.vavr.Tuple;
-import io.vavr.Value;
 import io.vavr.Tuple2;
+import io.vavr.Value;
 import io.vavr.control.Option;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
@@ -35,6 +35,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ListTest extends AbstractLinearSeqTest {
 
@@ -238,7 +240,7 @@ public class ListTest extends AbstractLinearSeqTest {
     @Test
     public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
         final JavaConverters.ListView<Integer, List<Integer>> source = JavaConverters
-                .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
+          .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
         final List<Integer> target = List.ofAll(source);
         assertThat(target).isSameAs(source.getDelegate());
     }
@@ -259,9 +261,9 @@ public class ListTest extends AbstractLinearSeqTest {
 
     // -- peek
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailPeekOfNil() {
-        empty().peek();
+        assertThrows(NoSuchElementException.class, () -> empty().peek());
     }
 
     @Test
@@ -281,9 +283,9 @@ public class ListTest extends AbstractLinearSeqTest {
 
     // -- pop
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailPopOfNil() {
-        empty().pop();
+        assertThrows(NoSuchElementException.class, () -> empty().pop());
     }
 
     @Test
@@ -303,9 +305,9 @@ public class ListTest extends AbstractLinearSeqTest {
 
     // -- pop2
 
-    @Test(expected = NoSuchElementException.class)
+    @Test
     public void shouldFailPop2OfNil() {
-        empty().pop2();
+        assertThrows(NoSuchElementException.class, () -> empty().pop2());
     }
 
     @Test
@@ -365,10 +367,10 @@ public class ListTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldRightSimpleList() {
         assertThat(
-                List.unfoldRight(10, x -> x == 0
-                                          ? Option.none()
-                                          : Option.of(new Tuple2<>(x, x - 1))))
-                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+          List.unfoldRight(10, x -> x == 0
+            ? Option.none()
+            : Option.of(new Tuple2<>(x, x - 1))))
+          .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
     }
 
     @Test
@@ -379,10 +381,10 @@ public class ListTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldLeftSimpleList() {
         assertThat(
-                List.unfoldLeft(10, x -> x == 0
-                                         ? Option.none()
-                                         : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+          List.unfoldLeft(10, x -> x == 0
+            ? Option.none()
+            : Option.of(new Tuple2<>(x - 1, x))))
+          .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     @Test
@@ -393,51 +395,53 @@ public class ListTest extends AbstractLinearSeqTest {
     @Test
     public void shouldUnfoldSimpleList() {
         assertThat(
-                List.unfold(10, x -> x == 0
-                                     ? Option.none()
-                                     : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+          List.unfold(10, x -> x == 0
+            ? Option.none()
+            : Option.of(new Tuple2<>(x - 1, x))))
+          .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
     // -- Cons test
 
-    @Test(expected = InvalidObjectException.class)
-    public void shouldNotSerializeEnclosingClass() throws Throwable {
-        Serializables.callReadObject(List.of(1));
+    @Test
+    public void shouldNotSerializeEnclosingClass() {
+        assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(List.of(1)));
     }
 
-    @Test(expected = InvalidObjectException.class)
-    public void shouldNotDeserializeListWithSizeLessThanOne() throws Throwable {
-        try {
-            /*
-             * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
-             * of List elements is gathered dynamically.
-             */
-            final byte[] listWithOneElement = Serializables.serialize(List.of(0));
-            final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
-            int index = -1;
-            for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
-                final byte b1 = listWithOneElement[i];
-                final byte b2 = listWithTwoElements[i];
-                if (b1 != b2) {
-                    if (b1 != 1 || b2 != 2) {
-                        throw new IllegalStateException("Difference does not indicate number of elements.");
-                    } else {
-                        index = i;
+    @Test
+    public void shouldNotDeserializeListWithSizeLessThanOne() {
+        assertThrows(InvalidObjectException.class, () -> {
+            try {
+                /*
+                 * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
+                 * of List elements is gathered dynamically.
+                 */
+                final byte[] listWithOneElement = Serializables.serialize(List.of(0));
+                final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
+                int index = -1;
+                for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
+                    final byte b1 = listWithOneElement[i];
+                    final byte b2 = listWithTwoElements[i];
+                    if (b1 != b2) {
+                        if (b1 != 1 || b2 != 2) {
+                            throw new IllegalStateException("Difference does not indicate number of elements.");
+                        } else {
+                            index = i;
+                        }
                     }
                 }
+                if (index == -1) {
+                    throw new IllegalStateException("Hack incomplete - index not found");
+                }
+                /*
+                 * Hack the serialized data and fake zero elements.
+                 */
+                listWithOneElement[index] = 0;
+                Serializables.deserialize(listWithOneElement);
+            } catch (IllegalStateException x) {
+                throw (x.getCause() != null) ? x.getCause() : x;
             }
-            if (index == -1) {
-                throw new IllegalStateException("Hack incomplete - index not found");
-            }
-            /*
-             * Hack the serialized data and fake zero elements.
-             */
-            listWithOneElement[index] = 0;
-            Serializables.deserialize(listWithOneElement);
-        } catch (IllegalStateException x) {
-            throw (x.getCause() != null) ? x.getCause() : x;
-        }
+        });
     }
 
     //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
@@ -455,7 +459,6 @@ public class ListTest extends AbstractLinearSeqTest {
     }
 
     // -- spliterator
-
 
     @Test
     public void shouldHaveSizedSpliterator() {

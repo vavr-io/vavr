@@ -23,7 +23,7 @@ import io.vavr.JmhRunner;
 import io.vavr.Lazy;
 import io.vavr.collection.Array;
 import io.vavr.collection.Iterator;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 

@@ -21,7 +21,7 @@ package io.vavr.collection.euler;
 
 import io.vavr.collection.CharSeq;
 import io.vavr.collection.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.*;
 import static org.assertj.core.api.Assertions.assertThat;

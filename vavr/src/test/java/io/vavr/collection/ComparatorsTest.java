@@ -1,11 +1,12 @@
 package io.vavr.collection;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Comparator;
 
 import static io.vavr.collection.Comparators.naturalComparator;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ComparatorsTest {
 
@@ -19,14 +20,13 @@ public class ComparatorsTest {
         assertThat(comparator.compare(3, 3)).isEqualTo(0);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEWhenComparingNullAndIntegerUsingNaturalOrder() {
-        naturalComparator().compare(null, 1);
+        assertThrows(NullPointerException.class, () -> naturalComparator().compare(null, 1));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowNPEWhenComparingIntegerAndNullUsingNaturalOrder() {
-        naturalComparator().compare(1, null);
+        assertThrows(NullPointerException.class, () -> naturalComparator().compare(1, null));
     }
-
 }

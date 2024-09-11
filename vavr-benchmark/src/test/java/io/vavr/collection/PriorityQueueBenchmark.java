@@ -22,7 +22,7 @@ package io.vavr.collection;
 import fj.P;
 import io.vavr.JmhRunner;
 import io.vavr.Tuple2;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.openjdk.jmh.annotations.*;
 import scala.math.Ordering;
 import scala.math.Ordering$;
