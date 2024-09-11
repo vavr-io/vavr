@@ -1,12 +1,27 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
+    target-branch: "master"
+    directory: "/"
+    schedule:
+      interval: "daily"
+      time: "02:00"
+  - package-ecosystem: "maven"
+    target-branch: "version/0.x"
     directory: "/"
     schedule:
       interval: "daily"
       time: "02:00"
   - package-ecosystem: "github-actions"
     directory: "/"
+    target-branch: "master"
     schedule:
       interval: "daily"
       time: "02:00"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: "version/0.x"
+    schedule:
+      interval: "daily"
+      time: "02:00"
+
