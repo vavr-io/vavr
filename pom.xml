@@ -71,7 +71,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <jmh.version>1.37</jmh.version>
         <junit.version>5.11.0</junit.version>
         <maven.enforcer.version>3.0.0-M2</maven.enforcer.version>
-        <maven.build-helper.version>3.0.0</maven.build-helper.version>
+        <maven.build-helper.version>3.6.0</maven.build-helper.version>
         <maven.bundle.version>5.1.1</maven.bundle.version>
         <maven.clean.version>3.1.0</maven.clean.version>
         <maven.install.version>3.1.3</maven.install.version>
