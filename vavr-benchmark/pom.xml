@@ -52,7 +52,7 @@
         <dependency>
             <groupId>io.usethesource</groupId>
             <artifactId>capsule</artifactId>
-            <version>0.6.1</version>
+            <version>0.7.1</version>
         </dependency>
         <dependency>
             <groupId>org.openjdk.jol</groupId>
