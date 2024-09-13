@@ -87,7 +87,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <maven.source.version>3.0.1</maven.source.version>
         <maven.exec.version>1.5.0</maven.exec.version>
         <scala.maven.version>3.4.4</scala.maven.version>
-        <scala.version>2.12.6</scala.version>
+        <scala.version>2.12.18</scala.version>
         <scala.compat.version>2.12</scala.compat.version>
     </properties>
     <dependencyManagement>
