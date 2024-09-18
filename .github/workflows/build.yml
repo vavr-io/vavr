@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '8', '11', '17', '21', '23-ea' ]
+        java: [ '8', '11', '17', '21', '23' ]
         architecture: [ 'x64' ]
     name: Build with JDK ${{ matrix.java }} on ${{ matrix.architecture }}
     steps:
