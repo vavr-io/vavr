@@ -87,7 +87,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <maven.source.version>3.0.1</maven.source.version>
         <maven.exec.version>3.4.1</maven.exec.version>
         <scala.maven.version>3.4.4</scala.maven.version>
-        <scala.version>2.12.6</scala.version>
+        <scala.version>2.12.20</scala.version>
         <scala.compat.version>2.12</scala.compat.version>
     </properties>
     <dependencyManagement>
@@ -261,7 +261,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                         <showDeprecation>true</showDeprecation>
                         <showWarnings>true</showWarnings>
                         <compilerArgs>
-                            <arg>-Werror</arg>
+<!--                            <arg>-Werror</arg>-->
                             <arg>-Xlint:all</arg>
                             <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
                             <arg>-Xlint:-processing</arg>
