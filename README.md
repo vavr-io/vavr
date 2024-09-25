@@ -18,8 +18,6 @@ The most interesting part is a feature-rich, persistent collection library that 
 
 Because Vavr does not depend on any libraries (other than the JVM), you can easily add it as a standalone .jar to your classpath.
 
-To stay up to date please follow the [blog](http://blog.vavr.io).
-
 ### Stargazers over time
 [![Stargazers over time](https://starchart.cc/vavr-io/vavr.svg?variant=adaptive)](https://starchart.cc/vavr-io/vavr)
 
