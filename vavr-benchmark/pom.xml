@@ -42,7 +42,7 @@
         <dependency>
             <groupId>org.functionaljava</groupId>
             <artifactId>functionaljava-java8</artifactId>
-            <version>4.6</version>
+            <version>4.8.1</version>
         </dependency>
         <dependency>
             <groupId>org.eclipse.collections</groupId>
