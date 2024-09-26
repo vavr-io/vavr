@@ -80,7 +80,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <maven.gpg.version>3.2.6</maven.gpg.version>
         <maven.jacoco.version>0.8.12</maven.jacoco.version>
         <maven.jar.version>3.4.2</maven.jar.version>
-        <maven.javadoc.version>3.0.1</maven.javadoc.version>
+        <maven.javadoc.version>3.10.0</maven.javadoc.version>
         <maven.release.version>2.5.3</maven.release.version>
         <maven.versions.version>2.17.1</maven.versions.version>
         <maven.surefire.version>3.5.0</maven.surefire.version>
