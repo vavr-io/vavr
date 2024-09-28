@@ -26,7 +26,7 @@
         <dependency>
             <groupId>org.scalaz</groupId>
             <artifactId>scalaz-core_2.12</artifactId>
-            <version>7.3.0-M8</version>
+            <version>7.3.8</version>
             <!--contains scala-library 2.12.1-->
         </dependency>
         <dependency>
