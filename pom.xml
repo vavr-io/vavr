@@ -86,9 +86,8 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <maven.surefire.version>3.5.0</maven.surefire.version>
         <maven.source.version>3.3.1</maven.source.version>
         <maven.exec.version>3.4.1</maven.exec.version>
-        <scala.maven.version>3.4.4</scala.maven.version>
-        <scala.version>2.12.6</scala.version>
-        <scala.compat.version>2.12</scala.compat.version>
+        <scala.maven.version>4.9.2</scala.maven.version>
+        <scala.version>3.5.1</scala.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -188,7 +187,6 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     <version>${scala.maven.version}</version>
                     <configuration>
                         <scalaVersion>${scala.version}</scalaVersion>
-                        <scalaCompatVersion>${scala.compat.version}</scalaCompatVersion>
                         <failOnMultipleScalaVersions>true</failOnMultipleScalaVersions>
                     </configuration>
                     <executions>
