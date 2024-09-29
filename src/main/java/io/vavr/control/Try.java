@@ -723,7 +723,8 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
      * @param cases A not necessarily exhaustive sequence of cases that will be matched against a cause.
      * @return A new {@code Try} if this is a {@code Failure}, otherwise this.
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings({"varargs"})
+    @SafeVarargs
     public final Try<T> mapFailure(Match.Case<? extends Throwable, ? extends Throwable>... cases) {
         if (isSuccess()) {
             return this;
