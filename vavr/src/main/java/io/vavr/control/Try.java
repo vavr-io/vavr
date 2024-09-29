@@ -594,7 +594,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return A new {@code Try} if this is a {@code Failure}, otherwise this.
      */
     @GwtIncompatible
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SafeVarargs
     default Try<T> mapFailure(Match.Case<? extends Throwable, ? extends Throwable>... cases) {
         if (isSuccess()) {
             return this;
