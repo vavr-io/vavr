@@ -734,6 +734,21 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
     }
 
     /**
+     * Maps the cause to a new exception if this is a {@code Failure} or returns this instance if this is a {@code Success}.
+     *
+     * @param mapper A function that maps the cause of a failure to another exception.
+     * @return A new {@code Try} if this is a {@code Failure}, otherwise this.
+     * @throws NullPointerException if {@code mapper} is null.
+     */
+    public final Try<T> mapFailure(Function<? super Throwable, ? extends Throwable> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+
+        return isFailure()
+            ? failure(mapper.apply(getCause()))
+            : this;
+    }
+
+    /**
      * Runs the given checked function if this is a {@link Try.Success},
      * passing the result of the current expression to it.
      * If this expression is a {@link Try.Failure} then it'll return a new
