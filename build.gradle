@@ -40,8 +40,9 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
-ext.ammoniteScalaVersion = '2.13'
-ext.ammoniteVersion = '2.5.11'
+ext.ammoniteScalaVersion = '3.5'
+ext.ammoniteVersion = '3.0.0'
+ext.ammoniteVersionQualifier = '2-6342755f'
 ext.assertjVersion = '3.26.3'
 ext.junitVersion = '5.11.1'
 
@@ -87,7 +88,10 @@ tasks.register('generateSources') {
         }
         def ammoniteJar = new File(ammoniteDir, "amm-${ammoniteScalaVersion}-${ammoniteVersion}.jar")
         if (!ammoniteJar.exists()) {
-            def ammoniteReleaseUrl = "https://github.com/lihaoyi/Ammonite/releases/download/${ammoniteVersion}/${ammoniteScalaVersion}-${ammoniteVersion}"
+            def ammoniteAssetName = [ammoniteScalaVersion, ammoniteVersion, ammoniteVersionQualifier]
+                .findAll { it != null && !it.isEmpty() }
+                .join('-')
+            def ammoniteReleaseUrl = "https://github.com/lihaoyi/Ammonite/releases/download/${ammoniteVersion}/${ammoniteAssetName}"
             ant.get(src: ammoniteReleaseUrl, dest: ammoniteJar)
         }
         javaexec {
