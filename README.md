@@ -35,4 +35,8 @@ See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc
 
 ### Contributing
 
+Currently, there are two significant branches:
+- `master` (represents a stream of work leading to the release of a new major version)
+- `version/0.x` (continues 0.10.4 with minor updates and bugfixes)
+
 A small number of users have reported problems building Vavr. Read our [contribution guide](./CONTRIBUTING.md) for details.
