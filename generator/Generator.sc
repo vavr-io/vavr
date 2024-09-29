@@ -29,7 +29,6 @@ import JavaGenerator._
 
 import collection.immutable.ListMap
 import scala.language.implicitConversions
-import scala.reflect.macros.whitebox
 
 val N = 8
 val VARARGS = 10
@@ -776,7 +775,7 @@ def generateMainClasses(): Unit = {
             val forClassName = if (mtype.endsWith("Iterable")) { s"For$i" } else { s"For$i$mtype" }
             val generics = (1 to i).gen(j => s"T$j")(", ")
             val params = (1 to i).gen(j => s"${if(mtype == "Either") mtype + s"<L, T$j>" else mtype + s"<T$j>"} ts$j")(", ")
-          xs"""
+            xs"""
               /$javadoc
                * Creates a {@code For}-comprehension of ${i.numerus(mtype)}.
                ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} $mtype")("\n")}
@@ -2131,7 +2130,7 @@ def generateMainClasses(): Unit = {
               }
             """)}
 
-            ${(i > 1) gen (1 to i).gen(j => xs"""
+            ${(i > 1) `gen` (1 to i).gen(j => xs"""
               /$javadoc
                * Maps the ${j.ordinal} component of this tuple to a new value.
                *
@@ -2201,7 +2200,7 @@ def generateMainClasses(): Unit = {
               }
             """)}
 
-            ${(i < N) gen (1 to N-i).gen(j => xs"""
+            ${(i < N) `gen` (1 to N-i).gen(j => xs"""
               /$javadoc
                * Concat a tuple's values to this tuple.
                *
@@ -3644,7 +3643,7 @@ def generateTestClasses(): Unit = {
                 }
               """)}
 
-              ${(i > 1) gen (1 to i).gen(j => {
+              ${(i > 1) `gen` (1 to i).gen(j => {
                 val substitutedResultTypes = if (i == 0) "" else s"<${(1 to i).gen(k => s"${if (k == j) "String" else "Integer"}")(", ")}>"
                 val ones = (1 to i).gen(_ => "1")(", ")
                 val result = (1 to i).gen(k => s"${if (k == j) "\"X\"" else "1"}")(", ")
@@ -3683,7 +3682,7 @@ def generateTestClasses(): Unit = {
                 }
               """)}
 
-              ${(i < N) gen (1 to N-i).gen(j => xs"""
+              ${(i < N) `gen` (1 to N-i).gen(j => xs"""
                 @$test
                 public void shouldConcatTuple$j() {
                     final Tuple${i+j}<${(1 to i+j).gen(j => s"Integer")(", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(", ")})"}.concat(Tuple.of(${(i+1 to i+j).gen(k => s"$k")(", ")}));
@@ -3943,10 +3942,10 @@ object Generator {
     def first: String = s.substring(0, 1)
 
     // converts first char of s to upper case. throws if string is empty
-    def firstUpper: String = s(0).toUpper + s.substring(1)
+    def firstUpper: String = s"${s(0).toUpper}${s.substring(1)}"
 
     // converts first char of s to lower case. throws if string is empty
-    def firstLower: String = s(0).toLower + s.substring(1)
+    def firstLower: String = s"${s(0).toLower}${s.substring(1)}"
   }
 
   implicit class BooleanExtensions(condition: Boolean) {
@@ -4121,7 +4120,7 @@ object Generator {
      * @param args StringContext parts
      * @return An aligned String
      */
-    def xs(args: Any*): String = align(sc.s(indentedArgs(args:_*):_*))
+    def xs(args: Any*): String = align(sc.s(indentedArgs(args*)*))
 
     /**
      * Formats raw/unescaped strings.
@@ -4129,7 +4128,7 @@ object Generator {
      * @param args StringContext parts
      * @return An aligned String
      */
-    def xraw(args: Any*): String = align(sc.raw(indentedArgs(args:_*):_*))
+    def xraw(args: Any*): String = align(sc.raw(indentedArgs(args*)*))
 
     // indent embedded strings, invariant: parts.length = args.length + 1
     private def indentedArgs(args: Any*): Seq[String] =
