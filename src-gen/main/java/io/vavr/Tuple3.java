@@ -51,17 +51,17 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Serializable {
     /**
      * The 1st element of this tuple.
      */
-    public final T1 _1;
+    transient public T1 _1;
 
     /**
      * The 2nd element of this tuple.
      */
-    public final T2 _2;
+    transient public T2 _2;
 
     /**
      * The 3rd element of this tuple.
      */
-    public final T3 _3;
+    transient public T3 _3;
 
     /**
      * Constructs a tuple of three elements.
@@ -418,6 +418,22 @@ public final class Tuple3<T1, T2, T3> implements Tuple, Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(_1, _2, _3);
+    }
+
+    private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
+        s.defaultWriteObject();
+        s.writeObject(_1);
+        s.writeObject(_2);
+        s.writeObject(_3);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void readObject(java.io.ObjectInputStream s)
+                throws java.io.IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        _1 = (T1) s.readObject();
+        _2 = (T2) s.readObject();
+        _3 = (T3) s.readObject();
     }
 
     @Override

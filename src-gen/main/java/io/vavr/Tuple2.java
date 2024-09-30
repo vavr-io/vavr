@@ -53,12 +53,12 @@ public final class Tuple2<T1, T2> implements Tuple, Serializable {
     /**
      * The 1st element of this tuple.
      */
-    public final T1 _1;
+    transient public T1 _1;
 
     /**
      * The 2nd element of this tuple.
      */
-    public final T2 _2;
+    transient public T2 _2;
 
     /**
      * Constructs a tuple of two elements.
@@ -395,6 +395,20 @@ public final class Tuple2<T1, T2> implements Tuple, Serializable {
     @Override
     public int hashCode() {
         return Objects.hashCode(_1) ^ Objects.hashCode(_2);
+    }
+
+    private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
+        s.defaultWriteObject();
+        s.writeObject(_1);
+        s.writeObject(_2);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void readObject(java.io.ObjectInputStream s)
+                throws java.io.IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        _1 = (T1) s.readObject();
+        _2 = (T2) s.readObject();
     }
 
     @Override

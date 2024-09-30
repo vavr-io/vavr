@@ -56,42 +56,42 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Seri
     /**
      * The 1st element of this tuple.
      */
-    public final T1 _1;
+    transient public T1 _1;
 
     /**
      * The 2nd element of this tuple.
      */
-    public final T2 _2;
+    transient public T2 _2;
 
     /**
      * The 3rd element of this tuple.
      */
-    public final T3 _3;
+    transient public T3 _3;
 
     /**
      * The 4th element of this tuple.
      */
-    public final T4 _4;
+    transient public T4 _4;
 
     /**
      * The 5th element of this tuple.
      */
-    public final T5 _5;
+    transient public T5 _5;
 
     /**
      * The 6th element of this tuple.
      */
-    public final T6 _6;
+    transient public T6 _6;
 
     /**
      * The 7th element of this tuple.
      */
-    public final T7 _7;
+    transient public T7 _7;
 
     /**
      * The 8th element of this tuple.
      */
-    public final T8 _8;
+    transient public T8 _8;
 
     /**
      * Constructs a tuple of 8 elements.
@@ -641,6 +641,32 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Seri
     @Override
     public int hashCode() {
         return Objects.hash(_1, _2, _3, _4, _5, _6, _7, _8);
+    }
+
+    private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
+        s.defaultWriteObject();
+        s.writeObject(_1);
+        s.writeObject(_2);
+        s.writeObject(_3);
+        s.writeObject(_4);
+        s.writeObject(_5);
+        s.writeObject(_6);
+        s.writeObject(_7);
+        s.writeObject(_8);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void readObject(java.io.ObjectInputStream s)
+                throws java.io.IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        _1 = (T1) s.readObject();
+        _2 = (T2) s.readObject();
+        _3 = (T3) s.readObject();
+        _4 = (T4) s.readObject();
+        _5 = (T5) s.readObject();
+        _6 = (T6) s.readObject();
+        _7 = (T7) s.readObject();
+        _8 = (T8) s.readObject();
     }
 
     @Override

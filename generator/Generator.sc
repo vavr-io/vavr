@@ -1963,7 +1963,7 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * The ${j.ordinal} element of this tuple.
                */
-              public final T$j _$j;
+              transient public T$j _$j;
             """)("\n\n")}
 
             ${if (i == 0) xs"""
@@ -2237,6 +2237,24 @@ def generateMainClasses(): Unit = {
             public int hashCode() {
                 return ${if (i == 0) "1" else if (i == 1) "Objects.hashCode(_1)" else if (i == 2) "Objects.hashCode(_1) ^ Objects.hashCode(_2)" else s"""Objects.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
             }
+
+            ${(i > 0).gen(xs"""
+            private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
+                s.defaultWriteObject();
+                ${(1 to i).gen(j => xs"""
+                  s.writeObject(_$j);
+                   """)("\n")}
+            }
+
+            @SuppressWarnings("unchecked")
+            private void readObject(java.io.ObjectInputStream s)
+                        throws java.io.IOException, ClassNotFoundException {
+                s.defaultReadObject();
+                ${(1 to i).gen(j => xs"""
+                  _$j = (T$j) s.readObject();
+                   """)("\n")}
+            }
+            """)}
 
             @Override
             public String toString() {
