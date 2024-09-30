@@ -43,7 +43,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     /**
      * The 1st element of this tuple.
      */
-    public final T1 _1;
+    transient public T1 _1;
 
     /**
      * Constructs a tuple of one element.
@@ -280,6 +280,18 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     @Override
     public int hashCode() {
         return Tuple.hash(_1);
+    }
+
+    private void writeObject(java.io.ObjectOutputStream s) throws java.io.IOException {
+        s.defaultWriteObject();
+        s.writeObject(_1);
+    }
+
+    @SuppressWarnings("unchecked")
+    private void readObject(java.io.ObjectInputStream s)
+                throws java.io.IOException, ClassNotFoundException {
+        s.defaultReadObject();
+        _1 = (T1) s.readObject();
     }
 
     @Override
