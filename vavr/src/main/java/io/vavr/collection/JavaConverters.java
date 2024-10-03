@@ -62,6 +62,7 @@ class JavaConverters {
 
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("serial") // Conditionally serializable
         private C delegate;
         private final boolean mutable;
 

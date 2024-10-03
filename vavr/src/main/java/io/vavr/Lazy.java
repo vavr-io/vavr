@@ -65,6 +65,8 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
 
     // read http://javarevisited.blogspot.de/2014/05/double-checked-locking-on-singleton-in-java.html
     private transient volatile Supplier<? extends T> supplier;
+
+    @SuppressWarnings("serial") // Conditionally serializable
     private T value; // will behave as a volatile in reality, because a supplier volatile read will update all fields (see https://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html#volatile)
 
     // should not be called directly
