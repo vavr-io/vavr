@@ -1090,6 +1090,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("serial") // Conditionally serializable
         private final L value;
 
         /**
@@ -1153,6 +1154,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("serial") // Conditionally serializable
         private final R value;
 
         /**
