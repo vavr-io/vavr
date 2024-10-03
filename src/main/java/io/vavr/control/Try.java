@@ -1848,7 +1848,7 @@ interface TryModule {
     static boolean isFatal(Throwable throwable) {
         return throwable instanceof InterruptedException
                 || throwable instanceof LinkageError
-                || throwable instanceof ThreadDeath
+                || ThreadDeathChecker.isThreadDeath(throwable)
                 || throwable instanceof VirtualMachineError;
     }
 
@@ -1858,4 +1858,19 @@ interface TryModule {
         throw (T) t;
     }
 
+    class ThreadDeathChecker {
+        static final Class<?> THREAD_DEATH_CLASS = resolve();
+
+        static boolean isThreadDeath(Throwable throwable) {
+            return THREAD_DEATH_CLASS != null && THREAD_DEATH_CLASS.isInstance(throwable);
+        }
+
+        private static Class<?> resolve() {
+            try {
+                return Class.forName("java.lang.ThreadDeath");
+            } catch (ClassNotFoundException e) {
+                return null;
+            }
+        }
+    }
 }
