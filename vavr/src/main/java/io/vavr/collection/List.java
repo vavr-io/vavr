@@ -1803,6 +1803,7 @@ public interface List<T> extends LinearSeq<T> {
 
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("serial") // Conditionally serializable
         private final T head;
         private final List<T> tail;
         private final int length;

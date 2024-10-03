@@ -37,7 +37,9 @@ import static io.vavr.collection.HashArrayMappedTrieModule.Action.REMOVE;
  *
  * @author Ruslan Sennov
  */
-interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>> {
+interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>>, Serializable {
+
+    static final long serialVersionUID = 1L;
 
     static <K, V> HashArrayMappedTrie<K, V> empty() {
         return EmptyNode.instance();
@@ -166,6 +168,8 @@ interface HashArrayMappedTrieModule {
      * @param <V> Value type
      */
     abstract class AbstractNode<K, V> implements HashArrayMappedTrie<K, V> {
+
+        private static final long serialVersionUID = 1L;
 
         static final int SIZE = 5;
         static final int BUCKET_SIZE = 1 << SIZE;
@@ -329,6 +333,8 @@ interface HashArrayMappedTrieModule {
      * @param <V> Value type
      */
     abstract class LeafNode<K, V> extends AbstractNode<K, V> {
+
+        private static final long serialVersionUID = 1L;
 
         abstract K key();
 
