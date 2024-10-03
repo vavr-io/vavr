@@ -1953,6 +1953,7 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * The ${j.ordinal} element of this tuple.
                */
+              @SuppressWarnings("serial") // Conditionally serializable
               public final T$j _$j;
             """)("\n\n")}
 

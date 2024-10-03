@@ -43,6 +43,7 @@ public final class Tuple1<T1> implements Tuple, Comparable<Tuple1<T1>>, Serializ
     /**
      * The 1st element of this tuple.
      */
+    @SuppressWarnings("serial") // Conditionally serializable
     public final T1 _1;
 
     /**

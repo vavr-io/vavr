@@ -47,11 +47,13 @@ public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, 
     /**
      * The 1st element of this tuple.
      */
+    @SuppressWarnings("serial") // Conditionally serializable
     public final T1 _1;
 
     /**
      * The 2nd element of this tuple.
      */
+    @SuppressWarnings("serial") // Conditionally serializable
     public final T2 _2;
 
     /**

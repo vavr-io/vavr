@@ -46,21 +46,25 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     /**
      * The 1st element of this tuple.
      */
+    @SuppressWarnings("serial") // Conditionally serializable
     public final T1 _1;
 
     /**
      * The 2nd element of this tuple.
      */
+    @SuppressWarnings("serial") // Conditionally serializable
     public final T2 _2;
 
     /**
      * The 3rd element of this tuple.
      */
+    @SuppressWarnings("serial") // Conditionally serializable
     public final T3 _3;
 
     /**
      * The 4th element of this tuple.
      */
+    @SuppressWarnings("serial") // Conditionally serializable
     public final T4 _4;
 
     /**
