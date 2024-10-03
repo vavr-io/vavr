@@ -38,6 +38,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
 
     private static final long serialVersionUID = 1L;
 
+    @SuppressWarnings("serial") // Conditionally serializable
     private final Comparator<? super T> comparator;
     private final Seq<Node<T>> forest;
     private final int size;
@@ -798,6 +799,7 @@ final class PriorityQueueBase {
 
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("serial") // Conditionally serializable
         final T root;
         final int rank;
         final Seq<Node<T>> children;

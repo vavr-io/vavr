@@ -1857,6 +1857,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("serial") // Conditionally serializable
         final T head;
         final Lazy<Stream<T>> tail;
 
