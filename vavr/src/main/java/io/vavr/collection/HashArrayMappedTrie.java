@@ -377,7 +377,9 @@ interface HashArrayMappedTrieModule {
         private static final long serialVersionUID = 1L;
 
         private final int hash;
+        @SuppressWarnings("serial") // Conditionally serializable
         private final K key;
+        @SuppressWarnings("serial") // Conditionally serializable
         private final V value;
 
         LeafSingleton(int hash, K key, V value) {
@@ -446,7 +448,9 @@ interface HashArrayMappedTrieModule {
         private static final long serialVersionUID = 1L;
 
         private final int hash;
+        @SuppressWarnings("serial") // Conditionally serializable
         private final K key;
+        @SuppressWarnings("serial") // Conditionally serializable
         private final V value;
         private final int size;
         private final LeafNode<K, V> tail;
@@ -592,6 +596,7 @@ interface HashArrayMappedTrieModule {
 
         private final int bitmap;
         private final int size;
+        @SuppressWarnings("serial") // Conditionally serializable
         private final Object[] subNodes;
 
         IndexedNode(int bitmap, int size, Object[] subNodes) {
@@ -705,6 +710,7 @@ interface HashArrayMappedTrieModule {
 
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("serial") // Conditionally serializable
         private final Object[] subNodes;
         private final int count;
         private final int size;
