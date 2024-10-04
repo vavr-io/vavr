@@ -833,6 +833,7 @@ public abstract class Tree<T> implements Traversable<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("serial") // Conditionally serializable
         private final T value;
         private final io.vavr.collection.List<Node<T>> children;
 
