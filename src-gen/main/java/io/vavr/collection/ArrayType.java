@@ -37,7 +37,10 @@ import java.util.Collection;
 /**
  * Helper to replace reflective array access.
  */
-interface ArrayType<T> {
+interface ArrayType<T> extends Serializable {
+
+    long serialVersionUID = 1L;
+
     @SuppressWarnings("unchecked")
     static <T> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
 

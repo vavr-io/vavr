@@ -594,7 +594,9 @@ public class BitSetTest extends AbstractSortedSetTest {
 
         private static final long serialVersionUID = 1L;
 
+        @SuppressWarnings("serial") // Conditionally serializable
         private final java.util.Map<Integer, T> fromIntMap = new java.util.HashMap<>();
+        @SuppressWarnings("serial") // Conditionally serializable
         private final java.util.Map<T, Integer> toIntMap = new java.util.HashMap<>();
         private int nextValue = 0;
 

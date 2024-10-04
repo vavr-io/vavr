@@ -51,6 +51,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     private static final Array<?> EMPTY = new Array<>(new Object[0]);
 
+    @SuppressWarnings("serial") // Conditionally serializable
     private final Object[] delegate;
 
     private Array(Object[] delegate) {

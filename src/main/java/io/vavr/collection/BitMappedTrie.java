@@ -65,6 +65,7 @@ final class BitMappedTrie<T> implements Serializable {
     static <T> BitMappedTrie<T> empty() { return (BitMappedTrie<T>) EMPTY; }
 
     final ArrayType<T> type;
+    @SuppressWarnings("serial") // Conditionally serializable
     private final Object array;
     private final int offset, length;
     private final int depthShift;
