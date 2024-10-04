@@ -1104,7 +1104,7 @@ def generateMainClasses(): Unit = {
                   private static final long serialVersionUID = 1L;
 
                   private final Pattern0<T> pattern;
-                  private final $FunctionType<? super T, ? extends R> f;
+                  private transient final $FunctionType<? super T, ? extends R> f;
 
                   private Case0(Pattern0<T> pattern, $FunctionType<? super T, ? extends R> f) {
                       this.pattern = pattern;
@@ -1130,13 +1130,18 @@ def generateMainClasses(): Unit = {
                   case 2 => BiFunctionType
                   case _ => s"Function$i"
                 }
+                val accessModifier = i match {
+                  case 1 => "transient final"
+                  case 2 => "transient final"
+                  case _ => "final"
+                }
                 xs"""
                   public static final class Case$i<T, $generics, R> implements Case<T, R> {
 
                       private static final long serialVersionUID = 1L;
 
                       private final Pattern$i<T, $generics> pattern;
-                      private final $functionType<$argTypes, ? extends R> f;
+                      private $accessModifier $functionType<$argTypes, ? extends R> f;
 
                       private Case$i(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
                           this.pattern = pattern;
@@ -2329,7 +2334,9 @@ def generateMainClasses(): Unit = {
          *
          * @author Daniel Dietrich
          */
-        public interface Tuple {
+        public interface Tuple extends ${im.getType("java.io.Serializable")} {
+
+            long serialVersionUID = 1L;
 
             /**
              * The maximum arity of an Tuple.
@@ -2415,7 +2422,10 @@ def generateMainClasses(): Unit = {
        *
        * @author Pap Lőrinc
        */
-      interface ArrayType<T> {
+      interface ArrayType<T> extends Serializable {
+
+          long serialVersionUID = 1L;
+
           @SuppressWarnings("unchecked")
           static <T> ArrayType<T> obj() { return (ArrayType<T>) ObjectArrayType.INSTANCE; }
 

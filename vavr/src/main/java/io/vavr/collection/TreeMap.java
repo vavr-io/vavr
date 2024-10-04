@@ -1562,6 +1562,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
             private static final long serialVersionUID = 1L;
 
+            @SuppressWarnings("serial") // Conditionally serializable
             private final Comparator<K> keyComparator;
 
             @SuppressWarnings("unchecked")
