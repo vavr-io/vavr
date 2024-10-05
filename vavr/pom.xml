@@ -64,6 +64,13 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessors>
+                        <annotationProcessor>
+                            io.vavr.match.PatternsProcessor
+                        </annotationProcessor>
+                    </annotationProcessors>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
