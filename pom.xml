@@ -69,7 +69,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <java.version>1.8</java.version>
         <jmh.version>1.37</jmh.version>
-        <junit.version>5.11.1</junit.version>
+        <junit.version>5.11.2</junit.version>
         <maven.enforcer.version>3.5.0</maven.enforcer.version>
         <maven.build-helper.version>3.6.0</maven.build-helper.version>
         <maven.bundle.version>5.1.9</maven.bundle.version>
