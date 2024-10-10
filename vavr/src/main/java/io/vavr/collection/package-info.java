@@ -2,7 +2,7 @@
  * Purely functional collections based on {@linkplain io.vavr.collection.Traversable}.
  *
  * <h2>Performance Characteristics of Vavr Collections</h2>
- * <table cellpadding="5" cellspacing="0" border="1" style="border-collapse: collapse">
+ * <table style="border-collapse: collapse; border: 1px solid; padding: 5px;">
  * <caption>Time Complexity of Sequential Operations</caption>
  * <thead>
  * <tr>
@@ -27,7 +27,7 @@
  * </tbody>
  * </table>
  * <br>
- * <table cellpadding="5" cellspacing="0" border="1" style="border-collapse: collapse">
+ * <table style="border-collapse: collapse; border: 1px solid; padding: 5px;">
  * <caption>Time Complexity of Map/Set Operations</caption>
  * <thead>
  * <tr>
