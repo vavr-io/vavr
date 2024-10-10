@@ -2347,7 +2347,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * The string {@code "boo:and:foo"}, for example, yields the following results with these expressions:
      * <blockquote>
-     * <table cellpadding=1 cellspacing=0 summary="Split examples showing regex and result">
+     * <table cellpadding=1 cellspacing=0>
+     * <caption>Split examples showing regex and result</caption>
      * <tr>
      * <th>Regex</th>
      * <th>Result</th>
@@ -2401,7 +2402,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * The string {@code "boo:and:foo"}, for example, yields the
      * following results with these parameters:
-     * <blockquote><table cellpadding=1 cellspacing=0 summary="Split example showing regex, limit, and result">
+     * <blockquote><table cellpadding=1 cellspacing=0>
+     * <caption>Split example showing regex, limit, and result</caption>
      * <tr>
      * <th>Regex</th>
      * <th>Limit</th>
@@ -2456,7 +2458,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * {@code CharSeq} may be a different length than the original {@code CharSeq}.
      * <p>
      * Examples of lowercase  mappings are in the following table:
-     * <table border="1" summary="Lowercase mapping examples showing language code of locale, upper case, lower case, and description">
+     * <table border="1">
+     * <caption>Lowercase mapping examples showing language code of locale, upper case, lower case, and description</caption>
      * <tr>
      * <th>Language Code of Locale</th>
      * <th>Upper Case</th>
@@ -2536,7 +2539,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * Examples of locale-sensitive and 1:M case mappings are in the following table.
      *
-     * <table border="1" summary="Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.">
+     * <table border="1">
+     * <caption>Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.</caption>
      * <tr>
      * <th>Language Code of Locale</th>
      * <th>Lower Case</th>
@@ -2613,7 +2617,8 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * Examples of locale-sensitive and 1:M case mappings are in the following table.
      *
-     * <table border="1" summary="Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.">
+     * <table border="1">
+     * <caption>Examples of locale-sensitive and 1:M case mappings. Shows Language code of locale, lower case, upper case, and description.</caption>
      * <tr>
      * <th>Language Code of Locale</th>
      * <th>Lower Case</th>
