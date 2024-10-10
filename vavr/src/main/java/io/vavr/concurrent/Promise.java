@@ -35,7 +35,7 @@ import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
  * The underlying {@code Executor} is used to execute asynchronous handlers, e.g. via
  * {@code promise.future().onComplete(...)}.
  *
- * <h3>Creation</h3>
+ * <h2>Creation</h2>
  * <p>
  * Promise offers static factory methods to create new promises which hasn't been fulfilled yet:
  * <ul>
