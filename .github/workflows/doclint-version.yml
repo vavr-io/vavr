@@ -22,4 +22,4 @@ jobs:
           cache: 'maven'
 
       - name: Validate JavaDocs
-        run: mvn javadoc:javadoc
+        run: mvn install -DskipTests=true && mvn javadoc:javadoc
