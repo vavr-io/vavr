@@ -1,4 +1,4 @@
-name: build
+name: doclint
 on:
   push:
     branches:
@@ -10,6 +10,7 @@ on:
 jobs:
   doc-lint:
     runs-on: ubuntu-latest
+    name: Validate JavaDocs
     steps:
       - uses: actions/checkout@v4
       - name: Setup JDK
