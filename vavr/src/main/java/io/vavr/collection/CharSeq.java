@@ -2347,7 +2347,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * The string {@code "boo:and:foo"}, for example, yields the following results with these expressions:
      * <blockquote>
-     * <table cellpadding=1 cellspacing=0>
+     * <table style="border-spacing: 0; padding: 1px;">
      * <caption>Split examples showing regex and result</caption>
      * <tr>
      * <th>Regex</th>
@@ -2402,7 +2402,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * The string {@code "boo:and:foo"}, for example, yields the
      * following results with these parameters:
-     * <blockquote><table cellpadding=1 cellspacing=0>
+     * <blockquote><table style="border-spacing: 0; padding: 1px;">
      * <caption>Split example showing regex, limit, and result</caption>
      * <tr>
      * <th>Regex</th>
