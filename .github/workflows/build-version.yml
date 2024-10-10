@@ -28,17 +28,3 @@ jobs:
 
       - name: Build with Maven
         run: mvn test
-  doc-lint:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Setup JDK
-        uses: actions/setup-java@v4
-        with:
-          distribution: 'temurin'
-          java-version: '23'
-          architecture: 'x64'
-          cache: 'maven'
-
-      - name: Validate JavaDocs
-        run: mvn javadoc:javadoc

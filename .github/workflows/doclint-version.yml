@@ -1,0 +1,24 @@
+name: build
+on:
+  push:
+    branches:
+      - version/**
+  pull_request:
+    branches:
+      - version/**
+
+jobs:
+  doc-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: 'x64'
+          cache: 'maven'
+
+      - name: Validate JavaDocs
+        run: mvn javadoc:javadoc
