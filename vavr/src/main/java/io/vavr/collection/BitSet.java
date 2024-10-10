@@ -139,14 +139,30 @@ public interface BitSet<T> extends SortedSet<T> {
         return Builder.DEFAULT.collector();
     }
 
+    /**
+     * Returns a BitSet containing no elements.
+     *
+     * @return an empty BitSet
+     */
     static BitSet<Integer> empty() {
         return Builder.DEFAULT.empty();
     }
 
+    /**
+     * Returns a BitSet containing a single value.
+     *
+     * @param value A single value
+     * @return A BitSet containing the given value
+     */
     static BitSet<Integer> of(Integer value) {
         return Builder.DEFAULT.of(value);
     }
 
+    /**
+     * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * @param values int values
+     * @return A new BitSet of int values
+     */
     static BitSet<Integer> of(Integer... values) {
         return Builder.DEFAULT.of(values);
     }
@@ -176,10 +192,20 @@ public interface BitSet<T> extends SortedSet<T> {
         return Builder.DEFAULT.fill(n, s);
     }
 
+    /**
+     * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * @param values int values
+     * @return A new BitSet of int values
+     */
     static BitSet<Integer> ofAll(Iterable<Integer> values) {
         return Builder.DEFAULT.ofAll(values);
     }
 
+    /**
+     * Creates a BitSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * @param javaStream A java.util.stream.Stream of int values
+     * @return A new BitSet of int values
+     */
     static BitSet<Integer> ofAll(java.util.stream.Stream<Integer> javaStream) {
         return Builder.DEFAULT.ofAll(javaStream);
     }
@@ -267,10 +293,24 @@ public interface BitSet<T> extends SortedSet<T> {
         return BitSet.ofAll(Iterator.range(from, toExclusive));
     }
 
+    /**
+     * Creates a BitSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of char values as specified or the empty range if {@code from >= toExclusive}
+     */
     static BitSet<Character> range(char from, char toExclusive) {
         return BitSet.withCharacters().ofAll(Iterator.range(from, toExclusive));
     }
 
+    /**
+     * Creates a BitSet of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
+     */
     static BitSet<Long> range(long from, long toExclusive) {
         return BitSet.withLongs().ofAll(Iterator.range(from, toExclusive));
     }
@@ -291,10 +331,32 @@ public interface BitSet<T> extends SortedSet<T> {
         return BitSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /** Creates a BitSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static BitSet<Character> rangeBy(char from, char toExclusive, int step) {
         return BitSet.withCharacters().ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /** Creates a BitSet of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static BitSet<Long> rangeBy(long from, long toExclusive, long step) {
         return BitSet.withLongs().ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -310,10 +372,24 @@ public interface BitSet<T> extends SortedSet<T> {
         return BitSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
+    /**
+     * Creates a BitSet of char numbers starting from {@code from}, extending to {@code toInclusive}.
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of char values as specified or the empty range if {@code from > toInclusive}
+     */
     static BitSet<Character> rangeClosed(char from, char toInclusive) {
         return BitSet.withCharacters().ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
+    /**
+     * Creates a BitSet of long numbers starting from {@code from}, extending to {@code toInclusive}.
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of long values as specified or the empty range if {@code from > toInclusive}
+     */
     static BitSet<Long> rangeClosed(long from, long toInclusive) {
         return BitSet.withLongs().ofAll(Iterator.rangeClosed(from, toInclusive));
     }
@@ -334,10 +410,34 @@ public interface BitSet<T> extends SortedSet<T> {
         return BitSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a BitSet of char numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static BitSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return BitSet.withCharacters().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a BitSet of long numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of long values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static BitSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
         return BitSet.withLongs().ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
