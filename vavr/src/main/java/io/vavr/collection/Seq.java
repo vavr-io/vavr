@@ -1093,7 +1093,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      *
      * @param element the element to find
      * @return the index of the search element, if it is contained in the sequence;
-     * otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     * otherwise, <code>(-(<i>insertion point</i>) - 1)</code>. The
      * <i>insertion point</i> is defined as the point at which the
      * element would be inserted into the sequence. Note that this guarantees that
      * the return value will be &gt;= 0 if and only if the element is found.
@@ -1110,7 +1110,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param element    the element to find
      * @param comparator the comparator by which this sequence is ordered
      * @return the index of the search element, if it is contained in the sequence;
-     * otherwise, <tt>(-(<i>insertion point</i>) - 1)</tt>. The
+     * otherwise, <code>(-(<i>insertion point</i>) - 1)</code>. The
      * <i>insertion point</i> is defined as the point at which the
      * element would be inserted into the sequence. Note that this guarantees that
      * the return value will be &gt;= 0 if and only if the element is found.
