@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.vavr</groupId>
         <artifactId>vavr-parent</artifactId>
-        <version>0.10.5-SNAPSHOT</version>
+        <version>0.10.5</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>vavr-match-processor</artifactId>
