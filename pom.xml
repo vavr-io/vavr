@@ -347,6 +347,12 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         </profile>
         <profile>
             <id>sonatype-oss-release</id>
+            <modules>
+                <module>vavr</module>
+                <module>vavr-match</module>
+                <module>vavr-match-processor</module>
+                <module>vavr-test</module>
+            </modules>
             <build>
                 <plugins>
                     <plugin>
