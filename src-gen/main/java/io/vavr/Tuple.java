@@ -32,13 +32,16 @@ package io.vavr;
 
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
 /**
  * The base interface of all tuples.
  */
-public interface Tuple {
+public interface Tuple extends Serializable {
+
+    long serialVersionUID = 1L;
 
     /**
      * The maximum arity of an Tuple.

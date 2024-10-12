@@ -30,10 +30,8 @@ import io.vavr.API;
 import io.vavr.Tuple;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
-import io.vavr.collection.Stream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static io.vavr.API.For;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

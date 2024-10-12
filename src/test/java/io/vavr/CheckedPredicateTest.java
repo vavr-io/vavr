@@ -26,8 +26,8 @@
  */
 package io.vavr;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Predicate;
 
@@ -61,7 +61,7 @@ public class CheckedPredicateTest {
         try {
             predicate.test(null);
         } catch(Throwable x) {
-            Assert.fail("Did not expect an exception but received: " + x.getMessage());
+            Assertions.fail("Did not expect an exception but received: " + x.getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ public class CheckedPredicateTest {
         final Predicate<Object> predicate = CheckedPredicate.of(obj -> { throw new Error(); }).unchecked();
         try {
             predicate.test(null);
-            Assert.fail("Did expect an exception.");
+            Assertions.fail("Did expect an exception.");
         } catch(Error x) {
             // ok!
         }

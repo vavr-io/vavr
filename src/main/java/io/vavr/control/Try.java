@@ -723,7 +723,8 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
      * @param cases A not necessarily exhaustive sequence of cases that will be matched against a cause.
      * @return A new {@code Try} if this is a {@code Failure}, otherwise this.
      */
-    @SuppressWarnings({ "unchecked", "varargs" })
+    @SuppressWarnings({"varargs"})
+    @SafeVarargs
     public final Try<T> mapFailure(Match.Case<? extends Throwable, ? extends Throwable>... cases) {
         if (isSuccess()) {
             return this;
@@ -731,6 +732,21 @@ public abstract class Try<T> implements Iterable<T>, io.vavr.Value<T>, Serializa
             final Option<Throwable> x = Match(getCause()).option(cases);
             return x.isEmpty() ? this : failure(x.get());
         }
+    }
+
+    /**
+     * Maps the cause to a new exception if this is a {@code Failure} or returns this instance if this is a {@code Success}.
+     *
+     * @param mapper A function that maps the cause of a failure to another exception.
+     * @return A new {@code Try} if this is a {@code Failure}, otherwise this.
+     * @throws NullPointerException if {@code mapper} is null.
+     */
+    public final Try<T> mapFailure(Function<? super Throwable, ? extends Throwable> mapper) {
+        Objects.requireNonNull(mapper, "mapper is null");
+
+        return isFailure()
+            ? failure(mapper.apply(getCause()))
+            : this;
     }
 
     /**
@@ -1832,7 +1848,7 @@ interface TryModule {
     static boolean isFatal(Throwable throwable) {
         return throwable instanceof InterruptedException
                 || throwable instanceof LinkageError
-                || throwable instanceof ThreadDeath
+                || ThreadDeathChecker.isThreadDeath(throwable)
                 || throwable instanceof VirtualMachineError;
     }
 
@@ -1842,4 +1858,19 @@ interface TryModule {
         throw (T) t;
     }
 
+    class ThreadDeathChecker {
+        static final Class<?> THREAD_DEATH_CLASS = resolve();
+
+        static boolean isThreadDeath(Throwable throwable) {
+            return THREAD_DEATH_CLASS != null && THREAD_DEATH_CLASS.isInstance(throwable);
+        }
+
+        private static Class<?> resolve() {
+            try {
+                return Class.forName("java.lang.ThreadDeath");
+            } catch (ClassNotFoundException e) {
+                return null;
+            }
+        }
+    }
 }

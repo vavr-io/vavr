@@ -29,7 +29,7 @@ package io.vavr;
 import io.vavr.collection.*;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
@@ -42,6 +42,7 @@ import java.util.function.Function;
 
 import static io.vavr.collection.Iterator.range;
 import static java.util.concurrent.CompletableFuture.runAsync;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LazyTest extends AbstractValueTest {
 
@@ -90,9 +91,9 @@ public class LazyTest extends AbstractValueTest {
         assertThat(Lazy.of(expected)).isSameAs(expected);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowOnNullSupplier() {
-        Lazy.of(null);
+        assertThrows(NullPointerException.class, () -> Lazy.of(null));
     }
 
     @Test
@@ -219,19 +220,19 @@ public class LazyTest extends AbstractValueTest {
         assertThat(evaluated[0]).isEqualTo("Yay!");
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCreatingLazyProxyAndSupplierIsNull() {
-        Lazy.val(null, CharSequence.class);
+        assertThrows(NullPointerException.class, () -> Lazy.val(null, CharSequence.class));
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowWhenCreatingLazyProxyAndTypeIsNull() {
-        Lazy.val(() -> "", null);
+        assertThrows(NullPointerException.class, () -> Lazy.val(() -> "", null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowWhenCreatingLazyProxyOfObjectType() {
-        Lazy.val(() -> "", String.class);
+        assertThrows(IllegalArgumentException.class, () -> Lazy.val(() -> "", String.class));
     }
 
     @Test

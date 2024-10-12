@@ -26,8 +26,8 @@
  */
 package io.vavr;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,7 +58,7 @@ public class CheckedRunnableTest {
         try {
             runnable.run();
         } catch(Throwable x) {
-            Assert.fail("Did not expect an exception but received: " + x.getMessage());
+            Assertions.fail("Did not expect an exception but received: " + x.getMessage());
         }
     }
 
@@ -67,7 +67,7 @@ public class CheckedRunnableTest {
         final Runnable runnable = CheckedRunnable.of(() -> { throw new Error(); }).unchecked();
         try {
             runnable.run();
-            Assert.fail("Did expect an exception.");
+            Assertions.fail("Did expect an exception.");
         } catch(Error x) {
             // ok!
         }

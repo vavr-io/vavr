@@ -29,7 +29,7 @@ package io.vavr.collection.euler;
 import io.vavr.collection.Stream;
 import io.vavr.collection.List;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

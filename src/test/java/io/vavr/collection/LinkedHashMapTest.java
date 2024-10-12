@@ -3,7 +3,7 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import org.assertj.core.api.Assertions;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -157,7 +157,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
         final Map<Integer, String> expected = LinkedHashMap.of(1, "2");
         assertThat(actual).isEqualTo(expected);
     }
-    
+
     // -- put
 
     @Test

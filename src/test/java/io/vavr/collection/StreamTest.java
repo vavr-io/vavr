@@ -29,8 +29,8 @@ package io.vavr.collection;
 import io.vavr.*;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
@@ -43,6 +43,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 import static io.vavr.collection.Stream.concat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class StreamTest extends AbstractLinearSeqTest {
 
@@ -660,7 +661,7 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     // -- subSequence(int, int)
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceIfSubSequenceStartsAtZeroAndEndsAtLastElement() {
@@ -735,19 +736,19 @@ public class StreamTest extends AbstractLinearSeqTest {
         assertThat(Stream.from(0).filter(hiddenThrow).take(1).sum().intValue()).isEqualTo(0);
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void shouldTakeZeroOfEmptyFilteredInfiniteStream() {
         assertThat(Stream.continually(1).filter(i -> false).take(0).isEmpty()).isTrue();
     }
 
-    @Ignore
+    @Disabled
     @Test
     public void shouldTakeZeroOfEmptyFlatMappedInfiniteStream() {
         assertThat(Stream.continually(1).flatMap(i -> Stream.empty()).take(0).isEmpty()).isTrue();
     }
 
-    @Ignore
+    @Disabled
     @Override
     @Test
     public void shouldReturnSameInstanceIfTakeAll() {
@@ -842,43 +843,45 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     // -- Serializable
 
-    @Test(expected = InvalidObjectException.class)
+    @Test
     public void shouldNotSerializeEnclosingClassOfCons() throws Throwable {
-        Serializables.callReadObject(Stream.cons(1, Stream::empty));
+        assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(Stream.cons(1, Stream::empty)));
     }
 
-    @Test(expected = InvalidObjectException.class)
+    @Test
     public void shouldNotDeserializeStreamWithSizeLessThanOne() throws Throwable {
-        try {
-            /*
-             * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
-             * of Stream elements is gathered dynamically.
-             */
-            final byte[] listWithOneElement = Serializables.serialize(Stream.of(0));
-            final byte[] listWithTwoElements = Serializables.serialize(Stream.of(0, 0));
-            int index = -1;
-            for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
-                final byte b1 = listWithOneElement[i];
-                final byte b2 = listWithTwoElements[i];
-                if (b1 != b2) {
-                    if (b1 != 1 || b2 != 2) {
-                        throw new IllegalStateException("Difference does not indicate number of elements.");
-                    } else {
-                        index = i;
+        assertThrows(InvalidObjectException.class, () -> {
+            try {
+                /*
+                 * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
+                 * of Stream elements is gathered dynamically.
+                 */
+                final byte[] listWithOneElement = Serializables.serialize(Stream.of(0));
+                final byte[] listWithTwoElements = Serializables.serialize(Stream.of(0, 0));
+                int index = -1;
+                for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
+                    final byte b1 = listWithOneElement[i];
+                    final byte b2 = listWithTwoElements[i];
+                    if (b1 != b2) {
+                        if (b1 != 1 || b2 != 2) {
+                            throw new IllegalStateException("Difference does not indicate number of elements.");
+                        } else {
+                            index = i;
+                        }
                     }
                 }
+                if (index == -1) {
+                    throw new IllegalStateException("Hack incomplete - index not found");
+                }
+                /*
+                 * Hack the serialized data and fake zero elements.
+                 */
+                listWithOneElement[index] = 0;
+                Serializables.deserialize(listWithOneElement);
+            } catch (IllegalStateException x) {
+                throw (x.getCause() != null) ? x.getCause() : x;
             }
-            if (index == -1) {
-                throw new IllegalStateException("Hack incomplete - index not found");
-            }
-            /*
-             * Hack the serialized data and fake zero elements.
-			 */
-            listWithOneElement[index] = 0;
-            Serializables.deserialize(listWithOneElement);
-        } catch (IllegalStateException x) {
-            throw (x.getCause() != null) ? x.getCause() : x;
-        }
+        });
     }
 
     // -- spliterator

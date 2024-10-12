@@ -32,7 +32,7 @@ import io.vavr.collection.Seq;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
 import io.vavr.collection.Vector;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.*;
 import static io.vavr.collection.Stream.rangeClosed;
