@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 /**
@@ -269,9 +270,11 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
             return this;
         } else {
             final Map<Tuple5<T1, T2, T3, T4, T5>, R> cache = new HashMap<>();
+            final ReentrantLock lock = new ReentrantLock();
             return (Function5<T1, T2, T3, T4, T5, R> & Memoized) (t1, t2, t3, t4, t5) -> {
                 final Tuple5<T1, T2, T3, T4, T5> key = Tuple.of(t1, t2, t3, t4, t5);
-                synchronized (cache) {
+                lock.lock();
+                try {
                     if (cache.containsKey(key)) {
                         return cache.get(key);
                     } else {
@@ -279,6 +282,8 @@ public interface Function5<T1, T2, T3, T4, T5, R> extends Serializable {
                         cache.put(key, value);
                         return value;
                     }
+                } finally {
+                    lock.unlock();
                 }
             };
         }

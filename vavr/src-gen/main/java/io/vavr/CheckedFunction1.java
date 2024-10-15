@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 
 /**
@@ -207,8 +208,10 @@ public interface CheckedFunction1<T1, R> extends Serializable {
             return this;
         } else {
             final Map<T1, R> cache = new HashMap<>();
+            final ReentrantLock lock = new ReentrantLock();
             return (CheckedFunction1<T1, R> & Memoized) (t1) -> {
-                synchronized (cache) {
+                lock.lock();
+                try {
                     if (cache.containsKey(t1)) {
                         return cache.get(t1);
                     } else {
@@ -216,6 +219,8 @@ public interface CheckedFunction1<T1, R> extends Serializable {
                         cache.put(t1, value);
                         return value;
                     }
+                } finally {
+                    lock.unlock();
                 }
             };
         }
