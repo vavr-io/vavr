@@ -53,7 +53,7 @@ import static io.vavr.collection.ChampTrie.NodeFactory.newHashCollisionNode;
  * </dl>
  *
  */
-public class ChampTrie {
+class ChampTrie {
     /**
      * Represents a node in a 'Compressed Hash-Array Mapped Prefix-tree'
      * (CHAMP) trie.

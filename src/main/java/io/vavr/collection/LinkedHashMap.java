@@ -30,12 +30,25 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
 
-import java.io.*;
-import java.util.*;
-import java.util.function.*;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
-import static io.vavr.collection.ChampSequenced.ChampSequencedData.seqHash;
 import static io.vavr.collection.ChampSequenced.ChampSequencedData.vecRemove;
 import static io.vavr.collection.ChampTrie.BitmapIndexedNode.emptyNode;
 
@@ -104,11 +117,6 @@ import static io.vavr.collection.ChampTrie.BitmapIndexedNode.emptyNode;
  * <p>
  * If the number of tombstones exceeds half of the size of the collection, we renumber all
  * sequence numbers, and we create a new Vector.
- * <p>
- * The immutable version of this set extends from the non-public class
- * {@code ChampBitmapIndexNode}. This design safes 16 bytes for every instance,
- * and reduces the number of redirections for finding an element in the
- * collection by 1.
  * <p>
  * References:
  * <p>

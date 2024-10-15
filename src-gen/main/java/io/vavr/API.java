@@ -30,14 +30,32 @@ package io.vavr;
    G E N E R A T O R   C R A F T E D
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
-import static io.vavr.API.Match.*;
-
-import io.vavr.collection.*;
+import io.vavr.collection.Array;
+import io.vavr.collection.CharSeq;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.HashSet;
+import io.vavr.collection.IndexedSeq;
+import io.vavr.collection.Iterator;
+import io.vavr.collection.LinkedHashMap;
+import io.vavr.collection.LinkedHashSet;
+import io.vavr.collection.List;
+import io.vavr.collection.Map;
+import io.vavr.collection.PriorityQueue;
+import io.vavr.collection.Queue;
+import io.vavr.collection.Seq;
+import io.vavr.collection.Set;
+import io.vavr.collection.SortedMap;
+import io.vavr.collection.SortedSet;
+import io.vavr.collection.Stream;
+import io.vavr.collection.TreeMap;
+import io.vavr.collection.TreeSet;
+import io.vavr.collection.Vector;
 import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
+
 import java.io.PrintStream;
 import java.util.Comparator;
 import java.util.Formatter;
@@ -47,6 +65,26 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+
+import static io.vavr.API.Match.Case;
+import static io.vavr.API.Match.Case0;
+import static io.vavr.API.Match.Case1;
+import static io.vavr.API.Match.Case2;
+import static io.vavr.API.Match.Case3;
+import static io.vavr.API.Match.Case4;
+import static io.vavr.API.Match.Case5;
+import static io.vavr.API.Match.Case6;
+import static io.vavr.API.Match.Case7;
+import static io.vavr.API.Match.Case8;
+import static io.vavr.API.Match.Pattern0;
+import static io.vavr.API.Match.Pattern1;
+import static io.vavr.API.Match.Pattern2;
+import static io.vavr.API.Match.Pattern3;
+import static io.vavr.API.Match.Pattern4;
+import static io.vavr.API.Match.Pattern5;
+import static io.vavr.API.Match.Pattern6;
+import static io.vavr.API.Match.Pattern7;
+import static io.vavr.API.Match.Pattern8;
 
 /**
  * The most basic Vavr functionality is accessed through this API class.
@@ -6081,7 +6119,7 @@ public final class API {
             private static final long serialVersionUID = 1L;
 
             private final Pattern0<T> pattern;
-            private final Function<? super T, ? extends R> f;
+            private transient final Function<? super T, ? extends R> f;
 
             private Case0(Pattern0<T> pattern, Function<? super T, ? extends R> f) {
                 this.pattern = pattern;
@@ -6104,7 +6142,7 @@ public final class API {
             private static final long serialVersionUID = 1L;
 
             private final Pattern1<T, T1> pattern;
-            private final Function<? super T1, ? extends R> f;
+            private transient final Function<? super T1, ? extends R> f;
 
             private Case1(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
                 this.pattern = pattern;
@@ -6127,7 +6165,7 @@ public final class API {
             private static final long serialVersionUID = 1L;
 
             private final Pattern2<T, T1, T2> pattern;
-            private final BiFunction<? super T1, ? super T2, ? extends R> f;
+            private transient final BiFunction<? super T1, ? super T2, ? extends R> f;
 
             private Case2(Pattern2<T, T1, T2> pattern, BiFunction<? super T1, ? super T2, ? extends R> f) {
                 this.pattern = pattern;
