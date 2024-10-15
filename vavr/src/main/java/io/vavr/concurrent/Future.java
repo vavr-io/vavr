@@ -32,6 +32,8 @@ import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.*;
 
 /**
@@ -178,8 +180,10 @@ public interface Future<T> extends Value<T> {
             return run(executor, complete -> {
                 final AtomicBoolean completed = new AtomicBoolean(false);
                 final AtomicInteger count = new AtomicInteger(list.length());
+                final Lock lock = new ReentrantLock();
                 list.forEach(future -> future.onComplete(result -> {
-                    synchronized (count) {
+                    lock.lock();
+                    try {
                         // if the future is already completed we already found our result and there is nothing more to do.
                         if (!completed.get()) {
                             // when there are no more results we return a None
@@ -193,6 +197,8 @@ public interface Future<T> extends Value<T> {
                                         }
                                     });
                         }
+                    } finally {
+                        lock.unlock();
                     }
                 }));
             });
