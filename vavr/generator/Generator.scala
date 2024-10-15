@@ -1752,8 +1752,10 @@ def generateMainClasses(): Unit = {
 	                        """}
                       """ else if (i == 1) xs"""
                         final ${im.getType("java.util.Map")}<$generics, R> cache = new ${im.getType("java.util.HashMap")}<>();
+                        final ${im.getType("java.util.concurrent.locks.ReentrantLock")} lock = new ${im.getType("java.util.concurrent.locks.ReentrantLock")}();
                         return ($className$fullGenerics & Memoized) ($params) -> {
-                            synchronized (cache) {
+                            lock.lock();
+                            try {
                                 if (cache.containsKey($params)) {
                                     return cache.get($params);
                                 } else {
@@ -1761,13 +1763,17 @@ def generateMainClasses(): Unit = {
                                     cache.put($params, value);
                                     return value;
                                 }
+                            } finally {
+                                lock.unlock();
                             }
                         };
                       """ else xs"""
                         final ${im.getType("java.util.Map")}<Tuple$i<$generics>, R> cache = new ${im.getType("java.util.HashMap")}<>();
+                        final ${im.getType("java.util.concurrent.locks.ReentrantLock")} lock = new ${im.getType("java.util.concurrent.locks.ReentrantLock")}();
                         return ($className$fullGenerics & Memoized) ($params) -> {
                             final Tuple$i$genericsTuple key = Tuple.of($params);
-                            synchronized (cache) {
+                            lock.lock();
+                            try {
                                 if (cache.containsKey(key)) {
                                     return cache.get(key);
                                 } else {
@@ -1775,6 +1781,8 @@ def generateMainClasses(): Unit = {
                                     cache.put(key, value);
                                     return value;
                                 }
+                            } finally {
+                                lock.unlock();
                             }
                         };
                       """}

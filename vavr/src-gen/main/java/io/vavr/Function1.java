@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -206,8 +207,10 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
             return this;
         } else {
             final Map<T1, R> cache = new HashMap<>();
+            final ReentrantLock lock = new ReentrantLock();
             return (Function1<T1, R> & Memoized) (t1) -> {
-                synchronized (cache) {
+                lock.lock();
+                try {
                     if (cache.containsKey(t1)) {
                         return cache.get(t1);
                     } else {
@@ -215,6 +218,8 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
                         cache.put(t1, value);
                         return value;
                     }
+                } finally {
+                    lock.unlock();
                 }
             };
         }
