@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ch.randelshofer</groupId>
+  <artifactId>vavr-champ</artifactId>
+  <version>0.10.5</version>
+  <packaging>jar</packaging>
+
+  <name>ch.randelshofer:vavr-champ</name>
+  <description>vavr-champ is binary compatible with vavr, but uses CHAMP-based collections internally.</description>
+  <url>https://github.com/wrandelshofer/vavr</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://github.com/wrandelshofer/vavr/blob/b562173e641c75037bb8b7a3f929af997e8d3a5c/LICENSE</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>Werner Randelshofer</name>
+      <email>werner.randelshofer@bluewin.ch</email>
+      <organization>ch.randelshofer</organization>
+      <organizationUrl>http://www.randelshofer.ch</organizationUrl>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/wrandelshofer/vavr.git</connection>
+    <developerConnection>scm:git:ssh://github.com/wrandelshofer/vavr.git</developerConnection>
+    <url>https://github.com/wrandelshofer/vavr/tree/master</url>
+  </scm>
+
+  <dependencies/>
+</project>

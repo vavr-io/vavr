@@ -28,6 +28,8 @@ package io.vavr.collection;
 
 import java.io.Serializable;
 import java.util.NoSuchElementException;
+import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -370,6 +372,65 @@ final class BitMappedTrie<T> implements Serializable {
     }
 
     int length() { return length; }
+
+    static class BitMappedTrieSpliterator<T> extends Spliterators.AbstractSpliterator<T> {
+        private final int globalLength;
+        private int globalIndex;
+
+        private int index;
+        private Object leaf;
+        private int length;
+        private final BitMappedTrie<T> root;
+      private  T current;
+
+        public BitMappedTrieSpliterator(BitMappedTrie<T> root, int fromIndex, int characteristics) {
+            super(Math.max(0,root.length - fromIndex), characteristics);
+            this.root = root;
+            globalLength = root.length;
+            globalIndex = Math.max(0,fromIndex);
+            index = lastDigit(root.offset + globalIndex);
+            leaf = root.getLeaf(globalIndex);
+            length = root.type.lengthOf(leaf);
+        }
+        public boolean moveNext() {
+            if (globalIndex >= globalLength) {
+                return false;
+            }
+            if (index == length) {
+                setCurrentArray();
+            }
+            current = root.type.getAt(leaf, index);
+            index++;
+            globalIndex++;
+            return true;
+        }
+
+        public T current() {
+            return current;
+        }
+
+        public void skip(int count) {
+            globalIndex += count;
+            index = lastDigit(root.offset + globalIndex);
+            leaf = root.getLeaf(globalIndex);
+            length = root.type.lengthOf(leaf);
+        }
+
+        @Override
+        public boolean tryAdvance(Consumer<? super T> action) {
+            if (moveNext()){
+                action.accept(current);
+                return true;
+            }
+            return false;
+        }
+
+        private void setCurrentArray() {
+            index = 0;
+            leaf = root.getLeaf(globalIndex);
+            length = root.type.lengthOf(leaf);
+        }
+    }
 }
 
 @FunctionalInterface
