@@ -2,7 +2,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![GitHub Release](https://img.shields.io/github/release/vavr-io/vavr.svg?style=flat-square)](https://github.com/vavr-io/vavr/releases)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.vavr/vavr/badge.svg?style=flat-square)](http://search.maven.org/#search|gav|1|g:"io.vavr"%20AND%20a:"vavr")
+![Maven Central Version](https://img.shields.io/maven-central/v/io.vavr/vavr?versionPrefix=0)
 [![Build Status](https://github.com/vavr-io/vavr/actions/workflows/build.yml/badge.svg)](https://github.com/vavr-io/vavr/actions/workflows/build.yml)
 [![Code Coverage](https://codecov.io/gh/vavr-io/vavr/branch/master/graph/badge.svg)](https://codecov.io/gh/vavr-io/vavr)
 
@@ -16,7 +16,7 @@ It provides persistent collections, functional abstractions for error handling, 
 Vavr fuses the power of object-oriented programming with the elegance and robustness of functional programming.
 The most interesting part is a feature-rich, persistent collection library that smoothly integrates with Java's standard collections.
 
-Because Vavr does not depend on any libraries (other than the JVM), you can easily add it as a standalone .jar to your classpath.
+Because Vavr does not depend on any libraries (other than the JVM), you can easily add it as a standalone _.jar_ to your classpath.
 
 ### Stargazers over time
 [![Stargazers over time](https://starchart.cc/vavr-io/vavr.svg?variant=adaptive)](https://starchart.cc/vavr-io/vavr)
