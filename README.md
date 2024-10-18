@@ -37,6 +37,8 @@ See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc
 
 Currently, there are two significant branches:
 - `master` (represents a stream of work leading to the release of a new major version)
-- `version/0.x` (continues 0.10.4 with minor updates and bugfixes)
+- `version/0.x` (continues 0.10.5 with minor updates and bugfixes)
+
+If you're unsure which one to start with, start with `version/0.x`.
 
 A small number of users have reported problems building Vavr. Read our [contribution guide](./CONTRIBUTING.md) for details.
