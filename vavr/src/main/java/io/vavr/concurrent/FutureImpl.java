@@ -25,7 +25,9 @@ import io.vavr.control.Try;
 
 import java.util.Objects;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
 
 /**
@@ -45,7 +47,7 @@ final class FutureImpl<T> implements Future<T> {
     /**
      * Used to synchronize state changes.
      */
-    private final Object lock = new Object();
+    private final Lock lock;
 
     /**
      * Indicates if this Future is cancelled
@@ -87,8 +89,10 @@ final class FutureImpl<T> implements Future<T> {
 
     // single constructor
     private FutureImpl(Executor executor, Option<Try<T>> value, Queue<Consumer<Try<T>>> actions, Queue<Thread> waiters, Computation<T> computation) {
+        this.lock = new ReentrantLock();
         this.executor = executor;
-        synchronized (lock) {
+        lock.lock();
+        try {
             this.cancelled = false;
             this.value = value;
             this.actions = actions;
@@ -98,6 +102,8 @@ final class FutureImpl<T> implements Future<T> {
             } catch (Throwable x) {
                 tryComplete(Try.failure(x));
             }
+        } finally {
+            lock.unlock();
         }
     }
 
@@ -219,8 +225,11 @@ final class FutureImpl<T> implements Future<T> {
                 public boolean block() {
                     try {
                         if (!threadEnqueued) {
-                            synchronized (lock) {
+                            lock.lock();
+                            try {
                                 waiters = waiters.enqueue(waitingThread);
+                            } finally {
+                                lock.unlock();
                             }
                             threadEnqueued = true;
                         }
@@ -256,7 +265,8 @@ final class FutureImpl<T> implements Future<T> {
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         if (!isCompleted()) {
-            synchronized (lock) {
+            lock.lock();
+            try {
                 if (!isCompleted()) {
                     if (mayInterruptIfRunning && this.thread != null) {
                         this.thread.interrupt();
@@ -264,6 +274,8 @@ final class FutureImpl<T> implements Future<T> {
                     this.cancelled = tryComplete(Try.failure(new CancellationException()));
                     return this.cancelled;
                 }
+            } finally {
+                lock.unlock();
             }
         }
         return false;
@@ -272,7 +284,8 @@ final class FutureImpl<T> implements Future<T> {
     private void updateThread() {
         // cancellation may have been initiated by a different thread before this.thread is set by the worker thread
         if (!isCompleted()) {
-            synchronized (lock) {
+            lock.lock();
+            try {
                 if (!isCompleted()) {
                     this.thread = Thread.currentThread();
                     try {
@@ -281,6 +294,8 @@ final class FutureImpl<T> implements Future<T> {
                         // we are not allowed to set the uncaught exception handler of the worker thread ¯\_(ツ)_/¯
                     }
                 }
+            } finally {
+                lock.unlock();
             }
         }
     }
@@ -322,12 +337,15 @@ final class FutureImpl<T> implements Future<T> {
         if (isCompleted()) {
             perform(action);
         } else {
-            synchronized (lock) {
+            lock.lock();
+            try {
                 if (isCompleted()) {
                     perform(action);
                 } else {
                     actions = actions.enqueue((Consumer<Try<T>>) action);
                 }
+            } finally {
+                lock.unlock();
             }
         }
         return this;
@@ -362,7 +380,8 @@ final class FutureImpl<T> implements Future<T> {
             final Queue<Consumer<Try<T>>> actions;
             final Queue<Thread> waiters;
             // it is essential to make the completed state public *before* performing the actions
-            synchronized (lock) {
+            lock.lock();
+            try {
                 if (isCompleted()) {
                     actions = null;
                     waiters = null;
@@ -374,6 +393,8 @@ final class FutureImpl<T> implements Future<T> {
                     this.waiters = null;
                     this.thread = null;
                 }
+            } finally {
+                lock.unlock();
             }
             if (waiters != null) {
                 waiters.forEach(this::unlock);
