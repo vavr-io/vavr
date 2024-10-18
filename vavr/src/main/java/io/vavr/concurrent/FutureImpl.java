@@ -47,7 +47,7 @@ final class FutureImpl<T> implements Future<T> {
     /**
      * Used to synchronize state changes.
      */
-    private final Lock lock = new ReentrantLock();
+    private final Lock lock;
 
     /**
      * Indicates if this Future is cancelled
@@ -89,6 +89,7 @@ final class FutureImpl<T> implements Future<T> {
 
     // single constructor
     private FutureImpl(Executor executor, Option<Try<T>> value, Queue<Consumer<Try<T>>> actions, Queue<Thread> waiters, Computation<T> computation) {
+        this.lock = new ReentrantLock();
         this.executor = executor;
         lock.lock();
         try {
