@@ -44,7 +44,7 @@ ext.ammoniteScalaVersion = '3.5'
 ext.ammoniteVersion = '3.0.0'
 ext.ammoniteVersionQualifier = '2-6342755f'
 ext.assertjVersion = '3.26.3'
-ext.junitVersion = '5.11.2'
+ext.junitVersion = '5.11.3'
 
 // JAVA_VERSION used for CI build matrix, may be provided as env variable
 def javaVersion = Integer.parseInt(System.getenv('JAVA_VERSION') ?: '8')
