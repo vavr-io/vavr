@@ -80,7 +80,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <maven.versions.version>2.17.1</maven.versions.version>
         <maven.surefire.version>3.5.1</maven.surefire.version>
         <maven.source.version>3.3.1</maven.source.version>
-        <maven.exec.version>3.4.1</maven.exec.version>
+        <maven.exec.version>3.5.0</maven.exec.version>
         <moditect.version>1.2.2.Final</moditect.version>
         <scala.maven.version>4.9.2</scala.maven.version>
         <scala.version>3.5.1</scala.version>
