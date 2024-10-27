@@ -44,10 +44,9 @@ _Source: http://users.ece.utexas.edu/~adnan/pike.html_
 * All classes start with the following copyright notice in order to apply the Apache-2.0 license:
 
 ```java
-/*  __    __  __  __    __  ___
- * \  \  /  /    \  \  /  /  __/
- *  \  \/  /  /\  \  \/  /  /
- *   \____/__/  \__\____/__/
+/* ____  ______________  ________________________  __________
+ * \   \/   /      \   \/   /   __/   /      \   \/   /      \
+ *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
  * Copyright 2014-2024 Vavr, https://vavr.io
  *
