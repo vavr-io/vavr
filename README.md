@@ -5,6 +5,12 @@
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/vavr-io/vavr)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.png)](https://gitter.im/vavr-io/vavr)
 
+```text
+ ____  ______________  ________________________  __________
+ \   \/   /      \   \/   /   __/   /      \   \/   /      \
+  \______/___/\___\______/___/_____/___/\___\______/___/\___\
+```
+
 # [Vavr](https://vavr.io/)
 
 Vavr is an object-functional language extension to Java 8, which aims to reduce the lines of code and increase code quality.
