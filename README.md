@@ -5,7 +5,7 @@
 [![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/vavr-io/vavr)
 [![Gitter Chat](https://badges.gitter.im/Join%20Chat.png)](https://gitter.im/vavr-io/vavr)
 
-# [Vavr](http://vavr.io/)
+# [Vavr](https://vavr.io/)
 
 Vavr is an object-functional language extension to Java 8, which aims to reduce the lines of code and increase code quality.
 It provides persistent collections, functional abstractions for error handling, concurrent programming, pattern matching and much more.
