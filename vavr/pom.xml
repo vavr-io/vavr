@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
     <name>Vavr</name>
     <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
-    <url>http://vavr.io</url>
+    <url>https://vavr.io</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>

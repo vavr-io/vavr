@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
     <name>Vavr Match Annotation Processor</name>
     <description>Processor for structural pattern matching.</description>
-    <url>http://vavr.io</url>
+    <url>https://vavr.io</url>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
