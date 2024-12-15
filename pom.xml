@@ -27,10 +27,6 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
     <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
     <modules>
         <module>vavr</module>
-        <module>vavr-benchmark</module>
-        <module>vavr-match</module>
-        <module>vavr-match-processor</module>
-        <module>vavr-test</module>
     </modules>
     <url>https://vavr.io</url>
     <licenses>
@@ -349,9 +345,6 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
             <id>sonatype-oss-release</id>
             <modules>
                 <module>vavr</module>
-                <module>vavr-match</module>
-                <module>vavr-match-processor</module>
-                <module>vavr-test</module>
             </modules>
             <build>
                 <plugins>
