@@ -949,6 +949,65 @@ public class TryTest extends AbstractValueTest {
         assertThat(Try.of(() -> {throw error;}).recoverWith(Error.class, success()).getCause()).isSameAs(error);
     }
 
+    // -- recoverAllAndTry
+
+    @Test
+    public void shouldRecoverFailure() {
+        assertThat(failure()
+                .recoverAllAndTry(() -> OK))
+                .isEqualTo(Try.success(OK));
+    }
+
+    @Test
+    public void shouldNotRecoverSuccess() {
+        final String initialValue = "INITIAL";
+        final String attemptValue = "RECOVERY";
+        assertThat(Try.success(initialValue)
+                .recoverAllAndTry(() -> attemptValue))
+                .isEqualTo(Try.success(initialValue));
+    }
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenRecoveryAttemptIsNull() {
+        assertThrows(NullPointerException.class, () -> failure().recoverAllAndTry(null));
+    }
+
+    // -- recoverAndTry
+
+    @Test
+    public void shouldRecoverCorrectTypeOfFailure() {
+        assertThat(Try.failure(new RuntimeException())
+                .recoverAndTry(RuntimeException.class, () -> OK))
+                .isEqualTo(Try.success(OK));
+    }
+
+    @Test
+    public void shouldNotRecoverIncorrectTypeOfFailure() {
+        Try<Object> initialFailure = Try.failure(new RuntimeException());
+        assertThat(initialFailure
+                .recoverAndTry(IllegalStateException.class, () -> OK))
+                .isEqualTo(initialFailure);
+    }
+
+    @Test
+    public void shouldNotRecoverSuccessForRecoverAndTry() {
+        final String initialValue = "INITIAL";
+        final String attemptValue = "RECOVERY";
+        assertThat(Try.success(initialValue)
+                .recoverAndTry(Throwable.class, () -> attemptValue))
+                .isEqualTo(Try.success(initialValue));
+    }
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenExceptionTypeIsNull() {
+        assertThrows(NullPointerException.class, () -> failure().recoverAndTry(null, () -> OK));
+    }
+
+    @Test
+    public void shouldThrowNullPointerExceptionWhenRecoveryAttemptIsNullForRecoverAndTry() {
+        assertThrows(NullPointerException.class, () -> failure().recoverAndTry(Throwable.class, null));
+    }
+
     // -- onFailure
 
     @Test
