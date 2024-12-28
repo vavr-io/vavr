@@ -28,9 +28,12 @@ package io.vavr.control;
 
 import io.vavr.*;
 import io.vavr.collection.Seq;
+import io.vavr.concurrent.FutureTest;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -399,6 +402,30 @@ public class OptionTest extends AbstractValueTest {
     @Test
     public void shouldMapNone() {
         assertThat(Option.<Integer> none().map(String::valueOf)).isEqualTo(Option.none());
+    }
+    
+    @Nested
+    class MapTry {
+        @Test
+        public void shouldMapTrySome() {
+            assertThat(Option.of(1).mapTry(String::valueOf)).isEqualTo(Try.success("1"));
+        }
+
+        @Test
+        public void shouldMapTryNone() {
+            Try<String> result = Option.none().mapTry(String::valueOf);
+            assertThat(result.isFailure()).isTrue();
+            assertThat(result.getCause().getClass()).isEqualTo(NoSuchElementException.class);
+            assertThat(result.getCause().getMessage()).isEqualTo("No value present");
+        }
+
+        @Test
+        public void shouldMapTryCheckedException() {
+            Try<Integer> result = Option.of("a").mapTry(Integer::new);
+            assertThat(result.isFailure()).isTrue();
+            assertThat(result.getCause().getClass()).isEqualTo(NumberFormatException.class);
+            assertThat(result.getCause().getMessage()).isEqualTo("For input string: \"a\"");
+        }
     }
 
     // -- flatMap

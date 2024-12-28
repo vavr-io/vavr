@@ -26,6 +26,7 @@
  */
 package io.vavr.control;
 
+import io.vavr.CheckedFunction1;
 import io.vavr.PartialFunction;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
@@ -660,6 +661,10 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
     public final <U> Option<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? none() : some(mapper.apply(get()));
+    }
+
+    public final <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
+        return toTry().mapTry(mapper);
     }
 
     /**
