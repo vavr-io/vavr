@@ -663,6 +663,16 @@ public abstract class Option<T> implements Iterable<T>, io.vavr.Value<T>, Serial
         return isEmpty() ? none() : some(mapper.apply(get()));
     }
 
+
+    /**
+     * Converts this to a {@link Try}, then runs the given checked function if this is a {@link Try.Success},
+     * passing the result of the current expression to it.
+     *
+     * @param <U>    The new component type
+     * @param mapper A checked function
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code mapper} is null
+     */
     public final <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         return toTry().mapTry(mapper);
     }
