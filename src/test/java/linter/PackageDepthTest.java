@@ -17,7 +17,7 @@ public class PackageDepthTest {
         classes()
                 .should(havePackageDepthLessThanOrEqualTo(1 + 2))
                 .check(new ClassFileImporter()
-                        .withImportOption(new ImportOption.DoNotIncludeTests())
+                        .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
                         .importPackages("io.vavr"));
     }
 
