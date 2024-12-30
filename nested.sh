@@ -6,4 +6,4 @@ find . -name "*Test.java" -type f -exec sed -E -i '' \
 
 find . -type f -name '*Test.java' -exec perl -i -pe 's/\bCAPS([a-z])([a-zA-Z]*)/\u\1\2/g' {} +
 
-exit 0;
+./gradlew test
