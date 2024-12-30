@@ -1,7 +1,7 @@
 #!/bin/zsh
 set -euo pipefail
 
-find . -name "*.java" -type f -exec sed -i \
-    -e 's|// -- \(.*\)|}\n\n@Nested\nclass \1 {|' {} +
+find . -name "*.java" -type f -exec sed -i '' \
+    's|// -- \(.*\)|}\n\n   @Nested\n   class \1 {|' {} +
 
 exit 0;
