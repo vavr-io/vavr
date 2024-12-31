@@ -6081,7 +6081,7 @@ public final class API {
             private static final long serialVersionUID = 1L;
 
             private final Pattern0<T> pattern;
-            private final Function<? super T, ? extends R> f;
+            private transient final Function<? super T, ? extends R> f;
 
             private Case0(Pattern0<T> pattern, Function<? super T, ? extends R> f) {
                 this.pattern = pattern;
@@ -6104,7 +6104,7 @@ public final class API {
             private static final long serialVersionUID = 1L;
 
             private final Pattern1<T, T1> pattern;
-            private final Function<? super T1, ? extends R> f;
+            private transient final Function<? super T1, ? extends R> f;
 
             private Case1(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
                 this.pattern = pattern;
@@ -6127,7 +6127,7 @@ public final class API {
             private static final long serialVersionUID = 1L;
 
             private final Pattern2<T, T1, T2> pattern;
-            private final BiFunction<? super T1, ? super T2, ? extends R> f;
+            private transient final BiFunction<? super T1, ? super T2, ? extends R> f;
 
             private Case2(Pattern2<T, T1, T2> pattern, BiFunction<? super T1, ? super T2, ? extends R> f) {
                 this.pattern = pattern;
