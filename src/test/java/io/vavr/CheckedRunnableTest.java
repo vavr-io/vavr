@@ -64,12 +64,13 @@ public class CheckedRunnableTest {
 
     @Test
     public void shouldApplyAnUncheckedFunctionThatThrows() {
+        boolean thrown = false;
         final Runnable runnable = CheckedRunnable.of(() -> { throw new Error(); }).unchecked();
         try {
             runnable.run();
-            Assertions.fail("Did expect an exception.");
         } catch(Error x) {
-            // ok!
+            thrown = true;
         }
+        assertThat(thrown).isTrue();
     }
 }
