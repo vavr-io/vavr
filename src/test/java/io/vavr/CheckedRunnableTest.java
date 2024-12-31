@@ -64,13 +64,7 @@ public class CheckedRunnableTest {
 
     @Test
     public void shouldApplyAnUncheckedFunctionThatThrows() {
-        boolean thrown = false;
         final Runnable runnable = CheckedRunnable.of(() -> { throw new Error(); }).unchecked();
-        try {
-            runnable.run();
-        } catch(Error x) {
-            thrown = true;
-        }
-        assertThat(thrown).isTrue();
+        Assertions.assertThrows(Error.class, () -> runnable.run());
     }
 }
