@@ -50,18 +50,13 @@ public class CheckedRunnableTest {
         try {
             runnable.run();
         } catch(Throwable x) {
-            Assertions.fail("Did not excepect an exception but received: " + x.getMessage());
+            Assertions.fail("Did not expect an exception but received: " + x.getMessage());
         }
     }
 
     @Test
     public void shouldApplyAnUncheckedFunctionThatThrows() {
         final Runnable runnable = CheckedRunnable.of(() -> { throw new Error(); }).unchecked();
-        try {
-            runnable.run();
-            Assertions.fail("Did excepect an exception.");
-        } catch(Error x) {
-            // ok!
-        }
+        Assertions.assertThrows(Error.class, () -> runnable.run());
     }
 }
