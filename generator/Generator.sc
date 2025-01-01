@@ -3116,7 +3116,6 @@ def generateTestClasses(): Unit = {
         val generics = (1 to i + 1).gen(j => "Object")(", ")
 
         val test = im.getType("org.junit.jupiter.api.Test")
-        val nested = im.getType("org.junit.jupiter.api.Nested")
         val assertThrows = im.getStatic("org.junit.jupiter.api.Assertions.assertThrows")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val recFuncF1 = if (i == 0) "11;" else s"i1 <= 0 ? i1 : $className.recurrent2.apply(${(1 to i).gen(j => s"i$j" + (j == 1).gen(s" - 1"))(", ")}) + 1;"
