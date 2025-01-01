@@ -45,7 +45,7 @@ public class ClassSectionTest {
 
                     if (!methodOrder.equals(methodNames)) {
                         String message = String.format("Methods in section '%s' of class '%s' are not alphabetically ordered: %s",
-                                section.getKey(), javaClass.getName(), methodNames);
+                                section.getKey(), javaClass.getName(), methodOrder);
                         events.add(SimpleConditionEvent.violated(javaClass, message));
                     }
                 }
