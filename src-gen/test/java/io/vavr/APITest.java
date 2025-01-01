@@ -47,6 +47,7 @@ import io.vavr.control.Try;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.Executors;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation")
@@ -57,53 +58,56 @@ public class APITest {
         AssertionsExtensions.assertThat(API.class).isNotInstantiable();
     }
 
-    // -- shortcuts
+    @Nested
+    class Shortcuts {
 
-    @Test
-    public void shouldCompileTODOAndThrowDefaultMessageAtRuntime() {
-        try {
-            final String s = TODO();
-            fail("TODO() should throw. s: " + s);
-        } catch(NotImplementedError err) {
-            assertThat(err.getMessage()).isEqualTo("An implementation is missing.");
+        @Test
+        public void shouldCompileTODOAndThrowDefaultMessageAtRuntime() {
+            try {
+                final String s = TODO();
+                fail("TODO() should throw. s: " + s);
+            } catch(NotImplementedError err) {
+                assertThat(err.getMessage()).isEqualTo("An implementation is missing.");
+            }
         }
-    }
 
-    @Test
-    public void shouldCompileTODOAndThrowGivenMessageAtRuntime() {
-        final String msg = "Don't try this in production!";
-        try {
-            final String s = TODO(msg);
-            fail("TODO(String) should throw. s: " + s);
-        } catch(NotImplementedError err) {
-            assertThat(err.getMessage()).isEqualTo(msg);
+        @Test
+        public void shouldCompileTODOAndThrowGivenMessageAtRuntime() {
+            final String msg = "Don't try this in production!";
+            try {
+                final String s = TODO(msg);
+                fail("TODO(String) should throw. s: " + s);
+            } catch(NotImplementedError err) {
+                assertThat(err.getMessage()).isEqualTo(msg);
+            }
         }
-    }
 
-    @Test
-    public void shouldCallprint_Object() {
-        assertThat(captureStdOut(()->print("ok"))).isEqualTo("ok");
-    }
+        @Test
+        public void shouldCallprint_Object() {
+            assertThat(captureStdOut(()->print("ok"))).isEqualTo("ok");
+        }
 
-    @Test
-    public void shouldCallprintf() {
-        assertThat(captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
-    }
+        @Test
+        public void shouldCallprintf() {
+            assertThat(captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
+        }
 
-    @Test
-    public void shouldCallprintln_Object() {
-        assertThat(captureStdOut(()->println("ok"))).isEqualTo("ok\n");
-    }
+        @Test
+        public void shouldCallprintln_Object() {
+            assertThat(captureStdOut(()->println("ok"))).isEqualTo("ok\n");
+        }
 
-    @Test
-    public void shouldCallprintln() {
-        assertThat(captureStdOut(()->println())).isEqualTo("\n");
-    }
+        @Test
+        public void shouldCallprintln() {
+            assertThat(captureStdOut(()->println())).isEqualTo("\n");
+        }
 
-    @Test
-     public void shouldCallprintlnWithArguments() {
-        assertThat(captureStdOut(() -> println("this", "and", "that"))).isEqualTo("this and that\n");
-     }
+        @Test
+         public void shouldCallprintlnWithArguments() {
+            assertThat(captureStdOut(() -> println("this", "and", "that"))).isEqualTo("this and that\n");
+         }
+
+    }
 
     //
     // Alias should return not null.
@@ -967,780 +971,791 @@ public class APITest {
         assertThat(SortedMap((Comparator<Integer>)Integer::compareTo, Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
     }
 
-    // -- run
+    @Nested
+    class Run {
 
-    @Test
-    public void shouldRunUnitAndReturnVoid() {
-        int[] i = { 0 };
-        Void nothing = run(() -> i[0]++);
-        assertThat(nothing).isNull();
-        assertThat(i[0]).isEqualTo(1);
-    }
-
-    // -- For
-
-    @Test
-    public void shouldIterateFor1UsingSimpleYield() {
-        final List<Integer> list = List.of(1, 2, 3);
-        final List<Integer> actual = For(list).yield().toList();
-        assertThat(actual).isEqualTo(list);
-    }
-
-    @Test
-    public void shouldIterateForList1() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3)
-        ).yield(i1 -> i1).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 1));
-        assertThat(result.head()).isEqualTo(1);
-        assertThat(result.last()).isEqualTo(3 * 1);
-    }
-
-    @Test
-    public void shouldIterateForList2() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3),
-            List.of(1, 2, 3)
-        ).yield((i1, i2) -> i1 + i2).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 2));
-        assertThat(result.head()).isEqualTo(2);
-        assertThat(result.last()).isEqualTo(3 * 2);
-    }
-
-    @Test
-    public void shouldIterateForList3() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3)
-        ).yield((i1, i2, i3) -> i1 + i2 + i3).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 3));
-        assertThat(result.head()).isEqualTo(3);
-        assertThat(result.last()).isEqualTo(3 * 3);
-    }
-
-    @Test
-    public void shouldIterateForList4() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 4));
-        assertThat(result.head()).isEqualTo(4);
-        assertThat(result.last()).isEqualTo(3 * 4);
-    }
-
-    @Test
-    public void shouldIterateForList5() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 5));
-        assertThat(result.head()).isEqualTo(5);
-        assertThat(result.last()).isEqualTo(3 * 5);
-    }
-
-    @Test
-    public void shouldIterateForList6() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 6));
-        assertThat(result.head()).isEqualTo(6);
-        assertThat(result.last()).isEqualTo(3 * 6);
-    }
-
-    @Test
-    public void shouldIterateForList7() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 7));
-        assertThat(result.head()).isEqualTo(7);
-        assertThat(result.last()).isEqualTo(3 * 7);
-    }
-
-    @Test
-    public void shouldIterateForList8() {
-        final List<Integer> result = For(
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3),
-            List.of(1, 2, 3)
-        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8).toList();
-        assertThat(result.length()).isEqualTo((int) Math.pow(3, 8));
-        assertThat(result.head()).isEqualTo(8);
-        assertThat(result.last()).isEqualTo(3 * 8);
-    }
-
-    @Test
-    public void shouldIterateForOption1() {
-        final Option<Integer> result = For(
-            Option.of(1)
-        ).yield(i1 -> i1);
-        assertThat(result.get()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldIterateForOption2() {
-        final Option<Integer> result = For(
-            Option.of(1),
-            Option.of(2)
-        ).yield((i1, i2) -> i1 + i2);
-        assertThat(result.get()).isEqualTo(3);
-    }
-
-    @Test
-    public void shouldIterateForOption3() {
-        final Option<Integer> result = For(
-            Option.of(1),
-            Option.of(2),
-            Option.of(3)
-        ).yield((i1, i2, i3) -> i1 + i2 + i3);
-        assertThat(result.get()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldIterateForOption4() {
-        final Option<Integer> result = For(
-            Option.of(1),
-            Option.of(2),
-            Option.of(3),
-            Option.of(4)
-        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
-        assertThat(result.get()).isEqualTo(10);
-    }
-
-    @Test
-    public void shouldIterateForOption5() {
-        final Option<Integer> result = For(
-            Option.of(1),
-            Option.of(2),
-            Option.of(3),
-            Option.of(4),
-            Option.of(5)
-        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
-        assertThat(result.get()).isEqualTo(15);
-    }
-
-    @Test
-    public void shouldIterateForOption6() {
-        final Option<Integer> result = For(
-            Option.of(1),
-            Option.of(2),
-            Option.of(3),
-            Option.of(4),
-            Option.of(5),
-            Option.of(6)
-        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
-        assertThat(result.get()).isEqualTo(21);
-    }
-
-    @Test
-    public void shouldIterateForOption7() {
-        final Option<Integer> result = For(
-            Option.of(1),
-            Option.of(2),
-            Option.of(3),
-            Option.of(4),
-            Option.of(5),
-            Option.of(6),
-            Option.of(7)
-        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
-        assertThat(result.get()).isEqualTo(28);
-    }
-
-    @Test
-    public void shouldIterateForOption8() {
-        final Option<Integer> result = For(
-            Option.of(1),
-            Option.of(2),
-            Option.of(3),
-            Option.of(4),
-            Option.of(5),
-            Option.of(6),
-            Option.of(7),
-            Option.of(8)
-        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
-        assertThat(result.get()).isEqualTo(36);
-    }
-
-    @Test
-    public void shouldIterateForFuture1() {
-        final Future<Integer>result = For(
-            Future.of(() -> 1)
-        ).yield(i1 -> i1);
-        assertThat(result.get()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldIterateForFuture2() {
-        final Future<Integer>result = For(
-            Future.of(() -> 1),
-            Future.of(() -> 2)
-        ).yield((i1, i2) -> i1 + i2);
-        assertThat(result.get()).isEqualTo(3);
-    }
-
-    @Test
-    public void shouldIterateForFuture3() {
-        final Future<Integer>result = For(
-            Future.of(() -> 1),
-            Future.of(() -> 2),
-            Future.of(() -> 3)
-        ).yield((i1, i2, i3) -> i1 + i2 + i3);
-        assertThat(result.get()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldIterateForFuture4() {
-        final Future<Integer>result = For(
-            Future.of(() -> 1),
-            Future.of(() -> 2),
-            Future.of(() -> 3),
-            Future.of(() -> 4)
-        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
-        assertThat(result.get()).isEqualTo(10);
-    }
-
-    @Test
-    public void shouldIterateForFuture5() {
-        final Future<Integer>result = For(
-            Future.of(() -> 1),
-            Future.of(() -> 2),
-            Future.of(() -> 3),
-            Future.of(() -> 4),
-            Future.of(() -> 5)
-        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
-        assertThat(result.get()).isEqualTo(15);
-    }
-
-    @Test
-    public void shouldIterateForFuture6() {
-        final Future<Integer>result = For(
-            Future.of(() -> 1),
-            Future.of(() -> 2),
-            Future.of(() -> 3),
-            Future.of(() -> 4),
-            Future.of(() -> 5),
-            Future.of(() -> 6)
-        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
-        assertThat(result.get()).isEqualTo(21);
-    }
-
-    @Test
-    public void shouldIterateForFuture7() {
-        final Future<Integer>result = For(
-            Future.of(() -> 1),
-            Future.of(() -> 2),
-            Future.of(() -> 3),
-            Future.of(() -> 4),
-            Future.of(() -> 5),
-            Future.of(() -> 6),
-            Future.of(() -> 7)
-        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
-        assertThat(result.get()).isEqualTo(28);
-    }
-
-    @Test
-    public void shouldIterateForFuture8() {
-        final Future<Integer>result = For(
-            Future.of(() -> 1),
-            Future.of(() -> 2),
-            Future.of(() -> 3),
-            Future.of(() -> 4),
-            Future.of(() -> 5),
-            Future.of(() -> 6),
-            Future.of(() -> 7),
-            Future.of(() -> 8)
-        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
-        assertThat(result.get()).isEqualTo(36);
-    }
-
-    @Test
-    public void shouldIterateForTry1() {
-        final Try<Integer>result = For(
-            Try.of(() -> 1)
-        ).yield(i1 -> i1);
-        assertThat(result.get()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldIterateForTry2() {
-        final Try<Integer>result = For(
-            Try.of(() -> 1),
-            Try.of(() -> 2)
-        ).yield((i1, i2) -> i1 + i2);
-        assertThat(result.get()).isEqualTo(3);
-    }
-
-    @Test
-    public void shouldIterateForTry3() {
-        final Try<Integer>result = For(
-            Try.of(() -> 1),
-            Try.of(() -> 2),
-            Try.of(() -> 3)
-        ).yield((i1, i2, i3) -> i1 + i2 + i3);
-        assertThat(result.get()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldIterateForTry4() {
-        final Try<Integer>result = For(
-            Try.of(() -> 1),
-            Try.of(() -> 2),
-            Try.of(() -> 3),
-            Try.of(() -> 4)
-        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
-        assertThat(result.get()).isEqualTo(10);
-    }
-
-    @Test
-    public void shouldIterateForTry5() {
-        final Try<Integer>result = For(
-            Try.of(() -> 1),
-            Try.of(() -> 2),
-            Try.of(() -> 3),
-            Try.of(() -> 4),
-            Try.of(() -> 5)
-        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
-        assertThat(result.get()).isEqualTo(15);
-    }
-
-    @Test
-    public void shouldIterateForTry6() {
-        final Try<Integer>result = For(
-            Try.of(() -> 1),
-            Try.of(() -> 2),
-            Try.of(() -> 3),
-            Try.of(() -> 4),
-            Try.of(() -> 5),
-            Try.of(() -> 6)
-        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
-        assertThat(result.get()).isEqualTo(21);
-    }
-
-    @Test
-    public void shouldIterateForTry7() {
-        final Try<Integer>result = For(
-            Try.of(() -> 1),
-            Try.of(() -> 2),
-            Try.of(() -> 3),
-            Try.of(() -> 4),
-            Try.of(() -> 5),
-            Try.of(() -> 6),
-            Try.of(() -> 7)
-        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
-        assertThat(result.get()).isEqualTo(28);
-    }
-
-    @Test
-    public void shouldIterateForTry8() {
-        final Try<Integer>result = For(
-            Try.of(() -> 1),
-            Try.of(() -> 2),
-            Try.of(() -> 3),
-            Try.of(() -> 4),
-            Try.of(() -> 5),
-            Try.of(() -> 6),
-            Try.of(() -> 7),
-            Try.of(() -> 8)
-        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
-        assertThat(result.get()).isEqualTo(36);
-    }
-
-    @Test
-    public void shouldIterateForEither1() {
-        final Either<Object, Integer>result = For(
-            Either.right(1)
-        ).yield(i1 -> i1);
-        assertThat(result.get()).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldIterateForEither2() {
-        final Either<Object, Integer>result = For(
-            Either.right(1),
-            Either.right(2)
-        ).yield((i1, i2) -> i1 + i2);
-        assertThat(result.get()).isEqualTo(3);
-    }
-
-    @Test
-    public void shouldIterateForEither3() {
-        final Either<Object, Integer>result = For(
-            Either.right(1),
-            Either.right(2),
-            Either.right(3)
-        ).yield((i1, i2, i3) -> i1 + i2 + i3);
-        assertThat(result.get()).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldIterateForEither4() {
-        final Either<Object, Integer>result = For(
-            Either.right(1),
-            Either.right(2),
-            Either.right(3),
-            Either.right(4)
-        ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
-        assertThat(result.get()).isEqualTo(10);
-    }
-
-    @Test
-    public void shouldIterateForEither5() {
-        final Either<Object, Integer>result = For(
-            Either.right(1),
-            Either.right(2),
-            Either.right(3),
-            Either.right(4),
-            Either.right(5)
-        ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
-        assertThat(result.get()).isEqualTo(15);
-    }
-
-    @Test
-    public void shouldIterateForEither6() {
-        final Either<Object, Integer>result = For(
-            Either.right(1),
-            Either.right(2),
-            Either.right(3),
-            Either.right(4),
-            Either.right(5),
-            Either.right(6)
-        ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
-        assertThat(result.get()).isEqualTo(21);
-    }
-
-    @Test
-    public void shouldIterateForEither7() {
-        final Either<Object, Integer>result = For(
-            Either.right(1),
-            Either.right(2),
-            Either.right(3),
-            Either.right(4),
-            Either.right(5),
-            Either.right(6),
-            Either.right(7)
-        ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
-        assertThat(result.get()).isEqualTo(28);
-    }
-
-    @Test
-    public void shouldIterateForEither8() {
-        final Either<Object, Integer>result = For(
-            Either.right(1),
-            Either.right(2),
-            Either.right(3),
-            Either.right(4),
-            Either.right(5),
-            Either.right(6),
-            Either.right(7),
-            Either.right(8)
-        ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
-        assertThat(result.get()).isEqualTo(36);
-    }
-
-    @Test
-    public void shouldIterateNestedFor() {
-        final List<String> result =
-                For(Arrays.asList(1, 2), i ->
-                        For(List.of('a', 'b')).yield(c -> i + ":" + c)).toList();
-        assertThat(result).isEqualTo(List.of("1:a", "1:b", "2:a", "2:b"));
-    }
-
-    // -- Match
-
-    @Test
-    public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
-        final Match.Case<Object, Integer> _case = Case($(ignored -> true), ignored -> 1);
-        assertThat(_case.isDefinedAt(null)).isTrue();
-        assertThat(_case.apply(null)).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
-        assertThat(Case($(ignored -> false), ignored -> 1).isDefinedAt(null)).isFalse();
-    }
-
-    @Test
-    public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
-        final Match.Case<Object, Integer> _case = Case($(ignored -> true), 1);
-        assertThat(_case.isDefinedAt(null)).isTrue();
-        assertThat(_case.apply(null)).isEqualTo(1);
-    }
-
-    @Test
-    public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
-        assertThat(Case($(ignored -> false), 1).isDefinedAt(null)).isFalse();
-    }
-
-    @Test
-    public void shouldPassIssue2401() {
-        final Seq<String> empty = Stream.empty();
-        try {
-            Match(empty).of(
-                    Case($(List.empty()), ignored -> "list")
-            );
-            fail("expected MatchError");
-        } catch (MatchError err) {
-            // ok!
+        @Test
+        public void shouldRunUnitAndReturnVoid() {
+            int[] i = { 0 };
+            Void nothing = run(() -> i[0]++);
+            assertThat(nothing).isNull();
+            assertThat(i[0]).isEqualTo(1);
         }
+
     }
 
-    @Test
-    public void shouldCatchClassCastExceptionWhenPredicateHasDifferentType() {
-        try {
-            final Object o = "";
-            Match(o).of(
-                    Case($((Integer i) -> true), "never")
-            );
-            fail("expected MatchError");
-        } catch (MatchError err) {
-            // ok!
+    @Nested
+    class For {
+
+        @Test
+        public void shouldIterateFor1UsingSimpleYield() {
+            final List<Integer> list = List.of(1, 2, 3);
+            final List<Integer> actual = For(list).yield().toList();
+            assertThat(actual).isEqualTo(list);
         }
+
+        @Test
+        public void shouldIterateForList1() {
+            final List<Integer> result = For(
+                List.of(1, 2, 3)
+            ).yield(i1 -> i1).toList();
+            assertThat(result.length()).isEqualTo((int) Math.pow(3, 1));
+            assertThat(result.head()).isEqualTo(1);
+            assertThat(result.last()).isEqualTo(3 * 1);
+        }
+
+        @Test
+        public void shouldIterateForList2() {
+            final List<Integer> result = For(
+                List.of(1, 2, 3),
+                List.of(1, 2, 3)
+            ).yield((i1, i2) -> i1 + i2).toList();
+            assertThat(result.length()).isEqualTo((int) Math.pow(3, 2));
+            assertThat(result.head()).isEqualTo(2);
+            assertThat(result.last()).isEqualTo(3 * 2);
+        }
+
+        @Test
+        public void shouldIterateForList3() {
+            final List<Integer> result = For(
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3).toList();
+            assertThat(result.length()).isEqualTo((int) Math.pow(3, 3));
+            assertThat(result.head()).isEqualTo(3);
+            assertThat(result.last()).isEqualTo(3 * 3);
+        }
+
+        @Test
+        public void shouldIterateForList4() {
+            final List<Integer> result = For(
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4).toList();
+            assertThat(result.length()).isEqualTo((int) Math.pow(3, 4));
+            assertThat(result.head()).isEqualTo(4);
+            assertThat(result.last()).isEqualTo(3 * 4);
+        }
+
+        @Test
+        public void shouldIterateForList5() {
+            final List<Integer> result = For(
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5).toList();
+            assertThat(result.length()).isEqualTo((int) Math.pow(3, 5));
+            assertThat(result.head()).isEqualTo(5);
+            assertThat(result.last()).isEqualTo(3 * 5);
+        }
+
+        @Test
+        public void shouldIterateForList6() {
+            final List<Integer> result = For(
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6).toList();
+            assertThat(result.length()).isEqualTo((int) Math.pow(3, 6));
+            assertThat(result.head()).isEqualTo(6);
+            assertThat(result.last()).isEqualTo(3 * 6);
+        }
+
+        @Test
+        public void shouldIterateForList7() {
+            final List<Integer> result = For(
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7).toList();
+            assertThat(result.length()).isEqualTo((int) Math.pow(3, 7));
+            assertThat(result.head()).isEqualTo(7);
+            assertThat(result.last()).isEqualTo(3 * 7);
+        }
+
+        @Test
+        public void shouldIterateForList8() {
+            final List<Integer> result = For(
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3),
+                List.of(1, 2, 3)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8).toList();
+            assertThat(result.length()).isEqualTo((int) Math.pow(3, 8));
+            assertThat(result.head()).isEqualTo(8);
+            assertThat(result.last()).isEqualTo(3 * 8);
+        }
+
+        @Test
+        public void shouldIterateForOption1() {
+            final Option<Integer> result = For(
+                Option.of(1)
+            ).yield(i1 -> i1);
+            assertThat(result.get()).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldIterateForOption2() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                Option.of(2)
+            ).yield((i1, i2) -> i1 + i2);
+            assertThat(result.get()).isEqualTo(3);
+        }
+
+        @Test
+        public void shouldIterateForOption3() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                Option.of(2),
+                Option.of(3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3);
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldIterateForOption4() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                Option.of(2),
+                Option.of(3),
+                Option.of(4)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+            assertThat(result.get()).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldIterateForOption5() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                Option.of(2),
+                Option.of(3),
+                Option.of(4),
+                Option.of(5)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+            assertThat(result.get()).isEqualTo(15);
+        }
+
+        @Test
+        public void shouldIterateForOption6() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                Option.of(2),
+                Option.of(3),
+                Option.of(4),
+                Option.of(5),
+                Option.of(6)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+            assertThat(result.get()).isEqualTo(21);
+        }
+
+        @Test
+        public void shouldIterateForOption7() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                Option.of(2),
+                Option.of(3),
+                Option.of(4),
+                Option.of(5),
+                Option.of(6),
+                Option.of(7)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+            assertThat(result.get()).isEqualTo(28);
+        }
+
+        @Test
+        public void shouldIterateForOption8() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                Option.of(2),
+                Option.of(3),
+                Option.of(4),
+                Option.of(5),
+                Option.of(6),
+                Option.of(7),
+                Option.of(8)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+            assertThat(result.get()).isEqualTo(36);
+        }
+
+        @Test
+        public void shouldIterateForFuture1() {
+            final Future<Integer>result = For(
+                Future.of(() -> 1)
+            ).yield(i1 -> i1);
+            assertThat(result.get()).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldIterateForFuture2() {
+            final Future<Integer>result = For(
+                Future.of(() -> 1),
+                Future.of(() -> 2)
+            ).yield((i1, i2) -> i1 + i2);
+            assertThat(result.get()).isEqualTo(3);
+        }
+
+        @Test
+        public void shouldIterateForFuture3() {
+            final Future<Integer>result = For(
+                Future.of(() -> 1),
+                Future.of(() -> 2),
+                Future.of(() -> 3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3);
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldIterateForFuture4() {
+            final Future<Integer>result = For(
+                Future.of(() -> 1),
+                Future.of(() -> 2),
+                Future.of(() -> 3),
+                Future.of(() -> 4)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+            assertThat(result.get()).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldIterateForFuture5() {
+            final Future<Integer>result = For(
+                Future.of(() -> 1),
+                Future.of(() -> 2),
+                Future.of(() -> 3),
+                Future.of(() -> 4),
+                Future.of(() -> 5)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+            assertThat(result.get()).isEqualTo(15);
+        }
+
+        @Test
+        public void shouldIterateForFuture6() {
+            final Future<Integer>result = For(
+                Future.of(() -> 1),
+                Future.of(() -> 2),
+                Future.of(() -> 3),
+                Future.of(() -> 4),
+                Future.of(() -> 5),
+                Future.of(() -> 6)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+            assertThat(result.get()).isEqualTo(21);
+        }
+
+        @Test
+        public void shouldIterateForFuture7() {
+            final Future<Integer>result = For(
+                Future.of(() -> 1),
+                Future.of(() -> 2),
+                Future.of(() -> 3),
+                Future.of(() -> 4),
+                Future.of(() -> 5),
+                Future.of(() -> 6),
+                Future.of(() -> 7)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+            assertThat(result.get()).isEqualTo(28);
+        }
+
+        @Test
+        public void shouldIterateForFuture8() {
+            final Future<Integer>result = For(
+                Future.of(() -> 1),
+                Future.of(() -> 2),
+                Future.of(() -> 3),
+                Future.of(() -> 4),
+                Future.of(() -> 5),
+                Future.of(() -> 6),
+                Future.of(() -> 7),
+                Future.of(() -> 8)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+            assertThat(result.get()).isEqualTo(36);
+        }
+
+        @Test
+        public void shouldIterateForTry1() {
+            final Try<Integer>result = For(
+                Try.of(() -> 1)
+            ).yield(i1 -> i1);
+            assertThat(result.get()).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldIterateForTry2() {
+            final Try<Integer>result = For(
+                Try.of(() -> 1),
+                Try.of(() -> 2)
+            ).yield((i1, i2) -> i1 + i2);
+            assertThat(result.get()).isEqualTo(3);
+        }
+
+        @Test
+        public void shouldIterateForTry3() {
+            final Try<Integer>result = For(
+                Try.of(() -> 1),
+                Try.of(() -> 2),
+                Try.of(() -> 3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3);
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldIterateForTry4() {
+            final Try<Integer>result = For(
+                Try.of(() -> 1),
+                Try.of(() -> 2),
+                Try.of(() -> 3),
+                Try.of(() -> 4)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+            assertThat(result.get()).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldIterateForTry5() {
+            final Try<Integer>result = For(
+                Try.of(() -> 1),
+                Try.of(() -> 2),
+                Try.of(() -> 3),
+                Try.of(() -> 4),
+                Try.of(() -> 5)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+            assertThat(result.get()).isEqualTo(15);
+        }
+
+        @Test
+        public void shouldIterateForTry6() {
+            final Try<Integer>result = For(
+                Try.of(() -> 1),
+                Try.of(() -> 2),
+                Try.of(() -> 3),
+                Try.of(() -> 4),
+                Try.of(() -> 5),
+                Try.of(() -> 6)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+            assertThat(result.get()).isEqualTo(21);
+        }
+
+        @Test
+        public void shouldIterateForTry7() {
+            final Try<Integer>result = For(
+                Try.of(() -> 1),
+                Try.of(() -> 2),
+                Try.of(() -> 3),
+                Try.of(() -> 4),
+                Try.of(() -> 5),
+                Try.of(() -> 6),
+                Try.of(() -> 7)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+            assertThat(result.get()).isEqualTo(28);
+        }
+
+        @Test
+        public void shouldIterateForTry8() {
+            final Try<Integer>result = For(
+                Try.of(() -> 1),
+                Try.of(() -> 2),
+                Try.of(() -> 3),
+                Try.of(() -> 4),
+                Try.of(() -> 5),
+                Try.of(() -> 6),
+                Try.of(() -> 7),
+                Try.of(() -> 8)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+            assertThat(result.get()).isEqualTo(36);
+        }
+
+        @Test
+        public void shouldIterateForEither1() {
+            final Either<Object, Integer>result = For(
+                Either.right(1)
+            ).yield(i1 -> i1);
+            assertThat(result.get()).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldIterateForEither2() {
+            final Either<Object, Integer>result = For(
+                Either.right(1),
+                Either.right(2)
+            ).yield((i1, i2) -> i1 + i2);
+            assertThat(result.get()).isEqualTo(3);
+        }
+
+        @Test
+        public void shouldIterateForEither3() {
+            final Either<Object, Integer>result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3);
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldIterateForEither4() {
+            final Either<Object, Integer>result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+            assertThat(result.get()).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldIterateForEither5() {
+            final Either<Object, Integer>result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4),
+                Either.right(5)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+            assertThat(result.get()).isEqualTo(15);
+        }
+
+        @Test
+        public void shouldIterateForEither6() {
+            final Either<Object, Integer>result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4),
+                Either.right(5),
+                Either.right(6)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+            assertThat(result.get()).isEqualTo(21);
+        }
+
+        @Test
+        public void shouldIterateForEither7() {
+            final Either<Object, Integer>result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4),
+                Either.right(5),
+                Either.right(6),
+                Either.right(7)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+            assertThat(result.get()).isEqualTo(28);
+        }
+
+        @Test
+        public void shouldIterateForEither8() {
+            final Either<Object, Integer>result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4),
+                Either.right(5),
+                Either.right(6),
+                Either.right(7),
+                Either.right(8)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+            assertThat(result.get()).isEqualTo(36);
+        }
+
+        @Test
+        public void shouldIterateNestedFor() {
+            final List<String> result =
+                    For(Arrays.asList(1, 2), i ->
+                            For(List.of('a', 'b')).yield(c -> i + ":" + c)).toList();
+            assertThat(result).isEqualTo(List.of("1:a", "1:b", "2:a", "2:b"));
+        }
+
     }
 
-    // -- Match patterns
+    @Nested
+    class MatchTest {
 
-    static class ClzMatch {}
-    static class ClzMatch1 extends ClzMatch {}
-    static class ClzMatch2 extends ClzMatch {}
+        @Test
+        public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
+            final Match.Case<Object, Integer> _case = Case($(ignored -> true), ignored -> 1);
+            assertThat(_case.isDefinedAt(null)).isTrue();
+            assertThat(_case.apply(null)).isEqualTo(1);
+        }
 
-    @Test
-    public void shouldMatchPattern1() {
-        final Tuple1<Integer> tuple = Tuple.of(1);
-        final String func = Match(tuple).of(
-                Case($Tuple1($(0)), (m1) -> "fail"),
-                Case($Tuple1($()), (m1) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case($Tuple1($(0)), () -> "fail"),
-                Case($Tuple1($()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case($Tuple1($(0)), "fail"),
-                Case($Tuple1($()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
+        @Test
+        public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
+            assertThat(Case($(ignored -> false), ignored -> 1).isDefinedAt(null)).isFalse();
+        }
 
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(Match.Pattern1.of(ClzMatch1.class, $(), t -> Tuple.of(null)), "fail"),
-                Case(Match.Pattern1.of(ClzMatch2.class, $(), t -> Tuple.of(null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
+        @Test
+        public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
+            final Match.Case<Object, Integer> _case = Case($(ignored -> true), 1);
+            assertThat(_case.isDefinedAt(null)).isTrue();
+            assertThat(_case.apply(null)).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
+            assertThat(Case($(ignored -> false), 1).isDefinedAt(null)).isFalse();
+        }
+
+        @Test
+        public void shouldPassIssue2401() {
+            final Seq<String> empty = Stream.empty();
+            try {
+                Match(empty).of(
+                        Case($(List.empty()), ignored -> "list")
+                );
+                fail("expected MatchError");
+            } catch (MatchError err) {
+                // ok!
+            }
+        }
+
+        @Test
+        public void shouldCatchClassCastExceptionWhenPredicateHasDifferentType() {
+            try {
+                final Object o = "";
+                Match(o).of(
+                        Case($((Integer i) -> true), "never")
+                );
+                fail("expected MatchError");
+            } catch (MatchError err) {
+                // ok!
+            }
+        }
+
     }
 
-    @Test
-    public void shouldMatchPattern2() {
-        final Tuple2<Integer, Integer> tuple = Tuple.of(1, 1);
-        final String func = Match(tuple).of(
-                Case($Tuple2($(0), $()), (m1, m2) -> "fail"),
-                Case($Tuple2($(), $()), (m1, m2) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case($Tuple2($(0), $()), () -> "fail"),
-                Case($Tuple2($(), $()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case($Tuple2($(0), $()), "fail"),
-                Case($Tuple2($(), $()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
+    @Nested
+    class MatchPatterns {
 
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(Match.Pattern2.of(ClzMatch1.class, $(), $(), t -> Tuple.of(null, null)), "fail"),
-                Case(Match.Pattern2.of(ClzMatch2.class, $(), $(), t -> Tuple.of(null, null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
-    }
+        class ClzMatch {}
+        class ClzMatch1 extends ClzMatch {}
+        class ClzMatch2 extends ClzMatch {}
 
-    @Test
-    public void shouldMatchPattern3() {
-        final Tuple3<Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1);
-        final String func = Match(tuple).of(
-                Case($Tuple3($(0), $(), $()), (m1, m2, m3) -> "fail"),
-                Case($Tuple3($(), $(), $()), (m1, m2, m3) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case($Tuple3($(0), $(), $()), () -> "fail"),
-                Case($Tuple3($(), $(), $()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case($Tuple3($(0), $(), $()), "fail"),
-                Case($Tuple3($(), $(), $()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
+        @Test
+        public void shouldMatchPattern1() {
+            final Tuple1<Integer> tuple = Tuple.of(1);
+            final String func = Match(tuple).of(
+                    Case($Tuple1($(0)), (m1) -> "fail"),
+                    Case($Tuple1($()), (m1) -> "okFunc")
+            );
+            assertThat(func).isEqualTo("okFunc");
+            final String supp = Match(tuple).of(
+                    Case($Tuple1($(0)), () -> "fail"),
+                    Case($Tuple1($()), () -> "okSupp")
+            );
+            assertThat(supp).isEqualTo("okSupp");
+            final String val = Match(tuple).of(
+                    Case($Tuple1($(0)), "fail"),
+                    Case($Tuple1($()), "okVal")
+            );
+            assertThat(val).isEqualTo("okVal");
 
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(Match.Pattern3.of(ClzMatch1.class, $(), $(), $(), t -> Tuple.of(null, null, null)), "fail"),
-                Case(Match.Pattern3.of(ClzMatch2.class, $(), $(), $(), t -> Tuple.of(null, null, null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
-    }
+            final ClzMatch c = new ClzMatch2();
+            final String match = Match(c).of(
+                    Case(Match.Pattern1.of(ClzMatch1.class, $(), t -> Tuple.of(null)), "fail"),
+                    Case(Match.Pattern1.of(ClzMatch2.class, $(), t -> Tuple.of(null)), "okMatch")
+            );
+            assertThat(match).isEqualTo("okMatch");
+        }
 
-    @Test
-    public void shouldMatchPattern4() {
-        final Tuple4<Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1);
-        final String func = Match(tuple).of(
-                Case($Tuple4($(0), $(), $(), $()), (m1, m2, m3, m4) -> "fail"),
-                Case($Tuple4($(), $(), $(), $()), (m1, m2, m3, m4) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case($Tuple4($(0), $(), $(), $()), () -> "fail"),
-                Case($Tuple4($(), $(), $(), $()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case($Tuple4($(0), $(), $(), $()), "fail"),
-                Case($Tuple4($(), $(), $(), $()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
+        @Test
+        public void shouldMatchPattern2() {
+            final Tuple2<Integer, Integer> tuple = Tuple.of(1, 1);
+            final String func = Match(tuple).of(
+                    Case($Tuple2($(0), $()), (m1, m2) -> "fail"),
+                    Case($Tuple2($(), $()), (m1, m2) -> "okFunc")
+            );
+            assertThat(func).isEqualTo("okFunc");
+            final String supp = Match(tuple).of(
+                    Case($Tuple2($(0), $()), () -> "fail"),
+                    Case($Tuple2($(), $()), () -> "okSupp")
+            );
+            assertThat(supp).isEqualTo("okSupp");
+            final String val = Match(tuple).of(
+                    Case($Tuple2($(0), $()), "fail"),
+                    Case($Tuple2($(), $()), "okVal")
+            );
+            assertThat(val).isEqualTo("okVal");
 
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(Match.Pattern4.of(ClzMatch1.class, $(), $(), $(), $(), t -> Tuple.of(null, null, null, null)), "fail"),
-                Case(Match.Pattern4.of(ClzMatch2.class, $(), $(), $(), $(), t -> Tuple.of(null, null, null, null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
-    }
+            final ClzMatch c = new ClzMatch2();
+            final String match = Match(c).of(
+                    Case(Match.Pattern2.of(ClzMatch1.class, $(), $(), t -> Tuple.of(null, null)), "fail"),
+                    Case(Match.Pattern2.of(ClzMatch2.class, $(), $(), t -> Tuple.of(null, null)), "okMatch")
+            );
+            assertThat(match).isEqualTo("okMatch");
+        }
 
-    @Test
-    public void shouldMatchPattern5() {
-        final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1);
-        final String func = Match(tuple).of(
-                Case($Tuple5($(0), $(), $(), $(), $()), (m1, m2, m3, m4, m5) -> "fail"),
-                Case($Tuple5($(), $(), $(), $(), $()), (m1, m2, m3, m4, m5) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case($Tuple5($(0), $(), $(), $(), $()), () -> "fail"),
-                Case($Tuple5($(), $(), $(), $(), $()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case($Tuple5($(0), $(), $(), $(), $()), "fail"),
-                Case($Tuple5($(), $(), $(), $(), $()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
+        @Test
+        public void shouldMatchPattern3() {
+            final Tuple3<Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1);
+            final String func = Match(tuple).of(
+                    Case($Tuple3($(0), $(), $()), (m1, m2, m3) -> "fail"),
+                    Case($Tuple3($(), $(), $()), (m1, m2, m3) -> "okFunc")
+            );
+            assertThat(func).isEqualTo("okFunc");
+            final String supp = Match(tuple).of(
+                    Case($Tuple3($(0), $(), $()), () -> "fail"),
+                    Case($Tuple3($(), $(), $()), () -> "okSupp")
+            );
+            assertThat(supp).isEqualTo("okSupp");
+            final String val = Match(tuple).of(
+                    Case($Tuple3($(0), $(), $()), "fail"),
+                    Case($Tuple3($(), $(), $()), "okVal")
+            );
+            assertThat(val).isEqualTo("okVal");
 
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(Match.Pattern5.of(ClzMatch1.class, $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null)), "fail"),
-                Case(Match.Pattern5.of(ClzMatch2.class, $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
-    }
+            final ClzMatch c = new ClzMatch2();
+            final String match = Match(c).of(
+                    Case(Match.Pattern3.of(ClzMatch1.class, $(), $(), $(), t -> Tuple.of(null, null, null)), "fail"),
+                    Case(Match.Pattern3.of(ClzMatch2.class, $(), $(), $(), t -> Tuple.of(null, null, null)), "okMatch")
+            );
+            assertThat(match).isEqualTo("okMatch");
+        }
 
-    @Test
-    public void shouldMatchPattern6() {
-        final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1);
-        final String func = Match(tuple).of(
-                Case($Tuple6($(0), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6) -> "fail"),
-                Case($Tuple6($(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case($Tuple6($(0), $(), $(), $(), $(), $()), () -> "fail"),
-                Case($Tuple6($(), $(), $(), $(), $(), $()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case($Tuple6($(0), $(), $(), $(), $(), $()), "fail"),
-                Case($Tuple6($(), $(), $(), $(), $(), $()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
+        @Test
+        public void shouldMatchPattern4() {
+            final Tuple4<Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1);
+            final String func = Match(tuple).of(
+                    Case($Tuple4($(0), $(), $(), $()), (m1, m2, m3, m4) -> "fail"),
+                    Case($Tuple4($(), $(), $(), $()), (m1, m2, m3, m4) -> "okFunc")
+            );
+            assertThat(func).isEqualTo("okFunc");
+            final String supp = Match(tuple).of(
+                    Case($Tuple4($(0), $(), $(), $()), () -> "fail"),
+                    Case($Tuple4($(), $(), $(), $()), () -> "okSupp")
+            );
+            assertThat(supp).isEqualTo("okSupp");
+            final String val = Match(tuple).of(
+                    Case($Tuple4($(0), $(), $(), $()), "fail"),
+                    Case($Tuple4($(), $(), $(), $()), "okVal")
+            );
+            assertThat(val).isEqualTo("okVal");
 
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(Match.Pattern6.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null)), "fail"),
-                Case(Match.Pattern6.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
-    }
+            final ClzMatch c = new ClzMatch2();
+            final String match = Match(c).of(
+                    Case(Match.Pattern4.of(ClzMatch1.class, $(), $(), $(), $(), t -> Tuple.of(null, null, null, null)), "fail"),
+                    Case(Match.Pattern4.of(ClzMatch2.class, $(), $(), $(), $(), t -> Tuple.of(null, null, null, null)), "okMatch")
+            );
+            assertThat(match).isEqualTo("okMatch");
+        }
 
-    @Test
-    public void shouldMatchPattern7() {
-        final Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1);
-        final String func = Match(tuple).of(
-                Case($Tuple7($(0), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7) -> "fail"),
-                Case($Tuple7($(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case($Tuple7($(0), $(), $(), $(), $(), $(), $()), () -> "fail"),
-                Case($Tuple7($(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case($Tuple7($(0), $(), $(), $(), $(), $(), $()), "fail"),
-                Case($Tuple7($(), $(), $(), $(), $(), $(), $()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
+        @Test
+        public void shouldMatchPattern5() {
+            final Tuple5<Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1);
+            final String func = Match(tuple).of(
+                    Case($Tuple5($(0), $(), $(), $(), $()), (m1, m2, m3, m4, m5) -> "fail"),
+                    Case($Tuple5($(), $(), $(), $(), $()), (m1, m2, m3, m4, m5) -> "okFunc")
+            );
+            assertThat(func).isEqualTo("okFunc");
+            final String supp = Match(tuple).of(
+                    Case($Tuple5($(0), $(), $(), $(), $()), () -> "fail"),
+                    Case($Tuple5($(), $(), $(), $(), $()), () -> "okSupp")
+            );
+            assertThat(supp).isEqualTo("okSupp");
+            final String val = Match(tuple).of(
+                    Case($Tuple5($(0), $(), $(), $(), $()), "fail"),
+                    Case($Tuple5($(), $(), $(), $(), $()), "okVal")
+            );
+            assertThat(val).isEqualTo("okVal");
 
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(Match.Pattern7.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null)), "fail"),
-                Case(Match.Pattern7.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
-    }
+            final ClzMatch c = new ClzMatch2();
+            final String match = Match(c).of(
+                    Case(Match.Pattern5.of(ClzMatch1.class, $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null)), "fail"),
+                    Case(Match.Pattern5.of(ClzMatch2.class, $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null)), "okMatch")
+            );
+            assertThat(match).isEqualTo("okMatch");
+        }
 
-    @Test
-    public void shouldMatchPattern8() {
-        final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1, 1);
-        final String func = Match(tuple).of(
-                Case($Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8) -> "fail"),
-                Case($Tuple8($(), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8) -> "okFunc")
-        );
-        assertThat(func).isEqualTo("okFunc");
-        final String supp = Match(tuple).of(
-                Case($Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), () -> "fail"),
-                Case($Tuple8($(), $(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
-        );
-        assertThat(supp).isEqualTo("okSupp");
-        final String val = Match(tuple).of(
-                Case($Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), "fail"),
-                Case($Tuple8($(), $(), $(), $(), $(), $(), $(), $()), "okVal")
-        );
-        assertThat(val).isEqualTo("okVal");
+        @Test
+        public void shouldMatchPattern6() {
+            final Tuple6<Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1);
+            final String func = Match(tuple).of(
+                    Case($Tuple6($(0), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6) -> "fail"),
+                    Case($Tuple6($(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6) -> "okFunc")
+            );
+            assertThat(func).isEqualTo("okFunc");
+            final String supp = Match(tuple).of(
+                    Case($Tuple6($(0), $(), $(), $(), $(), $()), () -> "fail"),
+                    Case($Tuple6($(), $(), $(), $(), $(), $()), () -> "okSupp")
+            );
+            assertThat(supp).isEqualTo("okSupp");
+            final String val = Match(tuple).of(
+                    Case($Tuple6($(0), $(), $(), $(), $(), $()), "fail"),
+                    Case($Tuple6($(), $(), $(), $(), $(), $()), "okVal")
+            );
+            assertThat(val).isEqualTo("okVal");
 
-        final ClzMatch c = new ClzMatch2();
-        final String match = Match(c).of(
-                Case(Match.Pattern8.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null)), "fail"),
-                Case(Match.Pattern8.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null)), "okMatch")
-        );
-        assertThat(match).isEqualTo("okMatch");
+            final ClzMatch c = new ClzMatch2();
+            final String match = Match(c).of(
+                    Case(Match.Pattern6.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null)), "fail"),
+                    Case(Match.Pattern6.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null)), "okMatch")
+            );
+            assertThat(match).isEqualTo("okMatch");
+        }
+
+        @Test
+        public void shouldMatchPattern7() {
+            final Tuple7<Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1);
+            final String func = Match(tuple).of(
+                    Case($Tuple7($(0), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7) -> "fail"),
+                    Case($Tuple7($(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7) -> "okFunc")
+            );
+            assertThat(func).isEqualTo("okFunc");
+            final String supp = Match(tuple).of(
+                    Case($Tuple7($(0), $(), $(), $(), $(), $(), $()), () -> "fail"),
+                    Case($Tuple7($(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
+            );
+            assertThat(supp).isEqualTo("okSupp");
+            final String val = Match(tuple).of(
+                    Case($Tuple7($(0), $(), $(), $(), $(), $(), $()), "fail"),
+                    Case($Tuple7($(), $(), $(), $(), $(), $(), $()), "okVal")
+            );
+            assertThat(val).isEqualTo("okVal");
+
+            final ClzMatch c = new ClzMatch2();
+            final String match = Match(c).of(
+                    Case(Match.Pattern7.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null)), "fail"),
+                    Case(Match.Pattern7.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null)), "okMatch")
+            );
+            assertThat(match).isEqualTo("okMatch");
+        }
+
+        @Test
+        public void shouldMatchPattern8() {
+            final Tuple8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer> tuple = Tuple.of(1, 1, 1, 1, 1, 1, 1, 1);
+            final String func = Match(tuple).of(
+                    Case($Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8) -> "fail"),
+                    Case($Tuple8($(), $(), $(), $(), $(), $(), $(), $()), (m1, m2, m3, m4, m5, m6, m7, m8) -> "okFunc")
+            );
+            assertThat(func).isEqualTo("okFunc");
+            final String supp = Match(tuple).of(
+                    Case($Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), () -> "fail"),
+                    Case($Tuple8($(), $(), $(), $(), $(), $(), $(), $()), () -> "okSupp")
+            );
+            assertThat(supp).isEqualTo("okSupp");
+            final String val = Match(tuple).of(
+                    Case($Tuple8($(0), $(), $(), $(), $(), $(), $(), $()), "fail"),
+                    Case($Tuple8($(), $(), $(), $(), $(), $(), $(), $()), "okVal")
+            );
+            assertThat(val).isEqualTo("okVal");
+
+            final ClzMatch c = new ClzMatch2();
+            final String match = Match(c).of(
+                    Case(Match.Pattern8.of(ClzMatch1.class, $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null)), "fail"),
+                    Case(Match.Pattern8.of(ClzMatch2.class, $(), $(), $(), $(), $(), $(), $(), $(), t -> Tuple.of(null, null, null, null, null, null, null, null)), "okMatch")
+            );
+            assertThat(match).isEqualTo("okMatch");
+        }
     }
 }
