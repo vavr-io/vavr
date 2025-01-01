@@ -2636,6 +2636,7 @@ def generateTestClasses(): Unit = {
     genVavrFile("io.vavr", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+      val nested = im.getType("org.junit.jupiter.api.Nested")
       val test = im.getType("org.junit.jupiter.api.Test")
 
       val API = im.getType("io.vavr.API")
@@ -2914,7 +2915,6 @@ def generateTestClasses(): Unit = {
                 $AssertionsExtensions.assertThat($API.class).isNotInstantiable();
             }
 
-            // -- shortcuts
             @Nested
             class Shortcuts {
 
@@ -2930,63 +2930,69 @@ def generateTestClasses(): Unit = {
 
             ${genAliasesTests(im, packageName, className)}
 
-            // -- run
+            @Nested
+            class Run {
 
-            @$test
-            public void shouldRunUnitAndReturnVoid() {
-                int[] i = { 0 };
-                Void nothing = run(() -> i[0]++);
-                $assertThat(nothing).isNull();
-                $assertThat(i[0]).isEqualTo(1);
+                @$test
+                public void shouldRunUnitAndReturnVoid() {
+                    int[] i = { 0 };
+                    Void nothing = run(() -> i[0]++);
+                    $assertThat(nothing).isNull();
+                    $assertThat(i[0]).isEqualTo(1);
+                }
+
             }
 
-            // -- For
+            @Nested
+            class For {
 
-            @$test
-            public void shouldIterateFor1UsingSimpleYield() {
-                final $ListType<Integer> list = List.of(1, 2, 3);
-                final $ListType<Integer> actual = For(list).yield().toList();
-                $assertThat(actual).isEqualTo(list);
-            }
+                @$test
+                public void shouldIterateFor1UsingSimpleYield() {
+                    final $ListType<Integer> list = List.of(1, 2, 3);
+                    final $ListType<Integer> actual = For(list).yield().toList();
+                    $assertThat(actual).isEqualTo(list);
+                }
 
-            ${(1 to N).gen(i => xs"""
-              @$test
-              public void shouldIterateFor$ListType$i() {
-                  final $ListType<Integer> result = For(
-                      ${(1 to i).gen(j => s"$ListType.of(1, 2, 3)")(",\n")}
-                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")}).toList();
-                  $assertThat(result.length()).isEqualTo((int) Math.pow(3, $i));
-                  $assertThat(result.head()).isEqualTo($i);
-                  $assertThat(result.last()).isEqualTo(3 * $i);
-              }
-            """)("\n\n")}
+                ${(1 to N).gen(i => xs"""
+                  @$test
+                  public void shouldIterateFor$ListType$i() {
+                      final $ListType<Integer> result = For(
+                          ${(1 to i).gen(j => s"$ListType.of(1, 2, 3)")(",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")}).toList();
+                      $assertThat(result.length()).isEqualTo((int) Math.pow(3, $i));
+                      $assertThat(result.head()).isEqualTo($i);
+                      $assertThat(result.last()).isEqualTo(3 * $i);
+                  }
+                """)("\n\n")}
 
-            ${monadicTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
-              @$test
-              public void shouldIterateFor$mtype$i() {
-                  final $mtype<Integer> result = For(
-                      ${(1 to i).gen(j => s"$mtype.of($j)")(",\n")}
-                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
-                  $assertThat(result.get()).isEqualTo(${(1 to i).sum});
-              }
-            """})("\n\n"))("\n\n")}
+                ${monadicTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
+                  @$test
+                  public void shouldIterateFor$mtype$i() {
+                      final $mtype<Integer> result = For(
+                          ${(1 to i).gen(j => s"$mtype.of($j)")(",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                      $assertThat(result.get()).isEqualTo(${(1 to i).sum});
+                  }
+                """})("\n\n"))("\n\n")}
 
-            ${monadicFunctionTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
-              @$test
-              public void shouldIterateFor$mtype$i() {
-                  final ${if(mtype == "Either") mtype + "<Object, Integer>" else mtype + "<Integer>"}result = For(
-                      ${(1 to i).gen(j => s"${if(mtype == "Either")  mtype + s".right($j)" else  mtype + s".of(() -> $j)"}")(",\n")}
-                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
-                  $assertThat(result.get()).isEqualTo(${(1 to i).sum});
-              }
-            """})("\n\n"))("\n\n")}
+                ${monadicFunctionTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
+                  @$test
+                  public void shouldIterateFor$mtype$i() {
+                      final ${if(mtype == "Either") mtype + "<Object, Integer>" else mtype + "<Integer>"}result = For(
+                          ${(1 to i).gen(j => s"${if(mtype == "Either")  mtype + s".right($j)" else  mtype + s".of(() -> $j)"}")(",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                      $assertThat(result.get()).isEqualTo(${(1 to i).sum});
+                  }
+                """})("\n\n"))("\n\n")}
 
-            @$test
-            public void shouldIterateNestedFor() {
-                final $ListType<String> result =
-                        For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
-                                For(${im.getType("io.vavr.collection.List")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
-                assertThat(result).isEqualTo($ListType.of("1:a", "1:b", "2:a", "2:b"));
+                @$test
+                public void shouldIterateNestedFor() {
+                    final $ListType<String> result =
+                            For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
+                                    For(${im.getType("io.vavr.collection.List")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
+                    assertThat(result).isEqualTo($ListType.of("1:a", "1:b", "2:a", "2:b"));
+                }
+
             }
 
             // -- Match
