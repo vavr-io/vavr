@@ -3,6 +3,7 @@ package linter;
 import com.tngtech.archunit.core.domain.JavaClass;
 import com.tngtech.archunit.core.domain.JavaMethod;
 import com.tngtech.archunit.core.domain.JavaModifier;
+import com.tngtech.archunit.core.domain.JavaParameter;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import com.tngtech.archunit.lang.ArchCondition;
@@ -67,12 +68,22 @@ public class ClassSectionTest {
         for (JavaMethod method : methods) {
             if (method.getModifiers().contains(JavaModifier.STATIC)) {
                 sections.get(STATIC_API).add(method);
-            } else if (method.isAnnotatedWith(Override.class)) {
+            } else if (isOverridden(method)) {
                 sections.get(ADJUSTED_RETURN_TYPES).add(method);
-            } else {
+            }
+            else {
                 sections.get(NON_STATIC_API).add(method);
             }
         }
         return sections;
+    }
+
+    private boolean isOverridden(JavaMethod method) {
+        return method.getOwner().getAllRawInterfaces().stream()
+                .anyMatch(c -> c.tryGetMethod(method.getName(), getTypeNames(method.getParameters())).isPresent());
+    }
+
+    private String[] getTypeNames(List<JavaParameter> parameters) {
+        return parameters.stream().map(p -> p.getRawType().getName()).toArray(String[]::new);
     }
 }
