@@ -16,6 +16,11 @@ import java.util.stream.Collectors;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.classes;
 
 public class ClassSectionTest {
+
+    public static final String STATIC_API = "static API";
+    public static final String ADJUSTED_RETURN_TYPES = "adjusted return types";
+    public static final String NON_STATIC_API = "non-static API";
+
     @Test
     public void methodsAreAlphabeticallyOrderedInSections() {
         classes()
@@ -55,14 +60,17 @@ public class ClassSectionTest {
 
     private Map<String, List<JavaMethod>> methodSections(Set<JavaMethod> methods) {
         Map<String, List<JavaMethod>> sections = new HashMap<>();
-        sections.put("static API", new ArrayList<>());
-        sections.put("non-static API", new ArrayList<>());
+        sections.put(STATIC_API, new ArrayList<>());
+        sections.put(ADJUSTED_RETURN_TYPES, new ArrayList<>());
+        sections.put(NON_STATIC_API, new ArrayList<>());
 
         for (JavaMethod method : methods) {
             if (method.getModifiers().contains(JavaModifier.STATIC)) {
-                sections.get("static API").add(method);
+                sections.get(STATIC_API).add(method);
+            } else if (method.isAnnotatedWith(Override.class)) {
+                sections.get(ADJUSTED_RETURN_TYPES).add(method);
             } else {
-                sections.get("non-static API").add(method);
+                sections.get(NON_STATIC_API).add(method);
             }
         }
         return sections;
