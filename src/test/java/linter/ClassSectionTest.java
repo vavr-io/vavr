@@ -25,7 +25,8 @@ public class ClassSectionTest {
     @Test
     public void methodsAreAlphabeticallyOrderedInSections() {
         classes()
-                .should(haveOrderedMethodSections()).check(new ClassFileImporter()
+                .should(haveOrderedMethodSections())
+                .check(new ClassFileImporter()
                         .withImportOption(ImportOption.Predefined.DO_NOT_INCLUDE_TESTS)
                         .importPackages("io.vavr"));
     }
@@ -70,20 +71,25 @@ public class ClassSectionTest {
                 sections.get(STATIC_API).add(method);
             } else if (isOverridden(method)) {
                 sections.get(ADJUSTED_RETURN_TYPES).add(method);
-            }
-            else {
+            } else {
                 sections.get(NON_STATIC_API).add(method);
             }
         }
         return sections;
     }
 
+    /* Source: https://github.com/TNG/ArchUnit/issues/359#issuecomment-975456116 */
     private boolean isOverridden(JavaMethod method) {
-        return method.getOwner().getAllRawInterfaces().stream()
+        return method.getOwner()
+                .getAllRawInterfaces()
+                .stream()
                 .anyMatch(c -> c.tryGetMethod(method.getName(), getTypeNames(method.getParameters())).isPresent());
     }
 
+    /* Source: https://github.com/TNG/ArchUnit/issues/359#issuecomment-975456116 */
     private String[] getTypeNames(List<JavaParameter> parameters) {
-        return parameters.stream().map(p -> p.getRawType().getName()).toArray(String[]::new);
+        return parameters.stream()
+                .map(p -> p.getRawType().getName())
+                .toArray(String[]::new);
     }
 }
