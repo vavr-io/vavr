@@ -31,6 +31,8 @@ import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -249,92 +251,107 @@ public class ArrayTest extends AbstractIndexedSeqTest {
     public void shouldThrowExceptionWhenGetIndexEqualToLength() {
         final Array<Integer> array = of(1);
         Assertions.assertThatThrownBy(() -> array.get(1))
-            .isInstanceOf(IndexOutOfBoundsException.class).hasMessage("get(1)");
+                .isInstanceOf(IndexOutOfBoundsException.class).hasMessage("get(1)");
     }
 
-    // -- partition
+    @Nested
+    @DisplayName("partition")
+    class PartitionTest {
 
-    @Test
-    public void shouldPartitionInOneIteration() {
-        final AtomicInteger count = new AtomicInteger(0);
-        final Tuple2<Array<Integer>, Array<Integer>> results = of(1, 2, 3).partition(i -> {
-            count.incrementAndGet();
-            return true;
-        });
-        assertThat(results._1).isEqualTo(of(1, 2, 3));
-        assertThat(results._2).isEqualTo(of());
-        assertThat(count.get()).isEqualTo(3);
+        @Test
+        public void shouldPartitionInOneIteration() {
+            final AtomicInteger count = new AtomicInteger(0);
+            final Tuple2<Array<Integer>, Array<Integer>> results = of(1, 2, 3).partition(i -> {
+                count.incrementAndGet();
+                return true;
+            });
+            assertThat(results._1).isEqualTo(of(1, 2, 3));
+            assertThat(results._2).isEqualTo(of());
+            assertThat(count.get()).isEqualTo(3);
+        }
+
+        // -- transform()
+
+        @Test
+        public void shouldTransform() {
+            String transformed = of(42).transform(v -> String.valueOf(v.get()));
+            assertThat(transformed).isEqualTo("42");
+        }
+
     }
 
-    // -- transform()
+    @Nested
+    @DisplayName("unfold")
+    class UnfoldTest {
 
-    @Test
-    public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("42");
+        @Test
+        public void shouldUnfoldRightToEmpty() {
+            assertThat(Array.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldUnfoldRightSimpleArray() {
+            assertThat(
+                    Array.unfoldRight(10, x -> x == 0
+                            ? Option.none()
+                            : Option.of(new Tuple2<>(x, x - 1))))
+                    .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+        }
+
+        @Test
+        public void shouldUnfoldLeftToEmpty() {
+            assertThat(Array.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldUnfoldLeftSimpleArray() {
+            assertThat(
+                    Array.unfoldLeft(10, x -> x == 0
+                            ? Option.none()
+                            : Option.of(new Tuple2<>(x - 1, x))))
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
+
+        @Test
+        public void shouldUnfoldToEmpty() {
+            assertThat(Array.unfold(0, x -> Option.none())).isEqualTo(empty());
+        }
+
+        @Test
+        public void shouldUnfoldSimpleArray() {
+            assertThat(
+                    Array.unfold(10, x -> x == 0
+                            ? Option.none()
+                            : Option.of(new Tuple2<>(x - 1, x))))
+                    .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+        }
+
     }
 
-    // -- unfold
+    @Nested
+    @DisplayName("toString")
+    class ToStringTest {
 
-    @Test
-    public void shouldUnfoldRightToEmpty() {
-        assertThat(Array.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+        @Test
+        public void shouldStringifyNil() {
+            assertThat(empty().toString()).isEqualTo("Array()");
+        }
+
+        @Test
+        public void shouldStringifyNonNil() {
+            assertThat(of(1, 2, 3).toString()).isEqualTo("Array(1, 2, 3)");
+        }
+
     }
 
-    @Test
-    public void shouldUnfoldRightSimpleArray() {
-        assertThat(
-                Array.unfoldRight(10, x -> x == 0
-                                           ? Option.none()
-                                           : Option.of(new Tuple2<>(x, x - 1))))
-                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
-    }
+    @Nested
+    @DisplayName("toArray")
+    class ToArrayTest {
 
-    @Test
-    public void shouldUnfoldLeftToEmpty() {
-        assertThat(Array.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldUnfoldLeftSimpleArray() {
-        assertThat(
-                Array.unfoldLeft(10, x -> x == 0
-                                          ? Option.none()
-                                          : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
-
-    @Test
-    public void shouldUnfoldToEmpty() {
-        assertThat(Array.unfold(0, x -> Option.none())).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldUnfoldSimpleArray() {
-        assertThat(
-                Array.unfold(10, x -> x == 0
-                                      ? Option.none()
-                                      : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
-
-    // -- toString
-
-    @Test
-    public void shouldStringifyNil() {
-        assertThat(empty().toString()).isEqualTo("Array()");
-    }
-
-    @Test
-    public void shouldStringifyNonNil() {
-        assertThat(of(1, 2, 3).toString()).isEqualTo("Array(1, 2, 3)");
-    }
-
-    // -- toArray
-
-    @Test
-    public void shouldReturnSelfOnConvertToArray() {
-        Array<Integer> value = of(1, 2, 3);
-        assertThat(value.toArray()).isSameAs(value);
+        @Test
+        public void shouldReturnSelfOnConvertToArray() {
+            Array<Integer> value = of(1, 2, 3);
+            assertThat(value.toArray()).isSameAs(value);
+        }
     }
 }
