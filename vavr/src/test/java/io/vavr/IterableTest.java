@@ -29,7 +29,6 @@ import java.util.Collections;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-// Specific tests. For general tests, see AbstractIterableTest.
 public class IterableTest {
 
     // -- eq
