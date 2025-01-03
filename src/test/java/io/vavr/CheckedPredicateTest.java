@@ -27,6 +27,8 @@
 package io.vavr;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.function.Predicate;
@@ -35,44 +37,53 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CheckedPredicateTest {
 
-    // -- of
+    @Nested
+    @DisplayName("of")
+    class OfTest {
 
-    @Test
-    public void shouldCreateCheckedPredicateUsingLambda() {
-        final CheckedPredicate<Object> predicate = CheckedPredicate.of(obj -> true);
-        assertThat(predicate).isNotNull();
-    }
+        @Test
+        public void shouldCreateCheckedPredicateUsingLambda() {
+            final CheckedPredicate<Object> predicate = CheckedPredicate.of(obj -> true);
+            assertThat(predicate).isNotNull();
+        }
 
-    @Test
-    public void shouldCreateCheckedPredicateUsingMethodReference() {
-        final CheckedPredicate<Object> predicate = CheckedPredicate.of(CheckedPredicateTest::test);
-        assertThat(predicate).isNotNull();
+        @Test
+        public void shouldCreateCheckedPredicateUsingMethodReference() {
+            final CheckedPredicate<Object> predicate = CheckedPredicate.of(CheckedPredicateTest::test);
+            assertThat(predicate).isNotNull();
+        }
     }
 
     private static boolean test(Object obj) {
         return true;
     }
 
-    // -- unchecked
 
-    @Test
-    public void shouldApplyAnUncheckedFunctionThatDoesNotThrow() {
-        final Predicate<Object> predicate = CheckedPredicate.of(obj -> true).unchecked();
-        try {
-            predicate.test(null);
-        } catch(Throwable x) {
-            Assertions.fail("Did not expect an exception but received: " + x.getMessage());
+    @Nested
+    @DisplayName("unchecked")
+    class UncheckedTest {
+
+        @Test
+        public void shouldApplyAnUncheckedFunctionThatDoesNotThrow() {
+            final Predicate<Object> predicate = CheckedPredicate.of(obj -> true).unchecked();
+            try {
+                predicate.test(null);
+            } catch (Throwable x) {
+                Assertions.fail("Did not expect an exception but received: " + x.getMessage());
+            }
         }
-    }
 
-    @Test
-    public void shouldApplyAnUncheckedFunctionThatThrows() {
-        final Predicate<Object> predicate = CheckedPredicate.of(obj -> { throw new Error(); }).unchecked();
-        try {
-            predicate.test(null);
-            Assertions.fail("Did expect an exception.");
-        } catch(Error x) {
-            // ok!
+        @Test
+        public void shouldApplyAnUncheckedFunctionThatThrows() {
+            final Predicate<Object> predicate = CheckedPredicate.of(obj -> {
+                throw new Error();
+            }).unchecked();
+            try {
+                predicate.test(null);
+                Assertions.fail("Did expect an exception.");
+            } catch (Error x) {
+                // ok!
+            }
         }
     }
 }
