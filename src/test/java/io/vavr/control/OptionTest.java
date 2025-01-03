@@ -403,7 +403,7 @@ public class OptionTest extends AbstractValueTest {
     public void shouldMapNone() {
         assertThat(Option.<Integer> none().map(String::valueOf)).isEqualTo(Option.none());
     }
-
+    
     @Nested
     class MapTry {
         @Test
