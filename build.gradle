@@ -43,7 +43,8 @@ plugins {
 ext.ammoniteScalaVersion = '3.5'
 ext.ammoniteVersion = '3.0.0'
 ext.ammoniteVersionQualifier = '2-6342755f'
-ext.assertjVersion = '3.27.0'
+ext.archUnitVersion = '1.3.0'
+ext.assertjVersion = '3.27.1'
 ext.junitVersion = '5.11.4'
 
 // JAVA_VERSION used for CI build matrix, may be provided as env variable
@@ -60,6 +61,7 @@ repositories {
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation "com.tngtech.archunit:archunit-junit5:$archUnitVersion"
 }
 
 tasks.withType(Test).configureEach {
