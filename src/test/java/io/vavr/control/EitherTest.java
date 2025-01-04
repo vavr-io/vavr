@@ -30,6 +30,8 @@ import io.vavr.AbstractValueTest;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.NoSuchElementException;
@@ -482,9 +484,33 @@ public class EitherTest extends AbstractValueTest {
     @Test
     public void shouldPeekLeftForLeft() {
         final int[] effect = { 0 };
-        final Either<Integer, ?> actual = Either.left(1).peekLeft(i -> effect[0] = i);
+        final Either<Integer, ?> actual = Either.left(1)
+                .peekLeft(i -> effect[0] = i);
         assertThat(actual).isEqualTo(Either.left(1));
         assertThat(effect[0]).isEqualTo(1);
+    }
+
+
+    @Nested
+    @DisplayName("peek(Runnable, Consumer)")
+    class PeekRunnableConsumer {
+        @Test
+        void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
+            final int[] actual = new int[] { -1 };
+            final Either<Integer, ?> testee = Either.left(1)
+                    .peek(i -> actual[0] = 1, i -> actual[0] = 2);
+            assertThat(testee).isEqualTo(Either.left(1));
+            assertThat(actual[0]).isEqualTo(1);
+        }
+
+        @Test
+        void shouldRunRunnableWhenValueIsNotDefined() {
+            final int[] actual = new int[] { -1 };
+            final Either<?, Integer> testee = Either.right(1)
+                    .peek(i -> actual[0] = 1, i -> actual[0] = 2);
+            assertThat(testee).isEqualTo(Either.right(1));
+            assertThat(actual[0]).isEqualTo(2);
+        }
     }
 
     @Test
