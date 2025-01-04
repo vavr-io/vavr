@@ -29,6 +29,8 @@ package io.vavr.control;
 import io.vavr.*;
 import io.vavr.collection.Seq;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
@@ -509,22 +511,45 @@ public class OptionTest extends AbstractValueTest {
         assertThat(API.None().toValidation(() -> "bad")).isEqualTo(API.Invalid("bad"));
     }
 
-    // -- peek
+    @Nested
+    class Peek {
+        @Test
+        public void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
+            final int[] actual = new int[] { -1 };
+            final Option<Integer> testee = Option.of(1).peek(i -> actual[0] = i);
+            assertThat(actual[0]).isEqualTo(1);
+            assertThat(testee).isEqualTo(Option.of(1));
+        }
 
-    @Test
-    public void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
-        final int[] actual = new int[] { -1 };
-        final Option<Integer> testee = Option.of(1).peek(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(1);
-        assertThat(testee).isEqualTo(Option.of(1));
+        @Test
+        public void shouldNotConsumeAnythingOnPeekWhenValueIsNotDefined() {
+            final int[] actual = new int[] { -1 };
+            final Option<Integer> testee = Option.<Integer> none().peek(i -> actual[0] = i);
+            assertThat(actual[0]).isEqualTo(-1);
+            assertThat(testee).isEqualTo(Option.none());
+        }
     }
 
-    @Test
-    public void shouldNotConsumeAnythingOnPeekWhenValueIsNotDefined() {
-        final int[] actual = new int[] { -1 };
-        final Option<Integer> testee = Option.<Integer> none().peek(i -> actual[0] = i);
-        assertThat(actual[0]).isEqualTo(-1);
-        assertThat(testee).isEqualTo(Option.none());
+    @Nested
+    @DisplayName("peek(Runnable, Consumer)")
+    class PeekRunnableConsumer {
+        @Test
+        void shouldConsumePresentValueOnPeekWhenValueIsDefined() {
+            final int[] actual = new int[] { -1 };
+            final Option<Integer> testee = Option.of(1)
+                    .peek(() -> actual[0] = -2, i -> actual[0] = i);
+            assertThat(actual[0]).isEqualTo(1);
+            assertThat(testee).isEqualTo(Option.of(1));
+        }
+
+        @Test
+        void shouldRunRunnableWhenValueIsNotDefined() {
+            final int[] actual = new int[] { -1 };
+            final Option<Integer> testee = Option.<Integer> none()
+                    .peek(() -> actual[0] = -2, i -> actual[0] = i);
+            assertThat(actual[0]).isEqualTo(-2);
+            assertThat(testee).isEqualTo(Option.none());
+        }
     }
 
     // -- transform
