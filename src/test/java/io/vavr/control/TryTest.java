@@ -627,6 +627,50 @@ public class TryTest extends AbstractValueTest {
         assertThat(closeable8.isClosed).isTrue();
     }
 
+    @Test
+    public void shouldCreateSuccessTryWithThreadedResources2() {
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Try<String> actual = Try.withResources(() -> closeable1, i1 -> closeable2).of(i2 -> "" + i2.value);
+        assertThat(actual).isEqualTo(Success("2"));
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithThreadedResources2() {
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Try<?> actual = Try.withResources(() -> closeable1, i1 -> closeable2).of(i2 -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateSuccessTryWithChainedResources3() {
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Try<String> actual = Try.withResources(() -> closeable1, i1 -> closeable2, i2 -> closeable3).of(i3 -> "" + i3.value);
+        assertThat(actual).isEqualTo(Success("3"));
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+    }
+
+    @Test
+    public void shouldCreateFailureTryWithThreadedResources3() {
+        final Closeable<Integer> closeable1 = Closeable.of(1);
+        final Closeable<Integer> closeable2 = Closeable.of(2);
+        final Closeable<Integer> closeable3 = Closeable.of(3);
+        final Try<?> actual = Try.withResources(() -> closeable1, i1 -> closeable2, i2 -> closeable3).of(i3 -> { throw new Error(); });
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(closeable1.isClosed).isTrue();
+        assertThat(closeable2.isClosed).isTrue();
+        assertThat(closeable3.isClosed).isTrue();
+    }
+
     // -- Failure.Cause
 
     @Test
