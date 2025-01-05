@@ -46,7 +46,7 @@ _Source: http://users.ece.utexas.edu/~adnan/pike.html_
  *
  * The MIT License (MIT)
  *
- * Copyright 2024 Vavr, https://vavr.io
+ * Copyright 2025 Vavr, https://vavr.io
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
