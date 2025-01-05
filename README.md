@@ -39,8 +39,6 @@ See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc
 
 Currently, there are two significant branches:
 - `main` (represents a stream of work leading to the release of a new ma version)
-- `version/1.x` (historical work that went into `1.0.0-alpha-3`, treat is as read-only)
-
-If you're unsure which one to start with, start with `main`.
+- `version/1.x` (historical work that went into `1.0.0-alpha-3`, treat is as read-only - will be kept around for cherry-picking)
 
 A small number of users have reported problems building Vavr. Read our [contribution guide](./CONTRIBUTING.md) for details.
