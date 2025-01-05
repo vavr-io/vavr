@@ -14,7 +14,7 @@
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
@@ -22,13 +22,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vavr-match</artifactId>
-            <version>${project.version}</version>
+            <version>0.10.5</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vavr-match-processor</artifactId>
-            <version>${project.version}</version>
+            <version>0.10.5</version>
             <optional>true</optional>
         </dependency>
 
