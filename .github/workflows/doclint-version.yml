@@ -2,10 +2,10 @@ name: doclint
 on:
   push:
     branches:
-      - version/**
+      - main
   pull_request:
     branches:
-      - version/**
+      - main
 
 jobs:
   doc-lint:
@@ -22,4 +22,4 @@ jobs:
           cache: 'maven'
 
       - name: Validate JavaDocs
-        run: mvn install -DskipTests=true && mvn javadoc:javadoc
+        run: mvn javadoc:javadoc
