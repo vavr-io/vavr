@@ -6,10 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Objects;
 
-/**
- * @author <a href="mailto:liang.qin.work@foxmail.com">liang.qin</a>
- * @since 2025/1/6 10:03
- **/
+
 @SuppressWarnings("unused")
 public class IfTest extends AbstractValueTest{
 
