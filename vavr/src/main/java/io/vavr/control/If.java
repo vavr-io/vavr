@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
+ * Tool to simplify "if" code blocks.
  * <pre>{@code
  * String planet = getPlanet();
  * if (planet == null) {
@@ -23,10 +24,11 @@ import java.util.function.Supplier;
  * }</pre>
  * Obviously, calling the 'getPlanet' method twice is inappropriate.
  * <br/>
- * But you can use this tool
+ * But you can simplify this code by using {@link #ifNew(Object, Predicate, Object)}  as follows
  * <pre>{@code
  *  String planet =  If.ifNew(getPlanet(),Objects::isNull,"Earth");
  * }</pre>
+ *
  **/
 @SuppressWarnings("unused")
 public abstract class If implements Serializable {
