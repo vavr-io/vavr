@@ -402,7 +402,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return a {@code Try}
      * @throws NullPointerException if {@code mapper} is null
      */
-    public final <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
+    default <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         return toTry().mapTry(mapper);
     }
 
