@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -380,10 +379,15 @@ public class OptionTest extends AbstractValueTest {
 
         @Test
         public void shouldMapTryCheckedException() {
-            Try<Integer> result = Option.of("a").mapTry(Integer::new);
+            Try<Integer> result = Option.of("a")
+                    .mapTry(this::checkedFunction);
             assertThat(result.isFailure()).isTrue();
-            assertThat(result.getCause().getClass()).isEqualTo(NumberFormatException.class);
-            assertThat(result.getCause().getMessage()).isEqualTo("For input string: \"a\"");
+            assertThat(result.getCause().getClass()).isEqualTo(Exception.class);
+            assertThat(result.getCause().getMessage()).isEqualTo("message");
+        }
+
+        private Integer checkedFunction(String string) throws Exception {
+            throw new Exception("message");
         }
     }
 
