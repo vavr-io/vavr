@@ -18,6 +18,7 @@
  */
 package io.vavr.control;
 
+import io.vavr.CheckedFunction1;
 import io.vavr.PartialFunction;
 import io.vavr.Tuple;
 import io.vavr.Value;
@@ -389,6 +390,20 @@ public interface Option<T> extends Value<T>, Serializable {
     default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? none() : some(mapper.apply(get()));
+    }
+
+
+    /**
+     * Converts this to a {@link Try}, then runs the given checked function if this is a {@link Try.Success},
+     * passing the result of the current expression to it.
+     *
+     * @param <U>    The new component type
+     * @param mapper A checked function
+     * @return a {@code Try}
+     * @throws NullPointerException if {@code mapper} is null
+     */
+    default <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
+        return toTry().mapTry(mapper);
     }
 
     /**
