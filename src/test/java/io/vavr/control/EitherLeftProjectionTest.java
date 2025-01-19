@@ -68,10 +68,8 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
     }
 
     @Nested
-    @DisplayName("LeftProjection")
-    class LeftProjectionTest {
-
-        // get
+    @DisplayName("Get")
+    class GetTest {
 
         @Test
         public void shouldThrowOnGetOnLeftProjectionOfRight() {
@@ -83,7 +81,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(Either.left(1).left().get()).isEqualTo(1);
         }
 
-        // orElse
+    }
+
+    @Nested
+    @DisplayName("orElse")
+    class OrElseTest {
 
         @Test
         public void shouldLeftProjectionOrElseLeftProjection() {
@@ -99,7 +101,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(API.Right(1).left().orElse(() -> elseProjection).get()).isEqualTo(2);
         }
 
-        // getOrElse
+    }
+
+    @Nested
+    @DisplayName("getOrElse")
+    class GetOrElseTest {
 
         @Test
         public void shouldReturnLeftWhenOrElseOnLeftProjectionOfLeft() {
@@ -113,7 +119,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(actual).isEqualTo(2);
         }
 
-        // getOrElse(Function)
+    }
+
+    @Nested
+    @DisplayName("getOrElse(Function)")
+    class GetOrElseFunctionTest {
 
         @Test
         public void shouldReturnLeftWhenOrElseGetGivenFunctionOnLeftProjectionOfLeft() {
@@ -127,7 +137,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(actual).isEqualTo(2);
         }
 
-        // orElseRun
+    }
+
+    @Nested
+    @DisplayName("orElseRun(Function)")
+    class OrElseRunTest {
 
         @Test
         public void shouldReturnLeftWhenOrElseRunOnLeftProjectionOfLeft() {
@@ -145,7 +159,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(actual[0]).isTrue();
         }
 
-        // getOrElseThrow(Function)
+    }
+
+    @Nested
+    @DisplayName("getOrElseThrow(Function)")
+    class GetOrElseThrowFunctionTest {
 
         @Test
         public void shouldReturnLeftWhenOrElseThrowWithFunctionOnLeftProjectionOfLeft() {
@@ -158,7 +176,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThrows(RuntimeException.class, () -> Either.right("1").left().getOrElseThrow(s -> new RuntimeException(s)));
         }
 
-        // toOption
+    }
+
+    @Nested
+    @DisplayName("toOption")
+    class ToOptionTest {
 
         @Test
         public void shouldConvertLeftProjectionOfLeftToSome() {
@@ -170,7 +192,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(Either.right("x").left().toOption()).isEqualTo(Option.none());
         }
 
-        // toEither
+    }
+
+    @Nested
+    @DisplayName("toEither")
+    class ToEitherTest {
 
         @Test
         public void shouldConvertLeftProjectionOfLeftToEither() {
@@ -184,7 +210,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(self.left().toEither()).isEqualTo(self);
         }
 
-        // toJavaOptional
+    }
+
+    @Nested
+    @DisplayName("toJavaOptional")
+    class ToJavaOptionalTest {
 
         @Test
         public void shouldConvertLeftProjectionOfLeftToJavaOptional() {
@@ -196,7 +226,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(Either.<Integer, String>right("x").left().toJavaOptional()).isEqualTo(Optional.empty());
         }
 
-        // filter
+    }
+
+    @Nested
+    @DisplayName("filter")
+    class FilterTest {
 
         @Test
         public void shouldFilterSomeOnLeftProjectionOfLeftIfPredicateMatches() {
@@ -221,7 +255,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(actual).isTrue();
         }
 
-        // flatMap
+    }
+
+    @Nested
+    @DisplayName("flatMap")
+    class FlatMapTest {
 
         @Test
         public void shouldFlatMapOnLeftProjectionOfLeft() {
