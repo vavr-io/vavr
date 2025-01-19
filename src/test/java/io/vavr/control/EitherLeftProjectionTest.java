@@ -286,7 +286,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(Either.left(1).right().forAll(e -> true)).isTrue();
         }
 
-        // forEach
+    }
+
+    @Nested
+    @DisplayName("forEach")
+    class ForEachTest {
 
         @Test
         public void shouldForEachOnLeftProjectionOfLeft() {
@@ -302,7 +306,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(actual.isEmpty()).isTrue();
         }
 
-        // peek
+    }
+
+    @Nested
+    @DisplayName("peek")
+    class PeekTest {
 
         @Test
         public void shouldPeekOnLeftProjectionOfLeft() {
@@ -320,7 +328,11 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
             assertThat(testee).isEqualTo(Either.right("1"));
         }
 
-        // map
+    }
+
+    @Nested
+    @DisplayName("map")
+    class MapTest {
 
         @Test
         public void shouldMapOnLeftProjectionOfLeft() {
