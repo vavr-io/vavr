@@ -6,4 +6,13 @@ find ./src -name "*Test.java" -type f -exec sed -E -i '' \
 
 find ./src -type f -name '*Test.java' -exec perl -i -pe 's/\bCAPS([a-zA-Z])([a-zA-Z]*)/\u\1\2/g' {} +
 
+git restore **/LazyTest.java \
+  **/PredicatesTest.java \
+  **/PartialFunctionTest.java \
+  **/MatchErrorTest.java \
+  **/ValueTest.java \
+  **/BitSetTest.java \
+  **/LinkedHashMultimapTest.java \
+  **/LinkedHashMultimapOfEntriesTest.java
+
 #./gradlew test
