@@ -12,16 +12,32 @@
   \______/___/\___\______/___/_____/___/\___\______/___/\___\
 ```
 
-Vavr is an object-functional language extension to Java 8 that aims to reduce the number of lines of code and increase code quality.
-It provides persistent collections, functional abstractions for error handling, concurrent programming, pattern matching, and much more.
+Vavr is an **object-functional extension for Java that reduces boilerplate code and enhances code quality.**
 
-Vavr fuses the power of object-oriented programming with the elegance and robustness of functional programming.
-The most interesting part is a feature-rich, persistent collection library that smoothly integrates with Java's standard collections.
+Vavr seamlessly combines object-oriented programming with the elegance and robustness of functional programming. 
 
-Because Vavr does not depend on any libraries (other than the JVM), you can easily add it as a standalone _.jar_ to your classpath.
+It provides:
+* persistent collections
+* functional abstractions for error handling, concurrent programming
+* pattern matching
+* ...and more
+
+Since **Vavr has no dependencies** beyond the JVM, you can easily add it as a standalone .jar to your classpath.
 
 ### Stargazers over time
 [![Stargazers over time](https://starchart.cc/vavr-io/vavr.svg?variant=adaptive)](https://starchart.cc/vavr-io/vavr)
+
+### Maven Dependency
+
+    <dependency>
+        <groupId>io.vavr</groupId>
+        <artifactId>vavr</artifactId>
+        <version>0.10.6</version>
+    </dependency>
+
+### Gradle Dependency
+
+    implementation 'io.vavr:vavr:0.10.6'
 
 ## Using Vavr
 
