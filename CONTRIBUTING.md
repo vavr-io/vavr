@@ -30,16 +30,16 @@ We follow _Rob Pike's 5 Rules of Programming_:
 > * **Rule 4. Fancy algorithms are buggier than simple ones, and they're much harder to implement.** Use simple algorithms as well as simple data structures.
 > * **Rule 5. Data dominates.** If you've chosen the right data structures and organized things well, the algorithms will almost always be self-evident. Data structures, not algorithms, are central to programming.
 >
-> Pike's rules 1 and 2 restate Tony Hoare's famous maxim "Premature optimization is the root of all evil." Ken Thompson rephrased Pike's rules 3 and 4 as "When in doubt, use brute force.". Rules 3 and 4 are instances of the design philosophy KISS. Rule 5 was previously stated by Fred Brooks in The Mythical Man-Month. Rule 5 is often shortened to "write stupid code that uses smart objects".
+> Pike's rules 1 and 2 restate Tony Hoare's famous maxim, "Premature optimization is the root of all evil." Ken Thompson rephrased Pike's rules 3 and 4 as "When in doubt, use brute force.". Rules 3 and 4 are instances of the design philosophy KISS. Rule 5 was previously stated by Fred Brooks in The Mythical Man-Month. Rule 5 is often shortened to "write stupid code that uses smart objects".
 
 _Source: http://users.ece.utexas.edu/~adnan/pike.html_
 
 ### Javadoc
 
-* Public API needs javadoc, e.g. public classes and public methods.
-* Non-trivial private methods need javadoc, too.
+* Public API needs Javadoc, e.g., public classes and public methods.
+* Non-trivial private methods need Javadoc, too.
 * A package, which is part of the public API, contains a `package-info.java`.
-* Unit tests contain no javadoc at all (because they introduce no new API and contain no business logic).
+* Unit tests contain no Javadoc at all (because they introduce no new API and contain no business logic).
 * Running `mvn javadoc:javadoc` results in no javadoc errors.
 * All classes start with the following copyright notice in order to apply the Apache-2.0 license:
 
@@ -71,7 +71,7 @@ _Source: http://users.ece.utexas.edu/~adnan/pike.html_
 * Package names are denoted in the singular.
 * Packages are sliced by domain (no util or tool packages).
 * Package private classes are used in order to hide non-public API.
-* Inner classes are preferred over package private classes in case of one-to-one dependencies.
+* Inner classes are preferred over package-private classes in case of one-to-one dependencies.
 
 ### File structure
 
@@ -82,7 +82,6 @@ We organize our classes and interfaces in the following way:
    1. static API
    2. non-static API
    3. adjusted return types
-* The methods of each of these sections are alphabetically ordered. 
 
 ```java
 /**
