@@ -18,9 +18,8 @@
  */
 package io.vavr;
 
-import org.assertj.core.api.Assertions;
-
 import java.lang.reflect.Constructor;
+import org.assertj.core.api.Assertions;
 
 public final class AssertionsExtensions {
 

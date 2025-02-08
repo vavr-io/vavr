@@ -19,7 +19,6 @@
 package io.vavr;
 
 import io.vavr.control.Option;
-
 import java.util.function.Function;
 
 /**

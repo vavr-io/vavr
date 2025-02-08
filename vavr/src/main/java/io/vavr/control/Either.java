@@ -22,7 +22,6 @@ import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
-
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;

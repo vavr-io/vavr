@@ -18,13 +18,12 @@
  */
 package io.vavr.collection;
 
+import java.util.function.IntFunction;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.function.IntFunction;
-
-import static java.lang.Integer.signum;
 import static io.vavr.API.List;
+import static java.lang.Integer.signum;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class QuickSortTest {

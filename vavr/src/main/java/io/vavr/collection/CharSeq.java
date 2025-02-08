@@ -22,7 +22,6 @@ import io.vavr.*;
 import io.vavr.collection.CharSeqModule.Combinations;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
-
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;

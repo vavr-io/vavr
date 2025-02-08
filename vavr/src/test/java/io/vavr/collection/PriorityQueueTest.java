@@ -19,18 +19,17 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
+import static io.vavr.TestComparators.toStringComparator;
 import static java.util.Comparator.comparingInt;
 import static java.util.stream.Collectors.toList;
-import static io.vavr.TestComparators.toStringComparator;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PriorityQueueTest extends AbstractTraversableTest {

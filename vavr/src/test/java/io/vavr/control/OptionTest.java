@@ -19,21 +19,20 @@
 package io.vavr.control;
 
 import io.vavr.*;
-import io.vavr.collection.Seq;
 import io.vavr.AbstractValueTest;
 import io.vavr.Function1;
 import io.vavr.PartialFunction;
 import io.vavr.Serializables;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-
+import io.vavr.collection.Seq;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

@@ -19,7 +19,6 @@
 package io.vavr.concurrent;
 
 import io.vavr.control.Try;
-
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;

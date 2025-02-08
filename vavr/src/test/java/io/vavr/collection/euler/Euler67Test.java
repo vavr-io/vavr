@@ -20,9 +20,8 @@ package io.vavr.collection.euler;
 
 import io.vavr.Function3;
 import io.vavr.collection.Vector;
-import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

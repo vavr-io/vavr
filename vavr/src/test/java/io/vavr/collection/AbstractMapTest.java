@@ -23,9 +23,6 @@ import io.vavr.PartialFunction;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
-import org.assertj.core.api.IterableAssert;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -38,11 +35,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
+import org.assertj.core.api.IterableAssert;
+import org.junit.jupiter.api.Test;
 
-import static java.util.Arrays.asList;
 import static io.vavr.API.Some;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
+import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public abstract class AbstractMapTest extends AbstractTraversableTest {

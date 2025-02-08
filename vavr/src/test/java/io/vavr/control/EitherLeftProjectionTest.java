@@ -22,8 +22,6 @@ import io.vavr.API;
 import io.vavr.AbstractValueTest;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -32,6 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Spliterator;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

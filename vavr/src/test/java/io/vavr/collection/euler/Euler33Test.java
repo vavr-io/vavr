@@ -19,8 +19,8 @@
 package io.vavr.collection.euler;
 
 import io.vavr.Tuple;
-import io.vavr.collection.CharSeq;
 import io.vavr.Tuple2;
+import io.vavr.collection.CharSeq;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 

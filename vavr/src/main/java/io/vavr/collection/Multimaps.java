@@ -19,7 +19,6 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple2;
-
 import java.util.Objects;
 import java.util.function.Function;
 

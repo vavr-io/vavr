@@ -20,12 +20,10 @@ package io.vavr.control;
 
 import io.vavr.CheckedFunction1;
 import io.vavr.PartialFunction;
-import io.vavr.Tuple;
 import io.vavr.Value;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
-
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;

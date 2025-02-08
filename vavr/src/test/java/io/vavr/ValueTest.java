@@ -20,10 +20,9 @@ package io.vavr;
 
 import io.vavr.collection.List;
 import io.vavr.control.Option;
-import org.junit.jupiter.api.Test;
-
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -19,10 +19,9 @@
 package io.vavr.collection;
 
 import io.vavr.control.Option;
-import org.junit.jupiter.api.Test;
-
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -20,14 +20,12 @@ package io.vavr.concurrent;
 
 import io.vavr.CheckedFunction0;
 import io.vavr.control.Try;
-
 import java.util.Random;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
-import static java.util.concurrent.ForkJoinPool.commonPool;
 import static org.assertj.core.api.Assertions.fail;
 
 final class Concurrent {

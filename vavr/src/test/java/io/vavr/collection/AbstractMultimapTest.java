@@ -22,14 +22,6 @@ import io.vavr.PartialFunction;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
-import org.assertj.core.api.IterableAssert;
-import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
-import org.junit.jupiter.api.extension.Extension;
-import org.junit.jupiter.api.extension.ExtensionContext;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
-import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -44,6 +36,13 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collector;
+import org.assertj.core.api.IterableAssert;
+import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
+import org.junit.jupiter.api.extension.Extension;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
+import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertThrows;

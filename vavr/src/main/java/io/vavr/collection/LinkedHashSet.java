@@ -20,7 +20,6 @@ package io.vavr.collection;
 
 import io.vavr.*;
 import io.vavr.control.Option;
-
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Comparator;

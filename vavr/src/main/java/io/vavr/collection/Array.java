@@ -22,7 +22,6 @@ import io.vavr.*;
 import io.vavr.collection.ArrayModule.Combinations;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
-
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;

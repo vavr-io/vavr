@@ -19,11 +19,8 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple;
-import io.vavr.control.Option;
 import io.vavr.Tuple2;
-import org.assertj.core.data.Index;
-import org.junit.jupiter.api.Test;
-
+import io.vavr.control.Option;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +28,7 @@ import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;

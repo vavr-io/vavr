@@ -18,14 +18,13 @@
  */
 package io.vavr;
 
+import io.vavr.collection.List;
 import io.vavr.collection.Queue;
 import io.vavr.collection.Stream;
-import io.vavr.collection.List;
 import io.vavr.control.Option;
-import org.junit.jupiter.api.Test;
-
 import java.util.Arrays;
 import java.util.Collections;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

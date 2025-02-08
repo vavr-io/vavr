@@ -24,7 +24,6 @@ import io.vavr.Tuple3;
 import io.vavr.collection.RedBlackTreeModule.Empty;
 import io.vavr.collection.RedBlackTreeModule.Node;
 import io.vavr.control.Option;
-
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.NoSuchElementException;

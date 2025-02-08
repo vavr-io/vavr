@@ -3,10 +3,9 @@ package io.vavr.issues;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashSet;
 import io.vavr.collection.Set;
+import java.util.Objects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

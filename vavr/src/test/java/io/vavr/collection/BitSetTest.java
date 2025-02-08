@@ -4,11 +4,6 @@ import io.vavr.Function1;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.Value;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.IterableAssert;
-import org.assertj.core.api.ObjectAssert;
-import org.junit.jupiter.api.Test;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,10 +12,14 @@ import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
+import org.junit.jupiter.api.Test;
 
-import static java.util.stream.Collectors.toList;
 import static io.vavr.Serializables.deserialize;
 import static io.vavr.Serializables.serialize;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class BitSetTest extends AbstractSortedSetTest {

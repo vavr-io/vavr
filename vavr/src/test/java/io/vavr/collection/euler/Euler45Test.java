@@ -18,8 +18,8 @@
  */
 package io.vavr.collection.euler;
 
-import io.vavr.collection.Stream;
 import io.vavr.collection.List;
+import io.vavr.collection.Stream;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 

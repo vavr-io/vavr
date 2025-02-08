@@ -2,9 +2,6 @@ package io.vavr.collection;
 
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Spliterator;
@@ -12,6 +9,8 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LinkedHashMapTest extends AbstractMapTest {
 

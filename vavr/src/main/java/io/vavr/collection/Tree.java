@@ -25,14 +25,13 @@ import io.vavr.Tuple3;
 import io.vavr.collection.List.Nil;
 import io.vavr.collection.Tree.*;
 import io.vavr.control.Option;
-
 import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static io.vavr.collection.Tree.Order.PRE_ORDER;
 import static io.vavr.collection.Tree.*;
+import static io.vavr.collection.Tree.Order.PRE_ORDER;
 
 /**
  * A general Tree interface.

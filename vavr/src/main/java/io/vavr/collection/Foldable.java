@@ -19,7 +19,6 @@
 package io.vavr.collection;
 
 import io.vavr.control.Option;
-
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiFunction;

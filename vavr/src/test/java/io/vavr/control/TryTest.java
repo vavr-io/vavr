@@ -25,9 +25,6 @@ import io.vavr.PartialFunction;
 import io.vavr.Serializables;
 import io.vavr.Value;
 import io.vavr.collection.Seq;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.io.IOException;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -44,6 +41,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;

@@ -22,12 +22,6 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.control.Option;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.IterableAssert;
-import org.assertj.core.api.ObjectAssert;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -39,6 +33,11 @@ import java.util.concurrent.Executors;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.collection.Iterator.*;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

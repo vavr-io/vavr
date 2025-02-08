@@ -18,20 +18,19 @@
  */
 package io.vavr.collection;
 
-import io.vavr.Value;
 import io.vavr.Tuple2;
+import io.vavr.Value;
 import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class ArrayTest extends AbstractIndexedSeqTest {
 

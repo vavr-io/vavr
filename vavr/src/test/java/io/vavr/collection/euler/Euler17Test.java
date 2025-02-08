@@ -19,10 +19,10 @@
 package io.vavr.collection.euler;
 
 import io.vavr.Tuple;
-import io.vavr.collection.Map;
-import io.vavr.collection.Seq;
 import io.vavr.Tuple2;
 import io.vavr.collection.List;
+import io.vavr.collection.Map;
+import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import org.junit.jupiter.api.Test;
 

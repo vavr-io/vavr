@@ -23,7 +23,6 @@ import io.vavr.collection.Stream.Cons;
 import io.vavr.collection.Stream.Empty;
 import io.vavr.collection.StreamModule.*;
 import io.vavr.control.Option;
-
 import java.io.*;
 import java.util.*;
 import java.util.function.*;

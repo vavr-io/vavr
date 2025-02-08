@@ -20,11 +20,10 @@ package io.vavr.collection.euler;
 
 import io.vavr.Function1;
 import io.vavr.collection.CharSeq;
-import io.vavr.collection.Stream;
 import io.vavr.collection.List;
-import org.junit.jupiter.api.Test;
-
+import io.vavr.collection.Stream;
 import java.util.function.Predicate;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

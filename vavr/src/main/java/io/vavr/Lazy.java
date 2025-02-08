@@ -22,7 +22,6 @@ import io.vavr.collection.Iterator;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Option;
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;

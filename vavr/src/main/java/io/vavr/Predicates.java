@@ -20,7 +20,6 @@ package io.vavr;
 
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
-
 import java.util.Objects;
 import java.util.function.Predicate;
 

@@ -23,19 +23,18 @@ import io.vavr.collection.IteratorModule.ConcatIterator;
 import io.vavr.collection.IteratorModule.DistinctIterator;
 import io.vavr.collection.IteratorModule.GroupedIterator;
 import io.vavr.control.Option;
-
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 
-import static java.lang.Double.NEGATIVE_INFINITY;
-import static java.lang.Double.POSITIVE_INFINITY;
-import static java.math.RoundingMode.HALF_UP;
 import static io.vavr.collection.IteratorModule.BigDecimalHelper.areEqual;
 import static io.vavr.collection.IteratorModule.BigDecimalHelper.asDecimal;
 import static io.vavr.collection.IteratorModule.CachedIterator;
 import static io.vavr.collection.IteratorModule.EmptyIterator;
+import static java.lang.Double.NEGATIVE_INFINITY;
+import static java.lang.Double.POSITIVE_INFINITY;
+import static java.math.RoundingMode.HALF_UP;
 
 /**
  * {@code io.vavr.collection.Iterator} is a compositional replacement for {@code java.util.Iterator}

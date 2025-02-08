@@ -19,11 +19,10 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple2;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.Spliterator;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractSetTest extends AbstractTraversableRangeTest {
 
