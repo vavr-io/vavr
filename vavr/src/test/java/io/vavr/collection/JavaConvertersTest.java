@@ -18,6 +18,9 @@
  */
 package io.vavr.collection;
 
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
@@ -26,10 +29,6 @@ import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.UnaryOperator;
 
 import static io.vavr.collection.JavaConvertersTest.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConvertersTest.ChangePolicy.MUTABLE;

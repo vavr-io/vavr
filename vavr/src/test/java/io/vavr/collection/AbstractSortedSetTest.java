@@ -18,12 +18,11 @@
  */
 package io.vavr.collection;
 
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.Spliterator;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.TestComparators.toStringComparator;
 import static java.util.Comparator.naturalOrder;

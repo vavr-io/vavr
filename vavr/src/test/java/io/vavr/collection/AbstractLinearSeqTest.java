@@ -18,9 +18,8 @@
  */
 package io.vavr.collection;
 
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
 
 public abstract class AbstractLinearSeqTest extends AbstractSeqTest {
 

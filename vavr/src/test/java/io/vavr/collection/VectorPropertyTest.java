@@ -20,13 +20,12 @@ package io.vavr.collection;
 
 import io.vavr.Function2;
 import io.vavr.Tuple2;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Test;
-
 import java.util.List;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.Tuple;
 import static org.assertj.core.api.Assertions.assertThat;

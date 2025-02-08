@@ -18,8 +18,8 @@
  */
 package io.vavr.collection.euler;
 
-import io.vavr.Function1;
 import io.vavr.API;
+import io.vavr.Function1;
 import io.vavr.collection.List;
 import org.junit.jupiter.api.Test;
 

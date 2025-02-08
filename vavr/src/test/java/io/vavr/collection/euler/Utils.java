@@ -22,7 +22,6 @@ import io.vavr.API;
 import io.vavr.Function1;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.Stream;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.math.BigInteger;
@@ -30,7 +29,6 @@ import java.net.URL;
 import java.util.Scanner;
 
 import static io.vavr.API.$;
-import static io.vavr.API.Case;
 
 final class Utils {
 

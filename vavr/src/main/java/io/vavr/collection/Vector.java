@@ -22,13 +22,11 @@ import io.vavr.*;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.collection.VectorModule.Combinations;
 import io.vavr.control.Option;
-
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 
-import static io.vavr.collection.Collections.removeAll;
 import static io.vavr.collection.Collections.withSize;
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;

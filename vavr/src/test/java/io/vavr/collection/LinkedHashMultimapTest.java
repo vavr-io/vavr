@@ -1,8 +1,6 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple2;
-import org.junit.jupiter.api.TestTemplate;
-
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.Map;
@@ -10,6 +8,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.*;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.TestTemplate;
 
 public class LinkedHashMultimapTest extends AbstractMultimapTest {
 

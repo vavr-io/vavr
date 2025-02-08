@@ -19,10 +19,9 @@
 package io.vavr.control;
 
 import io.vavr.*;
-import io.vavr.collection.Seq;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
-
+import io.vavr.collection.Seq;
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;

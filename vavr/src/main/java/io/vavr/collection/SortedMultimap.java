@@ -18,9 +18,8 @@
  */
 package io.vavr.collection;
 
-import io.vavr.control.Option;
 import io.vavr.Tuple2;
-
+import io.vavr.control.Option;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.function.*;

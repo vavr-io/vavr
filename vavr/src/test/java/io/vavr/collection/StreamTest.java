@@ -21,9 +21,6 @@ package io.vavr.collection;
 import io.vavr.*;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -33,6 +30,8 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.collection.Stream.concat;
 import static org.junit.jupiter.api.Assertions.assertThrows;

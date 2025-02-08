@@ -20,12 +20,11 @@ package io.vavr.concurrent;
 
 import io.vavr.*;
 import io.vavr.collection.Iterator;
+import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import io.vavr.collection.List;
-
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.concurrent.*;

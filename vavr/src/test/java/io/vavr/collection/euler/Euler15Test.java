@@ -18,9 +18,8 @@
  */
 package io.vavr.collection.euler;
 
-import org.junit.jupiter.api.Test;
-
 import java.math.BigInteger;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.collection.euler.Utils.factorial;
 import static org.assertj.core.api.Assertions.assertThat;

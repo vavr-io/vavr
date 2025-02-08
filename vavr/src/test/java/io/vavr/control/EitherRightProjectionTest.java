@@ -22,9 +22,8 @@ import io.vavr.API;
 import io.vavr.AbstractValueTest;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.junit.jupiter.api.Test;
-
 import java.util.*;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;

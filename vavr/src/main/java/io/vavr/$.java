@@ -18,14 +18,14 @@
  */
 package io.vavr;
 
+import io.vavr.collection.List;
+import io.vavr.concurrent.Future;
 import io.vavr.control.Either;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import io.vavr.control.Validation;
 import io.vavr.match.annotation.Patterns;
 import io.vavr.match.annotation.Unapply;
-import io.vavr.collection.List;
-import io.vavr.concurrent.Future;
-import io.vavr.control.Option;
 
 /**
  * <strong>INTERNAL TYPE - turned to io.vavr.Patterns by vavr-match annotation processor.</strong>

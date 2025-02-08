@@ -22,8 +22,6 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.Value;
 import io.vavr.control.Option;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -32,6 +30,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

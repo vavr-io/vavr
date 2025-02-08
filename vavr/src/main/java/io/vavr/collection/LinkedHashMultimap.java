@@ -19,7 +19,6 @@
 package io.vavr.collection;
 
 import io.vavr.Tuple2;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;

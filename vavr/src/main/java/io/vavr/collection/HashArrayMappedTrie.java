@@ -22,14 +22,13 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.collection.HashArrayMappedTrieModule.EmptyNode;
 import io.vavr.control.Option;
-
 import java.io.Serializable;
 import java.util.Objects;
 
-import static java.lang.Integer.bitCount;
-import static java.util.Arrays.copyOf;
 import static io.vavr.collection.HashArrayMappedTrieModule.Action.PUT;
 import static io.vavr.collection.HashArrayMappedTrieModule.Action.REMOVE;
+import static java.lang.Integer.bitCount;
+import static java.util.Arrays.copyOf;
 
 /**
  * An immutable <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.

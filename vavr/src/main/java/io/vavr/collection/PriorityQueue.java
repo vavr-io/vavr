@@ -20,7 +20,6 @@ package io.vavr.collection;
 
 import io.vavr.*;
 import io.vavr.collection.PriorityQueueBase.*;
-
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;

@@ -21,13 +21,12 @@ package io.vavr.control;
 import io.vavr.AbstractValueTest;
 import io.vavr.Value;
 import io.vavr.collection.CharSeq;
-import io.vavr.collection.Seq;
 import io.vavr.collection.List;
-import org.junit.jupiter.api.Test;
-
+import io.vavr.collection.Seq;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Spliterator;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

@@ -20,11 +20,6 @@ package io.vavr.collection;
 
 import io.vavr.*;
 import io.vavr.control.Option;
-import org.assertj.core.api.IterableAssert;
-import org.assertj.core.api.ObjectAssert;
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-
 import java.io.InvalidObjectException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -35,6 +30,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.assertj.core.api.IterableAssert;
+import org.assertj.core.api.ObjectAssert;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

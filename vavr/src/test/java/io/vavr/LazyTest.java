@@ -18,14 +18,12 @@
  */
 package io.vavr;
 
-import io.vavr.collection.Seq;
-import io.vavr.control.Try;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
 import io.vavr.control.Option;
-import org.junit.jupiter.api.Test;
-
+import io.vavr.control.Try;
 import java.io.Serializable;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -35,9 +33,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import org.junit.jupiter.api.Test;
 
-import static java.util.concurrent.CompletableFuture.runAsync;
 import static io.vavr.collection.Iterator.range;
+import static java.util.concurrent.CompletableFuture.runAsync;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LazyTest extends AbstractValueTest {

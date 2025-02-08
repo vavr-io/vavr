@@ -19,13 +19,12 @@
 package io.vavr;
 
 import io.vavr.collection.List;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.function.Predicate;
+import org.junit.jupiter.api.Test;
 
-import static io.vavr.API.$;
 import static io.vavr.API.*;
+import static io.vavr.API.$;
 import static io.vavr.Predicates.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;

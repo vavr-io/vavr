@@ -21,7 +21,6 @@ package io.vavr.concurrent;
 import io.vavr.collection.Queue;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-
 import java.util.Objects;
 import java.util.concurrent.*;
 import java.util.concurrent.locks.Lock;

@@ -20,10 +20,9 @@ package io.vavr.collection;
 
 import io.vavr.Function1;
 import io.vavr.PartialFunction;
-import io.vavr.Tuple3;
 import io.vavr.Tuple2;
+import io.vavr.Tuple3;
 import io.vavr.control.Option;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;

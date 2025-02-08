@@ -19,10 +19,9 @@
 package io.vavr.control;
 
 import io.vavr.*;
-import io.vavr.collection.Seq;
 import io.vavr.collection.Iterator;
+import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
@@ -1721,5 +1720,3 @@ interface TryModule {
         }
     }
 }
-
-

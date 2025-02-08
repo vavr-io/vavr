@@ -21,6 +21,12 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.Value;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Spliterator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import org.assertj.core.api.BooleanAssert;
 import org.assertj.core.api.DoubleAssert;
 import org.assertj.core.api.IntegerAssert;
@@ -29,13 +35,6 @@ import org.assertj.core.api.LongAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.StringAssert;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Spliterator;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collector;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 

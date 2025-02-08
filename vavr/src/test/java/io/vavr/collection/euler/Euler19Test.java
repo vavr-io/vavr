@@ -20,11 +20,10 @@ package io.vavr.collection.euler;
 
 import io.vavr.Tuple;
 import io.vavr.collection.List;
-import org.junit.jupiter.api.Test;
-
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.Month;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.For;
 import static org.assertj.core.api.Assertions.assertThat;

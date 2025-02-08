@@ -23,7 +23,6 @@ import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.Value;
 import io.vavr.control.Option;
-
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;

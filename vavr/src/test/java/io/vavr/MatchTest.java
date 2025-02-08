@@ -26,14 +26,13 @@ import io.vavr.control.Option.Some;
 import io.vavr.control.Validation;
 import io.vavr.match.annotation.Patterns;
 import io.vavr.match.annotation.Unapply;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.time.Year;
 import java.util.function.Predicate;
+import org.junit.jupiter.api.Test;
 
-import static io.vavr.API.$;
 import static io.vavr.API.*;
+import static io.vavr.API.$;
 import static io.vavr.MatchTest_DeveloperPatterns.$Developer;
 import static io.vavr.Patterns.*;
 import static io.vavr.Predicates.*;

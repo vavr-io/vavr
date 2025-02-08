@@ -24,7 +24,6 @@ import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 import org.junit.jupiter.api.Test;
 
-import static io.vavr.API.For;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**

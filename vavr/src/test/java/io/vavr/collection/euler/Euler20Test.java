@@ -20,9 +20,8 @@ package io.vavr.collection.euler;
 
 import io.vavr.collection.CharSeq;
 import io.vavr.collection.Stream;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigInteger;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

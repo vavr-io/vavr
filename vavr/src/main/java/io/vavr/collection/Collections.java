@@ -23,7 +23,6 @@ import io.vavr.Tuple2;
 import io.vavr.collection.JavaConverters.ChangePolicy;
 import io.vavr.collection.JavaConverters.ListView;
 import io.vavr.control.Option;
-
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;

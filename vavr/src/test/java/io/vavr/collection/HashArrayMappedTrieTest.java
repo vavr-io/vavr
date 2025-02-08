@@ -21,10 +21,9 @@ package io.vavr.collection;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
-import org.junit.jupiter.api.Test;
-
 import java.util.Random;
 import java.util.function.Function;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

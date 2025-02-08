@@ -18,11 +18,10 @@
  */
 package io.vavr.collection.euler;
 
-import io.vavr.collection.Stream;
 import io.vavr.collection.List;
-import org.junit.jupiter.api.Test;
-
+import io.vavr.collection.Stream;
 import java.math.BigInteger;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

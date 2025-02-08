@@ -18,12 +18,12 @@
  */
 package io.vavr.collection.euler;
 
-import io.vavr.collection.Stream;
 import io.vavr.collection.List;
+import io.vavr.collection.Stream;
 import org.junit.jupiter.api.Test;
 
-import static java.util.Comparator.reverseOrder;
 import static io.vavr.collection.euler.Utils.isPrime;
+import static java.util.Comparator.reverseOrder;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler41Test {

@@ -1,8 +1,7 @@
 package io.vavr.collection;
 
-import org.junit.jupiter.api.Test;
-
 import java.util.Comparator;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.collection.Comparators.naturalComparator;
 import static org.assertj.core.api.Assertions.assertThat;

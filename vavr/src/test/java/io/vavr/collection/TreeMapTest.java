@@ -21,8 +21,6 @@ package io.vavr.collection;
 import io.vavr.Serializables;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
-import org.junit.jupiter.api.Test;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,11 +30,12 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.Test;
 
-import static java.util.Arrays.asList;
-import static java.util.Comparator.nullsFirst;
 import static io.vavr.API.List;
 import static io.vavr.API.Tuple;
+import static java.util.Arrays.asList;
+import static java.util.Comparator.nullsFirst;
 
 public class TreeMapTest extends AbstractSortedMapTest {
 

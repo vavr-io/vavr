@@ -19,11 +19,10 @@
 package io.vavr.collection.euler;
 
 import io.vavr.Tuple;
-import io.vavr.collection.Stream;
 import io.vavr.Tuple2;
-import org.junit.jupiter.api.Test;
-
+import io.vavr.collection.Stream;
 import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

@@ -23,8 +23,6 @@ import io.vavr.PartialFunction;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
-import org.junit.jupiter.api.TestTemplate;
-
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -42,6 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.junit.jupiter.api.TestTemplate;
 
 import static io.vavr.API.$;
 import static io.vavr.API.Case;

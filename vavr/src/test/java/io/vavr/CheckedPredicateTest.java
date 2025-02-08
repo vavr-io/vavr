@@ -18,10 +18,9 @@
  */
 package io.vavr;
 
+import java.util.function.Predicate;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-
-import java.util.function.Predicate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

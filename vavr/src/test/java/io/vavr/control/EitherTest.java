@@ -19,14 +19,13 @@
 package io.vavr.control;
 
 import io.vavr.AbstractValueTest;
-import io.vavr.collection.Seq;
 import io.vavr.collection.List;
+import io.vavr.collection.Seq;
 import io.vavr.collection.Vector;
-import org.junit.jupiter.api.Test;
-
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Spliterator;
+import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.Left;
 import static io.vavr.API.Right;

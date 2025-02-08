@@ -26,7 +26,6 @@ import io.vavr.collection.List.Nil;
 import io.vavr.collection.ListModule.Combinations;
 import io.vavr.collection.ListModule.SplitAt;
 import io.vavr.control.Option;
-
 import java.io.*;
 import java.util.*;
 import java.util.function.*;

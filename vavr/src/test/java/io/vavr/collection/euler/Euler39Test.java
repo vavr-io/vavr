@@ -19,15 +19,15 @@
 package io.vavr.collection.euler;
 
 import io.vavr.Tuple;
-import io.vavr.collection.Map;
 import io.vavr.Tuple2;
 import io.vavr.Tuple3;
 import io.vavr.collection.List;
+import io.vavr.collection.Map;
 import org.junit.jupiter.api.Test;
 
+import static io.vavr.control.Option.some;
 import static java.lang.Math.floor;
 import static java.lang.Math.hypot;
-import static io.vavr.control.Option.some;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class Euler39Test {

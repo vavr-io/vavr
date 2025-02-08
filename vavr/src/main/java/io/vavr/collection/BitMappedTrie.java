@@ -23,11 +23,11 @@ import java.util.NoSuchElementException;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static java.util.function.Function.identity;
 import static io.vavr.collection.ArrayType.obj;
 import static io.vavr.collection.Collections.withSize;
 import static io.vavr.collection.NodeModifier.COPY_NODE;
 import static io.vavr.collection.NodeModifier.IDENTITY;
+import static java.util.function.Function.identity;
 
 /**
  * A `bit-mapped trie` is a very wide and shallow tree (for integer indices the depth will be `≤6`).
