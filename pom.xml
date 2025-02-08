@@ -116,8 +116,8 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                         <configuration>
                             <rules>
                                 <requireMavenVersion>
-                                    <version>3.5.3</version>
-                                    <message>Minimum required Maven version to build vavr is 3.5.3</message>
+                                    <version>3.9.9</version>
+                                    <message>Minimum required Maven version to build vavr is 3.9.9</message>
                                 </requireMavenVersion>
                             </rules>
                         </configuration>
