@@ -9,7 +9,6 @@ Tests & Code coverage:
 
 * Executing benchmark assertions: `mvn clean test -Pbenchmark`
 * Executing benchmarks (long running!): `mvn test -Pbenchmark -pl vavr-benchmark`
-* Executing code coverage report: `mvn -P ci clean test jacoco:report`
 
 We use these goals frequently to keep the dependencies and plugins up-to-date:
 
@@ -302,10 +301,6 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>${maven.surefire.version}</version>
                     <configuration>
-                        <!-- ForkJoinPool parallelism for io.vavr.concurrent.Future.
-	                             Typically this is the number of cores by default.
-	                             In the travis-ci build env this is currently set to 1. -->
-                        <!--<argLine>-Djava.util.concurrent.ForkJoinPool.common.parallelism=1</argLine>-->
                         <parallel>all</parallel>
                         <threadCount>4</threadCount>
                         <reuseForks>true</reuseForks>
@@ -315,38 +310,6 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         </pluginManagement>
     </build>
     <profiles>
-        <!-- A profile for code coverage analysis in ci environments -->
-        <profile>
-            <id>ci</id>
-            <activation>
-                <property>
-                    <name>env.CI</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.jacoco</groupId>
-                        <artifactId>jacoco-maven-plugin</artifactId>
-                        <version>${maven.jacoco.version}</version>
-                        <executions>
-                            <execution>
-                                <goals>
-                                    <goal>prepare-agent</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>report</id>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>report</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
         <profile>
             <id>sonatype-oss-release</id>
             <modules>
