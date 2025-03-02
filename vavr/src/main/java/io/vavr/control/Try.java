@@ -983,6 +983,62 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Returns {@code this}, if this is a {@link Try.Success}, otherwise attempts to recover from any failure
+     * by evaluating the given {@code recoveryAttempt} (via {@link Try#of(CheckedFunction0)}).
+     *
+     * <pre>{@code
+     * // = Success(5)
+     * Try.of(() -> 5)
+     *    .recoverAllAndTry(() -> 10);
+     *
+     * // = Success(10)
+     * Try.of(() -> 1/0)
+     *    .recoverAllAndTry(() -> 10);
+     * }</pre>
+     *
+     * @param recoveryAttempt A checked function that provides a fallback in case of a failure
+     * @return a {@code Try} that is either this {@code Success} or a new {@code Try} evaluated from {@code recoveryAttempt}
+     * @throws NullPointerException if {@code recoveryAttempt} is null
+     */
+    default Try<T> recoverAllAndTry(CheckedFunction0<? extends T> recoveryAttempt) {
+        Objects.requireNonNull(recoveryAttempt, "recoveryAttempt is null");
+        return isFailure() ? of(recoveryAttempt) : this;
+    }
+
+    /**
+     * Returns {@code this}, if this is a {@link Try.Success}, otherwise attempts to recover from failure when the
+     * underlying cause is assignable to the specified {@code exceptionType}, by evaluating the given
+     * {@code recoveryAttempt} (via {@link Try#of(CheckedFunction0)}).
+     *
+     * <pre>{@code
+     * // = Success(5)
+     * Try.of(() -> 5)
+     *    .recoverAndTry(ArithmeticException.class, () -> 10);
+     *
+     * // = Success(10)
+     * Try.of(() -> 1/0)
+     *    .recoverAndTry(ArithmeticException.class, () -> 10);
+     *
+     * // = Failure(java.lang.ArithmeticException: / by zero)
+     * Try.of(() -> 1/0)
+     *    .recoverAndTry(NullPointerException.class, () -> 10);
+     * }</pre>
+     *
+     * @param <X>            The type of the exception that may be recovered
+     * @param exceptionType  The specific exception type that should trigger the recovery
+     * @param recoveryAttempt A checked function that provides a fallback in case of a matching failure
+     * @return a {@code Try} that is either this {@code Success}, or a new {@code Try} evaluated from {@code recoveryAttempt}
+     * @throws NullPointerException if {@code exceptionType} or {@code recoveryAttempt} is null
+     */
+    default <X extends Throwable> Try<T> recoverAndTry(Class<X> exceptionType, CheckedFunction0<? extends T> recoveryAttempt) {
+        Objects.requireNonNull(exceptionType, "exceptionType is null");
+        Objects.requireNonNull(recoveryAttempt, "recoveryAttempt is null");
+        return isFailure() && exceptionType.isAssignableFrom(getCause().getClass())
+                ? of(recoveryAttempt)
+                : this;
+    }
+
+    /**
      * Converts this {@code Try} to an {@link Either}.
      *
      * @return A new {@code Either}
