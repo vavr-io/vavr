@@ -33,7 +33,7 @@ import static java.util.Arrays.copyOf;
 import static java.util.Arrays.sort;
 
 /**
- * Array is a Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
+ * Array is an immutable Traversable wrapper for {@code Object[]} containing elements of type {@code T}.
  *
  * @param <T> Component type
  * @author Ruslan Sennov, Daniel Dietrich
@@ -120,8 +120,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     /**
      * Creates an Array of the given elements.
      * <p>
-     * The resulting Array has the same iteration order as the given iterable of elements
-     * if the iteration order of the elements is stable.
+     * If the iteration order of the given elements is stable, the resulting Array
+     * will maintain that same order.
      *
      * @param <T>      Component type of the Array.
      * @param elements An Iterable of elements.
@@ -654,7 +654,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     public <R> Array<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
-    
+
     @Override
     public boolean hasDefiniteSize() {
         return true;

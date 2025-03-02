@@ -30,11 +30,13 @@ import java.util.function.*;
 import static io.vavr.API.Tuple;
 
 /**
- * An {@link Multimap} implementation (not intended to be public).
+ * An abstract base implementation of the {@link Multimap} interface that provides
+ * common functionality for concrete Multimap implementations. This class is not
+ * intended to be public and serves as a foundation for specialized Multimap types.
  *
  * @param <K> Key type
  * @param <V> Value type
- * @param <M> Multimap type
+ * @param <M> Concrete Multimap type extending this class
  * @author Ruslan Sennov
  */
 abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
@@ -45,18 +47,57 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     protected final SerializableSupplier<Traversable<?>> emptyContainer;
     private final ContainerType containerType;
 
+    /**
+     * Creates a new AbstractMultimap with the specified backing map, container type, and empty container supplier.
+     *
+     * @param back           The backing map that stores the key-value pairs
+     * @param containerType  The type of container used to store multiple values for a key
+     * @param emptyContainer A supplier that creates empty containers for new key entries
+     */
     AbstractMultimap(Map<K, Traversable<V>> back, ContainerType containerType, SerializableSupplier<Traversable<?>> emptyContainer) {
         this.back = back;
         this.containerType = containerType;
         this.emptyContainer = emptyContainer;
     }
 
+    /**
+     * Returns an empty Map instance specific to the implementing class.
+     *
+     * @param <K2> Key type of the empty map
+     * @param <V2> Value type of the empty map
+     * @return An empty Map instance
+     */
     protected abstract <K2, V2> Map<K2, V2> emptyMapSupplier();
 
+    /**
+     * Returns an empty Multimap instance specific to the implementing class.
+     *
+     * @param <K2> Key type of the empty multimap
+     * @param <V2> Value type of the empty multimap
+     * @return An empty Multimap instance
+     */
     protected abstract <K2, V2> Multimap<K2, V2> emptyInstance();
 
+    /**
+     * Creates a new Multimap instance from the given backing map.
+     *
+     * @param <K2> Key type of the new multimap
+     * @param <V2> Value type of the new multimap
+     * @param back The backing map to create the multimap from
+     * @return A new Multimap instance containing the entries from the backing map
+     */
     protected abstract <K2, V2> Multimap<K2, V2> createFromMap(Map<K2, Traversable<V2>> back);
 
+    /**
+     * Creates a new Multimap from the given entries by grouping values by their keys.
+     * For each key, a new container is created using the emptyContainer supplier,
+     * and values are added using the containerType's add operation.
+     *
+     * @param <K2>    Key type of the new multimap
+     * @param <V2>    Value type of the new multimap
+     * @param entries The entries to create the multimap from
+     * @return A new Multimap containing all the entries with values grouped by keys
+     */
     @SuppressWarnings("unchecked")
     private <K2, V2> Multimap<K2, V2> createFromEntries(Iterable<? extends Tuple2<? extends K2, ? extends V2>> entries) {
         Map<K2, Traversable<V2>> back = emptyMapSupplier();

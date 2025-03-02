@@ -635,7 +635,7 @@ public interface Try<T> extends Value<T>, Serializable {
             }
         }
     }
-    
+
     /**
      * Consumes the cause if this is a {@link Try.Failure}.
      *
@@ -820,9 +820,10 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Returns {@code this}, if this is a {@code Success} or this is a {@code Failure} and the cause is not assignable
-     * from {@code cause.getClass()}. Otherwise tries to recover the exception of the failure with {@code f} <b>which returns Try</b>.
-     * If {@link Try#isFailure()} returned by {@code f} function is <code>true</code> it means that recovery cannot take place due to some circumstances.
+     * Returns {@code this} if this is a {@code Success}, or if this is a {@code Failure} and the cause is not assignable
+     * from {@code exceptionType}. Otherwise, attempts to recover from the failure using the provided recovery function {@code f}.
+     * The recovery function returns a new {@code Try} instance. If the returned {@code Try} is a {@link Try#isFailure()},
+     * it indicates that the recovery was not successful.
      *
      * <pre>{@code
      * // = Success(13)
@@ -839,8 +840,8 @@ public interface Try<T> extends Value<T>, Serializable {
      * 
      * @param <X>           Exception type
      * @param exceptionType The specific exception type that should be handled
-     * @param f             A recovery function taking an exception of type {@code X} and returning Try as a result of recovery.
-     *                      If Try is {@link Try#isSuccess()} then recovery ends up successfully. Otherwise the function was not able to recover.
+     * @param f             A recovery function that takes an exception of type {@code X} and returns a new Try instance.
+     *                      The recovery is considered successful if the returned Try is a {@link Try#isSuccess()}.
      * @return a {@code Try}
      * @throws NullPointerException if {@code exceptionType} or {@code f} is null
      */
@@ -887,7 +888,7 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     @GwtIncompatible
     default <X extends Throwable> Try<T> recoverWith(Class<X> exceptionType,  Try<? extends T> recovered){
-        Objects.requireNonNull(exceptionType, "exeptionType is null");
+        Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(recovered, "recovered is null");
         return (isFailure() && exceptionType.isAssignableFrom(getCause().getClass()))
                 ? narrow(recovered)
@@ -915,7 +916,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param exceptionType The specific exception type that should be handled
      * @param value         A value that is used in case of a recovery
      * @return a {@code Try}
-     * @throws NullPointerException if {@code exception} is null
+     * @throws NullPointerException if {@code exceptionType} is null
      */
     @GwtIncompatible
     default <X extends Throwable> Try<T> recover(Class<X> exceptionType, T value) {
