@@ -66,7 +66,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <maven.clean.version>3.4.1</maven.clean.version>
         <maven.install.version>3.1.4</maven.install.version>
         <maven.compiler.version>3.14.0</maven.compiler.version>
-        <maven.deploy.version>3.0.0-M1</maven.deploy.version>
+        <maven.deploy.version>4.0.0-beta-2</maven.deploy.version>
         <maven.gpg.version>3.2.7</maven.gpg.version>
         <maven.jacoco.version>0.8.12</maven.jacoco.version>
         <maven.jar.version>3.4.2</maven.jar.version>
