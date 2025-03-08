@@ -89,6 +89,7 @@ import java.util.function.*;
  * <li>{@link #combinations()}</li>
  * <li>{@link #combinations(int)}</li>
  * <li>{@link #intersperse(Object)}</li>
+ * <li>{@link #leftJoin(Traversable, Function, Function)}</li>
  * <li>{@link #padTo(int, Object)}</li>
  * <li>{@link #permutations()}</li>
  * <li>{@link #reverse()}</li>
@@ -628,6 +629,33 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      */
     default Option<Integer> lastIndexWhereOption(Predicate<? super T> predicate, int end) {
         return Collections.indexOption(lastIndexWhere(predicate, end));
+    }
+
+    /**
+     * Perform a left join operation, which returns all the elements of {@code this} matched with
+     * an {@link Option}al element from the {@code right} {@link Traversable}. Matching is done
+     * using keys that are extracted from each element with the given functions. If the keys are
+     * not unique, only the first element from {@code right} will be considered.
+     *
+     * @param right       The {@link Traversable} to join with.
+     * @param getKeyLeft  Mapper from T to the key used for matching.
+     * @param getKeyRight Mapper from U to the key used for matching.
+     * @param <K>         The key type.
+     * @param <U>         The type of the right {@link Traversable}.
+     * @return A {@link Seq} of {@link Tuple2}s with T on the left and an {@link Option} element
+     * on the right.
+     */
+    default <K, U> Seq<Tuple2<T, Option<U>>> leftJoin(
+        Traversable<U> right,
+        Function<? super T, ? extends K> getKeyLeft,
+        Function<? super U, ? extends K> getKeyRight) {
+        Traversable<Tuple2<K, U>> rightWithKey =
+            right.map(u -> Tuple.of(getKeyRight.apply(u), u));
+        return this.map(t -> Tuple.of(getKeyLeft.apply(t), t))
+            .map(lt -> Tuple.of(
+                lt._2,
+                rightWithKey.find(rt -> lt._1.equals(rt._1)).map(t1 -> t1._2)
+            ));
     }
 
     /**
