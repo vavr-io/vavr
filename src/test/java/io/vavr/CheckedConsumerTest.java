@@ -27,6 +27,8 @@
 package io.vavr;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,98 +40,124 @@ import static org.assertj.core.api.Assertions.fail;
 
 public class CheckedConsumerTest {
 
-    // -- of
+    @Nested
+    @DisplayName("of")
+    class OfTest {
 
-    @Test
-    public void shouldCreateCheckedConsumerUsingLambda() {
-        final CheckedConsumer<Object> consumer = CheckedConsumer.of(obj -> {});
-        assertThat(consumer).isNotNull();
-    }
+        @Test
+        public void shouldCreateCheckedConsumerUsingLambda() {
+            final CheckedConsumer<Object> consumer = CheckedConsumer.of(obj -> {
+            });
+            assertThat(consumer).isNotNull();
+        }
 
-    @Test
-    public void shouldCreateCheckedConsumerUsingMethodReference() {
-        final CheckedConsumer<Object> consumer = CheckedConsumer.of(CheckedConsumerTest::accept);
-        assertThat(consumer).isNotNull();
+        @Test
+        public void shouldCreateCheckedConsumerUsingMethodReference() {
+            final CheckedConsumer<Object> consumer = CheckedConsumer.of(CheckedConsumerTest::accept);
+            assertThat(consumer).isNotNull();
+        }
+        
     }
 
     private static void accept(Object obj) {
     }
 
-    // -- accept
+    @Nested
+    @DisplayName("accept")
+    class AcceptTest {
 
-    @Test
-    public void shouldApplyNonThrowingCheckedConsumer() {
-        final CheckedConsumer<?> f = t -> {};
-        try {
-            f.accept(null);
-        } catch(Throwable x) {
-            fail("should not have thrown", x);
+        @Test
+        public void shouldApplyNonThrowingCheckedConsumer() {
+            final CheckedConsumer<?> f = t -> {
+            };
+            try {
+                f.accept(null);
+            } catch (Throwable x) {
+                fail("should not have thrown", x);
+            }
         }
-    }
 
-    @Test
-    public void shouldApplyThrowingCheckedConsumer() {
-        final CheckedConsumer<?> f = t -> { throw new Error(); };
-        try {
-            f.accept(null);
-            fail("should have thrown");
-        } catch(Throwable x) {
-            // ok
+        @Test
+        public void shouldApplyThrowingCheckedConsumer() {
+            final CheckedConsumer<?> f = t -> {
+                throw new Error();
+            };
+            try {
+                f.accept(null);
+                fail("should have thrown");
+            } catch (Throwable x) {
+                // ok
+            }
         }
+
     }
 
-    // -- andThen
+    @Nested
+    @DisplayName("andThen")
+    class AndThenTest {
 
-    @Test
-    public void shouldThrowWhenComposingCheckedConsumerUsingAndThenWithNullParameter() {
-        final CheckedConsumer<?> f = t -> {};
-        assertThatThrownBy(() -> f.andThen(null)).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    public void shouldComposeCheckedConsumerUsingAndThenWhenFirstOneSucceeds() {
-        final AtomicBoolean result = new AtomicBoolean(false);
-        final CheckedConsumer<?> f = t -> {};
-        try {
-            f.andThen(ignored -> result.set(true)).accept(null);
-            assertThat(result.get()).isTrue();
-        } catch(Throwable x) {
-            fail("should not have thrown", x);
+        @Test
+        public void shouldThrowWhenComposingCheckedConsumerUsingAndThenWithNullParameter() {
+            final CheckedConsumer<?> f = t -> {
+            };
+            assertThatThrownBy(() -> f.andThen(null)).isInstanceOf(NullPointerException.class);
         }
-    }
 
-    @Test
-    public void shouldComposeCheckedConsumerUsingAndThenWhenFirstOneFails() {
-        final AtomicBoolean result = new AtomicBoolean(false);
-        final CheckedConsumer<?> f = t -> { throw new Error(); };
-        try {
-            f.andThen(ignored -> result.set(true)).accept(null);
-            fail("should have thrown");
-        } catch(Throwable x) {
-            assertThat(result.get()).isFalse();
+        @Test
+        public void shouldComposeCheckedConsumerUsingAndThenWhenFirstOneSucceeds() {
+            final AtomicBoolean result = new AtomicBoolean(false);
+            final CheckedConsumer<?> f = t -> {
+            };
+            try {
+                f.andThen(ignored -> result.set(true)).accept(null);
+                assertThat(result.get()).isTrue();
+            } catch (Throwable x) {
+                fail("should not have thrown", x);
+            }
         }
-    }
 
-    // -- unchecked
-
-    @Test
-    public void shouldApplyAnUncheckedFunctionThatDoesNotThrow() {
-        final Consumer<Object> consumer = CheckedConsumer.of(obj -> {}).unchecked();
-        try {
-            consumer.accept(null);
-        } catch(Throwable x) {
-            Assertions.fail("Did not expect an exception but received: " + x.getMessage());
+        @Test
+        public void shouldComposeCheckedConsumerUsingAndThenWhenFirstOneFails() {
+            final AtomicBoolean result = new AtomicBoolean(false);
+            final CheckedConsumer<?> f = t -> {
+                throw new Error();
+            };
+            try {
+                f.andThen(ignored -> result.set(true)).accept(null);
+                fail("should have thrown");
+            } catch (Throwable x) {
+                assertThat(result.get()).isFalse();
+            }
         }
+
     }
 
-    @Test
-    public void shouldApplyAnUncheckedFunctionThatThrows() {
-        final Consumer<Object> consumer = CheckedConsumer.of(obj -> { throw new Error(); }).unchecked();
-        try {
-            consumer.accept(null);
-            Assertions.fail("Did expect an exception.");
-        } catch(Error x) {
-            // ok!
+    @Nested
+    @DisplayName("unchecked")
+    class UncheckedTest {
+
+        @Test
+        public void shouldApplyAnUncheckedFunctionThatDoesNotThrow() {
+            final Consumer<Object> consumer = CheckedConsumer.of(obj -> {
+            }).unchecked();
+            try {
+                consumer.accept(null);
+            } catch (Throwable x) {
+                Assertions.fail("Did not expect an exception but received: " + x.getMessage());
+            }
+        }
+
+        @Test
+        public void shouldApplyAnUncheckedFunctionThatThrows() {
+            final Consumer<Object> consumer = CheckedConsumer.of(obj -> {
+                throw new Error();
+            }).unchecked();
+            try {
+                consumer.accept(null);
+                Assertions.fail("Did expect an exception.");
+            } catch (Error x) {
+                // ok!
+            }
         }
     }
 }
