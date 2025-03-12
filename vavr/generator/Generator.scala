@@ -3032,8 +3032,6 @@ def generateTestClasses(): Unit = {
 
             }
 
-            // -- Match patterns
-
             @Nested
             class MatchPatternTests {
 
