@@ -40,6 +40,7 @@ import io.vavr.control.Try;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.Executors;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @SuppressWarnings("deprecation")
@@ -50,47 +51,50 @@ public class APITest {
         AssertionsExtensions.assertThat(API.class).isNotInstantiable();
     }
 
-    // -- shortcuts
+    @Nested
+    class Shortcuts {
 
-    @Test
-    public void shouldCompileTODOAndThrowDefaultMessageAtRuntime() {
-        try {
-            final String s = TODO();
-            fail("TODO() should throw. s: " + s);
-        } catch(NotImplementedError err) {
-            assertThat(err.getMessage()).isEqualTo("An implementation is missing.");
+        @Test
+        public void shouldCompileTODOAndThrowDefaultMessageAtRuntime() {
+            try {
+                final String s = TODO();
+                fail("TODO() should throw. s: " + s);
+            } catch(NotImplementedError err) {
+                assertThat(err.getMessage()).isEqualTo("An implementation is missing.");
+            }
         }
-    }
 
-    @Test
-    public void shouldCompileTODOAndThrowGivenMessageAtRuntime() {
-        final String msg = "Don't try this in production!";
-        try {
-            final String s = TODO(msg);
-            fail("TODO(String) should throw. s: " + s);
-        } catch(NotImplementedError err) {
-            assertThat(err.getMessage()).isEqualTo(msg);
+        @Test
+        public void shouldCompileTODOAndThrowGivenMessageAtRuntime() {
+            final String msg = "Don't try this in production!";
+            try {
+                final String s = TODO(msg);
+                fail("TODO(String) should throw. s: " + s);
+            } catch(NotImplementedError err) {
+                assertThat(err.getMessage()).isEqualTo(msg);
+            }
         }
-    }
 
-    @Test
-    public void shouldCallprint_Object() {
-        assertThat(captureStdOut(()->print("ok"))).isEqualTo("ok");
-    }
+        @Test
+        public void shouldCallprint_Object() {
+            assertThat(captureStdOut(()->print("ok"))).isEqualTo("ok");
+        }
 
-    @Test
-    public void shouldCallprintf() {
-        assertThat(captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
-    }
+        @Test
+        public void shouldCallprintf() {
+            assertThat(captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
+        }
 
-    @Test
-    public void shouldCallprintln_Object() {
-        assertThat(captureStdOut(()->println("ok"))).isEqualTo("ok\n");
-    }
+        @Test
+        public void shouldCallprintln_Object() {
+            assertThat(captureStdOut(()->println("ok"))).isEqualTo("ok\n");
+        }
 
-    @Test
-    public void shouldCallprintln() {
-        assertThat(captureStdOut(()->println())).isEqualTo("\n");
+        @Test
+        public void shouldCallprintln() {
+            assertThat(captureStdOut(()->println())).isEqualTo("\n");
+        }
+
     }
 
     //

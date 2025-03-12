@@ -2620,6 +2620,7 @@ def generateTestClasses(): Unit = {
     genVavrFile("io.vavr", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+      val nested = im.getType("org.junit.jupiter.api.Nested")
       val test = im.getType("org.junit.jupiter.api.Test")
       val assertThrows = im.getStatic("org.junit.jupiter.api.Assertions.assertThrows")
 
@@ -2892,9 +2893,12 @@ def generateTestClasses(): Unit = {
                 $AssertionsExtensions.assertThat($API.class).isNotInstantiable();
             }
 
-            // -- shortcuts
+            @Nested
+            class Shortcuts {
 
-            ${genShortcutsTests(im, packageName, className)}
+                ${genShortcutsTests(im, packageName, className)}
+
+            }
 
             //
             // Alias should return not null.
