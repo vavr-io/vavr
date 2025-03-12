@@ -462,7 +462,7 @@ public class BitSetTest extends AbstractSortedSetTest {
     @Test
     public void shouldBehaveExactlyLikeAnotherBitSet() {
         for (int i = 0; i < 10; i++) {
-            final Random random = getRandom(123456789);
+            final Random random = new Random();
 
             final java.util.BitSet mutableBitSet = new java.util.BitSet();
             BitSet<Integer> functionalBitSet = BitSet.empty();
