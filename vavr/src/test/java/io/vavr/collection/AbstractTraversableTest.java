@@ -46,8 +46,6 @@ import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.List;
 import static io.vavr.API.Map;
-import static io.vavr.OutputTester.captureErrOut;
-import static io.vavr.OutputTester.captureStdOut;
 import static io.vavr.OutputTester.failingPrintStream;
 import static io.vavr.OutputTester.failingPrintWriter;
 import static io.vavr.OutputTester.withFailingErrOut;

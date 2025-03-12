@@ -42,8 +42,6 @@ import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.StringAssert;
 import org.junit.jupiter.api.Test;
 
-import static io.vavr.OutputTester.captureErrOut;
-import static io.vavr.OutputTester.captureStdOut;
 import static io.vavr.OutputTester.withFailingErrOut;
 import static io.vavr.OutputTester.withFailingStdOut;
 import static java.util.Arrays.asList;

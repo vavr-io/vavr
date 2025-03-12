@@ -1448,8 +1448,6 @@ public class APITest {
 
     }
 
-    // -- Match patterns
-
     @Nested
     class MatchPatternTests {
 
