@@ -153,5 +153,5 @@ public class OutputTester {
     public static void withFailingStdOut(Runnable runnable) {
         Output.OUT.failOnWrite(runnable);
     }
-    
+
 }
