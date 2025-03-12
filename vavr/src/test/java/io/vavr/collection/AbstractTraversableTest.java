@@ -18,10 +18,7 @@
  */
 package io.vavr.collection;
 
-import io.vavr.AbstractValueTest;
-import io.vavr.PartialFunction;
-import io.vavr.Tuple;
-import io.vavr.Tuple2;
+import io.vavr.*;
 import io.vavr.control.Option;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -46,12 +43,8 @@ import static io.vavr.API.$;
 import static io.vavr.API.Case;
 import static io.vavr.API.List;
 import static io.vavr.API.Map;
-import static io.vavr.OutputTester.captureErrOut;
-import static io.vavr.OutputTester.captureStdOut;
 import static io.vavr.OutputTester.failingPrintStream;
 import static io.vavr.OutputTester.failingPrintWriter;
-import static io.vavr.OutputTester.withFailingErrOut;
-import static io.vavr.OutputTester.withFailingStdOut;
 import static java.lang.System.lineSeparator;
 import static java.util.Arrays.asList;
 import static java.util.Comparator.comparingInt;
@@ -2115,32 +2108,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.IMMUTABLE)).isTrue();
     }
 
-    // -- stderr
-
-    @TestTemplate
-    public void shouldWriteToStderr() {
-        assertThat(captureErrOut(() -> of(1, 2, 3).stderr())).isEqualTo("1\n" +
-          "2\n" +
-          "3\n");
-    }
-
-    @TestTemplate
-    public void shouldHandleStderrIOException() {
-        assertThrows(IllegalStateException.class, () -> withFailingErrOut(() -> of(0).stderr()));
-    }
-
-    // -- stdout
-
-    @TestTemplate
-    public void shouldWriteToStdout() {
-        assertThat(captureStdOut(() -> of(1, 2, 3).stdout())).isEqualTo("1\n" +
-          "2\n" +
-          "3\n");
-    }
+    // -- out
 
     @TestTemplate
     public void shouldHandleStdoutIOException() {
-        assertThrows(IllegalStateException.class, () -> withFailingStdOut(() -> of(0).stdout()));
+        assertThrows(IllegalStateException.class, () -> of(0).out(OutputTester.failingPrintStream()));
     }
 
     // -- PrintStream

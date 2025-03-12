@@ -24,10 +24,8 @@ package io.vavr;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import static io.vavr.API.*;
-import static io.vavr.OutputTester.captureStdOut;
 import static io.vavr.Patterns.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import io.vavr.collection.List;
@@ -73,26 +71,6 @@ public class APITest {
             } catch(NotImplementedError err) {
                 assertThat(err.getMessage()).isEqualTo(msg);
             }
-        }
-
-        @Test
-        public void shouldCallprint_Object() {
-            assertThat(captureStdOut(()->print("ok"))).isEqualTo("ok");
-        }
-
-        @Test
-        public void shouldCallprintf() {
-            assertThat(captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
-        }
-
-        @Test
-        public void shouldCallprintln_Object() {
-            assertThat(captureStdOut(()->println("ok"))).isEqualTo("ok\n");
-        }
-
-        @Test
-        public void shouldCallprintln() {
-            assertThat(captureStdOut(()->println())).isEqualTo("\n");
         }
 
     }
@@ -1447,8 +1425,6 @@ public class APITest {
         }
 
     }
-
-    // -- Match patterns
 
     @Nested
     class MatchPatternTests {

@@ -2622,7 +2622,6 @@ def generateTestClasses(): Unit = {
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
       val nested = im.getType("org.junit.jupiter.api.Nested")
       val test = im.getType("org.junit.jupiter.api.Test")
-      val assertThrows = im.getStatic("org.junit.jupiter.api.Assertions.assertThrows")
 
       val API = im.getType("io.vavr.API")
       val AssertionsExtensions = im.getType("io.vavr.AssertionsExtensions")
@@ -2838,7 +2837,6 @@ def generateTestClasses(): Unit = {
       def genShortcutsTests(im: ImportManager, packageName: String, className: String): String = {
 
         val fail = im.getStatic("org.junit.jupiter.api.Assertions.fail")
-        val captureStdOut = im.getStatic("io.vavr.OutputTester.captureStdOut")
 
         xs"""
           @$test
@@ -2860,26 +2858,6 @@ def generateTestClasses(): Unit = {
               } catch(NotImplementedError err) {
                   assertThat(err.getMessage()).isEqualTo(msg);
               }
-          }
-
-          @$test
-          public void shouldCallprint_Object() {
-              assertThat($captureStdOut(()->print("ok"))).isEqualTo("ok");
-          }
-
-          @$test
-          public void shouldCallprintf() {
-              assertThat($captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
-          }
-
-          @$test
-          public void shouldCallprintln_Object() {
-              assertThat($captureStdOut(()->println("ok"))).isEqualTo("ok\\n");
-          }
-
-          @$test
-          public void shouldCallprintln() {
-              assertThat($captureStdOut(()->println())).isEqualTo("\\n");
           }
         """
       }

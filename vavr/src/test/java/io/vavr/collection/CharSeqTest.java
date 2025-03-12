@@ -18,6 +18,7 @@
  */
 package io.vavr.collection;
 
+import io.vavr.OutputTester;
 import io.vavr.Serializables;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -42,10 +43,6 @@ import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.StringAssert;
 import org.junit.jupiter.api.Test;
 
-import static io.vavr.OutputTester.captureErrOut;
-import static io.vavr.OutputTester.captureStdOut;
-import static io.vavr.OutputTester.withFailingErrOut;
-import static io.vavr.OutputTester.withFailingStdOut;
 import static java.util.Arrays.asList;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -1768,32 +1765,11 @@ public class CharSeqTest {
         assertThat(CharSeq.of('a', 'b', 'c').startsWith(CharSeq.of('b', 'd'), 1)).isFalse();
     }
 
-    // -- stderr
-
-    @Test
-    public void shouldWriteToStderr() {
-        assertThat(captureErrOut(() -> CharSeq.of('1', '2', '3').stderr())).isEqualTo("1\n" +
-          "2\n" +
-          "3\n");
-    }
-
-    @Test
-    public void shouldHandleStderrIOException() {
-        assertThrows(IllegalStateException.class, () -> withFailingErrOut(() -> CharSeq.of('0').stderr()));
-    }
-
-    // -- stdout
-
-    @Test
-    public void shouldWriteToStdout() {
-        assertThat(captureStdOut(() -> CharSeq.of('1', '2', '3').stdout())).isEqualTo("1\n" +
-          "2\n" +
-          "3\n");
-    }
+    // -- out
 
     @Test
     public void shouldHandleStdoutIOException() {
-        assertThrows(IllegalStateException.class, () -> withFailingStdOut(() -> CharSeq.of('0').stdout()));
+        assertThrows(IllegalStateException.class, () -> CharSeq.of('0').out(OutputTester.failingPrintStream()));
     }
 
     // -- sum
