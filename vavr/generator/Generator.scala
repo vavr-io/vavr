@@ -2894,7 +2894,7 @@ def generateTestClasses(): Unit = {
             }
 
             @Nested
-            class Shortcuts {
+            class ShortcutTests {
 
                 ${genShortcutsTests(im, packageName, className)}
 
@@ -2906,7 +2906,7 @@ def generateTestClasses(): Unit = {
             //
 
             @Nested
-            class Aliases {
+            class AliasTests {
 
                 ${genAliasesTests(im, packageName, className)}
 
@@ -2977,98 +2977,106 @@ def generateTestClasses(): Unit = {
 
             }
 
-            // -- Match
+            @Nested
+            class MatchTests {
 
-            @$test
-            public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
-                final Match.Case<Object, Integer> _case = Case($$(ignored -> true), ignored -> 1);
-                assertThat(_case.isDefinedAt(null)).isTrue();
-                assertThat(_case.apply(null)).isEqualTo(1);
-            }
-
-            @$test
-            public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
-                assertThat(Case($$(ignored -> false), ignored -> 1).isDefinedAt(null)).isFalse();
-            }
-
-            @$test
-            public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
-                final Match.Case<Object, Integer> _case = Case($$(ignored -> true), 1);
-                assertThat(_case.isDefinedAt(null)).isTrue();
-                assertThat(_case.apply(null)).isEqualTo(1);
-            }
-
-            @$test
-            public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
-                assertThat(Case($$(ignored -> false), 1).isDefinedAt(null)).isFalse();
-            }
-
-            @$test
-            public void shouldPassIssue2401() {
-                final $SeqType<String> empty = $StreamType.empty();
-                try {
-                    Match(empty).of(
-                            Case($$($ListType.empty()), ignored -> "list")
-                    );
-                    fail("expected MatchError");
-                } catch (MatchError err) {
-                    // ok!
+                @$test
+                public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
+                    final Match.Case<Object, Integer> _case = Case($$(ignored -> true), ignored -> 1);
+                    assertThat(_case.isDefinedAt(null)).isTrue();
+                    assertThat(_case.apply(null)).isEqualTo(1);
                 }
-            }
 
-            @$test
-            public void shouldCatchClassCastExceptionWhenPredicateHasDifferentType() {
-                try {
-                    final Object o = "";
-                    Match(o).of(
-                            Case($$((Integer i) -> true), "never")
-                    );
-                    fail("expected MatchError");
-                } catch (MatchError err) {
-                    // ok!
+                @$test
+                public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
+                    assertThat(Case($$(ignored -> false), ignored -> 1).isDefinedAt(null)).isFalse();
                 }
+
+                @$test
+                public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
+                    final Match.Case<Object, Integer> _case = Case($$(ignored -> true), 1);
+                    assertThat(_case.isDefinedAt(null)).isTrue();
+                    assertThat(_case.apply(null)).isEqualTo(1);
+                }
+
+                @$test
+                public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
+                    assertThat(Case($$(ignored -> false), 1).isDefinedAt(null)).isFalse();
+                }
+
+                @$test
+                public void shouldPassIssue2401() {
+                    final $SeqType<String> empty = $StreamType.empty();
+                    try {
+                        Match(empty).of(
+                                Case($$($ListType.empty()), ignored -> "list")
+                        );
+                        fail("expected MatchError");
+                    } catch (MatchError err) {
+                        // ok!
+                    }
+                }
+
+                @$test
+                public void shouldCatchClassCastExceptionWhenPredicateHasDifferentType() {
+                    try {
+                        final Object o = "";
+                        Match(o).of(
+                                Case($$((Integer i) -> true), "never")
+                        );
+                        fail("expected MatchError");
+                    } catch (MatchError err) {
+                        // ok!
+                    }
+                }
+
             }
 
             // -- Match patterns
 
-            static class ClzMatch {}
-            static class ClzMatch1 extends ClzMatch {}
-            static class ClzMatch2 extends ClzMatch {}
+            @Nested
+            class MatchPatternTests {
 
-            ${(1 to N).gen(i => {
+                class ClzMatch {}
+                class ClzMatch1 extends ClzMatch {}
+                class ClzMatch2 extends ClzMatch {}
 
-              im.getStatic("io.vavr.API.*")
-              im.getStatic("io.vavr.Patterns.*")
+                ${(1 to N).gen(i => {
 
-              xs"""
-                @$test
-                public void shouldMatchPattern$i() {
-                    final Tuple$i<${(1 to i).gen(j => s"Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(", ")});
-                    final String func = Match(tuple).of(
-                            Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "fail"),
-                            Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "okFunc")
-                    );
-                    assertThat(func).isEqualTo("okFunc");
-                    final String supp = Match(tuple).of(
-                            Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), () -> "fail"),
-                            Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), () -> "okSupp")
-                    );
-                    assertThat(supp).isEqualTo("okSupp");
-                    final String val = Match(tuple).of(
-                            Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), "fail"),
-                            Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), "okVal")
-                    );
-                    assertThat(val).isEqualTo("okVal");
+                  im.getStatic("io.vavr.API.*")
+                  im.getStatic("io.vavr.Patterns.*")
 
-                    final ClzMatch c = new ClzMatch2();
-                    final String match = Match(c).of(
-                            Case(Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "fail"),
-                            Case(Match.Pattern$i.of(ClzMatch2.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "okMatch")
-                    );
-                    assertThat(match).isEqualTo("okMatch");
-                }
-              """
-            })("\n\n")}
+                  xs"""
+                    @$test
+                    public void shouldMatchPattern$i() {
+                        final Tuple$i<${(1 to i).gen(j => s"Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(", ")});
+                        final String func = Match(tuple).of(
+                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "fail"),
+                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "okFunc")
+                        );
+                        assertThat(func).isEqualTo("okFunc");
+                        final String supp = Match(tuple).of(
+                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), () -> "fail"),
+                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), () -> "okSupp")
+                        );
+                        assertThat(supp).isEqualTo("okSupp");
+                        final String val = Match(tuple).of(
+                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), "fail"),
+                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), "okVal")
+                        );
+                        assertThat(val).isEqualTo("okVal");
+
+                        final ClzMatch c = new ClzMatch2();
+                        final String match = Match(c).of(
+                                Case(Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "fail"),
+                                Case(Match.Pattern$i.of(ClzMatch2.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "okMatch")
+                        );
+                        assertThat(match).isEqualTo("okMatch");
+                    }
+                  """
+                })("\n\n")}
+
+            }
         }
       """
     })
