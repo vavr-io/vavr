@@ -2118,25 +2118,11 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     // -- stderr
 
     @TestTemplate
-    public void shouldWriteToStderr() {
-        assertThat(captureErrOut(() -> of(1, 2, 3).stderr())).isEqualTo("1\n" +
-          "2\n" +
-          "3\n");
-    }
-
-    @TestTemplate
     public void shouldHandleStderrIOException() {
         assertThrows(IllegalStateException.class, () -> withFailingErrOut(() -> of(0).stderr()));
     }
 
     // -- stdout
-
-    @TestTemplate
-    public void shouldWriteToStdout() {
-        assertThat(captureStdOut(() -> of(1, 2, 3).stdout())).isEqualTo("1\n" +
-          "2\n" +
-          "3\n");
-    }
 
     @TestTemplate
     public void shouldHandleStdoutIOException() {

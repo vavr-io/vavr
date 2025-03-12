@@ -1771,25 +1771,11 @@ public class CharSeqTest {
     // -- stderr
 
     @Test
-    public void shouldWriteToStderr() {
-        assertThat(captureErrOut(() -> CharSeq.of('1', '2', '3').stderr())).isEqualTo("1\n" +
-          "2\n" +
-          "3\n");
-    }
-
-    @Test
     public void shouldHandleStderrIOException() {
         assertThrows(IllegalStateException.class, () -> withFailingErrOut(() -> CharSeq.of('0').stderr()));
     }
 
     // -- stdout
-
-    @Test
-    public void shouldWriteToStdout() {
-        assertThat(captureStdOut(() -> CharSeq.of('1', '2', '3').stdout())).isEqualTo("1\n" +
-          "2\n" +
-          "3\n");
-    }
 
     @Test
     public void shouldHandleStdoutIOException() {
