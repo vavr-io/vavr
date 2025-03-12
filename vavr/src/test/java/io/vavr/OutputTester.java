@@ -153,15 +153,5 @@ public class OutputTester {
     public static void withFailingStdOut(Runnable runnable) {
         Output.OUT.failOnWrite(runnable);
     }
-
-    /**
-     * Execute the given runnable and capture everything that written
-     * to stdout. The written text is normalized to unix line feeds before its returned.
-     *
-     * @param runnable the runnable to be executed.
-     * @return the content written to stdout, normalized to unix line endings.
-     */
-    public static String captureStdOut(Runnable runnable) {
-        return Output.OUT.capture(runnable);
-    }
+    
 }
