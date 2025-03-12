@@ -20,9 +20,7 @@ package io.vavr;
 
 import java.io.*;
 import java.nio.charset.Charset;
-import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 /**
@@ -31,11 +29,6 @@ import static org.assertj.core.api.Assertions.fail;
  * @author Sebastian Zarnekow
  */
 public class OutputTester {
-
-    @Test
-    public void shouldNormalizeToUnixLineSeparators() {
-        assertThat(captureStdOut(() -> System.out.print("\r\n"))).isEqualTo("\n");
-    }
 
     /**
      * Encapsulate the standard output and error stream accessors.

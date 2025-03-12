@@ -24,10 +24,8 @@ package io.vavr;
 \*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*/
 
 import static io.vavr.API.*;
-import static io.vavr.OutputTester.captureStdOut;
 import static io.vavr.Patterns.*;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import io.vavr.collection.List;
