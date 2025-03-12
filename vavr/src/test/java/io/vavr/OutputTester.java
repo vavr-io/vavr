@@ -171,15 +171,4 @@ public class OutputTester {
     public static String captureStdOut(Runnable runnable) {
         return Output.OUT.capture(runnable);
     }
-
-    /**
-     * Execute the given runnable and capture everything that written
-     * to stderr. The written text is normalized to unix line feeds before its returned.
-     *
-     * @param runnable the runnable to be executed.
-     * @return the content written to stderr, normalized to unix line endings.
-     */
-    public static String captureErrOut(Runnable runnable) {
-        return Output.ERR.capture(runnable);
-    }
 }
