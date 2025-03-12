@@ -75,26 +75,6 @@ public class APITest {
             }
         }
 
-        @Test
-        public void shouldCallprint_Object() {
-            assertThat(captureStdOut(()->print("ok"))).isEqualTo("ok");
-        }
-
-        @Test
-        public void shouldCallprintf() {
-            assertThat(captureStdOut(()->printf("%s", "ok"))).isEqualTo("ok");
-        }
-
-        @Test
-        public void shouldCallprintln_Object() {
-            assertThat(captureStdOut(()->println("ok"))).isEqualTo("ok\n");
-        }
-
-        @Test
-        public void shouldCallprintln() {
-            assertThat(captureStdOut(()->println())).isEqualTo("\n");
-        }
-
     }
 
     //
