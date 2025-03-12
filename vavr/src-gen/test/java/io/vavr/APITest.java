@@ -102,873 +102,878 @@ public class APITest {
     // More specific test for each aliased class implemented in separate test class
     //
 
-    @Test
-    public void shouldFunction0ReturnNotNull() {
-        assertThat(Function(() -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction0ReturnNotNull() {
-        assertThat(CheckedFunction(() -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFunction1ReturnNotNull() {
-        assertThat(Function((v1) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction1ReturnNotNull() {
-        assertThat(CheckedFunction((v1) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFunction2ReturnNotNull() {
-        assertThat(Function((v1, v2) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction2ReturnNotNull() {
-        assertThat(CheckedFunction((v1, v2) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFunction3ReturnNotNull() {
-        assertThat(Function((v1, v2, v3) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction3ReturnNotNull() {
-        assertThat(CheckedFunction((v1, v2, v3) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFunction4ReturnNotNull() {
-        assertThat(Function((v1, v2, v3, v4) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction4ReturnNotNull() {
-        assertThat(CheckedFunction((v1, v2, v3, v4) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFunction5ReturnNotNull() {
-        assertThat(Function((v1, v2, v3, v4, v5) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction5ReturnNotNull() {
-        assertThat(CheckedFunction((v1, v2, v3, v4, v5) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFunction6ReturnNotNull() {
-        assertThat(Function((v1, v2, v3, v4, v5, v6) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction6ReturnNotNull() {
-        assertThat(CheckedFunction((v1, v2, v3, v4, v5, v6) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFunction7ReturnNotNull() {
-        assertThat(Function((v1, v2, v3, v4, v5, v6, v7) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction7ReturnNotNull() {
-        assertThat(CheckedFunction((v1, v2, v3, v4, v5, v6, v7) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFunction8ReturnNotNull() {
-        assertThat(Function((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldCheckedFunction8ReturnNotNull() {
-        assertThat(CheckedFunction((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isNotNull();
-    }
-
-    @Test
-    public void shouldUnchecked0ReturnNonCheckedFunction() {
-        assertThat(unchecked(() -> null)).isInstanceOf(Function0.class);
-    }
-
-    @Test
-    public void shouldUnchecked1ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1) -> null)).isInstanceOf(Function1.class);
-    }
-
-    @Test
-    public void shouldUnchecked2ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1, v2) -> null)).isInstanceOf(Function2.class);
-    }
-
-    @Test
-    public void shouldUnchecked3ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1, v2, v3) -> null)).isInstanceOf(Function3.class);
-    }
-
-    @Test
-    public void shouldUnchecked4ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1, v2, v3, v4) -> null)).isInstanceOf(Function4.class);
-    }
-
-    @Test
-    public void shouldUnchecked5ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1, v2, v3, v4, v5) -> null)).isInstanceOf(Function5.class);
-    }
-
-    @Test
-    public void shouldUnchecked6ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1, v2, v3, v4, v5, v6) -> null)).isInstanceOf(Function6.class);
-    }
-
-    @Test
-    public void shouldUnchecked7ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7) -> null)).isInstanceOf(Function7.class);
-    }
-
-    @Test
-    public void shouldUnchecked8ReturnNonCheckedFunction() {
-        assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isInstanceOf(Function8.class);
-    }
-
-    @Test
-    public void shouldTuple0ReturnNotNull() {
-        assertThat(Tuple()).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple1ReturnNotNull() {
-        assertThat(Tuple(1)).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple2ReturnNotNull() {
-        assertThat(Tuple(1, 2)).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple3ReturnNotNull() {
-        assertThat(Tuple(1, 2, 3)).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple4ReturnNotNull() {
-        assertThat(Tuple(1, 2, 3, 4)).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple5ReturnNotNull() {
-        assertThat(Tuple(1, 2, 3, 4, 5)).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple6ReturnNotNull() {
-        assertThat(Tuple(1, 2, 3, 4, 5, 6)).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple7ReturnNotNull() {
-        assertThat(Tuple(1, 2, 3, 4, 5, 6, 7)).isNotNull();
-    }
-
-    @Test
-    public void shouldTuple8ReturnNotNull() {
-        assertThat(Tuple(1, 2, 3, 4, 5, 6, 7, 8)).isNotNull();
-    }
-
-    @Test
-    public void shouldRightReturnNotNull() {
-        assertThat(Right(null)).isNotNull();
-    }
-
-    @Test
-    public void shouldLeftReturnNotNull() {
-        assertThat(Left(null)).isNotNull();
-    }
-
-    @Test
-    public void shouldFutureWithSupplierReturnNotNull() {
-        final Future<?> future = Future(() -> 1).await();
-        assertThat(future).isNotNull();
-        assertThat(future.isSuccess()).isTrue();
-    }
-
-    @Test
-    public void shouldFutureWithinExecutorWithSupplierReturnNotNull() {
-        final Future<?> future = Future(Executors.newSingleThreadExecutor(), () -> 1).await();
-        assertThat(future).isNotNull();
-        assertThat(future.isSuccess()).isTrue();
-    }
-
-    @Test
-    public void shouldFutureWithValueReturnNotNull() {
-        final Future<?> future = Future(1).await();
-        assertThat(future).isNotNull();
-        assertThat(future.isSuccess()).isTrue();
-    }
-
-    @Test
-    public void shouldFutureWithinExecutorWithValueReturnNotNull() {
-        final Future<?> future = Future(Executors.newSingleThreadExecutor(), 1).await();
-        assertThat(future).isNotNull();
-        assertThat(future.isSuccess()).isTrue();
-    }
-
-    @Test
-    public void shouldLazyReturnNotNull() {
-        assertThat(Lazy(() -> 1)).isNotNull();
-    }
-
-    @Test
-    public void shouldOptionReturnNotNull() {
-        assertThat(Option(1)).isNotNull();
-    }
-
-    @Test
-    public void shouldSomeReturnNotNull() {
-        assertThat(Some(1)).isNotNull();
-    }
-
-    @Test
-    public void shouldNoneReturnNotNull() {
-        assertThat(None()).isNotNull();
-    }
-
-    @Test
-    public void shouldTryReturnNotNull() {
-        final Try<?> t = Try(() -> 1);
-        assertThat(t).isNotNull();
-        assertThat(t.isSuccess()).isTrue();
-    }
-
-    @Test
-    public void shouldSuccessReturnNotNull() {
-        final Try<?> t = Success(1);
-        assertThat(t).isNotNull();
-        assertThat(t.isSuccess()).isTrue();
-    }
-
-    @Test
-    public void shouldFailureReturnNotNull() {
-        final Try<?> t = Failure(new Error());
-        assertThat(t).isNotNull();
-        assertThat(t.isFailure()).isTrue();
-    }
-
-    @Test
-    public void shouldValidReturnNotNull() {
-        assertThat(Valid(1)).isNotNull();
-    }
-
-    @Test
-    public void shouldInvalidReturnNotNull() {
-        assertThat(Invalid(new Error())).isNotNull();
-    }
-
-    @Test
-    public void shouldCharReturnNotNull() {
-        assertThat((Iterable<Character>) CharSeq('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldCharArrayReturnNotNull() {
-        assertThat((Iterable<Character>) CharSeq('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldCharSeqReturnNotNull() {
-        assertThat((Iterable<Character>) CharSeq("123")).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyArrayReturnNotNull() {
-        assertThat(Array()).isNotNull();
-    }
-
-    @Test
-    public void shouldArrayWithSingleReturnNotNull() {
-        assertThat(Array('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldArrayWithVarArgReturnNotNull() {
-        assertThat(Array('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyVectorReturnNotNull() {
-        assertThat(Vector()).isNotNull();
-    }
-
-    @Test
-    public void shouldVectorWithSingleReturnNotNull() {
-        assertThat(Vector('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldVectorWithVarArgReturnNotNull() {
-        assertThat(Vector('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyListReturnNotNull() {
-        assertThat(List()).isNotNull();
-    }
-
-    @Test
-    public void shouldListWithSingleReturnNotNull() {
-        assertThat(List('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldListWithVarArgReturnNotNull() {
-        assertThat(List('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyStreamReturnNotNull() {
-        assertThat(Stream()).isNotNull();
-    }
-
-    @Test
-    public void shouldStreamWithSingleReturnNotNull() {
-        assertThat(Stream('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldStreamWithVarArgReturnNotNull() {
-        assertThat(Stream('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyQueueReturnNotNull() {
-        assertThat(Queue()).isNotNull();
-    }
-
-    @Test
-    public void shouldQueueWithSingleReturnNotNull() {
-        assertThat(Queue('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldQueueWithVarArgReturnNotNull() {
-        assertThat(Queue('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyLinkedSetReturnNotNull() {
-        assertThat(LinkedSet()).isNotNull();
-    }
-
-    @Test
-    public void shouldLinkedSetWithSingleReturnNotNull() {
-        assertThat(LinkedSet('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldLinkedSetWithVarArgReturnNotNull() {
-        assertThat(LinkedSet('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptySetReturnNotNull() {
-        assertThat(Set()).isNotNull();
-    }
-
-    @Test
-    public void shouldSetWithSingleReturnNotNull() {
-        assertThat(Set('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldSetWithVarArgReturnNotNull() {
-        assertThat(Set('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptySeqReturnNotNull() {
-        assertThat(Seq()).isNotNull();
-    }
-
-    @Test
-    public void shouldSeqWithSingleReturnNotNull() {
-        assertThat(Seq('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldSeqWithVarArgReturnNotNull() {
-        assertThat(Seq('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyIndexedSeqReturnNotNull() {
-        assertThat(IndexedSeq()).isNotNull();
-    }
-
-    @Test
-    public void shouldIndexedSeqWithSingleReturnNotNull() {
-        assertThat(IndexedSeq('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldIndexedSeqWithVarArgReturnNotNull() {
-        assertThat(IndexedSeq('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptySortedSetReturnNotNull() {
-        assertThat(SortedSet()).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptySortedSetWithComparatorReturnNotNull() {
-        assertThat(SortedSet((Comparator<Character>) Character::compareTo)).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedSetWithSingleReturnNotNull() {
-        assertThat(SortedSet('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedSetWithSingleAndComparatorReturnNotNull() {
-        assertThat(SortedSet(Character::compareTo, '1')).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedSetWithVarArgReturnNotNull() {
-        assertThat(SortedSet('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedSetWithVarArgAndComparatorReturnNotNull() {
-        assertThat(SortedSet((Comparator<Character>) Character::compareTo, '1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyPriorityQueueReturnNotNull() {
-        assertThat(PriorityQueue()).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyPriorityQueueWithComparatorReturnNotNull() {
-        assertThat(PriorityQueue((Comparator<Character>) Character::compareTo)).isNotNull();
-    }
-
-    @Test
-    public void shouldPriorityQueueWithSingleReturnNotNull() {
-        assertThat(PriorityQueue('1')).isNotNull();
-    }
-
-    @Test
-    public void shouldPriorityQueueWithSingleAndComparatorReturnNotNull() {
-        assertThat(PriorityQueue(Character::compareTo, '1')).isNotNull();
-    }
-
-    @Test
-    public void shouldPriorityQueueWithVarArgReturnNotNull() {
-        assertThat(PriorityQueue('1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldPriorityQueueWithVarArgAndComparatorReturnNotNull() {
-        assertThat(PriorityQueue((Comparator<Character>) Character::compareTo, '1', '2', '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldEmptyLinkedMapReturnNotNull() {
-        assertThat(LinkedMap()).isNotNull();
-    }
-
-    @Test
-    public void shouldLinkedMapFromSingleReturnNotNull() {
-        assertThat(LinkedMap(1, '1')).isNotNull();
-    }
-
-    @Test
-    public void shouldLinkedMapFromTuplesReturnNotNull() {
-        assertThat(LinkedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldLinkedMapFromPairsReturnNotNull() {
-        assertThat(LinkedMap(1, '1', 2, '2', 3, '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom1Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2);
-      assertThat(map.apply(1)).isEqualTo(2);
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom2Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom3Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom4Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom5Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom6Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom7Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom8Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-      assertThat(map.apply(8)).isEqualTo(16);
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom9Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-      assertThat(map.apply(8)).isEqualTo(16);
-      assertThat(map.apply(9)).isEqualTo(18);
-    }
-
-    @Test
-    public void shouldCreateLinkedMapFrom10Pairs() {
-      Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-      assertThat(map.apply(8)).isEqualTo(16);
-      assertThat(map.apply(9)).isEqualTo(18);
-      assertThat(map.apply(10)).isEqualTo(20);
-    }
-
-    @Test
-    public void shouldEmptyMapReturnNotNull() {
-        assertThat(Map()).isNotNull();
-    }
-
-    @Test
-    public void shouldMapFromSingleReturnNotNull() {
-        assertThat(Map(1, '1')).isNotNull();
-    }
-
-    @Test
-    public void shouldMapFromTuplesReturnNotNull() {
-        assertThat(Map(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldMapFromPairsReturnNotNull() {
-        assertThat(Map(1, '1', 2, '2', 3, '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateMapFrom1Pairs() {
-      Map<Integer, Integer> map = Map(1, 2);
-      assertThat(map.apply(1)).isEqualTo(2);
-    }
-
-    @Test
-    public void shouldCreateMapFrom2Pairs() {
-      Map<Integer, Integer> map = Map(1, 2, 2, 4);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-    }
-
-    @Test
-    public void shouldCreateMapFrom3Pairs() {
-      Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldCreateMapFrom4Pairs() {
-      Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-    }
-
-    @Test
-    public void shouldCreateMapFrom5Pairs() {
-      Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-    }
-
-    @Test
-    public void shouldCreateMapFrom6Pairs() {
-      Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-    }
-
-    @Test
-    public void shouldCreateMapFrom7Pairs() {
-      Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-    }
-
-    @Test
-    public void shouldCreateMapFrom8Pairs() {
-      Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-      assertThat(map.apply(8)).isEqualTo(16);
-    }
-
-    @Test
-    public void shouldCreateMapFrom9Pairs() {
-      Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-      assertThat(map.apply(8)).isEqualTo(16);
-      assertThat(map.apply(9)).isEqualTo(18);
-    }
-
-    @Test
-    public void shouldCreateMapFrom10Pairs() {
-      Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-      assertThat(map.apply(8)).isEqualTo(16);
-      assertThat(map.apply(9)).isEqualTo(18);
-      assertThat(map.apply(10)).isEqualTo(20);
-    }
-
-    @Test
-    public void shouldEmptySortedMapReturnNotNull() {
-        assertThat(SortedMap()).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedMapFromSingleReturnNotNull() {
-        assertThat(SortedMap(1, '1')).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedMapFromTuplesReturnNotNull() {
-        assertThat(SortedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedMapFromPairsReturnNotNull() {
-        assertThat(SortedMap(1, '1', 2, '2', 3, '3')).isNotNull();
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom1Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2);
-      assertThat(map.apply(1)).isEqualTo(2);
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom2Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2, 2, 4);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom3Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom4Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom5Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom6Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom7Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom8Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-      assertThat(map.apply(8)).isEqualTo(16);
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom9Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-      assertThat(map.apply(8)).isEqualTo(16);
-      assertThat(map.apply(9)).isEqualTo(18);
-    }
-
-    @Test
-    public void shouldCreateSortedMapFrom10Pairs() {
-      Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
-      assertThat(map.apply(1)).isEqualTo(2);
-      assertThat(map.apply(2)).isEqualTo(4);
-      assertThat(map.apply(3)).isEqualTo(6);
-      assertThat(map.apply(4)).isEqualTo(8);
-      assertThat(map.apply(5)).isEqualTo(10);
-      assertThat(map.apply(6)).isEqualTo(12);
-      assertThat(map.apply(7)).isEqualTo(14);
-      assertThat(map.apply(8)).isEqualTo(16);
-      assertThat(map.apply(9)).isEqualTo(18);
-      assertThat(map.apply(10)).isEqualTo(20);
-    }
-
-    @Test
-    public void shouldEmptySortedMapFromComparatorReturnNotNull() {
-        assertThat(SortedMap(Integer::compareTo)).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedMapFromSingleAndComparatorReturnNotNull() {
-        assertThat(SortedMap(Integer::compareTo, 1, '1')).isNotNull();
-    }
-
-    @Test
-    public void shouldSortedMapFromTuplesAndComparatorReturnNotNull() {
-        assertThat(SortedMap((Comparator<Integer>)Integer::compareTo, Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+    @Nested
+    class Aliases {
+
+        @Test
+        public void shouldFunction0ReturnNotNull() {
+            assertThat(Function(() -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldCheckedFunction0ReturnNotNull() {
+            assertThat(CheckedFunction(() -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldFunction1ReturnNotNull() {
+            assertThat(Function((v1) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldCheckedFunction1ReturnNotNull() {
+            assertThat(CheckedFunction((v1) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldFunction2ReturnNotNull() {
+            assertThat(Function((v1, v2) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldCheckedFunction2ReturnNotNull() {
+            assertThat(CheckedFunction((v1, v2) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldFunction3ReturnNotNull() {
+            assertThat(Function((v1, v2, v3) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldCheckedFunction3ReturnNotNull() {
+            assertThat(CheckedFunction((v1, v2, v3) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldFunction4ReturnNotNull() {
+            assertThat(Function((v1, v2, v3, v4) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldCheckedFunction4ReturnNotNull() {
+            assertThat(CheckedFunction((v1, v2, v3, v4) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldFunction5ReturnNotNull() {
+            assertThat(Function((v1, v2, v3, v4, v5) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldCheckedFunction5ReturnNotNull() {
+            assertThat(CheckedFunction((v1, v2, v3, v4, v5) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldFunction6ReturnNotNull() {
+            assertThat(Function((v1, v2, v3, v4, v5, v6) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldCheckedFunction6ReturnNotNull() {
+            assertThat(CheckedFunction((v1, v2, v3, v4, v5, v6) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldFunction7ReturnNotNull() {
+            assertThat(Function((v1, v2, v3, v4, v5, v6, v7) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldCheckedFunction7ReturnNotNull() {
+            assertThat(CheckedFunction((v1, v2, v3, v4, v5, v6, v7) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldFunction8ReturnNotNull() {
+            assertThat(Function((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldCheckedFunction8ReturnNotNull() {
+            assertThat(CheckedFunction((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isNotNull();
+        }
+
+        @Test
+        public void shouldUnchecked0ReturnNonCheckedFunction() {
+            assertThat(unchecked(() -> null)).isInstanceOf(Function0.class);
+        }
+
+        @Test
+        public void shouldUnchecked1ReturnNonCheckedFunction() {
+            assertThat(unchecked((v1) -> null)).isInstanceOf(Function1.class);
+        }
+
+        @Test
+        public void shouldUnchecked2ReturnNonCheckedFunction() {
+            assertThat(unchecked((v1, v2) -> null)).isInstanceOf(Function2.class);
+        }
+
+        @Test
+        public void shouldUnchecked3ReturnNonCheckedFunction() {
+            assertThat(unchecked((v1, v2, v3) -> null)).isInstanceOf(Function3.class);
+        }
+
+        @Test
+        public void shouldUnchecked4ReturnNonCheckedFunction() {
+            assertThat(unchecked((v1, v2, v3, v4) -> null)).isInstanceOf(Function4.class);
+        }
+
+        @Test
+        public void shouldUnchecked5ReturnNonCheckedFunction() {
+            assertThat(unchecked((v1, v2, v3, v4, v5) -> null)).isInstanceOf(Function5.class);
+        }
+
+        @Test
+        public void shouldUnchecked6ReturnNonCheckedFunction() {
+            assertThat(unchecked((v1, v2, v3, v4, v5, v6) -> null)).isInstanceOf(Function6.class);
+        }
+
+        @Test
+        public void shouldUnchecked7ReturnNonCheckedFunction() {
+            assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7) -> null)).isInstanceOf(Function7.class);
+        }
+
+        @Test
+        public void shouldUnchecked8ReturnNonCheckedFunction() {
+            assertThat(unchecked((v1, v2, v3, v4, v5, v6, v7, v8) -> null)).isInstanceOf(Function8.class);
+        }
+
+        @Test
+        public void shouldTuple0ReturnNotNull() {
+            assertThat(Tuple()).isNotNull();
+        }
+
+        @Test
+        public void shouldTuple1ReturnNotNull() {
+            assertThat(Tuple(1)).isNotNull();
+        }
+
+        @Test
+        public void shouldTuple2ReturnNotNull() {
+            assertThat(Tuple(1, 2)).isNotNull();
+        }
+
+        @Test
+        public void shouldTuple3ReturnNotNull() {
+            assertThat(Tuple(1, 2, 3)).isNotNull();
+        }
+
+        @Test
+        public void shouldTuple4ReturnNotNull() {
+            assertThat(Tuple(1, 2, 3, 4)).isNotNull();
+        }
+
+        @Test
+        public void shouldTuple5ReturnNotNull() {
+            assertThat(Tuple(1, 2, 3, 4, 5)).isNotNull();
+        }
+
+        @Test
+        public void shouldTuple6ReturnNotNull() {
+            assertThat(Tuple(1, 2, 3, 4, 5, 6)).isNotNull();
+        }
+
+        @Test
+        public void shouldTuple7ReturnNotNull() {
+            assertThat(Tuple(1, 2, 3, 4, 5, 6, 7)).isNotNull();
+        }
+
+        @Test
+        public void shouldTuple8ReturnNotNull() {
+            assertThat(Tuple(1, 2, 3, 4, 5, 6, 7, 8)).isNotNull();
+        }
+
+        @Test
+        public void shouldRightReturnNotNull() {
+            assertThat(Right(null)).isNotNull();
+        }
+
+        @Test
+        public void shouldLeftReturnNotNull() {
+            assertThat(Left(null)).isNotNull();
+        }
+
+        @Test
+        public void shouldFutureWithSupplierReturnNotNull() {
+            final Future<?> future = Future(() -> 1).await();
+            assertThat(future).isNotNull();
+            assertThat(future.isSuccess()).isTrue();
+        }
+
+        @Test
+        public void shouldFutureWithinExecutorWithSupplierReturnNotNull() {
+            final Future<?> future = Future(Executors.newSingleThreadExecutor(), () -> 1).await();
+            assertThat(future).isNotNull();
+            assertThat(future.isSuccess()).isTrue();
+        }
+
+        @Test
+        public void shouldFutureWithValueReturnNotNull() {
+            final Future<?> future = Future(1).await();
+            assertThat(future).isNotNull();
+            assertThat(future.isSuccess()).isTrue();
+        }
+
+        @Test
+        public void shouldFutureWithinExecutorWithValueReturnNotNull() {
+            final Future<?> future = Future(Executors.newSingleThreadExecutor(), 1).await();
+            assertThat(future).isNotNull();
+            assertThat(future.isSuccess()).isTrue();
+        }
+
+        @Test
+        public void shouldLazyReturnNotNull() {
+            assertThat(Lazy(() -> 1)).isNotNull();
+        }
+
+        @Test
+        public void shouldOptionReturnNotNull() {
+            assertThat(Option(1)).isNotNull();
+        }
+
+        @Test
+        public void shouldSomeReturnNotNull() {
+            assertThat(Some(1)).isNotNull();
+        }
+
+        @Test
+        public void shouldNoneReturnNotNull() {
+            assertThat(None()).isNotNull();
+        }
+
+        @Test
+        public void shouldTryReturnNotNull() {
+            final Try<?> t = Try(() -> 1);
+            assertThat(t).isNotNull();
+            assertThat(t.isSuccess()).isTrue();
+        }
+
+        @Test
+        public void shouldSuccessReturnNotNull() {
+            final Try<?> t = Success(1);
+            assertThat(t).isNotNull();
+            assertThat(t.isSuccess()).isTrue();
+        }
+
+        @Test
+        public void shouldFailureReturnNotNull() {
+            final Try<?> t = Failure(new Error());
+            assertThat(t).isNotNull();
+            assertThat(t.isFailure()).isTrue();
+        }
+
+        @Test
+        public void shouldValidReturnNotNull() {
+            assertThat(Valid(1)).isNotNull();
+        }
+
+        @Test
+        public void shouldInvalidReturnNotNull() {
+            assertThat(Invalid(new Error())).isNotNull();
+        }
+
+        @Test
+        public void shouldCharReturnNotNull() {
+            assertThat((Iterable<Character>) CharSeq('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldCharArrayReturnNotNull() {
+            assertThat((Iterable<Character>) CharSeq('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldCharSeqReturnNotNull() {
+            assertThat((Iterable<Character>) CharSeq("123")).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyArrayReturnNotNull() {
+            assertThat(Array()).isNotNull();
+        }
+
+        @Test
+        public void shouldArrayWithSingleReturnNotNull() {
+            assertThat(Array('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldArrayWithVarArgReturnNotNull() {
+            assertThat(Array('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyVectorReturnNotNull() {
+            assertThat(Vector()).isNotNull();
+        }
+
+        @Test
+        public void shouldVectorWithSingleReturnNotNull() {
+            assertThat(Vector('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldVectorWithVarArgReturnNotNull() {
+            assertThat(Vector('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyListReturnNotNull() {
+            assertThat(List()).isNotNull();
+        }
+
+        @Test
+        public void shouldListWithSingleReturnNotNull() {
+            assertThat(List('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldListWithVarArgReturnNotNull() {
+            assertThat(List('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyStreamReturnNotNull() {
+            assertThat(Stream()).isNotNull();
+        }
+
+        @Test
+        public void shouldStreamWithSingleReturnNotNull() {
+            assertThat(Stream('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldStreamWithVarArgReturnNotNull() {
+            assertThat(Stream('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyQueueReturnNotNull() {
+            assertThat(Queue()).isNotNull();
+        }
+
+        @Test
+        public void shouldQueueWithSingleReturnNotNull() {
+            assertThat(Queue('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldQueueWithVarArgReturnNotNull() {
+            assertThat(Queue('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyLinkedSetReturnNotNull() {
+            assertThat(LinkedSet()).isNotNull();
+        }
+
+        @Test
+        public void shouldLinkedSetWithSingleReturnNotNull() {
+            assertThat(LinkedSet('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldLinkedSetWithVarArgReturnNotNull() {
+            assertThat(LinkedSet('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptySetReturnNotNull() {
+            assertThat(Set()).isNotNull();
+        }
+
+        @Test
+        public void shouldSetWithSingleReturnNotNull() {
+            assertThat(Set('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldSetWithVarArgReturnNotNull() {
+            assertThat(Set('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptySeqReturnNotNull() {
+            assertThat(Seq()).isNotNull();
+        }
+
+        @Test
+        public void shouldSeqWithSingleReturnNotNull() {
+            assertThat(Seq('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldSeqWithVarArgReturnNotNull() {
+            assertThat(Seq('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyIndexedSeqReturnNotNull() {
+            assertThat(IndexedSeq()).isNotNull();
+        }
+
+        @Test
+        public void shouldIndexedSeqWithSingleReturnNotNull() {
+            assertThat(IndexedSeq('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldIndexedSeqWithVarArgReturnNotNull() {
+            assertThat(IndexedSeq('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptySortedSetReturnNotNull() {
+            assertThat(SortedSet()).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptySortedSetWithComparatorReturnNotNull() {
+            assertThat(SortedSet((Comparator<Character>) Character::compareTo)).isNotNull();
+        }
+
+        @Test
+        public void shouldSortedSetWithSingleReturnNotNull() {
+            assertThat(SortedSet('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldSortedSetWithSingleAndComparatorReturnNotNull() {
+            assertThat(SortedSet(Character::compareTo, '1')).isNotNull();
+        }
+
+        @Test
+        public void shouldSortedSetWithVarArgReturnNotNull() {
+            assertThat(SortedSet('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldSortedSetWithVarArgAndComparatorReturnNotNull() {
+            assertThat(SortedSet((Comparator<Character>) Character::compareTo, '1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyPriorityQueueReturnNotNull() {
+            assertThat(PriorityQueue()).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyPriorityQueueWithComparatorReturnNotNull() {
+            assertThat(PriorityQueue((Comparator<Character>) Character::compareTo)).isNotNull();
+        }
+
+        @Test
+        public void shouldPriorityQueueWithSingleReturnNotNull() {
+            assertThat(PriorityQueue('1')).isNotNull();
+        }
+
+        @Test
+        public void shouldPriorityQueueWithSingleAndComparatorReturnNotNull() {
+            assertThat(PriorityQueue(Character::compareTo, '1')).isNotNull();
+        }
+
+        @Test
+        public void shouldPriorityQueueWithVarArgReturnNotNull() {
+            assertThat(PriorityQueue('1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldPriorityQueueWithVarArgAndComparatorReturnNotNull() {
+            assertThat(PriorityQueue((Comparator<Character>) Character::compareTo, '1', '2', '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldEmptyLinkedMapReturnNotNull() {
+            assertThat(LinkedMap()).isNotNull();
+        }
+
+        @Test
+        public void shouldLinkedMapFromSingleReturnNotNull() {
+            assertThat(LinkedMap(1, '1')).isNotNull();
+        }
+
+        @Test
+        public void shouldLinkedMapFromTuplesReturnNotNull() {
+            assertThat(LinkedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+        }
+
+        @Test
+        public void shouldLinkedMapFromPairsReturnNotNull() {
+            assertThat(LinkedMap(1, '1', 2, '2', 3, '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom1Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2);
+          assertThat(map.apply(1)).isEqualTo(2);
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom2Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom3Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom4Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom5Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom6Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom7Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom8Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+          assertThat(map.apply(8)).isEqualTo(16);
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom9Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+          assertThat(map.apply(8)).isEqualTo(16);
+          assertThat(map.apply(9)).isEqualTo(18);
+        }
+
+        @Test
+        public void shouldCreateLinkedMapFrom10Pairs() {
+          Map<Integer, Integer> map = LinkedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+          assertThat(map.apply(8)).isEqualTo(16);
+          assertThat(map.apply(9)).isEqualTo(18);
+          assertThat(map.apply(10)).isEqualTo(20);
+        }
+
+        @Test
+        public void shouldEmptyMapReturnNotNull() {
+            assertThat(Map()).isNotNull();
+        }
+
+        @Test
+        public void shouldMapFromSingleReturnNotNull() {
+            assertThat(Map(1, '1')).isNotNull();
+        }
+
+        @Test
+        public void shouldMapFromTuplesReturnNotNull() {
+            assertThat(Map(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+        }
+
+        @Test
+        public void shouldMapFromPairsReturnNotNull() {
+            assertThat(Map(1, '1', 2, '2', 3, '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldCreateMapFrom1Pairs() {
+          Map<Integer, Integer> map = Map(1, 2);
+          assertThat(map.apply(1)).isEqualTo(2);
+        }
+
+        @Test
+        public void shouldCreateMapFrom2Pairs() {
+          Map<Integer, Integer> map = Map(1, 2, 2, 4);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+        }
+
+        @Test
+        public void shouldCreateMapFrom3Pairs() {
+          Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldCreateMapFrom4Pairs() {
+          Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+        }
+
+        @Test
+        public void shouldCreateMapFrom5Pairs() {
+          Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldCreateMapFrom6Pairs() {
+          Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+        }
+
+        @Test
+        public void shouldCreateMapFrom7Pairs() {
+          Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+        }
+
+        @Test
+        public void shouldCreateMapFrom8Pairs() {
+          Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+          assertThat(map.apply(8)).isEqualTo(16);
+        }
+
+        @Test
+        public void shouldCreateMapFrom9Pairs() {
+          Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+          assertThat(map.apply(8)).isEqualTo(16);
+          assertThat(map.apply(9)).isEqualTo(18);
+        }
+
+        @Test
+        public void shouldCreateMapFrom10Pairs() {
+          Map<Integer, Integer> map = Map(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+          assertThat(map.apply(8)).isEqualTo(16);
+          assertThat(map.apply(9)).isEqualTo(18);
+          assertThat(map.apply(10)).isEqualTo(20);
+        }
+
+        @Test
+        public void shouldEmptySortedMapReturnNotNull() {
+            assertThat(SortedMap()).isNotNull();
+        }
+
+        @Test
+        public void shouldSortedMapFromSingleReturnNotNull() {
+            assertThat(SortedMap(1, '1')).isNotNull();
+        }
+
+        @Test
+        public void shouldSortedMapFromTuplesReturnNotNull() {
+            assertThat(SortedMap(Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+        }
+
+        @Test
+        public void shouldSortedMapFromPairsReturnNotNull() {
+            assertThat(SortedMap(1, '1', 2, '2', 3, '3')).isNotNull();
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom1Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2);
+          assertThat(map.apply(1)).isEqualTo(2);
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom2Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2, 2, 4);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom3Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom4Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom5Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom6Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom7Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom8Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+          assertThat(map.apply(8)).isEqualTo(16);
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom9Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+          assertThat(map.apply(8)).isEqualTo(16);
+          assertThat(map.apply(9)).isEqualTo(18);
+        }
+
+        @Test
+        public void shouldCreateSortedMapFrom10Pairs() {
+          Map<Integer, Integer> map = SortedMap(1, 2, 2, 4, 3, 6, 4, 8, 5, 10, 6, 12, 7, 14, 8, 16, 9, 18, 10, 20);
+          assertThat(map.apply(1)).isEqualTo(2);
+          assertThat(map.apply(2)).isEqualTo(4);
+          assertThat(map.apply(3)).isEqualTo(6);
+          assertThat(map.apply(4)).isEqualTo(8);
+          assertThat(map.apply(5)).isEqualTo(10);
+          assertThat(map.apply(6)).isEqualTo(12);
+          assertThat(map.apply(7)).isEqualTo(14);
+          assertThat(map.apply(8)).isEqualTo(16);
+          assertThat(map.apply(9)).isEqualTo(18);
+          assertThat(map.apply(10)).isEqualTo(20);
+        }
+
+        @Test
+        public void shouldEmptySortedMapFromComparatorReturnNotNull() {
+            assertThat(SortedMap(Integer::compareTo)).isNotNull();
+        }
+
+        @Test
+        public void shouldSortedMapFromSingleAndComparatorReturnNotNull() {
+            assertThat(SortedMap(Integer::compareTo, 1, '1')).isNotNull();
+        }
+
+        @Test
+        public void shouldSortedMapFromTuplesAndComparatorReturnNotNull() {
+            assertThat(SortedMap((Comparator<Integer>)Integer::compareTo, Tuple(1, '1'), Tuple(2, '2'), Tuple(3, '3'))).isNotNull();
+        }
+
     }
 
     // -- run

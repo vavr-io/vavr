@@ -2905,7 +2905,12 @@ def generateTestClasses(): Unit = {
             // More specific test for each aliased class implemented in separate test class
             //
 
-            ${genAliasesTests(im, packageName, className)}
+            @Nested
+            class Aliases {
+
+                ${genAliasesTests(im, packageName, className)}
+
+            }
 
             // -- run
 
