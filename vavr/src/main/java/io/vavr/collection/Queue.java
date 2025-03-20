@@ -738,6 +738,18 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
+    public Queue<T> distinctByKeepLast(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return ofAll(toList().distinctByKeepLast(comparator));
+    }
+
+    @Override
+    public <U> Queue<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        return ofAll(toList().distinctByKeepLast(keyExtractor));
+    }
+
+    @Override
     public Queue<T> drop(int n) {
         if (n <= 0) {
             return this;

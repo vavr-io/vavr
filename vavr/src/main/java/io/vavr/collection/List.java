@@ -818,6 +818,18 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
+    default List<T> distinctByKeepLast(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return ofAll(iterator().distinctByKeepLast(comparator));
+    }
+
+    @Override
+    default <U> List<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        return ofAll(iterator().distinctByKeepLast(keyExtractor));
+    }
+
+    @Override
     default List<T> drop(int n) {
         if (n <= 0) {
             return this;

@@ -106,6 +106,12 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
+    LinearSeq<T> distinctByKeepLast(Comparator<? super T> comparator);
+
+    @Override
+    <U> LinearSeq<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor);
+
+    @Override
     LinearSeq<T> drop(int n);
 
     @Override

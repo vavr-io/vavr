@@ -664,6 +664,34 @@ public class CharSeqTest {
           .isEqualTo(CharSeq.of('1', '2', '3', '4', '5'));
     }
 
+    // -- distinctByKeepLast(Comparator)
+
+    @Test
+    public void shouldComputeDistinctByKeepLastOfEmptyTraversableUsingComparator() {
+        final Comparator<Character> comparator = Comparator.comparingInt(i -> i);
+        assertThat(CharSeq.empty().distinctByKeepLast(comparator)).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldComputeDistinctByKeepLastOfNonEmptyTraversableUsingComparator() {
+        final Comparator<Character> comparator = (s1, s2) -> (s1 - s2);
+        assertThat(CharSeq.of('1', '2', '3', '3', '4', '5').distinctByKeepLast(comparator))
+                .isEqualTo(CharSeq.of('1', '2', '3', '4', '5'));
+    }
+
+    // -- distinctByKeepLast(Function)
+
+    @Test
+    public void shouldComputeDistinctByKeepLastOfEmptyTraversableUsingKeyExtractor() {
+        assertThat(CharSeq.empty().distinctByKeepLast(Function.identity())).isSameAs(CharSeq.empty());
+    }
+
+    @Test
+    public void shouldComputeDistinctByKeepLastOfNonEmptyTraversableUsingKeyExtractor() {
+        assertThat(CharSeq.of('1', '2', '3', '2', '4', '5').distinctByKeepLast(c -> c))
+                .isEqualTo(CharSeq.of('1', '3', '2', '4', '5'));
+    }
+
     // -- drop
 
     @Test

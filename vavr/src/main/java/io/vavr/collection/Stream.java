@@ -993,6 +993,18 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default Stream<T> distinctByKeepLast(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return ofAll(iterator().distinctByKeepLast(comparator));
+    }
+
+    @Override
+    default <U> Stream<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        return ofAll(iterator().distinctByKeepLast(keyExtractor));
+    }
+
+    @Override
     default Stream<T> drop(int n) {
         Stream<T> stream = this;
         while (n-- > 0 && !stream.isEmpty()) {
