@@ -472,6 +472,18 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public CharSeq distinctByKeepLast(Comparator<? super Character> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return ofAll(iterator().distinctByKeepLast(comparator));
+    }
+
+    @Override
+    public <U> CharSeq distinctByKeepLast(Function<? super Character, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        return ofAll(iterator().distinctByKeepLast(keyExtractor));
+    }
+
+    @Override
     public CharSeq drop(int n) {
         if (n <= 0) {
             return this;

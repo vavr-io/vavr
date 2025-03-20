@@ -747,6 +747,18 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Array<T> distinctByKeepLast(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return ofAll(iterator().distinctByKeepLast(comparator));
+    }
+
+    @Override
+    public <U> Array<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        return ofAll(iterator().distinctByKeepLast(keyExtractor));
+    }
+
+    @Override
     public Array<T> drop(int n) {
         if (n <= 0) {
             return this;

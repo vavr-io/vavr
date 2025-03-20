@@ -604,6 +604,8 @@ public class IteratorTest extends AbstractTraversableTest {
         multipleHasNext(() -> Iterator.of(1, 2, 1, 2, 1, 2).distinct());
         multipleHasNext(() -> Iterator.of(1, 2, 1, 2, 1, 2).distinctBy(e -> e % 2));
         multipleHasNext(() -> Iterator.of(1, 2, 1, 2, 1, 2).distinctBy(Comparator.comparingInt(e -> e % 2)));
+        multipleHasNext(() -> Iterator.of(1, 2, 1, 2, 1, 2).distinctByKeepLast(e -> e % 2));
+        multipleHasNext(() -> Iterator.of(1, 2, 1, 2, 1, 2).distinctByKeepLast(Comparator.comparingInt(e -> e % 2)));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).drop(1));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).dropRight(1));
         multipleHasNext(() -> Iterator.of(1, 2, 3, 4).dropUntil(e -> e == 3));

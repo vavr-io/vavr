@@ -106,6 +106,12 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
     @Override
+    IndexedSeq<T> distinctByKeepLast(Comparator<? super T> comparator);
+
+    @Override
+    <U> IndexedSeq<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor);
+
+    @Override
     IndexedSeq<T> drop(int n);
 
     @Override

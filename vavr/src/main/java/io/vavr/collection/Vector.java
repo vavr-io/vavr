@@ -686,6 +686,18 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public Vector<T> distinctByKeepLast(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        return ofAll(iterator().distinctByKeepLast(comparator));
+    }
+
+    @Override
+    public <U> Vector<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        return ofAll(iterator().distinctByKeepLast(keyExtractor));
+    }
+
+    @Override
     public Vector<T> drop(int n) {
         return wrap(trie.drop(n));
     }

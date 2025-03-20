@@ -1373,6 +1373,30 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
+    default Iterator<T> distinctByKeepLast(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator, "comparator is null");
+        if (!hasNext()) {
+            return empty();
+        } else {
+            return Collections.reverseIterator(new DistinctIterator<>(
+                    Collections.reverseIterator(this),
+                    TreeSet.empty(comparator),
+                    Function.identity()));
+        }
+    }
+
+    default <U> Iterator<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
+        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+        if (!hasNext()) {
+            return empty();
+        } else {
+            return Collections.reverseIterator(new DistinctIterator<>(
+                    Collections.reverseIterator(this),
+                    io.vavr.collection.HashSet.empty(),
+                    keyExtractor));
+        }
+    }
+
     /**
      * Removes up to n elements from this iterator.
      *
