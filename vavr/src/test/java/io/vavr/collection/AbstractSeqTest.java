@@ -24,12 +24,15 @@ import io.vavr.control.Option;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collector;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestTemplate;
 
+import static java.util.Comparator.comparingInt;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -2284,6 +2287,57 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
     public void shouldTestIndexedSeqEndsWithNonIndexedSeq() {
         assertThat(of(1, 3, 4).endsWith(Stream.of(3, 4))).isTrue();
         assertThat(of(1, 2, 3, 4).endsWith(Stream.of(2, 3, 5))).isFalse();
+    }
+
+    // -- distinctByKeepLast(Comparator)
+
+    @TestTemplate
+    public void shouldComputeDistinctByKeepLastOfEmptySeqUsingComparator() {
+        final Comparator<Integer> comparator = comparingInt(i -> i);
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(this.<Integer>empty().distinctByKeepLast(comparator)).isEqualTo(empty());
+        } else {
+            assertThat(this.<Integer>empty().distinctByKeepLast(comparator)).isSameAs(empty());
+        }
+    }
+
+    @TestTemplate
+    public void shouldComputeDistinctByKeepLastOfNonEmptySeqUsingComparator() {
+        final Comparator<String> comparator = comparingInt(s -> (s.charAt(1)));
+        final Seq<String> distinct = of("1a", "2a", "3b", "4b", "3a", "5c")
+                .distinctByKeepLast(comparator);
+        assertThat(distinct).isEqualTo(of("4b", "3a", "5c"));
+    }
+
+    @TestTemplate
+    public void shouldReturnSameInstanceWhenDistinctByKeepLastComparatorEmptySeq() {
+        final Seq<?> empty = empty();
+        assertThat(empty.distinctByKeepLast(Comparators.naturalComparator())).isSameAs(empty);
+    }
+
+    // -- distinctByKeepLast(Function)
+
+    @TestTemplate
+    public void shouldComputeDistinctByKeepLastOfEmptySeqUsingKeyExtractor() {
+        if (useIsEqualToInsteadOfIsSameAs()) {
+            assertThat(empty().distinctByKeepLast(Function.identity())).isEqualTo(empty());
+        } else {
+            assertThat(empty().distinctByKeepLast(Function.identity())).isSameAs(empty());
+        }
+    }
+
+    @TestTemplate
+    public void shouldComputeDistinctByKeepLastOfNonEmptySeqUsingKeyExtractor() {
+        final Function<String, Character> function = c -> c.charAt(1);
+        final Seq<String> distinct = of("1a", "2a", "3b", "4b", "3a", "5c")
+                .distinctByKeepLast(function);
+        assertThat(distinct).isEqualTo(of("4b", "3a", "5c"));
+    }
+
+    @TestTemplate
+    public void shouldReturnSameInstanceWhenDistinctByKeepLastFunctionEmptySeq() {
+        final Seq<?> empty = empty();
+        assertThat(empty.distinctByKeepLast(Function.identity())).isSameAs(empty);
     }
 
     private interface SomeInterface {

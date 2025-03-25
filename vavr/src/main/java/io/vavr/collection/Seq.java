@@ -1126,6 +1126,31 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     @Override
     <U> Seq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
 
+    /**
+     * Returns a sequential collection where duplicate elements, as determined by the comparator,
+     * are removed. If duplicates are encountered, the last occurrence of the element is
+     * retained in the resulting sequence.
+     *
+     * @param comparator the comparator used to determine equality of elements for the purpose
+     *                   of identifying duplicates. The comparator defines if two elements are
+     *                   considered equal.
+     * @return a new sequence where duplicates are removed, retaining the last occurrence of
+     *         each element as per the comparator provided.
+     */
+    Seq<T> distinctByKeepLast(Comparator<? super T> comparator);
+
+    /**
+     * Returns a sequential Stream-like sequence where the elements are distinct based on a key
+     * derived from the provided keyExtractor function. When duplicate elements are found,
+     * the last encountered element is kept in the sequence.
+     *
+     * @param <U> the type of key extracted from elements of this sequence
+     * @param keyExtractor the function to extract the key used for determining uniqueness
+     * @return a sequence consisting of distinct elements, keeping the last occurrence of each
+     *         duplicate based on the extracted key
+     */
+    <U> Seq<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor);
+
     @Override
     Seq<T> drop(int n);
 
