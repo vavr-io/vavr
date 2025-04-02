@@ -252,6 +252,9 @@ public interface Set<T> extends Traversable<T>, Serializable {
     Set<T> peek(Consumer<? super T> action);
 
     @Override
+    Set<T> tapEach(Consumer<? super T> action);
+    
+    @Override
     Set<T> replace(T currentElement, T newElement);
 
     @Override

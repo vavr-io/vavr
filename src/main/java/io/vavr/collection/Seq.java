@@ -1267,6 +1267,9 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Seq<T> peek(Consumer<? super T> action);
 
     @Override
+    Seq<T> tapEach(Consumer<? super T> action);
+    
+    @Override
     Seq<T> replace(T currentElement, T newElement);
 
     @Override
