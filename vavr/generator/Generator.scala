@@ -1668,7 +1668,7 @@ def generateMainClasses(): Unit = {
                 """
               })("\n\n")}
 
-              ${(1 until i).gen(j => {
+              ${(1 to i).gen(j => {
                 val partialApplicationArgs = (1 to j-1).gen(k => s"T$k t$k")(", ")
                 val resultFunctionGenerics = (j+1 to i).gen(k => s"T$k")(", ")
                 val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
