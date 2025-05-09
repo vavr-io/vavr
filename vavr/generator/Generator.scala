@@ -1677,11 +1677,10 @@ def generateMainClasses(): Unit = {
                 val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(", ")
                 xs"""
                   /$javadoc
-                   * Compose $j
-                   * Returns a composed function that first applies the {@linkplain Function} {@code $fName} the
-                   * given argument and then applies this Function1 to the result.
+                   * Returns a composed function that first applies the {@linkplain Function} {@code $fName} to the
+                   * ${j.ordinal} argument and then applies this $className to the result.
                    *
-                   * @param <V> argument type of before
+                   * @param <S> argument type of before
                    * @param $fName the function applied before this
                    * @return a function composed of before and this
                    * @throws NullPointerException if before is null
