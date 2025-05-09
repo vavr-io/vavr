@@ -1670,6 +1670,7 @@ def generateMainClasses(): Unit = {
 
               ${(1 to i).gen(j => {
                 val partialApplicationArgs = (1 to j-1).gen(k => s"T$k t$k")(", ")
+                val preGenerics = (1 to j-1).gen(k => s"T$k")(", ")
                 val resultFunctionGenerics = (j+1 to i).gen(k => s"T$k")(", ")
                 val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
                 val fixedApplyArgs = (1 to j-1).gen(k => s"t$k")(", ")
@@ -1678,7 +1679,7 @@ def generateMainClasses(): Unit = {
                   /$javadoc
                    * Compose $j
                    */
-                  default $className<$fixedApplyArgs, S, $resultFunctionGenerics, R> compose$j(Function1<S, T$j> f) {
+                  default $className<$preGenerics, S, $resultFunctionGenerics, R> compose$j(Function1<S, T$j> f) {
                       return ($partialApplicationArgs, S s, $resultFunctionArgs) -> apply($fixedApplyArgs, f.apply(s), $variableApplyArgs);
                   }
                 """
