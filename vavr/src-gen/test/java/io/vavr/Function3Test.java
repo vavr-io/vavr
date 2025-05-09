@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class Function3Test {
@@ -159,25 +160,30 @@ public class Function3Test {
         assertThat(composed).isNotNull();
     }
 
-    @Test
-    public void shouldCompose1() {
-        final Function3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
-        final Function1<String, String> toUpperCase = String::toUpperCase;
-        assertThat(concat.compose1(toUpperCase).apply("xx", "s2", "s3")).isEqualTo("XXs2s3");
-    }
+    @Nested
+    class ComposeTests {
 
-    @Test
-    public void shouldCompose2() {
-        final Function3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
-        final Function1<String, String> toUpperCase = String::toUpperCase;
-        assertThat(concat.compose2(toUpperCase).apply("s1", "xx", "s3")).isEqualTo("s1XXs3");
-    }
+      @Test
+      public void shouldCompose1() {
+          final Function3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
+          final Function1<String, String> toUpperCase = String::toUpperCase;
+          assertThat(concat.compose1(toUpperCase).apply("xx", "s2", "s3")).isEqualTo("XXs2s3");
+      }
 
-    @Test
-    public void shouldCompose3() {
-        final Function3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
-        final Function1<String, String> toUpperCase = String::toUpperCase;
-        assertThat(concat.compose3(toUpperCase).apply("s1", "s2", "xx")).isEqualTo("s1s2XX");
+      @Test
+      public void shouldCompose2() {
+          final Function3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
+          final Function1<String, String> toUpperCase = String::toUpperCase;
+          assertThat(concat.compose2(toUpperCase).apply("s1", "xx", "s3")).isEqualTo("s1XXs3");
+      }
+
+      @Test
+      public void shouldCompose3() {
+          final Function3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
+          final Function1<String, String> toUpperCase = String::toUpperCase;
+          assertThat(concat.compose3(toUpperCase).apply("s1", "s2", "xx")).isEqualTo("s1s2XX");
+      }
+
     }
 
     @Test

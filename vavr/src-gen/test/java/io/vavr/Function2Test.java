@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class Function2Test {
@@ -158,18 +159,23 @@ public class Function2Test {
         assertThat(composed).isNotNull();
     }
 
-    @Test
-    public void shouldCompose1() {
-        final Function2<String, String, String> concat = (String s1, String s2) -> s1 + s2;
-        final Function1<String, String> toUpperCase = String::toUpperCase;
-        assertThat(concat.compose1(toUpperCase).apply("xx", "s2")).isEqualTo("XXs2");
-    }
+    @Nested
+    class ComposeTests {
 
-    @Test
-    public void shouldCompose2() {
-        final Function2<String, String, String> concat = (String s1, String s2) -> s1 + s2;
-        final Function1<String, String> toUpperCase = String::toUpperCase;
-        assertThat(concat.compose2(toUpperCase).apply("s1", "xx")).isEqualTo("s1XX");
+      @Test
+      public void shouldCompose1() {
+          final Function2<String, String, String> concat = (String s1, String s2) -> s1 + s2;
+          final Function1<String, String> toUpperCase = String::toUpperCase;
+          assertThat(concat.compose1(toUpperCase).apply("xx", "s2")).isEqualTo("XXs2");
+      }
+
+      @Test
+      public void shouldCompose2() {
+          final Function2<String, String, String> concat = (String s1, String s2) -> s1 + s2;
+          final Function1<String, String> toUpperCase = String::toUpperCase;
+          assertThat(concat.compose2(toUpperCase).apply("s1", "xx")).isEqualTo("s1XX");
+      }
+
     }
 
     @Test

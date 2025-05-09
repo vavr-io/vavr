@@ -3100,6 +3100,7 @@ def generateTestClasses(): Unit = {
       def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
         val AtomicInteger = im.getType("java.util.concurrent.atomic.AtomicInteger")
+        val nested = im.getType("org.junit.jupiter.api.Nested")
 
         val functionArgsDecl = (1 to i).gen(j => s"Object o$j")(", ")
         val functionArgs = (1 to i).gen(j => s"o$j")(", ")
@@ -3444,24 +3445,27 @@ def generateTestClasses(): Unit = {
                   $assertThat(composed).isNotNull();
               }
 
+              @Nested
+              class ComposeTests {
+                ${(1 to i).gen(j =>
+                  val genArgs = (1 to i).gen(k => "String")(", ")
+                  val params = (1 to i).gen(k => s"String s$k")(", ")
+                  val values = (1 to i).gen(k => if (k == j) "\"xx\"" else s"\"s$k\"")(", ")
+                  val expected = (1 to i).gen(k => if (k == j) "XX" else s"s$k")("")
+                  val concat = (1 to i).gen(k => s"s$k")(" + ")
+                  xs"""
 
-              ${(1 to i).gen(j =>
-                val genArgs = (1 to i).gen(k => "String")(", ")
-                val params = (1 to i).gen(k => s"String s$k")(", ")
-                val values = (1 to i).gen(k => if (k == j) "\"xx\"" else s"\"s$k\"")(", ")
-                val expected = (1 to i).gen(k => if (k == j) "XX" else s"s$k")("")
-                val concat = (1 to i).gen(k => s"s$k")(" + ")
-                xs"""
+                  @$test
+                  public void shouldCompose$j() ${checked.gen(" throws Throwable ")}{
+                      final $name$i<$genArgs, String> concat = ($params) -> $concat;
+                      final Function1<String, String> toUpperCase = String::toUpperCase;
+                      assertThat(concat.compose$j(toUpperCase).apply($values)).isEqualTo(\"$expected\");
+                  }
 
-              @$test
-              public void shouldCompose$j() ${checked.gen(" throws Throwable ")}{
-                  final $name$i<$genArgs, String> concat = ($params) -> $concat;
-                  final Function1<String, String> toUpperCase = String::toUpperCase;
-                  assertThat(concat.compose$j(toUpperCase).apply($values)).isEqualTo(\"$expected\");
+                  """
+                )}
+
               }
-
-                """
-              )}
 
               ${(i == 0).gen(xs"""
               @$test
