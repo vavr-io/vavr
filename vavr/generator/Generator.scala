@@ -3432,16 +3432,23 @@ def generateTestClasses(): Unit = {
               }
 
 
-              ${(1 to i).gen(i => xs"""
-                @$test
-                public void shouldComposeWithCompose$i() {
-                    final $name$i<$generics> f = ($functionArgs) -> null;
-                    final ${name}1<Object, Object> before = o -> null;
-                    final $name$i<$generics> composed = f.compose${i}(before);
-                    $assertThat(composed).isNotNull();
-                }
+              ${(1 to i).gen(j =>
+                val genArgs = (1 to i).gen(k => "String")(", ")
+                val params = (1 to i).gen(k => s"String s$k")(", ")
+                val values = (1 to i).gen(k => if (k == j) "\"xx\"" else s"\"s$k\"")(", ")
+                val expected = (1 to i).gen(k => if (k == j) "XX" else s"s$k")("")
+                val concat = (1 to i).gen(k => s"s$k")(" + ")
+                xs"""
+              @$test
+              public void shouldComposeWithCompose$j() ${checked.gen(" throws Throwable ")}{
+                  final $name$i<$genArgs, String> f = ($params) -> $concat;
+                  final Function1<String, String> toUpperCase = String::toUpperCase;
+                  assertThat(f.compose$j(toUpperCase).apply($values)).isEqualTo(\"$expected\");
+              }
 
-              """)}
+
+                """
+              )}
 
               ${(i == 0).gen(xs"""
               @$test
