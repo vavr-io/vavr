@@ -159,20 +159,6 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
     R apply(T1 t1);
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before1} to the
-     * 1st argument and then applies this Function1 to the result.
-     *
-     * @param <S> argument type of before1
-     * @param before1 the function applied before this
-     * @return a function composed of before1 and this
-     * @throws NullPointerException if before1 is null
-     */
-    default <S> Function1<S, R> compose1(Function1<? super S, ? extends T1> before1) {
-        Objects.requireNonNull(before1, "before1 is null");
-        return (S s) -> apply(before1.apply(s));
-    }
-
-    /**
      * Returns the number of function arguments.
      * @return an int value &gt;= 0
      * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
@@ -300,5 +286,19 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
     default <V> Function1<V, R> compose(Function<? super V, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return v -> apply(before.apply(v));
+    }
+
+    /**
+     * Returns a composed function that first applies the {@linkplain Function} {@code before1} to the
+     * 1st argument and then applies this Function1 to the result.
+     *
+     * @param <S> argument type of before1
+     * @param before1 the function applied before this
+     * @return a function composed of before1 and this
+     * @throws NullPointerException if before1 is null
+     */
+    default <S> Function1<S, R> compose1(Function1<? super S, ? extends T1> before1) {
+        Objects.requireNonNull(before1, "before1 is null");
+        return (S s) -> apply(before1.apply(s));
     }
 }

@@ -1668,35 +1668,6 @@ def generateMainClasses(): Unit = {
                 """
               })("\n\n")}
 
-              ${(1 to i).gen(j => {
-                val fName = s"before$j"
-                val fGeneric = "S"
-                val applicationArgs = (1 to i).gen(k => if (k == j) s"$fGeneric ${fGeneric.toLowerCase}" else s"T$k t$k")(", ")
-                val generics = (1 to i).gen(k => if (k == j) "S" else s"T$k")(", ")
-                val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
-                val applyArgs = (1 to i).gen(k => if (k ==j) s"$fName.apply(${fGeneric.toLowerCase})" else s"t$k")(", ")
-                val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(", ")
-                val docAdd = i match
-                  case 1 => ""
-                  case 2 => " and the other argument"
-                  case _ => " and the other arguments"
-                xs"""
-                  /$javadoc
-                   * Returns a composed function that first applies the {@linkplain Function} {@code $fName} to the
-                   * ${j.ordinal} argument and then applies this $className to the result$docAdd.
-                   *
-                   * @param <$fGeneric> argument type of $fName
-                   * @param $fName the function applied before this
-                   * @return a function composed of $fName and this
-                   * @throws NullPointerException if $fName is null
-                   */
-                  default <S> $className<$generics, R> compose$j(Function1<? super $fGeneric, ? extends T$j> $fName) {
-                      Objects.requireNonNull($fName, "$fName is null");
-                      return ($applicationArgs) -> apply($applyArgs);
-                  }
-                """
-              })("\n\n")}
-
               ${(i == 0 && !checked).gen(
                 xs"""
                   /$javadoc
@@ -1921,6 +1892,35 @@ def generateMainClasses(): Unit = {
                     return v -> apply(before.apply(v));
                 }
               """)}
+
+              ${(1 to i).gen(j => {
+                val fName = s"before$j"
+                val fGeneric = "S"
+                val applicationArgs = (1 to i).gen(k => if (k == j) s"$fGeneric ${fGeneric.toLowerCase}" else s"T$k t$k")(", ")
+                val generics = (1 to i).gen(k => if (k == j) "S" else s"T$k")(", ")
+                val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
+                val applyArgs = (1 to i).gen(k => if (k ==j) s"$fName.apply(${fGeneric.toLowerCase})" else s"t$k")(", ")
+                val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(", ")
+                val docAdd = i match
+                  case 1 => ""
+                  case 2 => " and the other argument"
+                  case _ => " and the other arguments"
+                xs"""
+                  /$javadoc
+                   * Returns a composed function that first applies the {@linkplain Function} {@code $fName} to the
+                   * ${j.ordinal} argument and then applies this $className to the result$docAdd.
+                   *
+                   * @param <$fGeneric> argument type of $fName
+                   * @param $fName the function applied before this
+                   * @return a function composed of $fName and this
+                   * @throws NullPointerException if $fName is null
+                   */
+                  default <S> $className<$generics, R> compose$j(Function1<? super $fGeneric, ? extends T$j> $fName) {
+                      Objects.requireNonNull($fName, "$fName is null");
+                      return ($applicationArgs) -> apply($applyArgs);
+                  }
+                """
+              })("\n\n")}
           }
 
           ${checked.gen(xs"""

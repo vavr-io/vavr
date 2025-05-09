@@ -267,104 +267,6 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Seriali
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before1} to the
-     * 1st argument and then applies this CheckedFunction7 to the result and the other arguments.
-     *
-     * @param <S> argument type of before1
-     * @param before1 the function applied before this
-     * @return a function composed of before1 and this
-     * @throws NullPointerException if before1 is null
-     */
-    default <S> CheckedFunction7<S, T2, T3, T4, T5, T6, T7, R> compose1(Function1<? super S, ? extends T1> before1) {
-        Objects.requireNonNull(before1, "before1 is null");
-        return (S s, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(before1.apply(s), t2, t3, t4, t5, t6, t7);
-    }
-
-    /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before2} to the
-     * 2nd argument and then applies this CheckedFunction7 to the result and the other arguments.
-     *
-     * @param <S> argument type of before2
-     * @param before2 the function applied before this
-     * @return a function composed of before2 and this
-     * @throws NullPointerException if before2 is null
-     */
-    default <S> CheckedFunction7<T1, S, T3, T4, T5, T6, T7, R> compose2(Function1<? super S, ? extends T2> before2) {
-        Objects.requireNonNull(before2, "before2 is null");
-        return (T1 t1, S s, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(t1, before2.apply(s), t3, t4, t5, t6, t7);
-    }
-
-    /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before3} to the
-     * 3rd argument and then applies this CheckedFunction7 to the result and the other arguments.
-     *
-     * @param <S> argument type of before3
-     * @param before3 the function applied before this
-     * @return a function composed of before3 and this
-     * @throws NullPointerException if before3 is null
-     */
-    default <S> CheckedFunction7<T1, T2, S, T4, T5, T6, T7, R> compose3(Function1<? super S, ? extends T3> before3) {
-        Objects.requireNonNull(before3, "before3 is null");
-        return (T1 t1, T2 t2, S s, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(t1, t2, before3.apply(s), t4, t5, t6, t7);
-    }
-
-    /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before4} to the
-     * 4th argument and then applies this CheckedFunction7 to the result and the other arguments.
-     *
-     * @param <S> argument type of before4
-     * @param before4 the function applied before this
-     * @return a function composed of before4 and this
-     * @throws NullPointerException if before4 is null
-     */
-    default <S> CheckedFunction7<T1, T2, T3, S, T5, T6, T7, R> compose4(Function1<? super S, ? extends T4> before4) {
-        Objects.requireNonNull(before4, "before4 is null");
-        return (T1 t1, T2 t2, T3 t3, S s, T5 t5, T6 t6, T7 t7) -> apply(t1, t2, t3, before4.apply(s), t5, t6, t7);
-    }
-
-    /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before5} to the
-     * 5th argument and then applies this CheckedFunction7 to the result and the other arguments.
-     *
-     * @param <S> argument type of before5
-     * @param before5 the function applied before this
-     * @return a function composed of before5 and this
-     * @throws NullPointerException if before5 is null
-     */
-    default <S> CheckedFunction7<T1, T2, T3, T4, S, T6, T7, R> compose5(Function1<? super S, ? extends T5> before5) {
-        Objects.requireNonNull(before5, "before5 is null");
-        return (T1 t1, T2 t2, T3 t3, T4 t4, S s, T6 t6, T7 t7) -> apply(t1, t2, t3, t4, before5.apply(s), t6, t7);
-    }
-
-    /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before6} to the
-     * 6th argument and then applies this CheckedFunction7 to the result and the other arguments.
-     *
-     * @param <S> argument type of before6
-     * @param before6 the function applied before this
-     * @return a function composed of before6 and this
-     * @throws NullPointerException if before6 is null
-     */
-    default <S> CheckedFunction7<T1, T2, T3, T4, T5, S, T7, R> compose6(Function1<? super S, ? extends T6> before6) {
-        Objects.requireNonNull(before6, "before6 is null");
-        return (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, S s, T7 t7) -> apply(t1, t2, t3, t4, t5, before6.apply(s), t7);
-    }
-
-    /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before7} to the
-     * 7th argument and then applies this CheckedFunction7 to the result and the other arguments.
-     *
-     * @param <S> argument type of before7
-     * @param before7 the function applied before this
-     * @return a function composed of before7 and this
-     * @throws NullPointerException if before7 is null
-     */
-    default <S> CheckedFunction7<T1, T2, T3, T4, T5, T6, S, R> compose7(Function1<? super S, ? extends T7> before7) {
-        Objects.requireNonNull(before7, "before7 is null");
-        return (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, S s) -> apply(t1, t2, t3, t4, t5, t6, before7.apply(s));
-    }
-
-    /**
      * Returns the number of function arguments.
      * @return an int value &gt;= 0
      * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
@@ -491,6 +393,103 @@ public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Seriali
         return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
     }
 
+    /**
+     * Returns a composed function that first applies the {@linkplain Function} {@code before1} to the
+     * 1st argument and then applies this CheckedFunction7 to the result and the other arguments.
+     *
+     * @param <S> argument type of before1
+     * @param before1 the function applied before this
+     * @return a function composed of before1 and this
+     * @throws NullPointerException if before1 is null
+     */
+    default <S> CheckedFunction7<S, T2, T3, T4, T5, T6, T7, R> compose1(Function1<? super S, ? extends T1> before1) {
+        Objects.requireNonNull(before1, "before1 is null");
+        return (S s, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(before1.apply(s), t2, t3, t4, t5, t6, t7);
+    }
+
+    /**
+     * Returns a composed function that first applies the {@linkplain Function} {@code before2} to the
+     * 2nd argument and then applies this CheckedFunction7 to the result and the other arguments.
+     *
+     * @param <S> argument type of before2
+     * @param before2 the function applied before this
+     * @return a function composed of before2 and this
+     * @throws NullPointerException if before2 is null
+     */
+    default <S> CheckedFunction7<T1, S, T3, T4, T5, T6, T7, R> compose2(Function1<? super S, ? extends T2> before2) {
+        Objects.requireNonNull(before2, "before2 is null");
+        return (T1 t1, S s, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(t1, before2.apply(s), t3, t4, t5, t6, t7);
+    }
+
+    /**
+     * Returns a composed function that first applies the {@linkplain Function} {@code before3} to the
+     * 3rd argument and then applies this CheckedFunction7 to the result and the other arguments.
+     *
+     * @param <S> argument type of before3
+     * @param before3 the function applied before this
+     * @return a function composed of before3 and this
+     * @throws NullPointerException if before3 is null
+     */
+    default <S> CheckedFunction7<T1, T2, S, T4, T5, T6, T7, R> compose3(Function1<? super S, ? extends T3> before3) {
+        Objects.requireNonNull(before3, "before3 is null");
+        return (T1 t1, T2 t2, S s, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(t1, t2, before3.apply(s), t4, t5, t6, t7);
+    }
+
+    /**
+     * Returns a composed function that first applies the {@linkplain Function} {@code before4} to the
+     * 4th argument and then applies this CheckedFunction7 to the result and the other arguments.
+     *
+     * @param <S> argument type of before4
+     * @param before4 the function applied before this
+     * @return a function composed of before4 and this
+     * @throws NullPointerException if before4 is null
+     */
+    default <S> CheckedFunction7<T1, T2, T3, S, T5, T6, T7, R> compose4(Function1<? super S, ? extends T4> before4) {
+        Objects.requireNonNull(before4, "before4 is null");
+        return (T1 t1, T2 t2, T3 t3, S s, T5 t5, T6 t6, T7 t7) -> apply(t1, t2, t3, before4.apply(s), t5, t6, t7);
+    }
+
+    /**
+     * Returns a composed function that first applies the {@linkplain Function} {@code before5} to the
+     * 5th argument and then applies this CheckedFunction7 to the result and the other arguments.
+     *
+     * @param <S> argument type of before5
+     * @param before5 the function applied before this
+     * @return a function composed of before5 and this
+     * @throws NullPointerException if before5 is null
+     */
+    default <S> CheckedFunction7<T1, T2, T3, T4, S, T6, T7, R> compose5(Function1<? super S, ? extends T5> before5) {
+        Objects.requireNonNull(before5, "before5 is null");
+        return (T1 t1, T2 t2, T3 t3, T4 t4, S s, T6 t6, T7 t7) -> apply(t1, t2, t3, t4, before5.apply(s), t6, t7);
+    }
+
+    /**
+     * Returns a composed function that first applies the {@linkplain Function} {@code before6} to the
+     * 6th argument and then applies this CheckedFunction7 to the result and the other arguments.
+     *
+     * @param <S> argument type of before6
+     * @param before6 the function applied before this
+     * @return a function composed of before6 and this
+     * @throws NullPointerException if before6 is null
+     */
+    default <S> CheckedFunction7<T1, T2, T3, T4, T5, S, T7, R> compose6(Function1<? super S, ? extends T6> before6) {
+        Objects.requireNonNull(before6, "before6 is null");
+        return (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, S s, T7 t7) -> apply(t1, t2, t3, t4, t5, before6.apply(s), t7);
+    }
+
+    /**
+     * Returns a composed function that first applies the {@linkplain Function} {@code before7} to the
+     * 7th argument and then applies this CheckedFunction7 to the result and the other arguments.
+     *
+     * @param <S> argument type of before7
+     * @param before7 the function applied before this
+     * @return a function composed of before7 and this
+     * @throws NullPointerException if before7 is null
+     */
+    default <S> CheckedFunction7<T1, T2, T3, T4, T5, T6, S, R> compose7(Function1<? super S, ? extends T7> before7) {
+        Objects.requireNonNull(before7, "before7 is null");
+        return (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, S s) -> apply(t1, t2, t3, t4, t5, t6, before7.apply(s));
+    }
 }
 
 interface CheckedFunction7Module {

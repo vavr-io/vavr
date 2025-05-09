@@ -288,6 +288,97 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Serializab
     }
 
     /**
+     * Returns the number of function arguments.
+     * @return an int value &gt;= 0
+     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
+     */
+    default int arity() {
+        return 8;
+    }
+
+    /**
+     * Returns a curried version of this function.
+     *
+     * @return a curried function equivalent to this.
+     */
+    default Function1<T1, Function1<T2, Function1<T3, Function1<T4, Function1<T5, Function1<T6, Function1<T7, Function1<T8, R>>>>>>>> curried() {
+        return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> t7 -> t8 -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
+    }
+
+    /**
+     * Returns a tupled version of this function.
+     *
+     * @return a tupled function equivalent to this.
+     */
+    default Function1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled() {
+        return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8);
+    }
+
+    /**
+     * Returns a reversed version of this function. This may be useful in a recursive context.
+     *
+     * @return a reversed function equivalent to this.
+     */
+    default Function8<T8, T7, T6, T5, T4, T3, T2, T1, R> reversed() {
+        return (t8, t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
+    }
+
+    /**
+     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
+     * On subsequent calls given the same arguments the memoized value is returned.
+     * <p>
+     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
+     *
+     * @return a memoizing function equivalent to this.
+     */
+    default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> memoized() {
+        if (isMemoized()) {
+            return this;
+        } else {
+            final Map<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> cache = new HashMap<>();
+            final ReentrantLock lock = new ReentrantLock();
+            return (Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7, t8) -> {
+                final Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> key = Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8);
+                lock.lock();
+                try {
+                    if (cache.containsKey(key)) {
+                        return cache.get(key);
+                    } else {
+                        final R value = tupled().apply(key);
+                        cache.put(key, value);
+                        return value;
+                    }
+                } finally {
+                    lock.unlock();
+                }
+            };
+        }
+    }
+
+    /**
+     * Checks if this function is memoizing (= caching) computed values.
+     *
+     * @return true, if this function is memoizing, false otherwise
+     */
+    default boolean isMemoized() {
+        return this instanceof Memoized;
+    }
+
+    /**
+     * Returns a composed function that first applies this Function8 to the given argument and then applies
+     * {@linkplain Function} {@code after} to the result.
+     *
+     * @param <V> return type of after
+     * @param after the function applied after this
+     * @return a function composed of this and after
+     * @throws NullPointerException if after is null
+     */
+    default <V> Function8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(Function<? super R, ? extends V> after) {
+        Objects.requireNonNull(after, "after is null");
+        return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
+    }
+
+    /**
      * Returns a composed function that first applies the {@linkplain Function} {@code before1} to the
      * 1st argument and then applies this Function8 to the result and the other arguments.
      *
@@ -398,96 +489,4 @@ public interface Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> extends Serializab
         Objects.requireNonNull(before8, "before8 is null");
         return (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7, S s) -> apply(t1, t2, t3, t4, t5, t6, t7, before8.apply(s));
     }
-
-    /**
-     * Returns the number of function arguments.
-     * @return an int value &gt;= 0
-     * @see <a href="http://en.wikipedia.org/wiki/Arity">Arity</a>
-     */
-    default int arity() {
-        return 8;
-    }
-
-    /**
-     * Returns a curried version of this function.
-     *
-     * @return a curried function equivalent to this.
-     */
-    default Function1<T1, Function1<T2, Function1<T3, Function1<T4, Function1<T5, Function1<T6, Function1<T7, Function1<T8, R>>>>>>>> curried() {
-        return t1 -> t2 -> t3 -> t4 -> t5 -> t6 -> t7 -> t8 -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
-    }
-
-    /**
-     * Returns a tupled version of this function.
-     *
-     * @return a tupled function equivalent to this.
-     */
-    default Function1<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> tupled() {
-        return t -> apply(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8);
-    }
-
-    /**
-     * Returns a reversed version of this function. This may be useful in a recursive context.
-     *
-     * @return a reversed function equivalent to this.
-     */
-    default Function8<T8, T7, T6, T5, T4, T3, T2, T1, R> reversed() {
-        return (t8, t7, t6, t5, t4, t3, t2, t1) -> apply(t1, t2, t3, t4, t5, t6, t7, t8);
-    }
-
-    /**
-     * Returns a memoizing version of this function, which computes the return value for given arguments only one time.
-     * On subsequent calls given the same arguments the memoized value is returned.
-     * <p>
-     * Please note that memoizing functions do not permit {@code null} as single argument or return value.
-     *
-     * @return a memoizing function equivalent to this.
-     */
-    default Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> memoized() {
-        if (isMemoized()) {
-            return this;
-        } else {
-            final Map<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>, R> cache = new HashMap<>();
-            final ReentrantLock lock = new ReentrantLock();
-            return (Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> & Memoized) (t1, t2, t3, t4, t5, t6, t7, t8) -> {
-                final Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> key = Tuple.of(t1, t2, t3, t4, t5, t6, t7, t8);
-                lock.lock();
-                try {
-                    if (cache.containsKey(key)) {
-                        return cache.get(key);
-                    } else {
-                        final R value = tupled().apply(key);
-                        cache.put(key, value);
-                        return value;
-                    }
-                } finally {
-                    lock.unlock();
-                }
-            };
-        }
-    }
-
-    /**
-     * Checks if this function is memoizing (= caching) computed values.
-     *
-     * @return true, if this function is memoizing, false otherwise
-     */
-    default boolean isMemoized() {
-        return this instanceof Memoized;
-    }
-
-    /**
-     * Returns a composed function that first applies this Function8 to the given argument and then applies
-     * {@linkplain Function} {@code after} to the result.
-     *
-     * @param <V> return type of after
-     * @param after the function applied after this
-     * @return a function composed of this and after
-     * @throws NullPointerException if after is null
-     */
-    default <V> Function8<T1, T2, T3, T4, T5, T6, T7, T8, V> andThen(Function<? super R, ? extends V> after) {
-        Objects.requireNonNull(after, "after is null");
-        return (t1, t2, t3, t4, t5, t6, t7, t8) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7, t8));
-    }
-
 }
