@@ -3415,14 +3415,16 @@ def generateTestClasses(): Unit = {
                   $assertThat(composed).isNotNull();
               }
 
-              ${(i == 1).gen(xs"""
+
+              ${(1 to i).gen(i => xs"""
                 @$test
-                public void shouldComposeWithCompose() {
+                public void shouldComposeWithCompose$i() {
                     final $name$i<$generics> f = ($functionArgs) -> null;
                     final ${name}1<Object, Object> before = o -> null;
-                    final $name$i<$generics> composed = f.compose(before);
+                    final $name$i<$generics> composed = f.compose${i}(before);
                     $assertThat(composed).isNotNull();
                 }
+
               """)}
 
               ${(i == 0).gen(xs"""
