@@ -1669,16 +1669,25 @@ def generateMainClasses(): Unit = {
               })("\n\n")}
 
               ${(1 to i).gen(j => {
+                val fName = "f"
                 val applicationArgs = (1 to i).gen(k => if (k == j) "S s" else s"T$k t$k")(", ")
                 val generics = (1 to i).gen(k => if (k == j) "S" else s"T$k")(", ")
                 val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
-                val applyArgs = (1 to i).gen(k => if (k ==j) "f.apply(s)" else s"t$k")(", ")
+                val applyArgs = (1 to i).gen(k => if (k ==j) s"$fName.apply(s)" else s"t$k")(", ")
                 val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(", ")
                 xs"""
                   /$javadoc
                    * Compose $j
+                   * Returns a composed function that first applies the {@linkplain Function} {@code $fName} the
+                   * given argument and then applies this Function1 to the result.
+                   *
+                   * @param <V> argument type of before
+                   * @param $fName the function applied before this
+                   * @return a function composed of before and this
+                   * @throws NullPointerException if before is null
                    */
-                  default <S> $className<$generics, R> compose$j(Function1<S, T$j> f) {
+                  default <S> $className<$generics, R> compose$j(Function1<S, T$j> $fName) {
+                      Objects.requireNonNull($fName, "$fName is null");
                       return ($applicationArgs) -> apply($applyArgs);
                   }
                 """
