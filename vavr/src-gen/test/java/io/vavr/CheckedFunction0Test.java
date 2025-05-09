@@ -31,6 +31,7 @@ import java.lang.CharSequence;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class CheckedFunction0Test {
@@ -193,6 +194,11 @@ public class CheckedFunction0Test {
         final CheckedFunction1<Object, Object> after = o -> null;
         final CheckedFunction0<Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
+    }
+
+    @Nested
+    class ComposeTests {
+
     }
 
     @Test

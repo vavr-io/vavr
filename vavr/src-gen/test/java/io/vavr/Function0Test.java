@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import io.vavr.control.Try;
 import java.lang.CharSequence;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class Function0Test {
@@ -146,6 +147,11 @@ public class Function0Test {
         final Function1<Object, Object> after = o -> null;
         final Function0<Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
+    }
+
+    @Nested
+    class ComposeTests {
+
     }
 
     @Test

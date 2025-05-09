@@ -31,6 +31,7 @@ import java.lang.CharSequence;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class CheckedFunction3Test {
@@ -199,6 +200,32 @@ public class CheckedFunction3Test {
         final CheckedFunction1<Object, Object> after = o -> null;
         final CheckedFunction3<Object, Object, Object, Object> composed = f.andThen(after);
         assertThat(composed).isNotNull();
+    }
+
+    @Nested
+    class ComposeTests {
+
+      @Test
+      public void shouldCompose1()  throws Throwable {
+          final CheckedFunction3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
+          final Function1<String, String> toUpperCase = String::toUpperCase;
+          assertThat(concat.compose1(toUpperCase).apply("xx", "s2", "s3")).isEqualTo("XXs2s3");
+      }
+
+      @Test
+      public void shouldCompose2()  throws Throwable {
+          final CheckedFunction3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
+          final Function1<String, String> toUpperCase = String::toUpperCase;
+          assertThat(concat.compose2(toUpperCase).apply("s1", "xx", "s3")).isEqualTo("s1XXs3");
+      }
+
+      @Test
+      public void shouldCompose3()  throws Throwable {
+          final CheckedFunction3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
+          final Function1<String, String> toUpperCase = String::toUpperCase;
+          assertThat(concat.compose3(toUpperCase).apply("s1", "s2", "xx")).isEqualTo("s1s2XX");
+      }
+
     }
 
     @Test
