@@ -202,6 +202,27 @@ public class CheckedFunction3Test {
     }
 
     @Test
+    public void shouldCompose1()  throws Throwable {
+        final CheckedFunction3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose1(toUpperCase).apply("xx", "s2", "s3")).isEqualTo("XXs2s3");
+    }
+
+    @Test
+    public void shouldCompose2()  throws Throwable {
+        final CheckedFunction3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose2(toUpperCase).apply("s1", "xx", "s3")).isEqualTo("s1XXs3");
+    }
+
+    @Test
+    public void shouldCompose3()  throws Throwable {
+        final CheckedFunction3<String, String, String, String> concat = (String s1, String s2, String s3) -> s1 + s2 + s3;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose3(toUpperCase).apply("s1", "s2", "xx")).isEqualTo("s1s2XX");
+    }
+
+    @Test
     public void shouldNarrow() throws Throwable{
         final CheckedFunction3<Number, Number, Number, String> wideFunction = (o1, o2, o3) -> String.format("Numbers are: %s, %s, %s", o1, o2, o3);
         final CheckedFunction3<Integer, Integer, Integer, CharSequence> narrowFunction = CheckedFunction3.narrow(wideFunction);

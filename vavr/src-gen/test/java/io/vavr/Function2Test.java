@@ -159,6 +159,20 @@ public class Function2Test {
     }
 
     @Test
+    public void shouldCompose1() {
+        final Function2<String, String, String> concat = (String s1, String s2) -> s1 + s2;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose1(toUpperCase).apply("xx", "s2")).isEqualTo("XXs2");
+    }
+
+    @Test
+    public void shouldCompose2() {
+        final Function2<String, String, String> concat = (String s1, String s2) -> s1 + s2;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose2(toUpperCase).apply("s1", "xx")).isEqualTo("s1XX");
+    }
+
+    @Test
     public void shouldNarrow(){
         final Function2<Number, Number, String> wideFunction = (o1, o2) -> String.format("Numbers are: %s, %s", o1, o2);
         final Function2<Integer, Integer, CharSequence> narrowFunction = Function2.narrow(wideFunction);

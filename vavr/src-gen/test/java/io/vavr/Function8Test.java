@@ -165,6 +165,62 @@ public class Function8Test {
     }
 
     @Test
+    public void shouldCompose1() {
+        final Function8<String, String, String, String, String, String, String, String, String> concat = (String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) -> s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose1(toUpperCase).apply("xx", "s2", "s3", "s4", "s5", "s6", "s7", "s8")).isEqualTo("XXs2s3s4s5s6s7s8");
+    }
+
+    @Test
+    public void shouldCompose2() {
+        final Function8<String, String, String, String, String, String, String, String, String> concat = (String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) -> s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose2(toUpperCase).apply("s1", "xx", "s3", "s4", "s5", "s6", "s7", "s8")).isEqualTo("s1XXs3s4s5s6s7s8");
+    }
+
+    @Test
+    public void shouldCompose3() {
+        final Function8<String, String, String, String, String, String, String, String, String> concat = (String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) -> s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose3(toUpperCase).apply("s1", "s2", "xx", "s4", "s5", "s6", "s7", "s8")).isEqualTo("s1s2XXs4s5s6s7s8");
+    }
+
+    @Test
+    public void shouldCompose4() {
+        final Function8<String, String, String, String, String, String, String, String, String> concat = (String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) -> s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose4(toUpperCase).apply("s1", "s2", "s3", "xx", "s5", "s6", "s7", "s8")).isEqualTo("s1s2s3XXs5s6s7s8");
+    }
+
+    @Test
+    public void shouldCompose5() {
+        final Function8<String, String, String, String, String, String, String, String, String> concat = (String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) -> s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose5(toUpperCase).apply("s1", "s2", "s3", "s4", "xx", "s6", "s7", "s8")).isEqualTo("s1s2s3s4XXs6s7s8");
+    }
+
+    @Test
+    public void shouldCompose6() {
+        final Function8<String, String, String, String, String, String, String, String, String> concat = (String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) -> s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose6(toUpperCase).apply("s1", "s2", "s3", "s4", "s5", "xx", "s7", "s8")).isEqualTo("s1s2s3s4s5XXs7s8");
+    }
+
+    @Test
+    public void shouldCompose7() {
+        final Function8<String, String, String, String, String, String, String, String, String> concat = (String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) -> s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose7(toUpperCase).apply("s1", "s2", "s3", "s4", "s5", "s6", "xx", "s8")).isEqualTo("s1s2s3s4s5s6XXs8");
+    }
+
+    @Test
+    public void shouldCompose8() {
+        final Function8<String, String, String, String, String, String, String, String, String> concat = (String s1, String s2, String s3, String s4, String s5, String s6, String s7, String s8) -> s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8;
+        final Function1<String, String> toUpperCase = String::toUpperCase;
+        assertThat(concat.compose8(toUpperCase).apply("s1", "s2", "s3", "s4", "s5", "s6", "s7", "xx")).isEqualTo("s1s2s3s4s5s6s7XX");
+    }
+
+    @Test
     public void shouldNarrow(){
         final Function8<Number, Number, Number, Number, Number, Number, Number, Number, String> wideFunction = (o1, o2, o3, o4, o5, o6, o7, o8) -> String.format("Numbers are: %s, %s, %s, %s, %s, %s, %s, %s", o1, o2, o3, o4, o5, o6, o7, o8);
         final Function8<Integer, Integer, Integer, Integer, Integer, Integer, Integer, Integer, CharSequence> narrowFunction = Function8.narrow(wideFunction);
