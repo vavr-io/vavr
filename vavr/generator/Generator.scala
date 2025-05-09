@@ -1679,7 +1679,7 @@ def generateMainClasses(): Unit = {
                    * Compose $j
                    */
                   default $className<$fixedApplyArgs, S, $resultFunctionGenerics, R> compose$j(Function1<S, T$j> f) {
-                      return ($partialApplicationArgs, s, $resultFunctionArgs) -> apply($fixedApplyArgs, f.apply(s), $variableApplyArgs);
+                      return ($partialApplicationArgs, S s, $resultFunctionArgs) -> apply($fixedApplyArgs, f.apply(s), $variableApplyArgs);
                   }
                 """
               })("\n\n")}
