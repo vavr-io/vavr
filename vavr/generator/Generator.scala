@@ -1672,14 +1672,14 @@ def generateMainClasses(): Unit = {
                 val applicationArgs = (1 to i).gen(k => if (k == j) "S s" else s"T$k t$k")(", ")
                 val generics = (1 to i).gen(k => if (k == j) "S" else s"T$k")(", ")
                 val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
-                val fixedApplyArgs = (1 to j-1).gen(k => s"t$k")(", ")
+                val applyArgs = (1 to i).gen(k => if (k ==j) "f.apply(s)" else s"t$k")(", ")
                 val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(", ")
                 xs"""
                   /$javadoc
                    * Compose $j
                    */
                   default <S> $className<$generics, R> compose$j(Function1<S, T$j> f) {
-                      return ($applicationArgs) -> apply($fixedApplyArgs, f.apply(s), $variableApplyArgs);
+                      return ($applicationArgs) -> apply($applyArgs);
                   }
                 """
               })("\n\n")}
