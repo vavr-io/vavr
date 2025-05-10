@@ -29,6 +29,8 @@ val VARARGS = 10
 val TARGET_MAIN = s"${project.getBasedir()}/src-gen/main/java"
 val TARGET_TEST = s"${project.getBasedir()}/src-gen/test/java"
 val CHARSET = java.nio.charset.StandardCharsets.UTF_8
+val comment = "//"
+val javadoc = "**"
 
 /**
  * ENTRY POINT
@@ -42,9 +44,6 @@ def run(): Unit = {
  * Generate Vavr src-gen/main/java classes
  */
 def generateMainClasses(): Unit = {
-
-  // Workaround: Use /$javadoc instead of /** in a StringContext when IntelliJ IDEA otherwise shows up errors in the editor
-  val javadoc = "**"
 
   genAPI()
   genFunctions()
@@ -3186,9 +3185,9 @@ def generateTestClasses(): Unit = {
                   // should return memoized value of second apply()
                   $assertThat(memo.apply(${(1 to i).gen(j => s"$j")(", ")})).isEqualTo(expected);
                   ${(i > 0).gen(xs"""
-                    // should calculate new values when called subsequently with different parameters
+                    $comment should calculate new values when called subsequently with different parameters
                     $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(" + ")} + 1);
-                    // should return memoized value of second apply() (for new value)
+                    $comment should return memoized value of second apply() (for new value)
                     $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(" + ")} + 1);
                   """)}
               }
@@ -3235,7 +3234,7 @@ def generateTestClasses(): Unit = {
                       assertThat(pf.isDefinedAt(0)).isTrue();
                       assertThat(pf.isDefinedAt(1)).isFalse();
                       assertThat(pf.apply(0)).isEqualTo("0");
-                      assertThat(pf.apply(1)).isEqualTo("1"); // it is valid to return a value, even if isDefinedAt returns false
+                      assertThat(pf.apply(1)).isEqualTo("1"); $comment it is valid to return a value, even if isDefinedAt returns false
                   }
                 """})}
 
@@ -3307,7 +3306,7 @@ def generateTestClasses(): Unit = {
                       $assertThrows(${im.getType("java.security.NoSuchAlgorithmException")}.class, () -> {
                           $name$i<MessageDigest> digest = () -> ${im.getType("java.security.MessageDigest")}.getInstance("Unknown");
                           Function$i<MessageDigest> unchecked = digest.unchecked();
-                          unchecked.apply(); // Look ma, we throw an undeclared checked exception!
+                          unchecked.apply(); $comment Look ma, we throw an undeclared checked exception!
                       });
                   }
 
@@ -3374,7 +3373,7 @@ def generateTestClasses(): Unit = {
                       public void shouldUncheckedThrowIllegalState() {
                           $assertThrows(${im.getType("java.security.NoSuchAlgorithmException")}.class, () -> {
                               final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
-                              unchecked.apply(${toArgList("Unknown")}); // Look ma, we throw an undeclared checked exception!
+                              unchecked.apply(${toArgList("Unknown")}); $comment Look ma, we throw an undeclared checked exception!
                           });
                       }
 
