@@ -1891,6 +1891,35 @@ def generateMainClasses(): Unit = {
                     return v -> apply(before.apply(v));
                 }
               """)}
+
+              ${(1 to i).gen(j => {
+                val fName = s"before$j"
+                val fGeneric = "S"
+                val applicationArgs = (1 to i).gen(k => if (k == j) s"$fGeneric ${fGeneric.toLowerCase}" else s"T$k t$k")(", ")
+                val generics = (1 to i).gen(k => if (k == j) "S" else s"T$k")(", ")
+                val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
+                val applyArgs = (1 to i).gen(k => if (k ==j) s"$fName.apply(${fGeneric.toLowerCase})" else s"t$k")(", ")
+                val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(", ")
+                val docAdd = i match
+                  case 1 => ""
+                  case 2 => " and the other argument"
+                  case _ => " and the other arguments"
+                xs"""
+                  /$javadoc
+                   * Returns a composed function that first applies the {@linkplain Function} {@code $fName} to the
+                   * ${j.ordinal} argument and then applies this $className to the result$docAdd.
+                   *
+                   * @param <$fGeneric> argument type of $fName
+                   * @param $fName the function applied before this
+                   * @return a function composed of $fName and this
+                   * @throws NullPointerException if $fName is null
+                   */
+                  default <S> $className<$generics, R> compose$j(Function1<? super $fGeneric, ? extends T$j> $fName) {
+                      Objects.requireNonNull($fName, "$fName is null");
+                      return ($applicationArgs) -> apply($applyArgs);
+                  }
+                """
+              })("\n\n")}
           }
 
           ${checked.gen(xs"""
@@ -3070,6 +3099,7 @@ def generateTestClasses(): Unit = {
       def genFunctionTest(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
         val AtomicInteger = im.getType("java.util.concurrent.atomic.AtomicInteger")
+        val nested = im.getType("org.junit.jupiter.api.Nested")
 
         val functionArgsDecl = (1 to i).gen(j => s"Object o$j")(", ")
         val functionArgs = (1 to i).gen(j => s"o$j")(", ")
@@ -3414,15 +3444,27 @@ def generateTestClasses(): Unit = {
                   $assertThat(composed).isNotNull();
               }
 
-              ${(i == 1).gen(xs"""
-                @$test
-                public void shouldComposeWithCompose() {
-                    final $name$i<$generics> f = ($functionArgs) -> null;
-                    final ${name}1<Object, Object> before = o -> null;
-                    final $name$i<$generics> composed = f.compose(before);
-                    $assertThat(composed).isNotNull();
-                }
-              """)}
+              @Nested
+              class ComposeTests {
+                ${(1 to i).gen(j =>
+                  val genArgs = (1 to i).gen(k => "String")(", ")
+                  val params = (1 to i).gen(k => s"String s$k")(", ")
+                  val values = (1 to i).gen(k => if (k == j) "\"xx\"" else s"\"s$k\"")(", ")
+                  val expected = (1 to i).gen(k => if (k == j) "XX" else s"s$k")("")
+                  val concat = (1 to i).gen(k => s"s$k")(" + ")
+                  xs"""
+
+                  @$test
+                  public void shouldCompose$j() ${checked.gen(" throws Throwable ")}{
+                      final $name$i<$genArgs, String> concat = ($params) -> $concat;
+                      final Function1<String, String> toUpperCase = String::toUpperCase;
+                      assertThat(concat.compose$j(toUpperCase).apply($values)).isEqualTo(\"$expected\");
+                  }
+
+                  """
+                )}
+
+              }
 
               ${(i == 0).gen(xs"""
               @$test

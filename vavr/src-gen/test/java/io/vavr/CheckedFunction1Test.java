@@ -31,6 +31,7 @@ import java.lang.CharSequence;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class CheckedFunction1Test {
@@ -201,12 +202,16 @@ public class CheckedFunction1Test {
         assertThat(composed).isNotNull();
     }
 
-    @Test
-    public void shouldComposeWithCompose() {
-        final CheckedFunction1<Object, Object> f = (o1) -> null;
-        final CheckedFunction1<Object, Object> before = o -> null;
-        final CheckedFunction1<Object, Object> composed = f.compose(before);
-        assertThat(composed).isNotNull();
+    @Nested
+    class ComposeTests {
+
+      @Test
+      public void shouldCompose1()  throws Throwable {
+          final CheckedFunction1<String, String> concat = (String s1) -> s1;
+          final Function1<String, String> toUpperCase = String::toUpperCase;
+          assertThat(concat.compose1(toUpperCase).apply("xx")).isEqualTo("XX");
+      }
+
     }
 
     @Test
