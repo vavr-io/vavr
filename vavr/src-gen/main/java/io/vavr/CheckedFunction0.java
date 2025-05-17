@@ -104,7 +104,6 @@ public interface CheckedFunction0<R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    @SuppressWarnings("RedundantTypeArguments")
     static <R> Function0<Option<R>> lift(CheckedFunction0<? extends R> partialFunction) {
         return () -> Try.<R>of(partialFunction::apply).toOption();
     }

@@ -114,7 +114,6 @@ public interface CheckedFunction2<T1, T2, R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    @SuppressWarnings("RedundantTypeArguments")
     static <T1, T2, R> Function2<T1, T2, Option<R>> lift(CheckedFunction2<? super T1, ? super T2, ? extends R> partialFunction) {
         return (t1, t2) -> Try.<R>of(() -> partialFunction.apply(t1, t2)).toOption();
     }
@@ -295,31 +294,31 @@ public interface CheckedFunction2<T1, T2, R> extends Serializable {
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before1} to the
+     * Returns a composed function that first applies the {@linkplain Function} {@code before} to the
      * 1st argument and then applies this CheckedFunction2 to the result and the other argument.
      *
-     * @param <S> argument type of before1
-     * @param before1 the function applied before this
-     * @return a function composed of before1 and this
-     * @throws NullPointerException if before1 is null
+     * @param <S> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
      */
-    default <S> CheckedFunction2<S, T2, R> compose1(Function1<? super S, ? extends T1> before1) {
-        Objects.requireNonNull(before1, "before1 is null");
-        return (S s, T2 t2) -> apply(before1.apply(s), t2);
+    default <S> CheckedFunction2<S, T2, R> compose1(Function1<? super S, ? extends T1> before) {
+        Objects.requireNonNull(before, "before is null");
+        return (S s, T2 t2) -> apply(before.apply(s), t2);
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before2} to the
+     * Returns a composed function that first applies the {@linkplain Function} {@code before} to the
      * 2nd argument and then applies this CheckedFunction2 to the result and the other argument.
      *
-     * @param <S> argument type of before2
-     * @param before2 the function applied before this
-     * @return a function composed of before2 and this
-     * @throws NullPointerException if before2 is null
+     * @param <S> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
      */
-    default <S> CheckedFunction2<T1, S, R> compose2(Function1<? super S, ? extends T2> before2) {
-        Objects.requireNonNull(before2, "before2 is null");
-        return (T1 t1, S s) -> apply(t1, before2.apply(s));
+    default <S> CheckedFunction2<T1, S, R> compose2(Function1<? super S, ? extends T2> before) {
+        Objects.requireNonNull(before, "before is null");
+        return (T1 t1, S s) -> apply(t1, before.apply(s));
     }
 }
 

@@ -127,7 +127,6 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    @SuppressWarnings("RedundantTypeArguments")
     static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, Option<R>> lift(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> partialFunction) {
         return (t1, t2, t3, t4, t5, t6) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6)).toOption();
     }
@@ -334,86 +333,86 @@ public interface Function6<T1, T2, T3, T4, T5, T6, R> extends Serializable {
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before1} to the
+     * Returns a composed function that first applies the {@linkplain Function} {@code before} to the
      * 1st argument and then applies this Function6 to the result and the other arguments.
      *
-     * @param <S> argument type of before1
-     * @param before1 the function applied before this
-     * @return a function composed of before1 and this
-     * @throws NullPointerException if before1 is null
+     * @param <S> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
      */
-    default <S> Function6<S, T2, T3, T4, T5, T6, R> compose1(Function1<? super S, ? extends T1> before1) {
-        Objects.requireNonNull(before1, "before1 is null");
-        return (S s, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) -> apply(before1.apply(s), t2, t3, t4, t5, t6);
+    default <S> Function6<S, T2, T3, T4, T5, T6, R> compose1(Function1<? super S, ? extends T1> before) {
+        Objects.requireNonNull(before, "before is null");
+        return (S s, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6) -> apply(before.apply(s), t2, t3, t4, t5, t6);
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before2} to the
+     * Returns a composed function that first applies the {@linkplain Function} {@code before} to the
      * 2nd argument and then applies this Function6 to the result and the other arguments.
      *
-     * @param <S> argument type of before2
-     * @param before2 the function applied before this
-     * @return a function composed of before2 and this
-     * @throws NullPointerException if before2 is null
+     * @param <S> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
      */
-    default <S> Function6<T1, S, T3, T4, T5, T6, R> compose2(Function1<? super S, ? extends T2> before2) {
-        Objects.requireNonNull(before2, "before2 is null");
-        return (T1 t1, S s, T3 t3, T4 t4, T5 t5, T6 t6) -> apply(t1, before2.apply(s), t3, t4, t5, t6);
+    default <S> Function6<T1, S, T3, T4, T5, T6, R> compose2(Function1<? super S, ? extends T2> before) {
+        Objects.requireNonNull(before, "before is null");
+        return (T1 t1, S s, T3 t3, T4 t4, T5 t5, T6 t6) -> apply(t1, before.apply(s), t3, t4, t5, t6);
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before3} to the
+     * Returns a composed function that first applies the {@linkplain Function} {@code before} to the
      * 3rd argument and then applies this Function6 to the result and the other arguments.
      *
-     * @param <S> argument type of before3
-     * @param before3 the function applied before this
-     * @return a function composed of before3 and this
-     * @throws NullPointerException if before3 is null
+     * @param <S> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
      */
-    default <S> Function6<T1, T2, S, T4, T5, T6, R> compose3(Function1<? super S, ? extends T3> before3) {
-        Objects.requireNonNull(before3, "before3 is null");
-        return (T1 t1, T2 t2, S s, T4 t4, T5 t5, T6 t6) -> apply(t1, t2, before3.apply(s), t4, t5, t6);
+    default <S> Function6<T1, T2, S, T4, T5, T6, R> compose3(Function1<? super S, ? extends T3> before) {
+        Objects.requireNonNull(before, "before is null");
+        return (T1 t1, T2 t2, S s, T4 t4, T5 t5, T6 t6) -> apply(t1, t2, before.apply(s), t4, t5, t6);
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before4} to the
+     * Returns a composed function that first applies the {@linkplain Function} {@code before} to the
      * 4th argument and then applies this Function6 to the result and the other arguments.
      *
-     * @param <S> argument type of before4
-     * @param before4 the function applied before this
-     * @return a function composed of before4 and this
-     * @throws NullPointerException if before4 is null
+     * @param <S> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
      */
-    default <S> Function6<T1, T2, T3, S, T5, T6, R> compose4(Function1<? super S, ? extends T4> before4) {
-        Objects.requireNonNull(before4, "before4 is null");
-        return (T1 t1, T2 t2, T3 t3, S s, T5 t5, T6 t6) -> apply(t1, t2, t3, before4.apply(s), t5, t6);
+    default <S> Function6<T1, T2, T3, S, T5, T6, R> compose4(Function1<? super S, ? extends T4> before) {
+        Objects.requireNonNull(before, "before is null");
+        return (T1 t1, T2 t2, T3 t3, S s, T5 t5, T6 t6) -> apply(t1, t2, t3, before.apply(s), t5, t6);
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before5} to the
+     * Returns a composed function that first applies the {@linkplain Function} {@code before} to the
      * 5th argument and then applies this Function6 to the result and the other arguments.
      *
-     * @param <S> argument type of before5
-     * @param before5 the function applied before this
-     * @return a function composed of before5 and this
-     * @throws NullPointerException if before5 is null
+     * @param <S> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
      */
-    default <S> Function6<T1, T2, T3, T4, S, T6, R> compose5(Function1<? super S, ? extends T5> before5) {
-        Objects.requireNonNull(before5, "before5 is null");
-        return (T1 t1, T2 t2, T3 t3, T4 t4, S s, T6 t6) -> apply(t1, t2, t3, t4, before5.apply(s), t6);
+    default <S> Function6<T1, T2, T3, T4, S, T6, R> compose5(Function1<? super S, ? extends T5> before) {
+        Objects.requireNonNull(before, "before is null");
+        return (T1 t1, T2 t2, T3 t3, T4 t4, S s, T6 t6) -> apply(t1, t2, t3, t4, before.apply(s), t6);
     }
 
     /**
-     * Returns a composed function that first applies the {@linkplain Function} {@code before6} to the
+     * Returns a composed function that first applies the {@linkplain Function} {@code before} to the
      * 6th argument and then applies this Function6 to the result and the other arguments.
      *
-     * @param <S> argument type of before6
-     * @param before6 the function applied before this
-     * @return a function composed of before6 and this
-     * @throws NullPointerException if before6 is null
+     * @param <S> argument type of before
+     * @param before the function applied before this
+     * @return a function composed of before and this
+     * @throws NullPointerException if before is null
      */
-    default <S> Function6<T1, T2, T3, T4, T5, S, R> compose6(Function1<? super S, ? extends T6> before6) {
-        Objects.requireNonNull(before6, "before6 is null");
-        return (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, S s) -> apply(t1, t2, t3, t4, t5, before6.apply(s));
+    default <S> Function6<T1, T2, T3, T4, T5, S, R> compose6(Function1<? super S, ? extends T6> before) {
+        Objects.requireNonNull(before, "before is null");
+        return (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, S s) -> apply(t1, t2, t3, t4, t5, before.apply(s));
     }
 }

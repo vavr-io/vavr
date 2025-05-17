@@ -1586,7 +1586,6 @@ def generateMainClasses(): Unit = {
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
                *         if the function is defined for the given arguments, and {@code None} otherwise.
                */
-              @SuppressWarnings("RedundantTypeArguments")
               static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsOptionReturnType lift($fullGenericsType partialFunction) {
                   ${
                     val func = "partialFunction"
@@ -1893,7 +1892,7 @@ def generateMainClasses(): Unit = {
               """)}
 
               ${(1 to i).gen(j => {
-                val fName = s"before$j"
+                val fName = s"before"
                 val fGeneric = "S"
                 val applicationArgs = (1 to i).gen(k => if (k == j) s"$fGeneric ${fGeneric.toLowerCase}" else s"T$k t$k")(", ")
                 val generics = (1 to i).gen(k => if (k == j) "S" else s"T$k")(", ")

@@ -102,7 +102,6 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    @SuppressWarnings("RedundantTypeArguments")
     static <R> Function0<Option<R>> lift(Supplier<? extends R> partialFunction) {
         return () -> Try.<R>of(partialFunction::get).toOption();
     }
