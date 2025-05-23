@@ -26,33 +26,147 @@
  */
 package io.vavr.collection;
 
-import io.vavr.*;
+import io.vavr.PartialFunction;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.control.Option;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.Spliterator;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.ChampSequenced.ChampSequencedData.vecRemove;
+import static io.vavr.collection.ChampTrie.BitmapIndexedNode.emptyNode;
+
+
 /**
- * An immutable {@code HashSet} implementation that has predictable (insertion-order) iteration.
+ * Implements a mutable set using a Compressed Hash-Array Mapped Prefix-tree
+ * (CHAMP) and a bit-mapped trie (Vector).
+ * <p>
+ * Features:
+ * <ul>
+ *     <li>supports up to 2<sup>30</sup> elements</li>
+ *     <li>allows null elements</li>
+ *     <li>is immutable</li>
+ *     <li>is thread-safe</li>
+ *     <li>iterates in the order, in which elements were inserted</li>
+ * </ul>
+ * <p>
+ * Performance characteristics:
+ * <ul>
+ *     <li>add: O(log N) in an amortized sense, because we sometimes have to
+ *     renumber the elements.</li>
+ *     <li>remove: O(log N) in an amortized sense, because we sometimes have to
+ *     renumber the elements.</li>
+ *     <li>contains: O(1)</li>
+ *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in
+ *     the mutable copy</li>
+ *     <li>clone: O(1)</li>
+ *     <li>iterator creation: O(1)</li>
+ *     <li>iterator.next: O(log N)</li>
+ *     <li>getFirst(), getLast(): O(log N)</li>
+ * </ul>
+ * <p>
+ * Implementation details:
+ * <p>
+ * This set performs read and write operations of single elements in O(log N) time,
+ * and in O(log N) space, where N is the number of elements in the set.
+ * <p>
+ * The CHAMP trie contains nodes that may be shared with other sets.
+ * <p>
+ * If a write operation is performed on a node, then this set creates a
+ * copy of the node and of all parent nodes up to the root (copy-path-on-write).
+ * Since the CHAMP trie has a fixed maximal height, the cost is O(1).
+ * <p>
+ * Insertion Order:
+ * <p>
+ * This set uses a counter to keep track of the insertion order.
+ * It stores the current value of the counter in the sequence number
+ * field of each data entry. If the counter wraps around, it must renumber all
+ * sequence numbers.
+ * <p>
+ * The renumbering is why the {@code add} and {@code remove} methods are O(1)
+ * only in an amortized sense.
+ * <p>
+ * To support iteration, we use a Vector. The Vector has the same contents
+ * as the CHAMP trie. However, its elements are stored in insertion order.
+ * <p>
+ * If an element is removed from the CHAMP trie that is not the first or the
+ * last element of the Vector, we replace its corresponding element in
+ * the Vector by a tombstone. If the element is at the start or end of the Vector,
+ * we remove the element and all its neighboring tombstones from the Vector.
+ * <p>
+ * A tombstone can store the number of neighboring tombstones in ascending and in descending
+ * direction. We use these numbers to skip tombstones when we iterate over the vector.
+ * Since we only allow iteration in ascending or descending order from one of the ends of
+ * the vector, we do not need to keep the number of neighbors in all tombstones up to date.
+ * It is sufficient, if we update the neighbor with the lowest index and the one with the
+ * highest index.
+ * <p>
+ * If the number of tombstones exceeds half of the size of the collection, we renumber all
+ * sequence numbers, and we create a new Vector.
+ * <p>
+ * References:
+ * <p>
+ * Portions of the code in this class have been derived from JHotDraw8 'VectorSet.java'.
+ * <p>
+ * For a similar design, see 'VectorMap.scala'. Note, that this code is not a derivative
+ * of that code.
+ * <dl>
+ *     <dt>JHotDraw 8. VectorSet.java. Copyright © 2023 The authors and contributors of JHotDraw.
+ *     <a href="https://github.com/wrandelshofer/jhotdraw8/blob/8c1a98b70bc23a0c63f1886334d5b568ada36944/LICENSE">MIT License</a>.</dt>
+ *     <dd><a href="https://github.com/wrandelshofer/jhotdraw8">github.com</a></dd>
+ *     <dt>The Scala library. VectorMap.scala. Copyright EPFL and Lightbend, Inc. Apache License 2.0.</dt>
+ *     <dd><a href="https://github.com/scala/scala/blob/28eef15f3cc46f6d3dd1884e94329d7601dc20ee/src/library/scala/collection/immutable/VectorMap.scala">github.com</a>
+ *     </dd>
+ * </dl>
  *
- * @param <T> Component type
+ * @param <T> the element type
  */
-@SuppressWarnings("deprecation")
 public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(LinkedHashMap.empty());
+    private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(
+            emptyNode(), Vector.of(), 0, 0);
 
-    private final LinkedHashMap<T, Object> map;
+    private final ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<T>> root;
+    /**
+     * Offset of sequence numbers to vector indices.
+     *
+     * <pre>vector index = sequence number + offset</pre>
+     */
+    final int offset;
+    /**
+     * The size of the set.
+     */
+    final int size;
+    /**
+     * In this vector we store the elements in the order in which they were inserted.
+     */
+    final Vector<Object> vector;
 
-    private LinkedHashSet(LinkedHashMap<T, Object> map) {
-        this.map = map;
+    LinkedHashSet(
+            ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<T>> root,
+            Vector<Object> vector,
+            int size, int offset) {
+        this.root = root;
+        this.size = size;
+        this.offset = offset;
+        this.vector = Objects.requireNonNull(vector);
     }
 
     @SuppressWarnings("unchecked")
@@ -60,9 +174,6 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return (LinkedHashSet<T>) EMPTY;
     }
 
-    static <T> LinkedHashSet<T> wrap(LinkedHashMap<T, Object> map) {
-        return new LinkedHashSet<>(map);
-    }
 
     /**
      * Returns a {@link Collector} which may be used in conjunction with
@@ -97,7 +208,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet instance containing the given element
      */
     public static <T> LinkedHashSet<T> of(T element) {
-        return LinkedHashSet.<T> empty().add(element);
+        return LinkedHashSet.<T>empty().add(element);
     }
 
     /**
@@ -111,13 +222,10 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <T> LinkedHashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        LinkedHashMap<T, Object> map = LinkedHashMap.empty();
-        for (T element : elements) {
-            map = map.put(element, element);
-        }
-        return map.isEmpty() ? LinkedHashSet.empty() : new LinkedHashSet<>(map);
+        return LinkedHashSet.<T>empty().addAll(Arrays.asList(elements));
     }
 
     /**
@@ -159,12 +267,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     @SuppressWarnings("unchecked")
     public static <T> LinkedHashSet<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof LinkedHashSet) {
-            return (LinkedHashSet<T>) elements;
-        } else {
-            final LinkedHashMap<T, Object> mao = addAll(LinkedHashMap.empty(), elements);
-            return mao.isEmpty() ? empty() : new LinkedHashSet<>(mao);
-        }
+        return elements instanceof LinkedHashSet? (LinkedHashSet<T>) elements :LinkedHashSet.<T>of().addAll(elements);
     }
 
     /**
@@ -493,7 +596,34 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      */
     @Override
     public LinkedHashSet<T> add(T element) {
-        return contains(element) ? this : new LinkedHashSet<>(map.put(element, element));
+        return addLast(element, false);
+    }
+
+    private LinkedHashSet<T> addLast(T e, boolean moveToLast) {
+        ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<T>> details = new ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<T>>();
+        ChampSequenced.ChampSequencedElement<T> newElem = new ChampSequenced.ChampSequencedElement<T>(e, vector.size() - offset);
+        ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<T>> newRoot = root.put(null, newElem,
+                Objects.hashCode(e), 0, details,
+                moveToLast ? ChampSequenced.ChampSequencedElement::updateAndMoveToLast : ChampSequenced.ChampSequencedElement::update,
+                Objects::equals, Objects::hashCode);
+        if (details.isModified()) {
+            Vector<Object> newVector = vector;
+            int newOffset = offset;
+            int newSize = size;
+            if (details.isReplaced()) {
+                if (moveToLast) {
+                    ChampSequenced.ChampSequencedElement<T> oldElem = details.getOldData();
+                    Tuple2<Vector<Object>, Integer> result = ChampSequenced.ChampSequencedData.vecRemove(newVector, oldElem, newOffset);
+                    newVector = result._1;
+                    newOffset = result._2;
+                }
+            } else {
+                newSize++;
+            }
+            newVector = newVector.append(newElem);
+            return renumber(newRoot, newVector, newSize, newOffset);
+        }
+        return this;
     }
 
     /**
@@ -504,40 +634,30 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @param elements The elements to be added.
      * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
      */
+    @SuppressWarnings("unchecked")
     @Override
     public LinkedHashSet<T> addAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() && elements instanceof LinkedHashSet) {
-            @SuppressWarnings("unchecked")
-            final LinkedHashSet<T> set = (LinkedHashSet<T>) elements;
-            return set;
+        if(isEmpty()&&elements instanceof LinkedHashSet){
+            return (LinkedHashSet<T>) elements;
         }
-        final LinkedHashMap<T, Object> that = addAll(map, elements);
-        if (that.size() == map.size()) {
-            return this;
-        } else {
-            return new LinkedHashSet<>(that);
-        }
+        TransientLinkedHashSet<T> t = toTransient();
+        t.addAll(elements);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
     public <R> LinkedHashSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        return ofAll(iterator().<R> collect(partialFunction));
+        return ofAll(iterator().<R>collect(partialFunction));
     }
 
     @Override
     public boolean contains(T element) {
-        return map.get(element).isDefined();
+        return root.find(new ChampSequenced.ChampSequencedElement<>(element), Objects.hashCode(element), 0, Objects::equals) != ChampTrie.Node.NO_DATA;
     }
 
     @Override
     public LinkedHashSet<T> diff(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() || elements.isEmpty()) {
-            return this;
-        } else {
-            return removeAll(elements);
-        }
+        return removeAll(elements);
     }
 
     @Override
@@ -562,7 +682,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         if (n <= 0) {
             return this;
         } else {
-            return LinkedHashSet.ofAll(iterator().drop(n));
+            return LinkedHashSet.ofAll(iterator(n));
         }
     }
 
@@ -590,9 +710,9 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final LinkedHashSet<T> filtered = LinkedHashSet.ofAll(iterator().filter(predicate));
-        return filtered.length() == length() ? this : filtered;
+        TransientLinkedHashSet<T> t = toTransient();
+        t.filterAll(predicate);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
@@ -604,13 +724,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     @Override
     public <U> LinkedHashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final LinkedHashMap<U, Object> that = foldLeft(LinkedHashMap.empty(),
-                    (tree, t) -> addAll(tree, mapper.apply(t)));
-            return new LinkedHashSet<>(that);
+        LinkedHashSet<U> flatMapped = empty();
+        for (T t : this) {
+            for (U u : mapper.apply(t)) {
+                flatMapped = flatMapped.add(u);
+            }
         }
+        return flatMapped;
     }
 
     @Override
@@ -634,26 +754,26 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return true;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public T head() {
-        if (map.isEmpty()) {
-            throw new NoSuchElementException("head of empty set");
-        }
-        return map.head()._1();
+        return ((ChampSequenced.ChampSequencedElement<T>) vector.head()).getElement();
     }
 
     @Override
     public Option<T> headOption() {
-        return map.headOption().map(Tuple2::_1);
+        return isEmpty() ? Option.none() : Option.some(head());
     }
 
     @Override
     public LinkedHashSet<T> init() {
-        if (map.isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty set");
-        } else {
-            return new LinkedHashSet<>(map.init());
+        // XXX Traversable.init() specifies that we must throw
+        //     UnsupportedOperationException instead of NoSuchElementException
+        //     when this set is empty.
+        if (isEmpty()) {
+            throw new UnsupportedOperationException();
         }
+        return remove(last());
     }
 
     @Override
@@ -663,12 +783,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> intersect(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() || elements.isEmpty()) {
-            return empty();
-        } else {
-            return retainAll(elements);
-        }
+        return retainAll(elements);
     }
 
     /**
@@ -683,7 +798,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public boolean isEmpty() {
-        return map.isEmpty();
+        return size == 0;
     }
 
     /**
@@ -708,31 +823,32 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        return map.iterator().map(t -> t._1);
+        return new ChampIteration.IteratorFacade<>(spliterator());
     }
 
+    Iterator<T> iterator(int startIndex) {
+        return new ChampIteration.IteratorFacade<>(spliterator(startIndex));
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     public T last() {
-        return map.last()._1;
+        return ((ChampSequenced.ChampSequencedElement<T>) vector.last()).getElement();
     }
 
     @Override
     public int length() {
-        return map.size();
+        return size;
     }
 
     @Override
     public <U> LinkedHashSet<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        if (isEmpty()) {
-            return empty();
-        } else {
-            final LinkedHashMap<U, Object> that = foldLeft(LinkedHashMap.empty(), (tree, t) -> {
-                final U u = mapper.apply(t);
-                return tree.put(u, u);
-            });
-            return new LinkedHashSet<>(that);
+        LinkedHashSet<U> mapped = empty();
+        for (T t : this) {
+            mapped = mapped.add(mapper.apply(t));
         }
+        return mapped;
     }
 
     @Override
@@ -766,24 +882,109 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> remove(T element) {
-        final LinkedHashMap<T, Object> newMap = map.remove(element);
-        return (newMap == map) ? this : new LinkedHashSet<>(newMap);
+        int keyHash = Objects.hashCode(element);
+        ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<T>> details = new ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<T>>();
+        ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<T>> newRoot = root.remove(null,
+                new ChampSequenced.ChampSequencedElement<>(element),
+                keyHash, 0, details, Objects::equals);
+        if (details.isModified()) {
+            ChampSequenced.ChampSequencedElement<T> removedElem = details.getOldDataNonNull();
+            Tuple2<Vector<Object>, Integer> result = ChampSequenced.ChampSequencedData.vecRemove(vector, removedElem, offset);
+            return renumber(newRoot, result._1, size - 1,
+                    result._2);
+        }
+        return this;
     }
 
     @Override
     public LinkedHashSet<T> removeAll(Iterable<? extends T> elements) {
-        return Collections.removeAll(this, elements);
+        TransientLinkedHashSet<T> t = toTransient();
+        t.removeAll(elements);
+        return t.root==this.root?this: t.toImmutable();
+    }
+
+    /**
+     * Renumbers the sequenced elements in the trie if necessary.
+     *
+     * @param root   the root of the trie
+     * @param vector the root of the vector
+     * @param size   the size of the trie
+     * @param offset the offset that must be added to a sequence number to get the index into the vector
+     * @return a new {@link LinkedHashSet} instance
+     */
+    private LinkedHashSet<T> renumber(
+            ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<T>> root,
+            Vector<Object> vector,
+            int size, int offset) {
+
+        if (ChampSequenced.ChampSequencedData.vecMustRenumber(size, offset, this.vector.size())) {
+            ChampTrie.IdentityObject owner = new ChampTrie.IdentityObject();
+            Tuple2<ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<T>>, Vector<Object>> result = ChampSequenced.ChampSequencedData.<ChampSequenced.ChampSequencedElement<T>>vecRenumber(
+                    size, root, vector, owner, Objects::hashCode, Objects::equals,
+                    (e, seq) -> new ChampSequenced.ChampSequencedElement<>(e.getElement(), seq));
+            return new LinkedHashSet<>(
+                    result._1(), result._2(),
+                    size, 0);
+        }
+        return new LinkedHashSet<>(root, vector, size, offset);
     }
 
     @Override
     public LinkedHashSet<T> replace(T currentElement, T newElement) {
-        if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
-            final Tuple2<T, Object> currentPair = Tuple.of(currentElement, currentElement);
-            final Tuple2<T, Object> newPair = Tuple.of(newElement, newElement);
-            final LinkedHashMap<T, Object> newMap = map.replace(currentPair, newPair);
-            return new LinkedHashSet<>(newMap);
-        } else {
+        // currentElement and newElem are the same => do nothing
+        if (Objects.equals(currentElement, newElement)) {
             return this;
+        }
+
+        // try to remove currentElem from the 'root' trie
+        final ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<T>> detailsCurrent = new ChampTrie.ChangeEvent<>();
+        ChampTrie.IdentityObject owner = new ChampTrie.IdentityObject();
+        ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<T>> newRoot = root.remove(owner,
+                new ChampSequenced.ChampSequencedElement<>(currentElement),
+                Objects.hashCode(currentElement), 0, detailsCurrent, Objects::equals);
+        // currentElement was not in the 'root' trie => do nothing
+        if (!detailsCurrent.isModified()) {
+            return this;
+        }
+
+        // currentElement was in the 'root' trie, and we have just removed it
+        // => also remove its entry from the 'sequenceRoot' trie
+        Vector<Object> newVector = vector;
+        int newOffset = offset;
+        ChampSequenced.ChampSequencedElement<T> currentData = detailsCurrent.getOldData();
+        int seq = currentData.getSequenceNumber();
+        Tuple2<Vector<Object>, Integer> result = ChampSequenced.ChampSequencedData.vecRemove(newVector, currentData, newOffset);
+        newVector = result._1;
+        newOffset = result._2;
+
+        // try to update the trie with the newElement
+        ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<T>> detailsNew = new ChampTrie.ChangeEvent<>();
+        ChampSequenced.ChampSequencedElement<T> newData = new ChampSequenced.ChampSequencedElement<>(newElement, seq);
+        newRoot = newRoot.put(owner,
+                newData, Objects.hashCode(newElement), 0, detailsNew,
+                ChampSequenced.ChampSequencedElement::forceUpdate,
+                Objects::equals, Objects::hashCode);
+        boolean isReplaced = detailsNew.isReplaced();
+
+        // there already was an element with key newElement._1 in the trie, and we have just replaced it
+        // => remove the replaced entry from the 'sequenceRoot' trie
+        if (isReplaced) {
+            ChampSequenced.ChampSequencedElement<T> replacedEntry = detailsNew.getOldData();
+            result = ChampSequenced.ChampSequencedData.vecRemove(newVector, replacedEntry, newOffset);
+            newVector = result._1;
+            newOffset = result._2;
+        }
+
+        // we have just successfully added or replaced the newElement
+        // => insert the new entry in the 'sequenceRoot' trie
+        newVector = seq + newOffset < newVector.size() ? newVector.update(seq + newOffset, newData) : newVector.append(newData);
+
+        if (isReplaced) {
+            // we reduced the size of the map by one => renumbering may be necessary
+            return renumber(newRoot, newVector, size - 1, newOffset);
+        } else {
+            // we did not change the size of the map => no renumbering is needed
+            return new LinkedHashSet<>(newRoot, newVector, size, newOffset);
         }
     }
 
@@ -794,7 +995,21 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> retainAll(Iterable<? extends T> elements) {
-        return Collections.retainAll(this, elements);
+        TransientLinkedHashSet<T> t = toTransient();
+        t.retainAll(elements);
+        return t.root==this.root?this: t.toImmutable();
+    }
+
+
+    private Iterator<T> reverseIterator() {
+        return new ChampIteration.IteratorFacade<>(reverseSpliterator());
+    }
+
+    @SuppressWarnings("unchecked")
+    private Spliterator<T> reverseSpliterator() {
+        return new ChampSequenced.ChampReverseVectorSpliterator<>(vector,
+                e -> ((ChampSequenced.ChampSequencedElement<T>) e).getElement(),
+                0, size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
     }
 
     @Override
@@ -834,12 +1049,24 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2));
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public Spliterator<T> spliterator() {
+        return spliterator(0);
+    }
+
+    @SuppressWarnings("unchecked")
+    Spliterator<T> spliterator(int startIndex) {
+        return new ChampSequenced.ChampVectorSpliterator<>(vector,
+                e -> ((ChampSequenced.ChampSequencedElement<T>) e).getElement(),
+                startIndex, size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.IMMUTABLE);
+    }
+
     @Override
     public LinkedHashSet<T> tail() {
-        if (map.isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty set");
-        }
-        return wrap(map.tail());
+        // XXX AbstractTraversableTest.shouldThrowWhenTailOnNil requires that we throw UnsupportedOperationException instead of NoSuchElementException.
+        if (isEmpty()) throw new UnsupportedOperationException();
+        return remove(head());
     }
 
     @Override
@@ -849,7 +1076,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> take(int n) {
-        if (map.size() <= n) {
+        if (size() <= n) {
             return this;
         }
         return LinkedHashSet.ofAll(() -> iterator().take(n));
@@ -857,7 +1084,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public LinkedHashSet<T> takeRight(int n) {
-        if (map.size() <= n) {
+        if (size() <= n) {
             return this;
         }
         return LinkedHashSet.ofAll(() -> iterator().takeRight(n));
@@ -891,39 +1118,24 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public java.util.LinkedHashSet<T> toJavaSet() {
+        // XXX If the return value was not required to be a java.util.LinkedHashSet
+        //     we could provide a mutable LinkedHashSet in O(1)
         return toJavaSet(java.util.LinkedHashSet::new);
     }
 
+    TransientLinkedHashSet<T> toTransient() {
+        return new TransientLinkedHashSet<>(this);
+    }
+
     /**
-     * Adds all of the elements of {@code elements} to this set, replacing existing ones if they already present.
-     * <p>
-     * Note that this method has a worst-case quadratic complexity.
-     * <p>
-     * See also {@link #addAll(Iterable)}.
+     * Adds all of the elements of {@code that} set to this set, if not already present.
      *
      * @param elements The set to form the union with.
      * @return A new set that contains all distinct elements of this and {@code elements} set.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public LinkedHashSet<T> union(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            if (elements instanceof LinkedHashSet) {
-                return (LinkedHashSet<T>) elements;
-            } else {
-                return LinkedHashSet.ofAll(elements);
-            }
-        } else if (elements.isEmpty()) {
-            return this;
-        } else {
-            final LinkedHashMap<T, Object> that = addAll(map, elements);
-            if (that.size() == map.size()) {
-                return this;
-            } else {
-                return new LinkedHashSet<>(that);
-            }
-        }
+        return addAll(elements);
     }
 
     @Override
@@ -977,15 +1189,6 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static <T> LinkedHashMap<T, Object> addAll(LinkedHashMap<T, Object> initial,
-            Iterable<? extends T> additional) {
-        LinkedHashMap<T, Object> that = initial;
-        for (T t : additional) {
-            that = that.put(t, t);
-        }
-        return that;
-    }
-
     // -- Serialization
 
     /**
@@ -997,7 +1200,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A SerializationProxy for this enclosing class.
      */
     private Object writeReplace() {
-        return new SerializationProxy<>(this.map);
+        return new SerializationProxy<>(this);
     }
 
     /**
@@ -1025,7 +1228,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
-        private transient LinkedHashMap<T, Object> map;
+        private transient LinkedHashSet<T> set;
 
         /**
          * Constructor for the case of serialization, called by {@link LinkedHashSet#writeReplace()}.
@@ -1033,10 +1236,10 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
          * an instance of the enclosing class.
          *
-         * @param map a Cons
+         * @param set a Cons
          */
-        SerializationProxy(LinkedHashMap<T, Object> map) {
-            this.map = map;
+        SerializationProxy(LinkedHashSet<T> set) {
+            this.set = set;
         }
 
         /**
@@ -1047,9 +1250,9 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          */
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
-            s.writeInt(map.size());
-            for (Tuple2<T, Object> e : map) {
-                s.writeObject(e._1);
+            s.writeInt(set.size());
+            for (T e : set) {
+                s.writeObject(e);
             }
         }
 
@@ -1067,13 +1270,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            LinkedHashMap<T, Object> temp = LinkedHashMap.empty();
+            LinkedHashSet<T> temp = LinkedHashSet.empty();
             for (int i = 0; i < size; i++) {
-                @SuppressWarnings("unchecked")
-                final T element = (T) s.readObject();
-                temp = temp.put(element, element);
+                @SuppressWarnings("unchecked") final T element = (T) s.readObject();
+                temp = temp.add(element);
             }
-            map = temp;
+            set = temp;
         }
 
         /**
@@ -1086,7 +1288,176 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
          * @return A deserialized instance of the enclosing class.
          */
         private Object readResolve() {
-            return map.isEmpty() ? LinkedHashSet.empty() : new LinkedHashSet<>(map);
+            return LinkedHashSet.empty().addAll(set);
+        }
+    }
+
+    /**
+     * Supports efficient bulk-operations on a linked hash set through transience.
+     *
+     * @param <E>the element type
+     */
+    static class TransientLinkedHashSet<E> extends ChampTransience.ChampAbstractTransientSet<E, ChampSequenced.ChampSequencedElement<E>> {
+        int offset;
+        Vector<Object> vector;
+
+        TransientLinkedHashSet(LinkedHashSet<E> s) {
+            root = s.root;
+            size = s.size;
+            this.vector = s.vector;
+            this.offset = s.offset;
+        }
+
+        TransientLinkedHashSet() {
+            this(empty());
+        }
+
+        @Override
+        void clear() {
+            root = emptyNode();
+            vector = Vector.empty();
+            size = 0;
+            modCount++;
+            offset = -1;
+        }
+
+
+        public LinkedHashSet<E> toImmutable() {
+            owner = null;
+            return isEmpty()
+                    ? empty()
+                    : new LinkedHashSet<>(root, vector, size, offset);
+        }
+
+        boolean add(E element) {
+            return addLast(element, false);
+        }
+
+        private boolean addLast(E e, boolean moveToLast) {
+            ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<E>> details = new ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<E>>();
+            ChampSequenced.ChampSequencedElement<E> newElem = new ChampSequenced.ChampSequencedElement<E>(e, vector.size() - offset);
+            root = root.put(makeOwner(), newElem,
+                    Objects.hashCode(e), 0, details,
+                    moveToLast ? ChampSequenced.ChampSequencedElement::updateAndMoveToLast : ChampSequenced.ChampSequencedElement::update,
+                    Objects::equals, Objects::hashCode);
+            if (details.isModified()) {
+
+                if (details.isReplaced()) {
+                    if (moveToLast) {
+                        ChampSequenced.ChampSequencedElement<E> oldElem = details.getOldData();
+                        Tuple2<Vector<Object>, Integer> result = vecRemove(vector, oldElem, offset);
+                        vector = result._1;
+                        offset = result._2;
+                    }
+                } else {
+                    size++;
+                }
+                vector = vector.append(newElem);
+                renumber();
+                return true;
+            }
+            return false;
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean addAll(Iterable<? extends E> c) {
+            if (c == root) {
+                return false;
+            }
+            if (isEmpty() && (c instanceof LinkedHashSet<?>)) {
+                LinkedHashSet<?> cc = (LinkedHashSet<?>) c;
+                root = (ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<E>>) (ChampTrie.BitmapIndexedNode<?>) cc.root;
+                size = cc.size;
+                return true;
+            }
+            boolean modified = false;
+            for (E e : c) {
+                modified |= add(e);
+            }
+            return modified;
+        }
+
+        @Override
+        java.util.Iterator<E> iterator() {
+            return new ChampIteration.IteratorFacade<>(spliterator());
+        }
+
+        @SuppressWarnings("unchecked")
+        Spliterator<E> spliterator() {
+            return new ChampSequenced.ChampVectorSpliterator<>(vector,
+                    (Object o) -> ((ChampSequenced.ChampSequencedElement<E>) o).getElement(), 0,
+                    size(), Spliterator.SIZED | Spliterator.DISTINCT | Spliterator.ORDERED);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        boolean remove(Object element) {
+            int keyHash = Objects.hashCode(element);
+            ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<E>> details = new ChampTrie.ChangeEvent<ChampSequenced.ChampSequencedElement<E>>();
+            root = root.remove(makeOwner(),
+                    new ChampSequenced.ChampSequencedElement<>((E) element),
+                    keyHash, 0, details, Objects::equals);
+            if (details.isModified()) {
+                ChampSequenced.ChampSequencedElement<E> removedElem = details.getOldDataNonNull();
+                Tuple2<Vector<Object>, Integer> result = vecRemove(vector, removedElem, offset);
+                vector = result._1;
+                offset = result._2;
+                size--;
+                renumber();
+                return true;
+            }
+            return false;
+        }
+
+
+        private void renumber() {
+            if (ChampSequenced.ChampSequencedData.vecMustRenumber(size, offset, vector.size())) {
+                ChampTrie.IdentityObject owner = new ChampTrie.IdentityObject();
+                Tuple2<ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<E>>, Vector<Object>> result = ChampSequenced.ChampSequencedData.<ChampSequenced.ChampSequencedElement<E>>vecRenumber(
+                        size, root, vector, owner, Objects::hashCode, Objects::equals,
+                        (e, seq) -> new ChampSequenced.ChampSequencedElement<>(e.getElement(), seq));
+                root = result._1;
+                vector = result._2;
+                offset = 0;
+            }
+        }
+
+        static class VectorSideEffectPredicate<E> implements Predicate<ChampSequenced.ChampSequencedElement<E>> {
+            Vector<Object> newVector;
+            int newOffset;
+            Predicate<? super E> predicate;
+
+            public VectorSideEffectPredicate(Predicate<? super E> predicate, Vector<Object> vector, int offset) {
+                this.predicate = predicate;
+                this.newVector = vector;
+                this.newOffset = offset;
+            }
+
+            @Override
+            public boolean test(ChampSequenced.ChampSequencedElement<E> e) {
+                if (!predicate.test(e.getElement())) {
+                    Tuple2<Vector<Object>, Integer> result = vecRemove(newVector, e, newOffset);
+                    newVector = result._1;
+                    newOffset = result._2;
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        boolean filterAll(Predicate<? super E> predicate) {
+            VectorSideEffectPredicate<E> vp = new VectorSideEffectPredicate<>(predicate, vector, offset);
+            ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+            ChampTrie.BitmapIndexedNode<ChampSequenced.ChampSequencedElement<E>> newRootNode = root.filterAll(makeOwner(), vp, 0, bulkChange);
+            if (bulkChange.removed == 0) {
+                return false;
+            }
+            root = newRootNode;
+            vector = vp.newVector;
+            offset = vp.newOffset;
+            size -= bulkChange.removed;
+            modCount++;
+            return true;
         }
     }
 }

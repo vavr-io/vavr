@@ -161,7 +161,7 @@ publishing {
             artifact tasks.named('testSourcesJar')
             pom {
                 name = project.name
-                description = "Vavr is an object-functional library for Java 8+"
+                description = "vavr-champ is binary compatible with vavr, but uses CHAMP-based collections internally."
                 url = 'https://www.vavr.io'
                 inceptionYear = '2014'
                 licenses {
@@ -172,22 +172,16 @@ publishing {
                 }
                 developers {
                     developer {
-                        name = 'Daniel Dietrich'
-                        email = 'cafebab3@gmail.com'
-                        organization = 'Vavr'
-                        organizationUrl = 'https://github.com/vavr-io'
-                    }
-                    developer {
-                        name = 'Grzegorz Piwowarek'
-                        email = 'gpiwowarek@gmail.com'
-                        organization = 'Vavr'
-                        organizationUrl = 'https://github.com/vavr-io'
+                        name = 'Werner Randelshofer'
+                        email = 'werner.randelshofer@bluewin.ch'
+                        organization = 'Werner Randelshofer'
+                        organizationUrl = 'https://www.randelshofer.ch'
                     }
                 }
                 scm {
-                    connection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                    developerConnection = 'scm:git:https://github.com/vavr-io/vavr.git'
-                    url = 'https://github.com/vavr-io/vavr/tree/master'
+                    connection = 'scm:git:https://github.com/wrandelshofer/vavr.git'
+                    developerConnection = 'scm:git:https://github.com/wrandelshofer/vavr.git'
+                    url = 'https://github.com/wrandelshofer/vavr/tree/master'
                 }
             }
         }
@@ -207,7 +201,7 @@ nexusPublishing {
     repositories {
         sonatype {
             username.set(providers.systemProperty("ossrhUsername").orElse("").forUseAtConfigurationTime())
-            password.set(providers.systemProperty("ossrhPassword").orElse("").forUseAtConfigurationTime())
+            password.set(providers.systemProperty("ossrhPassword").orElse("").forUseAtConfigurationTime())        
         }
     }
 }

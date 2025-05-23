@@ -26,33 +26,107 @@
  */
 package io.vavr.collection;
 
-import io.vavr.*;
+import io.vavr.PartialFunction;
+import io.vavr.Tuple;
+import io.vavr.Tuple2;
 import io.vavr.control.Option;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.Spliterator;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
- * An immutable {@code HashSet} implementation.
+ * Implements an immutable set using a Compressed Hash-Array Mapped Prefix-tree
+ * (CHAMP).
+ * <p>
+ * Features:
+ * <ul>
+ *     <li>supports up to 2<sup>30</sup> entries</li>
+ *     <li>allows null elements</li>
+ *     <li>is immutable</li>
+ *     <li>is thread-safe</li>
+ *     <li>does not guarantee a specific iteration order</li>
+ * </ul>
+ * <p>
+ * Performance characteristics:
+ * <ul>
+ *     <li>add: O(1)</li>
+ *     <li>remove: O(1)</li>
+ *     <li>contains: O(1)</li>
+ *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in the mutable copy</li>
+ *     <li>clone: O(1)</li>
+ *     <li>iterator.next(): O(1)</li>
+ * </ul>
+ * <p>
+ * Implementation details:
+ * <p>
+ * This set performs read and write operations of single elements in O(1) time,
+ * and in O(1) space.
+ * <p>
+ * The CHAMP trie contains nodes that may be shared with other sets.
+ * <p>
+ * If a write operation is performed on a node, then this set creates a
+ * copy of the node and of all parent nodes up to the root (copy-path-on-write).
+ * Since the CHAMP trie has a fixed maximal height, the cost is O(1).
+ * <p>
+ * References:
+ * <p>
+ * Portions of the code in this class have been derived from 'The Capsule Hash Trie Collections Library', and from
+ * 'JHotDraw 8'.
+ * <dl>
+ *     <dt>Michael J. Steindorfer (2017).
+ *     Efficient Immutable Collections.</dt>
+ *     <dd><a href="https://michael.steindorfer.name/publications/phd-thesis-efficient-immutable-collections">michael.steindorfer.name</a>
+ *     </dd>
+ *     <dt>The Capsule Hash Trie Collections Library.
+ *     <br>Copyright (c) Michael Steindorfer. <a href="https://github.com/usethesource/capsule/blob/3856cd65fa4735c94bcfa94ec9ecf408429b54f4/LICENSE">BSD-2-Clause License</a></dt>
+ *     <dd><a href="https://github.com/usethesource/capsule">github.com</a>
+ *     </dd>
+ *     <dt>JHotDraw 8. Copyright © 2023 The authors and contributors of JHotDraw.
+ *     <a href="https://github.com/wrandelshofer/jhotdraw8/blob/8c1a98b70bc23a0c63f1886334d5b568ada36944/LICENSE">MIT License</a>.</dt>
+ *     <dd><a href="https://github.com/wrandelshofer/jhotdraw8">github.com</a>
+ *     </dd>
+ * </dl>
  *
- * @param <T> Component type
+ * @param <T> the element type
  */
 @SuppressWarnings("deprecation")
 public final class HashSet<T> implements Set<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static final HashSet<?> EMPTY = new HashSet<>(HashArrayMappedTrie.empty());
+    private static final HashSet<?> EMPTY = new HashSet<>(ChampTrie.BitmapIndexedNode.emptyNode(), 0);
+    private final ChampTrie.BitmapIndexedNode<T> root;
+    /**
+     * The size of the set.
+     */
+    final int size;
 
-    private final HashArrayMappedTrie<T, T> tree;
+    /**
+     * We do not guarantee an iteration order. Make sure that nobody accidentally relies on it.
+     * <p>
+     * XXX HashSetTest requires a specific iteration order of HashSet! Therefore, we can not use SALT here.
+     */
+    static final int SALT = 0;//new Random().nextInt();
 
-    private HashSet(HashArrayMappedTrie<T, T> tree) {
-        this.tree = tree;
+    HashSet(ChampTrie.BitmapIndexedNode<T> root, int size) {
+        this.root = root;
+        this.size = size;
     }
 
     @SuppressWarnings("unchecked")
@@ -93,7 +167,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet instance containing the given element
      */
     public static <T> HashSet<T> of(T element) {
-        return HashSet.<T> empty().add(element);
+        return HashSet.<T>empty().add(element);
     }
 
     /**
@@ -107,13 +181,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <T> HashSet<T> of(T... elements) {
         Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<T, T> tree = HashArrayMappedTrie.empty();
-        for (T element : elements) {
-            tree = tree.put(element, element);
-        }
-        return tree.isEmpty() ? empty() : new HashSet<>(tree);
+        return HashSet.<T>empty().addAll(Arrays.asList(elements));
     }
 
     /**
@@ -155,12 +226,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     @SuppressWarnings("unchecked")
     public static <T> HashSet<T> ofAll(Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof HashSet) {
-            return (HashSet<T>) elements;
-        } else {
-            final HashArrayMappedTrie<T, T> tree = addAll(HashArrayMappedTrie.empty(), elements);
-            return tree.isEmpty() ? empty() : new HashSet<>(tree);
-        }
+        return elements instanceof HashSet? (HashSet<T>) elements :HashSet.<T>of().addAll(elements);
     }
 
     /**
@@ -481,33 +547,47 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> add(T element) {
-        return contains(element) ? this : new HashSet<>(tree.put(element, element));
+        int keyHash = keyHash(element);
+        ChampTrie.ChangeEvent<T> details = new ChampTrie.ChangeEvent<>();
+        ChampTrie.BitmapIndexedNode<T> newRootNode = root.put(null, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, HashSet::keyHash);
+        if (details.isModified()) {
+            return new HashSet<>(newRootNode, size + 1);
+        }
+        return this;
     }
 
+    /**
+     * Update function for a set: we always keep the old element.
+     *
+     * @param oldElement the old element
+     * @param newElement the new element
+     * @param <E>        the element type
+     * @return always returns the old element
+     */
+    static <E> E updateElement(E oldElement, E newElement) {
+        return oldElement;
+    }
+
+
+    @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> addAll(Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() && elements instanceof HashSet) {
-            @SuppressWarnings("unchecked")
-            final HashSet<T> set = (HashSet<T>) elements;
-            return set;
+        if(isEmpty()&&elements instanceof HashSet){
+            return (HashSet<T>) elements;
         }
-        final HashArrayMappedTrie<T, T> that = addAll(tree, elements);
-        if (that.size() == tree.size()) {
-            return this;
-        } else {
-            return new HashSet<>(that);
-        }
+        TransientHashSet<T> t = toTransient();
+        t.addAll(elements);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
     public <R> HashSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
-        return ofAll(iterator().<R> collect(partialFunction));
+        return ofAll(iterator().<R>collect(partialFunction));
     }
 
     @Override
     public boolean contains(T element) {
-        return tree.get(element).isDefined();
+        return root.find(element, keyHash(element), 0, Objects::equals) != ChampTrie.Node.NO_DATA;
     }
 
     @Override
@@ -566,16 +646,9 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> filter(Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final HashSet<T> filtered = HashSet.ofAll(iterator().filter(predicate));
-
-        if (filtered.isEmpty()) {
-            return empty();
-        } else if (filtered.length() == length()) {
-            return this;
-        } else {
-            return filtered;
-        }
+        TransientHashSet<T> t = toTransient();
+        t.filterAll(predicate);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
@@ -590,9 +663,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
         if (isEmpty()) {
             return empty();
         } else {
-            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(),
-                    (tree, t) -> addAll(tree, mapper.apply(t)));
-            return new HashSet<>(that);
+            return foldLeft(HashSet.empty(),
+                    (tree, t) -> tree.addAll(mapper.apply(t)));
         }
     }
 
@@ -618,10 +690,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public T head() {
-        if (tree.isEmpty()) {
+        if (isEmpty()) {
             throw new NoSuchElementException("head of empty set");
         }
-        return iterator().next();
+        return ChampTrie.Node.getFirst(root);
     }
 
     @Override
@@ -631,6 +703,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> init() {
+        //XXX I would like to remove the last element here, but this would break HashSetTest.shouldGetInitOfNonNil().
+        //if (isEmpty()) {
+        //    throw new UnsupportedOperationException("init of empty set");
+        //}
+        //return remove(last());
         return tail();
     }
 
@@ -641,18 +718,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> intersect(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty() || elements.isEmpty()) {
-            return empty();
-        } else {
-            final int size = size();
-            if (size <= elements.size()) {
-                return retainAll(elements);
-            } else {
-                final HashSet<T> results = HashSet.<T> ofAll(elements).retainAll(this);
-                return (size == results.size()) ? this : results;
-            }
-        }
+        return retainAll(elements);
     }
 
     /**
@@ -667,7 +733,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public boolean isEmpty() {
-        return tree.isEmpty();
+        return size == 0;
     }
 
     /**
@@ -687,17 +753,21 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Iterator<T> iterator() {
-        return tree.keysIterator();
+        return new ChampIteration.IteratorFacade<>(spliterator());
+    }
+
+    static int keyHash(Object e) {
+        return SALT ^ Objects.hashCode(e);
     }
 
     @Override
     public T last() {
-        return Collections.last(this);
+        return ChampTrie.Node.getLast(root);
     }
 
     @Override
     public int length() {
-        return tree.size();
+        return size;
     }
 
     @Override
@@ -706,11 +776,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
         if (isEmpty()) {
             return empty();
         } else {
-            final HashArrayMappedTrie<U, U> that = foldLeft(HashArrayMappedTrie.empty(), (tree, t) -> {
-                final U u = mapper.apply(t);
-                return tree.put(u, u);
-            });
-            return new HashSet<>(that);
+            return foldLeft(HashSet.empty(),
+                    (tree, t) -> {
+                        final U u = mapper.apply(t);
+                        return tree.add(u);
+                    });
         }
     }
 
@@ -731,6 +801,10 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
+        //XXX HashSetTest#shouldPartitionInOneIteration prevents that we can use a faster implementation
+        //XXX HashSetTest#partitionShouldBeUnique prevents that we can use a faster implementation
+        //XXX I believe that these tests are wrong, because predicates should not have side effects!
+        //return new Tuple2<>(filter(predicate),filter(predicate.negate()));
         return Collections.partition(this, HashSet::ofAll, predicate);
     }
 
@@ -744,23 +818,27 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> remove(T element) {
-        final HashArrayMappedTrie<T, T> newTree = tree.remove(element);
-        return (newTree == tree) ? this : new HashSet<>(newTree);
+    public HashSet<T> remove(T key) {
+        int keyHash = keyHash(key);
+        ChampTrie.ChangeEvent<T> details = new ChampTrie.ChangeEvent<>();
+        ChampTrie.BitmapIndexedNode<T> newRootNode = root.remove(null, key, keyHash, 0, details, Objects::equals);
+        if (details.isModified()) {
+            return size == 1 ? HashSet.empty() : new HashSet<>(newRootNode, size - 1);
+        }
+        return this;
     }
 
     @Override
     public HashSet<T> removeAll(Iterable<? extends T> elements) {
-        return Collections.removeAll(this, elements);
+        TransientHashSet<T> t = toTransient();
+        t.removeAll(elements);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
     public HashSet<T> replace(T currentElement, T newElement) {
-        if (tree.containsKey(currentElement)) {
-            return remove(currentElement).add(newElement);
-        } else {
-            return this;
-        }
+        HashSet<T> removed = remove(currentElement);
+        return removed != this ? removed.add(newElement) : this;
     }
 
     @Override
@@ -770,7 +848,9 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public HashSet<T> retainAll(Iterable<? extends T> elements) {
-        return Collections.retainAll(this, elements);
+        TransientHashSet<T> t = toTransient();
+        t.retainAll(elements);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
@@ -811,8 +891,14 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public Spliterator<T> spliterator() {
+        return new ChampIteration.ChampSpliterator<>(root, Function.identity(),
+                Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
+    }
+
+    @Override
     public HashSet<T> tail() {
-        if (tree.isEmpty()) {
+        if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty set");
         }
         return remove(head());
@@ -820,11 +906,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public Option<HashSet<T>> tailOption() {
-        if (tree.isEmpty()) {
-            return Option.none();
-        } else {
-            return Option.some(tail());
-        }
+        return isEmpty() ? Option.none() : Option.some(tail());
     }
 
     @Override
@@ -871,29 +953,19 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public java.util.HashSet<T> toJavaSet() {
+        // XXX If the return value was not required to be a java.util.HashSet
+        //     we could provide a mutable HashSet in O(1)
         return toJavaSet(java.util.HashSet::new);
+    }
+
+    TransientHashSet<T> toTransient() {
+        return new TransientHashSet<>(this);
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public HashSet<T> union(Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            if (elements instanceof HashSet) {
-                return (HashSet<T>) elements;
-            } else {
-                return HashSet.ofAll(elements);
-            }
-        } else if (elements.isEmpty()) {
-            return this;
-        } else {
-            final HashArrayMappedTrie<T, T> that = addAll(tree, elements);
-            if (that.size() == tree.size()) {
-                return this;
-            } else {
-                return new HashSet<>(that);
-            }
-        }
+        return addAll(elements);
     }
 
     @Override
@@ -947,14 +1019,6 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static <T> HashArrayMappedTrie<T, T> addAll(HashArrayMappedTrie<T, T> initial,
-            Iterable<? extends T> additional) {
-        HashArrayMappedTrie<T, T> that = initial;
-        for (T t : additional) {
-            that = that.put(t, t);
-        }
-        return that;
-    }
 
     // -- Serialization
 
@@ -967,7 +1031,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A SerializationProxy for this enclosing class.
      */
     private Object writeReplace() {
-        return new SerializationProxy<>(this.tree);
+        return new SerializationProxy<>(this);
     }
 
     /**
@@ -995,7 +1059,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized
-        private transient HashArrayMappedTrie<T, T> tree;
+        private transient HashSet<T> tree;
 
         /**
          * Constructor for the case of serialization, called by {@link HashSet#writeReplace()}.
@@ -1005,7 +1069,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
          *
          * @param tree a Cons
          */
-        SerializationProxy(HashArrayMappedTrie<T, T> tree) {
+        SerializationProxy(HashSet<T> tree) {
             this.tree = tree;
         }
 
@@ -1018,8 +1082,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
         private void writeObject(ObjectOutputStream s) throws IOException {
             s.defaultWriteObject();
             s.writeInt(tree.size());
-            for (Tuple2<T, T> e : tree) {
-                s.writeObject(e._1);
+            for (T e : tree) {
+                s.writeObject(e);
             }
         }
 
@@ -1037,13 +1101,17 @@ public final class HashSet<T> implements Set<T>, Serializable {
             if (size < 0) {
                 throw new InvalidObjectException("No elements");
             }
-            HashArrayMappedTrie<T, T> temp = HashArrayMappedTrie.empty();
+            ChampTrie.IdentityObject owner = new ChampTrie.IdentityObject();
+            ChampTrie.BitmapIndexedNode<T> newRoot = ChampTrie.BitmapIndexedNode.emptyNode();
+            ChampTrie.ChangeEvent<T> details = new ChampTrie.ChangeEvent<>();
+            int newSize = 0;
             for (int i = 0; i < size; i++) {
-                @SuppressWarnings("unchecked")
-                final T element = (T) s.readObject();
-                temp = temp.put(element, element);
+                @SuppressWarnings("unchecked") final T element = (T) s.readObject();
+                int keyHash = keyHash(element);
+                newRoot = newRoot.put(owner, element, keyHash, 0, details, HashSet::updateElement, Objects::equals, HashSet::keyHash);
+                if (details.isModified()) newSize++;
             }
-            tree = temp;
+            tree = newSize == 0 ? empty() : new HashSet<>(newRoot, newSize);
         }
 
         /**
@@ -1056,7 +1124,169 @@ public final class HashSet<T> implements Set<T>, Serializable {
          * @return A deserialized instance of the enclosing class.
          */
         private Object readResolve() {
-            return tree.isEmpty() ? HashSet.empty() : new HashSet<>(tree);
+            return tree;
+        }
+    }
+
+    /**
+     * Supports efficient bulk-operations on a set through transience.
+     *
+     * @param <E>the element type
+     */
+    static class TransientHashSet<E> extends ChampTransience.ChampAbstractTransientSet<E, E> {
+        TransientHashSet(HashSet<E> s) {
+            root = s.root;
+            size = s.size;
+        }
+
+        TransientHashSet() {
+            this(empty());
+        }
+
+        public HashSet<E> toImmutable() {
+            owner = null;
+            return isEmpty()
+                    ? empty()
+                    : new HashSet<>(root, size);
+        }
+
+        boolean add(E e) {
+            ChampTrie.ChangeEvent<E> details = new ChampTrie.ChangeEvent<>();
+            root = root.put(makeOwner(),
+                    e, keyHash(e), 0, details,
+                    (oldKey, newKey) -> oldKey,
+                    Objects::equals, HashSet::keyHash);
+            if (details.isModified()) {
+                size++;
+                modCount++;
+            }
+            return details.isModified();
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean addAll(Iterable<? extends E> c) {
+            if (c == root) {
+                return false;
+            }
+            if (isEmpty() && (c instanceof HashSet<?>)) {
+                HashSet<?> cc = (HashSet<?>) c;
+                root = (ChampTrie.BitmapIndexedNode<E>) cc.root;
+                size = cc.size;
+                return true;
+            }
+            if (c instanceof HashSet<?>) {
+                HashSet<?> that = (HashSet<?>) c;
+                ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+                ChampTrie.BitmapIndexedNode<E> newRootNode = root.putAll(makeOwner(), (ChampTrie.Node<E>) that.root, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampTrie.ChangeEvent<>());
+                if (bulkChange.inBoth == that.size()) {
+                    return false;
+                }
+                root = newRootNode;
+                size += that.size - bulkChange.inBoth;
+                modCount++;
+                return true;
+            }
+            boolean added = false;
+            for (E e : c) {
+                added |= add(e);
+            }
+            return added;
+        }
+
+        @Override
+        public java.util.Iterator<E> iterator() {
+            return new ChampIteration.IteratorFacade<>(spliterator());
+        }
+
+
+        public Spliterator<E> spliterator() {
+            return new ChampIteration.ChampSpliterator<>(root, Function.identity(), Spliterator.DISTINCT | Spliterator.SIZED, size);
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        boolean remove(Object key) {
+            int keyHash = keyHash(key);
+            ChampTrie.ChangeEvent<E> details = new ChampTrie.ChangeEvent<>();
+            root = root.remove(owner, (E) key, keyHash, 0, details, Objects::equals);
+            if (details.isModified()) {
+                size--;
+                return true;
+            }
+            return false;
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean removeAll(Iterable<?> c) {
+            if (isEmpty()
+                    || (c instanceof Collection<?>) && ((Collection<?>) c).isEmpty()) {
+                return false;
+            }
+            if (c instanceof HashSet<?>) {
+                HashSet<?> that = (HashSet<?>) c;
+                ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+                ChampTrie.BitmapIndexedNode<E> newRootNode = root.removeAll(makeOwner(), (ChampTrie.BitmapIndexedNode<E>) that.root, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampTrie.ChangeEvent<>());
+                if (bulkChange.removed == 0) {
+                    return false;
+                }
+                root = newRootNode;
+                size -= bulkChange.removed;
+                modCount++;
+                return true;
+            }
+            return super.removeAll(c);
+        }
+
+        void clear() {
+            root = ChampTrie.BitmapIndexedNode.emptyNode();
+            size = 0;
+            modCount++;
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean retainAll(Iterable<?> c) {
+            if (isEmpty()) {
+                return false;
+            }
+            if ((c instanceof Collection<?> && ((Collection<?>) c).isEmpty())) {
+                Collection<?> cc = (Collection<?>) c;
+                clear();
+                return true;
+            }
+            ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+            ChampTrie.BitmapIndexedNode<E> newRootNode;
+            if (c instanceof HashSet<?>) {
+                HashSet<?> that = (HashSet<?>) c;
+                newRootNode = root.retainAll(makeOwner(), (ChampTrie.BitmapIndexedNode<E>) that.root, 0, bulkChange, HashSet::updateElement, Objects::equals, HashSet::keyHash, new ChampTrie.ChangeEvent<>());
+            } else if (c instanceof Collection<?>) {
+                Collection<?> that = (Collection<?>) c;
+                newRootNode = root.filterAll(makeOwner(), that::contains, 0, bulkChange);
+            } else {
+                java.util.HashSet<Object> that = new java.util.HashSet<>();
+                c.forEach(that::add);
+                newRootNode = root.filterAll(makeOwner(), that::contains, 0, bulkChange);
+            }
+            if (bulkChange.removed == 0) {
+                return false;
+            }
+            root = newRootNode;
+            size -= bulkChange.removed;
+            modCount++;
+            return true;
+        }
+
+        public boolean filterAll(Predicate<? super E> predicate) {
+            ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+            ChampTrie.BitmapIndexedNode<E> newRootNode
+                    = root.filterAll(makeOwner(), predicate, 0, bulkChange);
+            if (bulkChange.removed == 0) {
+                return false;
+            }
+            root = newRootNode;
+            size -= bulkChange.removed;
+            modCount++;
+            return true;
+
         }
     }
 }

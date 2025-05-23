@@ -26,7 +26,14 @@
  */
 package io.vavr.control;
 
-import io.vavr.*;
+import io.vavr.Function2;
+import io.vavr.Function3;
+import io.vavr.Function4;
+import io.vavr.Function5;
+import io.vavr.Function6;
+import io.vavr.Function7;
+import io.vavr.Function8;
+import io.vavr.Value;
 import io.vavr.collection.Array;
 import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
@@ -224,6 +231,12 @@ public abstract class Validation<E, T> implements Iterable<T>, Value<T>, Seriali
      * or an invalid Validation containing an accumulated List of errors.
      * @throws NullPointerException if values is null
      * @see #all(Traversable)
+     * @param <E>    value type in the case of invalid
+     * @param <T>    value type in the case of valid
+     * @param values An iterable of Validation instances.
+     * @return A valid Validation of the last value if all Validation instances are valid
+     * or an invalid Validation containing an accumulated List of errors.
+     * @throws NullPointerException if values is null
      */
     @SuppressWarnings("varargs")
     @SafeVarargs

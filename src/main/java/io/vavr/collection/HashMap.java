@@ -30,28 +30,110 @@ import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import io.vavr.control.Option;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
 import java.io.Serializable;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.Spliterator;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
+import static io.vavr.collection.ChampTrie.BitmapIndexedNode.emptyNode;
+
 /**
- * An immutable {@code HashMap} implementation based on a
- * <a href="https://en.wikipedia.org/wiki/Hash_array_mapped_trie">Hash array mapped trie (HAMT)</a>.
+ * Implements an immutable map using a Compressed Hash-Array Mapped Prefix-tree
+ * (CHAMP).
+ * <p>
+ * Features:
+ * <ul>
+ *     <li>supports up to 2<sup>30</sup> entries</li>
+ *     <li>allows null keys and null values</li>
+ *     <li>is immutable</li>
+ *     <li>is thread-safe</li>
+ *     <li>does not guarantee a specific iteration order</li>
+ * </ul>
+ * <p>
+ * Performance characteristics:
+ * <ul>
+ *     <li>put: O(1)</li>
+ *     <li>remove: O(1)</li>
+ *     <li>containsKey: O(1)</li>
+ *     <li>toMutable: O(1) + O(log N) distributed across subsequent updates in the mutable copy</li>
+ *     <li>clone: O(1)</li>
+ *     <li>iterator.next(): O(1)</li>
+ * </ul>
+ * <p>
+ * Implementation details:
+ * <p>
+ * This map performs read and write operations of single elements in O(1) time,
+ * and in O(1) space.
+ * <p>
+ * The CHAMP trie contains nodes that may be shared with other maps.
+ * <p>
+ * If a write operation is performed on a node, then this map creates a
+ * copy of the node and of all parent nodes up to the root (copy-path-on-write).
+ * Since the CHAMP trie has a fixed maximal height, the cost is O(1).
+ * <p>
+ * All operations on this map can be performed concurrently, without a need for
+ * synchronisation.
+ * <p>
+ * References:
+ * <p>
+ * Portions of the code in this class have been derived from 'The Capsule Hash Trie Collections Library', and from
+ * 'JHotDraw 8'.
+ * <dl>
+ *     <dt>Michael J. Steindorfer (2017).
+ *     Efficient Immutable Collections.</dt>
+ *     <dd><a href="https://michael.steindorfer.name/publications/phd-thesis-efficient-immutable-collections">michael.steindorfer.name</a>
+ *     </dd>
+ *     <dt>The Capsule Hash Trie Collections Library.
+ *     <br>Copyright (c) Michael Steindorfer. <a href="https://github.com/usethesource/capsule/blob/3856cd65fa4735c94bcfa94ec9ecf408429b54f4/LICENSE">BSD-2-Clause License</a></dt>
+ *     <dd><a href="https://github.com/usethesource/capsule">github.com</a>
+ *     </dd>
+ *     <dt>JHotDraw 8. Copyright © 2023 The authors and contributors of JHotDraw.
+ *     <a href="https://github.com/wrandelshofer/jhotdraw8/blob/8c1a98b70bc23a0c63f1886334d5b568ada36944/LICENSE">MIT License</a>.</dt>
+ *     <dd><a href="https://github.com/wrandelshofer/jhotdraw8">github.com</a>
+ *     </dd>
+ * </dl>
+ *
+ * @param <K> the key type
+ * @param <V> the value type
  */
-public final class HashMap<K, V> implements Map<K, V>, Serializable {
+public final class HashMap<K, V>  implements Map<K, V>, Serializable {
+    private final ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> root;
 
     private static final long serialVersionUID = 1L;
 
-    private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());
+    private static final HashMap<?, ?> EMPTY = new HashMap<>(emptyNode(), 0);
 
-    private final HashArrayMappedTrie<K, V> trie;
+    /**
+     * We do not guarantee an iteration order. Make sure that nobody accidentally relies on it.
+     * <p>
+     * XXX HashSetTest requires a specific iteration order of HashSet! Therefore, we can not use SALT here.
+     */
+    static final int SALT = 0;//new java.util.Random().nextInt();
+    /**
+     * The size of the map.
+     */
+    final int size;
 
-    private HashMap(HashArrayMappedTrie<K, V> trie) {
-        this.trie = trie;
+    HashMap(ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> root, int size) {
+        this.root=root;
+        this.size = size;
     }
 
     /**
@@ -71,9 +153,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link HashMap}.
      *
      * @param keyMapper The key mapper
-     * @param <K> The key type
-     * @param <V> The value type
-     * @param <T> Initial {@link java.util.stream.Stream} elements type
+     * @param <K>       The key type
+     * @param <V>       The value type
+     * @param <T>       Initial {@link java.util.stream.Stream} elements type
      * @return A {@link HashMap} Collector.
      */
     public static <K, V, T extends V> Collector<T, ArrayList<T>, HashMap<K, V>> collector(Function<? super T, ? extends K> keyMapper) {
@@ -85,11 +167,11 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
      * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link HashMap}.
      *
-     * @param keyMapper The key mapper
+     * @param keyMapper   The key mapper
      * @param valueMapper The value mapper
-     * @param <K> The key type
-     * @param <V> The value type
-     * @param <T> Initial {@link java.util.stream.Stream} elements type
+     * @param <K>         The key type
+     * @param <V>         The value type
+     * @param <T>         Initial {@link java.util.stream.Stream} elements type
      * @return A {@link HashMap} Collector.
      */
     public static <K, V, T> Collector<T, ArrayList<T>, HashMap<K, V>> collector(
@@ -129,7 +211,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entry
      */
     public static <K, V> HashMap<K, V> of(Tuple2<? extends K, ? extends V> entry) {
-        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(entry._1, entry._2));
+        return HashMap.<K, V>empty().put(entry._1, entry._2);
     }
 
     /**
@@ -141,12 +223,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given map
      */
     public static <K, V> HashMap<K, V> ofAll(java.util.Map<? extends K, ? extends V> map) {
-        Objects.requireNonNull(map, "map is null");
-        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
-            tree = tree.put(entry.getKey(), entry.getValue());
-        }
-        return wrap(tree);
+        return HashMap.<K, V>empty().putAllEntries(map.entrySet());
     }
 
     /**
@@ -161,8 +238,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map
      */
     public static <T, K, V> HashMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
-            Function<? super T, ? extends K> keyMapper,
-            Function<? super T, ? extends V> valueMapper) {
+                                                Function<? super T, ? extends K> keyMapper,
+                                                Function<? super T, ? extends V> valueMapper) {
         return Maps.ofStream(empty(), stream, keyMapper, valueMapper);
     }
 
@@ -177,7 +254,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map
      */
     public static <T, K, V> HashMap<K, V> ofAll(java.util.stream.Stream<? extends T> stream,
-            Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
+                                                Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
         return Maps.ofStream(empty(), stream, entryMapper);
     }
 
@@ -191,7 +268,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entry
      */
     public static <K, V> HashMap<K, V> of(K key, V value) {
-        return new HashMap<>(HashArrayMappedTrie.<K, V> empty().put(key, value));
+        return HashMap.<K, V>empty().put(key, value);
     }
 
     /**
@@ -443,13 +520,10 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entries
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <K, V> HashMap<K, V> ofEntries(java.util.Map.Entry<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
-            trie = trie.put(entry.getKey(), entry.getValue());
-        }
-        return wrap(trie);
+        return HashMap.<K, V>empty().putAllEntries(Arrays.asList(entries));
     }
 
     /**
@@ -461,13 +535,10 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @return A new Map containing the given entries
      */
     @SafeVarargs
+    @SuppressWarnings("varargs")
     public static <K, V> HashMap<K, V> ofEntries(Tuple2<? extends K, ? extends V>... entries) {
         Objects.requireNonNull(entries, "entries is null");
-        HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
-        for (Tuple2<? extends K, ? extends V> entry : entries) {
-            trie = trie.put(entry._1, entry._2);
-        }
-        return wrap(trie);
+        return HashMap.<K, V>empty().putAllTuples(Arrays.asList(entries));
     }
 
     /**
@@ -478,18 +549,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
      * @param <V>     The value type
      * @return A new Map containing the given entries
      */
-    @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
         Objects.requireNonNull(entries, "entries is null");
-        if (entries instanceof HashMap) {
-            return (HashMap<K, V>) entries;
-        } else {
-            HashArrayMappedTrie<K, V> trie = HashArrayMappedTrie.empty();
-            for (Tuple2<? extends K, ? extends V> entry : entries) {
-                trie = trie.put(entry._1, entry._2);
-            }
-            return trie.isEmpty() ? empty() : wrap(trie);
-        }
+        return HashMap.<K, V>empty().putAllTuples(entries);
     }
 
     @Override
@@ -512,7 +574,8 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public boolean containsKey(K key) {
-        return trie.containsKey(key);
+        return root.find(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0,
+                HashMap::keyEquals) != ChampTrie.Node.NO_DATA;
     }
 
     @Override
@@ -552,48 +615,56 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> filter(BiPredicate<? super K, ? super V> predicate) {
-        return Maps.filter(this, this::createFromEntries, predicate);
+        TransientHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(e.getKey(),e.getValue()));
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
     public HashMap<K, V> filterNot(BiPredicate<? super K, ? super V> predicate) {
-        return Maps.filterNot(this, this::createFromEntries, predicate);
+        return filter(predicate.negate());
     }
 
     @Override
     public HashMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.filter(this, this::createFromEntries, predicate);
+        TransientHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(new Tuple2<>(e.getKey(),e.getValue())));
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
     public HashMap<K, V> filterNot(Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.filterNot(this, this::createFromEntries, predicate);
+        return filter(predicate.negate());
     }
 
     @Override
     public HashMap<K, V> filterKeys(Predicate<? super K> predicate) {
-        return Maps.filterKeys(this, this::createFromEntries, predicate);
+        TransientHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(e.getKey()));
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
     public HashMap<K, V> filterNotKeys(Predicate<? super K> predicate) {
-        return Maps.filterNotKeys(this, this::createFromEntries, predicate);
+        return filterKeys(predicate.negate());
     }
 
     @Override
     public HashMap<K, V> filterValues(Predicate<? super V> predicate) {
-        return Maps.filterValues(this, this::createFromEntries, predicate);
+        TransientHashMap<K, V> t = toTransient();
+        t.filterAll(e->predicate.test(e.getValue()));
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
     public HashMap<K, V> filterNotValues(Predicate<? super V> predicate) {
-        return Maps.filterNotValues(this, this::createFromEntries, predicate);
+        return filterValues(predicate.negate());
     }
 
     @Override
     public <K2, V2> HashMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(HashMap.<K2, V2> empty(), (acc, entry) -> {
+        return foldLeft(HashMap.<K2, V2>empty(), (acc, entry) -> {
             for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
                 acc = acc.put(mappedEntry);
             }
@@ -602,13 +673,17 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Option<V> get(K key) {
-        return trie.get(key);
+        Object result = root.find(new AbstractMap.SimpleImmutableEntry<>(key, null), Objects.hashCode(key), 0, HashMap::keyEquals);
+        return result == ChampTrie.Node.NO_DATA || result == null
+                ? Option.none()
+                : Option.some(((AbstractMap.SimpleImmutableEntry<K, V>) result).getValue());
     }
 
     @Override
     public V getOrElse(K key, V defaultValue) {
-        return trie.getOrElse(key, defaultValue);
+        return get(key).getOrElse(defaultValue);
     }
 
     @Override
@@ -625,18 +700,21 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     public Tuple2<K, V> head() {
         if (isEmpty()) {
             throw new NoSuchElementException("head of empty HashMap");
-        } else {
-            return iterator().next();
         }
+        AbstractMap.SimpleImmutableEntry<K, V> entry = ChampTrie.Node.getFirst(root);
+        return new Tuple2<>(entry.getKey(), entry.getValue());
     }
 
+    /**
+     * XXX We return tail() here. I believe that this is correct.
+     * See identical code in {@link HashSet#init}
+     */
     @Override
     public HashMap<K, V> init() {
-        if (trie.isEmpty()) {
-            throw new UnsupportedOperationException("init of empty HashMap");
-        } else {
-            return remove(last()._1);
+        if (isEmpty()) {
+            throw new UnsupportedOperationException("tail of empty HashMap");
         }
+        return remove(last()._1);
     }
 
     @Override
@@ -656,7 +734,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public boolean isEmpty() {
-        return trie.isEmpty();
+        return size == 0;
     }
 
     /**
@@ -671,7 +749,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Iterator<Tuple2<K, V>> iterator() {
-        return trie.iterator();
+        return new ChampIteration.IteratorFacade<>(spliterator());
     }
 
     @Override
@@ -681,12 +759,21 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public Iterator<K> keysIterator() {
-        return trie.keysIterator();
+        return new ChampIteration.IteratorFacade<>(keysSpliterator());
+    }
+
+    private Spliterator<K> keysSpliterator() {
+        return new ChampIteration.ChampSpliterator<>(root, AbstractMap.SimpleImmutableEntry::getKey,
+                Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
     }
 
     @Override
     public Tuple2<K, V> last() {
-        return Collections.last(this);
+        if (isEmpty()) {
+            throw new NoSuchElementException("last of empty HashMap");
+        }
+        AbstractMap.SimpleImmutableEntry<K, V> entry = ChampTrie.Node.getLast(root);
+        return new Tuple2<>(entry.getKey(), entry.getValue());
     }
 
     @Override
@@ -714,12 +801,12 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> merge(Map<? extends K, ? extends V> that) {
-        return Maps.merge(this, this::createFromEntries, that);
+       return putAllTuples(that);
     }
 
     @Override
     public <U extends V> HashMap<K, V> merge(Map<? extends K, U> that,
-            BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+                                             BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
         return Maps.merge(this, this::createFromEntries, that, collisionResolution);
     }
 
@@ -750,7 +837,17 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> put(K key, V value) {
-        return new HashMap<>(trie.put(key, value));
+        final ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
+        final ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.put(null, new AbstractMap.SimpleImmutableEntry<>(key, value),
+                Objects.hashCode(key), 0, details,
+                HashMap::updateWithNewKey, HashMap::keyEquals, HashMap::entryKeyHash);
+        if (details.isModified()) {
+            if (details.isReplaced()) {
+                return new HashMap<>(newRootNode, size);
+            }
+            return new HashMap<>(newRootNode, size + 1);
+        }
+        return this;
     }
 
     @Override
@@ -760,31 +857,45 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public <U extends V> HashMap<K, V> put(Tuple2<? extends K, U> entry,
-            BiFunction<? super V, ? super U, ? extends V> merge) {
+                                           BiFunction<? super V, ? super U, ? extends V> merge) {
         return Maps.put(this, entry, merge);
+    }
+
+    private HashMap<K, V> putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> c) {
+        TransientHashMap<K,V> t=toTransient();
+        t.putAllEntries(c);
+        return t.root==this.root?this: t.toImmutable();
+    }
+
+    @SuppressWarnings("unchecked")
+    private HashMap<K, V> putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> c) {
+        if (isEmpty()&& c instanceof HashMap<?, ?>){
+            HashMap<?, ?> that = (HashMap<?, ?>) c;
+            return (HashMap<K, V>)that;
+        }
+        TransientHashMap<K,V> t=toTransient();
+        t.putAllTuples(c);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
     public HashMap<K, V> remove(K key) {
-        final HashArrayMappedTrie<K, V> result = trie.remove(key);
-        return result.size() == trie.size() ? this : wrap(result);
+        final int keyHash = Objects.hashCode(key);
+        final ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
+        final ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode =
+                root.remove(null, new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
+                        HashMap::keyEquals);
+        if (details.isModified()) {
+            return new HashMap<>(newRootNode, size - 1);
+        }
+        return this;
     }
 
     @Override
-    public HashMap<K, V> removeAll(Iterable<? extends K> keys) {
-        Objects.requireNonNull(keys, "keys is null");
-        HashArrayMappedTrie<K, V> result = trie;
-        for (K key : keys) {
-            result = result.remove(key);
-        }
-
-        if (result.isEmpty()) {
-            return empty();
-        } else if (result.size() == trie.size()) {
-            return this;
-        } else {
-            return wrap(result);
-        }
+    public HashMap<K, V> removeAll(Iterable<? extends K> c) {
+        TransientHashMap<K,V> t=toTransient();
+        t.removeAll(c);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
@@ -814,14 +925,9 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public HashMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        HashArrayMappedTrie<K, V> tree = HashArrayMappedTrie.empty();
-        for (Tuple2<K, V> entry : elements) {
-            if (contains(entry)) {
-                tree = tree.put(entry._1, entry._2);
-            }
-        }
-        return wrap(tree);
+        TransientHashMap<K,V> t=toTransient();
+        t.retainAllTuples(elements);
+        return t.root==this.root?this: t.toImmutable();
     }
 
     @Override
@@ -833,7 +939,7 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
     @Override
     public int size() {
-        return trie.size();
+        return size;
     }
 
     @Override
@@ -857,12 +963,17 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     @Override
+    public Spliterator<Tuple2<K, V>> spliterator() {
+        return new ChampIteration.ChampSpliterator<>(root, entry -> new Tuple2<>(entry.getKey(), entry.getValue()),
+                Spliterator.DISTINCT | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
+    }
+
+    @Override
     public HashMap<K, V> tail() {
-        if (trie.isEmpty()) {
+        if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty HashMap");
-        } else {
-            return remove(head()._1);
         }
+        return remove(head()._1);
     }
 
     @Override
@@ -895,19 +1006,39 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return toJavaMap(java.util.HashMap::new, t -> t);
     }
 
+    TransientHashMap<K,V> toTransient() {
+        return new TransientHashMap<>(this);
+    }
+
     @Override
     public Stream<V> values() {
-        return trie.valuesIterator().toStream();
+        return valuesIterator().toStream();
     }
 
     @Override
     public Iterator<V> valuesIterator() {
-        return trie.valuesIterator();
+        return new ChampIteration.IteratorFacade<>(valuesSpliterator());
+    }
+
+    private Spliterator<V> valuesSpliterator() {
+        return new ChampIteration.ChampSpliterator<>(root, AbstractMap.SimpleImmutableEntry::getValue,
+                Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE, size);
     }
 
     @Override
-    public boolean equals(Object o) {
-        return Collections.equals(this, o);
+    public boolean equals(final Object other) {
+        if (other == this) {
+            return true;
+        }
+        if (other == null) {
+            return false;
+        }
+        if (other instanceof HashMap) {
+            HashMap<?, ?> that = (HashMap<?, ?>) other;
+            return size == that.size &&root. equivalent(that.root);
+        } else {
+            return Collections.equals(this, other);
+        }
     }
 
     @Override
@@ -929,13 +1060,265 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return mkString(stringPrefix() + "(", ", ", ")");
     }
 
-    private static <K, V> HashMap<K, V> wrap(HashArrayMappedTrie<K, V> trie) {
-        return trie.isEmpty() ? empty() : new HashMap<>(trie);
-    }
-
     // We need this method to narrow the argument of `ofEntries`.
     // If this method is static with type args <K, V>, the jdk fails to infer types at the call site.
     private HashMap<K, V> createFromEntries(Iterable<Tuple2<K, V>> tuples) {
         return HashMap.ofEntries(tuples);
+    }
+
+    static <V, K> boolean keyEquals(AbstractMap.SimpleImmutableEntry<K, V> a, AbstractMap.SimpleImmutableEntry<K, V> b) {
+        return Objects.equals(a.getKey(), b.getKey());
+    }
+    static <V, K> int keyHash(Object e) {
+        return SALT ^ Objects.hashCode(e);
+    }
+    static <V, K> int entryKeyHash(AbstractMap.SimpleImmutableEntry<K, V> e) {
+        return SALT^Objects.hashCode(e.getKey());
+    }
+
+    static <V, K> boolean entryKeyEquals(AbstractMap.SimpleImmutableEntry<K, V> a, AbstractMap.SimpleImmutableEntry<K, V> b) {
+        return Objects.equals(a.getKey(), b.getKey());
+    }
+
+    // FIXME This behavior is enforced by AbstractMapTest.shouldPutExistingKeyAndNonEqualValue().<br>
+    //     This behavior replaces the existing key with the new one if it has not the same identity.<br>
+    //     This behavior does not match the behavior of java.util.HashMap.put().
+    //     This behavior violates the contract of the map: we do create a new instance of the map,
+    //     although it is equal to the previous instance.
+    static <K, V> AbstractMap.SimpleImmutableEntry<K, V> updateWithNewKey(AbstractMap.SimpleImmutableEntry<K, V> oldv, AbstractMap.SimpleImmutableEntry<K, V> newv) {
+        return Objects.equals(oldv.getValue(), newv.getValue())
+                && oldv.getKey() == newv.getKey()
+                ? oldv
+                : newv;
+    }
+
+    static <K, V> AbstractMap.SimpleImmutableEntry<K, V> updateEntry(AbstractMap.SimpleImmutableEntry<K, V> oldv, AbstractMap.SimpleImmutableEntry<K, V> newv) {
+        return Objects.equals(oldv.getValue(), newv.getValue()) ? oldv : newv;
+    }
+
+        private Object writeReplace() throws ObjectStreamException {
+        return new SerializationProxy<>(this);
+    }
+
+    /**
+     * A serialization proxy which, in this context, is used to deserialize immutable, linked Lists with final
+     * instance fields.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     */
+    // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
+    // classes. Also, it may not be compatible with circular object graphs.
+    private static final class SerializationProxy<K, V> implements Serializable {
+
+        private static final long serialVersionUID = 1L;
+
+        // the instance to be serialized/deserialized
+        private transient HashMap<K, V> map;
+
+        /**
+         * Constructor for the case of serialization, called by {@link HashMap#writeReplace()}.
+         * <p/>
+         * The constructor of a SerializationProxy takes an argument that concisely represents the logical state of
+         * an instance of the enclosing class.
+         *
+         * @param map a map
+         */
+        SerializationProxy(HashMap<K, V> map) {
+            this.map = map;
+        }
+
+        /**
+         * Write an object to a serialization stream.
+         *
+         * @param s An object serialization stream.
+         * @throws java.io.IOException If an error occurs writing to the stream.
+         */
+        private void writeObject(ObjectOutputStream s) throws IOException {
+            s.defaultWriteObject();
+            s.writeInt(map.size());
+            for (Tuple2<K, V> e : map) {
+                s.writeObject(e._1);
+                s.writeObject(e._2);
+            }
+        }
+
+        /**
+         * Read an object from a deserialization stream.
+         *
+         * @param s An object deserialization stream.
+         * @throws ClassNotFoundException If the object's class read from the stream cannot be found.
+         * @throws InvalidObjectException If the stream contains no list elements.
+         * @throws IOException            If an error occurs reading from the stream.
+         */
+        @SuppressWarnings("unchecked")
+        private void readObject(ObjectInputStream s) throws ClassNotFoundException, IOException {
+            s.defaultReadObject();
+            final int size = s.readInt();
+            if (size < 0) {
+                throw new InvalidObjectException("No elements");
+            }
+            ChampTrie.IdentityObject owner = new ChampTrie.IdentityObject();
+            ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRoot = emptyNode();
+            ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
+            int newSize = 0;
+            for (int i = 0; i < size; i++) {
+                final K key = (K) s.readObject();
+                final V value = (V) s.readObject();
+                int keyHash = Objects.hashCode(key);
+                newRoot = newRoot.put(owner, new AbstractMap.SimpleImmutableEntry<K, V>(key, value), keyHash, 0, details, HashMap::updateEntry, Objects::equals, Objects::hashCode);
+                if (details.isModified()) newSize++;
+            }
+            map = newSize == 0 ? empty() : new HashMap<>(newRoot, newSize);
+        }
+
+        /**
+         * {@code readResolve} method for the serialization proxy pattern.
+         * <p>
+         * Returns a logically equivalent instance of the enclosing class. The presence of this method causes the
+         * serialization system to translate the serialization proxy back into an instance of the enclosing class
+         * upon deserialization.
+         *
+         * @return A deserialized instance of the enclosing class.
+         */
+        private Object readResolve() {
+            return map;
+        }
+    }
+
+    /**
+     * Supports efficient bulk-operations on a hash map through transience.
+     *
+     * @param <K>the key type
+     * @param <V>the value type
+     */
+    static class TransientHashMap<K, V> extends ChampTransience.ChampAbstractTransientMap<K, V, AbstractMap.SimpleImmutableEntry<K, V>> {
+
+        TransientHashMap(HashMap<K, V> m) {
+            root = m.root;
+            size = m.size;
+        }
+
+        TransientHashMap() {
+            this(empty());
+        }
+
+        public V put(K key, V value) {
+            AbstractMap.SimpleImmutableEntry<K, V> oldData = putEntry(key, value, false).getOldData();
+            return oldData == null ? null : oldData.getValue();
+        }
+
+        boolean putAllEntries(Iterable<? extends java.util.Map.Entry<? extends K, ? extends V>> c) {
+            if (c == this) {
+                return false;
+            }
+            boolean modified = false;
+            for (java.util.Map.Entry<? extends K, ? extends V> e : c) {
+                V oldValue = put(e.getKey(), e.getValue());
+                modified = modified || !Objects.equals(oldValue, e.getValue());
+            }
+            return modified;
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean putAllTuples(Iterable<? extends Tuple2<? extends K, ? extends V>> c) {
+            if (c instanceof HashMap<?, ?>) {
+                HashMap<?, ?> that = (HashMap<?, ?>) c;
+                ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+                ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.putAll(makeOwner(), (ChampTrie.Node<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampTrie.Node<?>) that.root, 0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
+                        HashMap::entryKeyHash, new ChampTrie.ChangeEvent<>());
+                if (bulkChange.inBoth == that.size() && !bulkChange.replaced) {
+                    return false;
+                }
+                root = newRootNode;
+                size += that.size - bulkChange.inBoth;
+                modCount++;
+                return true;
+            }
+            return super.putAllTuples(c);
+        }
+
+        ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> putEntry(final K key, V value, boolean moveToLast) {
+            int keyHash = keyHash(key);
+            ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
+            root = root.put(makeOwner(), new AbstractMap.SimpleImmutableEntry<>(key, value), keyHash, 0, details,
+                    HashMap::updateEntry,
+                    HashMap::entryKeyEquals,
+                    HashMap::entryKeyHash);
+            if (details.isModified() && !details.isReplaced()) {
+                size += 1;
+                modCount++;
+            }
+            return details;
+        }
+
+
+        @SuppressWarnings("unchecked")
+        ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> removeKey(K key) {
+            int keyHash = keyHash(key);
+            ChampTrie.ChangeEvent<AbstractMap.SimpleImmutableEntry<K, V>> details = new ChampTrie.ChangeEvent<>();
+            root = root.remove(makeOwner(), new AbstractMap.SimpleImmutableEntry<>(key, null), keyHash, 0, details,
+                    HashMap::entryKeyEquals);
+            if (details.isModified()) {
+                size = size - 1;
+                modCount++;
+            }
+            return details;
+        }
+
+        @Override
+        void clear() {
+            root = emptyNode();
+            size = 0;
+            modCount++;
+        }
+
+        public HashMap<K, V> toImmutable() {
+            owner = null;
+            return isEmpty()
+                    ? empty()
+                    : new HashMap<>(root, size);
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean retainAllTuples(Iterable<? extends Tuple2<K, V>> c) {
+            if (isEmpty()) {
+                return false;
+            }
+            if (c instanceof Collection<?> && ((Collection<?>) c).isEmpty()
+                    || c instanceof Traversable<?> && ((Traversable<?>) c).isEmpty()) {
+                clear();
+                return true;
+            }
+            if (c instanceof HashMap<?, ?>) {
+                HashMap<?, ?> that = (HashMap<?, ?>) c;
+                ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+                ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.retainAll(makeOwner(),
+                        (ChampTrie.Node<AbstractMap.SimpleImmutableEntry<K, V>>) (ChampTrie.Node<?>) that.root,
+                        0, bulkChange, HashMap::updateEntry, HashMap::entryKeyEquals,
+                        HashMap::entryKeyHash, new ChampTrie.ChangeEvent<>());
+                if (bulkChange.removed == 0) {
+                    return false;
+                }
+                root = newRootNode;
+                size -= bulkChange.removed;
+                modCount++;
+                return true;
+            }
+            return super.retainAllTuples(c);
+        }
+
+        @SuppressWarnings("unchecked")
+        boolean filterAll(Predicate<java.util.Map.Entry<K, V>> predicate) {
+            ChampTrie.BulkChangeEvent bulkChange = new ChampTrie.BulkChangeEvent();
+            ChampTrie.BitmapIndexedNode<AbstractMap.SimpleImmutableEntry<K, V>> newRootNode = root.filterAll(makeOwner(), predicate, 0, bulkChange);
+            if (bulkChange.removed == 0) {
+                return false;
+            }
+            root = newRootNode;
+            size -= bulkChange.removed;
+            modCount++;
+            return true;
+        }
     }
 }
