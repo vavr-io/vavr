@@ -25,3 +25,5 @@ out/
 
 # -- VAVR build files
 generator/bin/
+
+target/

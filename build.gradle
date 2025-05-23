@@ -36,15 +36,16 @@ plugins {
     // publishing
     id 'maven-publish'
     id 'signing'
-    id 'net.researchgate.release' version '3.0.2'
+    id 'net.researchgate.release' version '3.1.0'
     id 'io.github.gradle-nexus.publish-plugin' version '2.0.0'
 }
 
 ext.ammoniteScalaVersion = '3.5'
 ext.ammoniteVersion = '3.0.0'
 ext.ammoniteVersionQualifier = '2-6342755f'
-ext.assertjVersion = '3.26.3'
-ext.junitVersion = '5.11.2'
+ext.archUnitVersion = '1.3.0'
+ext.assertjVersion = '3.27.1'
+ext.junitVersion = '5.11.4'
 
 // JAVA_VERSION used for CI build matrix, may be provided as env variable
 def javaVersion = Integer.parseInt(System.getenv('JAVA_VERSION') ?: '8')
@@ -60,11 +61,12 @@ repositories {
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter:$junitVersion"
     testImplementation "org.assertj:assertj-core:$assertjVersion"
+    testImplementation "com.tngtech.archunit:archunit-junit5:$archUnitVersion"
 }
 
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
-
+    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
     maxHeapSize = '1G'
 }
 

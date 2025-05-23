@@ -25,4 +25,4 @@ jobs:
           cache: 'gradle'
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew check --info --warning-mode all
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5

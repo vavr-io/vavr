@@ -4,7 +4,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright 2024 Vavr, https://vavr.io
+ * Copyright 2025 Vavr, https://vavr.io
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -2356,5 +2356,54 @@ public abstract class AbstractSeqTest extends AbstractTraversableRangeTest {
 
     enum SecondEnum implements SomeInterface {
         A1, A2, A3;
+    }
+
+
+    @Test
+    public void shouldLeftJoinNotIncludeRightKeysThatDontExistOnTheLeft() {
+        Seq<Integer> left = of(1, 2, 5);
+        Seq<String> right = of("1", "2", "6");
+        Seq<Tuple2<Integer, Option<String>>> joined =
+            left.leftJoin(right, Function.identity(), Integer::parseInt);
+        assertThat(joined).containsExactly(
+            Tuple.of(1, Option.of("1")),
+            Tuple.of(2, Option.of("2")),
+            Tuple.of(5, Option.none())
+        );
+    }
+
+    @Test
+    public void shouldLeftJoinOnlyIncludeTheFirstMatchingKeyFromTheRight() {
+        Seq<Integer> left = of(1, 2, 5);
+        Seq<String> right = of("1", "2", "55", "5");
+        Seq<Tuple2<Integer, Option<String>>> joined =
+            left.leftJoin(right, Function.identity(), s -> Integer.parseInt(s.substring(0, 1)));
+        assertThat(joined).containsExactly(
+            Tuple.of(1, Option.of("1")),
+            Tuple.of(2, Option.of("2")),
+            Tuple.of(5, Option.of("55"))
+        );
+    }
+
+    @Test
+    public void shouldLeftJoinNotHaveAnyRightElementsWhenRightIsEmpty() {
+        Seq<Integer> left = of(1, 2, 5);
+        Seq<String> right = empty();
+        Seq<Tuple2<Integer, Option<String>>> joined =
+            left.leftJoin(right, Function.identity(), s -> Integer.parseInt(s.substring(0, 1)));
+        assertThat(joined).containsExactly(
+            Tuple.of(1, Option.none()),
+            Tuple.of(2, Option.none()),
+            Tuple.of(5, Option.none())
+        );
+    }
+
+    @Test
+    public void shouldLeftJoinReturnEmptySeqWhenLeftIsEmpty() {
+        Seq<Integer> left = empty();
+        Seq<String> right = of("1", "2", "6");
+        Seq<Tuple2<Integer, Option<String>>> joined =
+            left.leftJoin(right, Function.identity(), Integer::parseInt);
+        assertThat(joined).isEmpty();
     }
 }
