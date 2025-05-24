@@ -22,13 +22,13 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vavr-match</artifactId>
-            <version>0.10.6</version>
+            <version>0.11.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vavr-match-processor</artifactId>
-            <version>0.10.6</version>
+            <version>0.11.0-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
 

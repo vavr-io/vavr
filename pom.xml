@@ -1,21 +1,3 @@
-<!--
-
-Before creating a pull request, the following goals should be executed locally:
-
-* Executing tests: `mvn clean test`
-* Executing doclint: `mvn javadoc:javadoc`
-
-Tests & Code coverage:
-
-* Executing benchmark assertions: `mvn clean test -Pbenchmark`
-* Executing benchmarks (long running!): `mvn test -Pbenchmark -pl vavr-benchmark`
-
-We use these goals frequently to keep the dependencies and plugins up-to-date:
-
-* Update version properties: `mvn versions:update-properties`
-* Check for new plugin version: `mvn versions:display-plugin-updates`
-
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.vavr</groupId>
