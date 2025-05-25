@@ -22,9 +22,6 @@ jobs:
           cache: 'maven'
 
       # this is a temporary workaround until new Maven Central snapshot publishing is sorted out
-      - name: Build vavr-match snapshot
-        run: git clone https://github.com/vavr-io/vavr-match.git && mvn -f vavr-match/pom.xml install -DskipTests
-
       - name: Build vavr-match-processor snapshot
         run: git clone https://github.com/vavr-io/vavr-match-processor.git && mvn -f vavr-match-processor/pom.xml install -DskipTests
 
