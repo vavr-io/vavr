@@ -12,7 +12,7 @@
   \______/___/\___\______/___/_____/___/\___\______/___/\___\
 ```
 
-Vavr is an **object-functional extension for Java that reduces boilerplate code and enhances code quality.**
+Vavr is an **object-functional extension for Java that makes defensive programming easy by leveraging immutability and functional control structures**
 
 Vavr seamlessly combines object-oriented programming with the elegance and robustness of functional programming. 
 
