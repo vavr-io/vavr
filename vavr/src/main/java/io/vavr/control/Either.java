@@ -31,29 +31,39 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Either represents a value of two possible types. An Either is either a {@link Left} or a
- * {@link Right}.
+ * Represents a value of one of two possible types: {@link Left} or {@link Right}.
  * <p>
- * If the given Either is a Right and projected to a Left, the Left operations have no effect on the Right value.<br>
- * If the given Either is a Left and projected to a Right, the Right operations have no effect on the Left value.<br>
- * If a Left is projected to a Left or a Right is projected to a Right, the operations have an effect.
+ * An {@code Either<L, R>} is typically used to model a computation that may result in either
+ * a success (represented by {@code Right}) or a failure (represented by {@code Left}).
  * <p>
- * <strong>Example:</strong> A compute() function, which results either in an Integer value (in the case of success) or
- * in an error message of type String (in the case of failure). By convention the success case is Right and the failure
- * is Left.
+ * This implementation is <strong>right-biased</strong>, meaning that most operations such as
+ * {@code map}, {@code flatMap}, {@code filter}, etc., are defined for the {@code Right} projection.
+ * This makes {@code Either} behave like a monad over its {@code Right} type, and enables fluent
+ * chaining of computations in the successful case.
  *
- * <pre>
- * <code>
- * Either&lt;String,Integer&gt; value = compute().right().map(i -&gt; i * 2).toEither();
- * </code>
- * </pre>
+ * <h2>Example</h2>
+ * <p>
+ * Suppose we have a {@code compute()} function that returns an {@code Either<String, Integer>},
+ * where {@code Right} represents a successful result and {@code Left} holds an error message.
  *
- * If the result of compute() is Right(1), the value is Right(2).<br>
- * If the result of compute() is Left("error"), the value is Left("error").
+ * <pre>{@code
+ * Either<String, Integer> result = compute().map(i -> i * 2);
+ * }</pre>
+ * <p>
+ * If {@code compute()} returns {@code Right(1)}, the result will be {@code Right(2)}.<br>
+ * If {@code compute()} returns {@code Left("error")}, the result will remain {@code Left("error")}.
  *
- * @param <L> The type of the Left value of an Either.
- * @param <R> The type of the Right value of an Either.
- * @author Daniel Dietrich
+ * <h2>Projection Semantics</h2>
+ * <ul>
+ *   <li>If an {@code Either} is a {@code Right} and projected to {@code Left}, operations on {@code Left} are no-ops.</li>
+ *   <li>If an {@code Either} is a {@code Left} and projected to {@code Right}, operations on {@code Right} are no-ops.</li>
+ *   <li>Operations on the matching projection are applied as expected.</li>
+ * </ul>
+ *
+ * @param <L> The type of the Left value.
+ * @param <R> The type of the Right value.
+ *
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public interface Either<L, R> extends Value<R>, Serializable {
 
@@ -65,6 +75,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param right The value.
      * @param <L>   Type of left value.
      * @param <R>   Type of right value.
+     *
      * @return A new {@code Right} instance.
      */
     static <L, R> Either<L, R> right(R right) {
@@ -77,6 +88,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param left The value.
      * @param <L>  Type of left value.
      * @param <R>  Type of right value.
+     *
      * @return A new {@code Left} instance.
      */
     static <L, R> Either<L, R> left(L left) {
@@ -91,6 +103,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param either A {@code Either}.
      * @param <L>    Type of left value.
      * @param <R>    Type of right value.
+     *
      * @return the given {@code either} instance as narrowed type {@code Either<L, R>}.
      */
     @SuppressWarnings("unchecked")
@@ -102,6 +115,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * Returns the left value.
      *
      * @return The left value.
+     *
      * @throws NoSuchElementException if this is a {@code Right}.
      */
     L getLeft();
@@ -124,6 +138,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * Returns a LeftProjection of this Either.
      *
      * @return a new LeftProjection of this
+     *
      * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
     @Deprecated
@@ -135,6 +150,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * Returns a RightProjection of this Either.
      *
      * @return a new RightProjection of this
+     *
      * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
     @Deprecated
@@ -149,6 +165,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param rightMapper maps the right value if this is a Right
      * @param <X>         The new left type of the resulting Either
      * @param <Y>         The new right type of the resulting Either
+     *
      * @return A new Either instance
      */
     default <X, Y> Either<X, Y> bimap(Function<? super L, ? extends X> leftMapper, Function<? super R, ? extends Y> rightMapper) {
@@ -167,6 +184,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param leftMapper  maps the left value if this is a Left
      * @param rightMapper maps the right value if this is a Right
      * @param <U>         type of the folded value
+     *
      * @return A value of type U
      */
     default <U> U fold(Function<? super L, ? extends U> leftMapper, Function<? super R, ? extends U> rightMapper) {
@@ -203,18 +221,20 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param eithers An {@link Iterable} of {@code Either}s
      * @param <L>     closure of all left types of the given {@code Either}s
      * @param <R>     closure of all right types of the given {@code Either}s
+     *
      * @return An {@code Either} of a {@link Seq} of left or right values
+     *
      * @throws NullPointerException if {@code eithers} is null
      */
     @SuppressWarnings("unchecked")
-    static <L,R> Either<Seq<L>, Seq<R>> sequence(Iterable<? extends Either<? extends L, ? extends R>> eithers) {
+    static <L, R> Either<Seq<L>, Seq<R>> sequence(Iterable<? extends Either<? extends L, ? extends R>> eithers) {
         Objects.requireNonNull(eithers, "eithers is null");
         return Iterator.ofAll((Iterable<Either<L, R>>) eithers)
-                .partition(Either::isLeft)
-                .apply((leftPartition, rightPartition) -> leftPartition.hasNext()
-                    ? Either.left(leftPartition.map(Either::getLeft).toVector())
-                    : Either.right(rightPartition.map(Either::get).toVector())
-                );
+          .partition(Either::isLeft)
+          .apply((leftPartition, rightPartition) -> leftPartition.hasNext()
+            ? Either.left(leftPartition.map(Either::getLeft).toVector())
+            : Either.right(rightPartition.map(Either::get).toVector())
+          );
     }
 
     /**
@@ -222,12 +242,14 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * transforming an {@code Iterable<? extends T>} into a {@code Either<Seq<U>>}.
      * <p>
      *
-     * @param values   An {@code Iterable} of values.
-     * @param mapper   A mapper of values to Eithers
-     * @param <L>      The mapped left value type.
-     * @param <R>      The mapped right value type.
-     * @param <T>      The type of the given values.
+     * @param values An {@code Iterable} of values.
+     * @param mapper A mapper of values to Eithers
+     * @param <L>    The mapped left value type.
+     * @param <R>    The mapped right value type.
+     * @param <T>    The type of the given values.
+     *
      * @return A {@code Either} of a {@link Seq} of results.
+     *
      * @throws NullPointerException if values or f is null.
      */
     static <L, R, T> Either<Seq<L>, Seq<R>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends R>> mapper) {
@@ -260,10 +282,12 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * @param eithers An {@link Iterable} of {@code Either}s
      * @param <L>     closure of all left types of the given {@code Either}s
      * @param <R>     closure of all right types of the given {@code Either}s
+     *
      * @return An {@code Either} of either a {@link Seq} of right values or the first left value, if present.
+     *
      * @throws NullPointerException if {@code eithers} is null
      */
-    static <L,R> Either<L, Seq<R>> sequenceRight(Iterable<? extends Either<? extends L, ? extends R>> eithers) {
+    static <L, R> Either<L, Seq<R>> sequenceRight(Iterable<? extends Either<? extends L, ? extends R>> eithers) {
         Objects.requireNonNull(eithers, "eithers is null");
         Vector<R> rightValues = Vector.empty();
         for (Either<? extends L, ? extends R> either : eithers) {
@@ -281,12 +305,14 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * transforming an {@code Iterable<? extends T>} into a {@code Either<Seq<U>>}.
      * <p>
      *
-     * @param values   An {@code Iterable} of values.
-     * @param mapper   A mapper of values to Eithers
-     * @param <L>      The mapped left value type.
-     * @param <R>      The mapped right value type.
-     * @param <T>      The type of the given values.
+     * @param values An {@code Iterable} of values.
+     * @param mapper A mapper of values to Eithers
+     * @param <L>    The mapped left value type.
+     * @param <R>    The mapped right value type.
+     * @param <T>    The type of the given values.
+     *
      * @return A {@code Either} of a {@link Seq} of results.
+     *
      * @throws NullPointerException if values or f is null.
      */
     static <L, R, T> Either<L, Seq<R>> traverseRight(Iterable<? extends T> values, Function<? super T, ? extends Either<? extends L, ? extends R>> mapper) {
@@ -299,6 +325,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * Gets the Right value or an alternate value, if the projected Either is a Left.
      *
      * @param other a function which converts a Left value to an alternative Right value
+     *
      * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
      * {@code other} by applying the Left value.
      */
@@ -328,8 +355,10 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param <X>               a throwable type
      * @param exceptionFunction a function which creates an exception based on a Left value
+     *
      * @return the right value, if the underlying Either is a Right or else throws the exception provided by
      * {@code exceptionFunction} by applying the Left value.
+     *
      * @throws X if the projected Either is a Left
      */
     default <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionFunction) throws X {
@@ -361,7 +390,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param mapper A mapper
      * @param <U>    Component type of the mapped right value
+     *
      * @return this as {@code Either<L, U>} if this is a Left, otherwise the right mapping result
+     *
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
@@ -389,7 +420,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param mapper A mapper
      * @param <U>    Component type of the mapped right value
+     *
      * @return a mapped {@code Monad}
+     *
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
@@ -418,7 +451,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param leftMapper A mapper
      * @param <U>        Component type of the mapped right value
+     *
      * @return a mapped {@code Monad}
+     *
      * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
@@ -438,7 +473,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * <p>
      *
      * @param predicate A predicate
+     *
      * @return a new {@code Option} instance
+     *
      * @throws NullPointerException if {@code predicate} is null
      */
     default Option<Either<L, R>> filter(Predicate<? super R> predicate) {
@@ -464,10 +501,12 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param predicate A predicate
      * @param zero      A function that turns a right value into a left value if the right value does not make it through the filter.
+     *
      * @return an {@code Either} instance
+     *
      * @throws NullPointerException if {@code predicate} is null
      */
-    default Either<L,R> filterOrElse(Predicate<? super R> predicate, Function<? super R, ? extends L> zero) {
+    default Either<L, R> filterOrElse(Predicate<? super R> predicate, Function<? super R, ? extends L> zero) {
         Objects.requireNonNull(predicate, "predicate is null");
         Objects.requireNonNull(zero, "zero is null");
         if (isLeft() || predicate.test(get())) {
@@ -481,6 +520,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * Gets the right value if this is a {@code Right} or throws if this is a {@code Left}.
      *
      * @return the right value
+     *
      * @throws NoSuchElementException if this is a {@code Left}.
      */
     @Override
@@ -568,6 +608,13 @@ public interface Either<L, R> extends Value<R>, Serializable {
         return isRight() ? Validation.valid(get()) : Validation.invalid(getLeft());
     }
 
+    @Override
+    default Try<R> toTry() {
+        return isRight() 
+          ? Try.success(get()) 
+          : Try.failure(new Failure(getLeft()));
+    }
+
     // -- Object.*
 
     @Override
@@ -586,6 +633,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param <L> The type of the Left value of an Either.
      * @param <R> The type of the Right value of an Either.
+     *
      * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
     @Deprecated
@@ -598,7 +646,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         public <L2, R2> LeftProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
-            return either.<L2, R2> bimap(leftMapper, rightMapper).left();
+            return either.<L2, R2>bimap(leftMapper, rightMapper).left();
         }
 
         /**
@@ -640,6 +688,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * Gets the {@code Left} value or throws.
          *
          * @return the left value, if the underlying {@code Either} is a {@code Left}
+         *
          * @throws NoSuchElementException if the underlying {@code Either} of this {@code LeftProjection} is a {@code Right}
          */
         @Override
@@ -667,7 +716,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * Gets the Left value or an alternate value, if the projected Either is a Right.
          *
          * @param other an alternative value
+         *
          * @return the left value, if the underlying Either is a Left or else {@code other}
+         *
          * @throws NoSuchElementException if the underlying either of this LeftProjection is a Right
          */
         @Override
@@ -679,6 +730,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * Gets the Left value or an alternate value, if the projected Either is a Right.
          *
          * @param other a function which converts a Right value to an alternative Left value
+         *
          * @return the left value, if the underlying Either is a Left or else the alternative Left value provided by
          * {@code other} by applying the Right value.
          */
@@ -708,8 +760,10 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param <X>               a throwable type
          * @param exceptionFunction a function which creates an exception based on a Right value
+         *
          * @return the left value, if the underlying Either is a Left or else throws the exception provided by
          * {@code exceptionFunction} by applying the Right value.
+         *
          * @throws X if the projected Either is a Right
          */
         public <X extends Throwable> L getOrElseThrow(Function<? super R, X> exceptionFunction) throws X {
@@ -735,6 +789,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * applies to the underlying value.
          *
          * @param predicate A predicate
+         *
          * @return A new Option
          */
         public Option<LeftProjection<L, R>> filter(Predicate<? super L> predicate) {
@@ -747,7 +802,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param mapper A mapper
          * @param <U>    Component type of the mapped left value
+         *
          * @return this as {@code LeftProjection<L, U>} if a Right is underlying, otherwise a the mapping result of the left value.
+         *
          * @throws NullPointerException if {@code mapper} is null
          */
         @SuppressWarnings("unchecked")
@@ -765,6 +822,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param mapper A mapper which takes a left value and returns a value of type U
          * @param <U>    The new type of a Left value
+         *
          * @return A new LeftProjection
          */
         @SuppressWarnings("unchecked")
@@ -782,6 +840,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * Applies the given action to the value if the projected either is a Left. Otherwise nothing happens.
          *
          * @param action An action which takes a left value
+         *
          * @return this LeftProjection
          */
         @Override
@@ -798,7 +857,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param f   A transformation
          * @param <U> Type of transformation result
+         *
          * @return An instance of type {@code U}
+         *
          * @throws NullPointerException if {@code f} is null
          */
         public <U> U transform(Function<? super LeftProjection<L, R>, ? extends U> f) {
@@ -841,6 +902,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param <L> The type of the Left value of an Either.
      * @param <R> The type of the Right value of an Either.
+     *
      * @deprecated Either is right-biased. Use {@link #swap()} instead of projections.
      */
     @Deprecated
@@ -853,7 +915,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         public <L2, R2> RightProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, Function<? super R, ? extends R2> rightMapper) {
-            return either.<L2, R2> bimap(leftMapper, rightMapper).right();
+            return either.<L2, R2>bimap(leftMapper, rightMapper).right();
         }
 
         /**
@@ -895,6 +957,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * Gets the {@code Right} value or throws.
          *
          * @return the right value, if the underlying {@code Either} is a {@code Right}
+         *
          * @throws NoSuchElementException if the underlying {@code Either} of this {@code RightProjection} is a {@code Left}
          */
         @Override
@@ -922,7 +985,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * Gets the Right value or an alternate value, if the projected Either is a Left.
          *
          * @param other an alternative value
+         *
          * @return the right value, if the underlying Either is a Right or else {@code other}
+         *
          * @throws NoSuchElementException if the underlying either of this RightProjection is a Left
          */
         @Override
@@ -934,6 +999,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * Gets the Right value or an alternate value, if the projected Either is a Left.
          *
          * @param other a function which converts a Left value to an alternative Right value
+         *
          * @return the right value, if the underlying Either is a Right or else the alternative Right value provided by
          * {@code other} by applying the Left value.
          */
@@ -957,8 +1023,10 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param <X>               a throwable type
          * @param exceptionFunction a function which creates an exception based on a Left value
+         *
          * @return the right value, if the underlying Either is a Right or else throws the exception provided by
          * {@code exceptionFunction} by applying the Left value.
+         *
          * @throws X if the projected Either is a Left
          */
         public <X extends Throwable> R getOrElseThrow(Function<? super L, X> exceptionFunction) throws X {
@@ -980,6 +1048,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * applies to the underlying value.
          *
          * @param predicate A predicate
+         *
          * @return A new Option
          */
         public Option<RightProjection<L, R>> filter(Predicate<? super R> predicate) {
@@ -992,7 +1061,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param mapper A mapper
          * @param <U>    Component type of the mapped right value
+         *
          * @return this as {@code RightProjection<L, U>} if a Left is underlying, otherwise a the mapping result of the right value.
+         *
          * @throws NullPointerException if {@code mapper} is null
          */
         @SuppressWarnings("unchecked")
@@ -1010,6 +1081,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param mapper A mapper which takes a right value and returns a value of type U
          * @param <U>    The new type of a Right value
+         *
          * @return A new RightProjection
          */
         @SuppressWarnings("unchecked")
@@ -1027,6 +1099,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
          * Applies the given action to the value if the projected either is a Right. Otherwise nothing happens.
          *
          * @param action An action which takes a right value
+         *
          * @return this {@code Either} instance
          */
         @Override
@@ -1043,7 +1116,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
          *
          * @param f   A transformation
          * @param <U> Type of transformation result
+         *
          * @return An instance of type {@code U}
+         *
          * @throws NullPointerException if {@code f} is null
          */
         public <U> U transform(Function<? super RightProjection<L, R>, ? extends U> f) {
@@ -1082,6 +1157,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param <L> left component type
      * @param <R> right component type
+     *
      * @author Daniel Dietrich
      */
     final class Left<L, R> implements Either<L, R>, Serializable {
@@ -1146,6 +1222,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * @param <L> left component type
      * @param <R> right component type
+     *
      * @author Daniel Dietrich
      */
     final class Right<L, R> implements Either<L, R>, Serializable {
@@ -1202,6 +1279,24 @@ public interface Either<L, R> extends Value<R>, Serializable {
         @Override
         public String toString() {
             return stringPrefix() + "(" + value + ")";
+        }
+    }
+
+    // it's not possible to use a generic type parameter for the exception type
+    class Failure extends Exception {
+
+        private static final long serialVersionUID = 1L;
+
+        @SuppressWarnings("serial") // Conditionally serializable
+        private final Object value;
+
+        public Failure(Object value) {
+            super("wrapped value representing a failure");
+            this.value = value;
+        }
+
+        public Object getValue() {
+            return value;
         }
     }
 }

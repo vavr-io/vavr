@@ -39,12 +39,12 @@ public class EitherTest extends AbstractValueTest {
 
     @Override
     protected <T> Either<?, T> empty() {
-        return Either.<T, T> left(null);
+        return Either.<T, T>left(null);
     }
 
     @Override
     protected <T> Either<?, T> of(T element) {
-        return Either.<T, T> right(element);
+        return Either.<T, T>right(element);
     }
 
     @SafeVarargs
@@ -67,28 +67,30 @@ public class EitherTest extends AbstractValueTest {
 
     @Test
     public void shouldBimapLeft() {
-        final Either<Integer, String> actual = Either.<Integer, String> left(1).bimap(i -> i + 1, s -> s + "1");
+        final Either<Integer, String> actual = Either.<Integer, String>left(1).bimap(i -> i + 1, s -> s + "1");
         final Either<Integer, String> expected = Either.left(2);
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldBimapLeftProjection() {
-        final Either.LeftProjection<Integer, String> actual = Either.<Integer, String> left(1).left().bimap(i -> i + 1, s -> s + "1");
+        final Either.LeftProjection<Integer, String> actual = Either.<Integer, String>left(1).left()
+          .bimap(i -> i + 1, s -> s + "1");
         final Either<Integer, String> expected = Either.left(2);
         assertThat(actual.get()).isEqualTo(expected.getLeft());
     }
 
     @Test
     public void shouldBimapRight() {
-        final Either<Integer, String> actual = Either.<Integer, String> right("1").bimap(i -> i + 1, s -> s + "1");
+        final Either<Integer, String> actual = Either.<Integer, String>right("1").bimap(i -> i + 1, s -> s + "1");
         final Either<Integer, String> expected = Either.right("11");
         assertThat(actual).isEqualTo(expected);
     }
 
     @Test
     public void shouldBimapRightProjection() {
-        final Either.RightProjection<Integer, String> actual = Either.<Integer, String> right("1").right().bimap(i -> i + 1, s -> s + "1");
+        final Either.RightProjection<Integer, String> actual = Either.<Integer, String>right("1").right()
+          .bimap(i -> i + 1, s -> s + "1");
         final Either<Integer, String> expected = Either.right("11");
         assertThat(actual.get()).isEqualTo(expected.get());
     }
@@ -110,8 +112,8 @@ public class EitherTest extends AbstractValueTest {
     @Test
     public void shouldThrowWhenSequencingNull() {
         assertThatThrownBy(() -> Either.sequence(null))
-                .isInstanceOf(NullPointerException.class)
-                .withFailMessage("eithers is null");
+          .isInstanceOf(NullPointerException.class)
+          .withFailMessage("eithers is null");
     }
 
     @Test
@@ -140,7 +142,7 @@ public class EitherTest extends AbstractValueTest {
 
     @Test
     public void shouldSequenceNonEmptyIterableOfMixedEither() {
-        final Iterable<Either<Integer,String>> eithers = List.of(Either.right("a"), Either.left(1), Either.right("c"), Either.left(3));
+        final Iterable<Either<Integer, String>> eithers = List.of(Either.right("a"), Either.left(1), Either.right("c"), Either.left(3));
         final Either<Seq<Integer>, Seq<String>> actual = Either.sequence(eithers);
         final Either<Seq<Integer>, Seq<String>> expected = Either.left(Vector.of(1, 3));
         assertThat(actual).isEqualTo(expected);
@@ -151,8 +153,8 @@ public class EitherTest extends AbstractValueTest {
     @Test
     public void shouldThrowWhenSequencingRightNull() {
         assertThatThrownBy(() -> Either.sequenceRight(null))
-                .isInstanceOf(NullPointerException.class)
-                .withFailMessage("eithers is null");
+          .isInstanceOf(NullPointerException.class)
+          .withFailMessage("eithers is null");
     }
 
     @Test
@@ -181,7 +183,7 @@ public class EitherTest extends AbstractValueTest {
 
     @Test
     public void shouldSequenceRightNonEmptyIterableOfMixedEither() {
-        final Iterable<Either<Integer,String>> eithers = List.of(Either.right("a"), Either.left(1), Either.right("c"), Either.left(3));
+        final Iterable<Either<Integer, String>> eithers = List.of(Either.right("a"), Either.left(1), Either.right("c"), Either.left(3));
         final Either<Integer, Seq<String>> actual = Either.sequenceRight(eithers);
         final Either<Integer, Seq<String>> expected = Either.left(1);
         assertThat(actual).isEqualTo(expected);
@@ -192,8 +194,8 @@ public class EitherTest extends AbstractValueTest {
     @Test
     public void shouldThrowWhenTraversingNull() {
         assertThatThrownBy(() -> Either.traverse(null, null))
-                .isInstanceOf(NullPointerException.class)
-                .withFailMessage("eithers is null");
+          .isInstanceOf(NullPointerException.class)
+          .withFailMessage("eithers is null");
     }
 
     @Test
@@ -224,7 +226,7 @@ public class EitherTest extends AbstractValueTest {
     public void shouldTraverseNonEmptyIterableOfMixedEither() {
         final Iterable<String> values = List.of("a", "1", "c", "3");
         final Either<Seq<Integer>, Seq<String>> actual =
-            Either.traverse(values, x -> x.matches("^\\d+$") ? Either.left(Integer.parseInt(x)) : Either.right(x));
+          Either.traverse(values, x -> x.matches("^\\d+$") ? Either.left(Integer.parseInt(x)) : Either.right(x));
         final Either<Seq<Integer>, Seq<String>> expected = Either.left(Vector.of(1, 3));
         assertThat(actual).isEqualTo(expected);
     }
@@ -234,8 +236,8 @@ public class EitherTest extends AbstractValueTest {
     @Test
     public void shouldThrowWhenTraversingRightNull() {
         assertThatThrownBy(() -> Either.traverseRight(null, null))
-                .isInstanceOf(NullPointerException.class)
-                .withFailMessage("eithers is null");
+          .isInstanceOf(NullPointerException.class)
+          .withFailMessage("eithers is null");
     }
 
     @Test
@@ -266,7 +268,7 @@ public class EitherTest extends AbstractValueTest {
     public void shouldTraverseRightNonEmptyIterableOfMixedEither() {
         final Iterable<String> values = List.of("a", "1", "c", "3");
         final Either<Integer, Seq<String>> actual =
-            Either.traverseRight(values, x -> x.matches("^\\d+$") ? Either.left(Integer.parseInt(x)) : Either.right(x));
+          Either.traverseRight(values, x -> x.matches("^\\d+$") ? Either.left(Integer.parseInt(x)) : Either.right(x));
         final Either<Integer, Seq<String>> expected = Either.left(1);
         assertThat(actual).isEqualTo(expected);
     }
@@ -276,7 +278,7 @@ public class EitherTest extends AbstractValueTest {
     @Test
     public void shouldReturnSameWhenCallingMapOnLeft() {
         final Either<Integer, Object> actual = Left(1);
-        assertThat(actual.map(v -> { throw new IllegalStateException(); })).isSameAs(actual);
+        assertThat(actual.map(v -> {throw new IllegalStateException();})).isSameAs(actual);
     }
 
     @Test
@@ -396,7 +398,7 @@ public class EitherTest extends AbstractValueTest {
 
     @Test
     public void shouldPeekLeftForLeft() {
-        final int[] effect = { 0 };
+        final int[] effect = {0};
         final Either<Integer, ?> actual = Either.left(1).peekLeft(i -> effect[0] = i);
         assertThat(actual).isEqualTo(Either.left(1));
         assertThat(effect[0]).isEqualTo(1);
@@ -404,7 +406,7 @@ public class EitherTest extends AbstractValueTest {
 
     @Test
     public void shouldNotPeekLeftForRight() {
-        Either.right(1).peekLeft(i -> { throw new IllegalStateException(); });
+        Either.right(1).peekLeft(i -> {throw new IllegalStateException();});
     }
 
     // equals
@@ -509,7 +511,6 @@ public class EitherTest extends AbstractValueTest {
         assertThat(Either.right(1).toString()).isEqualTo("Right(1)");
     }
 
-
     // -- spliterator
 
     @Test
@@ -525,5 +526,37 @@ public class EitherTest extends AbstractValueTest {
     @Test
     public void shouldReturnSizeWhenSpliterator() {
         assertThat(of(1).spliterator().getExactSizeIfKnown()).isEqualTo(1);
+    }
+
+    @Test
+    @Override
+    public void shouldConvertEmptyToTry() {
+        final Try<?> actual = empty().toTry();
+        assertThat(actual.isFailure()).isTrue();
+        assertThat(actual.getCause()).isInstanceOf(Either.Failure.class);
+    }
+
+    @Test
+    void shouldConvertRightToTrySuccess() {
+        Either<String, String> either = Either.right("ok");
+
+        Try<String> result = either.toTry();
+
+        assertThat(result.isSuccess()).isTrue();
+        assertThat(result.get()).isEqualTo("ok");
+    }
+
+    @Test
+    void shouldConvertLeftToTryFailureWrappingLeftValue() {
+        Either<String, String> either = Either.left("error");
+
+        Try<String> result = either.toTry();
+
+        assertThat(result.isFailure()).isTrue();
+        assertThatThrownBy(result::get)
+          .isInstanceOfSatisfying(Either.Failure.class, failure -> {
+              assertThat(failure.getValue()).isEqualTo("error");
+              assertThat(failure.getMessage()).isEqualTo("wrapped value representing a failure");
+          });
     }
 }
