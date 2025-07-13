@@ -24,6 +24,8 @@ It provides:
 
 Since **Vavr has no dependencies** beyond the JVM, you can easily add it as a standalone .jar to your classpath.
 
+Led and maintained by [@pivovarit](http://github.com/pivovarit)
+
 ### Stargazers over time
 [![Stargazers over time](https://starchart.cc/vavr-io/vavr.svg?variant=adaptive)](https://starchart.cc/vavr-io/vavr)
 
