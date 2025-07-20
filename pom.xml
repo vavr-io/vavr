@@ -278,7 +278,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                         <links>
                             <link>https://docs.oracle.com/javase/8/docs/api/</link>
                         </links>
-                        <stylesheetfile>${basedir}/../.javadoc/stylesheet.css</stylesheetfile>
+                        <stylesheetfile>${basedir}/.javadoc/stylesheet.css</stylesheetfile>
                     </configuration>
                 </plugin>
                 <plugin>
