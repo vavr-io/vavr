@@ -17,20 +17,17 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
 * Check for new plugin version: `mvn versions:display-plugin-updates`
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.vavr</groupId>
     <artifactId>vavr-parent</artifactId>
-    <version>0.10.6</version>
+    <version>0.10.7-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Vavr Parent</name>
     <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
     <modules>
         <module>vavr</module>
-        <module>vavr-benchmark</module>
-        <module>vavr-match</module>
-        <module>vavr-match-processor</module>
-        <module>vavr-test</module>
     </modules>
     <url>https://vavr.io</url>
     <licenses>
@@ -44,7 +41,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <connection>scm:git:git@github.com:vavr-io/vavr.git</connection>
         <developerConnection>scm:git:git@github.com:vavr-io/vavr.git</developerConnection>
         <url>git@github.com:vavr-io/vavr.git</url>
-        <tag>v0.10.6</tag>
+        <tag>HEAD</tag>
     </scm>
     <developers>
         <developer>
@@ -69,16 +66,19 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <maven.build-helper.version>3.6.0</maven.build-helper.version>
         <maven.bundle.version>5.1.9</maven.bundle.version>
         <maven.clean.version>3.4.0</maven.clean.version>
-        <maven.install.version>3.1.3</maven.install.version>
-        <maven.compiler.version>3.13.0</maven.compiler.version>
-        <maven.deploy.version>3.0.0-M1</maven.deploy.version>
-        <maven.gpg.version>3.2.7</maven.gpg.version>
+        <maven.install.version>3.1.4</maven.install.version>
+        <maven.compiler.version>3.14.0</maven.compiler.version>
+        <maven.deploy.version>3.1.4</maven.deploy.version>
+        <maven.gpg.version>3.2.8</maven.gpg.version>
+
         <maven.jacoco.version>0.8.12</maven.jacoco.version>
         <maven.jar.version>3.4.2</maven.jar.version>
-        <maven.javadoc.version>3.10.1</maven.javadoc.version>
+        <maven.javadoc.version>3.11.2</maven.javadoc.version>
+
         <maven.release.version>3.1.1</maven.release.version>
         <maven.versions.version>2.17.1</maven.versions.version>
-        <maven.surefire.version>3.5.1</maven.surefire.version>
+        <maven.surefire.version>3.5.3</maven.surefire.version>
+
         <maven.source.version>3.3.1</maven.source.version>
         <maven.exec.version>3.5.0</maven.exec.version>
         <moditect.version>1.2.2.Final</moditect.version>
@@ -199,7 +199,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                         <mavenExecutorId>forked-path</mavenExecutorId>
                         <useReleaseProfile>false</useReleaseProfile>
                         <!-- Honor arguments passed via command line -->
-                        <arguments>${arguments} -Psonatype-oss-release</arguments>
+                        <arguments>${arguments} -Pmaven-central-release</arguments>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -346,12 +346,9 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
             </build>
         </profile>
         <profile>
-            <id>sonatype-oss-release</id>
+            <id>maven-central-release</id>
             <modules>
                 <module>vavr</module>
-                <module>vavr-match</module>
-                <module>vavr-match-processor</module>
-                <module>vavr-test</module>
             </modules>
             <build>
                 <plugins>
@@ -373,7 +370,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.10.1</version>
+                        <version>${maven.javadoc.version}</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
@@ -386,13 +383,13 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                             <links>
                                 <link>https://docs.oracle.com/javase/8/docs/api/</link>
                             </links>
-                            <stylesheetfile>${basedir}/../.javadoc/stylesheet.css</stylesheetfile>
+                            <stylesheetfile>${basedir}/.javadoc/stylesheet.css</stylesheetfile>
                         </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>3.2.7</version>
+                        <version>${maven.gpg.version}</version>
                         <executions>
                             <execution>
                                 <id>sign-artifacts</id>
@@ -411,168 +408,38 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
                     </plugin>
 
                     <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>0.8.0</version>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <publishingServerId>central</publishingServerId>
+                            <centralSnapshotsUrl>https://central.sonatype.com/repository/maven-snapshots/</centralSnapshotsUrl>
+                        </configuration>
+                    </plugin>
+
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
                         <configuration>
                             <skip>true</skip>
                         </configuration>
                     </plugin>
-                    <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>deploy-to-sonatype</id>
-                                <phase>deploy</phase>
-                                <goals>
-                                    <goal>deploy</goal>
-                                    <goal>release</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <serverId>oss.sonatype.org</serverId>
-                            <nexusUrl>https://oss.sonatype.org</nexusUrl>
-                        </configuration>
-                    </plugin>
                 </plugins>
-            </build>
-        </profile>
-
-        <!-- A profile for eliminating eclipse m2e warnings -->
-        <profile>
-            <id>eclipse-m2e</id>
-            <activation>
-                <property>
-                    <name>m2e.version</name>
-                </property>
-            </activation>
-            <build>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.eclipse.m2e</groupId>
-                            <artifactId>lifecycle-mapping</artifactId>
-                            <version>${eclipse.lifecycle.mapping.version}</version>
-                            <configuration>
-                                <lifecycleMappingMetadata>
-                                    <pluginExecutions>
-                                        <!-- Elimate the eclipse warning 'maven-enforcer-plugin (goal "enforce")
-                                            is ignored by m2e' -->
-                                        <pluginExecution>
-                                            <pluginExecutionFilter>
-                                                <groupId>org.apache.maven.plugins</groupId>
-                                                <artifactId>maven-enforcer-plugin</artifactId>
-                                                <versionRange>[0,)</versionRange>
-                                                <goals>
-                                                    <goal>enforce</goal>
-                                                </goals>
-                                            </pluginExecutionFilter>
-                                            <action>
-                                                <ignore />
-                                            </action>
-                                        </pluginExecution>
-                                        <pluginExecution>
-                                            <pluginExecutionFilter>
-                                                <groupId>org.apache.maven.plugins</groupId>
-                                                <artifactId>maven-clean-plugin</artifactId>
-                                                <versionRange>[0,)</versionRange>
-                                                <goals>
-                                                    <goal>clean</goal>
-                                                </goals>
-                                            </pluginExecutionFilter>
-                                            <action>
-                                                <ignore />
-                                            </action>
-                                        </pluginExecution>
-                                        <pluginExecution>
-                                            <pluginExecutionFilter>
-                                                <groupId>net.alchim31.maven</groupId>
-                                                <artifactId>scala-maven-plugin</artifactId>
-                                                <versionRange>[0,)</versionRange>
-                                                <goals>
-                                                    <goal>script</goal>
-                                                </goals>
-                                            </pluginExecutionFilter>
-                                            <action>
-                                                <ignore />
-                                            </action>
-                                        </pluginExecution>
-                                        <pluginExecution>
-                                            <pluginExecutionFilter>
-                                                <groupId>org.apache.felix</groupId>
-                                                <artifactId>maven-bundle-plugin</artifactId>
-                                                <versionRange>[0,)</versionRange>
-                                                <goals>
-                                                    <goal>manifest</goal>
-                                                </goals>
-                                            </pluginExecutionFilter>
-                                            <action>
-                                                <ignore />
-                                            </action>
-                                        </pluginExecution>
-                                    </pluginExecutions>
-                                </lifecycleMappingMetadata>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
-            </build>
-        </profile>
-        <!-- A profile for running the benchmarks -->
-        <profile>
-            <id>benchmark</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>${maven.exec.version}</version>
-                        <executions>
-                            <execution>
-                                <phase>test</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <classpathScope>test</classpathScope>
-                                    <executable>java</executable>
-                                    <arguments>
-                                        <argument>-classpath</argument>
-                                        <classpath />
-                                        <argument>io.vavr.JmhRunner</argument>
-                                    </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-                <pluginManagement>
-                    <plugins>
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-plugin</artifactId>
-                            <version>${maven.surefire.version}</version>
-                            <configuration>
-                                <!-- Fixes "Unable to acquire the JMH lock" error -->
-                                <parallel>none</parallel>
-                            </configuration>
-                        </plugin>
-                    </plugins>
-                </pluginManagement>
             </build>
         </profile>
     </profiles>
-
-    <distributionManagement>
+    <repositories>
         <repository>
-            <id>sonatype-nexus-staging</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <name>Central Portal Snapshots</name>
+            <id>central-portal-snapshots</id>
+            <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
-
+    </repositories>
 </project>
