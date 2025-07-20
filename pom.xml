@@ -17,12 +17,11 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
 * Check for new plugin version: `mvn versions:display-plugin-updates`
 
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.vavr</groupId>
     <artifactId>vavr-parent</artifactId>
-    <version>0.10.7-SNAPSHOT</version>
+    <version>0.10.7</version>
     <packaging>pom</packaging>
     <name>Vavr Parent</name>
     <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
@@ -41,7 +40,7 @@ We use these goals frequently to keep the dependencies and plugins up-to-date:
         <connection>scm:git:git@github.com:vavr-io/vavr.git</connection>
         <developerConnection>scm:git:git@github.com:vavr-io/vavr.git</developerConnection>
         <url>git@github.com:vavr-io/vavr.git</url>
-        <tag>HEAD</tag>
+        <tag>v0.10.7</tag>
     </scm>
     <developers>
         <developer>
