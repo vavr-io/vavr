@@ -50,7 +50,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 import org.assertj.core.api.IterableAssert;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.AfterEachCallback;
 import org.junit.jupiter.api.extension.BeforeEachCallback;
@@ -69,11 +68,6 @@ public class FutureTest extends AbstractValueTest {
     static final Executor TRIVIAL_EXECUTOR = Runnable::run;
 
     private static final Executor REJECTING_EXECUTOR = ignored -> {throw new RejectedExecutionException();};
-
-    @AfterAll
-    public static void gracefullyFinishThreads() throws TimeoutException {
-        Concurrent.gracefullyFinishThreads();
-    }
 
     static class TraceUnitExtension implements AfterEachCallback, BeforeEachCallback {
 
