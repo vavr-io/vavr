@@ -21,9 +21,6 @@ package io.vavr.concurrent;
 import io.vavr.CheckedFunction0;
 import io.vavr.control.Try;
 import java.util.Random;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.fail;
@@ -74,14 +71,5 @@ final class Concurrent {
             zZz();
             throw exception;
         };
-    }
-
-    static void gracefullyFinishThreads() throws TimeoutException {
-        final boolean isQuiescent = ForkJoinPool.commonPool().awaitQuiescence(1L, TimeUnit.MINUTES);
-        if (isQuiescent) {
-            System.out.println("ForkJoinPool.commonPool() is quiecent");
-        } else {
-            throw new TimeoutException("Timeout while waiting for running threads in ForkJoinPool.commonPool() to finish.");
-        }
     }
 }

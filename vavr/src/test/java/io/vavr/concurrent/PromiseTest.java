@@ -19,19 +19,12 @@
 package io.vavr.concurrent;
 
 import io.vavr.control.Try;
-import java.util.concurrent.TimeoutException;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class PromiseTest {
-
-    @AfterAll
-    public static void gracefullyFinishThreads() throws TimeoutException {
-        Concurrent.gracefullyFinishThreads();
-    }
 
     @Test
     public void shouldReturnExecutorService() {
