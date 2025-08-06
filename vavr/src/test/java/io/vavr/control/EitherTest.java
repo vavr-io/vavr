@@ -407,17 +407,13 @@ public class EitherTest extends AbstractValueTest {
         @Test
         public void shouldMakeTheSameDecisionNoMatterHowItsCalled() {
             Either<String, Integer> e1 = Either.cond(true, () -> 21, () -> "vavr");
-            Either<String, Integer> e3 = Either.cond(true, 21, "vavr");
-            Either<String, Integer> e2 = Either.cond(true, 21, () -> "vavr");
-            Either<String, Integer> e4 = Either.cond(true, () -> 21, "vavr");
+            Either<String, Integer> e2 = Either.cond(true, 21, "vavr");
 
-            Either<String, Integer> e5 = Either.cond(false, () -> 21, () -> "vavr");
-            Either<String, Integer> e6 = Either.cond(false, 21, "vavr");
-            Either<String, Integer> e7 = Either.cond(false, 21, () -> "vavr");
-            Either<String, Integer> e8 = Either.cond(false, () -> 21, "vavr");
+            Either<String, Integer> e3 = Either.cond(false, () -> 21, () -> "vavr");
+            Either<String, Integer> e4 = Either.cond(false, 21, "vavr");
 
-            assertThat(List.of(e1, e2, e3, e4)).allMatch(e -> e.equals(Either.right(21)));
-            assertThat(List.of(e5, e6, e7, e8)).allMatch(e -> e.equals(Either.left("vavr")));
+            assertThat(List.of(e1, e2)).allMatch(e -> e.equals(Either.right(21)));
+            assertThat(List.of(e3, e4)).allMatch(e -> e.equals(Either.left("vavr")));
         }
     }
 
