@@ -654,8 +654,8 @@ public interface Either<L, R> extends Value<R>, Serializable {
 
     @Override
     default Try<R> toTry() {
-        return isRight()
-          ? Try.success(get())
+        return isRight() 
+          ? Try.success(get()) 
           : Try.failure(new Failure(getLeft()));
     }
 
