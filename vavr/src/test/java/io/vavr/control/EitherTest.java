@@ -32,6 +32,7 @@ import static io.vavr.API.Left;
 import static io.vavr.API.Right;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @SuppressWarnings("deprecation")
 public class EitherTest extends AbstractValueTest {
@@ -330,6 +331,89 @@ public class EitherTest extends AbstractValueTest {
             Either<String, Integer> either = Either.left("vavr");
             Either<CharSequence, Number> narrow = Either.narrow(either);
             assertThat(narrow.getLeft()).isEqualTo("vavr");
+        }
+    }
+
+    @Nested
+    public class CondTests {
+
+        @Test
+        public void shouldReturnRightIfTestTrue() {
+            Either<String, Integer> either = Either.cond(true, () -> 21, () -> "vavr");
+            assertThat(either).isEqualTo(Either.right(21));
+        }
+
+        @Test
+        public void shouldReturnLeftIfTestFalse() {
+            Either<String, Integer> either = Either.cond(false, () -> 21, () -> "vavr");
+            assertThat(either).isEqualTo(Either.left("vavr"));
+        }
+
+        @Test
+        public void shouldNotEvaluateRightSupplierOnFalse() {
+            Either<String, Integer> either = Either.cond(false, () -> {
+                fail("Should not be called");
+                return 21;
+            }, () -> "vavr");
+            assertThat(either).isEqualTo(Either.left("vavr"));
+        }
+
+        @Test
+        public void shouldNotEvaluateLeftSupplierOnTrue() {
+            Either<String, Integer> either = Either.cond(true, () -> 21, () -> {
+                fail("Should not be called");
+                return "vavr";
+            });
+            assertThat(either).isEqualTo(Either.right(21));
+        }
+        private class Animal {
+            String name;
+            Animal(String name) { this.name = name; }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof Animal)) return false;
+                Animal other = (Animal) o;
+                return name.equals(other.name);
+            }
+
+            @Override
+            public int hashCode() {
+                return name.hashCode();
+            }
+        }
+
+        private class Dog extends Animal {
+            Dog(String name) { super(name); }
+        }
+
+        private class Cat extends Animal {
+            Cat(String name) { super(name); }
+        }
+
+        @Test
+        public void shouldBeFineWithCovariantLeft() {
+            Either<Animal, Integer> either = Either.cond(false, () -> 21, () -> new Cat("vavr"));
+            assertThat(either).isEqualTo(Either.left(new Cat("vavr")));
+        }
+
+        @Test
+        public void shouldBeFineWithCovariantRight() {
+            Either<String, Animal> either = Either.cond(true, () -> new Dog("vavr"), () -> "vavr");
+            assertThat(either).isEqualTo(Either.right(new Dog("vavr")));
+        }
+
+        @Test
+        public void shouldMakeTheSameDecisionNoMatterHowItsCalled() {
+            Either<String, Integer> e1 = Either.cond(true, () -> 21, () -> "vavr");
+            Either<String, Integer> e2 = Either.cond(true, 21, "vavr");
+
+            Either<String, Integer> e3 = Either.cond(false, () -> 21, () -> "vavr");
+            Either<String, Integer> e4 = Either.cond(false, 21, "vavr");
+
+            assertThat(List.of(e1, e2)).allMatch(e -> e.equals(Either.right(21)));
+            assertThat(List.of(e3, e4)).allMatch(e -> e.equals(Either.left("vavr")));
         }
     }
 
