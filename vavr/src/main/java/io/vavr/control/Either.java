@@ -63,7 +63,7 @@ import java.util.function.Supplier;
  * @param <L> The type of the Left value.
  * @param <R> The type of the Right value.
  *
- * @author Daniel Dietrich, Grzegorz Piwowarek
+ * @author Daniel Dietrich, Grzegorz Piwowarek, Adam Kopeć
  */
 public interface Either<L, R> extends Value<R>, Serializable {
 
@@ -109,6 +109,50 @@ public interface Either<L, R> extends Value<R>, Serializable {
     @SuppressWarnings("unchecked")
     static <L, R> Either<L, R> narrow(Either<? extends L, ? extends R> either) {
         return (Either<L, R>) either;
+    }
+
+    /**
+     * Decides which {@code Either<L, R>} to return, depending on the test value -
+     * if it's true, the result will be a {@link Either.Right},
+     * if it's false - the result will be a {@link Either.Left}
+     *
+     * @param test   A {@code boolean} value to evaluate
+     * @param right  A {@code Supplier<? extends R>} supplier of right value, called if test is true
+     * @param left   A {@code Supplier<? extends L>} supplier of left value, called if test is false
+     * @param <L>    Type of left value
+     * @param <R>    Type of right value
+     *
+     * @return {@code Either<L, R>} with right or left value, depending on the test condition evaluation
+     *
+     * @throws NullPointerException if any of the arguments is null
+     */
+    static <L, R> Either<L, R> cond(boolean test, Supplier<? extends R> right, Supplier<? extends L> left) {
+        Objects.requireNonNull(right, "right is null");
+        Objects.requireNonNull(left, "left is null");
+
+        return test ? right(right.get()) : left(left.get());
+    }
+
+    /**
+     * Decides which {@code Either<L, R>} to return, depending on the test value -
+     * if it's true, the result will be a {@link Either.Right},
+     * if it's false - the result will be a {@link Either.Left}
+     *
+     * @param test   A {@code boolean} value to evaluate
+     * @param right  A n{@code R} right value, returned if test is true
+     * @param left   A {@code L} left value, returned if test is false
+     * @param <L>    Type of left value
+     * @param <R>    Type of right value
+     *
+     * @return {@code Either<L, R>} with right or left value, depending on the test condition evaluation
+     *
+     * @throws NullPointerException if any of the arguments is null
+     */
+    static <L, R> Either<L, R> cond(boolean test, R right, L left) {
+        Objects.requireNonNull(right, "right is null");
+        Objects.requireNonNull(left, "left is null");
+
+        return cond(test, () -> right, () -> left);
     }
 
     /**
