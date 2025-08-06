@@ -2335,6 +2335,7 @@ public final class API {
      * Creates a {@code For}-comprehension of one Iterable.
      *
      * @param ts1 the 1st Iterable
+
      * @param <T1> component type of the 1st Iterable
      * @return a new {@code For}-comprehension of arity 1
      */
@@ -2348,6 +2349,7 @@ public final class API {
      *
      * @param ts1 the 1st Iterable
      * @param ts2 the 2nd Iterable
+
      * @param <T1> component type of the 1st Iterable
      * @param <T2> component type of the 2nd Iterable
      * @return a new {@code For}-comprehension of arity 2
@@ -2364,6 +2366,7 @@ public final class API {
      * @param ts1 the 1st Iterable
      * @param ts2 the 2nd Iterable
      * @param ts3 the 3rd Iterable
+
      * @param <T1> component type of the 1st Iterable
      * @param <T2> component type of the 2nd Iterable
      * @param <T3> component type of the 3rd Iterable
@@ -2383,6 +2386,7 @@ public final class API {
      * @param ts2 the 2nd Iterable
      * @param ts3 the 3rd Iterable
      * @param ts4 the 4th Iterable
+
      * @param <T1> component type of the 1st Iterable
      * @param <T2> component type of the 2nd Iterable
      * @param <T3> component type of the 3rd Iterable
@@ -2405,6 +2409,7 @@ public final class API {
      * @param ts3 the 3rd Iterable
      * @param ts4 the 4th Iterable
      * @param ts5 the 5th Iterable
+
      * @param <T1> component type of the 1st Iterable
      * @param <T2> component type of the 2nd Iterable
      * @param <T3> component type of the 3rd Iterable
@@ -2430,6 +2435,7 @@ public final class API {
      * @param ts4 the 4th Iterable
      * @param ts5 the 5th Iterable
      * @param ts6 the 6th Iterable
+
      * @param <T1> component type of the 1st Iterable
      * @param <T2> component type of the 2nd Iterable
      * @param <T3> component type of the 3rd Iterable
@@ -2458,6 +2464,7 @@ public final class API {
      * @param ts5 the 5th Iterable
      * @param ts6 the 6th Iterable
      * @param ts7 the 7th Iterable
+
      * @param <T1> component type of the 1st Iterable
      * @param <T2> component type of the 2nd Iterable
      * @param <T3> component type of the 3rd Iterable
@@ -2489,6 +2496,7 @@ public final class API {
      * @param ts6 the 6th Iterable
      * @param ts7 the 7th Iterable
      * @param ts8 the 8th Iterable
+
      * @param <T1> component type of the 1st Iterable
      * @param <T2> component type of the 2nd Iterable
      * @param <T3> component type of the 3rd Iterable
@@ -2515,6 +2523,7 @@ public final class API {
      * Creates a {@code For}-comprehension of one Option.
      *
      * @param ts1 the 1st Option
+
      * @param <T1> component type of the 1st Option
      * @return a new {@code For}-comprehension of arity 1
      */
@@ -2528,6 +2537,7 @@ public final class API {
      *
      * @param ts1 the 1st Option
      * @param ts2 the 2nd Option
+
      * @param <T1> component type of the 1st Option
      * @param <T2> component type of the 2nd Option
      * @return a new {@code For}-comprehension of arity 2
@@ -2544,6 +2554,7 @@ public final class API {
      * @param ts1 the 1st Option
      * @param ts2 the 2nd Option
      * @param ts3 the 3rd Option
+
      * @param <T1> component type of the 1st Option
      * @param <T2> component type of the 2nd Option
      * @param <T3> component type of the 3rd Option
@@ -2563,6 +2574,7 @@ public final class API {
      * @param ts2 the 2nd Option
      * @param ts3 the 3rd Option
      * @param ts4 the 4th Option
+
      * @param <T1> component type of the 1st Option
      * @param <T2> component type of the 2nd Option
      * @param <T3> component type of the 3rd Option
@@ -2585,6 +2597,7 @@ public final class API {
      * @param ts3 the 3rd Option
      * @param ts4 the 4th Option
      * @param ts5 the 5th Option
+
      * @param <T1> component type of the 1st Option
      * @param <T2> component type of the 2nd Option
      * @param <T3> component type of the 3rd Option
@@ -2610,6 +2623,7 @@ public final class API {
      * @param ts4 the 4th Option
      * @param ts5 the 5th Option
      * @param ts6 the 6th Option
+
      * @param <T1> component type of the 1st Option
      * @param <T2> component type of the 2nd Option
      * @param <T3> component type of the 3rd Option
@@ -2638,6 +2652,7 @@ public final class API {
      * @param ts5 the 5th Option
      * @param ts6 the 6th Option
      * @param ts7 the 7th Option
+
      * @param <T1> component type of the 1st Option
      * @param <T2> component type of the 2nd Option
      * @param <T3> component type of the 3rd Option
@@ -2669,6 +2684,7 @@ public final class API {
      * @param ts6 the 6th Option
      * @param ts7 the 7th Option
      * @param ts8 the 8th Option
+
      * @param <T1> component type of the 1st Option
      * @param <T2> component type of the 2nd Option
      * @param <T3> component type of the 3rd Option
@@ -2695,6 +2711,7 @@ public final class API {
      * Creates a {@code For}-comprehension of one Future.
      *
      * @param ts1 the 1st Future
+
      * @param <T1> component type of the 1st Future
      * @return a new {@code For}-comprehension of arity 1
      */
@@ -2708,6 +2725,7 @@ public final class API {
      *
      * @param ts1 the 1st Future
      * @param ts2 the 2nd Future
+
      * @param <T1> component type of the 1st Future
      * @param <T2> component type of the 2nd Future
      * @return a new {@code For}-comprehension of arity 2
@@ -2724,6 +2742,7 @@ public final class API {
      * @param ts1 the 1st Future
      * @param ts2 the 2nd Future
      * @param ts3 the 3rd Future
+
      * @param <T1> component type of the 1st Future
      * @param <T2> component type of the 2nd Future
      * @param <T3> component type of the 3rd Future
@@ -2743,6 +2762,7 @@ public final class API {
      * @param ts2 the 2nd Future
      * @param ts3 the 3rd Future
      * @param ts4 the 4th Future
+
      * @param <T1> component type of the 1st Future
      * @param <T2> component type of the 2nd Future
      * @param <T3> component type of the 3rd Future
@@ -2765,6 +2785,7 @@ public final class API {
      * @param ts3 the 3rd Future
      * @param ts4 the 4th Future
      * @param ts5 the 5th Future
+
      * @param <T1> component type of the 1st Future
      * @param <T2> component type of the 2nd Future
      * @param <T3> component type of the 3rd Future
@@ -2790,6 +2811,7 @@ public final class API {
      * @param ts4 the 4th Future
      * @param ts5 the 5th Future
      * @param ts6 the 6th Future
+
      * @param <T1> component type of the 1st Future
      * @param <T2> component type of the 2nd Future
      * @param <T3> component type of the 3rd Future
@@ -2818,6 +2840,7 @@ public final class API {
      * @param ts5 the 5th Future
      * @param ts6 the 6th Future
      * @param ts7 the 7th Future
+
      * @param <T1> component type of the 1st Future
      * @param <T2> component type of the 2nd Future
      * @param <T3> component type of the 3rd Future
@@ -2849,6 +2872,7 @@ public final class API {
      * @param ts6 the 6th Future
      * @param ts7 the 7th Future
      * @param ts8 the 8th Future
+
      * @param <T1> component type of the 1st Future
      * @param <T2> component type of the 2nd Future
      * @param <T3> component type of the 3rd Future
@@ -2875,6 +2899,7 @@ public final class API {
      * Creates a {@code For}-comprehension of one Try.
      *
      * @param ts1 the 1st Try
+
      * @param <T1> component type of the 1st Try
      * @return a new {@code For}-comprehension of arity 1
      */
@@ -2888,6 +2913,7 @@ public final class API {
      *
      * @param ts1 the 1st Try
      * @param ts2 the 2nd Try
+
      * @param <T1> component type of the 1st Try
      * @param <T2> component type of the 2nd Try
      * @return a new {@code For}-comprehension of arity 2
@@ -2904,6 +2930,7 @@ public final class API {
      * @param ts1 the 1st Try
      * @param ts2 the 2nd Try
      * @param ts3 the 3rd Try
+
      * @param <T1> component type of the 1st Try
      * @param <T2> component type of the 2nd Try
      * @param <T3> component type of the 3rd Try
@@ -2923,6 +2950,7 @@ public final class API {
      * @param ts2 the 2nd Try
      * @param ts3 the 3rd Try
      * @param ts4 the 4th Try
+
      * @param <T1> component type of the 1st Try
      * @param <T2> component type of the 2nd Try
      * @param <T3> component type of the 3rd Try
@@ -2945,6 +2973,7 @@ public final class API {
      * @param ts3 the 3rd Try
      * @param ts4 the 4th Try
      * @param ts5 the 5th Try
+
      * @param <T1> component type of the 1st Try
      * @param <T2> component type of the 2nd Try
      * @param <T3> component type of the 3rd Try
@@ -2970,6 +2999,7 @@ public final class API {
      * @param ts4 the 4th Try
      * @param ts5 the 5th Try
      * @param ts6 the 6th Try
+
      * @param <T1> component type of the 1st Try
      * @param <T2> component type of the 2nd Try
      * @param <T3> component type of the 3rd Try
@@ -2998,6 +3028,7 @@ public final class API {
      * @param ts5 the 5th Try
      * @param ts6 the 6th Try
      * @param ts7 the 7th Try
+
      * @param <T1> component type of the 1st Try
      * @param <T2> component type of the 2nd Try
      * @param <T3> component type of the 3rd Try
@@ -3029,6 +3060,7 @@ public final class API {
      * @param ts6 the 6th Try
      * @param ts7 the 7th Try
      * @param ts8 the 8th Try
+
      * @param <T1> component type of the 1st Try
      * @param <T2> component type of the 2nd Try
      * @param <T3> component type of the 3rd Try
@@ -3055,6 +3087,7 @@ public final class API {
      * Creates a {@code For}-comprehension of one List.
      *
      * @param ts1 the 1st List
+
      * @param <T1> component type of the 1st List
      * @return a new {@code For}-comprehension of arity 1
      */
@@ -3068,6 +3101,7 @@ public final class API {
      *
      * @param ts1 the 1st List
      * @param ts2 the 2nd List
+
      * @param <T1> component type of the 1st List
      * @param <T2> component type of the 2nd List
      * @return a new {@code For}-comprehension of arity 2
@@ -3084,6 +3118,7 @@ public final class API {
      * @param ts1 the 1st List
      * @param ts2 the 2nd List
      * @param ts3 the 3rd List
+
      * @param <T1> component type of the 1st List
      * @param <T2> component type of the 2nd List
      * @param <T3> component type of the 3rd List
@@ -3103,6 +3138,7 @@ public final class API {
      * @param ts2 the 2nd List
      * @param ts3 the 3rd List
      * @param ts4 the 4th List
+
      * @param <T1> component type of the 1st List
      * @param <T2> component type of the 2nd List
      * @param <T3> component type of the 3rd List
@@ -3125,6 +3161,7 @@ public final class API {
      * @param ts3 the 3rd List
      * @param ts4 the 4th List
      * @param ts5 the 5th List
+
      * @param <T1> component type of the 1st List
      * @param <T2> component type of the 2nd List
      * @param <T3> component type of the 3rd List
@@ -3150,6 +3187,7 @@ public final class API {
      * @param ts4 the 4th List
      * @param ts5 the 5th List
      * @param ts6 the 6th List
+
      * @param <T1> component type of the 1st List
      * @param <T2> component type of the 2nd List
      * @param <T3> component type of the 3rd List
@@ -3178,6 +3216,7 @@ public final class API {
      * @param ts5 the 5th List
      * @param ts6 the 6th List
      * @param ts7 the 7th List
+
      * @param <T1> component type of the 1st List
      * @param <T2> component type of the 2nd List
      * @param <T3> component type of the 3rd List
@@ -3209,6 +3248,7 @@ public final class API {
      * @param ts6 the 6th List
      * @param ts7 the 7th List
      * @param ts8 the 8th List
+
      * @param <T1> component type of the 1st List
      * @param <T2> component type of the 2nd List
      * @param <T3> component type of the 3rd List
@@ -3231,6 +3271,382 @@ public final class API {
         return new For8List<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
     }
 
+    /**
+     * Creates a {@code For}-comprehension of one Either.
+     *
+     * @param ts1 the 1st Either
+     * @param <L> left-hand type of all Eithers
+     * @param <T1> component type of the 1st Either
+     * @return a new {@code For}-comprehension of arity 1
+     */
+    public static <L, T1> For1Either<L, T1> For(Either<L, T1> ts1) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        return new For1Either<>(ts1);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of two Eithers.
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param <L> left-hand type of all Eithers
+     * @param <T1> component type of the 1st Either
+     * @param <T2> component type of the 2nd Either
+     * @return a new {@code For}-comprehension of arity 2
+     */
+    public static <L, T1, T2> For2Either<L, T1, T2> For(Either<L, T1> ts1, Either<L, T2> ts2) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        return new For2Either<>(ts1, ts2);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of three Eithers.
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param <L> left-hand type of all Eithers
+     * @param <T1> component type of the 1st Either
+     * @param <T2> component type of the 2nd Either
+     * @param <T3> component type of the 3rd Either
+     * @return a new {@code For}-comprehension of arity 3
+     */
+    public static <L, T1, T2, T3> For3Either<L, T1, T2, T3> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        return new For3Either<>(ts1, ts2, ts3);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 4 Eithers.
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param <L> left-hand type of all Eithers
+     * @param <T1> component type of the 1st Either
+     * @param <T2> component type of the 2nd Either
+     * @param <T3> component type of the 3rd Either
+     * @param <T4> component type of the 4th Either
+     * @return a new {@code For}-comprehension of arity 4
+     */
+    public static <L, T1, T2, T3, T4> For4Either<L, T1, T2, T3, T4> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        return new For4Either<>(ts1, ts2, ts3, ts4);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 5 Eithers.
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param ts5 the 5th Either
+     * @param <L> left-hand type of all Eithers
+     * @param <T1> component type of the 1st Either
+     * @param <T2> component type of the 2nd Either
+     * @param <T3> component type of the 3rd Either
+     * @param <T4> component type of the 4th Either
+     * @param <T5> component type of the 5th Either
+     * @return a new {@code For}-comprehension of arity 5
+     */
+    public static <L, T1, T2, T3, T4, T5> For5Either<L, T1, T2, T3, T4, T5> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        return new For5Either<>(ts1, ts2, ts3, ts4, ts5);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 6 Eithers.
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param ts5 the 5th Either
+     * @param ts6 the 6th Either
+     * @param <L> left-hand type of all Eithers
+     * @param <T1> component type of the 1st Either
+     * @param <T2> component type of the 2nd Either
+     * @param <T3> component type of the 3rd Either
+     * @param <T4> component type of the 4th Either
+     * @param <T5> component type of the 5th Either
+     * @param <T6> component type of the 6th Either
+     * @return a new {@code For}-comprehension of arity 6
+     */
+    public static <L, T1, T2, T3, T4, T5, T6> For6Either<L, T1, T2, T3, T4, T5, T6> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        return new For6Either<>(ts1, ts2, ts3, ts4, ts5, ts6);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 7 Eithers.
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param ts5 the 5th Either
+     * @param ts6 the 6th Either
+     * @param ts7 the 7th Either
+     * @param <L> left-hand type of all Eithers
+     * @param <T1> component type of the 1st Either
+     * @param <T2> component type of the 2nd Either
+     * @param <T3> component type of the 3rd Either
+     * @param <T4> component type of the 4th Either
+     * @param <T5> component type of the 5th Either
+     * @param <T6> component type of the 6th Either
+     * @param <T7> component type of the 7th Either
+     * @return a new {@code For}-comprehension of arity 7
+     */
+    public static <L, T1, T2, T3, T4, T5, T6, T7> For7Either<L, T1, T2, T3, T4, T5, T6, T7> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6, Either<L, T7> ts7) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        return new For7Either<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 8 Eithers.
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param ts5 the 5th Either
+     * @param ts6 the 6th Either
+     * @param ts7 the 7th Either
+     * @param ts8 the 8th Either
+     * @param <L> left-hand type of all Eithers
+     * @param <T1> component type of the 1st Either
+     * @param <T2> component type of the 2nd Either
+     * @param <T3> component type of the 3rd Either
+     * @param <T4> component type of the 4th Either
+     * @param <T5> component type of the 5th Either
+     * @param <T6> component type of the 6th Either
+     * @param <T7> component type of the 7th Either
+     * @param <T8> component type of the 8th Either
+     * @return a new {@code For}-comprehension of arity 8
+     */
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> For8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6, Either<L, T7> ts7, Either<L, T8> ts8) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        return new For8Either<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of one Validation.
+     *
+     * @param ts1 the 1st Validation
+     * @param <L> left-hand type of all Validations
+     * @param <T1> component type of the 1st Validation
+     * @return a new {@code For}-comprehension of arity 1
+     */
+    public static <L, T1> For1Validation<L, T1> For(Validation<L, T1> ts1) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        return new For1Validation<>(ts1);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of two Validations.
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param <L> left-hand type of all Validations
+     * @param <T1> component type of the 1st Validation
+     * @param <T2> component type of the 2nd Validation
+     * @return a new {@code For}-comprehension of arity 2
+     */
+    public static <L, T1, T2> For2Validation<L, T1, T2> For(Validation<L, T1> ts1, Validation<L, T2> ts2) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        return new For2Validation<>(ts1, ts2);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of three Validations.
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param <L> left-hand type of all Validations
+     * @param <T1> component type of the 1st Validation
+     * @param <T2> component type of the 2nd Validation
+     * @param <T3> component type of the 3rd Validation
+     * @return a new {@code For}-comprehension of arity 3
+     */
+    public static <L, T1, T2, T3> For3Validation<L, T1, T2, T3> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        return new For3Validation<>(ts1, ts2, ts3);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 4 Validations.
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param <L> left-hand type of all Validations
+     * @param <T1> component type of the 1st Validation
+     * @param <T2> component type of the 2nd Validation
+     * @param <T3> component type of the 3rd Validation
+     * @param <T4> component type of the 4th Validation
+     * @return a new {@code For}-comprehension of arity 4
+     */
+    public static <L, T1, T2, T3, T4> For4Validation<L, T1, T2, T3, T4> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        return new For4Validation<>(ts1, ts2, ts3, ts4);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 5 Validations.
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param ts5 the 5th Validation
+     * @param <L> left-hand type of all Validations
+     * @param <T1> component type of the 1st Validation
+     * @param <T2> component type of the 2nd Validation
+     * @param <T3> component type of the 3rd Validation
+     * @param <T4> component type of the 4th Validation
+     * @param <T5> component type of the 5th Validation
+     * @return a new {@code For}-comprehension of arity 5
+     */
+    public static <L, T1, T2, T3, T4, T5> For5Validation<L, T1, T2, T3, T4, T5> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        return new For5Validation<>(ts1, ts2, ts3, ts4, ts5);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 6 Validations.
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param ts5 the 5th Validation
+     * @param ts6 the 6th Validation
+     * @param <L> left-hand type of all Validations
+     * @param <T1> component type of the 1st Validation
+     * @param <T2> component type of the 2nd Validation
+     * @param <T3> component type of the 3rd Validation
+     * @param <T4> component type of the 4th Validation
+     * @param <T5> component type of the 5th Validation
+     * @param <T6> component type of the 6th Validation
+     * @return a new {@code For}-comprehension of arity 6
+     */
+    public static <L, T1, T2, T3, T4, T5, T6> For6Validation<L, T1, T2, T3, T4, T5, T6> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5, Validation<L, T6> ts6) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        return new For6Validation<>(ts1, ts2, ts3, ts4, ts5, ts6);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 7 Validations.
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param ts5 the 5th Validation
+     * @param ts6 the 6th Validation
+     * @param ts7 the 7th Validation
+     * @param <L> left-hand type of all Validations
+     * @param <T1> component type of the 1st Validation
+     * @param <T2> component type of the 2nd Validation
+     * @param <T3> component type of the 3rd Validation
+     * @param <T4> component type of the 4th Validation
+     * @param <T5> component type of the 5th Validation
+     * @param <T6> component type of the 6th Validation
+     * @param <T7> component type of the 7th Validation
+     * @return a new {@code For}-comprehension of arity 7
+     */
+    public static <L, T1, T2, T3, T4, T5, T6, T7> For7Validation<L, T1, T2, T3, T4, T5, T6, T7> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5, Validation<L, T6> ts6, Validation<L, T7> ts7) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        return new For7Validation<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7);
+    }
+
+    /**
+     * Creates a {@code For}-comprehension of 8 Validations.
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param ts5 the 5th Validation
+     * @param ts6 the 6th Validation
+     * @param ts7 the 7th Validation
+     * @param ts8 the 8th Validation
+     * @param <L> left-hand type of all Validations
+     * @param <T1> component type of the 1st Validation
+     * @param <T2> component type of the 2nd Validation
+     * @param <T3> component type of the 3rd Validation
+     * @param <T4> component type of the 4th Validation
+     * @param <T5> component type of the 5th Validation
+     * @param <T6> component type of the 6th Validation
+     * @param <T7> component type of the 7th Validation
+     * @param <T8> component type of the 8th Validation
+     * @return a new {@code For}-comprehension of arity 8
+     */
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> For8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5, Validation<L, T6> ts6, Validation<L, T7> ts7, Validation<L, T8> ts8) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        return new For8Validation<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
+    }
+
      /**
       * For-comprehension with one Iterable.
       */
@@ -3243,9 +3659,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Iterable.
+          * Yields a result for elements of the cross-product of the underlying Iterable.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
@@ -3278,9 +3694,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Iterables.
+          * Yields a result for elements of the cross-product of the underlying Iterables.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
@@ -3309,9 +3725,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Iterables.
+          * Yields a result for elements of the cross-product of the underlying Iterables.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
@@ -3343,9 +3759,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Iterables.
+          * Yields a result for elements of the cross-product of the underlying Iterables.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
@@ -3380,9 +3796,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Iterables.
+          * Yields a result for elements of the cross-product of the underlying Iterables.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
@@ -3420,9 +3836,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Iterables.
+          * Yields a result for elements of the cross-product of the underlying Iterables.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
@@ -3463,9 +3879,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Iterables.
+          * Yields a result for elements of the cross-product of the underlying Iterables.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
@@ -3509,9 +3925,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Iterables.
+          * Yields a result for elements of the cross-product of the underlying Iterables.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
@@ -3542,9 +3958,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Option.
+          * Yields a result for elements of the cross-product of the underlying Option.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
@@ -3577,9 +3993,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Options.
+          * Yields a result for elements of the cross-product of the underlying Options.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
@@ -3608,9 +4024,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Options.
+          * Yields a result for elements of the cross-product of the underlying Options.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
@@ -3642,9 +4058,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Options.
+          * Yields a result for elements of the cross-product of the underlying Options.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
@@ -3679,9 +4095,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Options.
+          * Yields a result for elements of the cross-product of the underlying Options.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
@@ -3719,9 +4135,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Options.
+          * Yields a result for elements of the cross-product of the underlying Options.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
@@ -3762,9 +4178,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Options.
+          * Yields a result for elements of the cross-product of the underlying Options.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
@@ -3808,9 +4224,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Options.
+          * Yields a result for elements of the cross-product of the underlying Options.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
@@ -3841,9 +4257,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Future.
+          * Yields a result for elements of the cross-product of the underlying Future.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
@@ -3876,9 +4292,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Futures.
+          * Yields a result for elements of the cross-product of the underlying Futures.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
@@ -3907,9 +4323,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Futures.
+          * Yields a result for elements of the cross-product of the underlying Futures.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
@@ -3941,9 +4357,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Futures.
+          * Yields a result for elements of the cross-product of the underlying Futures.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
@@ -3978,9 +4394,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Futures.
+          * Yields a result for elements of the cross-product of the underlying Futures.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
@@ -4018,9 +4434,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Futures.
+          * Yields a result for elements of the cross-product of the underlying Futures.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
@@ -4061,9 +4477,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Futures.
+          * Yields a result for elements of the cross-product of the underlying Futures.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
@@ -4107,9 +4523,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Futures.
+          * Yields a result for elements of the cross-product of the underlying Futures.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
@@ -4140,9 +4556,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Try.
+          * Yields a result for elements of the cross-product of the underlying Try.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
@@ -4175,9 +4591,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Trys.
+          * Yields a result for elements of the cross-product of the underlying Trys.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
@@ -4206,9 +4622,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Trys.
+          * Yields a result for elements of the cross-product of the underlying Trys.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
@@ -4240,9 +4656,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Trys.
+          * Yields a result for elements of the cross-product of the underlying Trys.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
@@ -4277,9 +4693,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Trys.
+          * Yields a result for elements of the cross-product of the underlying Trys.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
@@ -4317,9 +4733,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Trys.
+          * Yields a result for elements of the cross-product of the underlying Trys.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
@@ -4360,9 +4776,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Trys.
+          * Yields a result for elements of the cross-product of the underlying Trys.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
@@ -4406,9 +4822,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Trys.
+          * Yields a result for elements of the cross-product of the underlying Trys.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
@@ -4439,9 +4855,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying List.
+          * Yields a result for elements of the cross-product of the underlying List.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
@@ -4474,9 +4890,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Lists.
+          * Yields a result for elements of the cross-product of the underlying Lists.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
@@ -4505,9 +4921,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Lists.
+          * Yields a result for elements of the cross-product of the underlying Lists.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
@@ -4539,9 +4955,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Lists.
+          * Yields a result for elements of the cross-product of the underlying Lists.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
@@ -4576,9 +4992,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Lists.
+          * Yields a result for elements of the cross-product of the underlying Lists.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
@@ -4616,9 +5032,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Lists.
+          * Yields a result for elements of the cross-product of the underlying Lists.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
@@ -4659,9 +5075,9 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Lists.
+          * Yields a result for elements of the cross-product of the underlying Lists.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
@@ -4705,13 +5121,611 @@ public final class API {
          }
 
          /**
-          * Yields a result for elements of the cross product of the underlying Lists.
+          * Yields a result for elements of the cross-product of the underlying Lists.
           *
-          * @param f a function that maps an element of the cross product to a result
+          * @param f a function that maps an element of the cross-product to a result
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
          public <R> List<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.flatMap(t4 ->
+                 ts5.flatMap(t5 ->
+                 ts6.flatMap(t6 ->
+                 ts7.flatMap(t7 ->
+                 ts8.map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with one Either.
+      */
+     public static class For1Either<L, T1> {
+
+         private final Either<L, T1> ts1;
+
+         private For1Either(Either<L, T1> ts1) {
+             this.ts1 = ts1;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Either.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Either} elements
+          * @return an {@code Either} of mapped results
+          */
+         public <R> Either<L, R> yield(Function<? super T1, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return ts1.map(f);
+         }
+
+         /**
+          * A shortcut for {@code yield(Function.identity())}.
+          *
+          * @return an {@code Iterator} of mapped results
+          */
+         public Either<L, T1> yield() {
+             return this.yield(Function.identity());
+         }
+     }
+
+     /**
+      * For-comprehension with two Eithers.
+      */
+     public static class For2Either<L, T1, T2> {
+
+         private final Either<L, T1> ts1;
+         private final Either<L, T2> ts2;
+
+         private For2Either(Either<L, T1> ts1, Either<L, T2> ts2) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Eithers.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Either} elements
+          * @return an {@code Either} of mapped results
+          */
+         public <R> Either<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.map(t2 -> f.apply(t1, t2)));
+         }
+
+     }
+
+     /**
+      * For-comprehension with three Eithers.
+      */
+     public static class For3Either<L, T1, T2, T3> {
+
+         private final Either<L, T1> ts1;
+         private final Either<L, T2> ts2;
+         private final Either<L, T3> ts3;
+
+         private For3Either(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Eithers.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Either} elements
+          * @return an {@code Either} of mapped results
+          */
+         public <R> Either<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.map(t3 -> f.apply(t1, t2, t3))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 4 Eithers.
+      */
+     public static class For4Either<L, T1, T2, T3, T4> {
+
+         private final Either<L, T1> ts1;
+         private final Either<L, T2> ts2;
+         private final Either<L, T3> ts3;
+         private final Either<L, T4> ts4;
+
+         private For4Either(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Eithers.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Either} elements
+          * @return an {@code Either} of mapped results
+          */
+         public <R> Either<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.map(t4 -> f.apply(t1, t2, t3, t4)))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 5 Eithers.
+      */
+     public static class For5Either<L, T1, T2, T3, T4, T5> {
+
+         private final Either<L, T1> ts1;
+         private final Either<L, T2> ts2;
+         private final Either<L, T3> ts3;
+         private final Either<L, T4> ts4;
+         private final Either<L, T5> ts5;
+
+         private For5Either(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+             this.ts5 = ts5;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Eithers.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Either} elements
+          * @return an {@code Either} of mapped results
+          */
+         public <R> Either<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.flatMap(t4 ->
+                 ts5.map(t5 -> f.apply(t1, t2, t3, t4, t5))))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 6 Eithers.
+      */
+     public static class For6Either<L, T1, T2, T3, T4, T5, T6> {
+
+         private final Either<L, T1> ts1;
+         private final Either<L, T2> ts2;
+         private final Either<L, T3> ts3;
+         private final Either<L, T4> ts4;
+         private final Either<L, T5> ts5;
+         private final Either<L, T6> ts6;
+
+         private For6Either(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+             this.ts5 = ts5;
+             this.ts6 = ts6;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Eithers.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Either} elements
+          * @return an {@code Either} of mapped results
+          */
+         public <R> Either<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.flatMap(t4 ->
+                 ts5.flatMap(t5 ->
+                 ts6.map(t6 -> f.apply(t1, t2, t3, t4, t5, t6)))))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 7 Eithers.
+      */
+     public static class For7Either<L, T1, T2, T3, T4, T5, T6, T7> {
+
+         private final Either<L, T1> ts1;
+         private final Either<L, T2> ts2;
+         private final Either<L, T3> ts3;
+         private final Either<L, T4> ts4;
+         private final Either<L, T5> ts5;
+         private final Either<L, T6> ts6;
+         private final Either<L, T7> ts7;
+
+         private For7Either(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6, Either<L, T7> ts7) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+             this.ts5 = ts5;
+             this.ts6 = ts6;
+             this.ts7 = ts7;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Eithers.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Either} elements
+          * @return an {@code Either} of mapped results
+          */
+         public <R> Either<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.flatMap(t4 ->
+                 ts5.flatMap(t5 ->
+                 ts6.flatMap(t6 ->
+                 ts7.map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7))))))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 8 Eithers.
+      */
+     public static class For8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> {
+
+         private final Either<L, T1> ts1;
+         private final Either<L, T2> ts2;
+         private final Either<L, T3> ts3;
+         private final Either<L, T4> ts4;
+         private final Either<L, T5> ts5;
+         private final Either<L, T6> ts6;
+         private final Either<L, T7> ts7;
+         private final Either<L, T8> ts8;
+
+         private For8Either(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6, Either<L, T7> ts7, Either<L, T8> ts8) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+             this.ts5 = ts5;
+             this.ts6 = ts6;
+             this.ts7 = ts7;
+             this.ts8 = ts8;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Eithers.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Either} elements
+          * @return an {@code Either} of mapped results
+          */
+         public <R> Either<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.flatMap(t4 ->
+                 ts5.flatMap(t5 ->
+                 ts6.flatMap(t6 ->
+                 ts7.flatMap(t7 ->
+                 ts8.map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8)))))))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with one Validation.
+      */
+     public static class For1Validation<L, T1> {
+
+         private final Validation<L, T1> ts1;
+
+         private For1Validation(Validation<L, T1> ts1) {
+             this.ts1 = ts1;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Validation.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Validation} elements
+          * @return an {@code Validation} of mapped results
+          */
+         public <R> Validation<L, R> yield(Function<? super T1, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return ts1.map(f);
+         }
+
+         /**
+          * A shortcut for {@code yield(Function.identity())}.
+          *
+          * @return an {@code Iterator} of mapped results
+          */
+         public Validation<L, T1> yield() {
+             return this.yield(Function.identity());
+         }
+     }
+
+     /**
+      * For-comprehension with two Validations.
+      */
+     public static class For2Validation<L, T1, T2> {
+
+         private final Validation<L, T1> ts1;
+         private final Validation<L, T2> ts2;
+
+         private For2Validation(Validation<L, T1> ts1, Validation<L, T2> ts2) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Validations.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Validation} elements
+          * @return an {@code Validation} of mapped results
+          */
+         public <R> Validation<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.map(t2 -> f.apply(t1, t2)));
+         }
+
+     }
+
+     /**
+      * For-comprehension with three Validations.
+      */
+     public static class For3Validation<L, T1, T2, T3> {
+
+         private final Validation<L, T1> ts1;
+         private final Validation<L, T2> ts2;
+         private final Validation<L, T3> ts3;
+
+         private For3Validation(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Validations.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Validation} elements
+          * @return an {@code Validation} of mapped results
+          */
+         public <R> Validation<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.map(t3 -> f.apply(t1, t2, t3))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 4 Validations.
+      */
+     public static class For4Validation<L, T1, T2, T3, T4> {
+
+         private final Validation<L, T1> ts1;
+         private final Validation<L, T2> ts2;
+         private final Validation<L, T3> ts3;
+         private final Validation<L, T4> ts4;
+
+         private For4Validation(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Validations.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Validation} elements
+          * @return an {@code Validation} of mapped results
+          */
+         public <R> Validation<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.map(t4 -> f.apply(t1, t2, t3, t4)))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 5 Validations.
+      */
+     public static class For5Validation<L, T1, T2, T3, T4, T5> {
+
+         private final Validation<L, T1> ts1;
+         private final Validation<L, T2> ts2;
+         private final Validation<L, T3> ts3;
+         private final Validation<L, T4> ts4;
+         private final Validation<L, T5> ts5;
+
+         private For5Validation(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+             this.ts5 = ts5;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Validations.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Validation} elements
+          * @return an {@code Validation} of mapped results
+          */
+         public <R> Validation<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.flatMap(t4 ->
+                 ts5.map(t5 -> f.apply(t1, t2, t3, t4, t5))))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 6 Validations.
+      */
+     public static class For6Validation<L, T1, T2, T3, T4, T5, T6> {
+
+         private final Validation<L, T1> ts1;
+         private final Validation<L, T2> ts2;
+         private final Validation<L, T3> ts3;
+         private final Validation<L, T4> ts4;
+         private final Validation<L, T5> ts5;
+         private final Validation<L, T6> ts6;
+
+         private For6Validation(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5, Validation<L, T6> ts6) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+             this.ts5 = ts5;
+             this.ts6 = ts6;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Validations.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Validation} elements
+          * @return an {@code Validation} of mapped results
+          */
+         public <R> Validation<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.flatMap(t4 ->
+                 ts5.flatMap(t5 ->
+                 ts6.map(t6 -> f.apply(t1, t2, t3, t4, t5, t6)))))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 7 Validations.
+      */
+     public static class For7Validation<L, T1, T2, T3, T4, T5, T6, T7> {
+
+         private final Validation<L, T1> ts1;
+         private final Validation<L, T2> ts2;
+         private final Validation<L, T3> ts3;
+         private final Validation<L, T4> ts4;
+         private final Validation<L, T5> ts5;
+         private final Validation<L, T6> ts6;
+         private final Validation<L, T7> ts7;
+
+         private For7Validation(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5, Validation<L, T6> ts6, Validation<L, T7> ts7) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+             this.ts5 = ts5;
+             this.ts6 = ts6;
+             this.ts7 = ts7;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Validations.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Validation} elements
+          * @return an {@code Validation} of mapped results
+          */
+         public <R> Validation<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+             Objects.requireNonNull(f, "f is null");
+             return
+                 ts1.flatMap(t1 ->
+                 ts2.flatMap(t2 ->
+                 ts3.flatMap(t3 ->
+                 ts4.flatMap(t4 ->
+                 ts5.flatMap(t5 ->
+                 ts6.flatMap(t6 ->
+                 ts7.map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7))))))));
+         }
+
+     }
+
+     /**
+      * For-comprehension with 8 Validations.
+      */
+     public static class For8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> {
+
+         private final Validation<L, T1> ts1;
+         private final Validation<L, T2> ts2;
+         private final Validation<L, T3> ts3;
+         private final Validation<L, T4> ts4;
+         private final Validation<L, T5> ts5;
+         private final Validation<L, T6> ts6;
+         private final Validation<L, T7> ts7;
+         private final Validation<L, T8> ts8;
+
+         private For8Validation(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5, Validation<L, T6> ts6, Validation<L, T7> ts7, Validation<L, T8> ts8) {
+             this.ts1 = ts1;
+             this.ts2 = ts2;
+             this.ts3 = ts3;
+             this.ts4 = ts4;
+             this.ts5 = ts5;
+             this.ts6 = ts6;
+             this.ts7 = ts7;
+             this.ts8 = ts8;
+         }
+
+         /**
+          * Yields a result for elements of the cross-product of the underlying Validations.
+          *
+          * @param f a function that maps an element of the cross-product to a result
+          * @param <R> type of the resulting {@code Validation} elements
+          * @return an {@code Validation} of mapped results
+          */
+         public <R> Validation<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
