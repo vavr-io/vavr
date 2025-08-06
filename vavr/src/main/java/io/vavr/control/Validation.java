@@ -190,6 +190,50 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     /**
+     * Decides which {@code Validation<E, T>} to return, depending on the test value -
+     * if it's true, the result will be a {@link Validation.Valid},
+     * if it's false - the result will be a {@link Validation.Invalid}
+     *
+     * @param test   A {@code boolean} value to evaluate
+     * @param valid  A {@code Supplier<? extends T>} supplier of valid value, called if test is true
+     * @param error  A {@code Supplier<? extends E>} supplier of error, called if test is false
+     * @param <E>    Type of error
+     * @param <T>    Type of valid value
+     *
+     * @return {@code Validation<E, T>} with valid value or error, depending on the test condition evaluation
+     *
+     * @throws NullPointerException if any of the arguments is null
+     */
+    static <E, T> Validation<E, T> cond(boolean test, Supplier<? extends T> valid, Supplier<? extends E> error) {
+        Objects.requireNonNull(valid, "valid is null");
+        Objects.requireNonNull(error, "error is null");
+
+        return test ? valid(valid.get()) : invalid(error.get());
+    }
+
+    /**
+     * Decides which {@code Validation<E, T>} to return, depending on the test value -
+     * if it's true, the result will be a {@link Validation.Valid},
+     * if it's false - the result will be a {@link Validation.Invalid}
+     *
+     * @param test   A {@code boolean} value to evaluate
+     * @param valid  A {@code T} valid value, called if test is true
+     * @param error  An {@code E} error value, called if test is false
+     * @param <E>    Type of error
+     * @param <T>    Type of valid value
+     *
+     * @return {@code Validation<E, T>} with valid value or error, depending on the test condition evaluation
+     *
+     * @throws NullPointerException if any of the arguments is null
+     */
+    static <E, T> Validation<E, T> cond(boolean test, T valid, E error) {
+        Objects.requireNonNull(valid, "valid is null");
+        Objects.requireNonNull(error, "error is null");
+
+        return test ? valid(valid) : invalid(error);
+    }
+
+    /**
      * Combines two {@code Validation}s into a {@link Builder}.
      *
      * @param <E>         type of error
