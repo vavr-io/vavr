@@ -26,9 +26,11 @@ import io.vavr.collection.Seq;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Spliterator;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ValidationTest extends AbstractValueTest {
 
@@ -125,6 +127,103 @@ public class ValidationTest extends AbstractValueTest {
         Validation<String, Integer> validation = Validation.invalid("vavr");
         Validation<CharSequence, Number> narrow = Validation.narrow(validation);
         assertThat(narrow.getError()).isEqualTo("vavr");
+    }
+
+    @Nested
+    public class CondTests {
+
+        @Test
+        public void shouldReturnValidIfTestTrue() {
+            Validation<String, Integer> validation = Validation.cond(true, () -> 21, () -> "vavr");
+            assertThat(validation).isEqualTo(Validation.valid(21));
+        }
+
+        @Test
+        public void shouldReturnInvalidIfTestFalse() {
+            Validation<String, Integer> validation = Validation.cond(false, () -> 21, () -> "vavr");
+            assertThat(validation).isEqualTo(Validation.invalid("vavr"));
+        }
+
+        @Test
+        public void shouldNotEvaluateValidSupplierOnFalse() {
+            Validation<String, Integer> validation = Validation.cond(false, () -> {
+                fail("Should not be called");
+                return 21;
+            }, () -> "vavr");
+            assertThat(validation).isEqualTo(Validation.invalid("vavr"));
+        }
+
+        @Test
+        public void shouldNotEvaluateErrorSupplierOnTrue() {
+            Validation<String, Integer> validation = Validation.cond(true, () -> 21, () -> {
+                fail("Should not be called");
+                return "vavr";
+            });
+            assertThat(validation).isEqualTo(Validation.valid(21));
+        }
+
+        private class Car {
+            String name;
+
+            Car(String name) {
+                this.name = name;
+            }
+
+            @Override
+            public boolean equals(Object o) {
+                if (this == o) return true;
+                if (!(o instanceof Car)) return false;
+                Car other = (Car) o;
+                return name.equals(other.name);
+            }
+
+            @Override
+            public int hashCode() {
+                return name.hashCode();
+            }
+        }
+
+        private class Hatchback extends Car {
+            Hatchback(String name) {
+                super(name);
+            }
+        }
+
+        private class Sedan extends Car {
+            Sedan(String name) {
+                super(name);
+            }
+        }
+
+        @Test
+        public void shouldBeFineWithCovariantError() {
+            Validation<Car, Integer> validation = Validation.cond(false, () -> 21, () -> new Hatchback("vavr"));
+            assertThat(validation).isEqualTo(Validation.invalid(new Hatchback("vavr")));
+        }
+
+        @Test
+        public void shouldBeFineWithCovariantValid() {
+            Validation<String, Car> validation = Validation.cond(true, () -> new Sedan("vavr"), () -> "vavr");
+            assertThat(validation).isEqualTo(Validation.valid(new Sedan("vavr")));
+        }
+
+        @Test
+        public void shouldMakeTheSameDecisionNoMatterHowItsCalled() {
+            Validation<String, Integer> v1 = Validation.cond(true, () -> 21, () -> "vavr");
+            Validation<String, Integer> v2 = Validation.cond(true, 21, "vavr");
+
+            Validation<String, Integer> v3 = Validation.cond(false, () -> 21, () -> "vavr");
+            Validation<String, Integer> v4 = Validation.cond(false, 21, "vavr");
+
+            assertThat(List.of(v1, v2)).allMatch(e -> e.equals(Validation.valid(21)));
+            assertThat(List.of(v3, v4)).allMatch(e -> e.equals(Validation.invalid("vavr")));
+        }
+
+        @Test
+        public void shouldThrowWhenProvidedWithNull() {
+            assertThrows(NullPointerException.class, () -> Validation.cond(false, 1, null));
+            assertThrows(NullPointerException.class, () -> Validation.cond(false, null, 2));
+        }
     }
 
     // -- Validation.sequence
