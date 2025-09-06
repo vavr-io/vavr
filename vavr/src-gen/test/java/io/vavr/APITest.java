@@ -33,8 +33,10 @@ import io.vavr.collection.Map;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import io.vavr.concurrent.Future;
+import io.vavr.control.Either;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import io.vavr.control.Validation;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.concurrent.Executors;
@@ -1173,6 +1175,190 @@ public class APITest {
                 Option.of(6),
                 Option.of(7),
                 Option.of(8)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+            assertThat(result.get()).isEqualTo(36);
+        }
+
+        @Test
+        public void shouldIterateForEither1() {
+            final Either<Object, Integer> result = For(
+                Either.right(1)
+            ).yield(i1 -> i1);
+            assertThat(result.get()).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldIterateForEither2() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                Either.right(2)
+            ).yield((i1, i2) -> i1 + i2);
+            assertThat(result.get()).isEqualTo(3);
+        }
+
+        @Test
+        public void shouldIterateForEither3() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3);
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldIterateForEither4() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+            assertThat(result.get()).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldIterateForEither5() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4),
+                Either.right(5)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+            assertThat(result.get()).isEqualTo(15);
+        }
+
+        @Test
+        public void shouldIterateForEither6() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4),
+                Either.right(5),
+                Either.right(6)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+            assertThat(result.get()).isEqualTo(21);
+        }
+
+        @Test
+        public void shouldIterateForEither7() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4),
+                Either.right(5),
+                Either.right(6),
+                Either.right(7)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+            assertThat(result.get()).isEqualTo(28);
+        }
+
+        @Test
+        public void shouldIterateForEither8() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                Either.right(2),
+                Either.right(3),
+                Either.right(4),
+                Either.right(5),
+                Either.right(6),
+                Either.right(7),
+                Either.right(8)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+            assertThat(result.get()).isEqualTo(36);
+        }
+
+        @Test
+        public void shouldIterateForValidation1() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1)
+            ).yield(i1 -> i1);
+            assertThat(result.get()).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldIterateForValidation2() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                Validation.valid(2)
+            ).yield((i1, i2) -> i1 + i2);
+            assertThat(result.get()).isEqualTo(3);
+        }
+
+        @Test
+        public void shouldIterateForValidation3() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                Validation.valid(2),
+                Validation.valid(3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3);
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldIterateForValidation4() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                Validation.valid(2),
+                Validation.valid(3),
+                Validation.valid(4)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+            assertThat(result.get()).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldIterateForValidation5() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                Validation.valid(2),
+                Validation.valid(3),
+                Validation.valid(4),
+                Validation.valid(5)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+            assertThat(result.get()).isEqualTo(15);
+        }
+
+        @Test
+        public void shouldIterateForValidation6() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                Validation.valid(2),
+                Validation.valid(3),
+                Validation.valid(4),
+                Validation.valid(5),
+                Validation.valid(6)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+            assertThat(result.get()).isEqualTo(21);
+        }
+
+        @Test
+        public void shouldIterateForValidation7() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                Validation.valid(2),
+                Validation.valid(3),
+                Validation.valid(4),
+                Validation.valid(5),
+                Validation.valid(6),
+                Validation.valid(7)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+            assertThat(result.get()).isEqualTo(28);
+        }
+
+        @Test
+        public void shouldIterateForValidation8() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                Validation.valid(2),
+                Validation.valid(3),
+                Validation.valid(4),
+                Validation.valid(5),
+                Validation.valid(6),
+                Validation.valid(7),
+                Validation.valid(8)
             ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
             assertThat(result.get()).isEqualTo(36);
         }
