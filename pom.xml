@@ -47,7 +47,7 @@
         <maven.bundle.version>5.1.9</maven.bundle.version>
         <maven.clean.version>3.5.0</maven.clean.version>
         <maven.install.version>3.1.4</maven.install.version>
-        <maven.compiler.version>3.14.0</maven.compiler.version>
+        <maven.compiler.version>3.14.1</maven.compiler.version>
         <maven.deploy.version>3.0.0-M1</maven.deploy.version>
         <maven.gpg.version>3.2.7</maven.gpg.version>
         <maven.jacoco.version>0.8.12</maven.jacoco.version>
