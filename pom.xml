@@ -52,7 +52,7 @@
         <maven.gpg.version>3.2.7</maven.gpg.version>
         <maven.jacoco.version>0.8.12</maven.jacoco.version>
         <maven.jar.version>3.4.2</maven.jar.version>
-        <maven.javadoc.version>3.11.3</maven.javadoc.version>
+        <maven.javadoc.version>3.12.0</maven.javadoc.version>
         <maven.release.version>3.1.1</maven.release.version>
         <maven.versions.version>2.18.0</maven.versions.version>
         <maven.surefire.version>3.5.4</maven.surefire.version>
@@ -317,7 +317,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.11.3</version>
+                        <version>3.12.0</version>
                         <executions>
                             <execution>
                                 <id>attach-javadocs</id>
