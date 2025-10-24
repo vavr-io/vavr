@@ -25,13 +25,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
  * An immutable {@code LinkedHashMap} implementation that has predictable (insertion-order) iteration.
  *
- * @author Ruslan Sennov
+ * @author Ruslan Sennov, Grzegorz Piwowarek
  */
 public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
@@ -704,6 +711,33 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     @Override
     public Iterator<Tuple2<K, V>> iterator() {
         return list.iterator();
+    }
+
+
+    /**
+     * Returns an iterator over the entries of this {@code LinkedHashMap}, starting from the specified key.
+     * <p>
+     * The iteration order follows the insertion order of this map.
+     * If the given key exists, the iteration starts from that entry (inclusive).
+     * If the key does not exist, the iteration starts from the beginning of the map.
+     * <p>
+     * The returned iterator is immutable and reflects the current state of this map.
+     *
+     * @param key the key from which iteration should begin
+     * @return an iterator over the entries of this map, starting from {@code key} if present,
+     *         or from the beginning otherwise
+     * @throws NullPointerException if {@code key} is {@code null} and this map does not support {@code null} keys
+     */
+    public Iterator<Tuple2<K, V>> iteratorFrom(K key) {
+        Objects.requireNonNull(key, "key is null");
+        if (list.isEmpty()) {
+            return list.iterator();
+        }
+
+        int idx = list.map(Tuple2::_1).indexOf(key, 0);
+        return idx == -1
+          ? list.iterator() 
+          : list.iterator(list.map(Tuple2::_1).indexOf(key,0));
     }
 
     @SuppressWarnings("unchecked")

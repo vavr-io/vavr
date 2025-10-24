@@ -109,13 +109,15 @@ public class LinkedHashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldKeepOrder() {
-        final List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').foldLeft(List.empty(), (s, t) -> s.append(t._2));
+        final List<Character> actual = LinkedHashMap.<Integer, Character>empty().put(3, 'a').put(2, 'b').put(1, 'c')
+          .foldLeft(List.empty(), (s, t) -> s.append(t._2));
         Assertions.assertThat(actual).isEqualTo(List.of('a', 'b', 'c'));
     }
 
     @Test
     public void shouldKeepValuesOrder() {
-        final List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').values().foldLeft(List.empty(), List::append);
+        final List<Character> actual = LinkedHashMap.<Integer, Character>empty().put(3, 'a').put(2, 'b').put(1, 'c')
+          .values().foldLeft(List.empty(), List::append);
         Assertions.assertThat(actual).isEqualTo(List.of('a', 'b', 'c'));
     }
 
@@ -152,11 +154,11 @@ public class LinkedHashMapTest extends AbstractMapTest {
     @Test
     public void shouldReturnModifiedKeysMapWithNonUniqueMapperAndPredictableOrder() {
         final Map<Integer, String> actual = LinkedHashMap.of(3, "3").put(1, "1").put(2, "2")
-                .mapKeys(Integer::toHexString).mapKeys(String::length);
+          .mapKeys(Integer::toHexString).mapKeys(String::length);
         final Map<Integer, String> expected = LinkedHashMap.of(1, "2");
         assertThat(actual).isEqualTo(expected);
     }
-    
+
     // -- put
 
     @Test
@@ -229,50 +231,50 @@ public class LinkedHashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldScan() {
-        final Map<Integer, String> map = this.<Integer, String> emptyMap()
-                .put(Tuple.of(1, "a"))
-                .put(Tuple.of(2, "b"))
-                .put(Tuple.of(3, "c"))
-                .put(Tuple.of(4, "d"));
+        final Map<Integer, String> map = this.<Integer, String>emptyMap()
+          .put(Tuple.of(1, "a"))
+          .put(Tuple.of(2, "b"))
+          .put(Tuple.of(3, "c"))
+          .put(Tuple.of(4, "d"));
         final Map<Integer, String> result = map.scan(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
         assertThat(result).isEqualTo(LinkedHashMap.empty()
-                .put(0, "x")
-                .put(1, "xa")
-                .put(3, "xab")
-                .put(6, "xabc")
-                .put(10, "xabcd"));
+          .put(0, "x")
+          .put(1, "xa")
+          .put(3, "xab")
+          .put(6, "xabc")
+          .put(10, "xabcd"));
     }
 
     @Test
     public void shouldScanLeft() {
-        final Map<Integer, String> map = this.<Integer, String> emptyMap()
-                .put(Tuple.of(1, "a"))
-                .put(Tuple.of(2, "b"))
-                .put(Tuple.of(3, "c"))
-                .put(Tuple.of(4, "d"));
+        final Map<Integer, String> map = this.<Integer, String>emptyMap()
+          .put(Tuple.of(1, "a"))
+          .put(Tuple.of(2, "b"))
+          .put(Tuple.of(3, "c"))
+          .put(Tuple.of(4, "d"));
         final Seq<Tuple2<Integer, String>> result = map.scanLeft(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
         assertThat(result).isEqualTo(List.of(
-                Tuple.of(0, "x"),
-                Tuple.of(1, "xa"),
-                Tuple.of(3, "xab"),
-                Tuple.of(6, "xabc"),
-                Tuple.of(10, "xabcd")));
+          Tuple.of(0, "x"),
+          Tuple.of(1, "xa"),
+          Tuple.of(3, "xab"),
+          Tuple.of(6, "xabc"),
+          Tuple.of(10, "xabcd")));
     }
 
     @Test
     public void shouldScanRight() {
-        final Map<Integer, String> map = this.<Integer, String> emptyMap()
-                .put(Tuple.of(1, "a"))
-                .put(Tuple.of(2, "b"))
-                .put(Tuple.of(3, "c"))
-                .put(Tuple.of(4, "d"));
+        final Map<Integer, String> map = this.<Integer, String>emptyMap()
+          .put(Tuple.of(1, "a"))
+          .put(Tuple.of(2, "b"))
+          .put(Tuple.of(3, "c"))
+          .put(Tuple.of(4, "d"));
         final Seq<Tuple2<Integer, String>> result = map.scanRight(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
         assertThat(result).isEqualTo(List.of(
-                Tuple.of(10, "abcdx"),
-                Tuple.of(9, "bcdx"),
-                Tuple.of(7, "cdx"),
-                Tuple.of(4, "dx"),
-                Tuple.of(0, "x")));
+          Tuple.of(10, "abcdx"),
+          Tuple.of(9, "bcdx"),
+          Tuple.of(7, "cdx"),
+          Tuple.of(4, "dx"),
+          Tuple.of(0, "x")));
     }
 
     // -- spliterator
@@ -294,4 +296,79 @@ public class LinkedHashMapTest extends AbstractMapTest {
         assertThat(LinkedHashMap.of(1, 2, 3, 4).isSequential()).isTrue();
     }
 
+    // -- iteratorFrom
+
+    @Test
+    public void shouldIterateFromMiddleKey() {
+        final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c", 4, "d");
+        final java.util.Iterator<Tuple2<Integer, String>> it = map.iteratorFrom(2);
+        final java.util.List<Tuple2<Integer, String>> actual = new ArrayList<>();
+        it.forEachRemaining(actual::add);
+        assertThat(actual).containsExactly(
+          Tuple.of(2, "b"),
+          Tuple.of(3, "c"),
+          Tuple.of(4, "d")
+        );
+    }
+
+    @Test
+    public void shouldIterateFromFirstKey() {
+        final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
+        final java.util.Iterator<Tuple2<Integer, String>> it = map.iteratorFrom(1);
+        final java.util.List<Tuple2<Integer, String>> actual = new ArrayList<>();
+        it.forEachRemaining(actual::add);
+        assertThat(actual).containsExactly(
+          Tuple.of(1, "a"),
+          Tuple.of(2, "b"),
+          Tuple.of(3, "c")
+        );
+    }
+
+    @Test
+    public void shouldIterateFromLastKey() {
+        final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
+        final Iterator<Tuple2<Integer, String>> it = map.iteratorFrom(3);
+        final java.util.List<Tuple2<Integer, String>> actual = new ArrayList<>();
+        it.forEachRemaining(actual::add);
+        assertThat(actual).containsExactly(Tuple.of(3, "c"));
+    }
+
+    @Test
+    public void shouldReturnIteratorForMissingKey() {
+        final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c");
+        final Iterator<Tuple2<Integer, String>> it = map.iteratorFrom(42);
+        assertThat(it).containsExactly(Tuple.of(1, "a"), Tuple.of(2, "b"), Tuple.of(3, "c"));
+    }
+
+    @Test
+    public void shouldReturnEmptyIteratorForEmptyMap() {
+        final LinkedHashMap<Integer, String> map = LinkedHashMap.empty();
+        final Iterator<Tuple2<Integer, String>> it = map.iteratorFrom(1);
+        assertThat(it.hasNext()).isFalse();
+    }
+
+    @Test
+    public void shouldNotAffectOriginalIterationOrder() {
+        final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c", 4, "d");
+        map.iteratorFrom(3).forEachRemaining(x -> {});
+        assertThat(map.toList()).containsExactly(
+          Tuple.of(1, "a"),
+          Tuple.of(2, "b"),
+          Tuple.of(3, "c"),
+          Tuple.of(4, "d")
+        );
+    }
+
+    @Test
+    public void shouldAllowMultipleIteratorsFromDifferentKeys() {
+        final LinkedHashMap<Integer, String> map = LinkedHashMap.of(1, "a", 2, "b", 3, "c", 4, "d");
+
+        final Iterator<Tuple2<Integer, String>> it1 = map.iteratorFrom(1);
+        final Iterator<Tuple2<Integer, String>> it3 = map.iteratorFrom(3);
+
+        assertThat(it1.next()).isEqualTo(Tuple.of(1, "a"));
+        assertThat(it3.next()).isEqualTo(Tuple.of(3, "c"));
+        assertThat(it1.hasNext()).isTrue();
+        assertThat(it3.hasNext()).isTrue();
+    }
 }
