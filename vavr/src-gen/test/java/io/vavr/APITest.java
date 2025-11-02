@@ -1555,6 +1555,73 @@ public class APITest {
             assertThat(result).isEqualTo(List.of("1:a", "1:b", "2:a", "2:b"));
         }
 
+        @Test
+        public void shouldSupportLazyForWithOption() {
+            final Option<Integer> result = For(Option.some(1), v1 ->
+                For(Option.some(2), v2 ->
+                    For(Option.some(3))
+                        .yield(v3 -> v1 + v2 + v3)
+                )
+            );
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldShortCircuitLazyForWithOptionOnNone() {
+            final java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
+            final Option<Integer> result = For(Option.none(), v1 ->
+                For(Option.some(counter.incrementAndGet()))
+                    .yield(v2 -> v1 + v2)
+            );
+            assertThat(result.isEmpty()).isTrue();
+            assertThat(counter.get()).isEqualTo(0);
+        }
+
+        @Test
+        public void shouldSupportLazyForWithEither() {
+            final Either<String, Integer> result = For(Either.right(1), v1 ->
+                For(Either.right(2), v2 ->
+                    For(Either.right(3))
+                        .yield(v3 -> v1 + v2 + v3)
+                )
+            );
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldShortCircuitLazyForWithEitherOnLeft() {
+            final java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
+            final Either<String, Integer> result = For(Either.left("error"), v1 ->
+                For(Either.right(counter.incrementAndGet()))
+                    .yield(v2 -> v1 + v2)
+            );
+            assertThat(result.isLeft()).isTrue();
+            assertThat(result.getLeft()).isEqualTo("error");
+            assertThat(counter.get()).isEqualTo(0);
+        }
+
+        @Test
+        public void shouldSupportLazyForWithTry() {
+            final Try<Integer> result = For(Try.success(1), v1 ->
+                For(Try.success(2), v2 ->
+                    For(Try.success(3))
+                        .yield(v3 -> v1 + v2 + v3)
+                )
+            );
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldShortCircuitLazyForWithTryOnFailure() {
+            final java.util.concurrent.atomic.AtomicInteger counter = new java.util.concurrent.atomic.AtomicInteger(0);
+            final Try<Integer> result = For(Try.failure(new RuntimeException("error")), v1 ->
+                For(Try.success(counter.incrementAndGet()))
+                    .yield(v2 -> v1 + v2)
+            );
+            assertThat(result.isFailure()).isTrue();
+            assertThat(counter.get()).isEqualTo(0);
+        }
+
     }
 
     @Nested

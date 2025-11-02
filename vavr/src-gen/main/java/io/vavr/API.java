@@ -53,13 +53,14 @@ import java.util.function.Supplier;
  * The {@code For}-comprehension is syntactic sugar for nested for-loops. We write
  *
  * <pre><code>
- * // lazily evaluated
+ * // Multi-argument form (eager evaluation of arguments)
  * Iterator&lt;R&gt; result = For(iterable1, iterable2, ..., iterableN).yield(f);
  * </code></pre>
  *
  * or
  *
  * <pre><code>
+ * // Nested form (lazy evaluation - recommended for Option, Try, Either, etc.)
  * Iterator&lt;R&gt; result =
  *     For(iterable1, v1 -&gt;
  *         For(iterable2, v2 -&gt;
@@ -83,6 +84,23 @@ import java.util.function.Supplier;
  *         }
  *     }
  * }
+ * </code></pre>
+ *
+ * <h3>Lazy Evaluation</h3>
+ * <p>
+ * For monadic types like {@code Option}, {@code Try}, {@code Either}, {@code Future}, and {@code Validation},
+ * the nested form provides lazy evaluation. Each step is only evaluated if the previous step succeeds.
+ * For example, with {@code Option}:
+ *
+ * <pre><code>
+ * Option&lt;Integer&gt; result = For(getOption(), v1 -&gt;
+ *     For(computeOption(v1), v2 -&gt;
+ *         For(finalOption(v2))
+ *             .yield(v3 -&gt; v1 + v2 + v3)
+ *     )
+ * );
+ * // computeOption(v1) is only called if getOption() returns Some
+ * // finalOption(v2) is only called if both previous steps return Some
  * </code></pre>
  *
  * Please note that values like Option, Try, Future, etc. are also iterable.
