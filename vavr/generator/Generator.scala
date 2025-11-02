@@ -779,6 +779,9 @@ def generateMainClasses(): Unit = {
             val mtypeSimpleName = mtype.toString.split("\\.").last
             val mtypeLower = mtypeSimpleName.toLowerCase
             val leftParamDoc = if (mtype == EitherType) "L, " else if (mtype == ValidationType) "E, " else ""
+            val leftParamLabel = if (mtype == EitherType) "* @param <L> left component type\n" else if (mtype == ValidationType) "* @param <E> error component type\n" else ""
+            val tParamDesc = if (mtype == EitherType) "right element type" else if (mtype == ValidationType) "valid element type" else "element type"
+            val uParamDesc = if (mtype == EitherType) "right component type" else if (mtype == ValidationType) "valid component type" else "component type"
             xs"""
               /$javadoc
                * A shortcut for {@code ts.flatMap(f)} which allows us to write real for-comprehensions using
@@ -794,9 +797,9 @@ def generateMainClasses(): Unit = {
                *
                * @param ts A $mtype
                * @param f A function {@code T -> $mtype<${leftParamDoc}U>}
-               ${if (mtype == EitherType) "* @param <L> left-hand component type\n" else if (mtype == ValidationType) "* @param <E> error component type\n" else ""}
-               * @param <T> right-hand element type of {@code ts}
-               * @param <U> right-hand component type of the resulting {@code $mtype}
+               $leftParamLabel
+               * @param <T> $tParamDesc of {@code ts}
+               * @param <U> $uParamDesc of the resulting {@code $mtype}
                * @return A new $mtype
                */
               public static ${leftTypeParamWithComma}T, U> $mtype${leftTypeParam}<${leftParam}U> For($mtype${leftTypeParam}<${leftParam}T> ts, $FunctionType<? super T, ? extends $mtype${leftTypeParam}<${leftParam}? extends U>> f) {
