@@ -33,6 +33,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for lazy evaluation in For comprehensions.
  * These tests demonstrate that the nested For approach short-circuits
  * when encountering None/Left/Failure, avoiding unnecessary computations.
+ * Uses counter-based verification to confirm that subsequent steps are not executed
+ * when an early step fails (returns None/Left/Failure).
  */
 public class LazyForComprehensionTest {
 

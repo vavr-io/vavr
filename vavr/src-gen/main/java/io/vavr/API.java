@@ -53,7 +53,7 @@ import java.util.function.Supplier;
  * The {@code For}-comprehension is syntactic sugar for nested for-loops. We write
  *
  * <pre><code>
- * // Multi-argument form (eager evaluation of arguments)
+ * // Multi-argument form (all arguments evaluated before For method is called)
  * Iterator&lt;R&gt; result = For(iterable1, iterable2, ..., iterableN).yield(f);
  * </code></pre>
  *
