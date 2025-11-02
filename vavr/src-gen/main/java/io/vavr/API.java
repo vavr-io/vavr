@@ -2363,8 +2363,8 @@ public final class API {
      *
      * @param ts An Option
      * @param f A function {@code T -> Option<U>}
-     * @param <T> right-hand element type of {@code ts}
-     * @param <U> right-hand component type of the resulting {@code Option}
+     * @param <T> element type of {@code ts}
+     * @param <U> component type of the resulting {@code Option}
      * @return A new Option
      */
     public static <T, U> Option<U> For(Option<T> ts, Function<? super T, ? extends Option<? extends U>> f) {
@@ -2385,8 +2385,8 @@ public final class API {
      *
      * @param ts A Future
      * @param f A function {@code T -> Future<U>}
-     * @param <T> right-hand element type of {@code ts}
-     * @param <U> right-hand component type of the resulting {@code Future}
+     * @param <T> element type of {@code ts}
+     * @param <U> component type of the resulting {@code Future}
      * @return A new Future
      */
     public static <T, U> Future<U> For(Future<T> ts, Function<? super T, ? extends Future<? extends U>> f) {
@@ -2407,8 +2407,8 @@ public final class API {
      *
      * @param ts A Try
      * @param f A function {@code T -> Try<U>}
-     * @param <T> right-hand element type of {@code ts}
-     * @param <U> right-hand component type of the resulting {@code Try}
+     * @param <T> element type of {@code ts}
+     * @param <U> component type of the resulting {@code Try}
      * @return A new Try
      */
     public static <T, U> Try<U> For(Try<T> ts, Function<? super T, ? extends Try<? extends U>> f) {
@@ -2429,9 +2429,9 @@ public final class API {
      *
      * @param ts An Either
      * @param f A function {@code T -> Either<L, U>}
-     * @param <L> left-hand component type
-     * @param <T> right-hand element type of {@code ts}
-     * @param <U> right-hand component type of the resulting {@code Either}
+     * @param <L> left component type
+     * @param <T> right element type of {@code ts}
+     * @param <U> right component type of the resulting {@code Either}
      * @return A new Either
      */
     public static <L, T, U> Either<L, U> For(Either<L, T> ts, Function<? super T, ? extends Either<L, ? extends U>> f) {

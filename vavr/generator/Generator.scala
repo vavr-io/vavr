@@ -776,6 +776,9 @@ def generateMainClasses(): Unit = {
             val leftParam = if (isComplex) "L, " else ""
             val leftTypeParam = if (isComplex) "<L>" else ""
             val leftTypeParamWithComma = if (isComplex) "<L, " else "<"
+            val mtypeSimpleName = mtype.toString.split("\\.").last
+            val mtypeLower = mtypeSimpleName.toLowerCase
+            val leftParamDoc = if (mtype == EitherType) "L, " else if (mtype == ValidationType) "E, " else ""
             xs"""
               /$javadoc
                * A shortcut for {@code ts.flatMap(f)} which allows us to write real for-comprehensions using
@@ -783,15 +786,15 @@ def generateMainClasses(): Unit = {
                * <p>
                * Example:
                * <pre><code>
-               * For(getOption(), value -&gt;
-               *     For(computeOption(value), result -&gt;
-               *         For(getFinalOption(result))
+               * For(get$mtypeSimpleName(), value -&gt;
+               *     For(compute$mtypeSimpleName(value), result -&gt;
+               *         For(getFinal$mtypeSimpleName(result))
                *             .yield(finalValue -&gt; process(value, result, finalValue))));
                * </code></pre>
                *
                * @param ts A $mtype
-               * @param f A function {@code T -> $mtype<U>}
-               ${if (isComplex) "* @param <L> left-hand component type\n" else ""}
+               * @param f A function {@code T -> $mtype<${leftParamDoc}U>}
+               ${if (mtype == EitherType) "* @param <L> left-hand component type\n" else if (mtype == ValidationType) "* @param <E> error component type\n" else ""}
                * @param <T> right-hand element type of {@code ts}
                * @param <U> right-hand component type of the resulting {@code $mtype}
                * @return A new $mtype
