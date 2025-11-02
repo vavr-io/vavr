@@ -2332,6 +2332,118 @@ public final class API {
     }
 
     /**
+     * A shortcut for {@code ts.flatMap(f)} which allows us to write real for-comprehensions using
+     * {@code For(...).yield(...)}.
+     * <p>
+     * Example:
+     * <pre><code>
+     * For(getOption(), value -&gt;
+     *     For(computeOption(value), result -&gt;
+     *         For(getFinalOption(result))
+     *             .yield(finalValue -&gt; process(value, result, finalValue))));
+     * </code></pre>
+     *
+     * @param ts An Option
+     * @param f A function {@code T -> Option<U>}
+     * @param <T> right-hand element type of {@code ts}
+     * @param <U> right-hand component type of the resulting {@code Option}
+     * @return A new Option
+     */
+    public static <T, U> Option<U> For(Option<T> ts, Function<? super T, ? extends Option<? extends U>> f) {
+        return ts.flatMap(f);
+    }
+
+    /**
+     * A shortcut for {@code ts.flatMap(f)} which allows us to write real for-comprehensions using
+     * {@code For(...).yield(...)}.
+     * <p>
+     * Example:
+     * <pre><code>
+     * For(getFuture(), value -&gt;
+     *     For(computeFuture(value), result -&gt;
+     *         For(getFinalFuture(result))
+     *             .yield(finalValue -&gt; process(value, result, finalValue))));
+     * </code></pre>
+     *
+     * @param ts A Future
+     * @param f A function {@code T -> Future<U>}
+     * @param <T> right-hand element type of {@code ts}
+     * @param <U> right-hand component type of the resulting {@code Future}
+     * @return A new Future
+     */
+    public static <T, U> Future<U> For(Future<T> ts, Function<? super T, ? extends Future<? extends U>> f) {
+        return ts.flatMap(f);
+    }
+
+    /**
+     * A shortcut for {@code ts.flatMap(f)} which allows us to write real for-comprehensions using
+     * {@code For(...).yield(...)}.
+     * <p>
+     * Example:
+     * <pre><code>
+     * For(getTry(), value -&gt;
+     *     For(computeTry(value), result -&gt;
+     *         For(getFinalTry(result))
+     *             .yield(finalValue -&gt; process(value, result, finalValue))));
+     * </code></pre>
+     *
+     * @param ts A Try
+     * @param f A function {@code T -> Try<U>}
+     * @param <T> right-hand element type of {@code ts}
+     * @param <U> right-hand component type of the resulting {@code Try}
+     * @return A new Try
+     */
+    public static <T, U> Try<U> For(Try<T> ts, Function<? super T, ? extends Try<? extends U>> f) {
+        return ts.flatMap(f);
+    }
+
+    /**
+     * A shortcut for {@code ts.flatMap(f)} which allows us to write real for-comprehensions using
+     * {@code For(...).yield(...)}.
+     * <p>
+     * Example:
+     * <pre><code>
+     * For(getEither(), value -&gt;
+     *     For(computeEither(value), result -&gt;
+     *         For(getFinalEither(result))
+     *             .yield(finalValue -&gt; process(value, result, finalValue))));
+     * </code></pre>
+     *
+     * @param ts An Either
+     * @param f A function {@code T -> Either<L, U>}
+     * @param <L> left-hand component type
+     * @param <T> right-hand element type of {@code ts}
+     * @param <U> right-hand component type of the resulting {@code Either}
+     * @return A new Either
+     */
+    public static <L, T, U> Either<L, U> For(Either<L, T> ts, Function<? super T, ? extends Either<L, ? extends U>> f) {
+        return ts.flatMap(f);
+    }
+
+    /**
+     * A shortcut for {@code ts.flatMap(f)} which allows us to write real for-comprehensions using
+     * {@code For(...).yield(...)}.
+     * <p>
+     * Example:
+     * <pre><code>
+     * For(getValidation(), value -&gt;
+     *     For(computeValidation(value), result -&gt;
+     *         For(getFinalValidation(result))
+     *             .yield(finalValue -&gt; process(value, result, finalValue))));
+     * </code></pre>
+     *
+     * @param ts A Validation
+     * @param f A function {@code T -> Validation<E, U>}
+     * @param <E> error component type
+     * @param <T> valid element type of {@code ts}
+     * @param <U> valid component type of the resulting {@code Validation}
+     * @return A new Validation
+     */
+    public static <E, T, U> Validation<E, U> For(Validation<E, T> ts, Function<? super T, ? extends Validation<E, ? extends U>> f) {
+        return ts.flatMap(f);
+    }
+
+    /**
      * Creates a {@code For}-comprehension of one Iterable.
      *
      * @param ts1 the 1st Iterable

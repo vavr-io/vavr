@@ -771,6 +771,37 @@ def generateMainClasses(): Unit = {
               return $IteratorType.ofAll(ts).flatMap(f);
           }
 
+          ${monadicTypesFor.filter(mtype => mtype != "Iterable" && mtype != ListType).gen(mtype => {
+            val isComplex = monadicTypesThatNeedParameter.contains(mtype)
+            val leftParam = if (isComplex) "L, " else ""
+            val leftTypeParam = if (isComplex) "<L>" else ""
+            val leftTypeParamWithComma = if (isComplex) "<L, " else "<"
+            xs"""
+              /$javadoc
+               * A shortcut for {@code ts.flatMap(f)} which allows us to write real for-comprehensions using
+               * {@code For(...).yield(...)}.
+               * <p>
+               * Example:
+               * <pre><code>
+               * For(getOption(), value -&gt;
+               *     For(computeOption(value), result -&gt;
+               *         For(getFinalOption(result))
+               *             .yield(finalValue -&gt; process(value, result, finalValue))));
+               * </code></pre>
+               *
+               * @param ts A $mtype
+               * @param f A function {@code T -> $mtype<U>}
+               ${if (isComplex) "* @param <L> left-hand component type\n" else ""}
+               * @param <T> right-hand element type of {@code ts}
+               * @param <U> right-hand component type of the resulting {@code $mtype}
+               * @return A new $mtype
+               */
+              public static ${leftTypeParamWithComma}T, U> $mtype${leftTypeParam}<${leftParam}U> For($mtype${leftTypeParam}<${leftParam}T> ts, $FunctionType<? super T, ? extends $mtype${leftTypeParam}<${leftParam}? extends U>> f) {
+                  return ts.flatMap(f);
+              }
+            """
+          })("\n\n")}
+
           ${monadicTypesFor.gen(mtype => (1 to N).gen(i => {
             val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
             val isComplex = monadicTypesThatNeedParameter.contains(mtype)
