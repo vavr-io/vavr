@@ -5740,6 +5740,3660 @@ public final class API {
 
      }
 
+    /**
+     * Creates a lazy {@code For}-comprehension over two Options.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
+     * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
+     * bound so far and returns the next Option. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Option
+     * @param ts2 the 2nd Option
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @return a new {@code ForLazy2Option} builder of arity 2
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2> ForLazy2Option<T1, T2> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        return new ForLazy2Option<>(ts1, ts2);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over three Options.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
+     * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
+     * bound so far and returns the next Option. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Option
+     * @param ts2 the 2nd Option
+     * @param ts3 the 3rd Option
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @return a new {@code ForLazy3Option} builder of arity 3
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3> ForLazy3Option<T1, T2, T3> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        return new ForLazy3Option<>(ts1, ts2, ts3);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 4 Options.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
+     * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
+     * bound so far and returns the next Option. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Option
+     * @param ts2 the 2nd Option
+     * @param ts3 the 3rd Option
+     * @param ts4 the 4th Option
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     * @return a new {@code ForLazy4Option} builder of arity 4
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4> ForLazy4Option<T1, T2, T3, T4> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        return new ForLazy4Option<>(ts1, ts2, ts3, ts4);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 5 Options.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
+     * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
+     * bound so far and returns the next Option. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Option
+     * @param ts2 the 2nd Option
+     * @param ts3 the 3rd Option
+     * @param ts4 the 4th Option
+     * @param ts5 the 5th Option
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     * @param <T5> the component type of the 5th Option
+     * @return a new {@code ForLazy5Option} builder of arity 5
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5> ForLazy5Option<T1, T2, T3, T4, T5> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        return new ForLazy5Option<>(ts1, ts2, ts3, ts4, ts5);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 6 Options.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
+     * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
+     * bound so far and returns the next Option. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Option
+     * @param ts2 the 2nd Option
+     * @param ts3 the 3rd Option
+     * @param ts4 the 4th Option
+     * @param ts5 the 5th Option
+     * @param ts6 the 6th Option
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     * @param <T5> the component type of the 5th Option
+     * @param <T6> the component type of the 6th Option
+     * @return a new {@code ForLazy6Option} builder of arity 6
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6Option<T1, T2, T3, T4, T5, T6> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        return new ForLazy6Option<>(ts1, ts2, ts3, ts4, ts5, ts6);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 7 Options.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
+     * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
+     * bound so far and returns the next Option. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Option
+     * @param ts2 the 2nd Option
+     * @param ts3 the 3rd Option
+     * @param ts4 the 4th Option
+     * @param ts5 the 5th Option
+     * @param ts6 the 6th Option
+     * @param ts7 the 7th Option
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     * @param <T5> the component type of the 5th Option
+     * @param <T6> the component type of the 6th Option
+     * @param <T7> the component type of the 7th Option
+     * @return a new {@code ForLazy7Option} builder of arity 7
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Option<T1, T2, T3, T4, T5, T6, T7> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        return new ForLazy7Option<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 8 Options.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
+     * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
+     * bound so far and returns the next Option. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Option
+     * @param ts2 the 2nd Option
+     * @param ts3 the 3rd Option
+     * @param ts4 the 4th Option
+     * @param ts5 the 5th Option
+     * @param ts6 the 6th Option
+     * @param ts7 the 7th Option
+     * @param ts8 the 8th Option
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     * @param <T5> the component type of the 5th Option
+     * @param <T6> the component type of the 6th Option
+     * @param <T7> the component type of the 7th Option
+     * @param <T8> the component type of the 8th Option
+     * @return a new {@code ForLazy8Option} builder of arity 8
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Option<T1, T2, T3, T4, T5, T6, T7, T8> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Option<T8>> ts8) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        return new ForLazy8Option<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over two Futures.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
+     * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
+     * bound so far and returns the next Future. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Future
+     * @param ts2 the 2nd Future
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @return a new {@code ForLazy2Future} builder of arity 2
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2> ForLazy2Future<T1, T2> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        return new ForLazy2Future<>(ts1, ts2);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over three Futures.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
+     * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
+     * bound so far and returns the next Future. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Future
+     * @param ts2 the 2nd Future
+     * @param ts3 the 3rd Future
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @return a new {@code ForLazy3Future} builder of arity 3
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3> ForLazy3Future<T1, T2, T3> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        return new ForLazy3Future<>(ts1, ts2, ts3);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 4 Futures.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
+     * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
+     * bound so far and returns the next Future. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Future
+     * @param ts2 the 2nd Future
+     * @param ts3 the 3rd Future
+     * @param ts4 the 4th Future
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     * @return a new {@code ForLazy4Future} builder of arity 4
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4> ForLazy4Future<T1, T2, T3, T4> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        return new ForLazy4Future<>(ts1, ts2, ts3, ts4);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 5 Futures.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
+     * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
+     * bound so far and returns the next Future. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Future
+     * @param ts2 the 2nd Future
+     * @param ts3 the 3rd Future
+     * @param ts4 the 4th Future
+     * @param ts5 the 5th Future
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     * @param <T5> the component type of the 5th Future
+     * @return a new {@code ForLazy5Future} builder of arity 5
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5> ForLazy5Future<T1, T2, T3, T4, T5> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        return new ForLazy5Future<>(ts1, ts2, ts3, ts4, ts5);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 6 Futures.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
+     * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
+     * bound so far and returns the next Future. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Future
+     * @param ts2 the 2nd Future
+     * @param ts3 the 3rd Future
+     * @param ts4 the 4th Future
+     * @param ts5 the 5th Future
+     * @param ts6 the 6th Future
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     * @param <T5> the component type of the 5th Future
+     * @param <T6> the component type of the 6th Future
+     * @return a new {@code ForLazy6Future} builder of arity 6
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6Future<T1, T2, T3, T4, T5, T6> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        return new ForLazy6Future<>(ts1, ts2, ts3, ts4, ts5, ts6);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 7 Futures.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
+     * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
+     * bound so far and returns the next Future. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Future
+     * @param ts2 the 2nd Future
+     * @param ts3 the 3rd Future
+     * @param ts4 the 4th Future
+     * @param ts5 the 5th Future
+     * @param ts6 the 6th Future
+     * @param ts7 the 7th Future
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     * @param <T5> the component type of the 5th Future
+     * @param <T6> the component type of the 6th Future
+     * @param <T7> the component type of the 7th Future
+     * @return a new {@code ForLazy7Future} builder of arity 7
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Future<T1, T2, T3, T4, T5, T6, T7> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        return new ForLazy7Future<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 8 Futures.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
+     * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
+     * bound so far and returns the next Future. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Future
+     * @param ts2 the 2nd Future
+     * @param ts3 the 3rd Future
+     * @param ts4 the 4th Future
+     * @param ts5 the 5th Future
+     * @param ts6 the 6th Future
+     * @param ts7 the 7th Future
+     * @param ts8 the 8th Future
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     * @param <T5> the component type of the 5th Future
+     * @param <T6> the component type of the 6th Future
+     * @param <T7> the component type of the 7th Future
+     * @param <T8> the component type of the 8th Future
+     * @return a new {@code ForLazy8Future} builder of arity 8
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Future<T1, T2, T3, T4, T5, T6, T7, T8> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Future<T8>> ts8) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        return new ForLazy8Future<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over two Trys.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
+     * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
+     * bound so far and returns the next Try. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Try
+     * @param ts2 the 2nd Try
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @return a new {@code ForLazy2Try} builder of arity 2
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2> ForLazy2Try<T1, T2> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        return new ForLazy2Try<>(ts1, ts2);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over three Trys.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
+     * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
+     * bound so far and returns the next Try. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Try
+     * @param ts2 the 2nd Try
+     * @param ts3 the 3rd Try
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @return a new {@code ForLazy3Try} builder of arity 3
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3> ForLazy3Try<T1, T2, T3> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        return new ForLazy3Try<>(ts1, ts2, ts3);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 4 Trys.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
+     * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
+     * bound so far and returns the next Try. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Try
+     * @param ts2 the 2nd Try
+     * @param ts3 the 3rd Try
+     * @param ts4 the 4th Try
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     * @return a new {@code ForLazy4Try} builder of arity 4
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4> ForLazy4Try<T1, T2, T3, T4> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        return new ForLazy4Try<>(ts1, ts2, ts3, ts4);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 5 Trys.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
+     * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
+     * bound so far and returns the next Try. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Try
+     * @param ts2 the 2nd Try
+     * @param ts3 the 3rd Try
+     * @param ts4 the 4th Try
+     * @param ts5 the 5th Try
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     * @param <T5> the component type of the 5th Try
+     * @return a new {@code ForLazy5Try} builder of arity 5
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5> ForLazy5Try<T1, T2, T3, T4, T5> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        return new ForLazy5Try<>(ts1, ts2, ts3, ts4, ts5);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 6 Trys.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
+     * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
+     * bound so far and returns the next Try. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Try
+     * @param ts2 the 2nd Try
+     * @param ts3 the 3rd Try
+     * @param ts4 the 4th Try
+     * @param ts5 the 5th Try
+     * @param ts6 the 6th Try
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     * @param <T5> the component type of the 5th Try
+     * @param <T6> the component type of the 6th Try
+     * @return a new {@code ForLazy6Try} builder of arity 6
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6Try<T1, T2, T3, T4, T5, T6> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        return new ForLazy6Try<>(ts1, ts2, ts3, ts4, ts5, ts6);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 7 Trys.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
+     * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
+     * bound so far and returns the next Try. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Try
+     * @param ts2 the 2nd Try
+     * @param ts3 the 3rd Try
+     * @param ts4 the 4th Try
+     * @param ts5 the 5th Try
+     * @param ts6 the 6th Try
+     * @param ts7 the 7th Try
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     * @param <T5> the component type of the 5th Try
+     * @param <T6> the component type of the 6th Try
+     * @param <T7> the component type of the 7th Try
+     * @return a new {@code ForLazy7Try} builder of arity 7
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Try<T1, T2, T3, T4, T5, T6, T7> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        return new ForLazy7Try<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 8 Trys.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
+     * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
+     * bound so far and returns the next Try. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Try
+     * @param ts2 the 2nd Try
+     * @param ts3 the 3rd Try
+     * @param ts4 the 4th Try
+     * @param ts5 the 5th Try
+     * @param ts6 the 6th Try
+     * @param ts7 the 7th Try
+     * @param ts8 the 8th Try
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     * @param <T5> the component type of the 5th Try
+     * @param <T6> the component type of the 6th Try
+     * @param <T7> the component type of the 7th Try
+     * @param <T8> the component type of the 8th Try
+     * @return a new {@code ForLazy8Try} builder of arity 8
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Try<T1, T2, T3, T4, T5, T6, T7, T8> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Try<T8>> ts8) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        return new ForLazy8Try<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over two Lists.
+     *
+     * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
+     * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
+     * bound so far and returns the next List. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st List
+     * @param ts2 the 2nd List
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @return a new {@code ForLazy2List} builder of arity 2
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2> ForLazy2List<T1, T2> For(List<T1> ts1, Function1<T1, List<T2>> ts2) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        return new ForLazy2List<>(ts1, ts2);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over three Lists.
+     *
+     * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
+     * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
+     * bound so far and returns the next List. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st List
+     * @param ts2 the 2nd List
+     * @param ts3 the 3rd List
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @return a new {@code ForLazy3List} builder of arity 3
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3> ForLazy3List<T1, T2, T3> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        return new ForLazy3List<>(ts1, ts2, ts3);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 4 Lists.
+     *
+     * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
+     * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
+     * bound so far and returns the next List. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st List
+     * @param ts2 the 2nd List
+     * @param ts3 the 3rd List
+     * @param ts4 the 4th List
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     * @return a new {@code ForLazy4List} builder of arity 4
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4> ForLazy4List<T1, T2, T3, T4> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        return new ForLazy4List<>(ts1, ts2, ts3, ts4);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 5 Lists.
+     *
+     * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
+     * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
+     * bound so far and returns the next List. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st List
+     * @param ts2 the 2nd List
+     * @param ts3 the 3rd List
+     * @param ts4 the 4th List
+     * @param ts5 the 5th List
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     * @param <T5> the component type of the 5th List
+     * @return a new {@code ForLazy5List} builder of arity 5
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5> ForLazy5List<T1, T2, T3, T4, T5> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        return new ForLazy5List<>(ts1, ts2, ts3, ts4, ts5);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 6 Lists.
+     *
+     * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
+     * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
+     * bound so far and returns the next List. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st List
+     * @param ts2 the 2nd List
+     * @param ts3 the 3rd List
+     * @param ts4 the 4th List
+     * @param ts5 the 5th List
+     * @param ts6 the 6th List
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     * @param <T5> the component type of the 5th List
+     * @param <T6> the component type of the 6th List
+     * @return a new {@code ForLazy6List} builder of arity 6
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6List<T1, T2, T3, T4, T5, T6> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        return new ForLazy6List<>(ts1, ts2, ts3, ts4, ts5, ts6);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 7 Lists.
+     *
+     * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
+     * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
+     * bound so far and returns the next List. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st List
+     * @param ts2 the 2nd List
+     * @param ts3 the 3rd List
+     * @param ts4 the 4th List
+     * @param ts5 the 5th List
+     * @param ts6 the 6th List
+     * @param ts7 the 7th List
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     * @param <T5> the component type of the 5th List
+     * @param <T6> the component type of the 6th List
+     * @param <T7> the component type of the 7th List
+     * @return a new {@code ForLazy7List} builder of arity 7
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7List<T1, T2, T3, T4, T5, T6, T7> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        return new ForLazy7List<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 8 Lists.
+     *
+     * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
+     * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
+     * bound so far and returns the next List. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st List
+     * @param ts2 the 2nd List
+     * @param ts3 the 3rd List
+     * @param ts4 the 4th List
+     * @param ts5 the 5th List
+     * @param ts6 the 6th List
+     * @param ts7 the 7th List
+     * @param ts8 the 8th List
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     * @param <T5> the component type of the 5th List
+     * @param <T6> the component type of the 6th List
+     * @param <T7> the component type of the 7th List
+     * @param <T8> the component type of the 8th List
+     * @return a new {@code ForLazy8List} builder of arity 8
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8List<T1, T2, T3, T4, T5, T6, T7, T8> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, List<T8>> ts8) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        return new ForLazy8List<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over two Eithers.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
+     * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
+     * bound so far and returns the next Either. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @return a new {@code ForLazy2Either} builder of arity 2
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2> ForLazy2Either<L, T1, T2> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        return new ForLazy2Either<>(ts1, ts2);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over three Eithers.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
+     * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
+     * bound so far and returns the next Either. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @return a new {@code ForLazy3Either} builder of arity 3
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3> ForLazy3Either<L, T1, T2, T3> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        return new ForLazy3Either<>(ts1, ts2, ts3);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 4 Eithers.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
+     * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
+     * bound so far and returns the next Either. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     * @return a new {@code ForLazy4Either} builder of arity 4
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4> ForLazy4Either<L, T1, T2, T3, T4> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        return new ForLazy4Either<>(ts1, ts2, ts3, ts4);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 5 Eithers.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
+     * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
+     * bound so far and returns the next Either. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param ts5 the 5th Either
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     * @param <T5> the component type of the 5th Either
+     * @return a new {@code ForLazy5Either} builder of arity 5
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4, T5> ForLazy5Either<L, T1, T2, T3, T4, T5> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        return new ForLazy5Either<>(ts1, ts2, ts3, ts4, ts5);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 6 Eithers.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
+     * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
+     * bound so far and returns the next Either. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param ts5 the 5th Either
+     * @param ts6 the 6th Either
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     * @param <T5> the component type of the 5th Either
+     * @param <T6> the component type of the 6th Either
+     * @return a new {@code ForLazy6Either} builder of arity 6
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Either<L, T1, T2, T3, T4, T5, T6> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        return new ForLazy6Either<>(ts1, ts2, ts3, ts4, ts5, ts6);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 7 Eithers.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
+     * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
+     * bound so far and returns the next Either. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param ts5 the 5th Either
+     * @param ts6 the 6th Either
+     * @param ts7 the 7th Either
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     * @param <T5> the component type of the 5th Either
+     * @param <T6> the component type of the 6th Either
+     * @param <T7> the component type of the 7th Either
+     * @return a new {@code ForLazy7Either} builder of arity 7
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Either<L, T1, T2, T3, T4, T5, T6, T7> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        return new ForLazy7Either<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 8 Eithers.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
+     * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
+     * bound so far and returns the next Either. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Either
+     * @param ts2 the 2nd Either
+     * @param ts3 the 3rd Either
+     * @param ts4 the 4th Either
+     * @param ts5 the 5th Either
+     * @param ts6 the 6th Either
+     * @param ts7 the 7th Either
+     * @param ts8 the 8th Either
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     * @param <T5> the component type of the 5th Either
+     * @param <T6> the component type of the 6th Either
+     * @param <T7> the component type of the 7th Either
+     * @param <T8> the component type of the 8th Either
+     * @return a new {@code ForLazy8Either} builder of arity 8
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Either<L, T8>> ts8) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        return new ForLazy8Either<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over two Validations.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
+     * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
+     * bound so far and returns the next Validation. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @return a new {@code ForLazy2Validation} builder of arity 2
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2> ForLazy2Validation<L, T1, T2> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        return new ForLazy2Validation<>(ts1, ts2);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over three Validations.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
+     * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
+     * bound so far and returns the next Validation. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @return a new {@code ForLazy3Validation} builder of arity 3
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3> ForLazy3Validation<L, T1, T2, T3> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        return new ForLazy3Validation<>(ts1, ts2, ts3);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 4 Validations.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
+     * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
+     * bound so far and returns the next Validation. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     * @return a new {@code ForLazy4Validation} builder of arity 4
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4> ForLazy4Validation<L, T1, T2, T3, T4> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        return new ForLazy4Validation<>(ts1, ts2, ts3, ts4);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 5 Validations.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
+     * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
+     * bound so far and returns the next Validation. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param ts5 the 5th Validation
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     * @param <T5> the component type of the 5th Validation
+     * @return a new {@code ForLazy5Validation} builder of arity 5
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4, T5> ForLazy5Validation<L, T1, T2, T3, T4, T5> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        return new ForLazy5Validation<>(ts1, ts2, ts3, ts4, ts5);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 6 Validations.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
+     * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
+     * bound so far and returns the next Validation. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param ts5 the 5th Validation
+     * @param ts6 the 6th Validation
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     * @param <T5> the component type of the 5th Validation
+     * @param <T6> the component type of the 6th Validation
+     * @return a new {@code ForLazy6Validation} builder of arity 6
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Validation<L, T1, T2, T3, T4, T5, T6> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        return new ForLazy6Validation<>(ts1, ts2, ts3, ts4, ts5, ts6);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 7 Validations.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
+     * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
+     * bound so far and returns the next Validation. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param ts5 the 5th Validation
+     * @param ts6 the 6th Validation
+     * @param ts7 the 7th Validation
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     * @param <T5> the component type of the 5th Validation
+     * @param <T6> the component type of the 6th Validation
+     * @param <T7> the component type of the 7th Validation
+     * @return a new {@code ForLazy7Validation} builder of arity 7
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Validation<L, T1, T2, T3, T4, T5, T6, T7> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        return new ForLazy7Validation<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7);
+    }
+
+    /**
+     * Creates a lazy {@code For}-comprehension over 8 Validations.
+     *
+     * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
+     * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
+     * bound so far and returns the next Validation. This only builds the lazy
+     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     *
+     *
+     * @param ts1 the 1st Validation
+     * @param ts2 the 2nd Validation
+     * @param ts3 the 3rd Validation
+     * @param ts4 the 4th Validation
+     * @param ts5 the 5th Validation
+     * @param ts6 the 6th Validation
+     * @param ts7 the 7th Validation
+     * @param ts8 the 8th Validation
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     * @param <T5> the component type of the 5th Validation
+     * @param <T6> the component type of the 6th Validation
+     * @param <T7> the component type of the 7th Validation
+     * @param <T8> the component type of the 8th Validation
+     * @return a new {@code ForLazy8Validation} builder of arity 8
+     * @throws NullPointerException if any argument is {@code null}
+     */
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Validation<L, T8>> ts8) {
+        Objects.requireNonNull(ts1, "ts1 is null");
+        Objects.requireNonNull(ts2, "ts2 is null");
+        Objects.requireNonNull(ts3, "ts3 is null");
+        Objects.requireNonNull(ts4, "ts4 is null");
+        Objects.requireNonNull(ts5, "ts5 is null");
+        Objects.requireNonNull(ts6, "ts6 is null");
+        Objects.requireNonNull(ts7, "ts7 is null");
+        Objects.requireNonNull(ts8, "ts8 is null");
+        return new ForLazy8Validation<>(ts1, ts2, ts3, ts4, ts5, ts6, ts7, ts8);
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with two Options.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Options are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     */
+    public static class ForLazy2Option<T1, T2> {
+
+        private final Option<T1> ts1;
+        private final Function1<T1, Option<T2>> ts2;
+
+        private ForLazy2Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Options by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Option}
+         * @return an {@code Option} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Option<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with three Options.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Options are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     */
+    public static class ForLazy3Option<T1, T2, T3> {
+
+        private final Option<T1> ts1;
+        private final Function1<T1, Option<T2>> ts2;
+        private final Function2<T1, T2, Option<T3>> ts3;
+
+        private ForLazy3Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Options by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Option}
+         * @return an {@code Option} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Option<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 4 Options.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Options are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     */
+    public static class ForLazy4Option<T1, T2, T3, T4> {
+
+        private final Option<T1> ts1;
+        private final Function1<T1, Option<T2>> ts2;
+        private final Function2<T1, T2, Option<T3>> ts3;
+        private final Function3<T1, T2, T3, Option<T4>> ts4;
+
+        private ForLazy4Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Options by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Option}
+         * @return an {@code Option} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Option<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 5 Options.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Options are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     * @param <T5> the component type of the 5th Option
+     */
+    public static class ForLazy5Option<T1, T2, T3, T4, T5> {
+
+        private final Option<T1> ts1;
+        private final Function1<T1, Option<T2>> ts2;
+        private final Function2<T1, T2, Option<T3>> ts3;
+        private final Function3<T1, T2, T3, Option<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Option<T5>> ts5;
+
+        private ForLazy5Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Options by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Option}
+         * @return an {@code Option} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Option<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 6 Options.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Options are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     * @param <T5> the component type of the 5th Option
+     * @param <T6> the component type of the 6th Option
+     */
+    public static class ForLazy6Option<T1, T2, T3, T4, T5, T6> {
+
+        private final Option<T1> ts1;
+        private final Function1<T1, Option<T2>> ts2;
+        private final Function2<T1, T2, Option<T3>> ts3;
+        private final Function3<T1, T2, T3, Option<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Option<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Option<T6>> ts6;
+
+        private ForLazy6Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Options by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Option}
+         * @return an {@code Option} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Option<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 7 Options.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Options are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     * @param <T5> the component type of the 5th Option
+     * @param <T6> the component type of the 6th Option
+     * @param <T7> the component type of the 7th Option
+     */
+    public static class ForLazy7Option<T1, T2, T3, T4, T5, T6, T7> {
+
+        private final Option<T1> ts1;
+        private final Function1<T1, Option<T2>> ts2;
+        private final Function2<T1, T2, Option<T3>> ts3;
+        private final Function3<T1, T2, T3, Option<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Option<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Option<T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7;
+
+        private ForLazy7Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Options by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Option}
+         * @return an {@code Option} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Option<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 8 Options.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Options are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Option
+     * @param <T2> the component type of the 2nd Option
+     * @param <T3> the component type of the 3rd Option
+     * @param <T4> the component type of the 4th Option
+     * @param <T5> the component type of the 5th Option
+     * @param <T6> the component type of the 6th Option
+     * @param <T7> the component type of the 7th Option
+     * @param <T8> the component type of the 8th Option
+     */
+    public static class ForLazy8Option<T1, T2, T3, T4, T5, T6, T7, T8> {
+
+        private final Option<T1> ts1;
+        private final Function1<T1, Option<T2>> ts2;
+        private final Function2<T1, T2, Option<T3>> ts3;
+        private final Function3<T1, T2, T3, Option<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Option<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Option<T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7;
+        private final Function7<T1, T2, T3, T4, T5, T6, T7, Option<T8>> ts8;
+
+        private ForLazy8Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Option<T8>> ts8) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+            this.ts8 = ts8;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Options by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Option}
+         * @return an {@code Option} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Option<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with two Futures.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Futures are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     */
+    public static class ForLazy2Future<T1, T2> {
+
+        private final Future<T1> ts1;
+        private final Function1<T1, Future<T2>> ts2;
+
+        private ForLazy2Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Futures by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Future}
+         * @return an {@code Future} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Future<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with three Futures.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Futures are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     */
+    public static class ForLazy3Future<T1, T2, T3> {
+
+        private final Future<T1> ts1;
+        private final Function1<T1, Future<T2>> ts2;
+        private final Function2<T1, T2, Future<T3>> ts3;
+
+        private ForLazy3Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Futures by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Future}
+         * @return an {@code Future} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Future<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 4 Futures.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Futures are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     */
+    public static class ForLazy4Future<T1, T2, T3, T4> {
+
+        private final Future<T1> ts1;
+        private final Function1<T1, Future<T2>> ts2;
+        private final Function2<T1, T2, Future<T3>> ts3;
+        private final Function3<T1, T2, T3, Future<T4>> ts4;
+
+        private ForLazy4Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Futures by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Future}
+         * @return an {@code Future} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Future<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 5 Futures.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Futures are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     * @param <T5> the component type of the 5th Future
+     */
+    public static class ForLazy5Future<T1, T2, T3, T4, T5> {
+
+        private final Future<T1> ts1;
+        private final Function1<T1, Future<T2>> ts2;
+        private final Function2<T1, T2, Future<T3>> ts3;
+        private final Function3<T1, T2, T3, Future<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Future<T5>> ts5;
+
+        private ForLazy5Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Futures by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Future}
+         * @return an {@code Future} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Future<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 6 Futures.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Futures are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     * @param <T5> the component type of the 5th Future
+     * @param <T6> the component type of the 6th Future
+     */
+    public static class ForLazy6Future<T1, T2, T3, T4, T5, T6> {
+
+        private final Future<T1> ts1;
+        private final Function1<T1, Future<T2>> ts2;
+        private final Function2<T1, T2, Future<T3>> ts3;
+        private final Function3<T1, T2, T3, Future<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Future<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Future<T6>> ts6;
+
+        private ForLazy6Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Futures by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Future}
+         * @return an {@code Future} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Future<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 7 Futures.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Futures are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     * @param <T5> the component type of the 5th Future
+     * @param <T6> the component type of the 6th Future
+     * @param <T7> the component type of the 7th Future
+     */
+    public static class ForLazy7Future<T1, T2, T3, T4, T5, T6, T7> {
+
+        private final Future<T1> ts1;
+        private final Function1<T1, Future<T2>> ts2;
+        private final Function2<T1, T2, Future<T3>> ts3;
+        private final Function3<T1, T2, T3, Future<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Future<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Future<T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7;
+
+        private ForLazy7Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Futures by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Future}
+         * @return an {@code Future} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Future<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 8 Futures.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Futures are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Future
+     * @param <T2> the component type of the 2nd Future
+     * @param <T3> the component type of the 3rd Future
+     * @param <T4> the component type of the 4th Future
+     * @param <T5> the component type of the 5th Future
+     * @param <T6> the component type of the 6th Future
+     * @param <T7> the component type of the 7th Future
+     * @param <T8> the component type of the 8th Future
+     */
+    public static class ForLazy8Future<T1, T2, T3, T4, T5, T6, T7, T8> {
+
+        private final Future<T1> ts1;
+        private final Function1<T1, Future<T2>> ts2;
+        private final Function2<T1, T2, Future<T3>> ts3;
+        private final Function3<T1, T2, T3, Future<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Future<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Future<T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7;
+        private final Function7<T1, T2, T3, T4, T5, T6, T7, Future<T8>> ts8;
+
+        private ForLazy8Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Future<T8>> ts8) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+            this.ts8 = ts8;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Futures by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Future}
+         * @return an {@code Future} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Future<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with two Trys.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Trys are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     */
+    public static class ForLazy2Try<T1, T2> {
+
+        private final Try<T1> ts1;
+        private final Function1<T1, Try<T2>> ts2;
+
+        private ForLazy2Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Trys by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Try}
+         * @return an {@code Try} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Try<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with three Trys.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Trys are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     */
+    public static class ForLazy3Try<T1, T2, T3> {
+
+        private final Try<T1> ts1;
+        private final Function1<T1, Try<T2>> ts2;
+        private final Function2<T1, T2, Try<T3>> ts3;
+
+        private ForLazy3Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Trys by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Try}
+         * @return an {@code Try} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Try<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 4 Trys.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Trys are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     */
+    public static class ForLazy4Try<T1, T2, T3, T4> {
+
+        private final Try<T1> ts1;
+        private final Function1<T1, Try<T2>> ts2;
+        private final Function2<T1, T2, Try<T3>> ts3;
+        private final Function3<T1, T2, T3, Try<T4>> ts4;
+
+        private ForLazy4Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Trys by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Try}
+         * @return an {@code Try} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Try<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 5 Trys.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Trys are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     * @param <T5> the component type of the 5th Try
+     */
+    public static class ForLazy5Try<T1, T2, T3, T4, T5> {
+
+        private final Try<T1> ts1;
+        private final Function1<T1, Try<T2>> ts2;
+        private final Function2<T1, T2, Try<T3>> ts3;
+        private final Function3<T1, T2, T3, Try<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Try<T5>> ts5;
+
+        private ForLazy5Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Trys by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Try}
+         * @return an {@code Try} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Try<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 6 Trys.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Trys are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     * @param <T5> the component type of the 5th Try
+     * @param <T6> the component type of the 6th Try
+     */
+    public static class ForLazy6Try<T1, T2, T3, T4, T5, T6> {
+
+        private final Try<T1> ts1;
+        private final Function1<T1, Try<T2>> ts2;
+        private final Function2<T1, T2, Try<T3>> ts3;
+        private final Function3<T1, T2, T3, Try<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Try<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Try<T6>> ts6;
+
+        private ForLazy6Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Trys by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Try}
+         * @return an {@code Try} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Try<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 7 Trys.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Trys are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     * @param <T5> the component type of the 5th Try
+     * @param <T6> the component type of the 6th Try
+     * @param <T7> the component type of the 7th Try
+     */
+    public static class ForLazy7Try<T1, T2, T3, T4, T5, T6, T7> {
+
+        private final Try<T1> ts1;
+        private final Function1<T1, Try<T2>> ts2;
+        private final Function2<T1, T2, Try<T3>> ts3;
+        private final Function3<T1, T2, T3, Try<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Try<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Try<T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7;
+
+        private ForLazy7Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Trys by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Try}
+         * @return an {@code Try} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Try<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 8 Trys.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Trys are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st Try
+     * @param <T2> the component type of the 2nd Try
+     * @param <T3> the component type of the 3rd Try
+     * @param <T4> the component type of the 4th Try
+     * @param <T5> the component type of the 5th Try
+     * @param <T6> the component type of the 6th Try
+     * @param <T7> the component type of the 7th Try
+     * @param <T8> the component type of the 8th Try
+     */
+    public static class ForLazy8Try<T1, T2, T3, T4, T5, T6, T7, T8> {
+
+        private final Try<T1> ts1;
+        private final Function1<T1, Try<T2>> ts2;
+        private final Function2<T1, T2, Try<T3>> ts3;
+        private final Function3<T1, T2, T3, Try<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Try<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Try<T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7;
+        private final Function7<T1, T2, T3, T4, T5, T6, T7, Try<T8>> ts8;
+
+        private ForLazy8Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Try<T8>> ts8) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+            this.ts8 = ts8;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Trys by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Try}
+         * @return an {@code Try} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Try<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with two Lists.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Lists are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     */
+    public static class ForLazy2List<T1, T2> {
+
+        private final List<T1> ts1;
+        private final Function1<T1, List<T2>> ts2;
+
+        private ForLazy2List(List<T1> ts1, Function1<T1, List<T2>> ts2) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Lists by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code List}
+         * @return an {@code List} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> List<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with three Lists.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Lists are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     */
+    public static class ForLazy3List<T1, T2, T3> {
+
+        private final List<T1> ts1;
+        private final Function1<T1, List<T2>> ts2;
+        private final Function2<T1, T2, List<T3>> ts3;
+
+        private ForLazy3List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Lists by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code List}
+         * @return an {@code List} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> List<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 4 Lists.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Lists are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     */
+    public static class ForLazy4List<T1, T2, T3, T4> {
+
+        private final List<T1> ts1;
+        private final Function1<T1, List<T2>> ts2;
+        private final Function2<T1, T2, List<T3>> ts3;
+        private final Function3<T1, T2, T3, List<T4>> ts4;
+
+        private ForLazy4List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Lists by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code List}
+         * @return an {@code List} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> List<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 5 Lists.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Lists are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     * @param <T5> the component type of the 5th List
+     */
+    public static class ForLazy5List<T1, T2, T3, T4, T5> {
+
+        private final List<T1> ts1;
+        private final Function1<T1, List<T2>> ts2;
+        private final Function2<T1, T2, List<T3>> ts3;
+        private final Function3<T1, T2, T3, List<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, List<T5>> ts5;
+
+        private ForLazy5List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Lists by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code List}
+         * @return an {@code List} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> List<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 6 Lists.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Lists are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     * @param <T5> the component type of the 5th List
+     * @param <T6> the component type of the 6th List
+     */
+    public static class ForLazy6List<T1, T2, T3, T4, T5, T6> {
+
+        private final List<T1> ts1;
+        private final Function1<T1, List<T2>> ts2;
+        private final Function2<T1, T2, List<T3>> ts3;
+        private final Function3<T1, T2, T3, List<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, List<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, List<T6>> ts6;
+
+        private ForLazy6List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Lists by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code List}
+         * @return an {@code List} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> List<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 7 Lists.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Lists are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     * @param <T5> the component type of the 5th List
+     * @param <T6> the component type of the 6th List
+     * @param <T7> the component type of the 7th List
+     */
+    public static class ForLazy7List<T1, T2, T3, T4, T5, T6, T7> {
+
+        private final List<T1> ts1;
+        private final Function1<T1, List<T2>> ts2;
+        private final Function2<T1, T2, List<T3>> ts3;
+        private final Function3<T1, T2, T3, List<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, List<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, List<T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7;
+
+        private ForLazy7List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Lists by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code List}
+         * @return an {@code List} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> List<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 8 Lists.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Lists are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+
+     * @param <T1> the component type of the 1st List
+     * @param <T2> the component type of the 2nd List
+     * @param <T3> the component type of the 3rd List
+     * @param <T4> the component type of the 4th List
+     * @param <T5> the component type of the 5th List
+     * @param <T6> the component type of the 6th List
+     * @param <T7> the component type of the 7th List
+     * @param <T8> the component type of the 8th List
+     */
+    public static class ForLazy8List<T1, T2, T3, T4, T5, T6, T7, T8> {
+
+        private final List<T1> ts1;
+        private final Function1<T1, List<T2>> ts2;
+        private final Function2<T1, T2, List<T3>> ts3;
+        private final Function3<T1, T2, T3, List<T4>> ts4;
+        private final Function4<T1, T2, T3, T4, List<T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, List<T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7;
+        private final Function7<T1, T2, T3, T4, T5, T6, T7, List<T8>> ts8;
+
+        private ForLazy8List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, List<T8>> ts8) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+            this.ts8 = ts8;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Lists by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code List}
+         * @return an {@code List} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> List<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with two Eithers.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Eithers are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     */
+    public static class ForLazy2Either<L, T1, T2> {
+
+        private final Either<L, T1> ts1;
+        private final Function1<T1, Either<L, T2>> ts2;
+
+        private ForLazy2Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Eithers by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Either}
+         * @return an {@code Either} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Either<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with three Eithers.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Eithers are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     */
+    public static class ForLazy3Either<L, T1, T2, T3> {
+
+        private final Either<L, T1> ts1;
+        private final Function1<T1, Either<L, T2>> ts2;
+        private final Function2<T1, T2, Either<L, T3>> ts3;
+
+        private ForLazy3Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Eithers by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Either}
+         * @return an {@code Either} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Either<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 4 Eithers.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Eithers are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     */
+    public static class ForLazy4Either<L, T1, T2, T3, T4> {
+
+        private final Either<L, T1> ts1;
+        private final Function1<T1, Either<L, T2>> ts2;
+        private final Function2<T1, T2, Either<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
+
+        private ForLazy4Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Eithers by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Either}
+         * @return an {@code Either} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Either<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 5 Eithers.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Eithers are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     * @param <T5> the component type of the 5th Either
+     */
+    public static class ForLazy5Either<L, T1, T2, T3, T4, T5> {
+
+        private final Either<L, T1> ts1;
+        private final Function1<T1, Either<L, T2>> ts2;
+        private final Function2<T1, T2, Either<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Either<L, T5>> ts5;
+
+        private ForLazy5Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Eithers by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Either}
+         * @return an {@code Either} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Either<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 6 Eithers.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Eithers are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     * @param <T5> the component type of the 5th Either
+     * @param <T6> the component type of the 6th Either
+     */
+    public static class ForLazy6Either<L, T1, T2, T3, T4, T5, T6> {
+
+        private final Either<L, T1> ts1;
+        private final Function1<T1, Either<L, T2>> ts2;
+        private final Function2<T1, T2, Either<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Either<L, T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6;
+
+        private ForLazy6Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Eithers by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Either}
+         * @return an {@code Either} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Either<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 7 Eithers.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Eithers are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     * @param <T5> the component type of the 5th Either
+     * @param <T6> the component type of the 6th Either
+     * @param <T7> the component type of the 7th Either
+     */
+    public static class ForLazy7Either<L, T1, T2, T3, T4, T5, T6, T7> {
+
+        private final Either<L, T1> ts1;
+        private final Function1<T1, Either<L, T2>> ts2;
+        private final Function2<T1, T2, Either<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Either<L, T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7;
+
+        private ForLazy7Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Eithers by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Either}
+         * @return an {@code Either} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Either<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 8 Eithers.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Eithers are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Eithers
+     * @param <T1> the component type of the 1st Either
+     * @param <T2> the component type of the 2nd Either
+     * @param <T3> the component type of the 3rd Either
+     * @param <T4> the component type of the 4th Either
+     * @param <T5> the component type of the 5th Either
+     * @param <T6> the component type of the 6th Either
+     * @param <T7> the component type of the 7th Either
+     * @param <T8> the component type of the 8th Either
+     */
+    public static class ForLazy8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> {
+
+        private final Either<L, T1> ts1;
+        private final Function1<T1, Either<L, T2>> ts2;
+        private final Function2<T1, T2, Either<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Either<L, T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7;
+        private final Function7<T1, T2, T3, T4, T5, T6, T7, Either<L, T8>> ts8;
+
+        private ForLazy8Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Either<L, T8>> ts8) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+            this.ts8 = ts8;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Eithers by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Either}
+         * @return an {@code Either} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Either<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with two Validations.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Validations are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     */
+    public static class ForLazy2Validation<L, T1, T2> {
+
+        private final Validation<L, T1> ts1;
+        private final Function1<T1, Validation<L, T2>> ts2;
+
+        private ForLazy2Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Validations by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Validation}
+         * @return an {@code Validation} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Validation<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with three Validations.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Validations are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     */
+    public static class ForLazy3Validation<L, T1, T2, T3> {
+
+        private final Validation<L, T1> ts1;
+        private final Function1<T1, Validation<L, T2>> ts2;
+        private final Function2<T1, T2, Validation<L, T3>> ts3;
+
+        private ForLazy3Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Validations by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Validation}
+         * @return an {@code Validation} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Validation<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 4 Validations.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Validations are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     */
+    public static class ForLazy4Validation<L, T1, T2, T3, T4> {
+
+        private final Validation<L, T1> ts1;
+        private final Function1<T1, Validation<L, T2>> ts2;
+        private final Function2<T1, T2, Validation<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
+
+        private ForLazy4Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Validations by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Validation}
+         * @return an {@code Validation} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Validation<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 5 Validations.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Validations are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     * @param <T5> the component type of the 5th Validation
+     */
+    public static class ForLazy5Validation<L, T1, T2, T3, T4, T5> {
+
+        private final Validation<L, T1> ts1;
+        private final Function1<T1, Validation<L, T2>> ts2;
+        private final Function2<T1, T2, Validation<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Validation<L, T5>> ts5;
+
+        private ForLazy5Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Validations by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Validation}
+         * @return an {@code Validation} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Validation<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 6 Validations.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Validations are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     * @param <T5> the component type of the 5th Validation
+     * @param <T6> the component type of the 6th Validation
+     */
+    public static class ForLazy6Validation<L, T1, T2, T3, T4, T5, T6> {
+
+        private final Validation<L, T1> ts1;
+        private final Function1<T1, Validation<L, T2>> ts2;
+        private final Function2<T1, T2, Validation<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Validation<L, T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6;
+
+        private ForLazy6Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Validations by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Validation}
+         * @return an {@code Validation} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Validation<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 7 Validations.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Validations are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     * @param <T5> the component type of the 5th Validation
+     * @param <T6> the component type of the 6th Validation
+     * @param <T7> the component type of the 7th Validation
+     */
+    public static class ForLazy7Validation<L, T1, T2, T3, T4, T5, T6, T7> {
+
+        private final Validation<L, T1> ts1;
+        private final Function1<T1, Validation<L, T2>> ts2;
+        private final Function2<T1, T2, Validation<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Validation<L, T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7;
+
+        private ForLazy7Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Validations by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Validation}
+         * @return an {@code Validation} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Validation<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
+    /**
+     * A lazily evaluated {@code For}-comprehension with 8 Validations.
+     *
+     * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+     * Construction is side-effect free; underlying Validations are only
+     * traversed when {@code yield(...)} is invoked.</p>
+     *
+     * @param <L> the common left-hand type of all Validations
+     * @param <T1> the component type of the 1st Validation
+     * @param <T2> the component type of the 2nd Validation
+     * @param <T3> the component type of the 3rd Validation
+     * @param <T4> the component type of the 4th Validation
+     * @param <T5> the component type of the 5th Validation
+     * @param <T6> the component type of the 6th Validation
+     * @param <T7> the component type of the 7th Validation
+     * @param <T8> the component type of the 8th Validation
+     */
+    public static class ForLazy8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> {
+
+        private final Validation<L, T1> ts1;
+        private final Function1<T1, Validation<L, T2>> ts2;
+        private final Function2<T1, T2, Validation<L, T3>> ts3;
+        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
+        private final Function4<T1, T2, T3, T4, Validation<L, T5>> ts5;
+        private final Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6;
+        private final Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7;
+        private final Function7<T1, T2, T3, T4, T5, T6, T7, Validation<L, T8>> ts8;
+
+        private ForLazy8Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Validation<L, T8>> ts8) {
+            this.ts1 = ts1;
+            this.ts2 = ts2;
+            this.ts3 = ts3;
+            this.ts4 = ts4;
+            this.ts5 = ts5;
+            this.ts6 = ts6;
+            this.ts7 = ts7;
+            this.ts8 = ts8;
+        }
+
+        /**
+         * Produces results by mapping the Cartesian product of all bound values.
+         *
+         * <p>Evaluation is lazy and delegated to the underlying Validations by
+         * composing flatMap/map chains.</p>
+         *
+         * @param f a function that maps a tuple of bound values to a result
+         * @param <R> the element type of the resulting {@code Validation}
+         * @return an {@code Validation} containing mapped results
+         * @throws NullPointerException if {@code f} is {@code null}
+         */
+        public <R> Validation<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+            Objects.requireNonNull(f, "f is null");
+            return ts1.flatMap(t1 -> {
+            return ts2.apply(t1).flatMap(t2 -> {
+              return ts3.apply(t1, t2).flatMap(t3 -> {
+                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                      });
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+    }
+
     //
     // Structural Pattern Matching
     //

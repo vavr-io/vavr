@@ -743,6 +743,150 @@ def generateMainClasses(): Unit = {
         """
       }
 
+      def genLazyFor(im: ImportManager, packageName: String, className: String): String = {
+        xs"""
+          ${
+          monadicTypesFor
+            .filterNot(_ == "Iterable")
+            .gen(mtype => (2 to N).gen(i => {
+              val forClassName = s"ForLazy$i$mtype"
+              val isComplex = monadicTypesThatNeedParameter.contains(mtype)
+              val parameterInset = if (isComplex) "L, " else ""
+              val generics = parameterInset + (1 to i).gen(j => s"T$j")(", ")
+
+              val params = (1 to i).gen { j =>
+                if (j == 1)
+                  s"$mtype<${parameterInset}T1> ts1"
+                else {
+                  val inputTypes = (1 until j).gen(k => s"T$k")(", ")
+                  s"Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
+                }
+              }(", ")
+
+              val ctorArgs = (1 to i).gen(j => s"ts$j")(", ")
+
+              xs"""
+                    /$javadoc
+                     * Creates a lazy {@code For}-comprehension over ${i.numerus(mtype)}.
+                     *
+                     * <p>The first argument ({@code ts1}) is the initial ${mtype}. Each subsequent
+                     * argument ({@code ts2} .. {@code ts$i}) is a function that receives all values
+                     * bound so far and returns the next ${mtype}. This only builds the lazy
+                     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+                     *
+                     ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} ${mtype}")("\n")}
+                     ${if (isComplex) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
+                     ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")("\n")}
+                     * @return a new {@code $forClassName} builder of arity $i
+                     * @throws NullPointerException if any argument is {@code null}
+                     */
+                    public static <$generics> $forClassName<$generics> For($params) {
+                        ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
+                        return new $forClassName<>($ctorArgs);
+                    }
+                  """
+            })("\n\n"))("\n\n")
+        }
+
+          ${
+          monadicTypesFor
+            .filterNot(_ == "Iterable")
+            .gen(mtype => (2 to N).gen(i => {
+              val rtype = mtype
+              val forClassName = s"ForLazy$i$mtype"
+              val parameterInset = if (monadicTypesThatNeedParameter.contains(mtype)) "L, " else ""
+              val generics = parameterInset + (1 to i).gen(j => s"T$j")(", ")
+              val functionType = i match {
+                case 2 => BiFunctionType
+                case _ => s"Function$i"
+              }
+              val args = (1 to i).gen(j => s"? super T$j")(", ")
+
+              val fields = (1 to i).gen { j =>
+                if (j == 1)
+                  s"private final $mtype<${parameterInset}T1> ts1;"
+                else {
+                  val inputTypes = (1 until j).gen(k => s"T$k")(", ")
+                  s"private final Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j;"
+                }
+              }("\n")
+
+              val ctorParams = (1 to i).gen { j =>
+                if (j == 1)
+                  s"$mtype<${parameterInset}T1> ts1"
+                else {
+                  val inputTypes = (1 until j).gen(k => s"T$k")(", ")
+                  s"Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
+                }
+              }(", ")
+
+              val assignments = (1 to i).gen(j => s"this.ts$j = ts$j;")("\n")
+
+              val yieldBody = {
+                def nestedLambda(j: Int): String = {
+                  val base = "                       "
+                  val indent = "  " * j
+                  if (j == i) {
+                    val argsList = (1 to i).map(k => s"t$k").mkString(", ")
+                    val inputArgs = (1 until i).map(k => s"t$k").mkString(", ")
+                    s"ts$i.apply($inputArgs).map(t$i -> f.apply($argsList))"
+                  } else if (j == 1) {
+                    s"ts1.flatMap(t1 -> {\n" +
+                      s"${base}${indent}  return ${nestedLambda(j + 1)};\n" +
+                      s"${base}${indent}})"
+                  } else {
+                    val inputArgs = (1 until j).map(k => s"t$k").mkString(", ")
+                    s"ts$j.apply($inputArgs).flatMap(t$j -> {\n" +
+                      s"${base}${indent}  return ${nestedLambda(j + 1)};\n" +
+                      s"${base}${indent}})"
+                  }
+                }
+
+                nestedLambda(1)
+              }
+
+              xs"""
+                  /$javadoc
+                   * A lazily evaluated {@code For}-comprehension with ${i.numerus(mtype)}.
+                   *
+                   * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
+                   * Construction is side-effect free; underlying ${i.plural(mtype)} are only
+                   * traversed when {@code yield(...)} is invoked.</p>
+                   *
+                   ${if (monadicTypesThatNeedParameter.contains(mtype)) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
+                   ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")("\n")}
+                   */
+                  public static class $forClassName<$generics> {
+
+                      $fields
+
+                      private $forClassName($ctorParams) {
+                          $assignments
+                      }
+
+                      /$javadoc
+                       * Produces results by mapping the Cartesian product of all bound values.
+                       *
+                       * <p>Evaluation is lazy and delegated to the underlying ${i.plural(mtype)} by
+                       * composing flatMap/map chains.</p>
+                       *
+                       * @param f a function that maps a tuple of bound values to a result
+                       * @param <R> the element type of the resulting {@code $rtype}
+                       * @return an {@code $rtype} containing mapped results
+                       * @throws NullPointerException if {@code f} is {@code null}
+                       */
+                      public <R> $rtype<${parameterInset}R> yield($functionType<$args, ? extends R> f) {
+                          $Objects.requireNonNull(f, "f is null");
+                          return $yieldBody;
+                      }
+                  }
+                """
+            })("\n\n"))("\n\n")
+        }
+        """
+      }
+
+
       def genFor(im: ImportManager, packageName: String, className: String): String = {
         xs"""
           //
@@ -1439,6 +1583,8 @@ def generateMainClasses(): Unit = {
             ${genJavaTypeTweaks(im, packageName, className)}
 
             ${genFor(im, packageName, className)}
+
+            ${genLazyFor(im, packageName, className)}
 
             ${genMatch(im, packageName, className)}
         }
