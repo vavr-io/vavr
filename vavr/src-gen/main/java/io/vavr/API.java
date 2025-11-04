@@ -5757,7 +5757,7 @@ public final class API {
      * @return a new {@code ForLazy2Option} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2> ForLazy2Option<T1, T2> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2) {
+    public static <T1, T2> ForLazy2Option<T1, T2> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Option<>(ts1, ts2);
@@ -5782,7 +5782,7 @@ public final class API {
      * @return a new {@code ForLazy3Option} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3> ForLazy3Option<T1, T2, T3> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3) {
+    public static <T1, T2, T3> ForLazy3Option<T1, T2, T3> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -5810,7 +5810,7 @@ public final class API {
      * @return a new {@code ForLazy4Option} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4> ForLazy4Option<T1, T2, T3, T4> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4) {
+    public static <T1, T2, T3, T4> ForLazy4Option<T1, T2, T3, T4> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -5841,7 +5841,7 @@ public final class API {
      * @return a new {@code ForLazy5Option} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5> ForLazy5Option<T1, T2, T3, T4, T5> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5) {
+    public static <T1, T2, T3, T4, T5> ForLazy5Option<T1, T2, T3, T4, T5> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -5875,7 +5875,7 @@ public final class API {
      * @return a new {@code ForLazy6Option} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6> ForLazy6Option<T1, T2, T3, T4, T5, T6> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6Option<T1, T2, T3, T4, T5, T6> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -5912,7 +5912,7 @@ public final class API {
      * @return a new {@code ForLazy7Option} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Option<T1, T2, T3, T4, T5, T6, T7> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Option<T1, T2, T3, T4, T5, T6, T7> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -5952,7 +5952,7 @@ public final class API {
      * @return a new {@code ForLazy8Option} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Option<T1, T2, T3, T4, T5, T6, T7, T8> For(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Option<T8>> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Option<T1, T2, T3, T4, T5, T6, T7, T8> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Option<T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -5981,7 +5981,7 @@ public final class API {
      * @return a new {@code ForLazy2Future} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2> ForLazy2Future<T1, T2> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2) {
+    public static <T1, T2> ForLazy2Future<T1, T2> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Future<>(ts1, ts2);
@@ -6006,7 +6006,7 @@ public final class API {
      * @return a new {@code ForLazy3Future} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3> ForLazy3Future<T1, T2, T3> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3) {
+    public static <T1, T2, T3> ForLazy3Future<T1, T2, T3> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6034,7 +6034,7 @@ public final class API {
      * @return a new {@code ForLazy4Future} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4> ForLazy4Future<T1, T2, T3, T4> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4) {
+    public static <T1, T2, T3, T4> ForLazy4Future<T1, T2, T3, T4> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6065,7 +6065,7 @@ public final class API {
      * @return a new {@code ForLazy5Future} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5> ForLazy5Future<T1, T2, T3, T4, T5> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5) {
+    public static <T1, T2, T3, T4, T5> ForLazy5Future<T1, T2, T3, T4, T5> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6099,7 +6099,7 @@ public final class API {
      * @return a new {@code ForLazy6Future} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6> ForLazy6Future<T1, T2, T3, T4, T5, T6> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6Future<T1, T2, T3, T4, T5, T6> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6136,7 +6136,7 @@ public final class API {
      * @return a new {@code ForLazy7Future} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Future<T1, T2, T3, T4, T5, T6, T7> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Future<T1, T2, T3, T4, T5, T6, T7> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6176,7 +6176,7 @@ public final class API {
      * @return a new {@code ForLazy8Future} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Future<T1, T2, T3, T4, T5, T6, T7, T8> For(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Future<T8>> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Future<T1, T2, T3, T4, T5, T6, T7, T8> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Future<T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6205,7 +6205,7 @@ public final class API {
      * @return a new {@code ForLazy2Try} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2> ForLazy2Try<T1, T2> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2) {
+    public static <T1, T2> ForLazy2Try<T1, T2> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Try<>(ts1, ts2);
@@ -6230,7 +6230,7 @@ public final class API {
      * @return a new {@code ForLazy3Try} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3> ForLazy3Try<T1, T2, T3> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3) {
+    public static <T1, T2, T3> ForLazy3Try<T1, T2, T3> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6258,7 +6258,7 @@ public final class API {
      * @return a new {@code ForLazy4Try} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4> ForLazy4Try<T1, T2, T3, T4> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4) {
+    public static <T1, T2, T3, T4> ForLazy4Try<T1, T2, T3, T4> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6289,7 +6289,7 @@ public final class API {
      * @return a new {@code ForLazy5Try} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5> ForLazy5Try<T1, T2, T3, T4, T5> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5) {
+    public static <T1, T2, T3, T4, T5> ForLazy5Try<T1, T2, T3, T4, T5> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6323,7 +6323,7 @@ public final class API {
      * @return a new {@code ForLazy6Try} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6> ForLazy6Try<T1, T2, T3, T4, T5, T6> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6Try<T1, T2, T3, T4, T5, T6> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6360,7 +6360,7 @@ public final class API {
      * @return a new {@code ForLazy7Try} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Try<T1, T2, T3, T4, T5, T6, T7> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Try<T1, T2, T3, T4, T5, T6, T7> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6400,7 +6400,7 @@ public final class API {
      * @return a new {@code ForLazy8Try} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Try<T1, T2, T3, T4, T5, T6, T7, T8> For(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Try<T8>> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Try<T1, T2, T3, T4, T5, T6, T7, T8> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Try<T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6429,7 +6429,7 @@ public final class API {
      * @return a new {@code ForLazy2List} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2> ForLazy2List<T1, T2> For(List<T1> ts1, Function1<T1, List<T2>> ts2) {
+    public static <T1, T2> ForLazy2List<T1, T2> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2List<>(ts1, ts2);
@@ -6454,7 +6454,7 @@ public final class API {
      * @return a new {@code ForLazy3List} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3> ForLazy3List<T1, T2, T3> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3) {
+    public static <T1, T2, T3> ForLazy3List<T1, T2, T3> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6482,7 +6482,7 @@ public final class API {
      * @return a new {@code ForLazy4List} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4> ForLazy4List<T1, T2, T3, T4> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4) {
+    public static <T1, T2, T3, T4> ForLazy4List<T1, T2, T3, T4> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6513,7 +6513,7 @@ public final class API {
      * @return a new {@code ForLazy5List} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5> ForLazy5List<T1, T2, T3, T4, T5> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5) {
+    public static <T1, T2, T3, T4, T5> ForLazy5List<T1, T2, T3, T4, T5> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6547,7 +6547,7 @@ public final class API {
      * @return a new {@code ForLazy6List} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6> ForLazy6List<T1, T2, T3, T4, T5, T6> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6List<T1, T2, T3, T4, T5, T6> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6584,7 +6584,7 @@ public final class API {
      * @return a new {@code ForLazy7List} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7List<T1, T2, T3, T4, T5, T6, T7> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7List<T1, T2, T3, T4, T5, T6, T7> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6624,7 +6624,7 @@ public final class API {
      * @return a new {@code ForLazy8List} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8List<T1, T2, T3, T4, T5, T6, T7, T8> For(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, List<T8>> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8List<T1, T2, T3, T4, T5, T6, T7, T8> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, List<T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6653,7 +6653,7 @@ public final class API {
      * @return a new {@code ForLazy2Either} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2> ForLazy2Either<L, T1, T2> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2) {
+    public static <L, T1, T2> ForLazy2Either<L, T1, T2> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Either<>(ts1, ts2);
@@ -6678,7 +6678,7 @@ public final class API {
      * @return a new {@code ForLazy3Either} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3> ForLazy3Either<L, T1, T2, T3> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3) {
+    public static <L, T1, T2, T3> ForLazy3Either<L, T1, T2, T3> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6706,7 +6706,7 @@ public final class API {
      * @return a new {@code ForLazy4Either} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4> ForLazy4Either<L, T1, T2, T3, T4> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4) {
+    public static <L, T1, T2, T3, T4> ForLazy4Either<L, T1, T2, T3, T4> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6737,7 +6737,7 @@ public final class API {
      * @return a new {@code ForLazy5Either} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5> ForLazy5Either<L, T1, T2, T3, T4, T5> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5) {
+    public static <L, T1, T2, T3, T4, T5> ForLazy5Either<L, T1, T2, T3, T4, T5> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6771,7 +6771,7 @@ public final class API {
      * @return a new {@code ForLazy6Either} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Either<L, T1, T2, T3, T4, T5, T6> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6) {
+    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Either<L, T1, T2, T3, T4, T5, T6> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6808,7 +6808,7 @@ public final class API {
      * @return a new {@code ForLazy7Either} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Either<L, T1, T2, T3, T4, T5, T6, T7> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Either<L, T1, T2, T3, T4, T5, T6, T7> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6848,7 +6848,7 @@ public final class API {
      * @return a new {@code ForLazy8Either} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Either<L, T8>> ts8) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Either<L, T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6877,7 +6877,7 @@ public final class API {
      * @return a new {@code ForLazy2Validation} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2> ForLazy2Validation<L, T1, T2> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2) {
+    public static <L, T1, T2> ForLazy2Validation<L, T1, T2> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Validation<>(ts1, ts2);
@@ -6902,7 +6902,7 @@ public final class API {
      * @return a new {@code ForLazy3Validation} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3> ForLazy3Validation<L, T1, T2, T3> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3) {
+    public static <L, T1, T2, T3> ForLazy3Validation<L, T1, T2, T3> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6930,7 +6930,7 @@ public final class API {
      * @return a new {@code ForLazy4Validation} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4> ForLazy4Validation<L, T1, T2, T3, T4> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4) {
+    public static <L, T1, T2, T3, T4> ForLazy4Validation<L, T1, T2, T3, T4> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6961,7 +6961,7 @@ public final class API {
      * @return a new {@code ForLazy5Validation} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5> ForLazy5Validation<L, T1, T2, T3, T4, T5> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5) {
+    public static <L, T1, T2, T3, T4, T5> ForLazy5Validation<L, T1, T2, T3, T4, T5> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6995,7 +6995,7 @@ public final class API {
      * @return a new {@code ForLazy6Validation} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Validation<L, T1, T2, T3, T4, T5, T6> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6) {
+    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Validation<L, T1, T2, T3, T4, T5, T6> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7032,7 +7032,7 @@ public final class API {
      * @return a new {@code ForLazy7Validation} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Validation<L, T1, T2, T3, T4, T5, T6, T7> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Validation<L, T1, T2, T3, T4, T5, T6, T7> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7072,7 +7072,7 @@ public final class API {
      * @return a new {@code ForLazy8Validation} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Validation<L, T8>> ts8) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Validation<L, T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7098,9 +7098,9 @@ public final class API {
     public static class ForLazy2Option<T1, T2> {
 
         private final Option<T1> ts1;
-        private final Function1<T1, Option<T2>> ts2;
+        private final Function1<? super T1, Option<T2>> ts2;
 
-        private ForLazy2Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2) {
+        private ForLazy2Option(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2) {
             this.ts1 = ts1;
             this.ts2 = ts2;
         }
@@ -7139,10 +7139,10 @@ public final class API {
     public static class ForLazy3Option<T1, T2, T3> {
 
         private final Option<T1> ts1;
-        private final Function1<T1, Option<T2>> ts2;
-        private final Function2<T1, T2, Option<T3>> ts3;
+        private final Function1<? super T1, Option<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Option<T3>> ts3;
 
-        private ForLazy3Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3) {
+        private ForLazy3Option(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7185,11 +7185,11 @@ public final class API {
     public static class ForLazy4Option<T1, T2, T3, T4> {
 
         private final Option<T1> ts1;
-        private final Function1<T1, Option<T2>> ts2;
-        private final Function2<T1, T2, Option<T3>> ts3;
-        private final Function3<T1, T2, T3, Option<T4>> ts4;
+        private final Function1<? super T1, Option<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Option<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4;
 
-        private ForLazy4Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4) {
+        private ForLazy4Option(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7236,12 +7236,12 @@ public final class API {
     public static class ForLazy5Option<T1, T2, T3, T4, T5> {
 
         private final Option<T1> ts1;
-        private final Function1<T1, Option<T2>> ts2;
-        private final Function2<T1, T2, Option<T3>> ts3;
-        private final Function3<T1, T2, T3, Option<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Option<T5>> ts5;
+        private final Function1<? super T1, Option<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Option<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5;
 
-        private ForLazy5Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5) {
+        private ForLazy5Option(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7292,13 +7292,13 @@ public final class API {
     public static class ForLazy6Option<T1, T2, T3, T4, T5, T6> {
 
         private final Option<T1> ts1;
-        private final Function1<T1, Option<T2>> ts2;
-        private final Function2<T1, T2, Option<T3>> ts3;
-        private final Function3<T1, T2, T3, Option<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Option<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Option<T6>> ts6;
+        private final Function1<? super T1, Option<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Option<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6;
 
-        private ForLazy6Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6) {
+        private ForLazy6Option(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7353,14 +7353,14 @@ public final class API {
     public static class ForLazy7Option<T1, T2, T3, T4, T5, T6, T7> {
 
         private final Option<T1> ts1;
-        private final Function1<T1, Option<T2>> ts2;
-        private final Function2<T1, T2, Option<T3>> ts3;
-        private final Function3<T1, T2, T3, Option<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Option<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Option<T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7;
+        private final Function1<? super T1, Option<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Option<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7;
 
-        private ForLazy7Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7) {
+        private ForLazy7Option(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7419,15 +7419,15 @@ public final class API {
     public static class ForLazy8Option<T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private final Option<T1> ts1;
-        private final Function1<T1, Option<T2>> ts2;
-        private final Function2<T1, T2, Option<T3>> ts3;
-        private final Function3<T1, T2, T3, Option<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Option<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Option<T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7;
-        private final Function7<T1, T2, T3, T4, T5, T6, T7, Option<T8>> ts8;
+        private final Function1<? super T1, Option<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Option<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7;
+        private final Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Option<T8>> ts8;
 
-        private ForLazy8Option(Option<T1> ts1, Function1<T1, Option<T2>> ts2, Function2<T1, T2, Option<T3>> ts3, Function3<T1, T2, T3, Option<T4>> ts4, Function4<T1, T2, T3, T4, Option<T5>> ts5, Function5<T1, T2, T3, T4, T5, Option<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Option<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Option<T8>> ts8) {
+        private ForLazy8Option(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Option<T8>> ts8) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7483,9 +7483,9 @@ public final class API {
     public static class ForLazy2Future<T1, T2> {
 
         private final Future<T1> ts1;
-        private final Function1<T1, Future<T2>> ts2;
+        private final Function1<? super T1, Future<T2>> ts2;
 
-        private ForLazy2Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2) {
+        private ForLazy2Future(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2) {
             this.ts1 = ts1;
             this.ts2 = ts2;
         }
@@ -7524,10 +7524,10 @@ public final class API {
     public static class ForLazy3Future<T1, T2, T3> {
 
         private final Future<T1> ts1;
-        private final Function1<T1, Future<T2>> ts2;
-        private final Function2<T1, T2, Future<T3>> ts3;
+        private final Function1<? super T1, Future<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Future<T3>> ts3;
 
-        private ForLazy3Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3) {
+        private ForLazy3Future(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7570,11 +7570,11 @@ public final class API {
     public static class ForLazy4Future<T1, T2, T3, T4> {
 
         private final Future<T1> ts1;
-        private final Function1<T1, Future<T2>> ts2;
-        private final Function2<T1, T2, Future<T3>> ts3;
-        private final Function3<T1, T2, T3, Future<T4>> ts4;
+        private final Function1<? super T1, Future<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Future<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4;
 
-        private ForLazy4Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4) {
+        private ForLazy4Future(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7621,12 +7621,12 @@ public final class API {
     public static class ForLazy5Future<T1, T2, T3, T4, T5> {
 
         private final Future<T1> ts1;
-        private final Function1<T1, Future<T2>> ts2;
-        private final Function2<T1, T2, Future<T3>> ts3;
-        private final Function3<T1, T2, T3, Future<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Future<T5>> ts5;
+        private final Function1<? super T1, Future<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Future<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5;
 
-        private ForLazy5Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5) {
+        private ForLazy5Future(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7677,13 +7677,13 @@ public final class API {
     public static class ForLazy6Future<T1, T2, T3, T4, T5, T6> {
 
         private final Future<T1> ts1;
-        private final Function1<T1, Future<T2>> ts2;
-        private final Function2<T1, T2, Future<T3>> ts3;
-        private final Function3<T1, T2, T3, Future<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Future<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Future<T6>> ts6;
+        private final Function1<? super T1, Future<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Future<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6;
 
-        private ForLazy6Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6) {
+        private ForLazy6Future(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7738,14 +7738,14 @@ public final class API {
     public static class ForLazy7Future<T1, T2, T3, T4, T5, T6, T7> {
 
         private final Future<T1> ts1;
-        private final Function1<T1, Future<T2>> ts2;
-        private final Function2<T1, T2, Future<T3>> ts3;
-        private final Function3<T1, T2, T3, Future<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Future<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Future<T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7;
+        private final Function1<? super T1, Future<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Future<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7;
 
-        private ForLazy7Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7) {
+        private ForLazy7Future(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7804,15 +7804,15 @@ public final class API {
     public static class ForLazy8Future<T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private final Future<T1> ts1;
-        private final Function1<T1, Future<T2>> ts2;
-        private final Function2<T1, T2, Future<T3>> ts3;
-        private final Function3<T1, T2, T3, Future<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Future<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Future<T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7;
-        private final Function7<T1, T2, T3, T4, T5, T6, T7, Future<T8>> ts8;
+        private final Function1<? super T1, Future<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Future<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7;
+        private final Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Future<T8>> ts8;
 
-        private ForLazy8Future(Future<T1> ts1, Function1<T1, Future<T2>> ts2, Function2<T1, T2, Future<T3>> ts3, Function3<T1, T2, T3, Future<T4>> ts4, Function4<T1, T2, T3, T4, Future<T5>> ts5, Function5<T1, T2, T3, T4, T5, Future<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Future<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Future<T8>> ts8) {
+        private ForLazy8Future(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Future<T8>> ts8) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7868,9 +7868,9 @@ public final class API {
     public static class ForLazy2Try<T1, T2> {
 
         private final Try<T1> ts1;
-        private final Function1<T1, Try<T2>> ts2;
+        private final Function1<? super T1, Try<T2>> ts2;
 
-        private ForLazy2Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2) {
+        private ForLazy2Try(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2) {
             this.ts1 = ts1;
             this.ts2 = ts2;
         }
@@ -7909,10 +7909,10 @@ public final class API {
     public static class ForLazy3Try<T1, T2, T3> {
 
         private final Try<T1> ts1;
-        private final Function1<T1, Try<T2>> ts2;
-        private final Function2<T1, T2, Try<T3>> ts3;
+        private final Function1<? super T1, Try<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Try<T3>> ts3;
 
-        private ForLazy3Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3) {
+        private ForLazy3Try(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -7955,11 +7955,11 @@ public final class API {
     public static class ForLazy4Try<T1, T2, T3, T4> {
 
         private final Try<T1> ts1;
-        private final Function1<T1, Try<T2>> ts2;
-        private final Function2<T1, T2, Try<T3>> ts3;
-        private final Function3<T1, T2, T3, Try<T4>> ts4;
+        private final Function1<? super T1, Try<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Try<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4;
 
-        private ForLazy4Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4) {
+        private ForLazy4Try(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8006,12 +8006,12 @@ public final class API {
     public static class ForLazy5Try<T1, T2, T3, T4, T5> {
 
         private final Try<T1> ts1;
-        private final Function1<T1, Try<T2>> ts2;
-        private final Function2<T1, T2, Try<T3>> ts3;
-        private final Function3<T1, T2, T3, Try<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Try<T5>> ts5;
+        private final Function1<? super T1, Try<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Try<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5;
 
-        private ForLazy5Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5) {
+        private ForLazy5Try(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8062,13 +8062,13 @@ public final class API {
     public static class ForLazy6Try<T1, T2, T3, T4, T5, T6> {
 
         private final Try<T1> ts1;
-        private final Function1<T1, Try<T2>> ts2;
-        private final Function2<T1, T2, Try<T3>> ts3;
-        private final Function3<T1, T2, T3, Try<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Try<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Try<T6>> ts6;
+        private final Function1<? super T1, Try<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Try<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6;
 
-        private ForLazy6Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6) {
+        private ForLazy6Try(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8123,14 +8123,14 @@ public final class API {
     public static class ForLazy7Try<T1, T2, T3, T4, T5, T6, T7> {
 
         private final Try<T1> ts1;
-        private final Function1<T1, Try<T2>> ts2;
-        private final Function2<T1, T2, Try<T3>> ts3;
-        private final Function3<T1, T2, T3, Try<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Try<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Try<T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7;
+        private final Function1<? super T1, Try<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Try<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7;
 
-        private ForLazy7Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7) {
+        private ForLazy7Try(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8189,15 +8189,15 @@ public final class API {
     public static class ForLazy8Try<T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private final Try<T1> ts1;
-        private final Function1<T1, Try<T2>> ts2;
-        private final Function2<T1, T2, Try<T3>> ts3;
-        private final Function3<T1, T2, T3, Try<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Try<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Try<T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7;
-        private final Function7<T1, T2, T3, T4, T5, T6, T7, Try<T8>> ts8;
+        private final Function1<? super T1, Try<T2>> ts2;
+        private final Function2<? super T1, ? super T2, Try<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7;
+        private final Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Try<T8>> ts8;
 
-        private ForLazy8Try(Try<T1> ts1, Function1<T1, Try<T2>> ts2, Function2<T1, T2, Try<T3>> ts3, Function3<T1, T2, T3, Try<T4>> ts4, Function4<T1, T2, T3, T4, Try<T5>> ts5, Function5<T1, T2, T3, T4, T5, Try<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Try<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Try<T8>> ts8) {
+        private ForLazy8Try(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Try<T8>> ts8) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8253,9 +8253,9 @@ public final class API {
     public static class ForLazy2List<T1, T2> {
 
         private final List<T1> ts1;
-        private final Function1<T1, List<T2>> ts2;
+        private final Function1<? super T1, List<T2>> ts2;
 
-        private ForLazy2List(List<T1> ts1, Function1<T1, List<T2>> ts2) {
+        private ForLazy2List(List<T1> ts1, Function1<? super T1, List<T2>> ts2) {
             this.ts1 = ts1;
             this.ts2 = ts2;
         }
@@ -8294,10 +8294,10 @@ public final class API {
     public static class ForLazy3List<T1, T2, T3> {
 
         private final List<T1> ts1;
-        private final Function1<T1, List<T2>> ts2;
-        private final Function2<T1, T2, List<T3>> ts3;
+        private final Function1<? super T1, List<T2>> ts2;
+        private final Function2<? super T1, ? super T2, List<T3>> ts3;
 
-        private ForLazy3List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3) {
+        private ForLazy3List(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8340,11 +8340,11 @@ public final class API {
     public static class ForLazy4List<T1, T2, T3, T4> {
 
         private final List<T1> ts1;
-        private final Function1<T1, List<T2>> ts2;
-        private final Function2<T1, T2, List<T3>> ts3;
-        private final Function3<T1, T2, T3, List<T4>> ts4;
+        private final Function1<? super T1, List<T2>> ts2;
+        private final Function2<? super T1, ? super T2, List<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4;
 
-        private ForLazy4List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4) {
+        private ForLazy4List(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8391,12 +8391,12 @@ public final class API {
     public static class ForLazy5List<T1, T2, T3, T4, T5> {
 
         private final List<T1> ts1;
-        private final Function1<T1, List<T2>> ts2;
-        private final Function2<T1, T2, List<T3>> ts3;
-        private final Function3<T1, T2, T3, List<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, List<T5>> ts5;
+        private final Function1<? super T1, List<T2>> ts2;
+        private final Function2<? super T1, ? super T2, List<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5;
 
-        private ForLazy5List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5) {
+        private ForLazy5List(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8447,13 +8447,13 @@ public final class API {
     public static class ForLazy6List<T1, T2, T3, T4, T5, T6> {
 
         private final List<T1> ts1;
-        private final Function1<T1, List<T2>> ts2;
-        private final Function2<T1, T2, List<T3>> ts3;
-        private final Function3<T1, T2, T3, List<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, List<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, List<T6>> ts6;
+        private final Function1<? super T1, List<T2>> ts2;
+        private final Function2<? super T1, ? super T2, List<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6;
 
-        private ForLazy6List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6) {
+        private ForLazy6List(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8508,14 +8508,14 @@ public final class API {
     public static class ForLazy7List<T1, T2, T3, T4, T5, T6, T7> {
 
         private final List<T1> ts1;
-        private final Function1<T1, List<T2>> ts2;
-        private final Function2<T1, T2, List<T3>> ts3;
-        private final Function3<T1, T2, T3, List<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, List<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, List<T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7;
+        private final Function1<? super T1, List<T2>> ts2;
+        private final Function2<? super T1, ? super T2, List<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7;
 
-        private ForLazy7List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7) {
+        private ForLazy7List(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8574,15 +8574,15 @@ public final class API {
     public static class ForLazy8List<T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private final List<T1> ts1;
-        private final Function1<T1, List<T2>> ts2;
-        private final Function2<T1, T2, List<T3>> ts3;
-        private final Function3<T1, T2, T3, List<T4>> ts4;
-        private final Function4<T1, T2, T3, T4, List<T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, List<T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7;
-        private final Function7<T1, T2, T3, T4, T5, T6, T7, List<T8>> ts8;
+        private final Function1<? super T1, List<T2>> ts2;
+        private final Function2<? super T1, ? super T2, List<T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7;
+        private final Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, List<T8>> ts8;
 
-        private ForLazy8List(List<T1> ts1, Function1<T1, List<T2>> ts2, Function2<T1, T2, List<T3>> ts3, Function3<T1, T2, T3, List<T4>> ts4, Function4<T1, T2, T3, T4, List<T5>> ts5, Function5<T1, T2, T3, T4, T5, List<T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, List<T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, List<T8>> ts8) {
+        private ForLazy8List(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, List<T8>> ts8) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8638,9 +8638,9 @@ public final class API {
     public static class ForLazy2Either<L, T1, T2> {
 
         private final Either<L, T1> ts1;
-        private final Function1<T1, Either<L, T2>> ts2;
+        private final Function1<? super T1, Either<L, T2>> ts2;
 
-        private ForLazy2Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2) {
+        private ForLazy2Either(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2) {
             this.ts1 = ts1;
             this.ts2 = ts2;
         }
@@ -8679,10 +8679,10 @@ public final class API {
     public static class ForLazy3Either<L, T1, T2, T3> {
 
         private final Either<L, T1> ts1;
-        private final Function1<T1, Either<L, T2>> ts2;
-        private final Function2<T1, T2, Either<L, T3>> ts3;
+        private final Function1<? super T1, Either<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Either<L, T3>> ts3;
 
-        private ForLazy3Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3) {
+        private ForLazy3Either(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8725,11 +8725,11 @@ public final class API {
     public static class ForLazy4Either<L, T1, T2, T3, T4> {
 
         private final Either<L, T1> ts1;
-        private final Function1<T1, Either<L, T2>> ts2;
-        private final Function2<T1, T2, Either<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
+        private final Function1<? super T1, Either<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Either<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4;
 
-        private ForLazy4Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4) {
+        private ForLazy4Either(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8776,12 +8776,12 @@ public final class API {
     public static class ForLazy5Either<L, T1, T2, T3, T4, T5> {
 
         private final Either<L, T1> ts1;
-        private final Function1<T1, Either<L, T2>> ts2;
-        private final Function2<T1, T2, Either<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Either<L, T5>> ts5;
+        private final Function1<? super T1, Either<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Either<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5;
 
-        private ForLazy5Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5) {
+        private ForLazy5Either(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8832,13 +8832,13 @@ public final class API {
     public static class ForLazy6Either<L, T1, T2, T3, T4, T5, T6> {
 
         private final Either<L, T1> ts1;
-        private final Function1<T1, Either<L, T2>> ts2;
-        private final Function2<T1, T2, Either<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Either<L, T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6;
+        private final Function1<? super T1, Either<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Either<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6;
 
-        private ForLazy6Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6) {
+        private ForLazy6Either(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8893,14 +8893,14 @@ public final class API {
     public static class ForLazy7Either<L, T1, T2, T3, T4, T5, T6, T7> {
 
         private final Either<L, T1> ts1;
-        private final Function1<T1, Either<L, T2>> ts2;
-        private final Function2<T1, T2, Either<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Either<L, T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7;
+        private final Function1<? super T1, Either<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Either<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7;
 
-        private ForLazy7Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7) {
+        private ForLazy7Either(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -8959,15 +8959,15 @@ public final class API {
     public static class ForLazy8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private final Either<L, T1> ts1;
-        private final Function1<T1, Either<L, T2>> ts2;
-        private final Function2<T1, T2, Either<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Either<L, T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Either<L, T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7;
-        private final Function7<T1, T2, T3, T4, T5, T6, T7, Either<L, T8>> ts8;
+        private final Function1<? super T1, Either<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Either<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7;
+        private final Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Either<L, T8>> ts8;
 
-        private ForLazy8Either(Either<L, T1> ts1, Function1<T1, Either<L, T2>> ts2, Function2<T1, T2, Either<L, T3>> ts3, Function3<T1, T2, T3, Either<L, T4>> ts4, Function4<T1, T2, T3, T4, Either<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Either<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Either<L, T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Either<L, T8>> ts8) {
+        private ForLazy8Either(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Either<L, T8>> ts8) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -9023,9 +9023,9 @@ public final class API {
     public static class ForLazy2Validation<L, T1, T2> {
 
         private final Validation<L, T1> ts1;
-        private final Function1<T1, Validation<L, T2>> ts2;
+        private final Function1<? super T1, Validation<L, T2>> ts2;
 
-        private ForLazy2Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2) {
+        private ForLazy2Validation(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2) {
             this.ts1 = ts1;
             this.ts2 = ts2;
         }
@@ -9064,10 +9064,10 @@ public final class API {
     public static class ForLazy3Validation<L, T1, T2, T3> {
 
         private final Validation<L, T1> ts1;
-        private final Function1<T1, Validation<L, T2>> ts2;
-        private final Function2<T1, T2, Validation<L, T3>> ts3;
+        private final Function1<? super T1, Validation<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Validation<L, T3>> ts3;
 
-        private ForLazy3Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3) {
+        private ForLazy3Validation(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -9110,11 +9110,11 @@ public final class API {
     public static class ForLazy4Validation<L, T1, T2, T3, T4> {
 
         private final Validation<L, T1> ts1;
-        private final Function1<T1, Validation<L, T2>> ts2;
-        private final Function2<T1, T2, Validation<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
+        private final Function1<? super T1, Validation<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Validation<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4;
 
-        private ForLazy4Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4) {
+        private ForLazy4Validation(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -9161,12 +9161,12 @@ public final class API {
     public static class ForLazy5Validation<L, T1, T2, T3, T4, T5> {
 
         private final Validation<L, T1> ts1;
-        private final Function1<T1, Validation<L, T2>> ts2;
-        private final Function2<T1, T2, Validation<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Validation<L, T5>> ts5;
+        private final Function1<? super T1, Validation<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Validation<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5;
 
-        private ForLazy5Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5) {
+        private ForLazy5Validation(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -9217,13 +9217,13 @@ public final class API {
     public static class ForLazy6Validation<L, T1, T2, T3, T4, T5, T6> {
 
         private final Validation<L, T1> ts1;
-        private final Function1<T1, Validation<L, T2>> ts2;
-        private final Function2<T1, T2, Validation<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Validation<L, T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6;
+        private final Function1<? super T1, Validation<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Validation<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6;
 
-        private ForLazy6Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6) {
+        private ForLazy6Validation(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -9278,14 +9278,14 @@ public final class API {
     public static class ForLazy7Validation<L, T1, T2, T3, T4, T5, T6, T7> {
 
         private final Validation<L, T1> ts1;
-        private final Function1<T1, Validation<L, T2>> ts2;
-        private final Function2<T1, T2, Validation<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Validation<L, T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7;
+        private final Function1<? super T1, Validation<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Validation<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7;
 
-        private ForLazy7Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7) {
+        private ForLazy7Validation(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;
@@ -9344,15 +9344,15 @@ public final class API {
     public static class ForLazy8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private final Validation<L, T1> ts1;
-        private final Function1<T1, Validation<L, T2>> ts2;
-        private final Function2<T1, T2, Validation<L, T3>> ts3;
-        private final Function3<T1, T2, T3, Validation<L, T4>> ts4;
-        private final Function4<T1, T2, T3, T4, Validation<L, T5>> ts5;
-        private final Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6;
-        private final Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7;
-        private final Function7<T1, T2, T3, T4, T5, T6, T7, Validation<L, T8>> ts8;
+        private final Function1<? super T1, Validation<L, T2>> ts2;
+        private final Function2<? super T1, ? super T2, Validation<L, T3>> ts3;
+        private final Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4;
+        private final Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5;
+        private final Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6;
+        private final Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7;
+        private final Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Validation<L, T8>> ts8;
 
-        private ForLazy8Validation(Validation<L, T1> ts1, Function1<T1, Validation<L, T2>> ts2, Function2<T1, T2, Validation<L, T3>> ts3, Function3<T1, T2, T3, Validation<L, T4>> ts4, Function4<T1, T2, T3, T4, Validation<L, T5>> ts5, Function5<T1, T2, T3, T4, T5, Validation<L, T6>> ts6, Function6<T1, T2, T3, T4, T5, T6, Validation<L, T7>> ts7, Function7<T1, T2, T3, T4, T5, T6, T7, Validation<L, T8>> ts8) {
+        private ForLazy8Validation(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Validation<L, T8>> ts8) {
             this.ts1 = ts1;
             this.ts2 = ts2;
             this.ts3 = ts3;

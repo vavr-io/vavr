@@ -758,7 +758,7 @@ def generateMainClasses(): Unit = {
                 if (j == 1)
                   s"$mtype<${parameterInset}T1> ts1"
                 else {
-                  val inputTypes = (1 until j).gen(k => s"T$k")(", ")
+                  val inputTypes = (1 until j).gen(k => s"? super T$k")(", ")
                   s"Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
                 }
               }(", ")
@@ -806,7 +806,7 @@ def generateMainClasses(): Unit = {
                 if (j == 1)
                   s"private final $mtype<${parameterInset}T1> ts1;"
                 else {
-                  val inputTypes = (1 until j).gen(k => s"T$k")(", ")
+                  val inputTypes = (1 until j).gen(k => s"? super T$k")(", ")
                   s"private final Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j;"
                 }
               }("\n")
@@ -815,7 +815,7 @@ def generateMainClasses(): Unit = {
                 if (j == 1)
                   s"$mtype<${parameterInset}T1> ts1"
                 else {
-                  val inputTypes = (1 until j).gen(k => s"T$k")(", ")
+                  val inputTypes = (1 until j).gen(k => s"? super T$k")(", ")
                   s"Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
                 }
               }(", ")
