@@ -565,6 +565,13 @@ public class BitSetTest extends AbstractSortedSetTest {
         // BitSet can't have reverse order
     }
 
+    @Test
+    @Override
+    public void shouldExecuteVoidedCorrectly() {
+        assertThat(empty().voided()).isEqualTo(empty());
+        assertThat(of(1).voided()).isEqualTo(of((Integer)null));
+    }
+
     // -- classes
 
     private static final class Mapper<T> implements Serializable {

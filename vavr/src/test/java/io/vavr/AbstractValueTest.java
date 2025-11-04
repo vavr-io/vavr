@@ -218,6 +218,25 @@ public abstract class AbstractValueTest {
         assertThat(of(1).getOrNull()).isEqualTo(1);
     }
 
+    // -- as
+
+    @TestTemplate
+    public void shouldExecuteAsCorrectly() {
+        assertThat(empty().as(1)).isEqualTo(empty().as(2));
+        assertThat(of(2).as(1)).isEqualTo(of(3).as(1));
+        assertThat(of(2).as(1)).isEqualTo(of(3).map(ignored -> 1));
+        assertThat(of(3).as(2)).isEqualTo(of(1).map(ignored -> 2));
+    }
+
+    // -- voided
+
+    @TestTemplate
+    public void shouldExecuteVoidedCorrectly() {
+        assertThat(empty().voided()).isEqualTo(empty());
+        assertThat(of(1).voided()).isEqualTo(of(1).as(null));
+        assertThat(of(1).voided()).isEqualTo(of(1).map(ignored -> null));
+    }
+
     // -- forEach
 
     @TestTemplate

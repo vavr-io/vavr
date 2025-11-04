@@ -416,6 +416,14 @@ public interface Value<T> extends Iterable<T> {
         return isEmpty() ? null : get();
     }
 
+    default <U> Value<U> as(U val) {
+        return map((ignored) -> val);
+    }
+
+    default Value<Void> voided() {
+        return map((ignored) -> null);
+    }
+
     /**
      * Checks if this {@code Value} is asynchronously (short: async) computed.
      * <p>

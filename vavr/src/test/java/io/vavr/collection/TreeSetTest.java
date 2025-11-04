@@ -411,4 +411,11 @@ public class TreeSetTest extends AbstractSortedSetTest {
     @Disabled
     public void shouldZipAllNonEmptyAndNil() {
     }
+
+    @Test
+    @Override
+    public void shouldExecuteVoidedCorrectly() {
+        assertThat(empty().voided()).isEqualTo(empty());
+        assertThat(of(1).map(ignored -> null)).isEqualTo(of(1).voided());
+    }
 }
