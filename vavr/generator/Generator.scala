@@ -771,8 +771,9 @@ def generateMainClasses(): Unit = {
                      *
                      * <p>The first argument ({@code ts1}) is the initial ${mtype}. Each subsequent
                      * argument ({@code ts2} .. {@code ts$i}) is a function that receives all values
-                     * bound so far and returns the next ${mtype}. This only builds the lazy
-                     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+                     * bound so far and returns the next ${mtype}. This method only constructs the
+                     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+                     * is invoked.</p>
                      *
                      ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} ${mtype}")("\n")}
                      ${if (isComplex) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
@@ -796,7 +797,6 @@ def generateMainClasses(): Unit = {
               val forClassName = s"ForLazy$i$mtype"
               val parameterInset = if (monadicTypesThatNeedParameter.contains(mtype)) "L, " else ""
               val generics = parameterInset + (1 to i).gen(j => s"T$j")(", ")
-              val args = (1 to i).gen(j => s"? super T$j")(", ")
 
               val fields = (1 to i).gen { j =>
                 if (j == 1)
@@ -846,8 +846,8 @@ def generateMainClasses(): Unit = {
                    * A lazily evaluated {@code For}-comprehension with ${i.numerus(mtype)}.
                    *
                    * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-                   * Construction is side-effect free; underlying ${i.plural(mtype)} are only
-                   * traversed when {@code yield(...)} is invoked.</p>
+                   * Construction is side-effect free; underlying ${i.plural(mtype)} are traversed
+                   * only when {@code yield(...)} is invoked.</p>
                    *
                    ${if (monadicTypesThatNeedParameter.contains(mtype)) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
                    ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")("\n")}
@@ -864,9 +864,9 @@ def generateMainClasses(): Unit = {
                        * Produces results by mapping the Cartesian product of all bound values.
                        *
                        * <p>Evaluation is lazy and delegated to the underlying ${i.plural(mtype)} by
-                       * composing flatMap/map chains.</p>
+                       * composing {@code flatMap} and {@code map} chains.</p>
                        *
-                       * @param f a function that maps a tuple of bound values to a result
+                       * @param f a function mapping a tuple of bound values to a result
                        * @param <R> the element type of the resulting {@code $rtype}
                        * @return an {@code $rtype} containing mapped results
                        * @throws NullPointerException if {@code f} is {@code null}

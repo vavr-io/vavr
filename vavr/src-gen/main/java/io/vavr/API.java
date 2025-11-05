@@ -5745,8 +5745,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Option. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Option. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Option
@@ -5768,8 +5769,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Option. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Option. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Option
@@ -5794,8 +5796,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Option. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Option. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Option
@@ -5823,8 +5826,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Option. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Option. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Option
@@ -5855,8 +5859,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Option. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Option. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Option
@@ -5890,8 +5895,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Option. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Option. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Option
@@ -5928,8 +5934,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Option. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Option. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Option. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Option
@@ -5969,8 +5976,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Future. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Future. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Future
@@ -5992,8 +6000,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Future. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Future. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Future
@@ -6018,8 +6027,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Future. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Future. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Future
@@ -6047,8 +6057,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Future. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Future. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Future
@@ -6079,8 +6090,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Future. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Future. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Future
@@ -6114,8 +6126,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Future. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Future. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Future
@@ -6152,8 +6165,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Future. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Future. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Future. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Future
@@ -6193,8 +6207,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Try. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Try. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Try
@@ -6216,8 +6231,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Try. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Try. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Try
@@ -6242,8 +6258,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Try. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Try. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Try
@@ -6271,8 +6288,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Try. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Try. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Try
@@ -6303,8 +6321,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Try. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Try. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Try
@@ -6338,8 +6357,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Try. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Try. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Try
@@ -6376,8 +6396,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Try. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Try. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Try. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Try
@@ -6417,8 +6438,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next List. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next List. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st List
@@ -6440,8 +6462,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next List. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next List. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st List
@@ -6466,8 +6489,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next List. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next List. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st List
@@ -6495,8 +6519,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next List. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next List. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st List
@@ -6527,8 +6552,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next List. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next List. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st List
@@ -6562,8 +6588,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next List. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next List. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st List
@@ -6600,8 +6627,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial List. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next List. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next List. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st List
@@ -6641,8 +6669,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Either. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Either. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Either
@@ -6664,8 +6693,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Either. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Either. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Either
@@ -6690,8 +6720,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Either. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Either. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Either
@@ -6719,8 +6750,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Either. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Either. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Either
@@ -6751,8 +6783,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Either. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Either. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Either
@@ -6786,8 +6819,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Either. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Either. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Either
@@ -6824,8 +6858,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Either. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Either. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Either. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Either
@@ -6865,8 +6900,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts2}) is a function that receives all values
-     * bound so far and returns the next Validation. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Validation. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Validation
@@ -6888,8 +6924,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts3}) is a function that receives all values
-     * bound so far and returns the next Validation. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Validation. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Validation
@@ -6914,8 +6951,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts4}) is a function that receives all values
-     * bound so far and returns the next Validation. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Validation. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Validation
@@ -6943,8 +6981,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts5}) is a function that receives all values
-     * bound so far and returns the next Validation. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Validation. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Validation
@@ -6975,8 +7014,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts6}) is a function that receives all values
-     * bound so far and returns the next Validation. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Validation. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Validation
@@ -7010,8 +7050,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts7}) is a function that receives all values
-     * bound so far and returns the next Validation. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Validation. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Validation
@@ -7048,8 +7089,9 @@ public final class API {
      *
      * <p>The first argument ({@code ts1}) is the initial Validation. Each subsequent
      * argument ({@code ts2} .. {@code ts8}) is a function that receives all values
-     * bound so far and returns the next Validation. This only builds the lazy
-     * comprehension; effects are evaluated when {@code yield(...)} is called.</p>
+     * bound so far and returns the next Validation. This method only constructs the
+     * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
+     * is invoked.</p>
      *
      *
      * @param ts1 the 1st Validation
@@ -7088,8 +7130,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with two Options.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Options are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Options are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Option
@@ -7109,9 +7151,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7128,8 +7170,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with three Options.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Options are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Options are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Option
@@ -7152,9 +7194,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7173,8 +7215,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 4 Options.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Options are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Options are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Option
@@ -7200,9 +7242,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7223,8 +7265,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 5 Options.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Options are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Options are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Option
@@ -7253,9 +7295,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7278,8 +7320,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 6 Options.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Options are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Options are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Option
@@ -7311,9 +7353,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7338,8 +7380,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 7 Options.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Options are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Options are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Option
@@ -7374,9 +7416,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7403,8 +7445,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 8 Options.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Options are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Options are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Option
@@ -7442,9 +7484,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Options by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Option}
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7473,8 +7515,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with two Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Futures are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7494,9 +7536,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7513,8 +7555,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with three Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Futures are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7537,9 +7579,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7558,8 +7600,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 4 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Futures are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7585,9 +7627,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7608,8 +7650,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 5 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Futures are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7638,9 +7680,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7663,8 +7705,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 6 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Futures are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7696,9 +7738,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7723,8 +7765,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 7 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Futures are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7759,9 +7801,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7788,8 +7830,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 8 Futures.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Futures are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Futures are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Future
@@ -7827,9 +7869,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Futures by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Future}
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7858,8 +7900,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with two Trys.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Trys are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Trys are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Try
@@ -7879,9 +7921,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7898,8 +7940,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with three Trys.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Trys are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Trys are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Try
@@ -7922,9 +7964,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7943,8 +7985,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 4 Trys.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Trys are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Trys are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Try
@@ -7970,9 +8012,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -7993,8 +8035,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 5 Trys.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Trys are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Trys are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Try
@@ -8023,9 +8065,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8048,8 +8090,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 6 Trys.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Trys are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Trys are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Try
@@ -8081,9 +8123,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8108,8 +8150,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 7 Trys.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Trys are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Trys are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Try
@@ -8144,9 +8186,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8173,8 +8215,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 8 Trys.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Trys are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Trys are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st Try
@@ -8212,9 +8254,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Trys by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Try}
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8243,8 +8285,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with two Lists.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Lists are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Lists are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st List
@@ -8264,9 +8306,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8283,8 +8325,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with three Lists.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Lists are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Lists are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st List
@@ -8307,9 +8349,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8328,8 +8370,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 4 Lists.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Lists are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Lists are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st List
@@ -8355,9 +8397,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8378,8 +8420,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 5 Lists.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Lists are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Lists are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st List
@@ -8408,9 +8450,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8433,8 +8475,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 6 Lists.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Lists are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Lists are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st List
@@ -8466,9 +8508,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8493,8 +8535,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 7 Lists.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Lists are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Lists are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st List
@@ -8529,9 +8571,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8558,8 +8600,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 8 Lists.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Lists are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Lists are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
 
      * @param <T1> the component type of the 1st List
@@ -8597,9 +8639,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Lists by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code List}
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8628,8 +8670,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with two Eithers.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Eithers are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Eithers are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
@@ -8649,9 +8691,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8668,8 +8710,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with three Eithers.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Eithers are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Eithers are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
@@ -8692,9 +8734,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8713,8 +8755,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 4 Eithers.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Eithers are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Eithers are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
@@ -8740,9 +8782,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8763,8 +8805,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 5 Eithers.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Eithers are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Eithers are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
@@ -8793,9 +8835,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8818,8 +8860,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 6 Eithers.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Eithers are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Eithers are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
@@ -8851,9 +8893,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8878,8 +8920,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 7 Eithers.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Eithers are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Eithers are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
@@ -8914,9 +8956,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -8943,8 +8985,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 8 Eithers.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Eithers are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Eithers are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Eithers
      * @param <T1> the component type of the 1st Either
@@ -8982,9 +9024,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Eithers by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Either}
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -9013,8 +9055,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with two Validations.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Validations are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Validations are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Validations
      * @param <T1> the component type of the 1st Validation
@@ -9034,9 +9076,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -9053,8 +9095,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with three Validations.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Validations are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Validations are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Validations
      * @param <T1> the component type of the 1st Validation
@@ -9077,9 +9119,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -9098,8 +9140,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 4 Validations.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Validations are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Validations are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Validations
      * @param <T1> the component type of the 1st Validation
@@ -9125,9 +9167,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -9148,8 +9190,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 5 Validations.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Validations are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Validations are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Validations
      * @param <T1> the component type of the 1st Validation
@@ -9178,9 +9220,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -9203,8 +9245,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 6 Validations.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Validations are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Validations are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Validations
      * @param <T1> the component type of the 1st Validation
@@ -9236,9 +9278,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -9263,8 +9305,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 7 Validations.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Validations are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Validations are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Validations
      * @param <T1> the component type of the 1st Validation
@@ -9299,9 +9341,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
@@ -9328,8 +9370,8 @@ public final class API {
      * A lazily evaluated {@code For}-comprehension with 8 Validations.
      *
      * <p>Constructed via {@code For(...)} and evaluated by calling {@code yield(...)}.
-     * Construction is side-effect free; underlying Validations are only
-     * traversed when {@code yield(...)} is invoked.</p>
+     * Construction is side-effect free; underlying Validations are traversed
+     * only when {@code yield(...)} is invoked.</p>
      *
      * @param <L> the common left-hand type of all Validations
      * @param <T1> the component type of the 1st Validation
@@ -9367,9 +9409,9 @@ public final class API {
          * Produces results by mapping the Cartesian product of all bound values.
          *
          * <p>Evaluation is lazy and delegated to the underlying Validations by
-         * composing flatMap/map chains.</p>
+         * composing {@code flatMap} and {@code map} chains.</p>
          *
-         * @param f a function that maps a tuple of bound values to a result
+         * @param f a function mapping a tuple of bound values to a result
          * @param <R> the element type of the resulting {@code Validation}
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
