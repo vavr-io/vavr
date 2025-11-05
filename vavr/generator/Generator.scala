@@ -796,10 +796,6 @@ def generateMainClasses(): Unit = {
               val forClassName = s"ForLazy$i$mtype"
               val parameterInset = if (monadicTypesThatNeedParameter.contains(mtype)) "L, " else ""
               val generics = parameterInset + (1 to i).gen(j => s"T$j")(", ")
-              val functionType = i match {
-                case 2 => BiFunctionType
-                case _ => s"Function$i"
-              }
               val args = (1 to i).gen(j => s"? super T$j")(", ")
 
               val fields = (1 to i).gen { j =>
@@ -875,7 +871,12 @@ def generateMainClasses(): Unit = {
                        * @return an {@code $rtype} containing mapped results
                        * @throws NullPointerException if {@code f} is {@code null}
                        */
-                      public <R> $rtype<${parameterInset}R> yield($functionType<$args, ? extends R> f) {
+                      public <R> $rtype<${parameterInset}R> yield(${
+                if (i == 2)
+                  s"BiFunction<? super T1, ? super T2, ? extends R>"
+                else
+                  s"Function$i<${(1 to i).map(j => s"? super T$j").mkString(", ")}, ? extends R>"
+              } f) {
                           $Objects.requireNonNull(f, "f is null");
                           return $yieldBody;
                       }
