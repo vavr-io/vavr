@@ -1100,7 +1100,11 @@ public class APITest {
             final Option<Integer> result = For(
                 Option.of(1)
             ).yield(i1 -> i1);
-            assertThat(result.get()).isEqualTo(1);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (1 + 1)) - 2 - 1);
         }
 
         @Test
@@ -1116,9 +1120,13 @@ public class APITest {
         public void shouldIterateLazyForOption2() {
             final Option<Integer> result = For(
                 Option.of(1),
-                (r1) -> Option.of(2)
+                (r1) -> Option.of(r1 + 2)
             ).yield((i1, i2) -> i1 + i2);
-            assertThat(result.get()).isEqualTo(3);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (2 + 1)) - 2 - 2);
         }
 
         @Test
@@ -1135,10 +1143,14 @@ public class APITest {
         public void shouldIterateLazyForOption3() {
             final Option<Integer> result = For(
                 Option.of(1),
-                (r1) -> Option.of(2),
-                (r1, r2) -> Option.of(3)
+                (r1) -> Option.of(r1 + 2),
+                (r1, r2) -> Option.of(r1 + r2 + 3)
             ).yield((i1, i2, i3) -> i1 + i2 + i3);
-            assertThat(result.get()).isEqualTo(6);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (3 + 1)) - 2 - 3);
         }
 
         @Test
@@ -1156,11 +1168,15 @@ public class APITest {
         public void shouldIterateLazyForOption4() {
             final Option<Integer> result = For(
                 Option.of(1),
-                (r1) -> Option.of(2),
-                (r1, r2) -> Option.of(3),
-                (r1, r2, r3) -> Option.of(4)
+                (r1) -> Option.of(r1 + 2),
+                (r1, r2) -> Option.of(r1 + r2 + 3),
+                (r1, r2, r3) -> Option.of(r1 + r2 + r3 + 4)
             ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
-            assertThat(result.get()).isEqualTo(10);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (4 + 1)) - 2 - 4);
         }
 
         @Test
@@ -1179,12 +1195,16 @@ public class APITest {
         public void shouldIterateLazyForOption5() {
             final Option<Integer> result = For(
                 Option.of(1),
-                (r1) -> Option.of(2),
-                (r1, r2) -> Option.of(3),
-                (r1, r2, r3) -> Option.of(4),
-                (r1, r2, r3, r4) -> Option.of(5)
+                (r1) -> Option.of(r1 + 2),
+                (r1, r2) -> Option.of(r1 + r2 + 3),
+                (r1, r2, r3) -> Option.of(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Option.of(r1 + r2 + r3 + r4 + 5)
             ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
-            assertThat(result.get()).isEqualTo(15);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (5 + 1)) - 2 - 5);
         }
 
         @Test
@@ -1204,13 +1224,17 @@ public class APITest {
         public void shouldIterateLazyForOption6() {
             final Option<Integer> result = For(
                 Option.of(1),
-                (r1) -> Option.of(2),
-                (r1, r2) -> Option.of(3),
-                (r1, r2, r3) -> Option.of(4),
-                (r1, r2, r3, r4) -> Option.of(5),
-                (r1, r2, r3, r4, r5) -> Option.of(6)
+                (r1) -> Option.of(r1 + 2),
+                (r1, r2) -> Option.of(r1 + r2 + 3),
+                (r1, r2, r3) -> Option.of(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Option.of(r1 + r2 + r3 + r4 + 5),
+                (r1, r2, r3, r4, r5) -> Option.of(r1 + r2 + r3 + r4 + r5 + 6)
             ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
-            assertThat(result.get()).isEqualTo(21);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (6 + 1)) - 2 - 6);
         }
 
         @Test
@@ -1231,14 +1255,18 @@ public class APITest {
         public void shouldIterateLazyForOption7() {
             final Option<Integer> result = For(
                 Option.of(1),
-                (r1) -> Option.of(2),
-                (r1, r2) -> Option.of(3),
-                (r1, r2, r3) -> Option.of(4),
-                (r1, r2, r3, r4) -> Option.of(5),
-                (r1, r2, r3, r4, r5) -> Option.of(6),
-                (r1, r2, r3, r4, r5, r6) -> Option.of(7)
+                (r1) -> Option.of(r1 + 2),
+                (r1, r2) -> Option.of(r1 + r2 + 3),
+                (r1, r2, r3) -> Option.of(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Option.of(r1 + r2 + r3 + r4 + 5),
+                (r1, r2, r3, r4, r5) -> Option.of(r1 + r2 + r3 + r4 + r5 + 6),
+                (r1, r2, r3, r4, r5, r6) -> Option.of(r1 + r2 + r3 + r4 + r5 + r6 + 7)
             ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
-            assertThat(result.get()).isEqualTo(28);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (7 + 1)) - 2 - 7);
         }
 
         @Test
@@ -1260,15 +1288,19 @@ public class APITest {
         public void shouldIterateLazyForOption8() {
             final Option<Integer> result = For(
                 Option.of(1),
-                (r1) -> Option.of(2),
-                (r1, r2) -> Option.of(3),
-                (r1, r2, r3) -> Option.of(4),
-                (r1, r2, r3, r4) -> Option.of(5),
-                (r1, r2, r3, r4, r5) -> Option.of(6),
-                (r1, r2, r3, r4, r5, r6) -> Option.of(7),
-                (r1, r2, r3, r4, r5, r6, r7) -> Option.of(8)
+                (r1) -> Option.of(r1 + 2),
+                (r1, r2) -> Option.of(r1 + r2 + 3),
+                (r1, r2, r3) -> Option.of(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Option.of(r1 + r2 + r3 + r4 + 5),
+                (r1, r2, r3, r4, r5) -> Option.of(r1 + r2 + r3 + r4 + r5 + 6),
+                (r1, r2, r3, r4, r5, r6) -> Option.of(r1 + r2 + r3 + r4 + r5 + r6 + 7),
+                (r1, r2, r3, r4, r5, r6, r7) -> Option.of(r1 + r2 + r3 + r4 + r5 + r6 + r7 + 8)
             ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
-            assertThat(result.get()).isEqualTo(36);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (8 + 1)) - 2 - 8);
         }
 
         @Test
@@ -1284,7 +1316,11 @@ public class APITest {
             final Either<Object, Integer> result = For(
                 Either.right(1)
             ).yield(i1 -> i1);
-            assertThat(result.get()).isEqualTo(1);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (1 + 1)) - 2 - 1);
         }
 
         @Test
@@ -1300,9 +1336,13 @@ public class APITest {
         public void shouldIterateLazyForEither2() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
-                (r1) -> Either.right(2)
+                (r1) -> Either.right(r1 + 2)
             ).yield((i1, i2) -> i1 + i2);
-            assertThat(result.get()).isEqualTo(3);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (2 + 1)) - 2 - 2);
         }
 
         @Test
@@ -1319,10 +1359,14 @@ public class APITest {
         public void shouldIterateLazyForEither3() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
-                (r1) -> Either.right(2),
-                (r1, r2) -> Either.right(3)
+                (r1) -> Either.right(r1 + 2),
+                (r1, r2) -> Either.right(r1 + r2 + 3)
             ).yield((i1, i2, i3) -> i1 + i2 + i3);
-            assertThat(result.get()).isEqualTo(6);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (3 + 1)) - 2 - 3);
         }
 
         @Test
@@ -1340,11 +1384,15 @@ public class APITest {
         public void shouldIterateLazyForEither4() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
-                (r1) -> Either.right(2),
-                (r1, r2) -> Either.right(3),
-                (r1, r2, r3) -> Either.right(4)
+                (r1) -> Either.right(r1 + 2),
+                (r1, r2) -> Either.right(r1 + r2 + 3),
+                (r1, r2, r3) -> Either.right(r1 + r2 + r3 + 4)
             ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
-            assertThat(result.get()).isEqualTo(10);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (4 + 1)) - 2 - 4);
         }
 
         @Test
@@ -1363,12 +1411,16 @@ public class APITest {
         public void shouldIterateLazyForEither5() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
-                (r1) -> Either.right(2),
-                (r1, r2) -> Either.right(3),
-                (r1, r2, r3) -> Either.right(4),
-                (r1, r2, r3, r4) -> Either.right(5)
+                (r1) -> Either.right(r1 + 2),
+                (r1, r2) -> Either.right(r1 + r2 + 3),
+                (r1, r2, r3) -> Either.right(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Either.right(r1 + r2 + r3 + r4 + 5)
             ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
-            assertThat(result.get()).isEqualTo(15);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (5 + 1)) - 2 - 5);
         }
 
         @Test
@@ -1388,13 +1440,17 @@ public class APITest {
         public void shouldIterateLazyForEither6() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
-                (r1) -> Either.right(2),
-                (r1, r2) -> Either.right(3),
-                (r1, r2, r3) -> Either.right(4),
-                (r1, r2, r3, r4) -> Either.right(5),
-                (r1, r2, r3, r4, r5) -> Either.right(6)
+                (r1) -> Either.right(r1 + 2),
+                (r1, r2) -> Either.right(r1 + r2 + 3),
+                (r1, r2, r3) -> Either.right(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Either.right(r1 + r2 + r3 + r4 + 5),
+                (r1, r2, r3, r4, r5) -> Either.right(r1 + r2 + r3 + r4 + r5 + 6)
             ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
-            assertThat(result.get()).isEqualTo(21);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (6 + 1)) - 2 - 6);
         }
 
         @Test
@@ -1415,14 +1471,18 @@ public class APITest {
         public void shouldIterateLazyForEither7() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
-                (r1) -> Either.right(2),
-                (r1, r2) -> Either.right(3),
-                (r1, r2, r3) -> Either.right(4),
-                (r1, r2, r3, r4) -> Either.right(5),
-                (r1, r2, r3, r4, r5) -> Either.right(6),
-                (r1, r2, r3, r4, r5, r6) -> Either.right(7)
+                (r1) -> Either.right(r1 + 2),
+                (r1, r2) -> Either.right(r1 + r2 + 3),
+                (r1, r2, r3) -> Either.right(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Either.right(r1 + r2 + r3 + r4 + 5),
+                (r1, r2, r3, r4, r5) -> Either.right(r1 + r2 + r3 + r4 + r5 + 6),
+                (r1, r2, r3, r4, r5, r6) -> Either.right(r1 + r2 + r3 + r4 + r5 + r6 + 7)
             ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
-            assertThat(result.get()).isEqualTo(28);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (7 + 1)) - 2 - 7);
         }
 
         @Test
@@ -1444,15 +1504,19 @@ public class APITest {
         public void shouldIterateLazyForEither8() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
-                (r1) -> Either.right(2),
-                (r1, r2) -> Either.right(3),
-                (r1, r2, r3) -> Either.right(4),
-                (r1, r2, r3, r4) -> Either.right(5),
-                (r1, r2, r3, r4, r5) -> Either.right(6),
-                (r1, r2, r3, r4, r5, r6) -> Either.right(7),
-                (r1, r2, r3, r4, r5, r6, r7) -> Either.right(8)
+                (r1) -> Either.right(r1 + 2),
+                (r1, r2) -> Either.right(r1 + r2 + 3),
+                (r1, r2, r3) -> Either.right(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Either.right(r1 + r2 + r3 + r4 + 5),
+                (r1, r2, r3, r4, r5) -> Either.right(r1 + r2 + r3 + r4 + r5 + 6),
+                (r1, r2, r3, r4, r5, r6) -> Either.right(r1 + r2 + r3 + r4 + r5 + r6 + 7),
+                (r1, r2, r3, r4, r5, r6, r7) -> Either.right(r1 + r2 + r3 + r4 + r5 + r6 + r7 + 8)
             ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
-            assertThat(result.get()).isEqualTo(36);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (8 + 1)) - 2 - 8);
         }
 
         @Test
@@ -1468,7 +1532,11 @@ public class APITest {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1)
             ).yield(i1 -> i1);
-            assertThat(result.get()).isEqualTo(1);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (1 + 1)) - 2 - 1);
         }
 
         @Test
@@ -1484,9 +1552,13 @@ public class APITest {
         public void shouldIterateLazyForValidation2() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
-                (r1) -> Validation.valid(2)
+                (r1) -> Validation.valid(r1 + 2)
             ).yield((i1, i2) -> i1 + i2);
-            assertThat(result.get()).isEqualTo(3);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (2 + 1)) - 2 - 2);
         }
 
         @Test
@@ -1503,10 +1575,14 @@ public class APITest {
         public void shouldIterateLazyForValidation3() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
-                (r1) -> Validation.valid(2),
-                (r1, r2) -> Validation.valid(3)
+                (r1) -> Validation.valid(r1 + 2),
+                (r1, r2) -> Validation.valid(r1 + r2 + 3)
             ).yield((i1, i2, i3) -> i1 + i2 + i3);
-            assertThat(result.get()).isEqualTo(6);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (3 + 1)) - 2 - 3);
         }
 
         @Test
@@ -1524,11 +1600,15 @@ public class APITest {
         public void shouldIterateLazyForValidation4() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
-                (r1) -> Validation.valid(2),
-                (r1, r2) -> Validation.valid(3),
-                (r1, r2, r3) -> Validation.valid(4)
+                (r1) -> Validation.valid(r1 + 2),
+                (r1, r2) -> Validation.valid(r1 + r2 + 3),
+                (r1, r2, r3) -> Validation.valid(r1 + r2 + r3 + 4)
             ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
-            assertThat(result.get()).isEqualTo(10);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (4 + 1)) - 2 - 4);
         }
 
         @Test
@@ -1547,12 +1627,16 @@ public class APITest {
         public void shouldIterateLazyForValidation5() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
-                (r1) -> Validation.valid(2),
-                (r1, r2) -> Validation.valid(3),
-                (r1, r2, r3) -> Validation.valid(4),
-                (r1, r2, r3, r4) -> Validation.valid(5)
+                (r1) -> Validation.valid(r1 + 2),
+                (r1, r2) -> Validation.valid(r1 + r2 + 3),
+                (r1, r2, r3) -> Validation.valid(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Validation.valid(r1 + r2 + r3 + r4 + 5)
             ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
-            assertThat(result.get()).isEqualTo(15);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (5 + 1)) - 2 - 5);
         }
 
         @Test
@@ -1572,13 +1656,17 @@ public class APITest {
         public void shouldIterateLazyForValidation6() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
-                (r1) -> Validation.valid(2),
-                (r1, r2) -> Validation.valid(3),
-                (r1, r2, r3) -> Validation.valid(4),
-                (r1, r2, r3, r4) -> Validation.valid(5),
-                (r1, r2, r3, r4, r5) -> Validation.valid(6)
+                (r1) -> Validation.valid(r1 + 2),
+                (r1, r2) -> Validation.valid(r1 + r2 + 3),
+                (r1, r2, r3) -> Validation.valid(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Validation.valid(r1 + r2 + r3 + r4 + 5),
+                (r1, r2, r3, r4, r5) -> Validation.valid(r1 + r2 + r3 + r4 + r5 + 6)
             ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
-            assertThat(result.get()).isEqualTo(21);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (6 + 1)) - 2 - 6);
         }
 
         @Test
@@ -1599,14 +1687,18 @@ public class APITest {
         public void shouldIterateLazyForValidation7() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
-                (r1) -> Validation.valid(2),
-                (r1, r2) -> Validation.valid(3),
-                (r1, r2, r3) -> Validation.valid(4),
-                (r1, r2, r3, r4) -> Validation.valid(5),
-                (r1, r2, r3, r4, r5) -> Validation.valid(6),
-                (r1, r2, r3, r4, r5, r6) -> Validation.valid(7)
+                (r1) -> Validation.valid(r1 + 2),
+                (r1, r2) -> Validation.valid(r1 + r2 + 3),
+                (r1, r2, r3) -> Validation.valid(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Validation.valid(r1 + r2 + r3 + r4 + 5),
+                (r1, r2, r3, r4, r5) -> Validation.valid(r1 + r2 + r3 + r4 + r5 + 6),
+                (r1, r2, r3, r4, r5, r6) -> Validation.valid(r1 + r2 + r3 + r4 + r5 + r6 + 7)
             ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
-            assertThat(result.get()).isEqualTo(28);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (7 + 1)) - 2 - 7);
         }
 
         @Test
@@ -1628,15 +1720,19 @@ public class APITest {
         public void shouldIterateLazyForValidation8() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
-                (r1) -> Validation.valid(2),
-                (r1, r2) -> Validation.valid(3),
-                (r1, r2, r3) -> Validation.valid(4),
-                (r1, r2, r3, r4) -> Validation.valid(5),
-                (r1, r2, r3, r4, r5) -> Validation.valid(6),
-                (r1, r2, r3, r4, r5, r6) -> Validation.valid(7),
-                (r1, r2, r3, r4, r5, r6, r7) -> Validation.valid(8)
+                (r1) -> Validation.valid(r1 + 2),
+                (r1, r2) -> Validation.valid(r1 + r2 + 3),
+                (r1, r2, r3) -> Validation.valid(r1 + r2 + r3 + 4),
+                (r1, r2, r3, r4) -> Validation.valid(r1 + r2 + r3 + r4 + 5),
+                (r1, r2, r3, r4, r5) -> Validation.valid(r1 + r2 + r3 + r4 + r5 + 6),
+                (r1, r2, r3, r4, r5, r6) -> Validation.valid(r1 + r2 + r3 + r4 + r5 + r6 + 7),
+                (r1, r2, r3, r4, r5, r6, r7) -> Validation.valid(r1 + r2 + r3 + r4 + r5 + r6 + r7 + 8)
             ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
-            assertThat(result.get()).isEqualTo(36);
+
+            // Each step builds on the sum of all previous results plus its index
+            // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+            // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+            assertThat(result.get()).isEqualTo((1 << (8 + 1)) - 2 - 8);
         }
 
         @Test

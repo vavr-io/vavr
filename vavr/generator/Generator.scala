@@ -3130,12 +3130,18 @@ def generateTestClasses(): Unit = {
                               s"$mtype.${builderName}($j)"
                           } else {
                               val args = (1 until j).map(k => s"r$k").mkString(", ")
-                              s"($args) -> $mtype.${builderName}($j)"
+                              val argsUsed = (1 until j).map(k => s"r$k").mkString(" + ")
+                              s"($args) -> $mtype.${builderName}(${argsUsed} + $j)"
                           } )(",\n")}
                       ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
-                      $assertThat(result.get()).isEqualTo(${(1 to i).sum});
+
+                      // Each step builds on the sum of all previous results plus its index
+                      // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
+                      // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
+                      assertThat(result.get()).isEqualTo((1 << ($i + 1)) - 2 - $i);
                   }
                 """})("\n\n"))("\n\n")}
+
 
                 ${monadicFunctionTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
                   @$test
