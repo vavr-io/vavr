@@ -1096,10 +1096,27 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForOption1() {
+            final Option<Integer> result = For(
+                Option.of(1)
+            ).yield(i1 -> i1);
+            assertThat(result.get()).isEqualTo(1);
+        }
+
+        @Test
         public void shouldIterateForOption2() {
             final Option<Integer> result = For(
                 Option.of(1),
                 Option.of(2)
+            ).yield((i1, i2) -> i1 + i2);
+            assertThat(result.get()).isEqualTo(3);
+        }
+
+        @Test
+        public void shouldIterateLazyForOption2() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                (r1) -> Option.of(2)
             ).yield((i1, i2) -> i1 + i2);
             assertThat(result.get()).isEqualTo(3);
         }
@@ -1110,6 +1127,16 @@ public class APITest {
                 Option.of(1),
                 Option.of(2),
                 Option.of(3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3);
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldIterateLazyForOption3() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                (r1) -> Option.of(2),
+                (r1, r2) -> Option.of(3)
             ).yield((i1, i2, i3) -> i1 + i2 + i3);
             assertThat(result.get()).isEqualTo(6);
         }
@@ -1126,6 +1153,17 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForOption4() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                (r1) -> Option.of(2),
+                (r1, r2) -> Option.of(3),
+                (r1, r2, r3) -> Option.of(4)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+            assertThat(result.get()).isEqualTo(10);
+        }
+
+        @Test
         public void shouldIterateForOption5() {
             final Option<Integer> result = For(
                 Option.of(1),
@@ -1133,6 +1171,18 @@ public class APITest {
                 Option.of(3),
                 Option.of(4),
                 Option.of(5)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+            assertThat(result.get()).isEqualTo(15);
+        }
+
+        @Test
+        public void shouldIterateLazyForOption5() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                (r1) -> Option.of(2),
+                (r1, r2) -> Option.of(3),
+                (r1, r2, r3) -> Option.of(4),
+                (r1, r2, r3, r4) -> Option.of(5)
             ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
             assertThat(result.get()).isEqualTo(15);
         }
@@ -1151,6 +1201,19 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForOption6() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                (r1) -> Option.of(2),
+                (r1, r2) -> Option.of(3),
+                (r1, r2, r3) -> Option.of(4),
+                (r1, r2, r3, r4) -> Option.of(5),
+                (r1, r2, r3, r4, r5) -> Option.of(6)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+            assertThat(result.get()).isEqualTo(21);
+        }
+
+        @Test
         public void shouldIterateForOption7() {
             final Option<Integer> result = For(
                 Option.of(1),
@@ -1160,6 +1223,20 @@ public class APITest {
                 Option.of(5),
                 Option.of(6),
                 Option.of(7)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+            assertThat(result.get()).isEqualTo(28);
+        }
+
+        @Test
+        public void shouldIterateLazyForOption7() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                (r1) -> Option.of(2),
+                (r1, r2) -> Option.of(3),
+                (r1, r2, r3) -> Option.of(4),
+                (r1, r2, r3, r4) -> Option.of(5),
+                (r1, r2, r3, r4, r5) -> Option.of(6),
+                (r1, r2, r3, r4, r5, r6) -> Option.of(7)
             ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
             assertThat(result.get()).isEqualTo(28);
         }
@@ -1180,7 +1257,30 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForOption8() {
+            final Option<Integer> result = For(
+                Option.of(1),
+                (r1) -> Option.of(2),
+                (r1, r2) -> Option.of(3),
+                (r1, r2, r3) -> Option.of(4),
+                (r1, r2, r3, r4) -> Option.of(5),
+                (r1, r2, r3, r4, r5) -> Option.of(6),
+                (r1, r2, r3, r4, r5, r6) -> Option.of(7),
+                (r1, r2, r3, r4, r5, r6, r7) -> Option.of(8)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+            assertThat(result.get()).isEqualTo(36);
+        }
+
+        @Test
         public void shouldIterateForEither1() {
+            final Either<Object, Integer> result = For(
+                Either.right(1)
+            ).yield(i1 -> i1);
+            assertThat(result.get()).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldIterateLazyForEither1() {
             final Either<Object, Integer> result = For(
                 Either.right(1)
             ).yield(i1 -> i1);
@@ -1197,11 +1297,30 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForEither2() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                (r1) -> Either.right(2)
+            ).yield((i1, i2) -> i1 + i2);
+            assertThat(result.get()).isEqualTo(3);
+        }
+
+        @Test
         public void shouldIterateForEither3() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
                 Either.right(2),
                 Either.right(3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3);
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldIterateLazyForEither3() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                (r1) -> Either.right(2),
+                (r1, r2) -> Either.right(3)
             ).yield((i1, i2, i3) -> i1 + i2 + i3);
             assertThat(result.get()).isEqualTo(6);
         }
@@ -1218,6 +1337,17 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForEither4() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                (r1) -> Either.right(2),
+                (r1, r2) -> Either.right(3),
+                (r1, r2, r3) -> Either.right(4)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+            assertThat(result.get()).isEqualTo(10);
+        }
+
+        @Test
         public void shouldIterateForEither5() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
@@ -1225,6 +1355,18 @@ public class APITest {
                 Either.right(3),
                 Either.right(4),
                 Either.right(5)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+            assertThat(result.get()).isEqualTo(15);
+        }
+
+        @Test
+        public void shouldIterateLazyForEither5() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                (r1) -> Either.right(2),
+                (r1, r2) -> Either.right(3),
+                (r1, r2, r3) -> Either.right(4),
+                (r1, r2, r3, r4) -> Either.right(5)
             ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
             assertThat(result.get()).isEqualTo(15);
         }
@@ -1243,6 +1385,19 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForEither6() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                (r1) -> Either.right(2),
+                (r1, r2) -> Either.right(3),
+                (r1, r2, r3) -> Either.right(4),
+                (r1, r2, r3, r4) -> Either.right(5),
+                (r1, r2, r3, r4, r5) -> Either.right(6)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+            assertThat(result.get()).isEqualTo(21);
+        }
+
+        @Test
         public void shouldIterateForEither7() {
             final Either<Object, Integer> result = For(
                 Either.right(1),
@@ -1252,6 +1407,20 @@ public class APITest {
                 Either.right(5),
                 Either.right(6),
                 Either.right(7)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+            assertThat(result.get()).isEqualTo(28);
+        }
+
+        @Test
+        public void shouldIterateLazyForEither7() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                (r1) -> Either.right(2),
+                (r1, r2) -> Either.right(3),
+                (r1, r2, r3) -> Either.right(4),
+                (r1, r2, r3, r4) -> Either.right(5),
+                (r1, r2, r3, r4, r5) -> Either.right(6),
+                (r1, r2, r3, r4, r5, r6) -> Either.right(7)
             ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
             assertThat(result.get()).isEqualTo(28);
         }
@@ -1272,7 +1441,30 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForEither8() {
+            final Either<Object, Integer> result = For(
+                Either.right(1),
+                (r1) -> Either.right(2),
+                (r1, r2) -> Either.right(3),
+                (r1, r2, r3) -> Either.right(4),
+                (r1, r2, r3, r4) -> Either.right(5),
+                (r1, r2, r3, r4, r5) -> Either.right(6),
+                (r1, r2, r3, r4, r5, r6) -> Either.right(7),
+                (r1, r2, r3, r4, r5, r6, r7) -> Either.right(8)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+            assertThat(result.get()).isEqualTo(36);
+        }
+
+        @Test
         public void shouldIterateForValidation1() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1)
+            ).yield(i1 -> i1);
+            assertThat(result.get()).isEqualTo(1);
+        }
+
+        @Test
+        public void shouldIterateLazyForValidation1() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1)
             ).yield(i1 -> i1);
@@ -1289,11 +1481,30 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForValidation2() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                (r1) -> Validation.valid(2)
+            ).yield((i1, i2) -> i1 + i2);
+            assertThat(result.get()).isEqualTo(3);
+        }
+
+        @Test
         public void shouldIterateForValidation3() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
                 Validation.valid(2),
                 Validation.valid(3)
+            ).yield((i1, i2, i3) -> i1 + i2 + i3);
+            assertThat(result.get()).isEqualTo(6);
+        }
+
+        @Test
+        public void shouldIterateLazyForValidation3() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                (r1) -> Validation.valid(2),
+                (r1, r2) -> Validation.valid(3)
             ).yield((i1, i2, i3) -> i1 + i2 + i3);
             assertThat(result.get()).isEqualTo(6);
         }
@@ -1305,6 +1516,17 @@ public class APITest {
                 Validation.valid(2),
                 Validation.valid(3),
                 Validation.valid(4)
+            ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
+            assertThat(result.get()).isEqualTo(10);
+        }
+
+        @Test
+        public void shouldIterateLazyForValidation4() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                (r1) -> Validation.valid(2),
+                (r1, r2) -> Validation.valid(3),
+                (r1, r2, r3) -> Validation.valid(4)
             ).yield((i1, i2, i3, i4) -> i1 + i2 + i3 + i4);
             assertThat(result.get()).isEqualTo(10);
         }
@@ -1322,6 +1544,18 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForValidation5() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                (r1) -> Validation.valid(2),
+                (r1, r2) -> Validation.valid(3),
+                (r1, r2, r3) -> Validation.valid(4),
+                (r1, r2, r3, r4) -> Validation.valid(5)
+            ).yield((i1, i2, i3, i4, i5) -> i1 + i2 + i3 + i4 + i5);
+            assertThat(result.get()).isEqualTo(15);
+        }
+
+        @Test
         public void shouldIterateForValidation6() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
@@ -1330,6 +1564,19 @@ public class APITest {
                 Validation.valid(4),
                 Validation.valid(5),
                 Validation.valid(6)
+            ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
+            assertThat(result.get()).isEqualTo(21);
+        }
+
+        @Test
+        public void shouldIterateLazyForValidation6() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                (r1) -> Validation.valid(2),
+                (r1, r2) -> Validation.valid(3),
+                (r1, r2, r3) -> Validation.valid(4),
+                (r1, r2, r3, r4) -> Validation.valid(5),
+                (r1, r2, r3, r4, r5) -> Validation.valid(6)
             ).yield((i1, i2, i3, i4, i5, i6) -> i1 + i2 + i3 + i4 + i5 + i6);
             assertThat(result.get()).isEqualTo(21);
         }
@@ -1349,6 +1596,20 @@ public class APITest {
         }
 
         @Test
+        public void shouldIterateLazyForValidation7() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                (r1) -> Validation.valid(2),
+                (r1, r2) -> Validation.valid(3),
+                (r1, r2, r3) -> Validation.valid(4),
+                (r1, r2, r3, r4) -> Validation.valid(5),
+                (r1, r2, r3, r4, r5) -> Validation.valid(6),
+                (r1, r2, r3, r4, r5, r6) -> Validation.valid(7)
+            ).yield((i1, i2, i3, i4, i5, i6, i7) -> i1 + i2 + i3 + i4 + i5 + i6 + i7);
+            assertThat(result.get()).isEqualTo(28);
+        }
+
+        @Test
         public void shouldIterateForValidation8() {
             final Validation<Object, Integer> result = For(
                 Validation.valid(1),
@@ -1359,6 +1620,21 @@ public class APITest {
                 Validation.valid(6),
                 Validation.valid(7),
                 Validation.valid(8)
+            ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
+            assertThat(result.get()).isEqualTo(36);
+        }
+
+        @Test
+        public void shouldIterateLazyForValidation8() {
+            final Validation<Object, Integer> result = For(
+                Validation.valid(1),
+                (r1) -> Validation.valid(2),
+                (r1, r2) -> Validation.valid(3),
+                (r1, r2, r3) -> Validation.valid(4),
+                (r1, r2, r3, r4) -> Validation.valid(5),
+                (r1, r2, r3, r4, r5) -> Validation.valid(6),
+                (r1, r2, r3, r4, r5, r6) -> Validation.valid(7),
+                (r1, r2, r3, r4, r5, r6, r7) -> Validation.valid(8)
             ).yield((i1, i2, i3, i4, i5, i6, i7, i8) -> i1 + i2 + i3 + i4 + i5 + i6 + i7 + i8);
             assertThat(result.get()).isEqualTo(36);
         }

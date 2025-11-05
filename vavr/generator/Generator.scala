@@ -3122,6 +3122,19 @@ def generateTestClasses(): Unit = {
                       ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
                       $assertThat(result.get()).isEqualTo(${(1 to i).sum});
                   }
+
+                  @$test
+                  public void shouldIterateLazyFor$mtype$i() {
+                      final $mtype<${parameterInset}Integer> result = For(
+                          ${(1 to i).gen(j => if (j == 1) {
+                              s"$mtype.${builderName}($j)"
+                          } else {
+                              val args = (1 until j).map(k => s"r$k").mkString(", ")
+                              s"($args) -> $mtype.${builderName}($j)"
+                          } )(",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                      $assertThat(result.get()).isEqualTo(${(1 to i).sum});
+                  }
                 """})("\n\n"))("\n\n")}
 
                 ${monadicFunctionTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
