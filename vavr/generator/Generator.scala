@@ -821,7 +821,7 @@ def generateMainClasses(): Unit = {
               val yieldBody = {
                 def nestedLambda(j: Int): String = {
                   val base = "                       "
-                  val indent = "  " * j
+                  val indent = "  " * (j + 1)
                   if (j == i) {
                     val argsList = (1 to i).map(k => s"t$k").mkString(", ")
                     val inputArgs = (1 until i).map(k => s"t$k").mkString(", ")

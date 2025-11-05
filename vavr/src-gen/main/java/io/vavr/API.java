@@ -7161,8 +7161,8 @@ public final class API {
         public <R> Option<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
-          });
+              return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+            });
         }
     }
 
@@ -7204,10 +7204,10 @@ public final class API {
         public <R> Option<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              });
             });
-          });
         }
     }
 
@@ -7252,12 +7252,12 @@ public final class API {
         public <R> Option<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+                });
               });
             });
-          });
         }
     }
 
@@ -7305,14 +7305,14 @@ public final class API {
         public <R> Option<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                  });
                 });
               });
             });
-          });
         }
     }
 
@@ -7363,16 +7363,16 @@ public final class API {
         public <R> Option<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                    });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -7426,18 +7426,18 @@ public final class API {
         public <R> Option<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                      });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -7494,20 +7494,20 @@ public final class API {
         public <R> Option<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
-                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                          return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                        });
                       });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -7546,8 +7546,8 @@ public final class API {
         public <R> Future<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
-          });
+              return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+            });
         }
     }
 
@@ -7589,10 +7589,10 @@ public final class API {
         public <R> Future<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              });
             });
-          });
         }
     }
 
@@ -7637,12 +7637,12 @@ public final class API {
         public <R> Future<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+                });
               });
             });
-          });
         }
     }
 
@@ -7690,14 +7690,14 @@ public final class API {
         public <R> Future<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                  });
                 });
               });
             });
-          });
         }
     }
 
@@ -7748,16 +7748,16 @@ public final class API {
         public <R> Future<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                    });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -7811,18 +7811,18 @@ public final class API {
         public <R> Future<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                      });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -7879,20 +7879,20 @@ public final class API {
         public <R> Future<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
-                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                          return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                        });
                       });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -7931,8 +7931,8 @@ public final class API {
         public <R> Try<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
-          });
+              return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+            });
         }
     }
 
@@ -7974,10 +7974,10 @@ public final class API {
         public <R> Try<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              });
             });
-          });
         }
     }
 
@@ -8022,12 +8022,12 @@ public final class API {
         public <R> Try<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+                });
               });
             });
-          });
         }
     }
 
@@ -8075,14 +8075,14 @@ public final class API {
         public <R> Try<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                  });
                 });
               });
             });
-          });
         }
     }
 
@@ -8133,16 +8133,16 @@ public final class API {
         public <R> Try<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                    });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -8196,18 +8196,18 @@ public final class API {
         public <R> Try<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                      });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -8264,20 +8264,20 @@ public final class API {
         public <R> Try<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
-                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                          return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                        });
                       });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -8316,8 +8316,8 @@ public final class API {
         public <R> List<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
-          });
+              return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+            });
         }
     }
 
@@ -8359,10 +8359,10 @@ public final class API {
         public <R> List<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              });
             });
-          });
         }
     }
 
@@ -8407,12 +8407,12 @@ public final class API {
         public <R> List<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+                });
               });
             });
-          });
         }
     }
 
@@ -8460,14 +8460,14 @@ public final class API {
         public <R> List<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                  });
                 });
               });
             });
-          });
         }
     }
 
@@ -8518,16 +8518,16 @@ public final class API {
         public <R> List<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                    });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -8581,18 +8581,18 @@ public final class API {
         public <R> List<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                      });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -8649,20 +8649,20 @@ public final class API {
         public <R> List<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
-                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                          return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                        });
                       });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -8701,8 +8701,8 @@ public final class API {
         public <R> Either<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
-          });
+              return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+            });
         }
     }
 
@@ -8744,10 +8744,10 @@ public final class API {
         public <R> Either<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              });
             });
-          });
         }
     }
 
@@ -8792,12 +8792,12 @@ public final class API {
         public <R> Either<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+                });
               });
             });
-          });
         }
     }
 
@@ -8845,14 +8845,14 @@ public final class API {
         public <R> Either<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                  });
                 });
               });
             });
-          });
         }
     }
 
@@ -8903,16 +8903,16 @@ public final class API {
         public <R> Either<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                    });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -8966,18 +8966,18 @@ public final class API {
         public <R> Either<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                      });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -9034,20 +9034,20 @@ public final class API {
         public <R> Either<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
-                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                          return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                        });
                       });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -9086,8 +9086,8 @@ public final class API {
         public <R> Validation<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
-          });
+              return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
+            });
         }
     }
 
@@ -9129,10 +9129,10 @@ public final class API {
         public <R> Validation<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).map(t3 -> f.apply(t1, t2, t3));
+              });
             });
-          });
         }
     }
 
@@ -9177,12 +9177,12 @@ public final class API {
         public <R> Validation<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).map(t4 -> f.apply(t1, t2, t3, t4));
+                });
               });
             });
-          });
         }
     }
 
@@ -9230,14 +9230,14 @@ public final class API {
         public <R> Validation<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).map(t5 -> f.apply(t1, t2, t3, t4, t5));
+                  });
                 });
               });
             });
-          });
         }
     }
 
@@ -9288,16 +9288,16 @@ public final class API {
         public <R> Validation<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).map(t6 -> f.apply(t1, t2, t3, t4, t5, t6));
+                    });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -9351,18 +9351,18 @@ public final class API {
         public <R> Validation<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).map(t7 -> f.apply(t1, t2, t3, t4, t5, t6, t7));
+                      });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
@@ -9419,20 +9419,20 @@ public final class API {
         public <R> Validation<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
-            return ts2.apply(t1).flatMap(t2 -> {
-              return ts3.apply(t1, t2).flatMap(t3 -> {
-                return ts4.apply(t1, t2, t3).flatMap(t4 -> {
-                  return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
-                    return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
-                      return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
-                        return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+              return ts2.apply(t1).flatMap(t2 -> {
+                return ts3.apply(t1, t2).flatMap(t3 -> {
+                  return ts4.apply(t1, t2, t3).flatMap(t4 -> {
+                    return ts5.apply(t1, t2, t3, t4).flatMap(t5 -> {
+                      return ts6.apply(t1, t2, t3, t4, t5).flatMap(t6 -> {
+                        return ts7.apply(t1, t2, t3, t4, t5, t6).flatMap(t7 -> {
+                          return ts8.apply(t1, t2, t3, t4, t5, t6, t7).map(t8 -> f.apply(t1, t2, t3, t4, t5, t6, t7, t8));
+                        });
                       });
                     });
                   });
                 });
               });
             });
-          });
         }
     }
 
