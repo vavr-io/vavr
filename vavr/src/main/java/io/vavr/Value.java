@@ -417,6 +417,26 @@ public interface Value<T> extends Iterable<T> {
     }
 
     /**
+     * Maps the underlying value to another fixed value.
+     *
+     * @param value  value to replace the contents with
+     * @param <U>    The new component type
+     * @return A new value
+     */
+    default <U> Value<U> mapTo(U value) {
+        return map((ignored) -> value);
+    }
+
+    /**
+     * Maps the underlying value to Void
+     *
+     * @return A new value of type Void
+     */
+    default Value<Void> mapToVoid() {
+        return map((ignored) -> null);
+    }
+
+    /**
      * Checks if this {@code Value} is asynchronously (short: async) computed.
      * <p>
      * Methods of a {@code Value} instance that operate on the underlying value may block the current thread

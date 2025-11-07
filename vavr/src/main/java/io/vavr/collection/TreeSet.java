@@ -1017,6 +1017,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));
     }
 
+    @Override
+    public TreeSet<Void> mapToVoid() {
+        return map((o1, o2) -> 0, ignored -> null);
+    }
+
     // -- Object
 
     @Override
