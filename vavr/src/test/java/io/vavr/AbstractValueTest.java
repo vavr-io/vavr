@@ -218,7 +218,7 @@ public abstract class AbstractValueTest {
         assertThat(of(1).getOrNull()).isEqualTo(1);
     }
 
-    // -- as
+    // -- mapTo
 
     @TestTemplate
     public void shouldExecuteMapToCorrectly() {
@@ -228,7 +228,7 @@ public abstract class AbstractValueTest {
         assertThat(of(3).mapTo(2)).isEqualTo(of(1).map(ignored -> 2));
     }
 
-    // -- voided
+    // -- mapToVoid
 
     @TestTemplate
     public void shouldExecuteMapToVoidCorrectly() {
