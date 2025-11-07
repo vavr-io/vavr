@@ -567,9 +567,9 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     @Test
     @Override
-    public void shouldExecuteVoidedCorrectly() {
-        assertThat(empty().voided()).isEqualTo(empty());
-        assertThat(of(1).voided()).isEqualTo(of((Integer)null));
+    public void shouldExecuteMapToVoidCorrectly() {
+        assertThat(empty().mapToVoid()).isEqualTo(empty());
+        assertThat(of(1).mapToVoid()).isEqualTo(of((Integer)null));
     }
 
     // -- classes

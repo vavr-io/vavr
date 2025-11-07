@@ -1018,7 +1018,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     @Override
-    public TreeSet<Void> voided() {
+    public TreeSet<Void> mapToVoid() {
         return map((o1, o2) -> 0, ignored -> null);
     }
 

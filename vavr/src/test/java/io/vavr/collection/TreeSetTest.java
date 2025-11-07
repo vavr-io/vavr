@@ -414,8 +414,8 @@ public class TreeSetTest extends AbstractSortedSetTest {
 
     @Test
     @Override
-    public void shouldExecuteVoidedCorrectly() {
-        assertThat(empty().voided()).isEqualTo(empty());
-        assertThat(of(1).map(ignored -> null)).isEqualTo(of(1).voided());
+    public void shouldExecuteMapToVoidCorrectly() {
+        assertThat(empty().mapToVoid()).isEqualTo(empty());
+        assertThat(of(1).map(ignored -> null)).isEqualTo(of(1).mapToVoid());
     }
 }

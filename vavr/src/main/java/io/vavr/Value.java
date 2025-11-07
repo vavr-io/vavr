@@ -416,11 +416,23 @@ public interface Value<T> extends Iterable<T> {
         return isEmpty() ? null : get();
     }
 
-    default <U> Value<U> as(U val) {
-        return map((ignored) -> val);
+    /**
+     * Maps the underlying value to another fixed value.
+     *
+     * @param value  value to replace the contents with
+     * @param <U>    The new component type
+     * @return A new value
+     */
+    default <U> Value<U> mapTo(U value) {
+        return map((ignored) -> value);
     }
 
-    default Value<Void> voided() {
+    /**
+     * Maps the underlying value to Void
+     *
+     * @return A new value of type Void
+     */
+    default Value<Void> mapToVoid() {
         return map((ignored) -> null);
     }
 
