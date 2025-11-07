@@ -1062,6 +1062,24 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
+     * Converts this {@code Try} to an {@link Either}, converting the Throwable (in the failure case)
+     * to a left value using the passed {@link Function}.
+     *
+     * @param <L> left type of the resulting Either
+     * @param throwableMapper A transformation from throwable to the left type of the new {@code Either}
+     * @return A new {@code Either}
+     * @throws NullPointerException if the given {@code throwableMapper} is null
+     */
+    default <L> Either<L, T> toEither(Function<? super Throwable, ? extends L> throwableMapper) {
+        Objects.requireNonNull(throwableMapper, "throwableMapper is null");
+        if (isFailure()) {
+            return Either.left(throwableMapper.apply(getCause()));
+        } else {
+            return Either.right(get());
+        }
+    }
+
+    /**
      * Converts this {@code Try} to a {@link Validation}.
      *
      * @return A new {@code Validation}
@@ -1071,8 +1089,8 @@ public interface Try<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Converts this {@code Try} to a {@link Validation}, converting the Throwable (if present)
-     * to another object using passed {@link Function}.
+     * Converts this {@code Try} to a {@link Validation}, converting the Throwable (in the failure case)
+     * to another object using the passed {@link Function}.
      *
      * <pre>{@code
      * Validation<String, Integer> = Try.of(() -> 1/0).toValidation(Throwable::getMessage));
