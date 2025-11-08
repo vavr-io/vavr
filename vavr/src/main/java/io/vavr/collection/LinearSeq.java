@@ -213,6 +213,16 @@ public interface LinearSeq<T> extends Seq<T> {
     <U> LinearSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
+    default <U> LinearSeq<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default LinearSeq<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     LinearSeq<T> orElse(Iterable<? extends T> other);
 
     @Override

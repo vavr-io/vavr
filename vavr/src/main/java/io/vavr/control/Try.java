@@ -583,6 +583,16 @@ public interface Try<T> extends Value<T>, Serializable {
         return mapTry(mapper::apply);
     }
 
+    @Override
+    default <U> Try<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Try<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
     /**
      * Maps the cause to a new exception if this is a {@code Failure} or returns this instance if this is a {@code Success}.
      * <p>

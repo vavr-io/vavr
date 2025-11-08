@@ -771,6 +771,16 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return map(Comparators.naturalComparator(), mapper);
     }
 
+    @Override
+    public <U> TreeSet<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    public TreeSet<Void> mapToVoid() {
+        return map((o1, o2) -> 0, ignored -> null);
+    }
+
     /**
      * Returns this {@code TreeSet} if it is nonempty,
      * otherwise {@code TreeSet} created from iterable, using existing comparator.
@@ -1015,11 +1025,6 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     @Override
     public <U> SortedSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));
-    }
-
-    @Override
-    public TreeSet<Void> mapToVoid() {
-        return map((o1, o2) -> 0, ignored -> null);
     }
 
     // -- Object

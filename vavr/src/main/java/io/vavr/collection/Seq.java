@@ -1217,6 +1217,16 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     <U> Seq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
+    default <U> Seq<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Seq<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     Seq<T> orElse(Iterable<? extends T> other);
 
     @Override

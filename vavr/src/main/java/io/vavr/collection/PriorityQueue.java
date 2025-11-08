@@ -464,6 +464,16 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         return map(Comparators.naturalComparator(), mapper);
     }
 
+    @Override
+    public <U> PriorityQueue<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    public PriorityQueue<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
     public <U> PriorityQueue<U> map(Comparator<U> comparator, Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(mapper, "mapper is null");

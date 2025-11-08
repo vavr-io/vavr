@@ -410,6 +410,16 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
         return (Seq<U>) iterator().map(mapper).toStream();
     }
 
+    @Override
+    default <U> Seq<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Seq<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
     /**
      * Maps the values of this {@code Multimap} while preserving the corresponding keys.
      *

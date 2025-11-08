@@ -669,6 +669,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
+    public <U> IndexedSeq<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    public IndexedSeq<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     public String mkString() {
         return back;
     }

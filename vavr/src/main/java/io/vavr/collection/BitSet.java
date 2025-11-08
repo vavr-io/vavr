@@ -589,6 +589,16 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
+    default <U> SortedSet<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default SortedSet<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     BitSet<T> remove(T element);
 
     @Override
