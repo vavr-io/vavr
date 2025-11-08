@@ -1066,6 +1066,41 @@ public class TryTest extends AbstractValueTest {
     }
 
     @Test
+    public void shouldConvertFailureToEitherUsingMapper() {
+        Either<String, Object> converted = failure().toEither(
+            exception -> "error string"
+        );
+        assertThat(converted.isLeft()).isTrue();
+        assertThat(converted.getLeft()).isEqualTo("error string");
+    }
+
+    @Test
+    public void shouldConvertSuccessToEitherUsingMapper() {
+        Either<String, String> converted = success().toEither(
+            exception -> "another error"
+        );
+        assertThat(converted.isRight()).isTrue();
+        assertThat(converted.get()).isEqualTo(success().get());
+    }
+
+    @Test
+    public void shouldExecuteToEitherMapperLazilyOnlyWhenFailure() {
+        Either<String, String> converted = success().toEither(
+            exception -> {
+                throw new RuntimeException();
+            }
+        );
+        assertThat(converted.isRight()).isTrue();
+        assertThat(converted.get()).isEqualTo(success().get());
+    }
+
+    @Test
+    public void shouldNotAcceptNullAsThrowableMapperForToEither() {
+        Function<Throwable, String> mapper = null;
+        assertThrows(NullPointerException.class, () -> failure().toEither(mapper));
+    }
+
+    @Test
     public void shouldConvertFailureToEitherLeft() {
         assertThat(failure().toEither("test").isLeft()).isTrue();
     }
