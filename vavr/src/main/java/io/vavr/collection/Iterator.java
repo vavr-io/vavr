@@ -1702,6 +1702,16 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
+    default <U> Iterator<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Iterator<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     default Iterator<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }

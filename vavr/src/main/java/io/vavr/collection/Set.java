@@ -249,6 +249,16 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     <U> Set<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
+    default <U> Set<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Set<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     Set<T> orElse(Iterable<? extends T> other);
 
     @Override

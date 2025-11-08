@@ -715,6 +715,16 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
+    public <U> HashSet<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    public HashSet<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     public String mkString(CharSequence prefix, CharSequence delimiter, CharSequence suffix) {
         return iterator().mkString(prefix, delimiter, suffix);
     }

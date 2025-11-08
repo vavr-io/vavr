@@ -224,6 +224,16 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
+    public <U> Seq<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    public Seq<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     public IntMap<T> orElse(Iterable<? extends T> other) {
         return unit(original.orElse(List.ofAll(other).zipWithIndex().map(t -> Tuple.of(t._2, t._1))));
     }

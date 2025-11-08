@@ -995,6 +995,16 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
+    public <U> Queue<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    public Queue<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     public Queue<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }

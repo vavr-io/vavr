@@ -390,6 +390,15 @@ public interface Option<T> extends Value<T>, Serializable {
         return isEmpty() ? none() : some(mapper.apply(get()));
     }
 
+    @Override
+    default <U> Option<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Option<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
 
     /**
      * Converts this to a {@link Try}, then runs the given checked function if this is a {@link Try.Success},

@@ -224,6 +224,16 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     @Override
+    public <U> Lazy<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    public Lazy<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     public Lazy<T> peek(Consumer<? super T> action) {
         action.accept(get());
         return this;

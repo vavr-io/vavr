@@ -424,6 +424,16 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
         return (Seq<U>) iterator().map(mapper).toStream();
     }
 
+    @Override
+    default <U> Seq<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Seq<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
     /**
      * Maps the entries of this {@code Map} to form a new {@code Map}.
      *

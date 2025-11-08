@@ -972,6 +972,16 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public <U> Array<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    public Array<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     public Array<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }

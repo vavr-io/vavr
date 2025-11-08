@@ -150,6 +150,16 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     <U> SortedSet<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
+    default <U> SortedSet<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default SortedSet<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     SortedSet<T> orElse(Iterable<? extends T> other);
 
     @Override

@@ -1237,6 +1237,16 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
+    default <U> Stream<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Stream<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     default Stream<T> padTo(int length, T element) {
         if (length <= 0) {
             return this;

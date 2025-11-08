@@ -630,6 +630,16 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
+    default <U> Tree<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Tree<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     default Tree<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }
