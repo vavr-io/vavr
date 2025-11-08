@@ -70,6 +70,8 @@ import static io.vavr.API.*;
  * <li>{@link #getOrElseTry(CheckedFunction0)}</li>
  * <li>{@link #getOrNull()}</li>
  * <li>{@link #map(Function)}</li>
+ * <li>{@link #mapTo(Object)}</li>
+ * <li>{@link #mapToVoid()}</li>
  * <li>{@link #stringPrefix()}</li>
  * </ul>
  *

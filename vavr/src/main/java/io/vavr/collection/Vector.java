@@ -870,6 +870,16 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
+    public <U> Vector<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    public Vector<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     public Vector<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }

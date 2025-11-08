@@ -1057,6 +1057,16 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
+    default <U> List<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default List<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     default List<T> orElse(Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }

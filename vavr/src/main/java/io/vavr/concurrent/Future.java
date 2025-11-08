@@ -1282,6 +1282,16 @@ public interface Future<T> extends Value<T> {
         return transformValue(t -> t.map(mapper));
     }
 
+    @Override
+    default <U> Future<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Future<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
     default <U> Future<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return transformValue(t -> t.mapTry(mapper));

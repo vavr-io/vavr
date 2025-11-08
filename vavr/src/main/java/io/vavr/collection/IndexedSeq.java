@@ -231,6 +231,16 @@ public interface IndexedSeq<T> extends Seq<T> {
     <U> IndexedSeq<U> map(Function<? super T, ? extends U> mapper);
 
     @Override
+    default <U> IndexedSeq<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default IndexedSeq<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
+    @Override
     IndexedSeq<T> orElse(Iterable<? extends T> other);
 
     @Override

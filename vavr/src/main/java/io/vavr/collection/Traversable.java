@@ -808,6 +808,16 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     @Override
     <U> Traversable<U> map(Function<? super T, ? extends U> mapper);
 
+    @Override
+    default <U> Traversable<U> mapTo(U value) {
+        return map(ignored -> value);
+    }
+
+    @Override
+    default Traversable<Void> mapToVoid() {
+        return map(ignored -> null);
+    }
+
     /**
      * Calculates the maximum of this elements according to their natural order. Especially the underlying
      * order of sorted collections is not taken into account.
