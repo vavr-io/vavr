@@ -948,10 +948,17 @@ def generateMainClasses(): Unit = {
               case 2 => BiFunctionType
               case _ => s"Function$i"
             }
+
+            val parameterDoc = (if (monadicTypesThatNeedParameter.contains(mtype)) {
+              s"\n* @param <L> The left-hand type of all {@link $mtype}s"
+            } else { "" })
+            val typeDocs = (1 to i).gen(j => s"* @param <T$j> component type of {@link $mtype} number $j\n")
             val args = (1 to i).gen(j => s"? super T$j")(", ")
             xs"""
               /$javadoc
                * For-comprehension with ${i.numerus(mtype)}.
+               $parameterDoc
+               $typeDocs
                */
               public static class $forClassName<$generics> {
 
