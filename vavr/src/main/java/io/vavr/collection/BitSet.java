@@ -34,12 +34,21 @@ import java.util.stream.Collector;
 /**
  * An immutable {@code BitSet} implementation.
  *
+ * @param <T> Component type
  * @author Ruslan Sennov
  */
 public interface BitSet<T> extends SortedSet<T> {
 
+    /**
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     */
     long serialVersionUID = 1L;
 
+    /**
+     * Builder of the BitSet. Encapsulates the conversion functions for T.
+     *
+     * @param <T> Component type
+     */
     class Builder<T> {
 
         final static Builder<Integer> DEFAULT = new Builder<>(i -> i, i -> i);
@@ -52,6 +61,12 @@ public interface BitSet<T> extends SortedSet<T> {
             this.toInt = toInt;
         }
 
+        /**
+         * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
+         * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain an {@link ArrayList}.
+         *
+         * @return A {@link ArrayList} Collector.
+         */
         public Collector<T, ArrayList<T>, BitSet<T>> collector() {
             final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
                 left.addAll(right);
@@ -60,10 +75,21 @@ public interface BitSet<T> extends SortedSet<T> {
             return Collector.of(ArrayList::new, ArrayList::add, combiner, this::ofAll);
         }
 
+        /**
+         * Returns a new empty BitSet
+         *
+         * @return new empty BitSet
+         */
         public BitSet<T> empty() {
             return new BitSetModule.BitSet1<>(fromInt, toInt, 0L);
         }
 
+        /**
+         * Builds a new BitSet from a specific value t
+         *
+         * @param t value to build the BitSet from
+         * @return new BitSet
+         */
         public BitSet<T> of(T t) {
             final int value = toInt.apply(t);
             if (value < BitSetModule.BITS_PER_WORD) {
@@ -75,27 +101,59 @@ public interface BitSet<T> extends SortedSet<T> {
             }
         }
 
+        /**
+         * Builds a new BitSet from a list of values
+         *
+         * @param values values to build the BitSet from
+         * @return new BitSet
+         */
         @SuppressWarnings("varargs")
         @SafeVarargs
         public final BitSet<T> of(T... values) {
             return empty().addAll(Array.wrap(values));
         }
 
+        /**
+         * Builds a new BitSet from an {@link Iterable}
+         *
+         * @param values iterable to build the BitSet from
+         * @return new BitSet
+         */
         public BitSet<T> ofAll(Iterable<? extends T> values) {
             Objects.requireNonNull(values, "values is null");
             return empty().addAll(values);
         }
 
+        /**
+         * Builds a new BitSet from a {@link java.util.stream.Stream} of values
+         *
+         * @param javaStream stream of values to build the BitSet from
+         * @return new BitSet
+         */
         public BitSet<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
             Objects.requireNonNull(javaStream, "javaStream is null");
             return empty().addAll(Iterator.ofAll(javaStream.iterator()));
         }
 
+        /**
+         * Builds a new BitSet tabulating a value n times
+         *
+         * @param n number of times to tabulate
+         * @param f function to tabulate
+         * @return new BitSet
+         */
         public BitSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
             Objects.requireNonNull(f, "f is null");
             return empty().addAll(Collections.tabulate(n, f));
         }
 
+        /**
+         * Builds a new BitSet containing n copies of the same value
+         *
+         * @param n number of times to copy the value
+         * @param s value supplier
+         * @return new BitSet
+         */
         public BitSet<T> fill(int n, Supplier<? extends T> s) {
             Objects.requireNonNull(s, "s is null");
             return empty().addAll(Collections.fill(n, s));
@@ -115,14 +173,29 @@ public interface BitSet<T> extends SortedSet<T> {
         return new Builder<>(i -> (char) i.intValue(), c -> (int) c);
     }
 
+    /**
+     * Returns new {@link BitSet} Builder for type {@link Byte}
+     *
+     * @return new Builder
+     */
     static Builder<Byte> withBytes() {
         return new Builder<>(Integer::byteValue, Byte::intValue);
     }
 
+    /**
+     * Returns new {@link BitSet} Builder for type {@link Long}
+     *
+     * @return new Builder
+     */
     static Builder<Long> withLongs() {
         return new Builder<>(Integer::longValue, Long::intValue);
     }
 
+    /**
+     * Returns new {@link BitSet} Builder for type {@link Short}
+     *
+     * @return new Builder
+     */
     static Builder<Short> withShorts() {
         return new Builder<>(Integer::shortValue, Short::intValue);
     }

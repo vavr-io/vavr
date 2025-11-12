@@ -51,7 +51,8 @@ import java.util.function.Supplier;
  * Example of creating a <em>real</em> lazy value (works only with interfaces):
  *
  * <pre><code>final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);</code></pre>
- *
+ * 
+ * @param <T> The type of the lazy evaluated value 
  * @author Daniel Dietrich
  */
 // DEV-NOTE: No flatMap and orElse because this more like a Functor than a Monad.

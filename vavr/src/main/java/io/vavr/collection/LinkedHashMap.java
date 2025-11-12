@@ -31,6 +31,8 @@ import java.util.stream.Collector;
 /**
  * An immutable {@code LinkedHashMap} implementation that has predictable (insertion-order) iteration.
  *
+ * @param <K> Key type
+ * @param <V> Value type
  * @author Ruslan Sennov
  */
 public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
