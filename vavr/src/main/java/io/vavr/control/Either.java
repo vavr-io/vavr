@@ -284,7 +284,6 @@ public interface Either<L, R> extends Value<R>, Serializable {
     /**
      * Maps the values of an iterable to a sequence of mapped values into a single {@code Either} by
      * transforming an {@code Iterable<? extends T>} into a {@code Either<Seq<U>>}.
-     * <p>
      *
      * @param values An {@code Iterable} of values.
      * @param mapper A mapper of values to Eithers
@@ -347,7 +346,6 @@ public interface Either<L, R> extends Value<R>, Serializable {
     /**
      * Maps the values of an iterable to a sequence of mapped values into a single {@code Either} by
      * transforming an {@code Iterable<? extends T>} into a {@code Either<Seq<U>>}.
-     * <p>
      *
      * @param values An {@code Iterable} of values.
      * @param mapper A mapper of values to Eithers
@@ -514,7 +512,6 @@ public interface Either<L, R> extends Value<R>, Serializable {
 
     /**
      * Filters this right-biased {@code Either} by testing a predicate.
-     * <p>
      *
      * @param predicate A predicate
      *

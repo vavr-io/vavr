@@ -2541,7 +2541,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * LATIN SMALL LETTER DOTLESS I character.
      * To obtain correct results for locale insensitive strings, use
      * {@code toLowerCase(Locale.ROOT)}.
-     * <p>
      *
      * @return the {@code CharSeq}, converted to lowercase.
      * @see String#toLowerCase(Locale)
@@ -2618,7 +2617,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * LATIN CAPITAL LETTER I WITH DOT ABOVE character.
      * To obtain correct results for locale insensitive strings, use
      * {@code toUpperCase(Locale.ROOT)}.
-     * <p>
      *
      * @return the {@code CharSeq}, converted to uppercase.
      * @see String#toUpperCase(Locale)
@@ -2697,7 +2695,6 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * LATIN CAPITAL LETTER I WITH DOT ABOVE character.
      * To obtain correct results for locale insensitive strings, use
      * {@code toUpperCase(Locale.ROOT)}.
-     * <p>
      *
      * @return the {@code CharSeq}, capitalized.
      */
