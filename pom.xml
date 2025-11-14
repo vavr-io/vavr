@@ -38,11 +38,13 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>1.8</java.version>
+        <nullaway.jspecify.mode>false</nullaway.jspecify.mode>
         <assertj.core.version>3.27.6</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
         <error.prone.version>2.44.0</error.prone.version>
         <jmh.version>1.37</jmh.version>
         <junit.version>5.13.4</junit.version>
+        <jspecify.version>1.0.0</jspecify.version>
         <maven.enforcer.version>3.6.2</maven.enforcer.version>
         <maven.build-helper.version>3.6.1</maven.build-helper.version>
         <maven.bundle.version>5.1.9</maven.bundle.version>
@@ -82,6 +84,11 @@
                 <groupId>org.openjdk.jmh</groupId>
                 <artifactId>jmh-generator-annprocess</artifactId>
                 <version>${jmh.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jspecify</groupId>
+                <artifactId>jspecify</artifactId>
+                <version>${jspecify.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -229,7 +236,6 @@
                         <target>${java.version}</target>
                         <showDeprecation>true</showDeprecation>
                         <showWarnings>true</showWarnings>
-                        <fork>true</fork>
                         <compilerArgs>
                             <arg>-Werror</arg>
                             <arg>-Xlint:all</arg>
@@ -237,31 +243,8 @@
                             <arg>-Xlint:-processing</arg>
                             <!-- Enable Java 9 compilation with 1.8 compatibility -->
                             <arg>-Xlint:-options</arg>
-                            <arg>-XDcompilePolicy=simple</arg>
-                            <arg>--should-stop=ifError=FLOW</arg>
-                            <arg>-Xplugin:ErrorProne -XepDisableAllChecks -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:JSpecifyMode=true</arg>
-                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
-                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
-                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
-                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
-                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
-                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
-                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
-                            <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
-                            <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
-                            <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
                         </compilerArgs>
                         <annotationProcessorPaths>
-                            <path>
-                                <groupId>com.google.errorprone</groupId>
-                                <artifactId>error_prone_core</artifactId>
-                                <version>${error.prone.version}</version>
-                            </path>
-                            <path>
-                                <groupId>com.uber.nullaway</groupId>
-                                <artifactId>nullaway</artifactId>
-                                <version>${nullaway.version}</version>
-                            </path>
                             <path>
                                 <groupId>${project.groupId}</groupId>
                                 <artifactId>vavr-match-processor</artifactId>
@@ -442,6 +425,61 @@
                 </plugins>
             </build>
         </profile>
+
+         <!-- ErrorProne with NullAway requires JDK 17+, JSpecifyMode requires JDK 22+ -->
+        <profile>
+            <id>jspecify-mode</id>
+            <activation>
+                <jdk>[22,)</jdk>
+            </activation>
+            <properties>
+                <nullaway.jspecify.mode>true</nullaway.jspecify.mode>
+            </properties>
+        </profile>
+         <profile>
+            <id>nullaway</id>
+            <activation>
+                <jdk>[17,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <configuration>
+                            <fork>true</fork>
+                            <compilerArgs combine.children="append">
+                                <arg>-XDcompilePolicy=simple</arg>
+                                <arg>--should-stop=ifError=FLOW</arg>
+                                <arg>-Xplugin:ErrorProne -XepDisableAllChecks -Xep:NullAway:WARN -XepOpt:NullAway:OnlyNullMarked=true -XepOpt:NullAway:JSpecifyMode=${nullaway.jspecify.mode}</arg>
+                                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED</arg>
+                                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED</arg>
+                                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED</arg>
+                                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED</arg>
+                                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED</arg>
+                                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED</arg>
+                                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED</arg>
+                                <arg>-J--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED</arg>
+                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
+                                <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
+                            </compilerArgs>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>com.google.errorprone</groupId>
+                                    <artifactId>error_prone_core</artifactId>
+                                    <version>${error.prone.version}</version>
+                                </path>
+                                <path>
+                                    <groupId>com.uber.nullaway</groupId>
+                                    <artifactId>nullaway</artifactId>
+                                    <version>${nullaway.version}</version>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+         </profile>
 
         <!-- A profile for running the benchmarks -->
         <profile>
