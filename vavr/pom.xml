@@ -33,6 +33,10 @@
         </dependency>
 
         <dependency>
+            <groupId>org.jspecify</groupId>
+            <artifactId>jspecify</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <scope>test</scope>
@@ -65,11 +69,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <annotationProcessors>
-                        <annotationProcessor>
-                            io.vavr.match.PatternsProcessor
-                        </annotationProcessor>
-                    </annotationProcessors>
+                    <annotationProcessorPaths combine.children="append">
+                        <path>
+                            <groupId>${project.groupId}</groupId>
+                            <artifactId>vavr-match-processor</artifactId>
+                            <version>0.11.0-SNAPSHOT</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>

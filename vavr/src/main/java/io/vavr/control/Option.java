@@ -32,6 +32,9 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.NullUnmarked;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Replacement for {@link java.util.Optional}.
@@ -47,7 +50,8 @@ import java.util.function.Supplier;
  * @param <T> The type of the optional value.
  * @author Daniel Dietrich
  */
-public interface Option<T> extends Value<T>, Serializable {
+@NullMarked
+public interface Option<T extends @Nullable Object> extends Value<T>, Serializable {
 
     long serialVersionUID = 1L;
 
@@ -58,7 +62,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T>   type of the value
      * @return {@code Some(value)} if value is not {@code null}, {@code None} otherwise
      */
-    static <T> Option<T> of(T value) {
+    static <T extends @Nullable Object> Option<T> of(T value) {
         return (value == null) ? none() : some(value);
     }
 
@@ -72,7 +76,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return An {@code Option} of a {@link Seq} of results
      * @throws NullPointerException if {@code values} is null
      */
-    static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
+    static <T extends @Nullable Object> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
         Vector<T> vector = Vector.empty();
         for (Option<? extends T> value : values) {
@@ -95,7 +99,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return A {@code Option} of a {@link Seq} of results.
      * @throws NullPointerException if values or f is null.
      */
-    static <T, U> Option<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Option<? extends U>> mapper) {
+    static <T extends @Nullable Object, U extends @Nullable Object> Option<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Option<? extends U>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
@@ -116,7 +120,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T>   type of the value
      * @return {@code Some(value)}
      */
-    static <T> Option<T> some(T value) {
+    static <T extends @Nullable Object> Option<T> some(T value) {
         return new Some<>(value);
     }
 
@@ -126,7 +130,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T> component type
      * @return the single instance of {@code None}
      */
-    static <T> Option<T> none() {
+    static <T extends @Nullable Object> Option<T> none() {
         @SuppressWarnings("unchecked")
         final None<T> none = (None<T>) None.INSTANCE;
         return none;
@@ -142,7 +146,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return the given {@code option} instance as narrowed type {@code Option<T>}.
      */
     @SuppressWarnings("unchecked")
-    static <T> Option<T> narrow(Option<? extends T> option) {
+    static <T extends @Nullable Object> Option<T> narrow(Option<? extends T> option) {
         return (Option<T>) option;
     }
 
@@ -155,7 +159,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return return {@code Some} of supplier's value if condition is true, or {@code None} in other case
      * @throws NullPointerException if the given {@code supplier} is null
      */
-    static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
+    static <T extends @Nullable Object> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return condition ? some(supplier.get()) : none();
     }
@@ -168,7 +172,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param value     An optional value, may be {@code null}
      * @return return {@code Some} of value if condition is true, or {@code None} in other case
      */
-    static <T> Option<T> when(boolean condition, T value) {
+    static <T extends @Nullable Object> Option<T> when(boolean condition, T value) {
         return condition ? some(value) : none();
     }
 
@@ -180,7 +184,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return {@code Some(optional.get())} if value is Java {@code Optional} is present, {@code None} otherwise
      */
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
-    static <T> Option<T> ofOptional(Optional<? extends T> optional) {
+    static <T extends @Nullable Object> Option<T> ofOptional(Optional<? extends T> optional) {
         Objects.requireNonNull(optional, "optional is null");
         return optional.<Option<T>>map(Option::of).orElseGet(Option::none);
     }
@@ -204,7 +208,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return A new {@code Option} instance containing value of type {@code R}
      * @throws NullPointerException if {@code partialFunction} is null
      */
-    default <R> Option<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+    default <R extends @Nullable Object> Option<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
         return flatMap(partialFunction.lift()::apply);
     }
@@ -371,7 +375,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return a new {@code Option}
      */
     @SuppressWarnings("unchecked")
-    default <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
+    default <U extends @Nullable Object> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? none() : (Option<U>) mapper.apply(get());
     }
@@ -384,16 +388,17 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
      */
     @Override
-    default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
+    default <U extends @Nullable Object> Option<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? none() : some(mapper.apply(get()));
     }
 
     @Override
-    default <U> Option<U> mapTo(U value) {
+    default <U extends @Nullable Object> Option<U> mapTo(U value) {
         return map(ignored -> value);
     }
 
+    @NullUnmarked // TODO: Void needs to be marked @NonNull in Value interface, because lambda maps to null
     @Override
     default Option<Void> mapToVoid() {
         return map(ignored -> null);
@@ -408,7 +413,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return a {@code Try}
      * @throws NullPointerException if {@code mapper} is null
      */
-    default <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
+    default <U extends @Nullable Object> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
         return toTry().mapTry(mapper);
     }
 
@@ -420,7 +425,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <U>         type of the folded value
      * @return A value of type U
      */
-    default <U> U fold(Supplier<? extends U> ifNone, Function<? super T, ? extends U> f) {
+    default <U extends @Nullable Object> U fold(Supplier<? extends U> ifNone, Function<? super T, ? extends U> f) {
         return this.<U>map(f).getOrElse(ifNone);
     }
 
@@ -447,7 +452,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Option<T>, ? extends U> f) {
+    default <U extends @Nullable Object> U transform(Function<? super Option<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
@@ -458,7 +463,7 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     @Override
-    boolean equals(Object o);
+    boolean equals(@Nullable Object o);
 
     @Override
     int hashCode();
@@ -474,7 +479,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T> The type of the optional value.
      * @author Daniel Dietrich
      */
-    final class Some<T> implements Option<T>, Serializable {
+    final class Some<T extends @Nullable Object> implements Option<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -501,7 +506,7 @@ public interface Option<T> extends Value<T>, Serializable {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(@Nullable Object obj) {
             return (obj == this) || (obj instanceof Some && Objects.equals(value, ((Some<?>) obj).value));
         }
 
@@ -527,7 +532,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T> The type of the optional value.
      * @author Daniel Dietrich
      */
-    final class None<T> implements Option<T>, Serializable {
+    final class None<T extends @Nullable Object> implements Option<T>, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -553,7 +558,7 @@ public interface Option<T> extends Value<T>, Serializable {
         }
 
         @Override
-        public boolean equals(Object o) {
+        public boolean equals(@Nullable Object o) {
             return o == this;
         }
 
