@@ -426,7 +426,7 @@
             </build>
         </profile>
 
-         <!-- ErrorProne with NullAway requires JDK 17+, JSpecifyMode requires JDK 22+ -->
+        <!-- ErrorProne with NullAway requires JDK 17+, JSpecifyMode requires JDK 22+ -->
         <profile>
             <id>jspecify-mode</id>
             <activation>
@@ -436,7 +436,7 @@
                 <nullaway.jspecify.mode>true</nullaway.jspecify.mode>
             </properties>
         </profile>
-         <profile>
+        <profile>
             <id>nullaway</id>
             <activation>
                 <jdk>[17,)</jdk>
