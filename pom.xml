@@ -51,7 +51,7 @@
         <maven.deploy.version>3.0.0-M1</maven.deploy.version>
         <maven.gpg.version>3.2.7</maven.gpg.version>
         <maven.jacoco.version>0.8.12</maven.jacoco.version>
-        <maven.jar.version>3.4.2</maven.jar.version>
+        <maven.jar.version>3.5.0</maven.jar.version>
         <maven.javadoc.version>3.12.0</maven.javadoc.version>
         <maven.release.version>3.2.0</maven.release.version>
         <maven.versions.version>2.19.1</maven.versions.version>
