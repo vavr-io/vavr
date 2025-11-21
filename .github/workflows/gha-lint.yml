@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Lint workflows
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - name: Check workflow files
         uses: docker://rhysd/actionlint:latest
         with:
