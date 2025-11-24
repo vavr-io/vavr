@@ -804,9 +804,9 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.Set<Integer> set = value.toJavaSet();
         if (value.isSingleValued()) {
-            assertThat(set).isEqualTo(JavaCollections.javaSet(1));
+            assertThat(set).containsExactlyInAnyOrderElementsOf(JavaCollections.javaSet(1));
         } else {
-            assertThat(set).isEqualTo(JavaCollections.javaSet(1, 2, 3));
+            assertThat(set).containsExactlyInAnyOrderElementsOf(JavaCollections.javaSet(1, 2, 3));
         }
     }
 
@@ -815,9 +815,9 @@ public abstract class AbstractValueTest {
         final Value<Integer> value = of(1, 2, 3);
         final java.util.Set<Integer> set = value.toJavaSet(java.util.HashSet::new);
         if (value.isSingleValued()) {
-            assertThat(set).isEqualTo(JavaCollections.javaSet(1));
+            assertThat(set).containsExactlyInAnyOrderElementsOf(JavaCollections.javaSet(1));
         } else {
-            assertThat(set).isEqualTo(JavaCollections.javaSet(1, 2, 3));
+            assertThat(set).containsExactlyInAnyOrderElementsOf(JavaCollections.javaSet(1, 2, 3));
         }
     }
 
