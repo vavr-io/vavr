@@ -3649,6 +3649,8 @@ public final class API {
 
      /**
       * For-comprehension with one Iterable.
+
+      * @param <T1> component type of {@link Iterable} number 1
       */
      public static class For1<T1> {
 
@@ -3682,6 +3684,9 @@ public final class API {
 
      /**
       * For-comprehension with two Iterables.
+
+      * @param <T1> component type of {@link Iterable} number 1
+      * @param <T2> component type of {@link Iterable} number 2
       */
      public static class For2<T1, T2> {
 
@@ -3711,6 +3716,10 @@ public final class API {
 
      /**
       * For-comprehension with three Iterables.
+
+      * @param <T1> component type of {@link Iterable} number 1
+      * @param <T2> component type of {@link Iterable} number 2
+      * @param <T3> component type of {@link Iterable} number 3
       */
      public static class For3<T1, T2, T3> {
 
@@ -3743,6 +3752,11 @@ public final class API {
 
      /**
       * For-comprehension with 4 Iterables.
+
+      * @param <T1> component type of {@link Iterable} number 1
+      * @param <T2> component type of {@link Iterable} number 2
+      * @param <T3> component type of {@link Iterable} number 3
+      * @param <T4> component type of {@link Iterable} number 4
       */
      public static class For4<T1, T2, T3, T4> {
 
@@ -3778,6 +3792,12 @@ public final class API {
 
      /**
       * For-comprehension with 5 Iterables.
+
+      * @param <T1> component type of {@link Iterable} number 1
+      * @param <T2> component type of {@link Iterable} number 2
+      * @param <T3> component type of {@link Iterable} number 3
+      * @param <T4> component type of {@link Iterable} number 4
+      * @param <T5> component type of {@link Iterable} number 5
       */
      public static class For5<T1, T2, T3, T4, T5> {
 
@@ -3816,6 +3836,13 @@ public final class API {
 
      /**
       * For-comprehension with 6 Iterables.
+
+      * @param <T1> component type of {@link Iterable} number 1
+      * @param <T2> component type of {@link Iterable} number 2
+      * @param <T3> component type of {@link Iterable} number 3
+      * @param <T4> component type of {@link Iterable} number 4
+      * @param <T5> component type of {@link Iterable} number 5
+      * @param <T6> component type of {@link Iterable} number 6
       */
      public static class For6<T1, T2, T3, T4, T5, T6> {
 
@@ -3857,6 +3884,14 @@ public final class API {
 
      /**
       * For-comprehension with 7 Iterables.
+
+      * @param <T1> component type of {@link Iterable} number 1
+      * @param <T2> component type of {@link Iterable} number 2
+      * @param <T3> component type of {@link Iterable} number 3
+      * @param <T4> component type of {@link Iterable} number 4
+      * @param <T5> component type of {@link Iterable} number 5
+      * @param <T6> component type of {@link Iterable} number 6
+      * @param <T7> component type of {@link Iterable} number 7
       */
      public static class For7<T1, T2, T3, T4, T5, T6, T7> {
 
@@ -3901,6 +3936,15 @@ public final class API {
 
      /**
       * For-comprehension with 8 Iterables.
+
+      * @param <T1> component type of {@link Iterable} number 1
+      * @param <T2> component type of {@link Iterable} number 2
+      * @param <T3> component type of {@link Iterable} number 3
+      * @param <T4> component type of {@link Iterable} number 4
+      * @param <T5> component type of {@link Iterable} number 5
+      * @param <T6> component type of {@link Iterable} number 6
+      * @param <T7> component type of {@link Iterable} number 7
+      * @param <T8> component type of {@link Iterable} number 8
       */
      public static class For8<T1, T2, T3, T4, T5, T6, T7, T8> {
 
@@ -3948,6 +3992,8 @@ public final class API {
 
      /**
       * For-comprehension with one Option.
+
+      * @param <T1> component type of {@link Option} number 1
       */
      public static class For1Option<T1> {
 
@@ -3981,6 +4027,9 @@ public final class API {
 
      /**
       * For-comprehension with two Options.
+
+      * @param <T1> component type of {@link Option} number 1
+      * @param <T2> component type of {@link Option} number 2
       */
      public static class For2Option<T1, T2> {
 
@@ -4010,6 +4059,10 @@ public final class API {
 
      /**
       * For-comprehension with three Options.
+
+      * @param <T1> component type of {@link Option} number 1
+      * @param <T2> component type of {@link Option} number 2
+      * @param <T3> component type of {@link Option} number 3
       */
      public static class For3Option<T1, T2, T3> {
 
@@ -4042,6 +4095,11 @@ public final class API {
 
      /**
       * For-comprehension with 4 Options.
+
+      * @param <T1> component type of {@link Option} number 1
+      * @param <T2> component type of {@link Option} number 2
+      * @param <T3> component type of {@link Option} number 3
+      * @param <T4> component type of {@link Option} number 4
       */
      public static class For4Option<T1, T2, T3, T4> {
 
@@ -4077,6 +4135,12 @@ public final class API {
 
      /**
       * For-comprehension with 5 Options.
+
+      * @param <T1> component type of {@link Option} number 1
+      * @param <T2> component type of {@link Option} number 2
+      * @param <T3> component type of {@link Option} number 3
+      * @param <T4> component type of {@link Option} number 4
+      * @param <T5> component type of {@link Option} number 5
       */
      public static class For5Option<T1, T2, T3, T4, T5> {
 
@@ -4115,6 +4179,13 @@ public final class API {
 
      /**
       * For-comprehension with 6 Options.
+
+      * @param <T1> component type of {@link Option} number 1
+      * @param <T2> component type of {@link Option} number 2
+      * @param <T3> component type of {@link Option} number 3
+      * @param <T4> component type of {@link Option} number 4
+      * @param <T5> component type of {@link Option} number 5
+      * @param <T6> component type of {@link Option} number 6
       */
      public static class For6Option<T1, T2, T3, T4, T5, T6> {
 
@@ -4156,6 +4227,14 @@ public final class API {
 
      /**
       * For-comprehension with 7 Options.
+
+      * @param <T1> component type of {@link Option} number 1
+      * @param <T2> component type of {@link Option} number 2
+      * @param <T3> component type of {@link Option} number 3
+      * @param <T4> component type of {@link Option} number 4
+      * @param <T5> component type of {@link Option} number 5
+      * @param <T6> component type of {@link Option} number 6
+      * @param <T7> component type of {@link Option} number 7
       */
      public static class For7Option<T1, T2, T3, T4, T5, T6, T7> {
 
@@ -4200,6 +4279,15 @@ public final class API {
 
      /**
       * For-comprehension with 8 Options.
+
+      * @param <T1> component type of {@link Option} number 1
+      * @param <T2> component type of {@link Option} number 2
+      * @param <T3> component type of {@link Option} number 3
+      * @param <T4> component type of {@link Option} number 4
+      * @param <T5> component type of {@link Option} number 5
+      * @param <T6> component type of {@link Option} number 6
+      * @param <T7> component type of {@link Option} number 7
+      * @param <T8> component type of {@link Option} number 8
       */
      public static class For8Option<T1, T2, T3, T4, T5, T6, T7, T8> {
 
@@ -4247,6 +4335,8 @@ public final class API {
 
      /**
       * For-comprehension with one Future.
+
+      * @param <T1> component type of {@link Future} number 1
       */
      public static class For1Future<T1> {
 
@@ -4280,6 +4370,9 @@ public final class API {
 
      /**
       * For-comprehension with two Futures.
+
+      * @param <T1> component type of {@link Future} number 1
+      * @param <T2> component type of {@link Future} number 2
       */
      public static class For2Future<T1, T2> {
 
@@ -4309,6 +4402,10 @@ public final class API {
 
      /**
       * For-comprehension with three Futures.
+
+      * @param <T1> component type of {@link Future} number 1
+      * @param <T2> component type of {@link Future} number 2
+      * @param <T3> component type of {@link Future} number 3
       */
      public static class For3Future<T1, T2, T3> {
 
@@ -4341,6 +4438,11 @@ public final class API {
 
      /**
       * For-comprehension with 4 Futures.
+
+      * @param <T1> component type of {@link Future} number 1
+      * @param <T2> component type of {@link Future} number 2
+      * @param <T3> component type of {@link Future} number 3
+      * @param <T4> component type of {@link Future} number 4
       */
      public static class For4Future<T1, T2, T3, T4> {
 
@@ -4376,6 +4478,12 @@ public final class API {
 
      /**
       * For-comprehension with 5 Futures.
+
+      * @param <T1> component type of {@link Future} number 1
+      * @param <T2> component type of {@link Future} number 2
+      * @param <T3> component type of {@link Future} number 3
+      * @param <T4> component type of {@link Future} number 4
+      * @param <T5> component type of {@link Future} number 5
       */
      public static class For5Future<T1, T2, T3, T4, T5> {
 
@@ -4414,6 +4522,13 @@ public final class API {
 
      /**
       * For-comprehension with 6 Futures.
+
+      * @param <T1> component type of {@link Future} number 1
+      * @param <T2> component type of {@link Future} number 2
+      * @param <T3> component type of {@link Future} number 3
+      * @param <T4> component type of {@link Future} number 4
+      * @param <T5> component type of {@link Future} number 5
+      * @param <T6> component type of {@link Future} number 6
       */
      public static class For6Future<T1, T2, T3, T4, T5, T6> {
 
@@ -4455,6 +4570,14 @@ public final class API {
 
      /**
       * For-comprehension with 7 Futures.
+
+      * @param <T1> component type of {@link Future} number 1
+      * @param <T2> component type of {@link Future} number 2
+      * @param <T3> component type of {@link Future} number 3
+      * @param <T4> component type of {@link Future} number 4
+      * @param <T5> component type of {@link Future} number 5
+      * @param <T6> component type of {@link Future} number 6
+      * @param <T7> component type of {@link Future} number 7
       */
      public static class For7Future<T1, T2, T3, T4, T5, T6, T7> {
 
@@ -4499,6 +4622,15 @@ public final class API {
 
      /**
       * For-comprehension with 8 Futures.
+
+      * @param <T1> component type of {@link Future} number 1
+      * @param <T2> component type of {@link Future} number 2
+      * @param <T3> component type of {@link Future} number 3
+      * @param <T4> component type of {@link Future} number 4
+      * @param <T5> component type of {@link Future} number 5
+      * @param <T6> component type of {@link Future} number 6
+      * @param <T7> component type of {@link Future} number 7
+      * @param <T8> component type of {@link Future} number 8
       */
      public static class For8Future<T1, T2, T3, T4, T5, T6, T7, T8> {
 
@@ -4546,6 +4678,8 @@ public final class API {
 
      /**
       * For-comprehension with one Try.
+
+      * @param <T1> component type of {@link Try} number 1
       */
      public static class For1Try<T1> {
 
@@ -4579,6 +4713,9 @@ public final class API {
 
      /**
       * For-comprehension with two Trys.
+
+      * @param <T1> component type of {@link Try} number 1
+      * @param <T2> component type of {@link Try} number 2
       */
      public static class For2Try<T1, T2> {
 
@@ -4608,6 +4745,10 @@ public final class API {
 
      /**
       * For-comprehension with three Trys.
+
+      * @param <T1> component type of {@link Try} number 1
+      * @param <T2> component type of {@link Try} number 2
+      * @param <T3> component type of {@link Try} number 3
       */
      public static class For3Try<T1, T2, T3> {
 
@@ -4640,6 +4781,11 @@ public final class API {
 
      /**
       * For-comprehension with 4 Trys.
+
+      * @param <T1> component type of {@link Try} number 1
+      * @param <T2> component type of {@link Try} number 2
+      * @param <T3> component type of {@link Try} number 3
+      * @param <T4> component type of {@link Try} number 4
       */
      public static class For4Try<T1, T2, T3, T4> {
 
@@ -4675,6 +4821,12 @@ public final class API {
 
      /**
       * For-comprehension with 5 Trys.
+
+      * @param <T1> component type of {@link Try} number 1
+      * @param <T2> component type of {@link Try} number 2
+      * @param <T3> component type of {@link Try} number 3
+      * @param <T4> component type of {@link Try} number 4
+      * @param <T5> component type of {@link Try} number 5
       */
      public static class For5Try<T1, T2, T3, T4, T5> {
 
@@ -4713,6 +4865,13 @@ public final class API {
 
      /**
       * For-comprehension with 6 Trys.
+
+      * @param <T1> component type of {@link Try} number 1
+      * @param <T2> component type of {@link Try} number 2
+      * @param <T3> component type of {@link Try} number 3
+      * @param <T4> component type of {@link Try} number 4
+      * @param <T5> component type of {@link Try} number 5
+      * @param <T6> component type of {@link Try} number 6
       */
      public static class For6Try<T1, T2, T3, T4, T5, T6> {
 
@@ -4754,6 +4913,14 @@ public final class API {
 
      /**
       * For-comprehension with 7 Trys.
+
+      * @param <T1> component type of {@link Try} number 1
+      * @param <T2> component type of {@link Try} number 2
+      * @param <T3> component type of {@link Try} number 3
+      * @param <T4> component type of {@link Try} number 4
+      * @param <T5> component type of {@link Try} number 5
+      * @param <T6> component type of {@link Try} number 6
+      * @param <T7> component type of {@link Try} number 7
       */
      public static class For7Try<T1, T2, T3, T4, T5, T6, T7> {
 
@@ -4798,6 +4965,15 @@ public final class API {
 
      /**
       * For-comprehension with 8 Trys.
+
+      * @param <T1> component type of {@link Try} number 1
+      * @param <T2> component type of {@link Try} number 2
+      * @param <T3> component type of {@link Try} number 3
+      * @param <T4> component type of {@link Try} number 4
+      * @param <T5> component type of {@link Try} number 5
+      * @param <T6> component type of {@link Try} number 6
+      * @param <T7> component type of {@link Try} number 7
+      * @param <T8> component type of {@link Try} number 8
       */
      public static class For8Try<T1, T2, T3, T4, T5, T6, T7, T8> {
 
@@ -4845,6 +5021,8 @@ public final class API {
 
      /**
       * For-comprehension with one List.
+
+      * @param <T1> component type of {@link List} number 1
       */
      public static class For1List<T1> {
 
@@ -4878,6 +5056,9 @@ public final class API {
 
      /**
       * For-comprehension with two Lists.
+
+      * @param <T1> component type of {@link List} number 1
+      * @param <T2> component type of {@link List} number 2
       */
      public static class For2List<T1, T2> {
 
@@ -4907,6 +5088,10 @@ public final class API {
 
      /**
       * For-comprehension with three Lists.
+
+      * @param <T1> component type of {@link List} number 1
+      * @param <T2> component type of {@link List} number 2
+      * @param <T3> component type of {@link List} number 3
       */
      public static class For3List<T1, T2, T3> {
 
@@ -4939,6 +5124,11 @@ public final class API {
 
      /**
       * For-comprehension with 4 Lists.
+
+      * @param <T1> component type of {@link List} number 1
+      * @param <T2> component type of {@link List} number 2
+      * @param <T3> component type of {@link List} number 3
+      * @param <T4> component type of {@link List} number 4
       */
      public static class For4List<T1, T2, T3, T4> {
 
@@ -4974,6 +5164,12 @@ public final class API {
 
      /**
       * For-comprehension with 5 Lists.
+
+      * @param <T1> component type of {@link List} number 1
+      * @param <T2> component type of {@link List} number 2
+      * @param <T3> component type of {@link List} number 3
+      * @param <T4> component type of {@link List} number 4
+      * @param <T5> component type of {@link List} number 5
       */
      public static class For5List<T1, T2, T3, T4, T5> {
 
@@ -5012,6 +5208,13 @@ public final class API {
 
      /**
       * For-comprehension with 6 Lists.
+
+      * @param <T1> component type of {@link List} number 1
+      * @param <T2> component type of {@link List} number 2
+      * @param <T3> component type of {@link List} number 3
+      * @param <T4> component type of {@link List} number 4
+      * @param <T5> component type of {@link List} number 5
+      * @param <T6> component type of {@link List} number 6
       */
      public static class For6List<T1, T2, T3, T4, T5, T6> {
 
@@ -5053,6 +5256,14 @@ public final class API {
 
      /**
       * For-comprehension with 7 Lists.
+
+      * @param <T1> component type of {@link List} number 1
+      * @param <T2> component type of {@link List} number 2
+      * @param <T3> component type of {@link List} number 3
+      * @param <T4> component type of {@link List} number 4
+      * @param <T5> component type of {@link List} number 5
+      * @param <T6> component type of {@link List} number 6
+      * @param <T7> component type of {@link List} number 7
       */
      public static class For7List<T1, T2, T3, T4, T5, T6, T7> {
 
@@ -5097,6 +5308,15 @@ public final class API {
 
      /**
       * For-comprehension with 8 Lists.
+
+      * @param <T1> component type of {@link List} number 1
+      * @param <T2> component type of {@link List} number 2
+      * @param <T3> component type of {@link List} number 3
+      * @param <T4> component type of {@link List} number 4
+      * @param <T5> component type of {@link List} number 5
+      * @param <T6> component type of {@link List} number 6
+      * @param <T7> component type of {@link List} number 7
+      * @param <T8> component type of {@link List} number 8
       */
      public static class For8List<T1, T2, T3, T4, T5, T6, T7, T8> {
 
@@ -5144,6 +5364,9 @@ public final class API {
 
      /**
       * For-comprehension with one Either.
+
+      * @param <L> The left-hand type of all {@link Either}s
+      * @param <T1> component type of {@link Either} number 1
       */
      public static class For1Either<L, T1> {
 
@@ -5177,6 +5400,10 @@ public final class API {
 
      /**
       * For-comprehension with two Eithers.
+
+      * @param <L> The left-hand type of all {@link Either}s
+      * @param <T1> component type of {@link Either} number 1
+      * @param <T2> component type of {@link Either} number 2
       */
      public static class For2Either<L, T1, T2> {
 
@@ -5206,6 +5433,11 @@ public final class API {
 
      /**
       * For-comprehension with three Eithers.
+
+      * @param <L> The left-hand type of all {@link Either}s
+      * @param <T1> component type of {@link Either} number 1
+      * @param <T2> component type of {@link Either} number 2
+      * @param <T3> component type of {@link Either} number 3
       */
      public static class For3Either<L, T1, T2, T3> {
 
@@ -5238,6 +5470,12 @@ public final class API {
 
      /**
       * For-comprehension with 4 Eithers.
+
+      * @param <L> The left-hand type of all {@link Either}s
+      * @param <T1> component type of {@link Either} number 1
+      * @param <T2> component type of {@link Either} number 2
+      * @param <T3> component type of {@link Either} number 3
+      * @param <T4> component type of {@link Either} number 4
       */
      public static class For4Either<L, T1, T2, T3, T4> {
 
@@ -5273,6 +5511,13 @@ public final class API {
 
      /**
       * For-comprehension with 5 Eithers.
+
+      * @param <L> The left-hand type of all {@link Either}s
+      * @param <T1> component type of {@link Either} number 1
+      * @param <T2> component type of {@link Either} number 2
+      * @param <T3> component type of {@link Either} number 3
+      * @param <T4> component type of {@link Either} number 4
+      * @param <T5> component type of {@link Either} number 5
       */
      public static class For5Either<L, T1, T2, T3, T4, T5> {
 
@@ -5311,6 +5556,14 @@ public final class API {
 
      /**
       * For-comprehension with 6 Eithers.
+
+      * @param <L> The left-hand type of all {@link Either}s
+      * @param <T1> component type of {@link Either} number 1
+      * @param <T2> component type of {@link Either} number 2
+      * @param <T3> component type of {@link Either} number 3
+      * @param <T4> component type of {@link Either} number 4
+      * @param <T5> component type of {@link Either} number 5
+      * @param <T6> component type of {@link Either} number 6
       */
      public static class For6Either<L, T1, T2, T3, T4, T5, T6> {
 
@@ -5352,6 +5605,15 @@ public final class API {
 
      /**
       * For-comprehension with 7 Eithers.
+
+      * @param <L> The left-hand type of all {@link Either}s
+      * @param <T1> component type of {@link Either} number 1
+      * @param <T2> component type of {@link Either} number 2
+      * @param <T3> component type of {@link Either} number 3
+      * @param <T4> component type of {@link Either} number 4
+      * @param <T5> component type of {@link Either} number 5
+      * @param <T6> component type of {@link Either} number 6
+      * @param <T7> component type of {@link Either} number 7
       */
      public static class For7Either<L, T1, T2, T3, T4, T5, T6, T7> {
 
@@ -5396,6 +5658,16 @@ public final class API {
 
      /**
       * For-comprehension with 8 Eithers.
+
+      * @param <L> The left-hand type of all {@link Either}s
+      * @param <T1> component type of {@link Either} number 1
+      * @param <T2> component type of {@link Either} number 2
+      * @param <T3> component type of {@link Either} number 3
+      * @param <T4> component type of {@link Either} number 4
+      * @param <T5> component type of {@link Either} number 5
+      * @param <T6> component type of {@link Either} number 6
+      * @param <T7> component type of {@link Either} number 7
+      * @param <T8> component type of {@link Either} number 8
       */
      public static class For8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> {
 
@@ -5443,6 +5715,9 @@ public final class API {
 
      /**
       * For-comprehension with one Validation.
+
+      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <T1> component type of {@link Validation} number 1
       */
      public static class For1Validation<L, T1> {
 
@@ -5476,6 +5751,10 @@ public final class API {
 
      /**
       * For-comprehension with two Validations.
+
+      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <T1> component type of {@link Validation} number 1
+      * @param <T2> component type of {@link Validation} number 2
       */
      public static class For2Validation<L, T1, T2> {
 
@@ -5505,6 +5784,11 @@ public final class API {
 
      /**
       * For-comprehension with three Validations.
+
+      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <T1> component type of {@link Validation} number 1
+      * @param <T2> component type of {@link Validation} number 2
+      * @param <T3> component type of {@link Validation} number 3
       */
      public static class For3Validation<L, T1, T2, T3> {
 
@@ -5537,6 +5821,12 @@ public final class API {
 
      /**
       * For-comprehension with 4 Validations.
+
+      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <T1> component type of {@link Validation} number 1
+      * @param <T2> component type of {@link Validation} number 2
+      * @param <T3> component type of {@link Validation} number 3
+      * @param <T4> component type of {@link Validation} number 4
       */
      public static class For4Validation<L, T1, T2, T3, T4> {
 
@@ -5572,6 +5862,13 @@ public final class API {
 
      /**
       * For-comprehension with 5 Validations.
+
+      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <T1> component type of {@link Validation} number 1
+      * @param <T2> component type of {@link Validation} number 2
+      * @param <T3> component type of {@link Validation} number 3
+      * @param <T4> component type of {@link Validation} number 4
+      * @param <T5> component type of {@link Validation} number 5
       */
      public static class For5Validation<L, T1, T2, T3, T4, T5> {
 
@@ -5610,6 +5907,14 @@ public final class API {
 
      /**
       * For-comprehension with 6 Validations.
+
+      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <T1> component type of {@link Validation} number 1
+      * @param <T2> component type of {@link Validation} number 2
+      * @param <T3> component type of {@link Validation} number 3
+      * @param <T4> component type of {@link Validation} number 4
+      * @param <T5> component type of {@link Validation} number 5
+      * @param <T6> component type of {@link Validation} number 6
       */
      public static class For6Validation<L, T1, T2, T3, T4, T5, T6> {
 
@@ -5651,6 +5956,15 @@ public final class API {
 
      /**
       * For-comprehension with 7 Validations.
+
+      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <T1> component type of {@link Validation} number 1
+      * @param <T2> component type of {@link Validation} number 2
+      * @param <T3> component type of {@link Validation} number 3
+      * @param <T4> component type of {@link Validation} number 4
+      * @param <T5> component type of {@link Validation} number 5
+      * @param <T6> component type of {@link Validation} number 6
+      * @param <T7> component type of {@link Validation} number 7
       */
      public static class For7Validation<L, T1, T2, T3, T4, T5, T6, T7> {
 
@@ -5695,6 +6009,16 @@ public final class API {
 
      /**
       * For-comprehension with 8 Validations.
+
+      * @param <L> The left-hand type of all {@link Validation}s
+      * @param <T1> component type of {@link Validation} number 1
+      * @param <T2> component type of {@link Validation} number 2
+      * @param <T3> component type of {@link Validation} number 3
+      * @param <T4> component type of {@link Validation} number 4
+      * @param <T5> component type of {@link Validation} number 5
+      * @param <T6> component type of {@link Validation} number 6
+      * @param <T7> component type of {@link Validation} number 7
+      * @param <T8> component type of {@link Validation} number 8
       */
      public static class For8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> {
 
@@ -9458,6 +9782,15 @@ public final class API {
 
     // - Pattern0
 
+    /**
+     * Returns a {@link Case0} instance for a specific {@link Pattern0} and {@link Function}
+     *
+     * @param <T>     Type of the value being matched
+     * @param <R>     Return value type
+     * @param pattern Pattern to match
+     * @param f       Matched value consumer
+     * @return new Case0
+     */
     @GwtIncompatible
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Function<? super T, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9465,6 +9798,15 @@ public final class API {
         return new Case0<>(pattern, f);
     }
 
+    /**
+     * Returns a {@link Case0} instance for a specific {@link Pattern0} and {@link Supplier}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param supplier Matched value supplier
+     * @return new Case0
+     */
     @GwtIncompatible
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9472,6 +9814,15 @@ public final class API {
         return new Case0<>(pattern, ignored -> supplier.get());
     }
 
+    /**
+     * Returns a {@link Case0} instance for a specific {@link Pattern0} and a constant value
+     *
+     * @param <T>     Type of the value being matched
+     * @param <R>     Return value type
+     * @param pattern Pattern to match
+     * @param retVal  Constant value to return
+     * @return new Case0
+     */
     @GwtIncompatible
     public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9480,6 +9831,16 @@ public final class API {
 
     // - Pattern1
 
+    /**
+     * Returns a {@link Case1} instance for a specific {@link Pattern1} and {@link Function}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param f        Matched value consumer
+     * @return new Case1
+     */
     @GwtIncompatible
     public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9487,6 +9848,16 @@ public final class API {
         return new Case1<>(pattern, f);
     }
 
+    /**
+     * Returns a {@link Case1} instance for a specific {@link Pattern1} and {@link Supplier}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param supplier Matched value supplier
+     * @return new Case1
+     */
     @GwtIncompatible
     public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9494,6 +9865,16 @@ public final class API {
         return new Case1<>(pattern, _1 -> supplier.get());
     }
 
+    /**
+     * Returns a {@link Case1} instance for a specific {@link Pattern1} and a constant value
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param retVal   Constant value to return
+     * @return new Case1
+     */
     @GwtIncompatible
     public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9502,6 +9883,17 @@ public final class API {
 
     // - Pattern2
 
+    /**
+     * Returns a {@link Case2} instance for a specific {@link Pattern2} and {@link BiFunction}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param f        Matched value consumer
+     * @return new Case2
+     */
     @GwtIncompatible
     public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, BiFunction<? super T1, ? super T2, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9509,6 +9901,17 @@ public final class API {
         return new Case2<>(pattern, f);
     }
 
+    /**
+     * Returns a {@link Case2} instance for a specific {@link Pattern2} and {@link Supplier}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param supplier Matched value supplier
+     * @return new Case2
+     */
     @GwtIncompatible
     public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9516,6 +9919,17 @@ public final class API {
         return new Case2<>(pattern, (_1, _2) -> supplier.get());
     }
 
+    /**
+     * Returns a {@link Case2} instance for a specific {@link Pattern2} and a constant value
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param retVal   Constant value to return
+     * @return new Case2
+     */
     @GwtIncompatible
     public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9524,6 +9938,18 @@ public final class API {
 
     // - Pattern3
 
+    /**
+     * Returns a {@link Case3} instance for a specific {@link Pattern3} and {@link Function3}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param f        Matched value consumer
+     * @return new Case3
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9531,6 +9957,18 @@ public final class API {
         return new Case3<>(pattern, f);
     }
 
+    /**
+     * Returns a {@link Case3} instance for a specific {@link Pattern3} and {@link Supplier}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param supplier Matched value supplier
+     * @return new Case3
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9538,6 +9976,18 @@ public final class API {
         return new Case3<>(pattern, (_1, _2, _3) -> supplier.get());
     }
 
+    /**
+     * Returns a {@link Case3} instance for a specific {@link Pattern3} and a constant value
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param retVal   Constant value to return
+     * @return new Case3
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9546,6 +9996,19 @@ public final class API {
 
     // - Pattern4
 
+    /**
+     * Returns a {@link Case4} instance for a specific {@link Pattern4} and {@link Function4}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param f        Matched value consumer
+     * @return new Case4
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9553,6 +10016,19 @@ public final class API {
         return new Case4<>(pattern, f);
     }
 
+    /**
+     * Returns a {@link Case4} instance for a specific {@link Pattern4} and {@link Supplier}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param supplier Matched value supplier
+     * @return new Case4
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9560,6 +10036,19 @@ public final class API {
         return new Case4<>(pattern, (_1, _2, _3, _4) -> supplier.get());
     }
 
+    /**
+     * Returns a {@link Case4} instance for a specific {@link Pattern4} and a constant value
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param retVal   Constant value to return
+     * @return new Case4
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9568,6 +10057,20 @@ public final class API {
 
     // - Pattern5
 
+    /**
+     * Returns a {@link Case5} instance for a specific {@link Pattern5} and {@link Function5}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param f        Matched value consumer
+     * @return new Case5
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9575,6 +10078,20 @@ public final class API {
         return new Case5<>(pattern, f);
     }
 
+    /**
+     * Returns a {@link Case5} instance for a specific {@link Pattern5} and {@link Supplier}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param supplier Matched value supplier
+     * @return new Case5
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9582,6 +10099,20 @@ public final class API {
         return new Case5<>(pattern, (_1, _2, _3, _4, _5) -> supplier.get());
     }
 
+    /**
+     * Returns a {@link Case5} instance for a specific {@link Pattern5} and a constant value
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param retVal   Constant value to return
+     * @return new Case5
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9590,6 +10121,21 @@ public final class API {
 
     // - Pattern6
 
+    /**
+     * Returns a {@link Case6} instance for a specific {@link Pattern6} and {@link Function6}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <T6>     Intermediate type 6 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param f        Matched value consumer
+     * @return new Case6
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9597,6 +10143,21 @@ public final class API {
         return new Case6<>(pattern, f);
     }
 
+    /**
+     * Returns a {@link Case6} instance for a specific {@link Pattern6} and {@link Supplier}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <T6>     Intermediate type 6 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param supplier Matched value supplier
+     * @return new Case6
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9604,6 +10165,21 @@ public final class API {
         return new Case6<>(pattern, (_1, _2, _3, _4, _5, _6) -> supplier.get());
     }
 
+    /**
+     * Returns a {@link Case6} instance for a specific {@link Pattern6} and a constant value
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <T6>     Intermediate type 6 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param retVal   Constant value to return
+     * @return new Case6
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9612,6 +10188,22 @@ public final class API {
 
     // - Pattern7
 
+    /**
+     * Returns a {@link Case7} instance for a specific {@link Pattern7} and {@link Function7}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <T6>     Intermediate type 6 for the pattern
+     * @param <T7>     Intermediate type 7 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param f        Matched value consumer
+     * @return new Case7
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9619,6 +10211,22 @@ public final class API {
         return new Case7<>(pattern, f);
     }
 
+    /**
+     * Returns a {@link Case7} instance for a specific {@link Pattern7} and {@link Supplier}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <T6>     Intermediate type 6 for the pattern
+     * @param <T7>     Intermediate type 7 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param supplier Matched value supplier
+     * @return new Case7
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9626,6 +10234,22 @@ public final class API {
         return new Case7<>(pattern, (_1, _2, _3, _4, _5, _6, _7) -> supplier.get());
     }
 
+    /**
+     * Returns a {@link Case7} instance for a specific {@link Pattern7} and a constant value
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <T6>     Intermediate type 6 for the pattern
+     * @param <T7>     Intermediate type 7 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param retVal   Constant value to return
+     * @return new Case7
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9634,6 +10258,23 @@ public final class API {
 
     // - Pattern8
 
+    /**
+     * Returns a {@link Case8} instance for a specific {@link Pattern8} and {@link Function8}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <T6>     Intermediate type 6 for the pattern
+     * @param <T7>     Intermediate type 7 for the pattern
+     * @param <T8>     Intermediate type 8 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param f        Matched value consumer
+     * @return new Case8
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9641,6 +10282,23 @@ public final class API {
         return new Case8<>(pattern, f);
     }
 
+    /**
+     * Returns a {@link Case8} instance for a specific {@link Pattern8} and {@link Supplier}
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <T6>     Intermediate type 6 for the pattern
+     * @param <T7>     Intermediate type 7 for the pattern
+     * @param <T8>     Intermediate type 8 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param supplier Matched value supplier
+     * @return new Case8
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9648,6 +10306,23 @@ public final class API {
         return new Case8<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8) -> supplier.get());
     }
 
+    /**
+     * Returns a {@link Case8} instance for a specific {@link Pattern8} and a constant value
+     *
+     * @param <T>      Type of the value being matched
+     * @param <T1>     Intermediate type 1 for the pattern
+     * @param <T2>     Intermediate type 2 for the pattern
+     * @param <T3>     Intermediate type 3 for the pattern
+     * @param <T4>     Intermediate type 4 for the pattern
+     * @param <T5>     Intermediate type 5 for the pattern
+     * @param <T6>     Intermediate type 6 for the pattern
+     * @param <T7>     Intermediate type 7 for the pattern
+     * @param <T8>     Intermediate type 8 for the pattern
+     * @param <R>      Return value type
+     * @param pattern  Pattern to match
+     * @param retVal   Constant value to return
+     * @return new Case8
+     */
     @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
@@ -9792,6 +10467,15 @@ public final class API {
             this.value = value;
         }
 
+        /**
+         * Executes the match, created by the factory function {@link API#Match(Object)}. Throws exceptions
+         * when the list of {@link Case}s is incomplete.
+         *
+         * @param cases list of cases we execute the match against
+         * @param <R>   return value type
+         * @return The matched value
+         * @throws MatchError if the list of cases was not defined for all possible values of T
+         */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <R> R of(Case<? extends T, ? extends R>... cases) {
@@ -9805,6 +10489,14 @@ public final class API {
             throw new MatchError(value);
         }
 
+        /**
+        * Executes the match, created by the factory function {@link API#Match(Object)}. Returns Option.some(...)
+        * if the value was matched and Option.none() otherwise.
+        *
+        * @param cases list of cases we execute the match against
+        * @param <R>   return value type
+        * @return Option containing the matched value, or none
+        */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
         public final <R> Option<R> option(Case<? extends T, ? extends R>... cases) {
@@ -9820,6 +10512,12 @@ public final class API {
 
         // -- CASES
 
+        /**
+         * Base interface for all the Cases
+         *
+         * @param <T> Type of the value being matched
+         * @param <R> Return value type
+         */
         public interface Case<T, R> extends PartialFunction<T, R> {
 
             /**
@@ -9828,8 +10526,17 @@ public final class API {
             long serialVersionUID = 1L;
         }
 
+        /**
+         * {@link Case} implementation for simplest case
+         *
+         * @param <T> Type of the value being matched
+         * @param <R> Return value type
+         */
         public static final class Case0<T, R> implements Case<T, R> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private final Pattern0<T> pattern;
@@ -9851,8 +10558,18 @@ public final class API {
             }
         }
 
+        /**
+         * {@link Case} implementation for a case with 1 intermediate type
+         *
+         * @param <T>  Type of the value being matched
+         * @param <T1> Intermediate type 1
+         * @param <R>  Return value type
+         */
         public static final class Case1<T, T1, R> implements Case<T, R> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private final Pattern1<T, T1> pattern;
@@ -9874,8 +10591,19 @@ public final class API {
             }
         }
 
+        /**
+         * {@link Case} implementation for a case with 2 intermediate types
+         *
+         * @param <T>  Type of the value being matched
+         * @param <T1> Intermediate type 1
+         * @param <T2> Intermediate type 2
+         * @param <R>  Return value type
+         */
         public static final class Case2<T, T1, T2, R> implements Case<T, R> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private final Pattern2<T, T1, T2> pattern;
@@ -9897,8 +10625,20 @@ public final class API {
             }
         }
 
+        /**
+         * {@link Case} implementation for a case with 3 intermediate types
+         *
+         * @param <T>  Type of the value being matched
+         * @param <T1> Intermediate type 1
+         * @param <T2> Intermediate type 2
+         * @param <T3> Intermediate type 3
+         * @param <R>  Return value type
+         */
         public static final class Case3<T, T1, T2, T3, R> implements Case<T, R> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private final Pattern3<T, T1, T2, T3> pattern;
@@ -9920,8 +10660,21 @@ public final class API {
             }
         }
 
+        /**
+         * {@link Case} implementation for a case with 4 intermediate types
+         *
+         * @param <T>  Type of the value being matched
+         * @param <T1> Intermediate type 1
+         * @param <T2> Intermediate type 2
+         * @param <T3> Intermediate type 3
+         * @param <T4> Intermediate type 4
+         * @param <R>  Return value type
+         */
         public static final class Case4<T, T1, T2, T3, T4, R> implements Case<T, R> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private final Pattern4<T, T1, T2, T3, T4> pattern;
@@ -9943,8 +10696,22 @@ public final class API {
             }
         }
 
+        /**
+         * {@link Case} implementation for a case with 5 intermediate types
+         *
+         * @param <T>  Type of the value being matched
+         * @param <T1> Intermediate type 1
+         * @param <T2> Intermediate type 2
+         * @param <T3> Intermediate type 3
+         * @param <T4> Intermediate type 4
+         * @param <T5> Intermediate type 5
+         * @param <R>  Return value type
+         */
         public static final class Case5<T, T1, T2, T3, T4, T5, R> implements Case<T, R> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private final Pattern5<T, T1, T2, T3, T4, T5> pattern;
@@ -9966,8 +10733,23 @@ public final class API {
             }
         }
 
+        /**
+         * {@link Case} implementation for a case with 6 intermediate types
+         *
+         * @param <T>  Type of the value being matched
+         * @param <T1> Intermediate type 1
+         * @param <T2> Intermediate type 2
+         * @param <T3> Intermediate type 3
+         * @param <T4> Intermediate type 4
+         * @param <T5> Intermediate type 5
+         * @param <T6> Intermediate type 6
+         * @param <R>  Return value type
+         */
         public static final class Case6<T, T1, T2, T3, T4, T5, T6, R> implements Case<T, R> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private final Pattern6<T, T1, T2, T3, T4, T5, T6> pattern;
@@ -9989,8 +10771,24 @@ public final class API {
             }
         }
 
+        /**
+         * {@link Case} implementation for a case with 7 intermediate types
+         *
+         * @param <T>  Type of the value being matched
+         * @param <T1> Intermediate type 1
+         * @param <T2> Intermediate type 2
+         * @param <T3> Intermediate type 3
+         * @param <T4> Intermediate type 4
+         * @param <T5> Intermediate type 5
+         * @param <T6> Intermediate type 6
+         * @param <T7> Intermediate type 7
+         * @param <R>  Return value type
+         */
         public static final class Case7<T, T1, T2, T3, T4, T5, T6, T7, R> implements Case<T, R> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private final Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern;
@@ -10012,8 +10810,25 @@ public final class API {
             }
         }
 
+        /**
+         * {@link Case} implementation for a case with 8 intermediate types
+         *
+         * @param <T>  Type of the value being matched
+         * @param <T1> Intermediate type 1
+         * @param <T2> Intermediate type 2
+         * @param <T3> Intermediate type 3
+         * @param <T4> Intermediate type 4
+         * @param <T5> Intermediate type 5
+         * @param <T6> Intermediate type 6
+         * @param <T7> Intermediate type 7
+         * @param <T8> Intermediate type 8
+         * @param <R>  Return value type
+         */
         public static final class Case8<T, T1, T2, T3, T4, T5, T6, T7, T8, R> implements Case<T, R> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private final Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern;
@@ -10051,8 +10866,16 @@ public final class API {
         // These can't be @FunctionalInterfaces because of ambiguities.
         // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
+        /**
+         * A {@link Pattern} implementation for the simplest pattern
+         *
+         * @param <T>  Class type that is matched by this pattern
+         */
         public static abstract class Pattern0<T> implements Pattern<T, T> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
             private static final Pattern0<Object> ANY = new Pattern0<Object>() {
@@ -10070,17 +10893,30 @@ public final class API {
                 }
             };
 
+            /**
+             * The greediest match, a catch-all
+             *
+             * @param <T> Class type that is matched by this pattern
+             * @return Pattern0
+             */
             @SuppressWarnings("unchecked")
             public static <T> Pattern0<T> any() {
                 return (Pattern0<T>) ANY;
             }
 
-            // DEV-NOTE: We need the lower bound `Class<? super T>` instead of the more appropriate `Class<T>`
-            //           because it allows us to create patterns for generic types, which would otherwise not be
-            //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
+            /**
+             * Static factory for a {@link Pattern0} based on a {@link Class}
+             *
+             * @param type {@link Class} to build the pattern from
+             * @param <T>  Class type matched by this pattern
+             * @return new Pattern0
+             */
             public static <T> Pattern0<T> of(Class<? super T> type) {
                 return new Pattern0<T>() {
 
+                    /**
+                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     */
                     private static final long serialVersionUID = 1L;
 
                     @Override
@@ -10094,15 +10930,49 @@ public final class API {
                     }
                 };
             }
+
+            /**
+             * Creates a new {@code Pattern0}.
+             *
+             * <p>This constructor is protected because {@code Pattern0} is abstract and
+             * intended to be subclassed rather than instantiated directly.</p>
+             */
+            protected Pattern0() {
+                // default constructor
+            }
         }
 
+        /**
+         * A {@link Pattern} implementation for the pattern with 1 intermediate type
+         *
+         * @param <T>  Class type that is matched by this pattern
+         * @param <T1> Member type 1 of the composite part this pattern decomposes
+         */
         public static abstract class Pattern1<T, T1> implements Pattern<T, T1> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
+            /**
+             * Static factory for a {@link Pattern1} based on a {@link Class}, {@link Pattern} to decompose
+             * it to and a mapper to aggregate result back into a {@link Tuple1}
+             *
+             * @param type    {@link Class} to build the pattern from
+             * @param p1      {@link Pattern} matching the intermediate type 1
+             * @param unapply Mapper function from T to a {@link Tuple1}
+             * @param <T>     Class type matched by this pattern
+             * @param <T1>    Member type 1 of the composite part this pattern decomposes
+             * @param <U1>    Member type 1 of the Tuple the composite part of this pattern decomposes to
+             * @return new Pattern1
+             */
             public static <T, T1 extends U1, U1> Pattern1<T, T1> of(Class<? super T> type, Pattern<T1, ?> p1, Function<T, Tuple1<U1>> unapply) {
                 return new Pattern1<T, T1>() {
 
+                    /**
+                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     */
                     private static final long serialVersionUID = 1L;
 
                     @SuppressWarnings("unchecked")
@@ -10124,15 +10994,53 @@ public final class API {
                     }
                 };
             }
+
+            /**
+             * Creates a new {@code Pattern1}.
+             *
+             * <p>This constructor is protected because {@code Pattern1} is abstract and
+             * intended to be subclassed rather than instantiated directly.</p>
+             */
+             protected Pattern1() {
+                 // default constructor
+             }
         }
 
+        /**
+         * A {@link Pattern} implementation for the pattern with 2 intermediate types
+         *
+         * @param <T>  Class type that is matched by this pattern
+         * @param <T1> Member type 1 of the composite part this pattern decomposes
+         * @param <T2> Member type 2 of the composite part this pattern decomposes
+         */
         public static abstract class Pattern2<T, T1, T2> implements Pattern<T, Tuple2<T1, T2>> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
+            /**
+             * Static factory for a {@link Pattern2} based on a {@link Class}, 2 {@link Pattern}s to decompose
+             * it to and a mapper to aggregate result back into a {@link Tuple2}
+             *
+             * @param type    {@link Class} to build the pattern from
+             * @param p1      {@link Pattern} matching the intermediate type 1
+             * @param p2      {@link Pattern} matching the intermediate type 2
+             * @param unapply Mapper function from T to a {@link Tuple2}
+             * @param <T>     Class type matched by this pattern
+             * @param <T1>    Member type 1 of the composite part this pattern decomposes
+             * @param <U1>    Member type 1 of the Tuple the composite part of this pattern decomposes to
+             * @param <T2>    Member type 2 of the composite part this pattern decomposes
+             * @param <U2>    Member type 2 of the Tuple the composite part of this pattern decomposes to
+             * @return new Pattern2
+             */
             public static <T, T1 extends U1, U1, T2 extends U2, U2> Pattern2<T, T1, T2> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Function<T, Tuple2<U1, U2>> unapply) {
                 return new Pattern2<T, T1, T2>() {
 
+                    /**
+                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     */
                     private static final long serialVersionUID = 1L;
 
                     @SuppressWarnings("unchecked")
@@ -10155,15 +11063,57 @@ public final class API {
                     }
                 };
             }
+
+            /**
+             * Creates a new {@code Pattern2}.
+             *
+             * <p>This constructor is protected because {@code Pattern2} is abstract and
+             * intended to be subclassed rather than instantiated directly.</p>
+             */
+             protected Pattern2() {
+                 // default constructor
+             }
         }
 
+        /**
+         * A {@link Pattern} implementation for the pattern with 3 intermediate types
+         *
+         * @param <T>  Class type that is matched by this pattern
+         * @param <T1> Member type 1 of the composite part this pattern decomposes
+         * @param <T2> Member type 2 of the composite part this pattern decomposes
+         * @param <T3> Member type 3 of the composite part this pattern decomposes
+         */
         public static abstract class Pattern3<T, T1, T2, T3> implements Pattern<T, Tuple3<T1, T2, T3>> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
+            /**
+             * Static factory for a {@link Pattern3} based on a {@link Class}, 3 {@link Pattern}s to decompose
+             * it to and a mapper to aggregate result back into a {@link Tuple3}
+             *
+             * @param type    {@link Class} to build the pattern from
+             * @param p1      {@link Pattern} matching the intermediate type 1
+             * @param p2      {@link Pattern} matching the intermediate type 2
+             * @param p3      {@link Pattern} matching the intermediate type 3
+             * @param unapply Mapper function from T to a {@link Tuple3}
+             * @param <T>     Class type matched by this pattern
+             * @param <T1>    Member type 1 of the composite part this pattern decomposes
+             * @param <U1>    Member type 1 of the Tuple the composite part of this pattern decomposes to
+             * @param <T2>    Member type 2 of the composite part this pattern decomposes
+             * @param <U2>    Member type 2 of the Tuple the composite part of this pattern decomposes to
+             * @param <T3>    Member type 3 of the composite part this pattern decomposes
+             * @param <U3>    Member type 3 of the Tuple the composite part of this pattern decomposes to
+             * @return new Pattern3
+             */
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3> Pattern3<T, T1, T2, T3> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Function<T, Tuple3<U1, U2, U3>> unapply) {
                 return new Pattern3<T, T1, T2, T3>() {
 
+                    /**
+                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     */
                     private static final long serialVersionUID = 1L;
 
                     @SuppressWarnings("unchecked")
@@ -10187,15 +11137,61 @@ public final class API {
                     }
                 };
             }
+
+            /**
+             * Creates a new {@code Pattern3}.
+             *
+             * <p>This constructor is protected because {@code Pattern3} is abstract and
+             * intended to be subclassed rather than instantiated directly.</p>
+             */
+             protected Pattern3() {
+                 // default constructor
+             }
         }
 
+        /**
+         * A {@link Pattern} implementation for the pattern with 4 intermediate types
+         *
+         * @param <T>  Class type that is matched by this pattern
+         * @param <T1> Member type 1 of the composite part this pattern decomposes
+         * @param <T2> Member type 2 of the composite part this pattern decomposes
+         * @param <T3> Member type 3 of the composite part this pattern decomposes
+         * @param <T4> Member type 4 of the composite part this pattern decomposes
+         */
         public static abstract class Pattern4<T, T1, T2, T3, T4> implements Pattern<T, Tuple4<T1, T2, T3, T4>> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
+            /**
+             * Static factory for a {@link Pattern4} based on a {@link Class}, 4 {@link Pattern}s to decompose
+             * it to and a mapper to aggregate result back into a {@link Tuple4}
+             *
+             * @param type    {@link Class} to build the pattern from
+             * @param p1      {@link Pattern} matching the intermediate type 1
+             * @param p2      {@link Pattern} matching the intermediate type 2
+             * @param p3      {@link Pattern} matching the intermediate type 3
+             * @param p4      {@link Pattern} matching the intermediate type 4
+             * @param unapply Mapper function from T to a {@link Tuple4}
+             * @param <T>     Class type matched by this pattern
+             * @param <T1>    Member type 1 of the composite part this pattern decomposes
+             * @param <U1>    Member type 1 of the Tuple the composite part of this pattern decomposes to
+             * @param <T2>    Member type 2 of the composite part this pattern decomposes
+             * @param <U2>    Member type 2 of the Tuple the composite part of this pattern decomposes to
+             * @param <T3>    Member type 3 of the composite part this pattern decomposes
+             * @param <U3>    Member type 3 of the Tuple the composite part of this pattern decomposes to
+             * @param <T4>    Member type 4 of the composite part this pattern decomposes
+             * @param <U4>    Member type 4 of the Tuple the composite part of this pattern decomposes to
+             * @return new Pattern4
+             */
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4> Pattern4<T, T1, T2, T3, T4> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Function<T, Tuple4<U1, U2, U3, U4>> unapply) {
                 return new Pattern4<T, T1, T2, T3, T4>() {
 
+                    /**
+                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     */
                     private static final long serialVersionUID = 1L;
 
                     @SuppressWarnings("unchecked")
@@ -10220,15 +11216,65 @@ public final class API {
                     }
                 };
             }
+
+            /**
+             * Creates a new {@code Pattern4}.
+             *
+             * <p>This constructor is protected because {@code Pattern4} is abstract and
+             * intended to be subclassed rather than instantiated directly.</p>
+             */
+             protected Pattern4() {
+                 // default constructor
+             }
         }
 
+        /**
+         * A {@link Pattern} implementation for the pattern with 5 intermediate types
+         *
+         * @param <T>  Class type that is matched by this pattern
+         * @param <T1> Member type 1 of the composite part this pattern decomposes
+         * @param <T2> Member type 2 of the composite part this pattern decomposes
+         * @param <T3> Member type 3 of the composite part this pattern decomposes
+         * @param <T4> Member type 4 of the composite part this pattern decomposes
+         * @param <T5> Member type 5 of the composite part this pattern decomposes
+         */
         public static abstract class Pattern5<T, T1, T2, T3, T4, T5> implements Pattern<T, Tuple5<T1, T2, T3, T4, T5>> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
+            /**
+             * Static factory for a {@link Pattern5} based on a {@link Class}, 5 {@link Pattern}s to decompose
+             * it to and a mapper to aggregate result back into a {@link Tuple5}
+             *
+             * @param type    {@link Class} to build the pattern from
+             * @param p1      {@link Pattern} matching the intermediate type 1
+             * @param p2      {@link Pattern} matching the intermediate type 2
+             * @param p3      {@link Pattern} matching the intermediate type 3
+             * @param p4      {@link Pattern} matching the intermediate type 4
+             * @param p5      {@link Pattern} matching the intermediate type 5
+             * @param unapply Mapper function from T to a {@link Tuple5}
+             * @param <T>     Class type matched by this pattern
+             * @param <T1>    Member type 1 of the composite part this pattern decomposes
+             * @param <U1>    Member type 1 of the Tuple the composite part of this pattern decomposes to
+             * @param <T2>    Member type 2 of the composite part this pattern decomposes
+             * @param <U2>    Member type 2 of the Tuple the composite part of this pattern decomposes to
+             * @param <T3>    Member type 3 of the composite part this pattern decomposes
+             * @param <U3>    Member type 3 of the Tuple the composite part of this pattern decomposes to
+             * @param <T4>    Member type 4 of the composite part this pattern decomposes
+             * @param <U4>    Member type 4 of the Tuple the composite part of this pattern decomposes to
+             * @param <T5>    Member type 5 of the composite part this pattern decomposes
+             * @param <U5>    Member type 5 of the Tuple the composite part of this pattern decomposes to
+             * @return new Pattern5
+             */
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5> Pattern5<T, T1, T2, T3, T4, T5> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Function<T, Tuple5<U1, U2, U3, U4, U5>> unapply) {
                 return new Pattern5<T, T1, T2, T3, T4, T5>() {
 
+                    /**
+                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     */
                     private static final long serialVersionUID = 1L;
 
                     @SuppressWarnings("unchecked")
@@ -10254,15 +11300,69 @@ public final class API {
                     }
                 };
             }
+
+            /**
+             * Creates a new {@code Pattern5}.
+             *
+             * <p>This constructor is protected because {@code Pattern5} is abstract and
+             * intended to be subclassed rather than instantiated directly.</p>
+             */
+             protected Pattern5() {
+                 // default constructor
+             }
         }
 
+        /**
+         * A {@link Pattern} implementation for the pattern with 6 intermediate types
+         *
+         * @param <T>  Class type that is matched by this pattern
+         * @param <T1> Member type 1 of the composite part this pattern decomposes
+         * @param <T2> Member type 2 of the composite part this pattern decomposes
+         * @param <T3> Member type 3 of the composite part this pattern decomposes
+         * @param <T4> Member type 4 of the composite part this pattern decomposes
+         * @param <T5> Member type 5 of the composite part this pattern decomposes
+         * @param <T6> Member type 6 of the composite part this pattern decomposes
+         */
         public static abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> implements Pattern<T, Tuple6<T1, T2, T3, T4, T5, T6>> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
+            /**
+             * Static factory for a {@link Pattern6} based on a {@link Class}, 6 {@link Pattern}s to decompose
+             * it to and a mapper to aggregate result back into a {@link Tuple6}
+             *
+             * @param type    {@link Class} to build the pattern from
+             * @param p1      {@link Pattern} matching the intermediate type 1
+             * @param p2      {@link Pattern} matching the intermediate type 2
+             * @param p3      {@link Pattern} matching the intermediate type 3
+             * @param p4      {@link Pattern} matching the intermediate type 4
+             * @param p5      {@link Pattern} matching the intermediate type 5
+             * @param p6      {@link Pattern} matching the intermediate type 6
+             * @param unapply Mapper function from T to a {@link Tuple6}
+             * @param <T>     Class type matched by this pattern
+             * @param <T1>    Member type 1 of the composite part this pattern decomposes
+             * @param <U1>    Member type 1 of the Tuple the composite part of this pattern decomposes to
+             * @param <T2>    Member type 2 of the composite part this pattern decomposes
+             * @param <U2>    Member type 2 of the Tuple the composite part of this pattern decomposes to
+             * @param <T3>    Member type 3 of the composite part this pattern decomposes
+             * @param <U3>    Member type 3 of the Tuple the composite part of this pattern decomposes to
+             * @param <T4>    Member type 4 of the composite part this pattern decomposes
+             * @param <U4>    Member type 4 of the Tuple the composite part of this pattern decomposes to
+             * @param <T5>    Member type 5 of the composite part this pattern decomposes
+             * @param <U5>    Member type 5 of the Tuple the composite part of this pattern decomposes to
+             * @param <T6>    Member type 6 of the composite part this pattern decomposes
+             * @param <U6>    Member type 6 of the Tuple the composite part of this pattern decomposes to
+             * @return new Pattern6
+             */
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6> Pattern6<T, T1, T2, T3, T4, T5, T6> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Function<T, Tuple6<U1, U2, U3, U4, U5, U6>> unapply) {
                 return new Pattern6<T, T1, T2, T3, T4, T5, T6>() {
 
+                    /**
+                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     */
                     private static final long serialVersionUID = 1L;
 
                     @SuppressWarnings("unchecked")
@@ -10289,15 +11389,73 @@ public final class API {
                     }
                 };
             }
+
+            /**
+             * Creates a new {@code Pattern6}.
+             *
+             * <p>This constructor is protected because {@code Pattern6} is abstract and
+             * intended to be subclassed rather than instantiated directly.</p>
+             */
+             protected Pattern6() {
+                 // default constructor
+             }
         }
 
+        /**
+         * A {@link Pattern} implementation for the pattern with 7 intermediate types
+         *
+         * @param <T>  Class type that is matched by this pattern
+         * @param <T1> Member type 1 of the composite part this pattern decomposes
+         * @param <T2> Member type 2 of the composite part this pattern decomposes
+         * @param <T3> Member type 3 of the composite part this pattern decomposes
+         * @param <T4> Member type 4 of the composite part this pattern decomposes
+         * @param <T5> Member type 5 of the composite part this pattern decomposes
+         * @param <T6> Member type 6 of the composite part this pattern decomposes
+         * @param <T7> Member type 7 of the composite part this pattern decomposes
+         */
         public static abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> implements Pattern<T, Tuple7<T1, T2, T3, T4, T5, T6, T7>> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
+            /**
+             * Static factory for a {@link Pattern7} based on a {@link Class}, 7 {@link Pattern}s to decompose
+             * it to and a mapper to aggregate result back into a {@link Tuple7}
+             *
+             * @param type    {@link Class} to build the pattern from
+             * @param p1      {@link Pattern} matching the intermediate type 1
+             * @param p2      {@link Pattern} matching the intermediate type 2
+             * @param p3      {@link Pattern} matching the intermediate type 3
+             * @param p4      {@link Pattern} matching the intermediate type 4
+             * @param p5      {@link Pattern} matching the intermediate type 5
+             * @param p6      {@link Pattern} matching the intermediate type 6
+             * @param p7      {@link Pattern} matching the intermediate type 7
+             * @param unapply Mapper function from T to a {@link Tuple7}
+             * @param <T>     Class type matched by this pattern
+             * @param <T1>    Member type 1 of the composite part this pattern decomposes
+             * @param <U1>    Member type 1 of the Tuple the composite part of this pattern decomposes to
+             * @param <T2>    Member type 2 of the composite part this pattern decomposes
+             * @param <U2>    Member type 2 of the Tuple the composite part of this pattern decomposes to
+             * @param <T3>    Member type 3 of the composite part this pattern decomposes
+             * @param <U3>    Member type 3 of the Tuple the composite part of this pattern decomposes to
+             * @param <T4>    Member type 4 of the composite part this pattern decomposes
+             * @param <U4>    Member type 4 of the Tuple the composite part of this pattern decomposes to
+             * @param <T5>    Member type 5 of the composite part this pattern decomposes
+             * @param <U5>    Member type 5 of the Tuple the composite part of this pattern decomposes to
+             * @param <T6>    Member type 6 of the composite part this pattern decomposes
+             * @param <U6>    Member type 6 of the Tuple the composite part of this pattern decomposes to
+             * @param <T7>    Member type 7 of the composite part this pattern decomposes
+             * @param <U7>    Member type 7 of the Tuple the composite part of this pattern decomposes to
+             * @return new Pattern7
+             */
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7> Pattern7<T, T1, T2, T3, T4, T5, T6, T7> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Function<T, Tuple7<U1, U2, U3, U4, U5, U6, U7>> unapply) {
                 return new Pattern7<T, T1, T2, T3, T4, T5, T6, T7>() {
 
+                    /**
+                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     */
                     private static final long serialVersionUID = 1L;
 
                     @SuppressWarnings("unchecked")
@@ -10325,15 +11483,77 @@ public final class API {
                     }
                 };
             }
+
+            /**
+             * Creates a new {@code Pattern7}.
+             *
+             * <p>This constructor is protected because {@code Pattern7} is abstract and
+             * intended to be subclassed rather than instantiated directly.</p>
+             */
+             protected Pattern7() {
+                 // default constructor
+             }
         }
 
+        /**
+         * A {@link Pattern} implementation for the pattern with 8 intermediate types
+         *
+         * @param <T>  Class type that is matched by this pattern
+         * @param <T1> Member type 1 of the composite part this pattern decomposes
+         * @param <T2> Member type 2 of the composite part this pattern decomposes
+         * @param <T3> Member type 3 of the composite part this pattern decomposes
+         * @param <T4> Member type 4 of the composite part this pattern decomposes
+         * @param <T5> Member type 5 of the composite part this pattern decomposes
+         * @param <T6> Member type 6 of the composite part this pattern decomposes
+         * @param <T7> Member type 7 of the composite part this pattern decomposes
+         * @param <T8> Member type 8 of the composite part this pattern decomposes
+         */
         public static abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> implements Pattern<T, Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> {
 
+            /**
+             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             */
             private static final long serialVersionUID = 1L;
 
+            /**
+             * Static factory for a {@link Pattern8} based on a {@link Class}, 8 {@link Pattern}s to decompose
+             * it to and a mapper to aggregate result back into a {@link Tuple8}
+             *
+             * @param type    {@link Class} to build the pattern from
+             * @param p1      {@link Pattern} matching the intermediate type 1
+             * @param p2      {@link Pattern} matching the intermediate type 2
+             * @param p3      {@link Pattern} matching the intermediate type 3
+             * @param p4      {@link Pattern} matching the intermediate type 4
+             * @param p5      {@link Pattern} matching the intermediate type 5
+             * @param p6      {@link Pattern} matching the intermediate type 6
+             * @param p7      {@link Pattern} matching the intermediate type 7
+             * @param p8      {@link Pattern} matching the intermediate type 8
+             * @param unapply Mapper function from T to a {@link Tuple8}
+             * @param <T>     Class type matched by this pattern
+             * @param <T1>    Member type 1 of the composite part this pattern decomposes
+             * @param <U1>    Member type 1 of the Tuple the composite part of this pattern decomposes to
+             * @param <T2>    Member type 2 of the composite part this pattern decomposes
+             * @param <U2>    Member type 2 of the Tuple the composite part of this pattern decomposes to
+             * @param <T3>    Member type 3 of the composite part this pattern decomposes
+             * @param <U3>    Member type 3 of the Tuple the composite part of this pattern decomposes to
+             * @param <T4>    Member type 4 of the composite part this pattern decomposes
+             * @param <U4>    Member type 4 of the Tuple the composite part of this pattern decomposes to
+             * @param <T5>    Member type 5 of the composite part this pattern decomposes
+             * @param <U5>    Member type 5 of the Tuple the composite part of this pattern decomposes to
+             * @param <T6>    Member type 6 of the composite part this pattern decomposes
+             * @param <U6>    Member type 6 of the Tuple the composite part of this pattern decomposes to
+             * @param <T7>    Member type 7 of the composite part this pattern decomposes
+             * @param <U7>    Member type 7 of the Tuple the composite part of this pattern decomposes to
+             * @param <T8>    Member type 8 of the composite part this pattern decomposes
+             * @param <U8>    Member type 8 of the Tuple the composite part of this pattern decomposes to
+             * @return new Pattern8
+             */
             public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7, T8 extends U8, U8> Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Pattern<T8, ?> p8, Function<T, Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>> unapply) {
                 return new Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8>() {
 
+                    /**
+                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     */
                     private static final long serialVersionUID = 1L;
 
                     @SuppressWarnings("unchecked")
@@ -10362,6 +11582,16 @@ public final class API {
                     }
                 };
             }
+
+            /**
+             * Creates a new {@code Pattern8}.
+             *
+             * <p>This constructor is protected because {@code Pattern8} is abstract and
+             * intended to be subclassed rather than instantiated directly.</p>
+             */
+             protected Pattern8() {
+                 // default constructor
+             }
         }
     }
 }

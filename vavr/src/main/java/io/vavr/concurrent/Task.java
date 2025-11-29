@@ -31,7 +31,7 @@ public interface Task<T> {
 
     /**
      * Completes a task.
-     * <p>
+     *
      * @param <T> result type
      */
     @FunctionalInterface

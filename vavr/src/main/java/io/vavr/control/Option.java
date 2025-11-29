@@ -87,7 +87,6 @@ public interface Option<T> extends Value<T>, Serializable {
     /**
      * Maps the values of an iterable to a sequence of mapped values into a single {@code Option} by
      * transforming an {@code Iterable<? extends T>} into a {@code Option<Seq<U>>}.
-     * <p>
      *
      * @param values   An {@code Iterable} of values.
      * @param mapper   A mapper of values to Options

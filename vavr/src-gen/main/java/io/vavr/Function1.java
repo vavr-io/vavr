@@ -235,7 +235,7 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
 
     /**
      * Converts this {@code Function1} to a {@link PartialFunction} by adding an {@code isDefinedAt} condition.
-     * <p>
+     *
      * @param isDefinedAt a predicate that states if an element is in the domain of the returned {@code PartialFunction}.
      * @return a new {@code PartialFunction} that has the same behavior like this function but is defined only for those elements that make it through the given {@code Predicate}
      * @throws NullPointerException if {@code isDefinedAt} is null

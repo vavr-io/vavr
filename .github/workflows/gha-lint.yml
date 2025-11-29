@@ -1,0 +1,15 @@
+name: GitHub Actions lint
+
+on:
+  pull_request:
+
+jobs:
+  actionlint:
+    runs-on: ubuntu-latest
+    name: Lint workflows
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check workflow files
+        uses: docker://rhysd/actionlint:latest
+        with:
+          args: -color

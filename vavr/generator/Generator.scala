@@ -948,10 +948,17 @@ def generateMainClasses(): Unit = {
               case 2 => BiFunctionType
               case _ => s"Function$i"
             }
+
+            val parameterDoc = (if (monadicTypesThatNeedParameter.contains(mtype)) {
+              s"\n* @param <L> The left-hand type of all {@link $mtype}s"
+            } else { "" })
+            val typeDocs = (1 to i).gen(j => s"* @param <T$j> component type of {@link $mtype} number $j\n")
             val args = (1 to i).gen(j => s"? super T$j")(", ")
             xs"""
               /$javadoc
                * For-comprehension with ${i.numerus(mtype)}.
+               $parameterDoc
+               $typeDocs
                */
               public static class $forClassName<$generics> {
 
@@ -1019,6 +1026,15 @@ def generateMainClasses(): Unit = {
 
           // - Pattern0
 
+          /**
+           * Returns a {@link Case0} instance for a specific {@link Pattern0} and {@link $FunctionType}
+           *
+           * @param <T>     Type of the value being matched
+           * @param <R>     Return value type
+           * @param pattern Pattern to match
+           * @param f       Matched value consumer
+           * @return new Case0
+           */
           @GwtIncompatible
           public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $FunctionType<? super T, ? extends R> f) {
               $Objects.requireNonNull(pattern, "pattern is null");
@@ -1026,6 +1042,15 @@ def generateMainClasses(): Unit = {
               return new Case0<>(pattern, f);
           }
 
+          /**
+           * Returns a {@link Case0} instance for a specific {@link Pattern0} and {@link $SupplierType}
+           *
+           * @param <T>      Type of the value being matched
+           * @param <R>      Return value type
+           * @param pattern  Pattern to match
+           * @param supplier Matched value supplier
+           * @return new Case0
+           */
           @GwtIncompatible
           public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> supplier) {
               $Objects.requireNonNull(pattern, "pattern is null");
@@ -1033,6 +1058,15 @@ def generateMainClasses(): Unit = {
               return new Case0<>(pattern, ignored -> supplier.get());
           }
 
+          /**
+           * Returns a {@link Case0} instance for a specific {@link Pattern0} and a constant value
+           *
+           * @param <T>     Type of the value being matched
+           * @param <R>     Return value type
+           * @param pattern Pattern to match
+           * @param retVal  Constant value to return
+           * @return new Case0
+           */
           @GwtIncompatible
           public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
               $Objects.requireNonNull(pattern, "pattern is null");
@@ -1048,9 +1082,21 @@ def generateMainClasses(): Unit = {
               case 2 => BiFunctionType
               case _ => s"Function$i"
             }
+            val typeDocs = (1 to i).gen(j => s"* @param <T$j>     Intermediate type $j for the pattern\n")
+
             xs"""
               // - Pattern$i
 
+              /$javadoc
+               * Returns a {@link Case$i} instance for a specific {@link Pattern$i} and {@link $functionType}
+               *
+               * @param <T>      Type of the value being matched
+               $typeDocs
+               * @param <R>      Return value type
+               * @param pattern  Pattern to match
+               * @param f        Matched value consumer
+               * @return new Case$i
+               */
               @GwtIncompatible
               public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
                   $Objects.requireNonNull(pattern, "pattern is null");
@@ -1058,6 +1104,16 @@ def generateMainClasses(): Unit = {
                   return new Case$i<>(pattern, f);
               }
 
+              /$javadoc
+               * Returns a {@link Case$i} instance for a specific {@link Pattern$i} and {@link $SupplierType}
+               *
+               * @param <T>      Type of the value being matched
+               $typeDocs
+               * @param <R>      Return value type
+               * @param pattern  Pattern to match
+               * @param supplier Matched value supplier
+               * @return new Case$i
+               */
               @GwtIncompatible
               public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, $SupplierType<? extends R> supplier) {
                   $Objects.requireNonNull(pattern, "pattern is null");
@@ -1065,6 +1121,16 @@ def generateMainClasses(): Unit = {
                   return new Case$i<>(pattern, $params -> supplier.get());
               }
 
+              /$javadoc
+               * Returns a {@link Case$i} instance for a specific {@link Pattern$i} and a constant value
+               *
+               * @param <T>      Type of the value being matched
+               $typeDocs
+               * @param <R>      Return value type
+               * @param pattern  Pattern to match
+               * @param retVal   Constant value to return
+               * @return new Case$i
+               */
               @GwtIncompatible
               public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, R retVal) {
                   $Objects.requireNonNull(pattern, "pattern is null");
@@ -1211,6 +1277,15 @@ def generateMainClasses(): Unit = {
                   this.value = value;
               }
 
+              /$javadoc
+               * Executes the match, created by the factory function {@link API#Match(Object)}. Throws exceptions
+               * when the list of {@link Case}s is incomplete.
+               *
+               * @param cases list of cases we execute the match against
+               * @param <R>   return value type
+               * @return The matched value
+               * @throws MatchError if the list of cases was not defined for all possible values of T
+               */
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
               public final <R> R of(Case<? extends T, ? extends R>... cases) {
@@ -1224,6 +1299,14 @@ def generateMainClasses(): Unit = {
                   throw new MatchError(value);
               }
 
+              /$javadoc
+              * Executes the match, created by the factory function {@link API#Match(Object)}. Returns $OptionType.some(...)
+              * if the value was matched and $OptionType.none() otherwise.
+              *
+              * @param cases list of cases we execute the match against
+              * @param <R>   return value type
+              * @return $OptionType containing the matched value, or none
+              */
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
               public final <R> $OptionType<R> option(Case<? extends T, ? extends R>... cases) {
@@ -1239,6 +1322,12 @@ def generateMainClasses(): Unit = {
 
               // -- CASES
 
+              /$javadoc
+               * Base interface for all the Cases
+               *
+               * @param <T> Type of the value being matched
+               * @param <R> Return value type
+               */
               public interface Case<T, R> extends $PartialFunctionType<T, R> {
 
                   /**
@@ -1247,8 +1336,17 @@ def generateMainClasses(): Unit = {
                   long serialVersionUID = 1L;
               }
 
+              /$javadoc
+               * {@link Case} implementation for simplest case
+               *
+               * @param <T> Type of the value being matched
+               * @param <R> Return value type
+               */
               public static final class Case0<T, R> implements Case<T, R> {
 
+                  /$javadoc
+                   * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                   */
                   private static final long serialVersionUID = 1L;
 
                   private final Pattern0<T> pattern;
@@ -1283,9 +1381,20 @@ def generateMainClasses(): Unit = {
                   case 2 => "transient final"
                   case _ => "final"
                 }
+                val typeDocs = (1 to i).gen(j => s"* @param <T$j> Intermediate type $j\n")
                 xs"""
+                  /$javadoc
+                   * {@link Case} implementation for a case with $i intermediate type${if (i>1) "s" else ""}
+                   *
+                   * @param <T>  Type of the value being matched
+                   $typeDocs
+                   * @param <R>  Return value type
+                   */
                   public static final class Case$i<T, $generics, R> implements Case<T, R> {
 
+                      /$javadoc
+                       * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                       */
                       private static final long serialVersionUID = 1L;
 
                       private final Pattern$i<T, $generics> pattern;
@@ -1329,8 +1438,16 @@ def generateMainClasses(): Unit = {
               // These can't be @FunctionalInterfaces because of ambiguities.
               // For benchmarks lambda vs. abstract class see http://www.oracle.com/technetwork/java/jvmls2013kuksen-2014088.pdf
 
+              /$javadoc
+               * A {@link Pattern} implementation for the simplest pattern
+               *
+               * @param <T>  Class type that is matched by this pattern
+               */
               public static abstract class Pattern0<T> implements Pattern<T, T> {
 
+                  /$javadoc
+                   * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                   */
                   private static final long serialVersionUID = 1L;
 
                   private static final Pattern0<Object> ANY = new Pattern0<Object>() {
@@ -1348,17 +1465,35 @@ def generateMainClasses(): Unit = {
                       }
                   };
 
+                  /**
+                   * The greediest match, a catch-all
+                   *
+                   * @param <T> Class type that is matched by this pattern
+                   * @return Pattern0
+                   */
                   @SuppressWarnings("unchecked")
                   public static <T> Pattern0<T> any() {
                       return (Pattern0<T>) ANY;
                   }
 
-                  // DEV-NOTE: We need the lower bound `Class<? super T>` instead of the more appropriate `Class<T>`
+                  ${// DEV-NOTE: We need the lower bound `Class<? super T>` instead of the more appropriate `Class<T>`
                   //           because it allows us to create patterns for generic types, which would otherwise not be
                   //           possible: `Pattern0<Some<String>> p = Pattern0.of(Some.class);`
+                  ""
+                  }
+                  /$javadoc
+                   * Static factory for a {@link Pattern0} based on a {@link Class}
+                   *
+                   * @param type {@link Class} to build the pattern from
+                   * @param <T>  Class type matched by this pattern
+                   * @return new Pattern0
+                   */
                   public static <T> Pattern0<T> of(Class<? super T> type) {
                       return new Pattern0<T>() {
 
+                          /$javadoc
+                           * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                           */
                           private static final long serialVersionUID = 1L;
 
                           @Override
@@ -1372,6 +1507,16 @@ def generateMainClasses(): Unit = {
                           }
                       };
                   }
+
+                  /$javadoc
+                   * Creates a new {@code Pattern0}.
+                   *
+                   * <p>This constructor is protected because {@code Pattern0} is abstract and
+                   * intended to be subclassed rather than instantiated directly.</p>
+                   */
+                  protected Pattern0() {
+                      // default constructor
+                  }
               }
 
               ${(1 to N).gen(i => {
@@ -1381,14 +1526,45 @@ def generateMainClasses(): Unit = {
                 val unapplyGenerics = (1 to i).gen(j => s"U$j")(", ")
                 val unapplyTupleType = s"Tuple$i<$unapplyGenerics>"
                 val args = (1 to i).gen(j => s"Pattern<T$j, ?> p$j")(", ")
+                val typeDocs = (1 to i).gen(j => s"* @param <T$j> Member type $j of the composite part this pattern decomposes\n")
+                val staticOfTypeDocs = (1 to i).gen(j =>
+                  xs"""
+                      * @param <T$j>    Member type $j of the composite part this pattern decomposes
+                      * @param <U$j>    Member type $j of the Tuple the composite part of this pattern decomposes to\n
+                  """
+                )
+                val staticOfParamDocs = (1 to i).gen(j => s"* @param p$j      {@link Pattern} matching the intermediate type $j\n")
                 xs"""
+                  /$javadoc
+                   * A {@link Pattern} implementation for the pattern with $i intermediate type${if (i>1) "s" else ""}
+                   *
+                   * @param <T>  Class type that is matched by this pattern
+                   $typeDocs
+                   */
                   public static abstract class Pattern$i<T, $resultGenerics> implements Pattern<T, $resultType> {
 
+                      /$javadoc
+                       * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                       */
                       private static final long serialVersionUID = 1L;
 
+                      /**
+                       * Static factory for a {@link Pattern$i} based on a {@link Class}, ${if (i >1) s"$i {@link Pattern}s" else "{@link Pattern}"} to decompose
+                       * it to and a mapper to aggregate result back into a {@link Tuple$i}
+                       *
+                       * @param type    {@link Class} to build the pattern from
+                       $staticOfParamDocs
+                       * @param unapply Mapper function from T to a {@link Tuple$i}
+                       * @param <T>     Class type matched by this pattern
+                       $staticOfTypeDocs
+                       * @return new Pattern$i
+                       */
                       public static <T, $declaredGenerics> Pattern$i<T, $resultGenerics> of(Class<? super T> type, $args, Function<T, $unapplyTupleType> unapply) {
                           return new Pattern$i<T, $resultGenerics>() {
 
+                              /$javadoc
+                               * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                               */
                               private static final long serialVersionUID = 1L;
 
                               @SuppressWarnings("unchecked")
@@ -1414,6 +1590,16 @@ def generateMainClasses(): Unit = {
                               }
                           };
                       }
+
+                      /$javadoc
+                       * Creates a new {@code Pattern$i}.
+                       *
+                       * <p>This constructor is protected because {@code Pattern$i} is abstract and
+                       * intended to be subclassed rather than instantiated directly.</p>
+                       */
+                       protected Pattern$i() {
+                           // default constructor
+                       }
                   }
                 """
               })("\n\n")}
@@ -1950,7 +2136,7 @@ def generateMainClasses(): Unit = {
               ${(i == 1 && !checked).gen(xs"""
                 /$javadoc
                  * Converts this {@code Function1} to a {@link PartialFunction} by adding an {@code isDefinedAt} condition.
-                 * <p>
+                 *
                  * @param isDefinedAt a predicate that states if an element is in the domain of the returned {@code PartialFunction}.
                  * @return a new {@code PartialFunction} that has the same behavior like this function but is defined only for those elements that make it through the given {@code Predicate}
                  * @throws NullPointerException if {@code isDefinedAt} is null
