@@ -2601,7 +2601,7 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
         expected.add(2);
         expected.add(1);
         expected.add(3);
-        assertThat(of(1, 2, 2, 3).toJavaSet()).isEqualTo(expected);
+        assertThat(of(1, 2, 2, 3).toJavaSet()).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     // toTree
