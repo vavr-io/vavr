@@ -31,15 +31,6 @@ import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
-import org.assertj.core.api.Assertions;
-import org.assertj.core.api.IterableAssert;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
@@ -59,6 +50,13 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import org.assertj.core.api.IterableAssert;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 import static io.vavr.concurrent.Concurrent.waitUntil;
 import static io.vavr.concurrent.Concurrent.zZz;
@@ -770,7 +768,7 @@ public class FutureTest extends AbstractValueTest {
         }
 
         @Test
-        void shouldNotRunCancelledFuture() throws Exception {
+        void shouldNotRunCancelledFuture() {
             ExecutorService es = Executors.newSingleThreadExecutor();
 
             AtomicBoolean f1Executed = new AtomicBoolean(false);
@@ -782,8 +780,8 @@ public class FutureTest extends AbstractValueTest {
             f2.cancel(true);
             f1.cancel(true);
 
-            es.shutdown();
-            assertThat(es.awaitTermination(5, TimeUnit.SECONDS)).isTrue();
+            f1.await();
+            f2.await();
 
             assertThat(f1.isCancelled()).isTrue();
             assertThat(f2.isCancelled()).isTrue();
