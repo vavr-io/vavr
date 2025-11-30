@@ -31,6 +31,15 @@ import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import io.vavr.control.Option;
 import io.vavr.control.Try;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.api.IterableAssert;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.ExtensionContext;
+
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
@@ -40,6 +49,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.SynchronousQueue;
@@ -49,16 +59,11 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import org.assertj.core.api.IterableAssert;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.AfterEachCallback;
-import org.junit.jupiter.api.extension.BeforeEachCallback;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.api.extension.ExtensionContext;
 
 import static io.vavr.concurrent.Concurrent.waitUntil;
 import static io.vavr.concurrent.Concurrent.zZz;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SuppressWarnings("deprecation")
@@ -112,7 +117,8 @@ public class FutureTest extends AbstractValueTest {
             @Override
             public IterableAssert<T> isEqualTo(Object expected) {
                 if (actual instanceof Future && expected instanceof Future) {
-                    FutureTest.super.assertThat(((Future<T>) actual).getValue()).isEqualTo(((Future<T>) expected).getValue());
+                    FutureTest.super.assertThat(((Future<T>) actual).getValue())
+                      .isEqualTo(((Future<T>) expected).getValue());
                     return this;
                 } else {
                     return super.isEqualTo(expected);
@@ -487,7 +493,7 @@ public class FutureTest extends AbstractValueTest {
     public void shouldReduceWithErrorIfSequenceOfFuturesContainsOneError() {
         final Future<Integer> future = Future.reduce(
           List.of(Future.of(zZz(13)), Future.of(zZz(new Error()))),
-          (i1, i2) -> i1 + i2
+          Integer::sum
         ).await();
         assertFailed(future, Error.class);
     }
@@ -692,46 +698,29 @@ public class FutureTest extends AbstractValueTest {
     @Test
     public void shouldFoldEmptyIterable() {
         final Seq<Future<Integer>> futures = Stream.empty();
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
+        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
         assertThat(testee.getValue().get()).isEqualTo(Try.success(0));
     }
 
     @Test
     public void shouldFoldNonEmptyIterableOfSucceedingFutures() {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.of(zZz(i))).take(5);
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
+        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
         assertThat(testee.getValue().get()).isEqualTo(Try.success(15));
     }
 
     @Test
     public void shouldFoldNonEmptyIterableOfFailingFutures() {
         final Seq<Future<Integer>> futures = Stream.from(1).map(i -> Future.<Integer>of(zZz(new Error()))).take(5);
-        final Future<Integer> testee = Future.fold(futures, 0, (a, b) -> a + b).await();
+        final Future<Integer> testee = Future.fold(futures, 0, Integer::sum).await();
         assertFailed(testee, Error.class);
     }
 
-    // -- cancel()
-
-    @Test
-    public void shouldInterruptLockedFuture() {
-        final Object monitor = new Object();
-        final AtomicBoolean running = new AtomicBoolean(false);
-        final Future<?> future = blocking(() -> {
-            synchronized (monitor) {
-                running.set(true);
-                monitor.wait(); // wait forever
-            }
-        });
-        waitUntil(running::get);
-        synchronized (monitor) {
-            future.cancel();
-        }
-        assertThat(future.isCancelled()).isTrue();
-    }
-
-    @Test
-    public void shouldThrowOnGetAfterCancellation() {
-        assertThrows(CancellationException.class, () -> {
+    @Nested
+    public class CancellationTests {
+        
+        @Test
+        public void shouldInterruptLockedFuture() {
             final Object monitor = new Object();
             final AtomicBoolean running = new AtomicBoolean(false);
             final Future<?> future = blocking(() -> {
@@ -745,21 +734,67 @@ public class FutureTest extends AbstractValueTest {
                 future.cancel();
             }
             assertThat(future.isCancelled()).isTrue();
-            future.get();
-        });
-    }
+        }
 
-    @Test
-    public void shouldCancelFutureThatNeverCompletes() {
-        @SuppressWarnings("deprecation") final Future<?> future = Future.run(complete -> {
-            // we break our promise, the Future is never completed
-        });
+        @Test
+        public void shouldThrowOnGetAfterCancellation() {
+            assertThrows(CancellationException.class, () -> {
+                final Object monitor = new Object();
+                final AtomicBoolean running = new AtomicBoolean(false);
+                final Future<?> future = blocking(() -> {
+                    synchronized (monitor) {
+                        running.set(true);
+                        monitor.wait(); // wait forever
+                    }
+                });
+                waitUntil(running::get);
+                synchronized (monitor) {
+                    future.cancel();
+                }
+                assertThat(future.isCancelled()).isTrue();
+                future.get();
+            });
+        }
 
-        assertThat(future.isCompleted()).isFalse();
-        assertThat(future.isCancelled()).isFalse();
+        @Test
+        public void shouldCancelFutureThatNeverCompletes() {
+            @SuppressWarnings("deprecation") final Future<?> future = Future.run(complete -> {
+                // we break our promise, the Future is never completed
+            });
 
-        assertThat(future.cancel()).isTrue();
-        assertThat(future.isCompleted()).isTrue();
+            assertThat(future.isCompleted()).isFalse();
+            assertThat(future.isCancelled()).isFalse();
+
+            assertThat(future.cancel()).isTrue();
+            assertThat(future.isCompleted()).isTrue();
+        }
+
+        @Test
+        void shouldNotRunCancelledFuture() throws Exception {
+            ExecutorService es = Executors.newSingleThreadExecutor();
+
+            AtomicBoolean f1Executed = new AtomicBoolean(false);
+            AtomicBoolean f2Executed = new AtomicBoolean(false);
+
+            Future<Void> f1 = Future.run(es, () -> {Thread.sleep(10000);f1Executed.set(true);});
+            Future<Void> f2 = Future.run(es, () -> {f2Executed.set(true);Thread.sleep(10000);});
+
+            f2.cancel(true);
+            f1.cancel(true);
+
+            es.shutdown();
+            assertThat(es.awaitTermination(5, TimeUnit.SECONDS)).isTrue();
+
+            assertThat(f1.isCancelled()).isTrue();
+            assertThat(f2.isCancelled()).isTrue();
+
+            assertThat(f1.isFailure()).isTrue();
+            assertThat(f2.isFailure()).isTrue();
+            assertThatThrownBy(f1::get).isInstanceOf(CancellationException.class);
+            assertThatThrownBy(f2::get).isInstanceOf(CancellationException.class);
+            assertThat(f1Executed.get()).isFalse();
+            assertThat(f2Executed.get()).isFalse();
+        }
     }
 
     // -- collect()
