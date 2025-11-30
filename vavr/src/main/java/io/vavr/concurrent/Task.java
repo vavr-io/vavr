@@ -29,6 +29,10 @@ public interface Task<T> {
      */
     void run(Complete<T> complete) throws Throwable;
 
+    @FunctionalInterface
+    interface SyncTask<T> extends Task<T> {
+    }
+
     /**
      * Completes a task.
      *
