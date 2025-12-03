@@ -34,42 +34,42 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Replacement for {@link java.util.Optional}.
+ * A replacement for {@link java.util.Optional}.
  * <p>
- * Option is a <a href="http://stackoverflow.com/questions/13454347/monads-with-java-8">monadic</a> container type which
- * represents an optional value. Instances of Option are either an instance of {@link Some} or the
- * singleton {@link None}.
+ * {@code Option} is a monadic container type representing the presence or absence of a value.
+ * An instance is either a {@link Some} holding a value or the singleton {@link None}.
  * <p>
- * Most of the API is taken from {@link java.util.Optional}. A similar type can be found in <a
- * href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and <a
- * href="http://www.scala-lang.org/api/current/#scala.Option">Scala</a>.
+ * The design is similar to {@link java.util.Optional} and related types in
+ * <a href="http://hackage.haskell.org/package/base-4.6.0.1/docs/Data-Maybe.html">Haskell</a> and
+ * <a href="http://www.scala-lang.org/api/current/#scala.Option">Scala</a>.
  *
- * @param <T> The type of the optional value.
- * @author Daniel Dietrich
+ * @param <T> the type of the optional value
  */
 public interface Option<T> extends Value<T>, Serializable {
 
     long serialVersionUID = 1L;
 
     /**
-     * Creates a new {@code Option} of a given value.
+     * Creates an {@code Option} from the given value.
      *
-     * @param value A value
-     * @param <T>   type of the value
-     * @return {@code Some(value)} if value is not {@code null}, {@code None} otherwise
+     * @param value the value to wrap
+     * @param <T>   the value type
+     * @return {@code Some(value)} if the value is non-null, otherwise {@code None}
      */
     static <T> Option<T> of(T value) {
         return (value == null) ? none() : some(value);
     }
 
     /**
-     * Reduces many {@code Option}s into a single {@code Option} by transforming an
-     * {@code Iterable<Option<? extends T>>} into a {@code Option<Seq<T>>}. If any of
-     * the Options are {@link Option.None}, then this returns {@link Option.None}.
+     * Reduces multiple {@code Option} values into a single {@code Option} by transforming
+     * an {@code Iterable<Option<? extends T>>} into an {@code Option<Seq<T>>}.
+     * <p>
+     * If any element is {@link Option.None}, the result is {@code None}.
+     * Otherwise, all contained values are collected into a {@link Seq} wrapped in {@code Some}.
      *
-     * @param values An {@code Iterable} of {@code Option}s
-     * @param <T>    type of the Options
-     * @return An {@code Option} of a {@link Seq} of results
+     * @param values an iterable of {@code Option} values
+     * @param <T>    the element type
+     * @return an {@code Option} containing a {@code Seq} of all values, or {@code None} if any value is empty
      * @throws NullPointerException if {@code values} is null
      */
     static <T> Option<Seq<T>> sequence(Iterable<? extends Option<? extends T>> values) {
@@ -85,15 +85,19 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Maps the values of an iterable to a sequence of mapped values into a single {@code Option} by
-     * transforming an {@code Iterable<? extends T>} into a {@code Option<Seq<U>>}.
+     * Maps the elements of an iterable into {@code Option} values and collects the results
+     * into a single {@code Option}.
+     * <p>
+     * Each element is transformed using {@code mapper}.
+     * If any mapped value is {@link Option.None}, the result is {@code None}.
+     * Otherwise, all mapped values are accumulated into a {@link Seq} wrapped in {@code Some}.
      *
-     * @param values   An {@code Iterable} of values.
-     * @param mapper   A mapper of values to Options
-     * @param <T>      The type of the given values.
-     * @param <U>      The mapped value type.
-     * @return A {@code Option} of a {@link Seq} of results.
-     * @throws NullPointerException if values or f is null.
+     * @param values an iterable of input values
+     * @param mapper a function mapping each value to an {@code Option}
+     * @param <T>    the input element type
+     * @param <U>    the mapped element type
+     * @return an {@code Option} containing a {@code Seq} of mapped values, or {@code None} if any mapping yields {@code None}
+     * @throws NullPointerException if {@code values} or {@code mapper} is null
      */
     static <T, U> Option<Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Option<? extends U>> mapper) {
         Objects.requireNonNull(values, "values is null");
@@ -102,29 +106,27 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Creates a new {@code Some} of a given value.
+     * Creates a {@code Some} containing the given value.
      * <p>
-     * The only difference to {@link Option#of(Object)} is, when called with argument {@code null}.
+     * Unlike {@link Option#of(Object)}, this method preserves {@code null}:
      * <pre>
-     * <code>
-     * Option.of(null);   // = None
-     * Option.some(null); // = Some(null)
-     * </code>
+     * Option.of(null);   // yields None
+     * Option.some(null); // yields Some(null)
      * </pre>
      *
-     * @param value A value
-     * @param <T>   type of the value
-     * @return {@code Some(value)}
+     * @param value the value to wrap, possibly {@code null}
+     * @param <T>   the value type
+     * @return a {@code Some} containing {@code value}
      */
     static <T> Option<T> some(T value) {
         return new Some<>(value);
     }
 
     /**
-     * Returns the single instance of {@code None}
+     * Returns the singleton {@code None} instance.
      *
-     * @param <T> component type
-     * @return the single instance of {@code None}
+     * @param <T> the option's component type
+     * @return the singleton {@code None}
      */
     static <T> Option<T> none() {
         @SuppressWarnings("unchecked")
@@ -133,13 +135,13 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code Option<? extends T>} to {@code Option<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a widened {@code Option<? extends T>} to {@code Option<T>} via a type-safe cast.
+     * <p>
+     * This is safe because immutable/read-only types are covariant.
      *
-     * @param option A {@code Option}.
-     * @param <T>    Component type of the {@code Option}.
-     * @return the given {@code option} instance as narrowed type {@code Option<T>}.
+     * @param option the {@code Option} to narrow
+     * @param <T>    the component type of the {@code Option}
+     * @return the same {@code Option} instance, cast to {@code Option<T>}
      */
     @SuppressWarnings("unchecked")
     static <T> Option<T> narrow(Option<? extends T> option) {
@@ -147,13 +149,14 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Creates {@code Some} of suppliers value if condition is true, or {@code None} in other case
+     * Returns {@code Some} of the value supplied by {@code supplier} if {@code condition} is true,
+     * or {@code None} if {@code condition} is false.
      *
-     * @param <T>       type of the optional value
-     * @param condition A boolean value
-     * @param supplier  An optional value supplier, may supply {@code null}
-     * @return return {@code Some} of supplier's value if condition is true, or {@code None} in other case
-     * @throws NullPointerException if the given {@code supplier} is null
+     * @param <T>       the type of the optional value
+     * @param condition the condition to test
+     * @param supplier  a supplier of the value, may return {@code null}
+     * @return {@code Some} of the supplied value if {@code condition} is true, otherwise {@code None}
+     * @throws NullPointerException if {@code supplier} is null
      */
     static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
@@ -161,23 +164,23 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Creates {@code Some} of value if condition is true, or {@code None} in other case
+     * Returns {@code Some} of the given {@code value} if {@code condition} is true, or {@code None} otherwise.
      *
-     * @param <T>       type of the optional value
-     * @param condition A boolean value
-     * @param value     An optional value, may be {@code null}
-     * @return return {@code Some} of value if condition is true, or {@code None} in other case
+     * @param <T>       the type of the optional value
+     * @param condition the condition to test
+     * @param value     the value to wrap, may be {@code null}
+     * @return {@code Some} of {@code value} if {@code condition} is true, otherwise {@code None}
      */
     static <T> Option<T> when(boolean condition, T value) {
         return condition ? some(value) : none();
     }
 
     /**
-     * Wraps a Java Optional to a new Option
+     * Wraps a {@link java.util.Optional} in a new {@code Option}.
      *
-     * @param optional a given optional to wrap in {@code Option}
-     * @param <T>      type of the value
-     * @return {@code Some(optional.get())} if value is Java {@code Optional} is present, {@code None} otherwise
+     * @param optional the Java {@code Optional} to wrap
+     * @param <T>      the type of the contained value
+     * @return {@code Some(optional.get())} if the {@code Optional} is present, otherwise {@code None}
      */
     @SuppressWarnings("OptionalUsedAsFieldOrParameterType")
     static <T> Option<T> ofOptional(Optional<? extends T> optional) {
@@ -186,22 +189,21 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Collects value that is in the domain of the given {@code partialFunction} by mapping the value to type {@code R}.
+     * Applies a {@code partialFunction} to the value of this {@code Option} if it is defined for that value,
+     * and wraps the result in a new {@code Option}.
+     * <p>
+     * If the {@code partialFunction} is not defined for the value, {@code None} is returned.
      *
      * <pre>{@code
-     * partialFunction.isDefinedAt(value)
+     * if (partialFunction.isDefinedAt(value)) {
+     *     R newValue = partialFunction.apply(value);
+     *     // wrapped in Some(newValue)
+     * }
      * }</pre>
      *
-     * If the element makes it through that filter, the mapped instance is wrapped in {@code Option}
-     *
-     * <pre>{@code
-     * R newValue = partialFunction.apply(value)
-     * }</pre>
-     *
-     *
-     * @param partialFunction A function that is not necessarily defined on value of this option.
-     * @param <R> The new value type
-     * @return A new {@code Option} instance containing value of type {@code R}
+     * @param partialFunction a function that may not be defined for all input values
+     * @param <R>             the type of the mapped value
+     * @return a new {@code Option} containing the mapped value if defined, otherwise {@code None}
      * @throws NullPointerException if {@code partialFunction} is null
      */
     default <R> Option<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
@@ -210,17 +212,17 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Returns true, if this is {@code None}, otherwise false, if this is {@code Some}.
+     * Checks whether this {@code Option} is empty.
      *
-     * @return true, if this {@code Option} is empty, false otherwise
+     * @return {@code true} if this is {@code None}, {@code false} if this is {@code Some}
      */
     @Override
     boolean isEmpty();
 
     /**
-     * Runs a Java Runnable passed as parameter if this {@code Option} is empty.
+     * Executes the given {@link Runnable} if this {@code Option} is empty ({@code None}).
      *
-     * @param action a given Runnable to be run
+     * @param action a {@code Runnable} to execute
      * @return this {@code Option}
      */
     default Option<T> onEmpty(Runnable action) {
@@ -232,9 +234,9 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * An {@code Option}'s value is computed synchronously.
+     * Indicates that an {@code Option}'s value is computed synchronously.
      *
-     * @return false
+     * @return {@code false}
      */
     @Override
     default boolean isAsync() {
@@ -242,20 +244,20 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Returns true, if this is {@code Some}, otherwise false, if this is {@code None}.
+     * Checks whether this {@code Option} contains a value.
      * <p>
-     * Please note that it is possible to create {@code new Some(null)}, which is defined.
+     * Note that {@code Some(null)} is considered defined.
      *
-     * @return true, if this {@code Option} has a defined value, false otherwise
+     * @return {@code true} if this is {@code Some}, {@code false} if this is {@code None}
      */
     default boolean isDefined() {
         return !isEmpty();
     }
 
     /**
-     * An {@code Option}'s value is computed eagerly.
+     * Indicates that an {@code Option}'s value is computed eagerly.
      *
-     * @return false
+     * @return {@code false}
      */
     @Override
     default boolean isLazy() {
@@ -263,7 +265,7 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * An {@code Option} is single-valued.
+     * Indicates that an {@code Option} contains exactly one value.
      *
      * @return {@code true}
      */
@@ -273,21 +275,21 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Gets the value if this is a {@code Some} or throws if this is a {@code None}.
+     * Returns the value contained in this {@code Some}, or throws if this is {@code None}.
      *
-     * @return the value
-     * @throws NoSuchElementException if this is a {@code None}.
+     * @return the contained value
+     * @throws NoSuchElementException if this is {@code None}
      */
     @Override
     T get();
 
     /**
-     * Returns the value if this is a {@code Some} or the {@code other} value if this is a {@code None}.
+     * Returns the value contained in this {@code Some}, or the provided {@code other} value if this is {@code None}.
      * <p>
-     * Please note, that the other value is eagerly evaluated.
+     * Note that {@code other} is evaluated eagerly.
      *
-     * @param other An alternative value
-     * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
+     * @param other an alternative value to return if this is {@code None}
+     * @return the contained value if defined, otherwise {@code other}
      */
     @Override
     default T getOrElse(T other) {
@@ -295,10 +297,10 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Returns this {@code Option} if it is nonempty, otherwise return the alternative.
+     * Returns this {@code Option} if it is non-empty, otherwise returns the provided alternative {@code Option}.
      *
-     * @param other An alternative {@code Option}
-     * @return this {@code Option} if it is nonempty, otherwise return the alternative.
+     * @param other an alternative {@code Option} to return if this is {@code None}
+     * @return this {@code Option} if defined, otherwise {@code other}
      */
     @SuppressWarnings("unchecked")
     default Option<T> orElse(Option<? extends T> other) {
@@ -307,10 +309,11 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Returns this {@code Option} if it is nonempty, otherwise return the result of evaluating supplier.
+     * Returns this {@code Option} if it is non-empty; otherwise, returns the {@code Option} provided by the supplier.
      *
-     * @param supplier An alternative {@code Option} supplier
-     * @return this {@code Option} if it is nonempty, otherwise return the result of evaluating supplier.
+     * @param supplier a supplier of an alternative {@code Option} if this is {@code None}
+     * @return this {@code Option} if defined, otherwise the result of {@code supplier.get()}
+     * @throws NullPointerException if {@code supplier} is null
      */
     @SuppressWarnings("unchecked")
     default Option<T> orElse(Supplier<? extends Option<? extends T>> supplier) {
@@ -319,13 +322,13 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Returns the value if this is a {@code Some}, otherwise the {@code other} value is returned,
-     * if this is a {@code None}.
+     * Returns the value contained in this {@code Some}, or the value supplied by {@code supplier} if this is {@code None}.
      * <p>
-     * Please note, that the other value is lazily evaluated.
+     * The alternative value is evaluated lazily.
      *
-     * @param supplier An alternative value supplier
-     * @return This value, if this Option is defined or the {@code other} value, if this Option is empty.
+     * @param supplier a supplier of an alternative value if this is {@code None}
+     * @return the contained value if defined, otherwise the value returned by {@code supplier}
+     * @throws NullPointerException if {@code supplier} is null
      */
     @Override
     default T getOrElse(Supplier<? extends T> supplier) {
@@ -334,12 +337,13 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Returns the value if this is a {@code Some}, otherwise throws an exception.
+     * Returns the value contained in this {@code Some}, or throws an exception provided by {@code exceptionSupplier} if this is {@code None}.
      *
-     * @param exceptionSupplier An exception supplier
-     * @param <X>               A throwable
-     * @return This value, if this Option is defined, otherwise throws X
-     * @throws X a throwable
+     * @param exceptionSupplier a supplier of the exception to throw if this is {@code None}
+     * @param <X>               the type of the exception
+     * @return the contained value if defined
+     * @throws X if this {@code Option} is {@code None}
+     * @throws NullPointerException if {@code exceptionSupplier} is null
      */
     @Override
     default <X extends Throwable> T getOrElseThrow(Supplier<X> exceptionSupplier) throws X {
@@ -352,11 +356,12 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Returns {@code Some(value)} if this is a {@code Some} and the value satisfies the given predicate.
-     * Otherwise {@code None} is returned.
+     * Returns {@code Some(value)} if this {@code Option} is a {@code Some} and the contained value satisfies the given predicate.
+     * Otherwise, returns {@code None}.
      *
-     * @param predicate A predicate which is used to test an optional value
-     * @return {@code Some(value)} or {@code None} as specified
+     * @param predicate a predicate to test the contained value
+     * @return {@code Some(value)} if the value satisfies the predicate, otherwise {@code None}
+     * @throws NullPointerException if {@code predicate} is null
      */
     default Option<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
@@ -364,11 +369,13 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Maps the value to a new {@code Option} if this is a {@code Some}, otherwise returns {@code None}.
+     * Transforms the value of this {@code Option} using the given mapper if it is a {@code Some}.
+     * Returns {@code None} if this is {@code None}.
      *
-     * @param mapper A mapper
-     * @param <U>    Component type of the resulting Option
-     * @return a new {@code Option}
+     * @param mapper a function to transform the contained value
+     * @param <U>    the type of the resulting {@code Option}'s value
+     * @return a new {@code Option} containing the mapped value, or {@code None}
+     * @throws NullPointerException if {@code mapper} is null
      */
     @SuppressWarnings("unchecked")
     default <U> Option<U> flatMap(Function<? super T, ? extends Option<? extends U>> mapper) {
@@ -377,11 +384,13 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Maps the value and wraps it in a new {@code Some} if this is a {@code Some}, returns {@code None}.
+     * Transforms the value of this {@code Some} using the given mapper and wraps it in a new {@code Some}.
+     * Returns {@code None} if this is {@code None}.
      *
-     * @param mapper A value mapper
-     * @param <U>    The new value type
-     * @return a new {@code Some} containing the mapped value if this Option is defined, otherwise {@code None}, if this is empty.
+     * @param mapper a function to transform the contained value
+     * @param <U>    the type of the resulting {@code Some}'s value
+     * @return a new {@code Some} with the mapped value if this is defined, otherwise {@code None}
+     * @throws NullPointerException if {@code mapper} is null
      */
     @Override
     default <U> Option<U> map(Function<? super T, ? extends U> mapper) {
@@ -400,12 +409,12 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Converts this to a {@link Try}, then runs the given checked function if this is a {@link Try.Success},
-     * passing the result of the current expression to it.
+     * Converts this {@code Option} to a {@link Try}, then applies the given checked function if this is a {@link Try.Success},
+     * passing the contained value to it.
      *
-     * @param <U>    The new component type
-     * @param mapper A checked function
-     * @return a {@code Try}
+     * @param <U>    the type of the resulting {@code Try}'s value
+     * @param mapper a checked function to transform the contained value
+     * @return a {@code Try} containing the mapped value if this {@code Option} is defined, otherwise a {@link Try.Failure}
      * @throws NullPointerException if {@code mapper} is null
      */
     default <U> Try<U> mapTry(CheckedFunction1<? super T, ? extends U> mapper) {
@@ -413,22 +422,29 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Folds either the {@code None} or the {@code Some} side of the Option value.
+     * Folds this {@code Option} into a single value by applying one of two functions:
+     * <ul>
+     *     <li>{@code ifNone} is applied if this is {@code None}</li>
+     *     <li>{@code f} is applied to the contained value if this is {@code Some}</li>
+     * </ul>
      *
-     * @param ifNone  maps the left value if this is a None
-     * @param f maps the value if this is a Some
-     * @param <U>         type of the folded value
-     * @return A value of type U
+     * @param ifNone a function to produce a value if this is {@code None}
+     * @param f      a function to transform the contained value if this is {@code Some}
+     * @param <U>    the type of the folded result
+     * @return the result of applying {@code f} or {@code ifNone} depending on whether this is {@code Some} or {@code None}
+     * @throws NullPointerException if {@code ifNone} or {@code f} is null
      */
     default <U> U fold(Supplier<? extends U> ifNone, Function<? super T, ? extends U> f) {
         return this.<U>map(f).getOrElse(ifNone);
     }
 
     /**
-     * Applies an action to this value, if this option is defined, otherwise does nothing.
+     * Executes the given action on the contained value if this {@code Option} is defined ({@code Some}),
+     * otherwise does nothing.
      *
-     * @param action An action which can be applied to an optional value
+     * @param action a consumer to apply to the contained value
      * @return this {@code Option}
+     * @throws NullPointerException if {@code action} is null
      */
     @Override
     default Option<T> peek(Consumer<? super T> action) {
@@ -440,11 +456,11 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     /**
-     * Transforms this {@code Option}.
+     * Transforms this {@code Option} into a value of type {@code U} using the given function.
      *
-     * @param f   A transformation
-     * @param <U> Type of transformation result
-     * @return An instance of type {@code U}
+     * @param f   a function to transform this {@code Option}
+     * @param <U> the type of the result
+     * @return the result of applying {@code f} to this {@code Option}
      * @throws NullPointerException if {@code f} is null
      */
     default <U> U transform(Function<? super Option<T>, ? extends U> f) {
