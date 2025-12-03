@@ -53,12 +53,12 @@ import java.util.stream.StreamSupport;
 import static io.vavr.API.*;
 
 /**
- * Functional programming is all about values and transformation of values using functions. The {@code Value}
- * type reflects the values in a functional setting. It can be seen as the result of a partial function application.
- * Hence the result may be undefined. If a value is undefined, we say it is empty.
+ * Represents a value in a functional programming context. A {@code Value} models the outcome of a computation
+ * that may or may not produce a result, similar to the result of a partially applied function.
  * <p>
- * How the empty state is interpreted depends on the context, i.e. it may be <em>undefined</em>, <em>failed</em>,
- * <em>no elements</em>, etc.
+ * A {@code Value} may be present or absent. When absent, it is considered <em>empty</em>. The meaning of the
+ * empty state depends on the concrete implementation and usage context - it may represent an undefined value,
+ * a failed computation, or the absence of elements.
  * <p>
  * Basic operations:
  *

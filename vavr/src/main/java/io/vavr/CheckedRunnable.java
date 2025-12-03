@@ -21,28 +21,29 @@ package io.vavr;
 import static io.vavr.CheckedRunnableModule.sneakyThrow;
 
 /**
- * A {@linkplain Runnable} which may throw.
+ * A {@linkplain Runnable} that is allowed to throw checked exceptions.
  */
 @FunctionalInterface
 public interface CheckedRunnable {
 
     /**
-     * Creates a {@code CheckedRunnable}.
+     * Creates a {@code CheckedRunnable} from the given method reference or lambda.
      *
+     * <p>Example usage:</p>
      * <pre>{@code
      * // class Evil { static void sideEffect() { ... } }
      * final CheckedRunnable checkedRunnable = CheckedRunnable.of(Evil::sideEffect);
      * final Runnable runnable = checkedRunnable.unchecked();
      *
-     * // may or may not perform a side-effect while not throwing
+     * // may or may not perform the side-effect without throwing checked exceptions
      * runnable.run();
      *
-     * // may or may not perform a side-effect while throwing
+     * // may or may not perform the side-effect while potentially throwing
      * runnable.run();
      * }</pre>
      *
-     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @return a new {@code CheckedRunnable}
+     * @param methodReference typically a method reference, e.g. {@code Type::method}
+     * @return a new {@code CheckedRunnable} wrapping the given method reference
      * @see CheckedFunction1#of(CheckedFunction1)
      */
     static CheckedRunnable of(CheckedRunnable methodReference) {
@@ -50,16 +51,18 @@ public interface CheckedRunnable {
     }
 
     /**
-     * Performs side-effects.
+     * Executes the action, potentially performing side-effects.
      *
-     * @throws Throwable if an error occurs
+     * @throws Throwable if an error occurs during execution
      */
+
     void run() throws Throwable;
 
     /**
-     * Returns an unchecked {@link Runnable} that will <em>sneaky throw</em> if an exceptions occurs when running the unit of work.
+     * Returns an unchecked {@link Runnable} that <em>sneakily throws</em> any exception 
+     * encountered during execution of this unit of work.
      *
-     * @return a new {@link Runnable} that throws a {@code Throwable}.
+     * @return a {@link Runnable} that may throw any {@link Throwable} without declaring it
      */
     default Runnable unchecked() {
         return () -> {

@@ -35,28 +35,29 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * Represents a lazy evaluated value. Compared to a Supplier, Lazy is memoizing, i.e. it evaluates only once and
- * therefore is referential transparent.
+ * Represents a lazily evaluated value. Unlike a standard {@link java.util.function.Supplier}, 
+ * {@code Lazy} is memoizing: the computation is performed at most once, ensuring referential transparency.
  *
- * <pre>
- * <code>
+ * <p>This type behaves more like a <em>Functor</em> than a <em>Monad</em>: it represents a value rather than capturing
+ * a specific state. Therefore, it does not provide operations like {@code flatMap} or {@code orElse}.</p>
+ *
+ * <p>Example usage:</p>
+ * <pre><code>
  * final Lazy&lt;Double&gt; l = Lazy.of(Math::random);
- * l.isEvaluated(); // = false
- * l.get();         // = 0.123 (random generated)
- * l.isEvaluated(); // = true
- * l.get();         // = 0.123 (memoized)
- * </code>
- * </pre>
+ * l.isEvaluated(); // false
+ * double value = l.get(); // evaluates and returns a random number, e.g., 0.123
+ * l.isEvaluated(); // true
+ * double memoizedValue = l.get(); // returns the same value as before, e.g., 0.123
+ * </code></pre>
  *
- * Example of creating a <em>real</em> lazy value (works only with interfaces):
+ * <p>Creating a <em>truly lazy</em> value for an interface type:</p>
+ * <pre><code>
+ * final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);
+ * </code></pre>
  *
- * <pre><code>final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);</code></pre>
- * 
- * @param <T> The type of the lazy evaluated value 
+ * @param <T> the type of the lazily evaluated value
  * @author Daniel Dietrich
  */
-// DEV-NOTE: No flatMap and orElse because this more like a Functor than a Monad.
-//           It represents a value rather than capturing a specific state.
 public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -74,13 +75,12 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code Lazy<? extends T>} to {@code Lazy<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code Lazy<? extends T>} to {@code Lazy<T>} via a type-safe cast.
+     * This is safe because immutable or read-only collections are covariant.
      *
-     * @param lazy A {@code Lazy}.
-     * @param <T>  Component type of the {@code Lazy}.
-     * @return the given {@code lazy} instance as narrowed type {@code Lazy<T>}.
+     * @param lazy the {@code Lazy} instance to narrow
+     * @param <T>  the type of the value
+     * @return the given {@code lazy} instance as a {@code Lazy<T>}
      */
     @SuppressWarnings("unchecked")
     public static <T> Lazy<T> narrow(Lazy<? extends T> lazy) {
@@ -88,12 +88,12 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Creates a {@code Lazy} that requests its value from a given {@code Supplier}. The supplier is asked only once,
-     * the value is memoized.
+     * Creates a {@code Lazy} instance that obtains its value from the given {@code Supplier}.
+     * The supplier is invoked at most once, and the result is cached for subsequent calls.
      *
-     * @param <T>      type of the lazy value
-     * @param supplier A supplier
-     * @return A new instance of Lazy
+     * @param <T>      the type of the lazy value
+     * @param supplier the supplier providing the value
+     * @return a new {@code Lazy} instance
      */
     @SuppressWarnings("unchecked")
     public static <T> Lazy<T> of(Supplier<? extends T> supplier) {
@@ -106,13 +106,15 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Reduces many {@code Lazy} values into a single {@code Lazy} by transforming an
-     * {@code Iterable<Lazy<? extends T>>} into a {@code Lazy<Seq<T>>}.
+     * Combines multiple {@code Lazy} instances into a single {@code Lazy} containing a sequence of their evaluated values.
      *
-     * @param <T>    Type of the lazy values.
-     * @param values An iterable of lazy values.
-     * @return A lazy sequence of values.
-     * @throws NullPointerException if values is null
+     * <p>Transforms an {@code Iterable<Lazy<? extends T>>} into a {@code Lazy<Seq<T>>}, evaluating each value lazily
+     * when the resulting {@code Lazy} is accessed.</p>
+     *
+     * @param <T>    the type of the lazy values
+     * @param values an {@code Iterable} of lazy values
+     * @return a {@code Lazy} containing a sequence of the evaluated values
+     * @throws NullPointerException if {@code values} is null
      */
     @SuppressWarnings("Convert2MethodRef") // TODO should be fixed in JDK 9 and Idea
     public static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
@@ -121,13 +123,13 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Creates a real _lazy value_ of type {@code T}, backed by a {@linkplain java.lang.reflect.Proxy} which delegates
-     * to a {@code Lazy} instance.
+     * Creates a true <em>lazy value</em> of type {@code T}, implemented using a {@linkplain java.lang.reflect.Proxy}
+     * that delegates to a {@code Lazy} instance.
      *
-     * @param supplier A supplier
-     * @param type     An interface
-     * @param <T>      type of the lazy value
-     * @return A new instance of T
+     * @param supplier the supplier providing the value when needed
+     * @param type     the interface class that the proxy should implement
+     * @param <T>      the type of the lazy value
+     * @return a new proxy instance of type {@code T} that evaluates lazily
      */
     @GwtIncompatible("reflection is not supported")
     @SuppressWarnings("unchecked")
@@ -148,10 +150,10 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Evaluates this lazy value and caches it, when called the first time.
-     * On subsequent calls, returns the cached value.
+     * Evaluates this lazy value on the first call and caches the result.
+     * Subsequent calls return the cached value without recomputation.
      *
-     * @return the lazy evaluated value
+     * @return the evaluated value
      */
     @Override
     public T get() {
@@ -173,9 +175,9 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * A {@code Lazy}'s value is computed synchronously.
+     * Indicates that this {@code Lazy} value is computed synchronously.
      *
-     * @return false
+     * @return {@code false}
      */
     @Override
     public boolean isAsync() {
@@ -188,21 +190,21 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Checks, if this lazy value is evaluated.
-     * <p>
-     * Note: A value is internally evaluated (once) by calling {@link #get()}.
+     * Checks whether this lazy value has been evaluated.
      *
-     * @return true, if the value is evaluated, false otherwise.
-     * @throws UnsupportedOperationException if this value is undefined
+     * <p>Note: The value is evaluated internally (at most once) when {@link #get()} is called.</p>
+     *
+     * @return {@code true} if the value has been evaluated, {@code false} otherwise
+     * @throws UnsupportedOperationException if this lazy value is undefined
      */
     public boolean isEvaluated() {
         return supplier == null;
     }
 
     /**
-     * A {@code Lazy}'s value is computed lazily.
+     * Indicates that this {@code Lazy} value is computed lazily.
      *
-     * @return true
+     * @return {@code true}
      */
     @Override
     public boolean isLazy() {
@@ -241,11 +243,12 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Transforms this {@code Lazy}.
+     * Applies a transformation function to the value contained in this {@code Lazy}, producing a new {@code Lazy} instance
+     * of the transformed value.
      *
-     * @param f   A transformation
-     * @param <U> Type of transformation result
-     * @return An instance of type {@code U}
+     * @param f   the function to transform the value
+     * @param <U> the type of the result of the transformation
+     * @return a new {@code Lazy} instance containing the transformed value
      * @throws NullPointerException if {@code f} is null
      */
     public <U> U transform(Function<? super Lazy<T>, ? extends U> f) {
@@ -274,10 +277,10 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Ensures that the value is evaluated before serialization.
+     * Forces the lazy value to be evaluated before it is serialized.
      *
-     * @param s An object serialization stream.
-     * @throws java.io.IOException If an error occurs writing to the stream.
+     * @param s the object output stream to write to
+     * @throws java.io.IOException if an I/O error occurs during serialization
      */
     @GwtIncompatible("The Java serialization protocol is explicitly not supported")
     private void writeObject(ObjectOutputStream s) throws IOException {
