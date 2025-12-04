@@ -53,7 +53,7 @@
         <maven.jacoco.version>0.8.12</maven.jacoco.version>
         <maven.jar.version>3.5.0</maven.jar.version>
         <maven.javadoc.version>3.12.0</maven.javadoc.version>
-        <maven.release.version>3.2.0</maven.release.version>
+        <maven.release.version>3.3.0</maven.release.version>
         <maven.versions.version>2.20.1</maven.versions.version>
         <maven.surefire.version>3.5.4</maven.surefire.version>
         <spotless.version>3.1.0</spotless.version>
