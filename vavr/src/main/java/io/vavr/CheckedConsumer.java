@@ -24,30 +24,31 @@ import java.util.function.Consumer;
 import static io.vavr.CheckedConsumerModule.sneakyThrow;
 
 /**
- * A consumer that may throw, equivalent to {@linkplain java.util.function.Consumer}.
+ * A {@linkplain java.util.function.Consumer} that is allowed to throw checked exceptions.
  *
- * @param <T> the value type supplied to this consumer.
+ * @param <T> the type of the input to the consumer
  */
 @FunctionalInterface
 public interface CheckedConsumer<T> {
 
     /**
-     * Creates a {@code CheckedConsumer}.
+     * Creates a {@code CheckedConsumer} from the given method reference or lambda.
      *
+     * <p>Example usage:</p>
      * <pre>{@code
      * final CheckedConsumer<Value> checkedConsumer = CheckedConsumer.of(Value::stdout);
      * final Consumer<Value> consumer = checkedConsumer.unchecked();
      *
-     * // prints "Hi" on the console
+     * // prints "Hi" to the console
      * consumer.accept(CharSeq.of("Hi!"));
      *
-     * // throws
+     * // may throw an exception
      * consumer.accept(null);
      * }</pre>
      *
-     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @param <T> type of values that are accepted by the consumer
-     * @return a new {@code CheckedConsumer}
+     * @param methodReference typically a method reference, e.g. {@code Type::method}
+     * @param <T> the type of values accepted by the consumer
+     * @return a new {@code CheckedConsumer} wrapping the given method reference
      * @see CheckedFunction1#of(CheckedFunction1)
      */
     static <T> CheckedConsumer<T> of(CheckedConsumer<T> methodReference) {
@@ -55,18 +56,18 @@ public interface CheckedConsumer<T> {
     }
 
     /**
-     * Performs side-effects.
+     * Performs an action on the given value, potentially causing side-effects.
      *
-     * @param t a value of type {@code T}
-     * @throws Throwable if an error occurs
+     * @param t the input value of type {@code T}
+     * @throws Throwable if an error occurs during execution
      */
     void accept(T t) throws Throwable;
 
     /**
-     * Returns a chained {@code CheckedConsumer} that first executes {@code this.accept(t)}
-     * and then {@code after.accept(t)}, for a given {@code t} of type {@code T}.
+     * Returns a composed {@code CheckedConsumer} that performs, in sequence, 
+     * {@code this.accept(t)} followed by {@code after.accept(t)} for the same input {@code t}.
      *
-     * @param after the action that will be executed after this action
+     * @param after the action to execute after this action
      * @return a new {@code CheckedConsumer} that chains {@code this} and {@code after}
      * @throws NullPointerException if {@code after} is null
      */
@@ -76,9 +77,10 @@ public interface CheckedConsumer<T> {
     }
 
     /**
-     * Returns an unchecked {@link Consumer} that will <em>sneaky throw</em> if an exceptions occurs when accepting a value.
+     * Returns an unchecked {@link Consumer} that <em>sneakily throws</em> any exception 
+     * encountered while accepting a value.
      *
-     * @return a new {@link Consumer} that throws a {@code Throwable}.
+     * @return a {@link Consumer} that may throw any {@link Throwable} without declaring it
      */
     default Consumer<T> unchecked() {
         return t -> {

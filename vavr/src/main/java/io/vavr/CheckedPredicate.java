@@ -23,7 +23,7 @@ import java.util.function.Predicate;
 import static io.vavr.CheckedPredicateModule.sneakyThrow;
 
 /**
- * A {@linkplain java.util.function.Predicate} which may throw.
+ * A {@linkplain java.util.function.Predicate} that is allowed to throw checked exceptions.
  *
  * @param <T> the type of the input to the predicate
  */
@@ -31,22 +31,23 @@ import static io.vavr.CheckedPredicateModule.sneakyThrow;
 public interface CheckedPredicate<T> {
 
     /**
-     * Creates a {@code CheckedPredicate}.
+     * Creates a {@code CheckedPredicate} from the given method reference or lambda.
      *
+     * <p>Example usage:</p>
      * <pre>{@code
      * final CheckedPredicate<Boolean> checkedPredicate = CheckedPredicate.of(Boolean::booleanValue);
      * final Predicate<Boolean> predicate = checkedPredicate.unchecked();
      *
-     * // = true
+     * // returns true
      * predicate.test(Boolean.TRUE);
      *
-     * // throws
+     * // may throw an exception
      * predicate.test(null);
      * }</pre>
      *
-     * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-     * @param <T> type of values that are tested by the predicate
-     * @return a new {@code CheckedPredicate}
+     * @param methodReference typically a method reference, e.g. {@code Type::method}
+     * @param <T> the type of values tested by the predicate
+     * @return a new {@code CheckedPredicate} wrapping the given method reference
      * @see CheckedFunction1#of(CheckedFunction1)
      */
     static <T> CheckedPredicate<T> of(CheckedPredicate<T> methodReference) {
@@ -57,24 +58,25 @@ public interface CheckedPredicate<T> {
      * Evaluates this predicate on the given argument.
      *
      * @param t the input argument
-     * @return {@code true} if the input argument matches the predicate, otherwise {@code false}
-     * @throws Throwable if an error occurs
+     * @return {@code true} if the argument satisfies the predicate, {@code false} otherwise
+     * @throws Throwable if an error occurs during evaluation
      */
     boolean test(T t) throws Throwable;
 
     /**
-     * Negates this predicate.
+     * Returns a predicate that represents the logical negation of this predicate.
      *
-     * @return A new CheckedPredicate.
+     * @return a new {@code CheckedPredicate} representing the negated condition
      */
     default CheckedPredicate<T> negate() {
         return t -> !test(t);
     }
 
     /**
-     * Returns an unchecked {@link Predicate} that will <em>sneaky throw</em> if an exceptions occurs when testing a value.
+     * Returns an unchecked {@link Predicate} that <em>sneakily throws</em> any exception 
+     * encountered when testing a value.
      *
-     * @return a new {@link Predicate} that throws a {@code Throwable}.
+     * @return a {@link Predicate} that may throw any {@link Throwable} without declaring it
      */
     default Predicate<T> unchecked() {
         return t -> {

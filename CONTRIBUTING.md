@@ -193,7 +193,7 @@ Note: Detailed information about performing a release can be found in the SCM se
 
 ### Branching Model
 
-We following a simple git workflow/branching model:
+We follow a simple git workflow/branching model:
 
 ```
                          master
