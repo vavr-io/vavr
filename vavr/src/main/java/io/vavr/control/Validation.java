@@ -31,46 +31,49 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
- * An implementation similar to scalaz's <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a> control.
+ * An implementation similar to Scalaz's 
+ * <a href="http://eed3si9n.com/learning-scalaz/Validation.html">Validation</a> control.
  *
  * <p>
- * The Validation type is different from a Monad type, it is an applicative
- * functor. Whereas a Monad will short circuit after the first error, the
- * applicative functor will continue on, accumulating ALL errors. This is
- * especially helpful in cases such as validation, where you want to know
- * all the validation errors that have occurred, not just the first one.
+ * The {@code Validation} type is an applicative functor, not a Monad. While a Monad
+ * short-circuits on the first error, an applicative functor accumulates all errors,
+ * making it particularly useful for validation scenarios where all errors should be reported.
  * </p>
  *
  * <pre>
  * <code>
- * <b>Validation construction:</b>
+ * // Validation construction:
  *
- * <i>Valid:</i>
- * Validation&lt;String,Integer&gt; valid = Validation.valid(5);
+ * // Valid
+ * Validation&lt;String, Integer&gt; valid = Validation.valid(5);
  *
- * <i>Invalid:</i>
- * Validation&lt;List&lt;String&gt;,Integer&gt; invalid = Validation.invalid(List.of("error1","error2"));
+ * // Invalid
+ * Validation&lt;List&lt;String>, Integer&gt;invalid = Validation.invalid(List.of("error1", "error2"));
  *
- * <b>Validation combination:</b>
+ * // Validation combination:
  *
- * Validation&lt;String,String&gt; valid1 = Validation.valid("John");
- * Validation&lt;String,Integer&gt; valid2 = Validation.valid(5);
- * Validation&lt;String,Option&lt;String&gt;&gt; valid3 = Validation.valid(Option.of("123 Fake St."));
- * Function3&lt;String,Integer,Option&lt;String&gt;,Person&gt; f = ...;
+ * Validation&lt;String, String> valid1 = Validation.valid("John");
+ * Validation&lt;String, Integer> valid2 = Validation.valid(5);
+ * Validation&lt;String, Option&lt;String&gt;&gt; valid3 = Validation.valid(Option.of("123 Fake St."));
+ * Function3&lt;String, Integer, Option&lt;String&gt;, Person> f = ...;
  *
- * Validation&lt;List&lt;String&gt;,String&gt; result = valid1.combine(valid2).ap((name,age) -&gt; "Name: "+name+" Age: "+age);
- * Validation&lt;List&lt;String&gt;,Person&gt; result2 = valid1.combine(valid2).combine(valid3).ap(f);
+ * Validation&lt;List&lt;String&gt;, String&gt; result =
+ *     valid1.combine(valid2).ap((name, age) -> "Name: " + name + " Age: " + age);
  *
- * <b>Another form of combining validations:</b>
+ * Validation&lt;List&lt;String&gt;, Person&gt; result2 =
+ *     valid1.combine(valid2).combine(valid3).ap(f);
  *
- * Validation&lt;List&lt;String&gt;,Person&gt; result3 = Validation.combine(valid1, valid2, valid3).ap(f);
+ * // Another way to combine validations:
+ * Validation&lt;List&lt;String&gt;, Person&gt; result3 =
+ *     Validation.combine(valid1, valid2, valid3).ap(f);
  * </code>
  * </pre>
  *
- * @param <E> value type in the case of invalid
- * @param <T> value type in the case of valid
+ * @param <E> the type of values in the case of invalid
+ * @param <T> the type of values in the case of valid
  * @author Eric Nelson
- * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">Validation</a>
+ * @see <a href="https://github.com/scalaz/scalaz/blob/series/7.3.x/core/src/main/scala/scalaz/Validation.scala">
+ *     Scalaz Validation source</a>
  */
 public interface Validation<E, T> extends Value<T>, Serializable {
 
