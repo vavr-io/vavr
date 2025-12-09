@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Represents a function with two arguments.
@@ -98,7 +99,7 @@ public interface Function2<T1, T2, R> extends Serializable, BiFunction<T1, T2, R
      * @param <T2> 2nd argument
      * @return a {@code Function2}
      */
-    static <T1, T2, R> Function2<T1, T2, R> of(Function2<T1, T2, R> methodReference) {
+    static <T1, T2, R> Function2<T1, T2, R> of(@NonNull Function2<T1, T2, R> methodReference) {
         return methodReference;
     }
 
@@ -112,7 +113,7 @@ public interface Function2<T1, T2, R> extends Serializable, BiFunction<T1, T2, R
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <T1, T2, R> Function2<T1, T2, Option<R>> lift(BiFunction<? super T1, ? super T2, ? extends R> partialFunction) {
+    static <T1, T2, R> Function2<T1, T2, Option<R>> lift(@NonNull BiFunction<? super T1, ? super T2, ? extends R> partialFunction) {
         return (t1, t2) -> Try.<R>of(() -> partialFunction.apply(t1, t2)).toOption();
     }
 
@@ -126,7 +127,7 @@ public interface Function2<T1, T2, R> extends Serializable, BiFunction<T1, T2, R
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, T2, R> Function2<T1, T2, Try<R>> liftTry(BiFunction<? super T1, ? super T2, ? extends R> partialFunction) {
+    static <T1, T2, R> Function2<T1, T2, Try<R>> liftTry(@NonNull BiFunction<? super T1, ? super T2, ? extends R> partialFunction) {
         return (t1, t2) -> Try.of(() -> partialFunction.apply(t1, t2));
     }
 
@@ -250,7 +251,7 @@ public interface Function2<T1, T2, R> extends Serializable, BiFunction<T1, T2, R
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> Function2<T1, T2, V> andThen(Function<? super R, ? extends V> after) {
+    default <V> Function2<T1, T2, V> andThen(@NonNull Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2) -> after.apply(apply(t1, t2));
     }
@@ -264,7 +265,7 @@ public interface Function2<T1, T2, R> extends Serializable, BiFunction<T1, T2, R
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function2<S, T2, R> compose1(Function1<? super S, ? extends T1> before) {
+    default <S> Function2<S, T2, R> compose1(@NonNull Function1<? super S, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return (S s, T2 t2) -> apply(before.apply(s), t2);
     }
@@ -278,7 +279,7 @@ public interface Function2<T1, T2, R> extends Serializable, BiFunction<T1, T2, R
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function2<T1, S, R> compose2(Function1<? super S, ? extends T2> before) {
+    default <S> Function2<T1, S, R> compose2(@NonNull Function1<? super S, ? extends T2> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, S s) -> apply(t1, before.apply(s));
     }

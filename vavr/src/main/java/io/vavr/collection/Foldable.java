@@ -22,11 +22,12 @@ import io.vavr.control.Option;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Represents a data structure that can be folded (reduced) into a single value.
  * <p>
- * Folding is the process of combining the elements of a structure using a 
+ * Folding is the process of combining the elements of a structure using a
  * provided function, typically accumulating a result.
  * <p>
  * <strong>Example:</strong>
@@ -55,10 +56,10 @@ public interface Foldable<T> {
      *   <li>{@link #foldRight(Object, BiFunction)}: combines elements from right to left.</li>
      *   <li>{@code fold}: requires an associative combine operation, as the element traversal
      *       is unordered. Associativity ensures the result is the same regardless of combination order.
-     *       Note that most binary operators are not associative, so the result may vary if 
+     *       Note that most binary operators are not associative, so the result may vary if
      *       elements are combined in a different order.
      *       <p>
-     *       Together, this {@code Foldable} and the associative {@code combine} operation form a 
+     *       Together, this {@code Foldable} and the associative {@code combine} operation form a
      *       <a href="https://en.wikipedia.org/wiki/Monoid" target="_blank">Monoid</a>.
      *   </li>
      * </ul>
@@ -74,7 +75,7 @@ public interface Foldable<T> {
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
      */
-    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> combine) {
+    default T fold(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> combine) {
         Objects.requireNonNull(combine, "combine is null");
         return foldLeft(zero, combine);
     }
@@ -98,7 +99,7 @@ public interface Foldable<T> {
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
      */
-    <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine);
+    <U> U foldLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> combine);
 
 
     /**
@@ -120,7 +121,7 @@ public interface Foldable<T> {
      * @return the folded result
      * @throws NullPointerException if {@code combine} is null
      */
-    <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine);
+    <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> combine);
 
     /**
      * Reduces the elements of this Foldable by repeatedly applying the given binary operation {@code op}.
@@ -135,7 +136,7 @@ public interface Foldable<T> {
      * @throws NoSuchElementException if this Foldable is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
+    default T reduce(@NonNull BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return reduceLeft(op);
     }
@@ -143,14 +144,14 @@ public interface Foldable<T> {
     /**
      * Reduces the elements of this Foldable by repeatedly applying the given binary operation {@code op}.
      * <p>
-     * The order of element combination is non-deterministic, so {@code op} should be associative to 
+     * The order of element combination is non-deterministic, so {@code op} should be associative to
      * guarantee a consistent result.
      *
      * @param op a binary function to combine two elements
      * @return an {@link Option} containing the reduced result, or {@link Option#none()} if this Foldable is empty
      * @throws NullPointerException if {@code op} is null
      */
-    default Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op) {
+    default Option<T> reduceOption(@NonNull BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return reduceLeftOption(op);
     }
@@ -165,7 +166,7 @@ public interface Foldable<T> {
      * @throws NoSuchElementException if this Foldable is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op);
+    T reduceLeft(@NonNull BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
      * Reduces the elements of this Foldable from the left by successively applying the given operation {@code op}.
@@ -176,7 +177,7 @@ public interface Foldable<T> {
      * @return an {@link Option} containing the reduced result, or {@link Option#none()} if empty
      * @throws NullPointerException if {@code op} is null
      */
-    Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op);
+    Option<T> reduceLeftOption(@NonNull BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
      * Reduces the elements of this Foldable from the right by successively applying the given operation {@code op}.
@@ -188,7 +189,7 @@ public interface Foldable<T> {
      * @throws NoSuchElementException if this Foldable is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    T reduceRight(BiFunction<? super T, ? super T, ? extends T> op);
+    T reduceRight(@NonNull BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
      * Reduces the elements of this Foldable from the right by successively applying the given operation {@code op}.
@@ -199,5 +200,5 @@ public interface Foldable<T> {
      * @return an {@link Option} containing the reduced result, or {@link Option#none()} if empty
      * @throws NullPointerException if {@code op} is null
      */
-    Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op);
+    Option<T> reduceRightOption(@NonNull BiFunction<? super T, ? super T, ? extends T> op);
 }

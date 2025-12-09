@@ -26,6 +26,7 @@ import io.vavr.control.Option;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Internal class, containing helpers.
@@ -184,7 +185,7 @@ final class Collections {
         return tabulate(n, anything -> s.get(), empty, of);
     }
 
-    static <C extends Traversable<T>, T> C fillObject(int n, T element, C empty, Function<T[], C> of) {
+    static <C extends Traversable<T>, T> C fillObject(int n, T element, @NonNull C empty, @NonNull Function<T[], C> of) {
         Objects.requireNonNull(empty, "empty is null");
         Objects.requireNonNull(of, "of is null");
         if (n <= 0) {

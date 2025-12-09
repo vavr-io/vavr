@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.*;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Interface for immutable sequential data structures.
@@ -143,7 +144,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return A new Seq containing the given elements appended to this elements
      * @throws NullPointerException if {@code elements} is null
      */
-    Seq<T> appendAll(Iterable<? extends T> elements);
+    Seq<T> appendAll(@NonNull Iterable<? extends T> elements);
 
     /**
      * A {@code Seq} is a partial function which returns the element at the specified index by calling
@@ -188,7 +189,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @see Seq#asJava()
      */
     @GwtIncompatible
-    Seq<T> asJava(Consumer<? super java.util.List<T>> action);
+    Seq<T> asJava(@NonNull Consumer<? super java.util.List<T>> action);
 
     /**
      * Creates a <strong>mutable</strong> {@link java.util.List} view on top of this {@code Seq},
@@ -209,7 +210,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @see Seq#asJavaMutable()
      */
     @GwtIncompatible
-    Seq<T> asJavaMutable(Consumer<? super java.util.List<T>> action);
+    Seq<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action);
 
     /**
      * Turns this {@code Seq} into a {@link PartialFunction} which is defined at a specific index, if this {@code Seq}
@@ -222,7 +223,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     PartialFunction<Integer, T> asPartialFunction() throws IndexOutOfBoundsException;
 
     @Override
-    <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
+    <R> Seq<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction);
 
     /**
      * Returns the union of all combinations from k = 0 to length().
@@ -263,7 +264,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return true if this sequence contains a slice with the same elements as that, otherwise false.
      * @throws NullPointerException if {@code that} is null.
      */
-    default boolean containsSlice(Iterable<? extends T> that) {
+    default boolean containsSlice(@NonNull Iterable<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         return indexOfSlice(that) >= 0;
     }
@@ -327,7 +328,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a new Iterator containing the cross product {@code this x that}
      * @throws NullPointerException if that is null
      */
-    default <U> Iterator<Tuple2<T, U>> crossProduct(Iterable<? extends U> that) {
+    default <U> Iterator<Tuple2<T, U>> crossProduct(@NonNull Iterable<? extends U> that) {
         Objects.requireNonNull(that, "that is null");
         final Stream<U> other = Stream.ofAll(that);
         return Iterator.ofAll(this).flatMap(a -> other.map(b -> Tuple.of(a, b)));
@@ -341,7 +342,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param that the sequence to test
      * @return true if this sequence has that as a suffix, false otherwise.
      */
-    default boolean endsWith(Seq<? extends T> that) {
+    default boolean endsWith(@NonNull Seq<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
         final Iterator<T> i = this.iterator().drop(length() - that.length());
         final Iterator<? extends T> j = that.iterator();
@@ -414,7 +415,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    default int indexOfSlice(Iterable<? extends T> that) {
+    default int indexOfSlice(@NonNull Iterable<? extends T> that) {
         return indexOfSlice(that, 0);
     }
 
@@ -426,7 +427,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param that the sequence to test
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    default Option<Integer> indexOfSliceOption(Iterable<? extends T> that) {
+    default Option<Integer> indexOfSliceOption(@NonNull Iterable<? extends T> that) {
         return Collections.indexOption(indexOfSlice(that));
     }
 
@@ -440,7 +441,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    int indexOfSlice(Iterable<? extends T> that, int from);
+    int indexOfSlice(@NonNull Iterable<? extends T> that, int from);
 
     /**
      * Finds first index after or at a start index where this sequence contains a given sequence as an {@code Option} of a slice.
@@ -450,7 +451,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param from the start index
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    default Option<Integer> indexOfSliceOption(Iterable<? extends T> that, int from) {
+    default Option<Integer> indexOfSliceOption(@NonNull Iterable<? extends T> that, int from) {
         return Collections.indexOption(indexOfSlice(that, from));
     }
 
@@ -461,7 +462,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return the index of the first element of this Seq that satisfies the given
      * {@code predicate}, or {@code -1}, if none exists.
      */
-    default int indexWhere(Predicate<? super T> predicate) {
+    default int indexWhere(@NonNull Predicate<? super T> predicate) {
         return indexWhere(predicate, 0);
     }
 
@@ -471,7 +472,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param predicate the predicate used to test elements.
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    default Option<Integer> indexWhereOption(Predicate<? super T> predicate) {
+    default Option<Integer> indexWhereOption(@NonNull Predicate<? super T> predicate) {
         return Collections.indexOption(indexWhere(predicate));
     }
 
@@ -484,7 +485,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return the index {@code >= from} of the first element of this Seq that
      * satisfies the given {@code predicate}, or {@code -1}, if none exists.
      */
-    int indexWhere(Predicate<? super T> predicate, int from);
+    int indexWhere(@NonNull Predicate<? super T> predicate, int from);
 
     /**
      * Finds index of the first element satisfying some predicate after or at
@@ -494,7 +495,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param from      the start index
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    default Option<Integer> indexWhereOption(Predicate<? super T> predicate, int from) {
+    default Option<Integer> indexWhereOption(@NonNull Predicate<? super T> predicate, int from) {
         return Collections.indexOption(indexWhere(predicate, from));
     }
 
@@ -516,7 +517,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a new Seq, where the given elements are inserted into this at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<T> insertAll(int index, Iterable<? extends T> elements);
+    Seq<T> insertAll(int index, @NonNull Iterable<? extends T> elements);
 
     /**
      * Inserts an element between all elements of this Traversable.
@@ -565,7 +566,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return the index of the last element of this Seq that satisfies the given {@code predicate}, or {@code -1},
      * if none exists.
      */
-    default int lastIndexWhere(Predicate<? super T> predicate) {
+    default int lastIndexWhere(@NonNull Predicate<? super T> predicate) {
         return lastIndexWhere(predicate, length() - 1);
     }
 
@@ -575,7 +576,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param predicate the predicate used to test elements.
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    default Option<Integer> lastIndexWhereOption(Predicate<? super T> predicate) {
+    default Option<Integer> lastIndexWhereOption(@NonNull Predicate<? super T> predicate) {
         return Collections.indexOption(lastIndexWhere(predicate));
     }
 
@@ -588,7 +589,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return the index {@code <= end} of the last element of this Seq that
      * satisfies the given {@code predicate}, or {@code -1}, if none exists.
      */
-    int lastIndexWhere(Predicate<? super T> predicate, int end);
+    int lastIndexWhere(@NonNull Predicate<? super T> predicate, int end);
 
     /**
      * Finds index of last element satisfying some predicate before or at given end index as an {@code Option}.
@@ -597,7 +598,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param end       the maximum index of the search
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    default Option<Integer> lastIndexWhereOption(Predicate<? super T> predicate, int end) {
+    default Option<Integer> lastIndexWhereOption(@NonNull Predicate<? super T> predicate, int end) {
         return Collections.indexOption(lastIndexWhere(predicate, end));
     }
 
@@ -644,7 +645,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    default int lastIndexOfSlice(Iterable<? extends T> that) {
+    default int lastIndexOfSlice(@NonNull Iterable<? extends T> that) {
         return lastIndexOfSlice(that, Integer.MAX_VALUE);
     }
 
@@ -654,7 +655,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param that the sequence to test
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    default Option<Integer> lastIndexOfSliceOption(Iterable<? extends T> that) {
+    default Option<Integer> lastIndexOfSliceOption(@NonNull Iterable<? extends T> that) {
         return Collections.indexOption(lastIndexOfSlice(that));
     }
 
@@ -667,7 +668,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * the elements of sequence that, or -1 of no such slice exists.
      * @throws NullPointerException if {@code that} is null.
      */
-    int lastIndexOfSlice(Iterable<? extends T> that, int end);
+    int lastIndexOfSlice(@NonNull Iterable<? extends T> that, int end);
 
     /**
      * Finds last index before or at a given end index where this sequence contains a given sequence as a slice as an {@code Option}.
@@ -676,7 +677,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param end  the end index
      * @return {@code Some(index)} or {@code None} if not found.
      */
-    default Option<Integer> lastIndexOfSliceOption(Iterable<? extends T> that, int end) {
+    default Option<Integer> lastIndexOfSliceOption(@NonNull Iterable<? extends T> that, int end) {
         return Collections.indexOption(lastIndexOfSlice(that, end));
     }
 
@@ -712,7 +713,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param replaced the number of elements to drop in the original list
      * @return a new sequence.
      */
-    Seq<T> patch(int from, Iterable<? extends T> that, int replaced);
+    Seq<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced);
 
     /**
      * Computes all unique permutations.
@@ -746,7 +747,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return the length of the longest prefix of this general sequence such that every
      * element of the segment satisfies the predicate p.
      */
-    default int prefixLength(Predicate<? super T> predicate) {
+    default int prefixLength(@NonNull Predicate<? super T> predicate) {
         return segmentLength(predicate, 0);
     }
 
@@ -764,7 +765,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param elements An Iterable of elements
      * @return A new Seq containing the given elements prepended to this elements
      */
-    Seq<T> prependAll(Iterable<? extends T> elements);
+    Seq<T> prependAll(@NonNull Iterable<? extends T> elements);
 
     /**
      * Removes the first occurrence of the given element.
@@ -789,7 +790,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a Seq containing all elements of this but none of the given elements.
      * @throws NullPointerException if {@code elements} is null
      */
-    Seq<T> removeAll(Iterable<? extends T> elements);
+    Seq<T> removeAll(@NonNull Iterable<? extends T> elements);
 
     /**
      * Returns a new Seq consisting of all elements which do not satisfy the given predicate.
@@ -800,7 +801,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @throws NullPointerException if {@code predicate} is null
      */
     @Deprecated
-    Seq<T> removeAll(Predicate<? super T> predicate);
+    Seq<T> removeAll(@NonNull Predicate<? super T> predicate);
 
     /**
      * Removes the element at the specified position in this sequence. Shifts any subsequent elements to the left
@@ -818,7 +819,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param predicate an predicate
      * @return a new Seq
      */
-    Seq<T> removeFirst(Predicate<T> predicate);
+    Seq<T> removeFirst(@NonNull Predicate<T> predicate);
 
     /**
      * Removes the last occurrence that satisfy predicate
@@ -826,7 +827,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param predicate an predicate
      * @return a new Seq
      */
-    Seq<T> removeLast(Predicate<T> predicate);
+    Seq<T> removeLast(@NonNull Predicate<T> predicate);
 
     /**
      * Reverses the order of elements.
@@ -881,7 +882,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return the length of the longest segment of this sequence starting from index
      * from such that every element of the segment satisfies the predicate p.
      */
-    int segmentLength(Predicate<? super T> predicate, int from);
+    int segmentLength(@NonNull Predicate<? super T> predicate, int from);
 
     /**
      * Randomize the order of the elements in the current sequence.
@@ -930,7 +931,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param comparator A comparator
      * @return a sorted version of this
      */
-    Seq<T> sorted(Comparator<? super T> comparator);
+    Seq<T> sorted(@NonNull Comparator<? super T> comparator);
 
     /**
      * Sorts this elements by comparing the elements in a different domain, using the given {@code mapper}.
@@ -940,7 +941,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a sorted version of this
      * @throws NullPointerException if {@code mapper} is null
      */
-    <U extends Comparable<? super U>> Seq<T> sortBy(Function<? super T, ? extends U> mapper);
+    <U extends Comparable<? super U>> Seq<T> sortBy(@NonNull Function<? super T, ? extends U> mapper);
 
     /**
      * Sorts this elements by comparing the elements in a different domain, using the given {@code mapper}.
@@ -951,7 +952,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a sorted version of this
      * @throws NullPointerException if {@code comparator} or {@code mapper} is null
      */
-    <U> Seq<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
+    <U> Seq<T> sortBy(@NonNull Comparator<? super U> comparator, Function<? super T, ? extends U> mapper);
 
     /**
      * Splits a Seq at the specified index. The result of {@code splitAt(n)} is equivalent to
@@ -968,7 +969,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param predicate An predicate
      * @return A {@link Tuple} containing divided sequences
      */
-    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(Predicate<? super T> predicate);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAt(@NonNull Predicate<? super T> predicate);
 
     /**
      * Splits a sequence at the first element which satisfies the {@link Predicate}, e.g. Tuple(init+element, tail).
@@ -976,7 +977,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param predicate An predicate
      * @return A {@link Tuple} containing divided sequences
      */
-    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAtInclusive(Predicate<? super T> predicate);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> splitAtInclusive(@NonNull Predicate<? super T> predicate);
 
     /**
      * Tests whether this list starts with the given sequence.
@@ -984,7 +985,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param that the sequence to test
      * @return true if that is empty or that is prefix of this collection, false otherwise.
      */
-    default boolean startsWith(Iterable<? extends T> that) {
+    default boolean startsWith(@NonNull Iterable<? extends T> that) {
         return startsWith(that, 0);
     }
 
@@ -997,7 +998,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param offset the index where the sequence is searched.
      * @return true if that is empty or that is prefix of this collection starting from the given offset, false otherwise.
      */
-    default boolean startsWith(Iterable<? extends T> that, int offset) {
+    default boolean startsWith(@NonNull Iterable<? extends T> that, int offset) {
         Objects.requireNonNull(that, "that is null");
         if (offset < 0) { return false; }
         final Iterator<T> i = this.iterator().drop(offset);
@@ -1081,7 +1082,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a new Seq consisting of all previous elements, with a single one (at the given index), changed to the new value.
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<T> update(int index, Function<? super T, ? extends T> updater);
+    Seq<T> update(int index, @NonNull Function<? super T, ? extends T> updater);
 
     /**
      * Searches this sequence for a specific element. The sequence must already be sorted into ascending natural
@@ -1113,7 +1114,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * element would be inserted into the sequence. Note that this guarantees that
      * the return value will be &gt;= 0 if and only if the element is found.
      */
-    int search(T element, Comparator<? super T> comparator);
+    int search(T element, @NonNull Comparator<? super T> comparator);
 
     // -- Adjusted return types of Traversable methods
 
@@ -1121,10 +1122,10 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Seq<T> distinct();
 
     @Override
-    Seq<T> distinctBy(Comparator<? super T> comparator);
+    Seq<T> distinctBy(@NonNull Comparator<? super T> comparator);
 
     @Override
-    <U> Seq<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
+    <U> Seq<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor);
 
     /**
      * Returns a sequential collection where duplicate elements, as determined by the comparator,
@@ -1137,7 +1138,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a new sequence where duplicates are removed, retaining the last occurrence of
      *         each element as per the comparator provided.
      */
-    Seq<T> distinctByKeepLast(Comparator<? super T> comparator);
+    Seq<T> distinctByKeepLast(@NonNull Comparator<? super T> comparator);
 
     /**
      * Returns a sequential Stream-like sequence where the elements are distinct based on a key
@@ -1149,16 +1150,16 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a sequence consisting of distinct elements, keeping the last occurrence of each
      *         duplicate based on the extracted key
      */
-    <U> Seq<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor);
+    <U> Seq<T> distinctByKeepLast(@NonNull Function<? super T, ? extends U> keyExtractor);
 
     @Override
     Seq<T> drop(int n);
 
     @Override
-    Seq<T> dropUntil(Predicate<? super T> predicate);
+    Seq<T> dropUntil(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Seq<T> dropWhile(Predicate<? super T> predicate);
+    Seq<T> dropWhile(@NonNull Predicate<? super T> predicate);
 
     @Override
     Seq<T> dropRight(int n);
@@ -1171,7 +1172,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    Seq<T> dropRightUntil(Predicate<? super T> predicate);
+    Seq<T> dropRightUntil(@NonNull Predicate<? super T> predicate);
 
     /**
      * Drops elements while the predicate holds for the current element, starting from the end.
@@ -1184,25 +1185,25 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    Seq<T> dropRightWhile(Predicate<? super T> predicate);
+    Seq<T> dropRightWhile(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Seq<T> filter(Predicate<? super T> predicate);
+    Seq<T> filter(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Seq<T> reject(Predicate<? super T> predicate);
+    Seq<T> reject(@NonNull Predicate<? super T> predicate);
 
     @Override
-    <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U> Seq<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+    default <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
     }
 
     @Override
-    <C> Map<C, ? extends Seq<T>> groupBy(Function<? super T, ? extends C> classifier);
+    <C> Map<C, ? extends Seq<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier);
 
     @Override
     Iterator<? extends Seq<T>> grouped(int size);
@@ -1214,7 +1215,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Option<? extends Seq<T>> initOption();
 
     @Override
-    <U> Seq<U> map(Function<? super T, ? extends U> mapper);
+    <U> Seq<U> map(@NonNull Function<? super T, ? extends U> mapper);
 
     @Override
     default <U> Seq<U> mapTo(U value) {
@@ -1230,13 +1231,13 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Seq<T> orElse(Iterable<? extends T> other);
 
     @Override
-    Seq<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
+    Seq<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier);
 
     @Override
-    Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(Predicate<? super T> predicate);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> partition(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Seq<T> peek(Consumer<? super T> action);
+    Seq<T> peek(@NonNull Consumer<? super T> action);
 
     @Override
     Seq<T> replace(T currentElement, T newElement);
@@ -1245,19 +1246,19 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Seq<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    Seq<T> retainAll(Iterable<? extends T> elements);
+    Seq<T> retainAll(@NonNull Iterable<? extends T> elements);
 
     @Override
-    Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+    Seq<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+    <U> Seq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
 
     @Override
-    <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    <U> Seq<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
-    Iterator<? extends Seq<T>> slideBy(Function<? super T, ?> classifier);
+    Iterator<? extends Seq<T>> slideBy(@NonNull Function<? super T, ?> classifier);
 
     @Override
     Iterator<? extends Seq<T>> sliding(int size);
@@ -1266,7 +1267,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Iterator<? extends Seq<T>> sliding(int size, int step);
 
     @Override
-    Tuple2<? extends Seq<T>, ? extends Seq<T>> span(Predicate<? super T> predicate);
+    Tuple2<? extends Seq<T>, ? extends Seq<T>> span(@NonNull Predicate<? super T> predicate);
 
     @Override
     Seq<T> tail();
@@ -1278,10 +1279,10 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Seq<T> take(int n);
 
     @Override
-    Seq<T> takeUntil(Predicate<? super T> predicate);
+    Seq<T> takeUntil(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Seq<T> takeWhile(Predicate<? super T> predicate);
+    Seq<T> takeWhile(@NonNull Predicate<? super T> predicate);
 
     @Override
     Seq<T> takeRight(int n);
@@ -1293,7 +1294,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a new instance consisting of all elements after the last one which does satisfy the given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    Seq<T> takeRightUntil(Predicate<? super T> predicate);
+    Seq<T> takeRightUntil(@NonNull Predicate<? super T> predicate);
 
     /**
      * Takes elements while the predicate holds for the current element, starting from the end.
@@ -1305,28 +1306,28 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a new instance consisting of all elements after the last one which does not satisfy the given predicate.
      * @throws NullPointerException if {@code predicate} is null
      */
-    Seq<T> takeRightWhile(Predicate<? super T> predicate);
+    Seq<T> takeRightWhile(@NonNull Predicate<? super T> predicate);
 
     @Override
-    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends Seq<T1>, ? extends Seq<T2>> unzip(@NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
-    <T1, T2, T3> Tuple3<? extends Seq<T1>, ? extends Seq<T2>, ? extends Seq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
+    <T1, T2, T3> Tuple3<? extends Seq<T1>, ? extends Seq<T2>, ? extends Seq<T3>> unzip3(@NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
-    <U> Seq<Tuple2<T, U>> zip(Iterable<? extends U> that);
+    <U> Seq<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that);
 
     @Override
-    <U, R> Seq<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+    <U, R> Seq<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
 
     @Override
-    <U> Seq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
+    <U> Seq<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     Seq<Tuple2<T, Integer>> zipWithIndex();
 
     @Override
-    <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
+    <U> Seq<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper);
 
     /**
      * Turns this sequence from a partial function into a total function that
@@ -1350,7 +1351,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @deprecated Will be removed
      */
     @Deprecated
-    default Function1<Integer, T> withDefault(Function<? super Integer, ? extends T> defaultFunction) {
+    default Function1<Integer, T> withDefault(@NonNull Function<? super Integer, ? extends T> defaultFunction) {
         return i -> (i >= 0 && i < length()) ? apply(i) : defaultFunction.apply(i);
     }
 

@@ -23,6 +23,7 @@ import io.vavr.control.Option;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.function.*;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An immutable {@code SortedMap} interface.
@@ -64,8 +65,8 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
      * @return a new {@code SortedMap}
      * @throws NullPointerException if {@code keyMapper} or {@code valueMapper} is null
      */
-    <K2, V2> SortedMap<K2, V2> bimap(Comparator<? super K2> keyComparator,
-            Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
+    <K2, V2> SortedMap<K2, V2> bimap(@NonNull Comparator<? super K2> keyComparator,
+                                     @NonNull Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
 
     /**
      * Same as {@link #flatMap(BiFunction)} but using a specific comparator for values of the codomain of the given
@@ -77,7 +78,7 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
      * @param <V2>          New value type
      * @return A new Map instance containing mapped entries
      */
-    <K2, V2> SortedMap<K2, V2> flatMap(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
+    <K2, V2> SortedMap<K2, V2> flatMap(@NonNull Comparator<? super K2> keyComparator, @NonNull BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
 
     /**
      * Same as {@link #map(BiFunction)}, using a specific comparator for keys of the codomain of the given
@@ -90,27 +91,27 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
      * @return a new {@code SortedMap}
      * @throws NullPointerException if {@code mapper} is null
      */
-    <K2, V2> SortedMap<K2, V2> map(Comparator<? super K2> keyComparator, BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
+    <K2, V2> SortedMap<K2, V2> map(@NonNull Comparator<? super K2> keyComparator, @NonNull BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
 
     // -- Adjusted return types of Map methods
 
     @Override
-    <K2, V2> SortedMap<K2, V2> bimap(Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
+    <K2, V2> SortedMap<K2, V2> bimap(@NonNull Function<? super K, ? extends K2> keyMapper, @NonNull Function<? super V, ? extends V2> valueMapper);
 
     @Override
-    Tuple2<V, ? extends SortedMap<K, V>> computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction);
+    Tuple2<V, ? extends SortedMap<K, V>> computeIfAbsent(K key, @NonNull Function<? super K, ? extends V> mappingFunction);
 
     @Override
-    Tuple2<Option<V>, ? extends SortedMap<K, V>> computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction);
+    Tuple2<Option<V>, ? extends SortedMap<K, V>> computeIfPresent(K key, @NonNull BiFunction<? super K, ? super V, ? extends V> remappingFunction);
 
     @Override
     SortedMap<K, V> distinct();
 
     @Override
-    SortedMap<K, V> distinctBy(Comparator<? super Tuple2<K, V>> comparator);
+    SortedMap<K, V> distinctBy(@NonNull Comparator<? super Tuple2<K, V>> comparator);
 
     @Override
-    <U> SortedMap<K, V> distinctBy(Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
+    <U> SortedMap<K, V> distinctBy(@NonNull Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
 
     @Override
     SortedMap<K, V> drop(int n);
@@ -119,52 +120,52 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     SortedMap<K, V> dropRight(int n);
 
     @Override
-    SortedMap<K, V> dropUntil(Predicate<? super Tuple2<K, V>> predicate);
+    SortedMap<K, V> dropUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> dropWhile(Predicate<? super Tuple2<K, V>> predicate);
+    SortedMap<K, V> dropWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> filter(Predicate<? super Tuple2<K, V>> predicate);
+    SortedMap<K, V> filter(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> reject(Predicate<? super Tuple2<K, V>> predicate);
+    SortedMap<K, V> reject(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> filter(BiPredicate<? super K, ? super V> predicate);
+    SortedMap<K, V> filter(@NonNull BiPredicate<? super K, ? super V> predicate);
 
     @Override
-    SortedMap<K, V> reject(BiPredicate<? super K, ? super V> predicate);
+    SortedMap<K, V> reject(@NonNull BiPredicate<? super K, ? super V> predicate);
 
     @Override
-    SortedMap<K, V> filterKeys(Predicate<? super K> predicate);
+    SortedMap<K, V> filterKeys(@NonNull Predicate<? super K> predicate);
 
     @Override
-    SortedMap<K, V> rejectKeys(Predicate<? super K> predicate);
+    SortedMap<K, V> rejectKeys(@NonNull Predicate<? super K> predicate);
 
     @Override
-    SortedMap<K, V> filterValues(Predicate<? super V> predicate);
+    SortedMap<K, V> filterValues(@NonNull Predicate<? super V> predicate);
 
     @Override
-    SortedMap<K, V> rejectValues(Predicate<? super V> predicate);
-
-    @Override
-    @Deprecated
-    SortedMap<K, V> removeAll(BiPredicate<? super K, ? super V> predicate);
+    SortedMap<K, V> rejectValues(@NonNull Predicate<? super V> predicate);
 
     @Override
     @Deprecated
-    SortedMap<K, V> removeKeys(Predicate<? super K> predicate);
+    SortedMap<K, V> removeAll(@NonNull BiPredicate<? super K, ? super V> predicate);
 
     @Override
     @Deprecated
-    SortedMap<K, V> removeValues(Predicate<? super V> predicate);
+    SortedMap<K, V> removeKeys(@NonNull Predicate<? super K> predicate);
 
     @Override
-    <K2, V2> SortedMap<K2, V2> flatMap(BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
+    @Deprecated
+    SortedMap<K, V> removeValues(@NonNull Predicate<? super V> predicate);
 
     @Override
-    <C> Map<C, ? extends SortedMap<K, V>> groupBy(Function<? super Tuple2<K, V>, ? extends C> classifier);
+    <K2, V2> SortedMap<K2, V2> flatMap(@NonNull BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper);
+
+    @Override
+    <C> Map<C, ? extends SortedMap<K, V>> groupBy(@NonNull Function<? super Tuple2<K, V>, ? extends C> classifier);
 
     @Override
     Iterator<? extends SortedMap<K, V>> grouped(int size);
@@ -189,76 +190,76 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     }
 
     @Override
-    <K2, V2> SortedMap<K2, V2> map(BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
+    <K2, V2> SortedMap<K2, V2> map(@NonNull BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper);
 
     @Override
-    <K2> SortedMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper);
+    <K2> SortedMap<K2, V> mapKeys(@NonNull Function<? super K, ? extends K2> keyMapper);
 
     @Override
-    <K2> SortedMap<K2, V> mapKeys(Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge);
+    <K2> SortedMap<K2, V> mapKeys(@NonNull Function<? super K, ? extends K2> keyMapper, @NonNull BiFunction<? super V, ? super V, ? extends V> valueMerge);
 
     @Override
-    <V2> SortedMap<K, V2> mapValues(Function<? super V, ? extends V2> valueMapper);
+    <V2> SortedMap<K, V2> mapValues(@NonNull Function<? super V, ? extends V2> valueMapper);
 
     @Override
-    SortedMap<K, V> merge(Map<? extends K, ? extends V> that);
+    SortedMap<K, V> merge(@NonNull Map<? extends K, ? extends V> that);
 
     @Override
-    <U extends V> SortedMap<K, V> merge(Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
+    <U extends V> SortedMap<K, V> merge(@NonNull Map<? extends K, U> that, @NonNull BiFunction<? super V, ? super U, ? extends V> collisionResolution);
 
     @Override
     SortedMap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other);
 
     @Override
-    SortedMap<K, V> orElse(Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier);
+    SortedMap<K, V> orElse(@NonNull Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier);
 
     @Override
-    Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> partition(Predicate<? super Tuple2<K, V>> predicate);
+    Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> partition(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> peek(Consumer<? super Tuple2<K, V>> action);
+    SortedMap<K, V> peek(@NonNull Consumer<? super Tuple2<K, V>> action);
 
     @Override
     SortedMap<K, V> put(K key, V value);
 
     @Override
-    SortedMap<K, V> put(Tuple2<? extends K, ? extends V> entry);
+    SortedMap<K, V> put(@NonNull Tuple2<? extends K, ? extends V> entry);
 
     @Override
-    <U extends V> SortedMap<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge);
+    <U extends V> SortedMap<K, V> put(K key, U value, @NonNull BiFunction<? super V, ? super U, ? extends V> merge);
 
     @Override
-    <U extends V> SortedMap<K, V> put(Tuple2<? extends K, U> entry, BiFunction<? super V, ? super U, ? extends V> merge);
+    <U extends V> SortedMap<K, V> put(@NonNull Tuple2<? extends K, U> entry, @NonNull BiFunction<? super V, ? super U, ? extends V> merge);
 
     @Override
     SortedMap<K, V> remove(K key);
 
     @Override
-    SortedMap<K, V> removeAll(Iterable<? extends K> keys);
+    SortedMap<K, V> removeAll(@NonNull Iterable<? extends K> keys);
 
     @Override
     SortedMap<K, V> replace(K key, V oldValue, V newValue);
 
     @Override
-    SortedMap<K, V> replace(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+    SortedMap<K, V> replace(@NonNull Tuple2<K, V> currentElement, @NonNull Tuple2<K, V> newElement);
 
     @Override
     SortedMap<K, V> replaceValue(K key, V value);
 
     @Override
-    SortedMap<K, V> replaceAll(BiFunction<? super K, ? super V, ? extends V> function);
+    SortedMap<K, V> replaceAll(@NonNull BiFunction<? super K, ? super V, ? extends V> function);
 
     @Override
-    SortedMap<K, V> replaceAll(Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+    SortedMap<K, V> replaceAll(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     @Override
-    SortedMap<K, V> retainAll(Iterable<? extends Tuple2<K, V>> elements);
+    SortedMap<K, V> retainAll(@NonNull Iterable<? extends Tuple2<K, V>> elements);
 
     @Override
-    SortedMap<K, V> scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+    SortedMap<K, V> scan(@NonNull Tuple2<K, V> zero, @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
-    Iterator<? extends SortedMap<K, V>> slideBy(Function<? super Tuple2<K, V>, ?> classifier);
+    Iterator<? extends SortedMap<K, V>> slideBy(@NonNull Function<? super Tuple2<K, V>, ?> classifier);
 
     @Override
     Iterator<? extends SortedMap<K, V>> sliding(int size);
@@ -267,7 +268,7 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     Iterator<? extends SortedMap<K, V>> sliding(int size, int step);
 
     @Override
-    Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> span(Predicate<? super Tuple2<K, V>> predicate);
+    Tuple2<? extends SortedMap<K, V>, ? extends SortedMap<K, V>> span(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
     SortedMap<K, V> tail();
@@ -282,10 +283,10 @@ public interface SortedMap<K, V> extends Map<K, V>, Ordered<K> {
     SortedMap<K, V> takeRight(int n);
 
     @Override
-    SortedMap<K, V> takeUntil(Predicate<? super Tuple2<K, V>> predicate);
+    SortedMap<K, V> takeUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
-    SortedMap<K, V> takeWhile(Predicate<? super Tuple2<K, V>> predicate);
+    SortedMap<K, V> takeWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
     @Override
     java.util.SortedMap<K, V> toJavaMap();
