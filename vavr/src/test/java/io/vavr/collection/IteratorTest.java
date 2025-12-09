@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
@@ -39,7 +40,13 @@ import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static io.vavr.collection.Iterator.*;
+import static io.vavr.collection.Iterator.concat;
+import static io.vavr.collection.Iterator.continually;
+import static io.vavr.collection.Iterator.from;
+import static io.vavr.collection.Iterator.iterate;
+import static io.vavr.collection.Iterator.narrow;
+import static io.vavr.collection.Iterator.rangeBy;
+import static io.vavr.collection.Iterator.rangeClosedBy;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
@@ -715,6 +722,39 @@ public class IteratorTest extends AbstractTraversableTest {
     }
 
     // -- unfoldRight()
+
+    @Test
+    void shouldUnfoldRightLazily() {
+        AtomicInteger calls = new AtomicInteger();
+
+        Iterator<Integer> it = Iterator.unfoldRight(1, i -> {
+            calls.incrementAndGet();
+            return i <= 3 ? Option.some(Tuple.of(i, i + 1)) : Option.none();
+        });
+
+        assertThat(calls.get()).isZero();
+
+        assertThat(it.hasNext()).isTrue();
+        assertThat(calls.get()).isEqualTo(1);
+
+        assertThat(it.next()).isEqualTo(1);
+        assertThat(calls.get()).isEqualTo(1);
+
+        assertThat(it.hasNext()).isTrue();
+        assertThat(calls.get()).isEqualTo(2);
+
+        assertThat(it.next()).isEqualTo(2);
+        assertThat(calls.get()).isEqualTo(2);
+
+        assertThat(it.hasNext()).isTrue();
+        assertThat(calls.get()).isEqualTo(3);
+
+        assertThat(it.next()).isEqualTo(3);
+        assertThat(calls.get()).isEqualTo(3);
+
+        assertThat(it.hasNext()).isFalse();
+        assertThat(calls.get()).isEqualTo(4);
+    }
 
     @Test
     public void shouldUnfoldRightToEmpty() {
