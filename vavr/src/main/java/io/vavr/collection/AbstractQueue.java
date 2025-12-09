@@ -25,6 +25,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import org.jspecify.annotations.NonNull;
 
 /**
  * @author Pap Lőrinc, Daniel Dietrich
@@ -110,13 +111,13 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
     }
 
     @Override
-    public Q dropUntil(Predicate<? super T> predicate) {
+    public Q dropUntil(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
-    public abstract Q dropWhile(Predicate<? super T> predicate);
+    public abstract Q dropWhile(@NonNull Predicate<? super T> predicate);
 
     /**
      * Dual of {@linkplain #tail()}, returning all elements except the last.
@@ -153,39 +154,39 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
 
     @Override
     @SuppressWarnings("unchecked")
-    public Q retainAll(Iterable<? extends T> elements) {
+    public Q retainAll(@NonNull Iterable<? extends T> elements) {
         return Collections.retainAll((Q) this, elements);
     }
 
     @SuppressWarnings("unchecked")
-    public Q removeAll(Iterable<? extends T> elements) {
+    public Q removeAll(@NonNull Iterable<? extends T> elements) {
         return Collections.removeAll((Q) this, elements);
     }
 
     @Deprecated
-    public Q removeAll(Predicate<? super T> predicate) {
+    public Q removeAll(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reject(predicate);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public Q reject(Predicate<? super T> predicate) {
+    public Q reject(@NonNull Predicate<? super T> predicate) {
         return Collections.reject((Q) this, predicate);
     }
 
     @Override
-    public Q takeWhile(Predicate<? super T> predicate) {
+    public Q takeWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeUntil(predicate.negate());
     }
 
     @Override
-    public abstract Q takeUntil(Predicate<? super T> predicate);
+    public abstract Q takeUntil(@NonNull Predicate<? super T> predicate);
 
     @SuppressWarnings("unchecked")
     @Override
-    public Q peek(Consumer<? super T> action) {
+    public Q peek(@NonNull Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());

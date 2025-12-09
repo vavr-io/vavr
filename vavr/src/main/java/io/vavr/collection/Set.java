@@ -26,6 +26,7 @@ import io.vavr.control.Option;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.function.*;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An immutable {@code Set} interface.
@@ -112,7 +113,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
      * @param elements The elements to be added.
      * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
      */
-    Set<T> addAll(Iterable<? extends T> elements);
+    Set<T> addAll(@NonNull Iterable<? extends T> elements);
 
     /**
      * Tests if a given {@code element} is contained in this {@code Set}.
@@ -137,7 +138,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
      * @param that Elements to be removed from this set.
      * @return A new Set containing all elements of this set which are not located in {@code that} set.
      */
-    Set<T> diff(Set<? extends T> that);
+    Set<T> diff(@NonNull Set<? extends T> that);
 
     /**
      * Computes the intersection between this set and another set.
@@ -147,7 +148,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
      * @param that the set to intersect with.
      * @return A new Set consisting of all elements that are both in this set and in the given set {@code that}.
      */
-    Set<T> intersect(Set<? extends T> that);
+    Set<T> intersect(@NonNull Set<? extends T> that);
 
     /**
      * Removes a specific element from this set, if present.
@@ -163,7 +164,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
      * @param elements The elements to be removed from this set.
      * @return A new set consisting of the elements of this set, without the given {@code elements}.
      */
-    Set<T> removeAll(Iterable<? extends T> elements);
+    Set<T> removeAll(@NonNull Iterable<? extends T> elements);
 
     /**
      * Converts this Vavr {@code Set} to a {@code java.util.Set} while preserving characteristics
@@ -182,12 +183,12 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
      * @param that The set to form the union with.
      * @return A new set that contains all distinct elements of this and {@code that} set.
      */
-    Set<T> union(Set<? extends T> that);
+    Set<T> union(@NonNull Set<? extends T> that);
 
     // -- Adjusted return types of Traversable methods
 
     @Override
-    <R> Set<R> collect(PartialFunction<? super T, ? extends R> partialFunction);
+    <R> Set<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction);
 
     @Override
     boolean contains(T element);
@@ -196,10 +197,10 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> distinct();
 
     @Override
-    Set<T> distinctBy(Comparator<? super T> comparator);
+    Set<T> distinctBy(@NonNull Comparator<? super T> comparator);
 
     @Override
-    <U> Set<T> distinctBy(Function<? super T, ? extends U> keyExtractor);
+    <U> Set<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor);
 
     @Override
     Set<T> drop(int n);
@@ -208,22 +209,22 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> dropRight(int n);
 
     @Override
-    Set<T> dropUntil(Predicate<? super T> predicate);
+    Set<T> dropUntil(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Set<T> dropWhile(Predicate<? super T> predicate);
+    Set<T> dropWhile(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Set<T> filter(Predicate<? super T> predicate);
+    Set<T> filter(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Set<T> reject(Predicate<? super T> predicate);
+    Set<T> reject(@NonNull Predicate<? super T> predicate);
 
     @Override
-    <U> Set<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper);
+    <U> Set<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    <C> Map<C, ? extends Set<T>> groupBy(Function<? super T, ? extends C> classifier);
+    <C> Map<C, ? extends Set<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier);
 
     @Override
     Iterator<? extends Set<T>> grouped(int size);
@@ -240,13 +241,14 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     }
 
     @Override
+    @NonNull
     Iterator<T> iterator();
 
     @Override
     int length();
 
     @Override
-    <U> Set<U> map(Function<? super T, ? extends U> mapper);
+    <U> Set<U> map(@NonNull Function<? super T, ? extends U> mapper);
 
     @Override
     default <U> Set<U> mapTo(U value) {
@@ -259,16 +261,16 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     }
 
     @Override
-    Set<T> orElse(Iterable<? extends T> other);
+    Set<T> orElse(@NonNull Iterable<? extends T> other);
 
     @Override
-    Set<T> orElse(Supplier<? extends Iterable<? extends T>> supplier);
+    Set<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier);
 
     @Override
-    Tuple2<? extends Set<T>, ? extends Set<T>> partition(Predicate<? super T> predicate);
+    Tuple2<? extends Set<T>, ? extends Set<T>> partition(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Set<T> peek(Consumer<? super T> action);
+    Set<T> peek(@NonNull Consumer<? super T> action);
 
     @Override
     Set<T> replace(T currentElement, T newElement);
@@ -277,19 +279,19 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> replaceAll(T currentElement, T newElement);
 
     @Override
-    Set<T> retainAll(Iterable<? extends T> elements);
+    Set<T> retainAll(@NonNull Iterable<? extends T> elements);
 
     @Override
-    Set<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
+    Set<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
+    <U> Set<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
 
     @Override
-    <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
+    <U> Set<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
-    Iterator<? extends Set<T>> slideBy(Function<? super T, ?> classifier);
+    Iterator<? extends Set<T>> slideBy(@NonNull Function<? super T, ?> classifier);
 
     @Override
     Iterator<? extends Set<T>> sliding(int size);
@@ -298,7 +300,7 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Iterator<? extends Set<T>> sliding(int size, int step);
 
     @Override
-    Tuple2<? extends Set<T>, ? extends Set<T>> span(Predicate<? super T> predicate);
+    Tuple2<? extends Set<T>, ? extends Set<T>> span(@NonNull Predicate<? super T> predicate);
 
     @Override
     Set<T> tail();
@@ -313,29 +315,29 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> takeRight(int n);
 
     @Override
-    Set<T> takeUntil(Predicate<? super T> predicate);
+    Set<T> takeUntil(@NonNull Predicate<? super T> predicate);
 
     @Override
-    Set<T> takeWhile(Predicate<? super T> predicate);
+    Set<T> takeWhile(@NonNull Predicate<? super T> predicate);
 
     @Override
-    <T1, T2> Tuple2<? extends Set<T1>, ? extends Set<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+    <T1, T2> Tuple2<? extends Set<T1>, ? extends Set<T2>> unzip(@NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     @Override
-    <T1, T2, T3> Tuple3<? extends Set<T1>, ? extends Set<T2>, ? extends Set<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
+    <T1, T2, T3> Tuple3<? extends Set<T1>, ? extends Set<T2>, ? extends Set<T3>> unzip3(@NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     @Override
-    <U> Set<Tuple2<T, U>> zip(Iterable<? extends U> that);
+    <U> Set<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that);
 
     @Override
-    <U, R> Set<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
+    <U, R> Set<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper);
 
     @Override
-    <U> Set<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem);
+    <U> Set<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem);
 
     @Override
     Set<Tuple2<T, Integer>> zipWithIndex();
 
     @Override
-    <U> Set<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper);
+    <U> Set<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper);
 }

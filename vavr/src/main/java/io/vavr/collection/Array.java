@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+import org.jspecify.annotations.NonNull;
 
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
@@ -609,7 +610,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> appendAll(Iterable<? extends T> elements) {
+    public Array<T> appendAll(@NonNull Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() && elements instanceof Array) {
             @SuppressWarnings("unchecked")
@@ -634,7 +635,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @GwtIncompatible
     @Override
-    public Array<T> asJava(Consumer<? super java.util.List<T>> action) {
+    public Array<T> asJava(@NonNull Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
@@ -646,12 +647,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @GwtIncompatible
     @Override
-    public Array<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
+    public Array<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
     }
 
     @Override
-    public <R> Array<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+    public <R> Array<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
 
@@ -687,7 +688,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Iterator<T> iterator() {
+    public @NonNull Iterator<T> iterator() {
         return new AbstractIterator<T>() {
             private int index = 0;
 
@@ -733,27 +734,27 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> distinctBy(Comparator<? super T> comparator) {
+    public Array<T> distinctBy(@NonNull Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
         return filter(seen::add);
     }
 
     @Override
-    public <U> Array<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+    public <U> Array<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
-    public Array<T> distinctByKeepLast(Comparator<? super T> comparator) {
+    public Array<T> distinctByKeepLast(@NonNull Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return ofAll(iterator().distinctByKeepLast(comparator));
     }
 
     @Override
-    public <U> Array<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
+    public <U> Array<T> distinctByKeepLast(@NonNull Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return ofAll(iterator().distinctByKeepLast(keyExtractor));
     }
@@ -772,12 +773,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> dropUntil(Predicate<? super T> predicate) {
+    public Array<T> dropUntil(@NonNull Predicate<? super T> predicate) {
         return io.vavr.collection.Collections.dropUntil(this, predicate);
     }
 
     @Override
-    public Array<T> dropWhile(Predicate<? super T> predicate) {
+    public Array<T> dropWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropUntil(predicate.negate());
     }
@@ -794,18 +795,18 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> dropRightUntil(Predicate<? super T> predicate) {
+    public Array<T> dropRightUntil(@NonNull Predicate<? super T> predicate) {
         return io.vavr.collection.Collections.dropRightUntil(this, predicate);
     }
 
     @Override
-    public Array<T> dropRightWhile(Predicate<? super T> predicate) {
+    public Array<T> dropRightWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropRightUntil(predicate.negate());
     }
 
     @Override
-    public Array<T> filter(Predicate<? super T> predicate) {
+    public Array<T> filter(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> list = new ArrayList<>();
         for (T t : this) {
@@ -823,13 +824,13 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> reject(Predicate<? super T> predicate) {
+    public Array<T> reject(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Collections.reject(this, predicate);
     }
 
     @Override
-    public <U> Array<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> Array<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -845,7 +846,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <C> Map<C, Array<T>> groupBy(Function<? super T, ? extends C> classifier) {
+    public <C> Map<C, Array<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, Array::ofAll);
     }
 
@@ -909,7 +910,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> insertAll(int index, Iterable<? extends T> elements) {
+    public Array<T> insertAll(int index, @NonNull Iterable<? extends T> elements) {
         if (index < 0 || index > length()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Array of length " + length());
         }
@@ -962,7 +963,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> Array<U> map(@NonNull Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         final Object[] arr = new Object[length()];
         for (int i = 0; i < delegate.length; i++) {
@@ -987,7 +988,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+    public Array<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
@@ -1012,7 +1013,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> patch(int from, Iterable<? extends T> that, int replaced) {
+    public Array<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced) {
         from = from < 0 ? 0 : from;
         replaced = replaced < 0 ? 0 : replaced;
         Array<T> result = take(from).appendAll(that);
@@ -1022,7 +1023,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Tuple2<Array<T>, Array<T>> partition(Predicate<? super T> predicate) {
+    public Tuple2<Array<T>, Array<T>> partition(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final java.util.List<T> left = new ArrayList<>(), right = new ArrayList<>();
         for (T t : this) {
@@ -1032,7 +1033,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> peek(Consumer<? super T> action) {
+    public Array<T> peek(@NonNull Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(head());
@@ -1061,7 +1062,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> prependAll(Iterable<? extends T> elements) {
+    public Array<T> prependAll(@NonNull Iterable<? extends T> elements) {
         return insertAll(0, elements);
     }
 
@@ -1083,7 +1084,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> removeFirst(Predicate<T> predicate) {
+    public Array<T> removeFirst(@NonNull Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         int found = -1;
         for (int i = 0; i < length(); i++) {
@@ -1101,7 +1102,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> removeLast(Predicate<T> predicate) {
+    public Array<T> removeLast(@NonNull Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         int found = -1;
         for (int i = length() - 1; i >= 0; i--) {
@@ -1138,13 +1139,13 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> removeAll(Iterable<? extends T> elements) {
+    public Array<T> removeAll(@NonNull Iterable<? extends T> elements) {
         return io.vavr.collection.Collections.removeAll(this, elements);
     }
 
     @Override
     @Deprecated
-    public Array<T> removeAll(Predicate<? super T> predicate) {
+    public Array<T> removeAll(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reject(predicate);
     }
@@ -1186,7 +1187,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> retainAll(Iterable<? extends T> elements) {
+    public Array<T> retainAll(@NonNull Iterable<? extends T> elements) {
         return io.vavr.collection.Collections.retainAll(this, elements);
     }
 
@@ -1215,17 +1216,17 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+    public Array<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> Array<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U> Array<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, Array::ofAll);
     }
 
     @Override
-    public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U> Array<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, Array::ofAll);
     }
 
@@ -1250,7 +1251,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Iterator<Array<T>> slideBy(Function<? super T, ?> classifier) {
+    public Iterator<Array<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
         return iterator().slideBy(classifier).map(Array::ofAll);
     }
 
@@ -1273,19 +1274,19 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Array<T> sorted(Comparator<? super T> comparator) {
+    public Array<T> sorted(@NonNull Comparator<? super T> comparator) {
         final Object[] arr = copyOf(delegate, delegate.length);
         sort(arr, (o1, o2) -> comparator.compare((T) o1, (T) o2));
         return wrap(arr);
     }
 
     @Override
-    public <U extends Comparable<? super U>> Array<T> sortBy(Function<? super T, ? extends U> mapper) {
+    public <U extends Comparable<? super U>> Array<T> sortBy(@NonNull Function<? super T, ? extends U> mapper) {
         return sortBy(U::compareTo, mapper);
     }
 
     @Override
-    public <U> Array<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+    public <U> Array<T> sortBy(@NonNull Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
         return Collections.sortBy(this, comparator, mapper, collector());
     }
 
@@ -1295,14 +1296,14 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Tuple2<Array<T>, Array<T>> splitAt(Predicate<? super T> predicate) {
+    public Tuple2<Array<T>, Array<T>> splitAt(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Array<T> init = takeWhile(predicate.negate());
         return Tuple.of(init, drop(init.length()));
     }
 
     @Override
-    public Tuple2<Array<T>, Array<T>> splitAtInclusive(Predicate<? super T> predicate) {
+    public Tuple2<Array<T>, Array<T>> splitAtInclusive(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = 0; i < delegate.length; i++) {
             final T value = get(i);
@@ -1318,7 +1319,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Tuple2<Array<T>, Array<T>> span(Predicate<? super T> predicate) {
+    public Tuple2<Array<T>, Array<T>> span(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
@@ -1374,12 +1375,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> takeUntil(Predicate<? super T> predicate) {
+    public Array<T> takeUntil(@NonNull Predicate<? super T> predicate) {
         return io.vavr.collection.Collections.takeUntil(this, predicate);
     }
 
     @Override
-    public Array<T> takeWhile(Predicate<? super T> predicate) {
+    public Array<T> takeWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeUntil(predicate.negate());
     }
@@ -1398,12 +1399,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> takeRightUntil(Predicate<? super T> predicate) {
+    public Array<T> takeRightUntil(@NonNull Predicate<? super T> predicate) {
         return io.vavr.collection.Collections.takeRightUntil(this, predicate);
     }
 
     @Override
-    public Array<T> takeRightWhile(Predicate<? super T> predicate) {
+    public Array<T> takeRightWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeRightUntil(predicate.negate());
     }
@@ -1423,7 +1424,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public <T1, T2> Tuple2<Array<T1>, Array<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
@@ -1440,7 +1441,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<Array<T1>, Array<T2>, Array<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    public <T1, T2, T3> Tuple3<Array<T1>, Array<T2>, Array<T3>> unzip3(@NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (isEmpty()) {
             return Tuple.of(empty(), empty(), empty());
@@ -1470,25 +1471,25 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> update(int index, Function<? super T, ? extends T> updater) {
+    public Array<T> update(int index, @NonNull Function<? super T, ? extends T> updater) {
         Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+    public <U> Array<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    public <U, R> Array<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    public <U, R> Array<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
-    public <U> Array<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
+    public <U> Array<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -1499,7 +1500,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public <U> Array<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    public <U> Array<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return ofAll(iterator().zipWithIndex(mapper));
     }

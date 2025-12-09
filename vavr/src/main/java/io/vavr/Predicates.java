@@ -22,6 +22,7 @@ import io.vavr.collection.Iterator;
 import io.vavr.collection.List;
 import java.util.Objects;
 import java.util.function.Predicate;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Defines general-purpose predicates which are particularly useful when working with {@link API.Match}.
@@ -56,7 +57,7 @@ public final class Predicates {
      */
     @SuppressWarnings({"varargs" })
     @SafeVarargs
-    public static <T> Predicate<T> allOf(Predicate<T>... predicates) {
+    public static <T> Predicate<T> allOf(@NonNull Predicate<T>... predicates) {
         Objects.requireNonNull(predicates, "predicates is null");
         return t -> List.of(predicates).foldLeft(true, (bool, pred) -> bool && pred.test(t));
     }
@@ -84,7 +85,7 @@ public final class Predicates {
      */
     @SuppressWarnings({"varargs" })
     @SafeVarargs
-    public static <T> Predicate<T> anyOf(Predicate<T>... predicates) {
+    public static <T> Predicate<T> anyOf(@NonNull Predicate<T>... predicates) {
         Objects.requireNonNull(predicates, "predicates is null");
         return t -> List.of(predicates).find(pred -> pred.test(t)).isDefined();
     }
@@ -109,7 +110,7 @@ public final class Predicates {
      * @return a predicate that evaluates to {@code true} if any element satisfies {@code predicate}
      * @throws NullPointerException if {@code predicate} is null
      */
-    public static <T> Predicate<Iterable<T>> exists(Predicate<? super T> predicate) {
+    public static <T> Predicate<Iterable<T>> exists(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return iterable -> Iterator.ofAll(iterable).exists(predicate);
     }
@@ -134,7 +135,7 @@ public final class Predicates {
      * @return a predicate that evaluates to {@code true} only if all elements satisfy {@code predicate}
      * @throws NullPointerException if {@code predicate} is null
      */
-    public static <T> Predicate<Iterable<T>> forAll(Predicate<? super T> predicate) {
+    public static <T> Predicate<Iterable<T>> forAll(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return iterable -> Iterator.ofAll(iterable).forAll(predicate);
     }
@@ -156,7 +157,7 @@ public final class Predicates {
      */
     // DEV-NOTE: We need Class<? extends T> instead of Class<T>, see {@link TryTest#shouldRecoverSuccessUsingCase()}
     @GwtIncompatible
-    public static <T> Predicate<T> instanceOf(Class<? extends T> type) {
+    public static <T> Predicate<T> instanceOf(@NonNull Class<? extends T> type) {
         Objects.requireNonNull(type, "type is null");
         return obj -> obj != null && type.isAssignableFrom(obj.getClass());
     }
@@ -200,7 +201,7 @@ public final class Predicates {
      */
     @SuppressWarnings({"varargs" })
     @SafeVarargs
-    public static <T> Predicate<T> isIn(T... values) {
+    public static <T> Predicate<T> isIn(@NonNull T... values) {
         Objects.requireNonNull(values, "values is null");
         return obj -> List.of(values).find(value -> Objects.equals(value, obj)).isDefined();
     }
@@ -261,7 +262,7 @@ public final class Predicates {
      */
     @SuppressWarnings({"varargs" })
     @SafeVarargs
-    public static <T> Predicate<T> noneOf(Predicate<T>... predicates) {
+    public static <T> Predicate<T> noneOf(@NonNull Predicate<T>... predicates) {
         Objects.requireNonNull(predicates, "predicates is null");
         return anyOf(predicates).negate();
     }
@@ -287,7 +288,7 @@ public final class Predicates {
      * @throws NullPointerException if {@code predicate} is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> Predicate<T> not(Predicate<? super T> predicate) {
+    public static <T> Predicate<T> not(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return (Predicate<T>) predicate.negate();
     }

@@ -28,6 +28,7 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A {@link HashMap}-based implementation of {@link Multimap}
@@ -85,7 +86,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param entries       Multimap entries
          * @return A new HashMultimap containing the given entries.
          */
-        public <K, V2 extends V> HashMultimap<K, V2> ofEntries(Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
+        public <K, V2 extends V> HashMultimap<K, V2> ofEntries(@NonNull Iterable<? extends Tuple2<? extends K, ? extends V2>> entries) {
             Objects.requireNonNull(entries, "entries is null");
             HashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
@@ -103,7 +104,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @return A new HashMultimap containing the given entries.
          */
         @SafeVarargs
-        public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(Tuple2<? extends K, ? extends V2>... entries) {
+        public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(@NonNull Tuple2<? extends K, ? extends V2>... entries) {
             Objects.requireNonNull(entries, "entries is null");
             HashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
@@ -121,7 +122,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @return A new HashMultimap containing the given entries.
          */
         @SafeVarargs
-        public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(java.util.Map.Entry<? extends K, ? extends V2>... entries) {
+        public final <K, V2 extends V> HashMultimap<K, V2> ofEntries(java.util.Map.@NonNull Entry<? extends K, ? extends V2>... entries) {
             Objects.requireNonNull(entries, "entries is null");
             HashMultimap<K, V2> result = empty();
             for (java.util.Map.Entry<? extends K, ? extends V2> entry : entries) {
@@ -138,7 +139,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2> The value type
          * @return A new Multimap containing the given map entries
          */
-        public <K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.Map<? extends K, ? extends V2> map) {
+        public <K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.@NonNull Map<? extends K, ? extends V2> map) {
             return Multimaps.ofJavaMap(empty(), map);
         }
 
@@ -153,9 +154,9 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2>        The value type
          * @return A new Multimap
          */
-        public <T, K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.stream.Stream<? extends T> stream,
-                                                    Function<? super T, ? extends K> keyMapper,
-                                                    Function<? super T, ? extends V2> valueMapper) {
+        public <T, K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
+                                                              @NonNull Function<? super T, ? extends K> keyMapper,
+                                                              @NonNull Function<? super T, ? extends V2> valueMapper) {
             return Multimaps.ofStream(empty(), stream, keyMapper, valueMapper);
         }
 
@@ -169,8 +170,8 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2>        The value type
          * @return A new HashMultimap
          */
-        public <T, K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.stream.Stream<? extends T> stream,
-                                                    Function<? super T, Tuple2<? extends K, ? extends V2>> entryMapper) {
+        public <T, K, V2 extends V> HashMultimap<K, V2> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
+                                                              @NonNull Function<? super T, Tuple2<? extends K, ? extends V2>> entryMapper) {
             return Multimaps.ofStream(empty(), stream, entryMapper);
         }
 
@@ -186,7 +187,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @throws NullPointerException if {@code f} is null
          */
         @SuppressWarnings("unchecked")
-        public <K, V2 extends V> HashMultimap<K, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
+        public <K, V2 extends V> HashMultimap<K, V2> tabulate(int n, @NonNull Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
             Objects.requireNonNull(f, "f is null");
             return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
         }
@@ -202,7 +203,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @throws NullPointerException if {@code s} is null
          */
         @SuppressWarnings("unchecked")
-        public <K, V2 extends V> HashMultimap<K, V2> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
+        public <K, V2 extends V> HashMultimap<K, V2> fill(int n, @NonNull Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
             Objects.requireNonNull(s, "s is null");
             return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
         }
@@ -217,7 +218,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @return A HashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
          */
         @SuppressWarnings("unchecked")
-        public <K, V2 extends V> HashMultimap<K, V2> fill(int n, Tuple2<? extends K, ? extends V2> element) {
+        public <K, V2 extends V> HashMultimap<K, V2> fill(int n, @NonNull Tuple2<? extends K, ? extends V2> element) {
             return ofEntries(Collections.fillObject(n, element));
         }
 
@@ -451,7 +452,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param entry A tuple containing the key-value pair.
          * @return A new HashMultimap containing the given entry.
          */
-        public <K, V2 extends V> HashMultimap<K, V2> of(Tuple2<? extends K, ? extends V2> entry) {
+        public <K, V2 extends V> HashMultimap<K, V2> of(@NonNull Tuple2<? extends K, ? extends V2> entry) {
             final HashMultimap<K, V2> e = empty();
             return e.put(entry._1, entry._2);
         }

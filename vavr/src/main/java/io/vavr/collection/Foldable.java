@@ -22,6 +22,7 @@ import io.vavr.control.Option;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Interface of foldable data structures.
@@ -72,7 +73,7 @@ public interface Foldable<T> {
      * @return a folded value
      * @throws NullPointerException if {@code combine} is null
      */
-    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> combine) {
+    default T fold(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> combine) {
         Objects.requireNonNull(combine, "combine is null");
         return foldLeft(zero, combine);
     }
@@ -93,7 +94,7 @@ public interface Foldable<T> {
      * @return a folded value
      * @throws NullPointerException if {@code combine} is null
      */
-    <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine);
+    <U> U foldLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> combine);
 
     /**
      * Folds this elements from the right, starting with {@code zero} and successively calling {@code combine}.
@@ -111,7 +112,7 @@ public interface Foldable<T> {
      * @return a folded value
      * @throws NullPointerException if {@code combine} is null
      */
-    <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine);
+    <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> combine);
 
     /**
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op}.
@@ -122,7 +123,7 @@ public interface Foldable<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
+    default T reduce(@NonNull BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return reduceLeft(op);
     }
@@ -135,7 +136,7 @@ public interface Foldable<T> {
      * @return Some of reduced value or None if the Foldable is empty.
      * @throws NullPointerException if {@code op} is null
      */
-    default Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op) {
+    default Option<T> reduceOption(@NonNull BiFunction<? super T, ? super T, ? extends T> op) {
         Objects.requireNonNull(op, "op is null");
         return reduceLeftOption(op);
     }
@@ -148,7 +149,7 @@ public interface Foldable<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op);
+    T reduceLeft(@NonNull BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the left.
@@ -157,7 +158,7 @@ public interface Foldable<T> {
      * @return Some of reduced value or None if the Foldable is empty.
      * @throws NullPointerException if {@code op} is null
      */
-    Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op);
+    Option<T> reduceLeftOption(@NonNull BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the right.
@@ -167,7 +168,7 @@ public interface Foldable<T> {
      * @throws NoSuchElementException if this is empty
      * @throws NullPointerException   if {@code op} is null
      */
-    T reduceRight(BiFunction<? super T, ? super T, ? extends T> op);
+    T reduceRight(@NonNull BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the right.
@@ -176,6 +177,6 @@ public interface Foldable<T> {
      * @return Some of reduced value or None.
      * @throws NullPointerException if {@code op} is null
      */
-    Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op);
+    Option<T> reduceRightOption(@NonNull BiFunction<? super T, ? super T, ? extends T> op);
 
 }

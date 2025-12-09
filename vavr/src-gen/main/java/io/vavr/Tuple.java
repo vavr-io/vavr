@@ -28,6 +28,7 @@ import io.vavr.collection.Stream;
 import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
+import org.jspecify.annotations.NonNull;
 
 /**
  * The base interface of all tuples.
@@ -79,7 +80,7 @@ public interface Tuple extends Serializable {
      * @param      entry A {@link java.util.Map.Entry}
      * @return a new {@code Tuple2} containing key and value of the given {@code entry}
      */
-    static <T1, T2> Tuple2<T1, T2> fromEntry(Map.Entry<? extends T1, ? extends T2> entry) {
+    static <T1, T2> Tuple2<T1, T2> fromEntry(Map.@NonNull Entry<? extends T1, ? extends T2> entry) {
         Objects.requireNonNull(entry, "entry is null");
         return new Tuple2<>(entry.getKey(), entry.getValue());
     }
@@ -509,7 +510,7 @@ public interface Tuple extends Serializable {
      * @param tuples an {@code Iterable} of tuples
      * @return a tuple of one {@link Seq}.
      */
-    static <T1> Tuple1<Seq<T1>> sequence1(Iterable<? extends Tuple1<? extends T1>> tuples) {
+    static <T1> Tuple1<Seq<T1>> sequence1(@NonNull Iterable<? extends Tuple1<? extends T1>> tuples) {
         Objects.requireNonNull(tuples, "tuples is null");
         final Stream<Tuple1<? extends T1>> s = Stream.ofAll(tuples);
         return new Tuple1<>(s.map(Tuple1::_1));
@@ -523,7 +524,7 @@ public interface Tuple extends Serializable {
      * @param tuples an {@code Iterable} of tuples
      * @return a tuple of two {@link Seq}s.
      */
-    static <T1, T2> Tuple2<Seq<T1>, Seq<T2>> sequence2(Iterable<? extends Tuple2<? extends T1, ? extends T2>> tuples) {
+    static <T1, T2> Tuple2<Seq<T1>, Seq<T2>> sequence2(@NonNull Iterable<? extends Tuple2<? extends T1, ? extends T2>> tuples) {
         Objects.requireNonNull(tuples, "tuples is null");
         final Stream<Tuple2<? extends T1, ? extends T2>> s = Stream.ofAll(tuples);
         return new Tuple2<>(s.map(Tuple2::_1), s.map(Tuple2::_2));
@@ -538,7 +539,7 @@ public interface Tuple extends Serializable {
      * @param tuples an {@code Iterable} of tuples
      * @return a tuple of three {@link Seq}s.
      */
-    static <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> sequence3(Iterable<? extends Tuple3<? extends T1, ? extends T2, ? extends T3>> tuples) {
+    static <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> sequence3(@NonNull Iterable<? extends Tuple3<? extends T1, ? extends T2, ? extends T3>> tuples) {
         Objects.requireNonNull(tuples, "tuples is null");
         final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> s = Stream.ofAll(tuples);
         return new Tuple3<>(s.map(Tuple3::_1), s.map(Tuple3::_2), s.map(Tuple3::_3));
@@ -554,7 +555,7 @@ public interface Tuple extends Serializable {
      * @param tuples an {@code Iterable} of tuples
      * @return a tuple of 4 {@link Seq}s.
      */
-    static <T1, T2, T3, T4> Tuple4<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>> sequence4(Iterable<? extends Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4>> tuples) {
+    static <T1, T2, T3, T4> Tuple4<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>> sequence4(@NonNull Iterable<? extends Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4>> tuples) {
         Objects.requireNonNull(tuples, "tuples is null");
         final Stream<Tuple4<? extends T1, ? extends T2, ? extends T3, ? extends T4>> s = Stream.ofAll(tuples);
         return new Tuple4<>(s.map(Tuple4::_1), s.map(Tuple4::_2), s.map(Tuple4::_3), s.map(Tuple4::_4));
@@ -571,7 +572,7 @@ public interface Tuple extends Serializable {
      * @param tuples an {@code Iterable} of tuples
      * @return a tuple of 5 {@link Seq}s.
      */
-    static <T1, T2, T3, T4, T5> Tuple5<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>> sequence5(Iterable<? extends Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5>> tuples) {
+    static <T1, T2, T3, T4, T5> Tuple5<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>> sequence5(@NonNull Iterable<? extends Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5>> tuples) {
         Objects.requireNonNull(tuples, "tuples is null");
         final Stream<Tuple5<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5>> s = Stream.ofAll(tuples);
         return new Tuple5<>(s.map(Tuple5::_1), s.map(Tuple5::_2), s.map(Tuple5::_3), s.map(Tuple5::_4), s.map(Tuple5::_5));
@@ -589,7 +590,7 @@ public interface Tuple extends Serializable {
      * @param tuples an {@code Iterable} of tuples
      * @return a tuple of 6 {@link Seq}s.
      */
-    static <T1, T2, T3, T4, T5, T6> Tuple6<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>> sequence6(Iterable<? extends Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6>> tuples) {
+    static <T1, T2, T3, T4, T5, T6> Tuple6<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>> sequence6(@NonNull Iterable<? extends Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6>> tuples) {
         Objects.requireNonNull(tuples, "tuples is null");
         final Stream<Tuple6<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6>> s = Stream.ofAll(tuples);
         return new Tuple6<>(s.map(Tuple6::_1), s.map(Tuple6::_2), s.map(Tuple6::_3), s.map(Tuple6::_4), s.map(Tuple6::_5), s.map(Tuple6::_6));
@@ -608,7 +609,7 @@ public interface Tuple extends Serializable {
      * @param tuples an {@code Iterable} of tuples
      * @return a tuple of 7 {@link Seq}s.
      */
-    static <T1, T2, T3, T4, T5, T6, T7> Tuple7<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>> sequence7(Iterable<? extends Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7>> tuples) {
+    static <T1, T2, T3, T4, T5, T6, T7> Tuple7<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>> sequence7(@NonNull Iterable<? extends Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7>> tuples) {
         Objects.requireNonNull(tuples, "tuples is null");
         final Stream<Tuple7<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7>> s = Stream.ofAll(tuples);
         return new Tuple7<>(s.map(Tuple7::_1), s.map(Tuple7::_2), s.map(Tuple7::_3), s.map(Tuple7::_4), s.map(Tuple7::_5), s.map(Tuple7::_6), s.map(Tuple7::_7));
@@ -628,7 +629,7 @@ public interface Tuple extends Serializable {
      * @param tuples an {@code Iterable} of tuples
      * @return a tuple of 8 {@link Seq}s.
      */
-    static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>, Seq<T8>> sequence8(Iterable<? extends Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8>> tuples) {
+    static <T1, T2, T3, T4, T5, T6, T7, T8> Tuple8<Seq<T1>, Seq<T2>, Seq<T3>, Seq<T4>, Seq<T5>, Seq<T6>, Seq<T7>, Seq<T8>> sequence8(@NonNull Iterable<? extends Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8>> tuples) {
         Objects.requireNonNull(tuples, "tuples is null");
         final Stream<Tuple8<? extends T1, ? extends T2, ? extends T3, ? extends T4, ? extends T5, ? extends T6, ? extends T7, ? extends T8>> s = Stream.ofAll(tuples);
         return new Tuple8<>(s.map(Tuple8::_1), s.map(Tuple8::_2), s.map(Tuple8::_3), s.map(Tuple8::_4), s.map(Tuple8::_5), s.map(Tuple8::_6), s.map(Tuple8::_7), s.map(Tuple8::_8));

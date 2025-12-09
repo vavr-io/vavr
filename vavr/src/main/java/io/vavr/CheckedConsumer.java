@@ -20,6 +20,7 @@ package io.vavr;
 
 import java.util.Objects;
 import java.util.function.Consumer;
+import org.jspecify.annotations.NonNull;
 
 import static io.vavr.CheckedConsumerModule.sneakyThrow;
 
@@ -51,7 +52,7 @@ public interface CheckedConsumer<T> {
      * @return a new {@code CheckedConsumer} wrapping the given method reference
      * @see CheckedFunction1#of(CheckedFunction1)
      */
-    static <T> CheckedConsumer<T> of(CheckedConsumer<T> methodReference) {
+    static <T> CheckedConsumer<T> of(@NonNull CheckedConsumer<T> methodReference) {
         return methodReference;
     }
 
@@ -71,7 +72,7 @@ public interface CheckedConsumer<T> {
      * @return a new {@code CheckedConsumer} that chains {@code this} and {@code after}
      * @throws NullPointerException if {@code after} is null
      */
-    default CheckedConsumer<T> andThen(CheckedConsumer<? super T> after) {
+    default CheckedConsumer<T> andThen(@NonNull CheckedConsumer<? super T> after) {
         Objects.requireNonNull(after, "after is null");
         return (T t) -> { accept(t); after.accept(t); };
     }

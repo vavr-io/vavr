@@ -27,6 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.function.*;
 import java.util.stream.Collector;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An immutable {@code HashSet} implementation.
@@ -485,7 +486,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> addAll(Iterable<? extends T> elements) {
+    public HashSet<T> addAll(@NonNull Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() && elements instanceof HashSet) {
             @SuppressWarnings("unchecked")
@@ -501,7 +502,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <R> HashSet<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+    public <R> HashSet<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
 
@@ -511,7 +512,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> diff(Set<? extends T> elements) {
+    public HashSet<T> diff(@NonNull Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() || elements.isEmpty()) {
             return this;
@@ -526,13 +527,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> distinctBy(Comparator<? super T> comparator) {
+    public HashSet<T> distinctBy(@NonNull Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return HashSet.ofAll(iterator().distinctBy(comparator));
     }
 
     @Override
-    public <U> HashSet<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+    public <U> HashSet<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return HashSet.ofAll(iterator().distinctBy(keyExtractor));
     }
@@ -552,20 +553,20 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> dropUntil(Predicate<? super T> predicate) {
+    public HashSet<T> dropUntil(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
-    public HashSet<T> dropWhile(Predicate<? super T> predicate) {
+    public HashSet<T> dropWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final HashSet<T> dropped = HashSet.ofAll(iterator().dropWhile(predicate));
         return dropped.length() == length() ? this : dropped;
     }
 
     @Override
-    public HashSet<T> filter(Predicate<? super T> predicate) {
+    public HashSet<T> filter(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final HashSet<T> filtered = HashSet.ofAll(iterator().filter(predicate));
 
@@ -579,13 +580,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> reject(Predicate<? super T> predicate) {
+    public HashSet<T> reject(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return filter(predicate.negate());
     }
 
     @Override
-    public <U> HashSet<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> HashSet<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -597,12 +598,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+    public <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
         return foldLeft(zero, (u, t) -> f.apply(t, u));
     }
 
     @Override
-    public <C> Map<C, HashSet<T>> groupBy(Function<? super T, ? extends C> classifier) {
+    public <C> Map<C, HashSet<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
         return Collections.groupBy(this, classifier, HashSet::ofAll);
     }
 
@@ -640,7 +641,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> intersect(Set<? extends T> elements) {
+    public HashSet<T> intersect(@NonNull Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty() || elements.isEmpty()) {
             return empty();
@@ -686,7 +687,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Iterator<T> iterator() {
+    public @NonNull Iterator<T> iterator() {
         return tree.keysIterator();
     }
 
@@ -701,7 +702,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> HashSet<U> map(@NonNull Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return empty();
@@ -730,22 +731,22 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> orElse(Iterable<? extends T> other) {
+    public HashSet<T> orElse(@NonNull Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }
 
     @Override
-    public HashSet<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+    public HashSet<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
     @Override
-    public Tuple2<HashSet<T>, HashSet<T>> partition(Predicate<? super T> predicate) {
+    public Tuple2<HashSet<T>, HashSet<T>> partition(@NonNull Predicate<? super T> predicate) {
         return Collections.partition(this, HashSet::ofAll, predicate);
     }
 
     @Override
-    public HashSet<T> peek(Consumer<? super T> action) {
+    public HashSet<T> peek(@NonNull Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(iterator().head());
@@ -760,7 +761,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> removeAll(Iterable<? extends T> elements) {
+    public HashSet<T> removeAll(@NonNull Iterable<? extends T> elements) {
         return Collections.removeAll(this, elements);
     }
 
@@ -779,27 +780,27 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> retainAll(Iterable<? extends T> elements) {
+    public HashSet<T> retainAll(@NonNull Iterable<? extends T> elements) {
         return Collections.retainAll(this, elements);
     }
 
     @Override
-    public HashSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+    public HashSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> HashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U> HashSet<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
         return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
-    public <U> HashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U> HashSet<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
         return Collections.scanRight(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
-    public Iterator<HashSet<T>> slideBy(Function<? super T, ?> classifier) {
+    public Iterator<HashSet<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
         return iterator().slideBy(classifier).map(HashSet::ofAll);
     }
 
@@ -814,7 +815,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public Tuple2<HashSet<T>, HashSet<T>> span(Predicate<? super T> predicate) {
+    public Tuple2<HashSet<T>, HashSet<T>> span(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
@@ -854,13 +855,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public HashSet<T> takeUntil(Predicate<? super T> predicate) {
+    public HashSet<T> takeUntil(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
-    public HashSet<T> takeWhile(Predicate<? super T> predicate) {
+    public HashSet<T> takeWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final HashSet<T> taken = HashSet.ofAll(iterator().takeWhile(predicate));
         return taken.length() == length() ? this : taken;
@@ -886,7 +887,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public HashSet<T> union(Set<? extends T> elements) {
+    public HashSet<T> union(@NonNull Set<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             if (elements instanceof HashSet) {
@@ -908,7 +909,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public <T1, T2> Tuple2<HashSet<T1>, HashSet<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
@@ -916,26 +917,26 @@ public final class HashSet<T> implements Set<T>, Serializable {
 
     @Override
     public <T1, T2, T3> Tuple3<HashSet<T1>, HashSet<T2>, HashSet<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
         return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2), HashSet.ofAll(t._3));
     }
 
     @Override
-    public <U> HashSet<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+    public <U> HashSet<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    public <U, R> HashSet<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    public <U, R> HashSet<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return HashSet.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
-    public <U> HashSet<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
+    public <U> HashSet<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return HashSet.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -946,7 +947,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> HashSet<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    public <U> HashSet<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return HashSet.ofAll(iterator().zipWithIndex(mapper));
     }

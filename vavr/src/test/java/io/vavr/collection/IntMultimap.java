@@ -28,6 +28,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.Spliterator;
 import java.util.function.*;
+import org.jspecify.annotations.NonNull;
 
 public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
@@ -90,7 +91,7 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public <R> Seq<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+    public <R> Seq<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
         final PartialFunction<Tuple2<Integer, T>, R> pf = new PartialFunction<Tuple2<Integer, T>, R>() {
             private static final long serialVersionUID = 1L;
@@ -112,12 +113,12 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMultimap<T> distinctBy(Comparator<? super T> comparator) {
+    public IntMultimap<T> distinctBy(@NonNull Comparator<? super T> comparator) {
         return unit(original.distinctBy((o1, o2) -> comparator.compare(o1._2, o2._2)));
     }
 
     @Override
-    public <U> IntMultimap<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+    public <U> IntMultimap<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
         return unit(original.distinctBy(f -> keyExtractor.apply(f._2)));
     }
 
@@ -134,38 +135,38 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMultimap<T> dropUntil(Predicate<? super T> predicate) {
+    public IntMultimap<T> dropUntil(@NonNull Predicate<? super T> predicate) {
         return unit(original.dropUntil(p -> predicate.test(p._2)));
     }
 
     @Override
-    public IntMultimap<T> dropWhile(Predicate<? super T> predicate) {
+    public IntMultimap<T> dropWhile(@NonNull Predicate<? super T> predicate) {
         return unit(original.dropWhile(p -> predicate.test(p._2)));
     }
 
     @Override
-    public IntMultimap<T> filter(Predicate<? super T> predicate) {
+    public IntMultimap<T> filter(@NonNull Predicate<? super T> predicate) {
         return unit(original.filter(p -> predicate.test(p._2)));
     }
 
     @Override
-    public IntMultimap<T> reject(Predicate<? super T> predicate) {
+    public IntMultimap<T> reject(@NonNull Predicate<? super T> predicate) {
         return unit(original.reject(p -> predicate.test(p._2)));
     }
 
     @Override
-    public <U> Seq<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    public <U> Seq<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
         return original.flatMap(e -> mapper.apply(e._2));
     }
 
     @Override
-    public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
+    public <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return original.foldRight(zero, (e, u) -> f.apply(e._2, u));
     }
 
     @Override
-    public <C> Map<C, ? extends IntMultimap<T>> groupBy(Function<? super T, ? extends C> classifier) {
+    public <C> Map<C, ? extends IntMultimap<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
         return original.groupBy(e -> classifier.apply(e._2)).map((k, v) -> Tuple.of(k, IntMultimap.of(v)));
     }
 
@@ -220,7 +221,7 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public <U> Seq<U> map(Function<? super T, ? extends U> mapper) {
+    public <U> Seq<U> map(@NonNull Function<? super T, ? extends U> mapper) {
         return original.map(e -> mapper.apply(e._2));
     }
 
@@ -241,18 +242,18 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public IntMultimap<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+    public IntMultimap<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
         return unit(original.orElse(() -> (Iterable<? extends Tuple2<Integer, T>>) List.ofAll(supplier.get()).zipWithIndex().map(t -> Tuple.of(t._2, t._1))));
     }
 
     @Override
-    public Tuple2<IntMultimap<T>, IntMultimap<T>> partition(Predicate<? super T> predicate) {
+    public Tuple2<IntMultimap<T>, IntMultimap<T>> partition(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return original.partition(p -> predicate.test(p._2)).map(IntMultimap::of, IntMultimap::of);
     }
 
     @Override
-    public IntMultimap<T> peek(Consumer<? super T> action) {
+    public IntMultimap<T> peek(@NonNull Consumer<? super T> action) {
         original.peek(e -> action.accept(e._2));
         return this;
     }
@@ -278,29 +279,29 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public IntMultimap<T> retainAll(Iterable<? extends T> elements) {
+    public IntMultimap<T> retainAll(@NonNull Iterable<? extends T> elements) {
         final Set<T> elementsSet = HashSet.ofAll(elements);
         return unit(original.retainAll(original.filter(e -> elementsSet.contains(e._2))));
     }
 
     @Override
-    public Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+    public Traversable<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
         final int[] index = new int[] { 0 };
         return original.scan(Tuple.of(-1, zero), (i, t) -> Tuple.of(index[0]++, operation.apply(i._2, t._2))).values();
     }
 
     @Override
-    public <U> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U> Traversable<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
         return original.scanLeft(zero, (i, t) -> operation.apply(i, t._2));
     }
 
     @Override
-    public <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U> Traversable<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
         return original.scanRight(zero, (t, i) -> operation.apply(t._2, i));
     }
 
     @Override
-    public Iterator<IntMultimap<T>> slideBy(Function<? super T, ?> classifier) {
+    public Iterator<IntMultimap<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
         return original.slideBy(e -> classifier.apply(e._2)).map(IntMultimap::of);
     }
 
@@ -315,7 +316,7 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Tuple2<? extends IntMultimap<T>, ? extends IntMultimap<T>> span(Predicate<? super T> predicate) {
+    public Tuple2<? extends IntMultimap<T>, ? extends IntMultimap<T>> span(@NonNull Predicate<? super T> predicate) {
         return original.span(p -> predicate.test(p._2)).map(IntMultimap::of, IntMultimap::of);
     }
 
@@ -379,41 +380,41 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public Traversable<T> takeUntil(Predicate<? super T> predicate) {
+    public Traversable<T> takeUntil(@NonNull Predicate<? super T> predicate) {
         return unit(original.takeUntil(p -> predicate.test(p._2)));
     }
 
     @Override
-    public IntMultimap<T> takeWhile(Predicate<? super T> predicate) {
+    public IntMultimap<T> takeWhile(@NonNull Predicate<? super T> predicate) {
         return unit(original.takeWhile(p -> predicate.test(p._2)));
     }
 
     @Override
-    public <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(@NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    public <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(@NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
     }
 
     @Override
-    public <U> Seq<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+    public <U> Seq<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    public <U, R> Seq<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    public <U, R> Seq<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
-    public <U> Seq<Tuple2<T, U>> zipAll(Iterable<? extends U> that, T thisElem, U thatElem) {
+    public <U> Seq<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         return Stream.ofAll(iterator().zipAll(that, thisElem, thatElem));
     }
@@ -424,7 +425,7 @@ public final class IntMultimap<T> implements Traversable<T>, Serializable {
     }
 
     @Override
-    public <U> Seq<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    public <U> Seq<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWithIndex(mapper));
     }
