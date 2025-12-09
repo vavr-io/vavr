@@ -27,6 +27,7 @@ import java.io.*;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
+import org.jspecify.annotations.NonNull;
 
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
@@ -142,7 +143,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Stream<T> concat(Iterable<? extends T>... iterables) {
+    static <T> Stream<T> concat(@NonNull Iterable<? extends T>... iterables) {
         return Iterator.concat(iterables).toStream();
     }
 
@@ -153,8 +154,8 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>       Component type.
      * @return A new {@code Stream}
      */
-    static <T> Stream<T> concat(Iterable<? extends Iterable<? extends T>> iterables) {
-        return Iterator.<T> concat(iterables).toStream();
+    static <T> Stream<T> concat(@NonNull Iterable<? extends Iterable<? extends T>> iterables) {
+        return Iterator.concat(iterables).toStream();
     }
 
     /**
@@ -214,7 +215,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>      value type
      * @return A new Stream
      */
-    static <T> Stream<T> continually(Supplier<? extends T> supplier) {
+    static <T> Stream<T> continually(@NonNull Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return Stream.ofAll(Iterator.continually(supplier));
     }
@@ -228,7 +229,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>  value type
      * @return A new Stream
      */
-    static <T> Stream<T> iterate(T seed, Function<? super T, ? extends T> f) {
+    static <T> Stream<T> iterate(T seed, @NonNull Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Stream.ofAll(Iterator.iterate(seed, f));
     }
@@ -244,7 +245,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T> value type
      * @return A new Stream
      */
-    static <T> Stream<T> iterate(Supplier<? extends Option<? extends T>> supplier) {
+    static <T> Stream<T> iterate(@NonNull Supplier<? extends Option<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return Stream.ofAll(Iterator.iterate(supplier));
     }
@@ -258,7 +259,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream
      */
     @SuppressWarnings("unchecked")
-    static <T> Stream<T> cons(T head, Supplier<? extends Stream<? extends T>> tailSupplier) {
+    static <T> Stream<T> cons(T head, @NonNull Supplier<? extends Stream<? extends T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
         return new ConsImpl<>(head, (Supplier<Stream<T>>) tailSupplier);
     }
@@ -313,7 +314,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A list containing the given elements in the same order.
      */
     @SafeVarargs
-    static <T> Stream<T> of(T... elements) {
+    static <T> Stream<T> of(@NonNull T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(new Iterator<T>() {
             int i = 0;
@@ -340,7 +341,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A Stream consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> Stream<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    static <T> Stream<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Stream.ofAll(io.vavr.collection.Collections.tabulate(n, f));
     }
@@ -354,7 +355,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A Stream of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    static <T> Stream<T> fill(int n, Supplier<? extends T> s) {
+    static <T> Stream<T> fill(int n, @NonNull Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Stream.ofAll(io.vavr.collection.Collections.fill(n, s));
     }
@@ -379,7 +380,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A Stream containing the given elements in the same order.
      */
     @SuppressWarnings("unchecked")
-    static <T> Stream<T> ofAll(Iterable<? extends T> elements) {
+    static <T> Stream<T> ofAll(@NonNull Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Stream) {
             return (Stream<T>) elements;
@@ -398,7 +399,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>        Component type of the Stream.
      * @return A Stream containing the given elements in the same order.
      */
-    static <T> Stream<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
+    static <T> Stream<T> ofAll(java.util.stream.@NonNull Stream<? extends T> javaStream) {
         Objects.requireNonNull(javaStream, "javaStream is null");
         return StreamFactory.create(javaStream.iterator());
     }
@@ -410,7 +411,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Boolean values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Boolean> ofAll(boolean... elements) {
+    static Stream<Boolean> ofAll(@NonNull boolean... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -422,7 +423,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Byte values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Byte> ofAll(byte... elements) {
+    static Stream<Byte> ofAll(@NonNull byte... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -434,7 +435,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Character values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Character> ofAll(char... elements) {
+    static Stream<Character> ofAll(@NonNull char... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -446,7 +447,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Double values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Double> ofAll(double... elements) {
+    static Stream<Double> ofAll(@NonNull double... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -458,7 +459,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Float values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Float> ofAll(float... elements) {
+    static Stream<Float> ofAll(@NonNull float... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -470,7 +471,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Integer values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Integer> ofAll(int... elements) {
+    static Stream<Integer> ofAll(@NonNull int... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -482,7 +483,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Long values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Long> ofAll(long... elements) {
+    static Stream<Long> ofAll(@NonNull long... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -494,7 +495,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Short values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Short> ofAll(short... elements) {
+    static Stream<Short> ofAll(@NonNull short... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -721,7 +722,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * Stream.transpose(Stream(Stream(1,2,3), Stream(4,5,6))) → Stream(Stream(1,4), Stream(2,5), Stream(3,6))
      * }
      */
-    static <T> Stream<Stream<T>> transpose(Stream<Stream<T>> matrix) {
+    static <T> Stream<Stream<T>> transpose(@NonNull Stream<Stream<T>> matrix) {
         return io.vavr.collection.Collections.transpose(matrix, Stream::ofAll, Stream::of);
     }
 
@@ -750,7 +751,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T, U> Stream<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
+    static <T, U> Stream<U> unfoldRight(T seed, @NonNull Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toStream();
     }
 
@@ -779,7 +780,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T, U> Stream<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+    static <T, U> Stream<U> unfoldLeft(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toStream();
     }
 
@@ -807,7 +808,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> Stream<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
+    static <T> Stream<T> unfold(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toStream();
     }
 
@@ -828,7 +829,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> appendAll(Iterable<? extends T> elements) {
+    default Stream<T> appendAll(@NonNull Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (Collections.isEmpty(elements)) {
             return this;
@@ -860,7 +861,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param mapper an mapper
      * @return a new Stream
      */
-    default Stream<T> appendSelf(Function<? super Stream<T>, ? extends Stream<T>> mapper) {
+    default Stream<T> appendSelf(@NonNull Function<? super Stream<T>, ? extends Stream<T>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? this : new AppendSelf<>((Cons<T>) this, mapper).stream();
     }
@@ -873,7 +874,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @GwtIncompatible
     @Override
-    default Stream<T> asJava(Consumer<? super java.util.List<T>> action) {
+    default Stream<T> asJava(@NonNull Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
@@ -885,12 +886,12 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @GwtIncompatible
     @Override
-    default Stream<T> asJavaMutable(Consumer<? super java.util.List<T>> action) {
+    default Stream<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
     }
 
     @Override
-    default <R> Stream<R> collect(PartialFunction<? super T, ? extends R> partialFunction) {
+    default <R> Stream<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
         return ofAll(iterator().<R> collect(partialFunction));
     }
 
@@ -980,26 +981,26 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> distinctBy(Comparator<? super T> comparator) {
+    default Stream<T> distinctBy(@NonNull Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final java.util.Set<T> seen = new java.util.TreeSet<>(comparator);
         return filter(seen::add);
     }
 
     @Override
-    default <U> Stream<T> distinctBy(Function<? super T, ? extends U> keyExtractor) {
+    default <U> Stream<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
-    default Stream<T> distinctByKeepLast(Comparator<? super T> comparator) {
+    default Stream<T> distinctByKeepLast(@NonNull Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return ofAll(iterator().distinctByKeepLast(comparator));
     }
 
     @Override
-    default <U> Stream<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
+    default <U> Stream<T> distinctByKeepLast(@NonNull Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return ofAll(iterator().distinctByKeepLast(keyExtractor));
     }
@@ -1014,13 +1015,13 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> dropUntil(Predicate<? super T> predicate) {
+    default Stream<T> dropUntil(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropWhile(predicate.negate());
     }
 
     @Override
-    default Stream<T> dropWhile(Predicate<? super T> predicate) {
+    default Stream<T> dropWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         Stream<T> stream = this;
         while (!stream.isEmpty() && predicate.test(stream.head())) {
@@ -1039,19 +1040,19 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> dropRightUntil(Predicate<? super T> predicate) {
+    default Stream<T> dropRightUntil(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reverse().dropUntil(predicate).reverse();
     }
 
     @Override
-    default Stream<T> dropRightWhile(Predicate<? super T> predicate) {
+    default Stream<T> dropRightWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropRightUntil(predicate.negate());
     }
 
     @Override
-    default Stream<T> filter(Predicate<? super T> predicate) {
+    default Stream<T> filter(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return this;
@@ -1067,13 +1068,13 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> reject(Predicate<? super T> predicate) {
+    default Stream<T> reject(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Collections.reject(this, predicate);
     }
 
     @Override
-    default <U> Stream<U> flatMap(Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    default <U> Stream<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isEmpty() ? Empty.instance() : Stream.ofAll(new FlatMapIterator<>(this.iterator(), mapper));
     }
@@ -1097,7 +1098,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <C> Map<C, Stream<T>> groupBy(Function<? super T, ? extends C> classifier) {
+    default <C> Map<C, Stream<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, Stream::ofAll);
     }
 
@@ -1155,7 +1156,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> insertAll(int index, Iterable<? extends T> elements) {
+    default Stream<T> insertAll(int index, @NonNull Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -1227,7 +1228,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> Stream<U> map(Function<? super T, ? extends U> mapper) {
+    default <U> Stream<U> map(@NonNull Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Empty.instance();
@@ -1268,19 +1269,19 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> orElse(Iterable<? extends T> other) {
+    default Stream<T> orElse(@NonNull Iterable<? extends T> other) {
         return isEmpty() ? ofAll(other) : this;
     }
 
     @Override
-    default Stream<T> orElse(Supplier<? extends Iterable<? extends T>> supplier) {
+    default Stream<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
     @Override
-    default Stream<T> patch(int from, Iterable<? extends T> that, int replaced) {
-        from = from < 0 ? 0 : from;
-        replaced = replaced < 0 ? 0 : replaced;
+    default Stream<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced) {
+        from = Math.max(from, 0);
+        replaced = Math.max(replaced, 0);
         Stream<T> result = take(from).appendAll(that);
         from += replaced;
         result = result.appendAll(drop(from));
@@ -1288,13 +1289,13 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> partition(Predicate<? super T> predicate) {
+    default Tuple2<Stream<T>, Stream<T>> partition(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(filter(predicate), filter(predicate.negate()));
     }
 
     @Override
-    default Stream<T> peek(Consumer<? super T> action) {
+    default Stream<T> peek(@NonNull Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (isEmpty()) {
             return this;
@@ -1329,7 +1330,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> prependAll(Iterable<? extends T> elements) {
+    default Stream<T> prependAll(@NonNull Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (isEmpty()) {
             if (elements instanceof Stream) {
@@ -1355,7 +1356,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> removeFirst(Predicate<T> predicate) {
+    default Stream<T> removeFirst(@NonNull Predicate<T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return this;
@@ -1366,7 +1367,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> removeLast(Predicate<T> predicate) {
+    default Stream<T> removeLast(@NonNull Predicate<T> predicate) {
         return isEmpty() ? this : reverse().removeFirst(predicate).reverse();
     }
 
@@ -1389,13 +1390,13 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> removeAll(Iterable<? extends T> elements) {
+    default Stream<T> removeAll(@NonNull Iterable<? extends T> elements) {
         return io.vavr.collection.Collections.removeAll(this, elements);
     }
 
     @Override
     @Deprecated
-    default Stream<T> removeAll(Predicate<? super T> predicate) {
+    default Stream<T> removeAll(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reject(predicate);
     }
@@ -1426,7 +1427,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> retainAll(Iterable<? extends T> elements) {
+    default Stream<T> retainAll(@NonNull Iterable<? extends T> elements) {
         return io.vavr.collection.Collections.retainAll(this, elements);
     }
 
@@ -1446,19 +1447,19 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
+    default Stream<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    default <U> Stream<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U> Stream<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
         // lazily streams the elements of an iterator
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, Iterator::toStream);
     }
 
     // not lazy!
     @Override
-    default <U> Stream<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U> Stream<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, Iterator::toStream);
     }
 
@@ -1482,7 +1483,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Iterator<Stream<T>> slideBy(Function<? super T, ?> classifier) {
+    default Iterator<Stream<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
         return iterator().slideBy(classifier).map(Stream::ofAll);
     }
 
@@ -1502,23 +1503,23 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> sorted(Comparator<? super T> comparator) {
+    default Stream<T> sorted(@NonNull Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(Stream.collector());
     }
 
     @Override
-    default <U extends Comparable<? super U>> Stream<T> sortBy(Function<? super T, ? extends U> mapper) {
+    default <U extends Comparable<? super U>> Stream<T> sortBy(@NonNull Function<? super T, ? extends U> mapper) {
         return sortBy(U::compareTo, mapper);
     }
 
     @Override
-    default <U> Stream<T> sortBy(Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
+    default <U> Stream<T> sortBy(@NonNull Comparator<? super U> comparator, Function<? super T, ? extends U> mapper) {
         return Collections.sortBy(this, comparator, mapper, collector());
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> span(Predicate<? super T> predicate) {
+    default Tuple2<Stream<T>, Stream<T>> span(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate), dropWhile(predicate));
     }
@@ -1529,13 +1530,13 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> splitAt(Predicate<? super T> predicate) {
+    default Tuple2<Stream<T>, Stream<T>> splitAt(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Tuple.of(takeWhile(predicate.negate()), dropWhile(predicate.negate()));
     }
 
     @Override
-    default Tuple2<Stream<T>, Stream<T>> splitAtInclusive(Predicate<? super T> predicate) {
+    default Tuple2<Stream<T>, Stream<T>> splitAtInclusive(@NonNull Predicate<? super T> predicate) {
         final Tuple2<Stream<T>, Stream<T>> split = splitAt(predicate);
         if (split._2.isEmpty()) {
             return split;
@@ -1602,13 +1603,13 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> takeUntil(Predicate<? super T> predicate) {
+    default Stream<T> takeUntil(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeWhile(predicate.negate());
     }
 
     @Override
-    default Stream<T> takeWhile(Predicate<? super T> predicate) {
+    default Stream<T> takeWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Empty.instance();
@@ -1634,13 +1635,13 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> takeRightUntil(Predicate<? super T> predicate) {
+    default Stream<T> takeRightUntil(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reverse().takeUntil(predicate).reverse();
     }
 
     @Override
-    default Stream<T> takeRightWhile(Predicate<? super T> predicate) {
+    default Stream<T> takeRightWhile(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeRightUntil(predicate.negate());
     }
@@ -1653,14 +1654,14 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    default <U> U transform(Function<? super Stream<T>, ? extends U> f) {
+    default <U> U transform(@NonNull Function<? super Stream<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
 
     @Override
     default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(
-            Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
         final Stream<T1> stream1 = stream.map(t -> t._1);
@@ -1670,7 +1671,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default <T1, T2, T3> Tuple3<Stream<T1>, Stream<T2>, Stream<T3>> unzip3(
-            Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> stream = map(unzipper);
         final Stream<T1> stream1 = stream.map(t -> t._1);
@@ -1703,25 +1704,25 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> update(int index, Function<? super T, ? extends T> updater) {
+    default Stream<T> update(int index, @NonNull Function<? super T, ? extends T> updater) {
         Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> zip(Iterable<? extends U> that) {
+    default <U> Stream<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    default <U, R> Stream<R> zipWith(Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    default <U, R> Stream<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWith(that, mapper));
     }
 
     @Override
-    default <U> Stream<Tuple2<T, U>> zipAll(Iterable<? extends U> iterable, T thisElem, U thatElem) {
+    default <U> Stream<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> iterable, T thisElem, U thatElem) {
         Objects.requireNonNull(iterable, "iterable is null");
         return Stream.ofAll(iterator().zipAll(iterable, thisElem, thatElem));
     }
@@ -1732,7 +1733,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default <U> Stream<U> zipWithIndex(BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    default <U> Stream<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return Stream.ofAll(iterator().zipWithIndex(mapper));
     }
@@ -1753,7 +1754,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param nextSupplier a supplier which will provide values for extending a stream
      * @return new {@code Stream} composed from this stream extended with values provided by the supplier
      */
-    default Stream<T> extend(Supplier<? extends T> nextSupplier) {
+    default Stream<T> extend(@NonNull Supplier<? extends T> nextSupplier) {
         Objects.requireNonNull(nextSupplier, "nextSupplier is null");
         return Stream.ofAll(appendAll(Stream.continually(nextSupplier)));
     }
@@ -1765,7 +1766,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param nextFunction a function which calculates the next value basing on the previous value
      * @return new {@code Stream} composed from this stream extended with values calculated by the provided function
      */
-    default Stream<T> extend(Function<? super T, ? extends T> nextFunction) {
+    default Stream<T> extend(@NonNull Function<? super T, ? extends T> nextFunction) {
         Objects.requireNonNull(nextFunction, "nextFunction is null");
         if (isEmpty()) {
             return this;
@@ -1833,7 +1834,7 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
-        public Iterator<T> iterator() {
+        public @NonNull Iterator<T> iterator() {
             return Iterator.empty();
         }
 
@@ -1898,7 +1899,7 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
-        public Iterator<T> iterator() {
+        public @NonNull Iterator<T> iterator() {
             return new StreamIterator<>(this);
         }
 
@@ -1977,7 +1978,7 @@ interface StreamModule {
         }
 
         @Override
-        public Stream<T> appendAll(Iterable<? extends T> elements) {
+        public Stream<T> appendAll(@NonNull Iterable<? extends T> elements) {
             Objects.requireNonNull(elements, "elements is null");
             return isEmpty() ? Stream.ofAll(queue) : new AppendElements<>(head, queue.appendAll(elements), tail);
         }

@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Function;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Represents a function with 7 arguments.
@@ -112,7 +113,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @param <T7> 7th argument
      * @return a {@code Function7}
      */
-    static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> of(Function7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
+    static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> of(@NonNull Function7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
         return methodReference;
     }
 
@@ -131,7 +132,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, Option<R>> lift(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> partialFunction) {
+    static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, Option<R>> lift(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> partialFunction) {
         return (t1, t2, t3, t4, t5, t6, t7) -> Try.<R>of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6, t7)).toOption();
     }
 
@@ -150,7 +151,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, Try<R>> liftTry(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> partialFunction) {
+    static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, Try<R>> liftTry(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> partialFunction) {
         return (t1, t2, t3, t4, t5, t6, t7) -> Try.of(() -> partialFunction.apply(t1, t2, t3, t4, t5, t6, t7));
     }
 
@@ -349,7 +350,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> Function7<T1, T2, T3, T4, T5, T6, T7, V> andThen(Function<? super R, ? extends V> after) {
+    default <V> Function7<T1, T2, T3, T4, T5, T6, T7, V> andThen(@NonNull Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return (t1, t2, t3, t4, t5, t6, t7) -> after.apply(apply(t1, t2, t3, t4, t5, t6, t7));
     }
@@ -363,7 +364,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function7<S, T2, T3, T4, T5, T6, T7, R> compose1(Function1<? super S, ? extends T1> before) {
+    default <S> Function7<S, T2, T3, T4, T5, T6, T7, R> compose1(@NonNull Function1<? super S, ? extends T1> before) {
         Objects.requireNonNull(before, "before is null");
         return (S s, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(before.apply(s), t2, t3, t4, t5, t6, t7);
     }
@@ -377,7 +378,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function7<T1, S, T3, T4, T5, T6, T7, R> compose2(Function1<? super S, ? extends T2> before) {
+    default <S> Function7<T1, S, T3, T4, T5, T6, T7, R> compose2(@NonNull Function1<? super S, ? extends T2> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, S s, T3 t3, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(t1, before.apply(s), t3, t4, t5, t6, t7);
     }
@@ -391,7 +392,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function7<T1, T2, S, T4, T5, T6, T7, R> compose3(Function1<? super S, ? extends T3> before) {
+    default <S> Function7<T1, T2, S, T4, T5, T6, T7, R> compose3(@NonNull Function1<? super S, ? extends T3> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, T2 t2, S s, T4 t4, T5 t5, T6 t6, T7 t7) -> apply(t1, t2, before.apply(s), t4, t5, t6, t7);
     }
@@ -405,7 +406,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function7<T1, T2, T3, S, T5, T6, T7, R> compose4(Function1<? super S, ? extends T4> before) {
+    default <S> Function7<T1, T2, T3, S, T5, T6, T7, R> compose4(@NonNull Function1<? super S, ? extends T4> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, T2 t2, T3 t3, S s, T5 t5, T6 t6, T7 t7) -> apply(t1, t2, t3, before.apply(s), t5, t6, t7);
     }
@@ -419,7 +420,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function7<T1, T2, T3, T4, S, T6, T7, R> compose5(Function1<? super S, ? extends T5> before) {
+    default <S> Function7<T1, T2, T3, T4, S, T6, T7, R> compose5(@NonNull Function1<? super S, ? extends T5> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, T2 t2, T3 t3, T4 t4, S s, T6 t6, T7 t7) -> apply(t1, t2, t3, t4, before.apply(s), t6, t7);
     }
@@ -433,7 +434,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function7<T1, T2, T3, T4, T5, S, T7, R> compose6(Function1<? super S, ? extends T6> before) {
+    default <S> Function7<T1, T2, T3, T4, T5, S, T7, R> compose6(@NonNull Function1<? super S, ? extends T6> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, S s, T7 t7) -> apply(t1, t2, t3, t4, t5, before.apply(s), t7);
     }
@@ -447,7 +448,7 @@ public interface Function7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
      * @return a function composed of before and this
      * @throws NullPointerException if before is null
      */
-    default <S> Function7<T1, T2, T3, T4, T5, T6, S, R> compose7(Function1<? super S, ? extends T7> before) {
+    default <S> Function7<T1, T2, T3, T4, T5, T6, S, R> compose7(@NonNull Function1<? super S, ? extends T7> before) {
         Objects.requireNonNull(before, "before is null");
         return (T1 t1, T2 t2, T3 t3, T4 t4, T5 t5, T6 t6, S s) -> apply(t1, t2, t3, t4, t5, t6, before.apply(s));
     }
