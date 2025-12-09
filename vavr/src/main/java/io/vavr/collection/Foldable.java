@@ -24,52 +24,54 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 
 /**
- * Interface of foldable data structures.
+ * Represents a data structure that can be folded (reduced) into a single value.
+ * <p>
+ * Folding is the process of combining the elements of a structure using a 
+ * provided function, typically accumulating a result.
  * <p>
  * <strong>Example:</strong>
  *
  * <pre><code>
- * // = "123"
- * Stream.of("1", "2", "3").fold("", (a1, a2) -&gt; a1 + a2);
+ * // Concatenates all elements into a single String: "123"
+ * Stream.of("1", "2", "3")
+ *       .fold("", (acc, element) -> acc + element);
  * </code></pre>
  *
- * @param <T> Component type of this foldable
+ * @param <T> the type of elements contained in this foldable structure
  * @author Daniel Dietrich
  */
 public interface Foldable<T> {
 
     /**
-     * Folds this elements using the given associative binary operator, starting with {@code zero} and
-     * successively calling {@code combine}. The order in which the elements are combined is
-     * non-deterministic.
+     * Folds the elements of this structure using the given associative binary operator,
+     * starting with the provided {@code zero} element and successively applying {@code combine}.
      * <p>
-     * The methods {@code fold}, {@code foldLeft} and {@code foldRight} differ in how the elements are combined:
-     *
+     * The order in which elements are combined is non-deterministic. Therefore, {@code combine}
+     * must be associative to guarantee a consistent result regardless of traversal order.
+     * <p>
+     * The fold operations differ in how elements are combined:
      * <ul>
-     * <li>{@link #foldLeft(Object, BiFunction)} associates to the left</li>
-     * <li>{@link #foldRight(Object, BiFunction)} associates to the right</li>
-     * <li>
-     * {@code fold} takes an associative combine operation because the traversal of elements is
-     * unordered/non-deterministic. The associativity guarantees that in each case the result will
-     * be the same, it does not matter in which order the elements are combined. Generally binary
-     * operators aren't associative, i.e. the result may differ if elements are combined in a different
-     * order.
-     * <p>
-     * We say that this Foldable and the associative combine operation form a
-     * <a href="https://en.wikipedia.org/wiki/Monoid" target="_blank">Monoid</a>.
-     * </li>
+     *   <li>{@link #foldLeft(Object, BiFunction)}: combines elements from left to right.</li>
+     *   <li>{@link #foldRight(Object, BiFunction)}: combines elements from right to left.</li>
+     *   <li>{@code fold}: requires an associative combine operation, as the element traversal
+     *       is unordered. Associativity ensures the result is the same regardless of combination order.
+     *       Note that most binary operators are not associative, so the result may vary if 
+     *       elements are combined in a different order.
+     *       <p>
+     *       Together, this {@code Foldable} and the associative {@code combine} operation form a 
+     *       <a href="https://en.wikipedia.org/wiki/Monoid" target="_blank">Monoid</a>.
+     *   </li>
      * </ul>
      *
-     * Example:
+     * <strong>Example:</strong>
+     * <pre>{@code
+     * // Result: 6
+     * Set.of(1, 2, 3).fold(0, (a, b) -> a + b);
+     * }</pre>
      *
-     * <pre> {@code
-     * // = 6
-     * Set(1, 2, 3).fold(0, (a, b) -> a + b);
-     * } </pre>
-     *
-     * @param zero    A zero element to start with.
-     * @param combine A function which combines elements.
-     * @return a folded value
+     * @param zero    the initial value to start folding with
+     * @param combine the function to combine two elements
+     * @return the folded result
      * @throws NullPointerException if {@code combine} is null
      */
     default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> combine) {
@@ -78,48 +80,59 @@ public interface Foldable<T> {
     }
 
     /**
-     * Folds this elements from the left, starting with {@code zero} and successively calling {@code combine}.
+     * Folds the elements of this structure from the left, starting with the given {@code zero} value
+     * and successively applying the {@code combine} function to each element.
      * <p>
-     * Example:
+     * Folding from the left means that elements are combined in the order they are encountered,
+     * associating each step with the accumulated result so far.
+     * <p>
+     * <strong>Example:</strong>
+     * <pre>{@code
+     * // Result: "cba!"
+     * List.of("a", "b", "c").foldLeft("!", (acc, x) -> x + acc);
+     * }</pre>
      *
-     * <pre> {@code
-     * // = "cba!"
-     * List("a", "b", "c").foldLeft("!", (xs, x) -> x + xs)
-     * } </pre>
-     *
-     * @param <U>     the type to fold over
-     * @param zero    A zero element to start with.
-     * @param combine A function which combines elements.
-     * @return a folded value
+     * @param <U>     the type of the accumulated result
+     * @param zero    the initial value to start folding with
+     * @param combine a function that combines the accumulated value and the next element
+     * @return the folded result
      * @throws NullPointerException if {@code combine} is null
      */
     <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine);
 
+
     /**
-     * Folds this elements from the right, starting with {@code zero} and successively calling {@code combine}.
+     * Folds the elements of this structure from the right, starting with the given {@code zero} value
+     * and successively applying the {@code combine} function to each element.
      * <p>
-     * Example:
+     * Folding from the right means that elements are combined starting from the last element
+     * and associating each step with the accumulated result so far.
+     * <p>
+     * <strong>Example:</strong>
+     * <pre>{@code
+     * // Result: "!cba"
+     * List.of("a", "b", "c").foldRight("!", (x, acc) -> acc + x);
+     * }</pre>
      *
-     * <pre> {@code
-     * // = "!cba"
-     * List("a", "b", "c").foldRight("!", (x, xs) -> xs + x)
-     * } </pre>
-     *
-     * @param <U>     the type of the folded value
-     * @param zero    A zero element to start with.
-     * @param combine A function which combines elements.
-     * @return a folded value
+     * @param <U>     the type of the accumulated result
+     * @param zero    the initial value to start folding with
+     * @param combine a function that combines the next element and the accumulated value
+     * @return the folded result
      * @throws NullPointerException if {@code combine} is null
      */
     <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine);
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given operation {@code op}.
-     * The order of element iteration is undetermined.
+     * Reduces the elements of this Foldable by repeatedly applying the given binary operation {@code op}.
+     * <p>
+     * The order in which elements are combined is non-deterministic, so {@code op} should be associative
+     * to guarantee a consistent result.
+     * <p>
+     * This method throws {@link NoSuchElementException} if the Foldable is empty.
      *
-     * @param op A BiFunction of type T
-     * @return the reduced value.
-     * @throws NoSuchElementException if this is empty
+     * @param op a binary function to combine two elements
+     * @return the reduced result
+     * @throws NoSuchElementException if this Foldable is empty
      * @throws NullPointerException   if {@code op} is null
      */
     default T reduce(BiFunction<? super T, ? super T, ? extends T> op) {
@@ -128,11 +141,13 @@ public interface Foldable<T> {
     }
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given operation {@code op}.
-     * The order of element iteration is undetermined.
+     * Reduces the elements of this Foldable by repeatedly applying the given binary operation {@code op}.
+     * <p>
+     * The order of element combination is non-deterministic, so {@code op} should be associative to 
+     * guarantee a consistent result.
      *
-     * @param op A BiFunction of type T
-     * @return Some of reduced value or None if the Foldable is empty.
+     * @param op a binary function to combine two elements
+     * @return an {@link Option} containing the reduced result, or {@link Option#none()} if this Foldable is empty
      * @throws NullPointerException if {@code op} is null
      */
     default Option<T> reduceOption(BiFunction<? super T, ? super T, ? extends T> op) {
@@ -141,41 +156,48 @@ public interface Foldable<T> {
     }
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the left.
+     * Reduces the elements of this Foldable from the left by successively applying the given operation {@code op}.
+     * <p>
+     * Elements are combined in encounter order, starting from the left.
      *
-     * @param op A BiFunction of type T
-     * @return the reduced value.
-     * @throws NoSuchElementException if this is empty
+     * @param op a binary function to combine two elements
+     * @return the reduced result
+     * @throws NoSuchElementException if this Foldable is empty
      * @throws NullPointerException   if {@code op} is null
      */
     T reduceLeft(BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the left.
+     * Reduces the elements of this Foldable from the left by successively applying the given operation {@code op}.
+     * <p>
+     * Returns an {@link Option} instead of throwing an exception if the Foldable is empty.
      *
-     * @param op A BiFunction of type T
-     * @return Some of reduced value or None if the Foldable is empty.
+     * @param op a binary function to combine two elements
+     * @return an {@link Option} containing the reduced result, or {@link Option#none()} if empty
      * @throws NullPointerException if {@code op} is null
      */
     Option<T> reduceLeftOption(BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the right.
+     * Reduces the elements of this Foldable from the right by successively applying the given operation {@code op}.
+     * <p>
+     * Elements are combined starting from the rightmost element.
      *
-     * @param op An operation of type T
-     * @return the reduced value.
-     * @throws NoSuchElementException if this is empty
+     * @param op a binary function to combine two elements
+     * @return the reduced result
+     * @throws NoSuchElementException if this Foldable is empty
      * @throws NullPointerException   if {@code op} is null
      */
     T reduceRight(BiFunction<? super T, ? super T, ? extends T> op);
 
     /**
-     * Accumulates the elements of this Foldable by successively calling the given operation {@code op} from the right.
+     * Reduces the elements of this Foldable from the right by successively applying the given operation {@code op}.
+     * <p>
+     * Returns an {@link Option} instead of throwing an exception if the Foldable is empty.
      *
-     * @param op An operation of type T
-     * @return Some of reduced value or None.
+     * @param op a binary function to combine two elements
+     * @return an {@link Option} containing the reduced result, or {@link Option#none()} if empty
      * @throws NullPointerException if {@code op} is null
      */
     Option<T> reduceRightOption(BiFunction<? super T, ? super T, ? extends T> op);
-
 }
