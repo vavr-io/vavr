@@ -30,6 +30,7 @@ import java.util.function.*;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collector;
+import org.jspecify.annotations.NonNull;
 
 import static io.vavr.collection.JavaConverters.ChangePolicy.IMMUTABLE;
 import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
@@ -84,7 +85,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A new {@link io.vavr.collection.CharSeq}
      */
     // DEV-NOTE: Needs to be 'of' instead of 'ofAll' because 'ofAll(CharSeq)' is ambiguous.
-    public static CharSeq of(CharSequence sequence) {
+    public static CharSeq of(@NonNull CharSequence sequence) {
         Objects.requireNonNull(sequence, "sequence is null");
         if (sequence instanceof CharSeq) {
             return (CharSeq) sequence;
@@ -110,7 +111,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A string containing the given characters in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    public static CharSeq of(char... characters) {
+    public static CharSeq of(char @NonNull ... characters) {
         Objects.requireNonNull(characters, "characters is null");
         if (characters.length == 0) {
             return empty();
@@ -132,7 +133,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @throws NullPointerException if {@code elements} is null or {@code elements} contains null
      */
     @SuppressWarnings("unchecked")
-    public static CharSeq ofAll(Iterable<? extends Character> elements) {
+    public static CharSeq ofAll(@NonNull Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (Collections.isEmpty(elements)){
             return EMPTY;
@@ -160,7 +161,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A CharSeq consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static CharSeq tabulate(int n, Function<? super Integer, ? extends Character> f) {
+    public static CharSeq tabulate(int n, @NonNull Function<? super Integer, ? extends Character> f) {
         Objects.requireNonNull(f, "f is null");
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
@@ -396,7 +397,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq appendAll(Iterable<? extends Character> elements) {
+    public CharSeq appendAll(@NonNull Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (Collections.isEmpty(elements)) {
             return this;
@@ -416,7 +417,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @GwtIncompatible
     @Override
-    public CharSeq asJava(Consumer<? super java.util.List<Character>> action) {
+    public CharSeq asJava(@NonNull Consumer<? super java.util.List<Character>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
@@ -428,12 +429,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     @GwtIncompatible
     @Override
-    public CharSeq asJavaMutable(Consumer<? super java.util.List<Character>> action) {
+    public CharSeq asJavaMutable(@NonNull Consumer<? super java.util.List<Character>> action) {
         return Collections.asJava(this, action, MUTABLE);
     }
 
     @Override
-    public <R> IndexedSeq<R> collect(PartialFunction<? super Character, ? extends R> partialFunction) {
+    public <R> IndexedSeq<R> collect(@NonNull PartialFunction<? super Character, ? extends R> partialFunction) {
         return Vector.ofAll(iterator().<R> collect(partialFunction));
     }
 
@@ -458,27 +459,27 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq distinctBy(Comparator<? super Character> comparator) {
+    public CharSeq distinctBy(@NonNull Comparator<? super Character> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final java.util.Set<Character> seen = new java.util.TreeSet<>(comparator);
         return filter(seen::add);
     }
 
     @Override
-    public <U> CharSeq distinctBy(Function<? super Character, ? extends U> keyExtractor) {
+    public <U> CharSeq distinctBy(@NonNull Function<? super Character, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         final java.util.Set<U> seen = new java.util.HashSet<>();
         return filter(t -> seen.add(keyExtractor.apply(t)));
     }
 
     @Override
-    public CharSeq distinctByKeepLast(Comparator<? super Character> comparator) {
+    public CharSeq distinctByKeepLast(@NonNull Comparator<? super Character> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return ofAll(iterator().distinctByKeepLast(comparator));
     }
 
     @Override
-    public <U> CharSeq distinctByKeepLast(Function<? super Character, ? extends U> keyExtractor) {
+    public <U> CharSeq distinctByKeepLast(@NonNull Function<? super Character, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         return ofAll(iterator().distinctByKeepLast(keyExtractor));
     }
@@ -495,12 +496,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq dropUntil(Predicate<? super Character> predicate) {
+    public CharSeq dropUntil(@NonNull Predicate<? super Character> predicate) {
         return io.vavr.collection.Collections.dropUntil(this, predicate);
     }
 
     @Override
-    public CharSeq dropWhile(Predicate<? super Character> predicate) {
+    public CharSeq dropWhile(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropUntil(predicate.negate());
     }
@@ -517,18 +518,18 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq dropRightWhile(Predicate<? super Character> predicate) {
+    public CharSeq dropRightWhile(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return dropRightUntil(predicate.negate());
     }
 
     @Override
-    public CharSeq dropRightUntil(Predicate<? super Character> predicate) {
+    public CharSeq dropRightUntil(@NonNull Predicate<? super Character> predicate) {
         return io.vavr.collection.Collections.dropRightUntil(this, predicate);
     }
 
     @Override
-    public CharSeq filter(Predicate<? super Character> predicate) {
+    public CharSeq filter(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < back.length(); i++) {
@@ -547,13 +548,13 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq reject(Predicate<? super Character> predicate) {
+    public CharSeq reject(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return Collections.reject(this, predicate);
     }
 
     @Override
-    public <U> IndexedSeq<U> flatMap(Function<? super Character, ? extends Iterable<? extends U>> mapper) {
+    public <U> IndexedSeq<U> flatMap(@NonNull Function<? super Character, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return Vector.empty();
@@ -568,7 +569,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
     }
 
-    public CharSeq flatMapChars(CharFunction<? extends CharSequence> mapper) {
+    public CharSeq flatMapChars(@NonNull CharFunction<? extends CharSequence> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return this;
@@ -582,7 +583,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <C> Map<C, CharSeq> groupBy(Function<? super Character, ? extends C> classifier) {
+    public <C> Map<C, CharSeq> groupBy(@NonNull Function<? super Character, ? extends C> classifier) {
         return io.vavr.collection.Collections.groupBy(this, classifier, CharSeq::ofAll);
     }
 
@@ -623,7 +624,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq insertAll(int index, Iterable<? extends Character> elements) {
+    public CharSeq insertAll(int index, @NonNull Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -640,7 +641,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public io.vavr.collection.Iterator<Character> iterator() {
+    public io.vavr.collection.@NonNull Iterator<Character> iterator() {
         return io.vavr.collection.Iterator.ofAll(toCharArray());
     }
 
@@ -659,7 +660,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> IndexedSeq<U> map(Function<? super Character, ? extends U> mapper) {
+    public <U> IndexedSeq<U> map(@NonNull Function<? super Character, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         IndexedSeq<U> result = Vector.empty();
         for (int i = 0; i < length(); i++) {
@@ -709,7 +710,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq orElse(Supplier<? extends Iterable<? extends Character>> supplier) {
+    public CharSeq orElse(@NonNull Supplier<? extends Iterable<? extends Character>> supplier) {
         return isEmpty() ? ofAll(supplier.get()) : this;
     }
 
@@ -722,7 +723,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq patch(int from, Iterable<? extends Character> that, int replaced) {
+    public CharSeq patch(int from, @NonNull Iterable<? extends Character> that, int replaced) {
         from = from < 0 ? 0 : from > length() ? length() : from;
         replaced = replaced < 0 ? 0 : replaced;
         final StringBuilder sb = new StringBuilder(back.substring(0, from));
@@ -750,7 +751,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Tuple2<CharSeq, CharSeq> partition(Predicate<? super Character> predicate) {
+    public Tuple2<CharSeq, CharSeq> partition(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Tuple.of(EMPTY, EMPTY);
@@ -771,7 +772,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq peek(Consumer<? super Character> action) {
+    public CharSeq peek(@NonNull Consumer<? super Character> action) {
         Objects.requireNonNull(action, "action is null");
         if (!isEmpty()) {
             action.accept(get(0));
@@ -805,7 +806,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq prependAll(Iterable<? extends Character> elements) {
+    public CharSeq prependAll(@NonNull Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (Collections.isEmpty(elements)) {
             return this;
@@ -840,7 +841,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq removeFirst(Predicate<Character> predicate) {
+    public CharSeq removeFirst(@NonNull Predicate<Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final StringBuilder sb = new StringBuilder();
         boolean found = false;
@@ -859,7 +860,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq removeLast(Predicate<Character> predicate) {
+    public CharSeq removeLast(@NonNull Predicate<Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         for (int i = length() - 1; i >= 0; i--) {
             if (predicate.test(get(i))) {
@@ -884,13 +885,13 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq removeAll(Iterable<? extends Character> elements) {
+    public CharSeq removeAll(@NonNull Iterable<? extends Character> elements) {
         return io.vavr.collection.Collections.removeAll(this, elements);
     }
 
     @Override
     @Deprecated
-    public CharSeq removeAll(Predicate<? super Character> predicate) {
+    public CharSeq removeAll(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return reject(predicate);
     }
@@ -938,7 +939,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq retainAll(Iterable<? extends Character> elements) {
+    public CharSeq retainAll(@NonNull Iterable<? extends Character> elements) {
         return io.vavr.collection.Collections.retainAll(this, elements);
     }
 
@@ -958,17 +959,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
+    public CharSeq scan(Character zero, @NonNull BiFunction<? super Character, ? super Character, ? extends Character> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, io.vavr.collection.Iterator::toCharSeq);
     }
 
     @Override
-    public <U> IndexedSeq<U> scanLeft(U zero, BiFunction<? super U, ? super Character, ? extends U> operation) {
+    public <U> IndexedSeq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super Character, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, io.vavr.collection.Iterator::toVector);
     }
 
     @Override
-    public <U> IndexedSeq<U> scanRight(U zero, BiFunction<? super Character, ? super U, ? extends U> operation) {
+    public <U> IndexedSeq<U> scanRight(U zero, @NonNull BiFunction<? super Character, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, io.vavr.collection.Iterator::toVector);
     }
 
@@ -991,7 +992,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public io.vavr.collection.Iterator<CharSeq> slideBy(Function<? super Character, ?> classifier) {
+    public io.vavr.collection.Iterator<CharSeq> slideBy(@NonNull Function<? super Character, ?> classifier) {
         return iterator().slideBy(classifier).map(CharSeq::ofAll);
     }
 
@@ -1011,23 +1012,23 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq sorted(Comparator<? super Character> comparator) {
+    public CharSeq sorted(@NonNull Comparator<? super Character> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return isEmpty() ? this : toJavaStream().sorted(comparator).collect(CharSeq.collector());
     }
 
     @Override
-    public <U extends Comparable<? super U>> CharSeq sortBy(Function<? super Character, ? extends U> mapper) {
+    public <U extends Comparable<? super U>> CharSeq sortBy(@NonNull Function<? super Character, ? extends U> mapper) {
         return sortBy(U::compareTo, mapper);
     }
 
     @Override
-    public <U> CharSeq sortBy(Comparator<? super U> comparator, Function<? super Character, ? extends U> mapper) {
+    public <U> CharSeq sortBy(@NonNull Comparator<? super U> comparator, Function<? super Character, ? extends U> mapper) {
         return Collections.sortBy(this, comparator, mapper, collector());
     }
 
     @Override
-    public Tuple2<CharSeq, CharSeq> span(Predicate<? super Character> predicate) {
+    public Tuple2<CharSeq, CharSeq> span(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < length(); i++) {
@@ -1081,12 +1082,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq takeUntil(Predicate<? super Character> predicate) {
+    public CharSeq takeUntil(@NonNull Predicate<? super Character> predicate) {
         return io.vavr.collection.Collections.takeUntil(this, predicate);
     }
 
     @Override
-    public CharSeq takeWhile(Predicate<? super Character> predicate) {
+    public CharSeq takeWhile(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeUntil(predicate.negate());
     }
@@ -1103,12 +1104,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq takeRightUntil(Predicate<? super Character> predicate) {
+    public CharSeq takeRightUntil(@NonNull Predicate<? super Character> predicate) {
         return io.vavr.collection.Collections.takeRightUntil(this, predicate);
     }
 
     @Override
-    public CharSeq takeRightWhile(Predicate<? super Character> predicate) {
+    public CharSeq takeRightWhile(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return takeRightUntil(predicate.negate());
     }
@@ -1127,7 +1128,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <T1, T2> Tuple2<IndexedSeq<T1>, IndexedSeq<T2>> unzip(Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
+    public <T1, T2> Tuple2<IndexedSeq<T1>, IndexedSeq<T2>> unzip(@NonNull Function<? super Character, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         IndexedSeq<T1> xs = Vector.empty();
         IndexedSeq<T2> ys = Vector.empty();
@@ -1140,7 +1141,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <T1, T2, T3> Tuple3<IndexedSeq<T1>, IndexedSeq<T2>, IndexedSeq<T3>> unzip3(Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+    public <T1, T2, T3> Tuple3<IndexedSeq<T1>, IndexedSeq<T2>, IndexedSeq<T3>> unzip3(@NonNull Function<? super Character, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         IndexedSeq<T1> xs = Vector.empty();
         IndexedSeq<T2> ys = Vector.empty();
@@ -1165,19 +1166,19 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq update(int index, Function<? super Character, ? extends Character> updater) {
+    public CharSeq update(int index, @NonNull Function<? super Character, ? extends Character> updater) {
         Objects.requireNonNull(updater, "updater is null");
         final char c = updater.apply(get(index));
         return update(index, c);
     }
 
     @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> zip(Iterable<? extends U> that) {
+    public <U> IndexedSeq<Tuple2<Character, U>> zip(@NonNull Iterable<? extends U> that) {
         return zipWith(that, Tuple::of);
     }
 
     @Override
-    public <U, R> IndexedSeq<R> zipWith(Iterable<? extends U> that, BiFunction<? super Character, ? super U, ? extends R> mapper) {
+    public <U, R> IndexedSeq<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super Character, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         IndexedSeq<R> result = Vector.empty();
@@ -1190,7 +1191,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> IndexedSeq<Tuple2<Character, U>> zipAll(Iterable<? extends U> that, Character thisElem, U thatElem) {
+    public <U> IndexedSeq<Tuple2<Character, U>> zipAll(@NonNull Iterable<? extends U> that, Character thisElem, U thatElem) {
         Objects.requireNonNull(that, "that is null");
         IndexedSeq<Tuple2<Character, U>> result = Vector.empty();
         final io.vavr.collection.Iterator<Character> list1 = iterator();
@@ -1209,7 +1210,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public <U> IndexedSeq<U> zipWithIndex(BiFunction<? super Character, ? super Integer, ? extends U> mapper) {
+    public <U> IndexedSeq<U> zipWithIndex(@NonNull BiFunction<? super Character, ? super Integer, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         IndexedSeq<U> result = Vector.empty();
         for (int i = 0; i < length(); i++) {
@@ -1245,7 +1246,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Tuple2<CharSeq, CharSeq> splitAt(Predicate<? super Character> predicate) {
+    public Tuple2<CharSeq, CharSeq> splitAt(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Tuple.of(EMPTY, EMPTY);
@@ -1263,7 +1264,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public Tuple2<CharSeq, CharSeq> splitAtInclusive(Predicate<? super Character> predicate) {
+    public Tuple2<CharSeq, CharSeq> splitAtInclusive(@NonNull Predicate<? super Character> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         if (isEmpty()) {
             return Tuple.of(EMPTY, EMPTY);
@@ -1280,7 +1281,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public boolean startsWith(Iterable<? extends Character> that, int offset) {
+    public boolean startsWith(@NonNull Iterable<? extends Character> that, int offset) {
         return startsWith(CharSeq.ofAll(that), offset);
     }
 
@@ -2287,7 +2288,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <blockquote>
      * {@code
      * {@link Pattern}.{@link
-     * Pattern#compile compile}(<i>regex</i>).{@link
+     * Pattern#compile(String) compile}(<i>regex</i>).{@link
      * Pattern#matcher(CharSequence) matcher}(<i>str</i>).{@link
      * java.util.regex.Matcher#replaceFirst replaceFirst}(<i>repl</i>)
      * }
@@ -2320,7 +2321,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <blockquote>
      * {@code
      * {@link Pattern}.{@link
-     * Pattern#compile compile}(<i>regex</i>).{@link
+     * Pattern#compile(String) compile}(<i>regex</i>).{@link
      * Pattern#matcher(CharSequence) matcher}(<i>str</i>).{@link
      * java.util.regex.Matcher#replaceAll replaceAll}(<i>repl</i>)
      * }
@@ -2454,7 +2455,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <blockquote>
      * {@code
      * {@link Pattern}.{@link
-     * Pattern#compile compile}(<i>regex</i>).{@link
+     * Pattern#compile(String) compile}(<i>regex</i>).{@link
      * Pattern#split(CharSequence, int) split}(<i>str</i>,&nbsp;<i>n</i>)
      * }
      * </blockquote>

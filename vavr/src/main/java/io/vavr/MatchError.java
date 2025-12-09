@@ -50,5 +50,4 @@ public class MatchError extends NoSuchElementException {
     public Object getObject() {
         return obj;
     }
-
 }

@@ -40,6 +40,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import org.jspecify.annotations.NonNull;
 
 /**
  * The most basic Vavr functionality is accessed through this API class.
@@ -863,7 +864,7 @@ public final class API {
      * @param supplier A supplier
      * @return A new instance of {@link Lazy}
      */
-    public static <T> Lazy<T> Lazy(Supplier<? extends T> supplier) {
+    public static <T> Lazy<T> Lazy(@NonNull Supplier<? extends T> supplier) {
         return Lazy.of(supplier);
     }
 
@@ -1025,7 +1026,7 @@ public final class API {
      * @param comparator The comparator used to sort the elements
      * @return A new {@link PriorityQueue} empty instance
      */
-    public static <T extends Comparable<? super T>> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator) {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> PriorityQueue(@NonNull Comparator<? super T> comparator) {
         return PriorityQueue.empty(comparator);
     }
 
@@ -1061,7 +1062,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T extends Comparable<? super T>> PriorityQueue<T> PriorityQueue(T... elements) {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> PriorityQueue(T @NonNull ... elements) {
         return PriorityQueue.of(elements);
     }
 
@@ -1075,7 +1076,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, T... elements) {
+    public static <T> PriorityQueue<T> PriorityQueue(@NonNull Comparator<? super T> comparator, T @NonNull ... elements) {
         return PriorityQueue.of(comparator, elements);
     }
 
@@ -1114,7 +1115,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Seq<T> Seq(T... elements) {
+    public static <T> Seq<T> Seq(T @NonNull ... elements) {
         return List.of(elements);
     }
     // -- IndexedSeq
@@ -1150,7 +1151,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> IndexedSeq<T> IndexedSeq(T... elements) {
+    public static <T> IndexedSeq<T> IndexedSeq(T @NonNull ... elements) {
         return Vector.of(elements);
     }
     // -- Array
@@ -1186,7 +1187,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Array<T> Array(T... elements) {
+    public static <T> Array<T> Array(T @NonNull ... elements) {
         return Array.of(elements);
     }
     // -- List
@@ -1222,7 +1223,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> List<T> List(T... elements) {
+    public static <T> List<T> List(T @NonNull ... elements) {
         return List.of(elements);
     }
     // -- Queue
@@ -1258,7 +1259,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Queue<T> Queue(T... elements) {
+    public static <T> Queue<T> Queue(T @NonNull ... elements) {
         return Queue.of(elements);
     }
     // -- Stream
@@ -1294,7 +1295,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Stream<T> Stream(T... elements) {
+    public static <T> Stream<T> Stream(T @NonNull ... elements) {
         return Stream.of(elements);
     }
     // -- Vector
@@ -1330,7 +1331,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Vector<T> Vector(T... elements) {
+    public static <T> Vector<T> Vector(T @NonNull ... elements) {
         return Vector.of(elements);
     }
 
@@ -1369,7 +1370,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Set<T> Set(T... elements) {
+    public static <T> Set<T> Set(T @NonNull ... elements) {
         return HashSet.of(elements);
     }
     // -- LinkedSet
@@ -1405,7 +1406,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Set<T> LinkedSet(T... elements) {
+    public static <T> Set<T> LinkedSet(T @NonNull ... elements) {
         return LinkedHashSet.of(elements);
     }
     // -- SortedSet
@@ -1427,7 +1428,7 @@ public final class API {
      * @param comparator The comparator used to sort the elements
      * @return A new {@link TreeSet} empty instance
      */
-    public static <T extends Comparable<? super T>> SortedSet<T> SortedSet(Comparator<? super T> comparator) {
+    public static <T extends Comparable<? super T>> SortedSet<T> SortedSet(@NonNull Comparator<? super T> comparator) {
         return TreeSet.empty(comparator);
     }
 
@@ -1463,7 +1464,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T extends Comparable<? super T>> SortedSet<T> SortedSet(T... elements) {
+    public static <T extends Comparable<? super T>> SortedSet<T> SortedSet(T @NonNull ... elements) {
         return TreeSet.of(elements);
     }
 
@@ -1477,7 +1478,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> SortedSet<T> SortedSet(Comparator<? super T> comparator, T... elements) {
+    public static <T> SortedSet<T> SortedSet(@NonNull Comparator<? super T> comparator, T @NonNull ... elements) {
         return TreeSet.of(comparator, elements);
     }
 
@@ -1508,7 +1509,7 @@ public final class API {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K, V> Map<K, V> Map(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> Map<K, V> Map(Tuple2<? extends K, ? extends V> @NonNull ... entries) {
         return HashMap.ofEntries(entries);
     }
 
@@ -1756,7 +1757,7 @@ public final class API {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K, V> Map<K, V> LinkedMap(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> Map<K, V> LinkedMap(Tuple2<? extends K, ? extends V> @NonNull ... entries) {
         return LinkedHashMap.ofEntries(entries);
     }
 
@@ -1998,7 +1999,7 @@ public final class API {
      * @param keyComparator The comparator used to sort the entries by their key
      * @return A new empty {@link TreeMap} instance
      */
-    public static <K, V> SortedMap<K, V> SortedMap(Comparator<? super K> keyComparator) {
+    public static <K, V> SortedMap<K, V> SortedMap(@NonNull Comparator<? super K> keyComparator) {
         return TreeMap.empty(keyComparator);
     }
 
@@ -2012,7 +2013,7 @@ public final class API {
      * @param value         A singleton map value.
      * @return A new {@link TreeMap} instance containing the given entry
      */
-    public static <K, V> SortedMap<K, V> SortedMap(Comparator<? super K> keyComparator, K key, V value) {
+    public static <K, V> SortedMap<K, V> SortedMap(@NonNull Comparator<? super K> keyComparator, K key, V value) {
         return TreeMap.of(keyComparator, key, value);
     }
 
@@ -2028,7 +2029,7 @@ public final class API {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(Tuple2<? extends K, ? extends V> @NonNull ... entries) {
         return TreeMap.ofEntries(entries);
     }
 
@@ -2045,7 +2046,7 @@ public final class API {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K, V> SortedMap<K, V> SortedMap(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> SortedMap<K, V> SortedMap(@NonNull Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V> @NonNull ... entries) {
         return TreeMap.ofEntries(keyComparator, entries);
     }
 
@@ -2339,7 +2340,7 @@ public final class API {
      * @param <T1> component type of the 1st Iterable
      * @return a new {@code For}-comprehension of arity 1
      */
-    public static <T1> For1<T1> For(Iterable<T1> ts1) {
+    public static <T1> For1<T1> For(@NonNull Iterable<T1> ts1) {
         Objects.requireNonNull(ts1, "ts1 is null");
         return new For1<>(ts1);
     }
@@ -2354,7 +2355,7 @@ public final class API {
      * @param <T2> component type of the 2nd Iterable
      * @return a new {@code For}-comprehension of arity 2
      */
-    public static <T1, T2> For2<T1, T2> For(Iterable<T1> ts1, Iterable<T2> ts2) {
+    public static <T1, T2> For2<T1, T2> For(@NonNull Iterable<T1> ts1, @NonNull Iterable<T2> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new For2<>(ts1, ts2);
@@ -2372,7 +2373,7 @@ public final class API {
      * @param <T3> component type of the 3rd Iterable
      * @return a new {@code For}-comprehension of arity 3
      */
-    public static <T1, T2, T3> For3<T1, T2, T3> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3) {
+    public static <T1, T2, T3> For3<T1, T2, T3> For(@NonNull Iterable<T1> ts1, @NonNull Iterable<T2> ts2, @NonNull Iterable<T3> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2393,7 +2394,7 @@ public final class API {
      * @param <T4> component type of the 4th Iterable
      * @return a new {@code For}-comprehension of arity 4
      */
-    public static <T1, T2, T3, T4> For4<T1, T2, T3, T4> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4) {
+    public static <T1, T2, T3, T4> For4<T1, T2, T3, T4> For(@NonNull Iterable<T1> ts1, @NonNull Iterable<T2> ts2, @NonNull Iterable<T3> ts3, @NonNull Iterable<T4> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2417,7 +2418,7 @@ public final class API {
      * @param <T5> component type of the 5th Iterable
      * @return a new {@code For}-comprehension of arity 5
      */
-    public static <T1, T2, T3, T4, T5> For5<T1, T2, T3, T4, T5> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5) {
+    public static <T1, T2, T3, T4, T5> For5<T1, T2, T3, T4, T5> For(@NonNull Iterable<T1> ts1, @NonNull Iterable<T2> ts2, @NonNull Iterable<T3> ts3, @NonNull Iterable<T4> ts4, @NonNull Iterable<T5> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2444,7 +2445,7 @@ public final class API {
      * @param <T6> component type of the 6th Iterable
      * @return a new {@code For}-comprehension of arity 6
      */
-    public static <T1, T2, T3, T4, T5, T6> For6<T1, T2, T3, T4, T5, T6> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> For6<T1, T2, T3, T4, T5, T6> For(@NonNull Iterable<T1> ts1, @NonNull Iterable<T2> ts2, @NonNull Iterable<T3> ts3, @NonNull Iterable<T4> ts4, @NonNull Iterable<T5> ts5, @NonNull Iterable<T6> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2474,7 +2475,7 @@ public final class API {
      * @param <T7> component type of the 7th Iterable
      * @return a new {@code For}-comprehension of arity 7
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> For7<T1, T2, T3, T4, T5, T6, T7> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> For7<T1, T2, T3, T4, T5, T6, T7> For(@NonNull Iterable<T1> ts1, @NonNull Iterable<T2> ts2, @NonNull Iterable<T3> ts3, @NonNull Iterable<T4> ts4, @NonNull Iterable<T5> ts5, @NonNull Iterable<T6> ts6, @NonNull Iterable<T7> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2507,7 +2508,7 @@ public final class API {
      * @param <T8> component type of the 8th Iterable
      * @return a new {@code For}-comprehension of arity 8
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8<T1, T2, T3, T4, T5, T6, T7, T8> For(Iterable<T1> ts1, Iterable<T2> ts2, Iterable<T3> ts3, Iterable<T4> ts4, Iterable<T5> ts5, Iterable<T6> ts6, Iterable<T7> ts7, Iterable<T8> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8<T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Iterable<T1> ts1, @NonNull Iterable<T2> ts2, @NonNull Iterable<T3> ts3, @NonNull Iterable<T4> ts4, @NonNull Iterable<T5> ts5, @NonNull Iterable<T6> ts6, @NonNull Iterable<T7> ts7, @NonNull Iterable<T8> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2527,7 +2528,7 @@ public final class API {
      * @param <T1> component type of the 1st Option
      * @return a new {@code For}-comprehension of arity 1
      */
-    public static <T1> For1Option<T1> For(Option<T1> ts1) {
+    public static <T1> For1Option<T1> For(@NonNull Option<T1> ts1) {
         Objects.requireNonNull(ts1, "ts1 is null");
         return new For1Option<>(ts1);
     }
@@ -2542,7 +2543,7 @@ public final class API {
      * @param <T2> component type of the 2nd Option
      * @return a new {@code For}-comprehension of arity 2
      */
-    public static <T1, T2> For2Option<T1, T2> For(Option<T1> ts1, Option<T2> ts2) {
+    public static <T1, T2> For2Option<T1, T2> For(@NonNull Option<T1> ts1, @NonNull Option<T2> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new For2Option<>(ts1, ts2);
@@ -2560,7 +2561,7 @@ public final class API {
      * @param <T3> component type of the 3rd Option
      * @return a new {@code For}-comprehension of arity 3
      */
-    public static <T1, T2, T3> For3Option<T1, T2, T3> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3) {
+    public static <T1, T2, T3> For3Option<T1, T2, T3> For(@NonNull Option<T1> ts1, @NonNull Option<T2> ts2, @NonNull Option<T3> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2581,7 +2582,7 @@ public final class API {
      * @param <T4> component type of the 4th Option
      * @return a new {@code For}-comprehension of arity 4
      */
-    public static <T1, T2, T3, T4> For4Option<T1, T2, T3, T4> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4) {
+    public static <T1, T2, T3, T4> For4Option<T1, T2, T3, T4> For(@NonNull Option<T1> ts1, @NonNull Option<T2> ts2, @NonNull Option<T3> ts3, @NonNull Option<T4> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2605,7 +2606,7 @@ public final class API {
      * @param <T5> component type of the 5th Option
      * @return a new {@code For}-comprehension of arity 5
      */
-    public static <T1, T2, T3, T4, T5> For5Option<T1, T2, T3, T4, T5> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4, Option<T5> ts5) {
+    public static <T1, T2, T3, T4, T5> For5Option<T1, T2, T3, T4, T5> For(@NonNull Option<T1> ts1, @NonNull Option<T2> ts2, @NonNull Option<T3> ts3, @NonNull Option<T4> ts4, @NonNull Option<T5> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2632,7 +2633,7 @@ public final class API {
      * @param <T6> component type of the 6th Option
      * @return a new {@code For}-comprehension of arity 6
      */
-    public static <T1, T2, T3, T4, T5, T6> For6Option<T1, T2, T3, T4, T5, T6> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4, Option<T5> ts5, Option<T6> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> For6Option<T1, T2, T3, T4, T5, T6> For(@NonNull Option<T1> ts1, @NonNull Option<T2> ts2, @NonNull Option<T3> ts3, @NonNull Option<T4> ts4, @NonNull Option<T5> ts5, @NonNull Option<T6> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2662,7 +2663,7 @@ public final class API {
      * @param <T7> component type of the 7th Option
      * @return a new {@code For}-comprehension of arity 7
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> For7Option<T1, T2, T3, T4, T5, T6, T7> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4, Option<T5> ts5, Option<T6> ts6, Option<T7> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> For7Option<T1, T2, T3, T4, T5, T6, T7> For(@NonNull Option<T1> ts1, @NonNull Option<T2> ts2, @NonNull Option<T3> ts3, @NonNull Option<T4> ts4, @NonNull Option<T5> ts5, @NonNull Option<T6> ts6, @NonNull Option<T7> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2695,7 +2696,7 @@ public final class API {
      * @param <T8> component type of the 8th Option
      * @return a new {@code For}-comprehension of arity 8
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8Option<T1, T2, T3, T4, T5, T6, T7, T8> For(Option<T1> ts1, Option<T2> ts2, Option<T3> ts3, Option<T4> ts4, Option<T5> ts5, Option<T6> ts6, Option<T7> ts7, Option<T8> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8Option<T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Option<T1> ts1, @NonNull Option<T2> ts2, @NonNull Option<T3> ts3, @NonNull Option<T4> ts4, @NonNull Option<T5> ts5, @NonNull Option<T6> ts6, @NonNull Option<T7> ts7, @NonNull Option<T8> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2715,7 +2716,7 @@ public final class API {
      * @param <T1> component type of the 1st Future
      * @return a new {@code For}-comprehension of arity 1
      */
-    public static <T1> For1Future<T1> For(Future<T1> ts1) {
+    public static <T1> For1Future<T1> For(@NonNull Future<T1> ts1) {
         Objects.requireNonNull(ts1, "ts1 is null");
         return new For1Future<>(ts1);
     }
@@ -2730,7 +2731,7 @@ public final class API {
      * @param <T2> component type of the 2nd Future
      * @return a new {@code For}-comprehension of arity 2
      */
-    public static <T1, T2> For2Future<T1, T2> For(Future<T1> ts1, Future<T2> ts2) {
+    public static <T1, T2> For2Future<T1, T2> For(@NonNull Future<T1> ts1, @NonNull Future<T2> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new For2Future<>(ts1, ts2);
@@ -2748,7 +2749,7 @@ public final class API {
      * @param <T3> component type of the 3rd Future
      * @return a new {@code For}-comprehension of arity 3
      */
-    public static <T1, T2, T3> For3Future<T1, T2, T3> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3) {
+    public static <T1, T2, T3> For3Future<T1, T2, T3> For(@NonNull Future<T1> ts1, @NonNull Future<T2> ts2, @NonNull Future<T3> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2769,7 +2770,7 @@ public final class API {
      * @param <T4> component type of the 4th Future
      * @return a new {@code For}-comprehension of arity 4
      */
-    public static <T1, T2, T3, T4> For4Future<T1, T2, T3, T4> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4) {
+    public static <T1, T2, T3, T4> For4Future<T1, T2, T3, T4> For(@NonNull Future<T1> ts1, @NonNull Future<T2> ts2, @NonNull Future<T3> ts3, @NonNull Future<T4> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2793,7 +2794,7 @@ public final class API {
      * @param <T5> component type of the 5th Future
      * @return a new {@code For}-comprehension of arity 5
      */
-    public static <T1, T2, T3, T4, T5> For5Future<T1, T2, T3, T4, T5> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4, Future<T5> ts5) {
+    public static <T1, T2, T3, T4, T5> For5Future<T1, T2, T3, T4, T5> For(@NonNull Future<T1> ts1, @NonNull Future<T2> ts2, @NonNull Future<T3> ts3, @NonNull Future<T4> ts4, @NonNull Future<T5> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2820,7 +2821,7 @@ public final class API {
      * @param <T6> component type of the 6th Future
      * @return a new {@code For}-comprehension of arity 6
      */
-    public static <T1, T2, T3, T4, T5, T6> For6Future<T1, T2, T3, T4, T5, T6> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4, Future<T5> ts5, Future<T6> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> For6Future<T1, T2, T3, T4, T5, T6> For(@NonNull Future<T1> ts1, @NonNull Future<T2> ts2, @NonNull Future<T3> ts3, @NonNull Future<T4> ts4, @NonNull Future<T5> ts5, @NonNull Future<T6> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2850,7 +2851,7 @@ public final class API {
      * @param <T7> component type of the 7th Future
      * @return a new {@code For}-comprehension of arity 7
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> For7Future<T1, T2, T3, T4, T5, T6, T7> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4, Future<T5> ts5, Future<T6> ts6, Future<T7> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> For7Future<T1, T2, T3, T4, T5, T6, T7> For(@NonNull Future<T1> ts1, @NonNull Future<T2> ts2, @NonNull Future<T3> ts3, @NonNull Future<T4> ts4, @NonNull Future<T5> ts5, @NonNull Future<T6> ts6, @NonNull Future<T7> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2883,7 +2884,7 @@ public final class API {
      * @param <T8> component type of the 8th Future
      * @return a new {@code For}-comprehension of arity 8
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8Future<T1, T2, T3, T4, T5, T6, T7, T8> For(Future<T1> ts1, Future<T2> ts2, Future<T3> ts3, Future<T4> ts4, Future<T5> ts5, Future<T6> ts6, Future<T7> ts7, Future<T8> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8Future<T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Future<T1> ts1, @NonNull Future<T2> ts2, @NonNull Future<T3> ts3, @NonNull Future<T4> ts4, @NonNull Future<T5> ts5, @NonNull Future<T6> ts6, @NonNull Future<T7> ts7, @NonNull Future<T8> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2903,7 +2904,7 @@ public final class API {
      * @param <T1> component type of the 1st Try
      * @return a new {@code For}-comprehension of arity 1
      */
-    public static <T1> For1Try<T1> For(Try<T1> ts1) {
+    public static <T1> For1Try<T1> For(@NonNull Try<T1> ts1) {
         Objects.requireNonNull(ts1, "ts1 is null");
         return new For1Try<>(ts1);
     }
@@ -2918,7 +2919,7 @@ public final class API {
      * @param <T2> component type of the 2nd Try
      * @return a new {@code For}-comprehension of arity 2
      */
-    public static <T1, T2> For2Try<T1, T2> For(Try<T1> ts1, Try<T2> ts2) {
+    public static <T1, T2> For2Try<T1, T2> For(@NonNull Try<T1> ts1, @NonNull Try<T2> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new For2Try<>(ts1, ts2);
@@ -2936,7 +2937,7 @@ public final class API {
      * @param <T3> component type of the 3rd Try
      * @return a new {@code For}-comprehension of arity 3
      */
-    public static <T1, T2, T3> For3Try<T1, T2, T3> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3) {
+    public static <T1, T2, T3> For3Try<T1, T2, T3> For(@NonNull Try<T1> ts1, @NonNull Try<T2> ts2, @NonNull Try<T3> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2957,7 +2958,7 @@ public final class API {
      * @param <T4> component type of the 4th Try
      * @return a new {@code For}-comprehension of arity 4
      */
-    public static <T1, T2, T3, T4> For4Try<T1, T2, T3, T4> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4) {
+    public static <T1, T2, T3, T4> For4Try<T1, T2, T3, T4> For(@NonNull Try<T1> ts1, @NonNull Try<T2> ts2, @NonNull Try<T3> ts3, @NonNull Try<T4> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -2981,7 +2982,7 @@ public final class API {
      * @param <T5> component type of the 5th Try
      * @return a new {@code For}-comprehension of arity 5
      */
-    public static <T1, T2, T3, T4, T5> For5Try<T1, T2, T3, T4, T5> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4, Try<T5> ts5) {
+    public static <T1, T2, T3, T4, T5> For5Try<T1, T2, T3, T4, T5> For(@NonNull Try<T1> ts1, @NonNull Try<T2> ts2, @NonNull Try<T3> ts3, @NonNull Try<T4> ts4, @NonNull Try<T5> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3008,7 +3009,7 @@ public final class API {
      * @param <T6> component type of the 6th Try
      * @return a new {@code For}-comprehension of arity 6
      */
-    public static <T1, T2, T3, T4, T5, T6> For6Try<T1, T2, T3, T4, T5, T6> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4, Try<T5> ts5, Try<T6> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> For6Try<T1, T2, T3, T4, T5, T6> For(@NonNull Try<T1> ts1, @NonNull Try<T2> ts2, @NonNull Try<T3> ts3, @NonNull Try<T4> ts4, @NonNull Try<T5> ts5, @NonNull Try<T6> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3038,7 +3039,7 @@ public final class API {
      * @param <T7> component type of the 7th Try
      * @return a new {@code For}-comprehension of arity 7
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> For7Try<T1, T2, T3, T4, T5, T6, T7> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4, Try<T5> ts5, Try<T6> ts6, Try<T7> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> For7Try<T1, T2, T3, T4, T5, T6, T7> For(@NonNull Try<T1> ts1, @NonNull Try<T2> ts2, @NonNull Try<T3> ts3, @NonNull Try<T4> ts4, @NonNull Try<T5> ts5, @NonNull Try<T6> ts6, @NonNull Try<T7> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3071,7 +3072,7 @@ public final class API {
      * @param <T8> component type of the 8th Try
      * @return a new {@code For}-comprehension of arity 8
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8Try<T1, T2, T3, T4, T5, T6, T7, T8> For(Try<T1> ts1, Try<T2> ts2, Try<T3> ts3, Try<T4> ts4, Try<T5> ts5, Try<T6> ts6, Try<T7> ts7, Try<T8> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8Try<T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Try<T1> ts1, @NonNull Try<T2> ts2, @NonNull Try<T3> ts3, @NonNull Try<T4> ts4, @NonNull Try<T5> ts5, @NonNull Try<T6> ts6, @NonNull Try<T7> ts7, @NonNull Try<T8> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3091,7 +3092,7 @@ public final class API {
      * @param <T1> component type of the 1st List
      * @return a new {@code For}-comprehension of arity 1
      */
-    public static <T1> For1List<T1> For(List<T1> ts1) {
+    public static <T1> For1List<T1> For(@NonNull List<T1> ts1) {
         Objects.requireNonNull(ts1, "ts1 is null");
         return new For1List<>(ts1);
     }
@@ -3106,7 +3107,7 @@ public final class API {
      * @param <T2> component type of the 2nd List
      * @return a new {@code For}-comprehension of arity 2
      */
-    public static <T1, T2> For2List<T1, T2> For(List<T1> ts1, List<T2> ts2) {
+    public static <T1, T2> For2List<T1, T2> For(@NonNull List<T1> ts1, @NonNull List<T2> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new For2List<>(ts1, ts2);
@@ -3124,7 +3125,7 @@ public final class API {
      * @param <T3> component type of the 3rd List
      * @return a new {@code For}-comprehension of arity 3
      */
-    public static <T1, T2, T3> For3List<T1, T2, T3> For(List<T1> ts1, List<T2> ts2, List<T3> ts3) {
+    public static <T1, T2, T3> For3List<T1, T2, T3> For(@NonNull List<T1> ts1, @NonNull List<T2> ts2, @NonNull List<T3> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3145,7 +3146,7 @@ public final class API {
      * @param <T4> component type of the 4th List
      * @return a new {@code For}-comprehension of arity 4
      */
-    public static <T1, T2, T3, T4> For4List<T1, T2, T3, T4> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4) {
+    public static <T1, T2, T3, T4> For4List<T1, T2, T3, T4> For(@NonNull List<T1> ts1, @NonNull List<T2> ts2, @NonNull List<T3> ts3, @NonNull List<T4> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3169,7 +3170,7 @@ public final class API {
      * @param <T5> component type of the 5th List
      * @return a new {@code For}-comprehension of arity 5
      */
-    public static <T1, T2, T3, T4, T5> For5List<T1, T2, T3, T4, T5> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4, List<T5> ts5) {
+    public static <T1, T2, T3, T4, T5> For5List<T1, T2, T3, T4, T5> For(@NonNull List<T1> ts1, @NonNull List<T2> ts2, @NonNull List<T3> ts3, @NonNull List<T4> ts4, @NonNull List<T5> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3196,7 +3197,7 @@ public final class API {
      * @param <T6> component type of the 6th List
      * @return a new {@code For}-comprehension of arity 6
      */
-    public static <T1, T2, T3, T4, T5, T6> For6List<T1, T2, T3, T4, T5, T6> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4, List<T5> ts5, List<T6> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> For6List<T1, T2, T3, T4, T5, T6> For(@NonNull List<T1> ts1, @NonNull List<T2> ts2, @NonNull List<T3> ts3, @NonNull List<T4> ts4, @NonNull List<T5> ts5, @NonNull List<T6> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3226,7 +3227,7 @@ public final class API {
      * @param <T7> component type of the 7th List
      * @return a new {@code For}-comprehension of arity 7
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> For7List<T1, T2, T3, T4, T5, T6, T7> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4, List<T5> ts5, List<T6> ts6, List<T7> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> For7List<T1, T2, T3, T4, T5, T6, T7> For(@NonNull List<T1> ts1, @NonNull List<T2> ts2, @NonNull List<T3> ts3, @NonNull List<T4> ts4, @NonNull List<T5> ts5, @NonNull List<T6> ts6, @NonNull List<T7> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3259,7 +3260,7 @@ public final class API {
      * @param <T8> component type of the 8th List
      * @return a new {@code For}-comprehension of arity 8
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8List<T1, T2, T3, T4, T5, T6, T7, T8> For(List<T1> ts1, List<T2> ts2, List<T3> ts3, List<T4> ts4, List<T5> ts5, List<T6> ts6, List<T7> ts7, List<T8> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> For8List<T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull List<T1> ts1, @NonNull List<T2> ts2, @NonNull List<T3> ts3, @NonNull List<T4> ts4, @NonNull List<T5> ts5, @NonNull List<T6> ts6, @NonNull List<T7> ts7, @NonNull List<T8> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3279,7 +3280,7 @@ public final class API {
      * @param <T1> component type of the 1st Either
      * @return a new {@code For}-comprehension of arity 1
      */
-    public static <L, T1> For1Either<L, T1> For(Either<L, T1> ts1) {
+    public static <L, T1> For1Either<L, T1> For(@NonNull Either<L, T1> ts1) {
         Objects.requireNonNull(ts1, "ts1 is null");
         return new For1Either<>(ts1);
     }
@@ -3294,7 +3295,7 @@ public final class API {
      * @param <T2> component type of the 2nd Either
      * @return a new {@code For}-comprehension of arity 2
      */
-    public static <L, T1, T2> For2Either<L, T1, T2> For(Either<L, T1> ts1, Either<L, T2> ts2) {
+    public static <L, T1, T2> For2Either<L, T1, T2> For(@NonNull Either<L, T1> ts1, @NonNull Either<L, T2> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new For2Either<>(ts1, ts2);
@@ -3312,7 +3313,7 @@ public final class API {
      * @param <T3> component type of the 3rd Either
      * @return a new {@code For}-comprehension of arity 3
      */
-    public static <L, T1, T2, T3> For3Either<L, T1, T2, T3> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3) {
+    public static <L, T1, T2, T3> For3Either<L, T1, T2, T3> For(@NonNull Either<L, T1> ts1, @NonNull Either<L, T2> ts2, @NonNull Either<L, T3> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3333,7 +3334,7 @@ public final class API {
      * @param <T4> component type of the 4th Either
      * @return a new {@code For}-comprehension of arity 4
      */
-    public static <L, T1, T2, T3, T4> For4Either<L, T1, T2, T3, T4> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4) {
+    public static <L, T1, T2, T3, T4> For4Either<L, T1, T2, T3, T4> For(@NonNull Either<L, T1> ts1, @NonNull Either<L, T2> ts2, @NonNull Either<L, T3> ts3, @NonNull Either<L, T4> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3357,7 +3358,7 @@ public final class API {
      * @param <T5> component type of the 5th Either
      * @return a new {@code For}-comprehension of arity 5
      */
-    public static <L, T1, T2, T3, T4, T5> For5Either<L, T1, T2, T3, T4, T5> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5) {
+    public static <L, T1, T2, T3, T4, T5> For5Either<L, T1, T2, T3, T4, T5> For(@NonNull Either<L, T1> ts1, @NonNull Either<L, T2> ts2, @NonNull Either<L, T3> ts3, @NonNull Either<L, T4> ts4, @NonNull Either<L, T5> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3384,7 +3385,7 @@ public final class API {
      * @param <T6> component type of the 6th Either
      * @return a new {@code For}-comprehension of arity 6
      */
-    public static <L, T1, T2, T3, T4, T5, T6> For6Either<L, T1, T2, T3, T4, T5, T6> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6) {
+    public static <L, T1, T2, T3, T4, T5, T6> For6Either<L, T1, T2, T3, T4, T5, T6> For(@NonNull Either<L, T1> ts1, @NonNull Either<L, T2> ts2, @NonNull Either<L, T3> ts3, @NonNull Either<L, T4> ts4, @NonNull Either<L, T5> ts5, @NonNull Either<L, T6> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3414,7 +3415,7 @@ public final class API {
      * @param <T7> component type of the 7th Either
      * @return a new {@code For}-comprehension of arity 7
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7> For7Either<L, T1, T2, T3, T4, T5, T6, T7> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6, Either<L, T7> ts7) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7> For7Either<L, T1, T2, T3, T4, T5, T6, T7> For(@NonNull Either<L, T1> ts1, @NonNull Either<L, T2> ts2, @NonNull Either<L, T3> ts3, @NonNull Either<L, T4> ts4, @NonNull Either<L, T5> ts5, @NonNull Either<L, T6> ts6, @NonNull Either<L, T7> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3447,7 +3448,7 @@ public final class API {
      * @param <T8> component type of the 8th Either
      * @return a new {@code For}-comprehension of arity 8
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> For8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Either<L, T1> ts1, Either<L, T2> ts2, Either<L, T3> ts3, Either<L, T4> ts4, Either<L, T5> ts5, Either<L, T6> ts6, Either<L, T7> ts7, Either<L, T8> ts8) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> For8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Either<L, T1> ts1, @NonNull Either<L, T2> ts2, @NonNull Either<L, T3> ts3, @NonNull Either<L, T4> ts4, @NonNull Either<L, T5> ts5, @NonNull Either<L, T6> ts6, @NonNull Either<L, T7> ts7, @NonNull Either<L, T8> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3467,7 +3468,7 @@ public final class API {
      * @param <T1> component type of the 1st Validation
      * @return a new {@code For}-comprehension of arity 1
      */
-    public static <L, T1> For1Validation<L, T1> For(Validation<L, T1> ts1) {
+    public static <L, T1> For1Validation<L, T1> For(@NonNull Validation<L, T1> ts1) {
         Objects.requireNonNull(ts1, "ts1 is null");
         return new For1Validation<>(ts1);
     }
@@ -3482,7 +3483,7 @@ public final class API {
      * @param <T2> component type of the 2nd Validation
      * @return a new {@code For}-comprehension of arity 2
      */
-    public static <L, T1, T2> For2Validation<L, T1, T2> For(Validation<L, T1> ts1, Validation<L, T2> ts2) {
+    public static <L, T1, T2> For2Validation<L, T1, T2> For(@NonNull Validation<L, T1> ts1, @NonNull Validation<L, T2> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new For2Validation<>(ts1, ts2);
@@ -3500,7 +3501,7 @@ public final class API {
      * @param <T3> component type of the 3rd Validation
      * @return a new {@code For}-comprehension of arity 3
      */
-    public static <L, T1, T2, T3> For3Validation<L, T1, T2, T3> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3) {
+    public static <L, T1, T2, T3> For3Validation<L, T1, T2, T3> For(@NonNull Validation<L, T1> ts1, @NonNull Validation<L, T2> ts2, @NonNull Validation<L, T3> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3521,7 +3522,7 @@ public final class API {
      * @param <T4> component type of the 4th Validation
      * @return a new {@code For}-comprehension of arity 4
      */
-    public static <L, T1, T2, T3, T4> For4Validation<L, T1, T2, T3, T4> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4) {
+    public static <L, T1, T2, T3, T4> For4Validation<L, T1, T2, T3, T4> For(@NonNull Validation<L, T1> ts1, @NonNull Validation<L, T2> ts2, @NonNull Validation<L, T3> ts3, @NonNull Validation<L, T4> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3545,7 +3546,7 @@ public final class API {
      * @param <T5> component type of the 5th Validation
      * @return a new {@code For}-comprehension of arity 5
      */
-    public static <L, T1, T2, T3, T4, T5> For5Validation<L, T1, T2, T3, T4, T5> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5) {
+    public static <L, T1, T2, T3, T4, T5> For5Validation<L, T1, T2, T3, T4, T5> For(@NonNull Validation<L, T1> ts1, @NonNull Validation<L, T2> ts2, @NonNull Validation<L, T3> ts3, @NonNull Validation<L, T4> ts4, @NonNull Validation<L, T5> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3572,7 +3573,7 @@ public final class API {
      * @param <T6> component type of the 6th Validation
      * @return a new {@code For}-comprehension of arity 6
      */
-    public static <L, T1, T2, T3, T4, T5, T6> For6Validation<L, T1, T2, T3, T4, T5, T6> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5, Validation<L, T6> ts6) {
+    public static <L, T1, T2, T3, T4, T5, T6> For6Validation<L, T1, T2, T3, T4, T5, T6> For(@NonNull Validation<L, T1> ts1, @NonNull Validation<L, T2> ts2, @NonNull Validation<L, T3> ts3, @NonNull Validation<L, T4> ts4, @NonNull Validation<L, T5> ts5, @NonNull Validation<L, T6> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3602,7 +3603,7 @@ public final class API {
      * @param <T7> component type of the 7th Validation
      * @return a new {@code For}-comprehension of arity 7
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7> For7Validation<L, T1, T2, T3, T4, T5, T6, T7> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5, Validation<L, T6> ts6, Validation<L, T7> ts7) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7> For7Validation<L, T1, T2, T3, T4, T5, T6, T7> For(@NonNull Validation<L, T1> ts1, @NonNull Validation<L, T2> ts2, @NonNull Validation<L, T3> ts3, @NonNull Validation<L, T4> ts4, @NonNull Validation<L, T5> ts5, @NonNull Validation<L, T6> ts6, @NonNull Validation<L, T7> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3635,7 +3636,7 @@ public final class API {
      * @param <T8> component type of the 8th Validation
      * @return a new {@code For}-comprehension of arity 8
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> For8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Validation<L, T1> ts1, Validation<L, T2> ts2, Validation<L, T3> ts3, Validation<L, T4> ts4, Validation<L, T5> ts5, Validation<L, T6> ts6, Validation<L, T7> ts7, Validation<L, T8> ts8) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> For8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Validation<L, T1> ts1, @NonNull Validation<L, T2> ts2, @NonNull Validation<L, T3> ts3, @NonNull Validation<L, T4> ts4, @NonNull Validation<L, T5> ts5, @NonNull Validation<L, T6> ts6, @NonNull Validation<L, T7> ts7, @NonNull Validation<L, T8> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -3667,7 +3668,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
-         public <R> Iterator<R> yield(Function<? super T1, ? extends R> f) {
+         public <R> Iterator<R> yield(@NonNull Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return Iterator.ofAll(ts1).map(f);
          }
@@ -3705,7 +3706,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
-         public <R> Iterator<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+         public <R> Iterator<R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  Iterator.ofAll(ts1).flatMap(t1 ->
@@ -3740,7 +3741,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
-         public <R> Iterator<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+         public <R> Iterator<R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  Iterator.ofAll(ts1).flatMap(t1 ->
@@ -3779,7 +3780,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
-         public <R> Iterator<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+         public <R> Iterator<R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  Iterator.ofAll(ts1).flatMap(t1 ->
@@ -3822,7 +3823,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
-         public <R> Iterator<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+         public <R> Iterator<R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  Iterator.ofAll(ts1).flatMap(t1 ->
@@ -3869,7 +3870,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
-         public <R> Iterator<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+         public <R> Iterator<R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  Iterator.ofAll(ts1).flatMap(t1 ->
@@ -3920,7 +3921,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
-         public <R> Iterator<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+         public <R> Iterator<R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  Iterator.ofAll(ts1).flatMap(t1 ->
@@ -3975,7 +3976,7 @@ public final class API {
           * @param <R> type of the resulting {@code Iterator} elements
           * @return an {@code Iterator} of mapped results
           */
-         public <R> Iterator<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+         public <R> Iterator<R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  Iterator.ofAll(ts1).flatMap(t1 ->
@@ -4010,7 +4011,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
-         public <R> Option<R> yield(Function<? super T1, ? extends R> f) {
+         public <R> Option<R> yield(@NonNull Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return ts1.map(f);
          }
@@ -4048,7 +4049,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
-         public <R> Option<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+         public <R> Option<R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4083,7 +4084,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
-         public <R> Option<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+         public <R> Option<R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4122,7 +4123,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
-         public <R> Option<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+         public <R> Option<R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4165,7 +4166,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
-         public <R> Option<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+         public <R> Option<R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4212,7 +4213,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
-         public <R> Option<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+         public <R> Option<R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4263,7 +4264,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
-         public <R> Option<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+         public <R> Option<R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4318,7 +4319,7 @@ public final class API {
           * @param <R> type of the resulting {@code Option} elements
           * @return an {@code Option} of mapped results
           */
-         public <R> Option<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+         public <R> Option<R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4353,7 +4354,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
-         public <R> Future<R> yield(Function<? super T1, ? extends R> f) {
+         public <R> Future<R> yield(@NonNull Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return ts1.map(f);
          }
@@ -4391,7 +4392,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
-         public <R> Future<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+         public <R> Future<R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4426,7 +4427,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
-         public <R> Future<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+         public <R> Future<R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4465,7 +4466,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
-         public <R> Future<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+         public <R> Future<R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4508,7 +4509,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
-         public <R> Future<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+         public <R> Future<R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4555,7 +4556,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
-         public <R> Future<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+         public <R> Future<R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4606,7 +4607,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
-         public <R> Future<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+         public <R> Future<R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4661,7 +4662,7 @@ public final class API {
           * @param <R> type of the resulting {@code Future} elements
           * @return an {@code Future} of mapped results
           */
-         public <R> Future<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+         public <R> Future<R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4696,7 +4697,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
-         public <R> Try<R> yield(Function<? super T1, ? extends R> f) {
+         public <R> Try<R> yield(@NonNull Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return ts1.map(f);
          }
@@ -4734,7 +4735,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
-         public <R> Try<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+         public <R> Try<R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4769,7 +4770,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
-         public <R> Try<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+         public <R> Try<R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4808,7 +4809,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
-         public <R> Try<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+         public <R> Try<R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4851,7 +4852,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
-         public <R> Try<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+         public <R> Try<R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4898,7 +4899,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
-         public <R> Try<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+         public <R> Try<R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -4949,7 +4950,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
-         public <R> Try<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+         public <R> Try<R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5004,7 +5005,7 @@ public final class API {
           * @param <R> type of the resulting {@code Try} elements
           * @return an {@code Try} of mapped results
           */
-         public <R> Try<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+         public <R> Try<R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5039,7 +5040,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
-         public <R> List<R> yield(Function<? super T1, ? extends R> f) {
+         public <R> List<R> yield(@NonNull Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return ts1.map(f);
          }
@@ -5077,7 +5078,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
-         public <R> List<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+         public <R> List<R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5112,7 +5113,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
-         public <R> List<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+         public <R> List<R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5151,7 +5152,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
-         public <R> List<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+         public <R> List<R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5194,7 +5195,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
-         public <R> List<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+         public <R> List<R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5241,7 +5242,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
-         public <R> List<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+         public <R> List<R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5292,7 +5293,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
-         public <R> List<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+         public <R> List<R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5347,7 +5348,7 @@ public final class API {
           * @param <R> type of the resulting {@code List} elements
           * @return an {@code List} of mapped results
           */
-         public <R> List<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+         public <R> List<R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5383,7 +5384,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           */
-         public <R> Either<L, R> yield(Function<? super T1, ? extends R> f) {
+         public <R> Either<L, R> yield(@NonNull Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return ts1.map(f);
          }
@@ -5422,7 +5423,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           */
-         public <R> Either<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+         public <R> Either<L, R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5458,7 +5459,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           */
-         public <R> Either<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+         public <R> Either<L, R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5498,7 +5499,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           */
-         public <R> Either<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+         public <R> Either<L, R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5542,7 +5543,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           */
-         public <R> Either<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+         public <R> Either<L, R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5590,7 +5591,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           */
-         public <R> Either<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+         public <R> Either<L, R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5642,7 +5643,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           */
-         public <R> Either<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+         public <R> Either<L, R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5698,7 +5699,7 @@ public final class API {
           * @param <R> type of the resulting {@code Either} elements
           * @return an {@code Either} of mapped results
           */
-         public <R> Either<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+         public <R> Either<L, R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5734,7 +5735,7 @@ public final class API {
           * @param <R> type of the resulting {@code Validation} elements
           * @return an {@code Validation} of mapped results
           */
-         public <R> Validation<L, R> yield(Function<? super T1, ? extends R> f) {
+         public <R> Validation<L, R> yield(@NonNull Function<? super T1, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return ts1.map(f);
          }
@@ -5773,7 +5774,7 @@ public final class API {
           * @param <R> type of the resulting {@code Validation} elements
           * @return an {@code Validation} of mapped results
           */
-         public <R> Validation<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+         public <R> Validation<L, R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5809,7 +5810,7 @@ public final class API {
           * @param <R> type of the resulting {@code Validation} elements
           * @return an {@code Validation} of mapped results
           */
-         public <R> Validation<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+         public <R> Validation<L, R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5849,7 +5850,7 @@ public final class API {
           * @param <R> type of the resulting {@code Validation} elements
           * @return an {@code Validation} of mapped results
           */
-         public <R> Validation<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+         public <R> Validation<L, R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5893,7 +5894,7 @@ public final class API {
           * @param <R> type of the resulting {@code Validation} elements
           * @return an {@code Validation} of mapped results
           */
-         public <R> Validation<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+         public <R> Validation<L, R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5941,7 +5942,7 @@ public final class API {
           * @param <R> type of the resulting {@code Validation} elements
           * @return an {@code Validation} of mapped results
           */
-         public <R> Validation<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+         public <R> Validation<L, R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -5993,7 +5994,7 @@ public final class API {
           * @param <R> type of the resulting {@code Validation} elements
           * @return an {@code Validation} of mapped results
           */
-         public <R> Validation<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+         public <R> Validation<L, R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -6049,7 +6050,7 @@ public final class API {
           * @param <R> type of the resulting {@code Validation} elements
           * @return an {@code Validation} of mapped results
           */
-         public <R> Validation<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+         public <R> Validation<L, R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
              Objects.requireNonNull(f, "f is null");
              return
                  ts1.flatMap(t1 ->
@@ -6082,7 +6083,7 @@ public final class API {
      * @return a new {@code ForLazy2Option} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2> ForLazy2Option<T1, T2> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2) {
+    public static <T1, T2> ForLazy2Option<T1, T2> For(@NonNull Option<T1> ts1, @NonNull Function1<? super T1, Option<T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Option<>(ts1, ts2);
@@ -6108,7 +6109,7 @@ public final class API {
      * @return a new {@code ForLazy3Option} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3> ForLazy3Option<T1, T2, T3> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3) {
+    public static <T1, T2, T3> ForLazy3Option<T1, T2, T3> For(@NonNull Option<T1> ts1, @NonNull Function1<? super T1, Option<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Option<T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6137,7 +6138,7 @@ public final class API {
      * @return a new {@code ForLazy4Option} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4> ForLazy4Option<T1, T2, T3, T4> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4) {
+    public static <T1, T2, T3, T4> ForLazy4Option<T1, T2, T3, T4> For(@NonNull Option<T1> ts1, @NonNull Function1<? super T1, Option<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Option<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6169,7 +6170,7 @@ public final class API {
      * @return a new {@code ForLazy5Option} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5> ForLazy5Option<T1, T2, T3, T4, T5> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5) {
+    public static <T1, T2, T3, T4, T5> ForLazy5Option<T1, T2, T3, T4, T5> For(@NonNull Option<T1> ts1, @NonNull Function1<? super T1, Option<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Option<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6204,7 +6205,7 @@ public final class API {
      * @return a new {@code ForLazy6Option} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6> ForLazy6Option<T1, T2, T3, T4, T5, T6> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6Option<T1, T2, T3, T4, T5, T6> For(@NonNull Option<T1> ts1, @NonNull Function1<? super T1, Option<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Option<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6242,7 +6243,7 @@ public final class API {
      * @return a new {@code ForLazy7Option} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Option<T1, T2, T3, T4, T5, T6, T7> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Option<T1, T2, T3, T4, T5, T6, T7> For(@NonNull Option<T1> ts1, @NonNull Function1<? super T1, Option<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Option<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6283,7 +6284,7 @@ public final class API {
      * @return a new {@code ForLazy8Option} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Option<T1, T2, T3, T4, T5, T6, T7, T8> For(Option<T1> ts1, Function1<? super T1, Option<T2>> ts2, Function2<? super T1, ? super T2, Option<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Option<T8>> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Option<T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Option<T1> ts1, @NonNull Function1<? super T1, Option<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Option<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Option<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Option<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Option<T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Option<T7>> ts7, @NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Option<T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6313,7 +6314,7 @@ public final class API {
      * @return a new {@code ForLazy2Future} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2> ForLazy2Future<T1, T2> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2) {
+    public static <T1, T2> ForLazy2Future<T1, T2> For(@NonNull Future<T1> ts1, @NonNull Function1<? super T1, Future<T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Future<>(ts1, ts2);
@@ -6339,7 +6340,7 @@ public final class API {
      * @return a new {@code ForLazy3Future} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3> ForLazy3Future<T1, T2, T3> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3) {
+    public static <T1, T2, T3> ForLazy3Future<T1, T2, T3> For(@NonNull Future<T1> ts1, @NonNull Function1<? super T1, Future<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Future<T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6368,7 +6369,7 @@ public final class API {
      * @return a new {@code ForLazy4Future} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4> ForLazy4Future<T1, T2, T3, T4> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4) {
+    public static <T1, T2, T3, T4> ForLazy4Future<T1, T2, T3, T4> For(@NonNull Future<T1> ts1, @NonNull Function1<? super T1, Future<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Future<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6400,7 +6401,7 @@ public final class API {
      * @return a new {@code ForLazy5Future} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5> ForLazy5Future<T1, T2, T3, T4, T5> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5) {
+    public static <T1, T2, T3, T4, T5> ForLazy5Future<T1, T2, T3, T4, T5> For(@NonNull Future<T1> ts1, @NonNull Function1<? super T1, Future<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Future<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6435,7 +6436,7 @@ public final class API {
      * @return a new {@code ForLazy6Future} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6> ForLazy6Future<T1, T2, T3, T4, T5, T6> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6Future<T1, T2, T3, T4, T5, T6> For(@NonNull Future<T1> ts1, @NonNull Function1<? super T1, Future<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Future<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6473,7 +6474,7 @@ public final class API {
      * @return a new {@code ForLazy7Future} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Future<T1, T2, T3, T4, T5, T6, T7> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Future<T1, T2, T3, T4, T5, T6, T7> For(@NonNull Future<T1> ts1, @NonNull Function1<? super T1, Future<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Future<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6514,7 +6515,7 @@ public final class API {
      * @return a new {@code ForLazy8Future} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Future<T1, T2, T3, T4, T5, T6, T7, T8> For(Future<T1> ts1, Function1<? super T1, Future<T2>> ts2, Function2<? super T1, ? super T2, Future<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Future<T8>> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Future<T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Future<T1> ts1, @NonNull Function1<? super T1, Future<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Future<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Future<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Future<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Future<T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Future<T7>> ts7, @NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Future<T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6544,7 +6545,7 @@ public final class API {
      * @return a new {@code ForLazy2Try} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2> ForLazy2Try<T1, T2> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2) {
+    public static <T1, T2> ForLazy2Try<T1, T2> For(@NonNull Try<T1> ts1, @NonNull Function1<? super T1, Try<T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Try<>(ts1, ts2);
@@ -6570,7 +6571,7 @@ public final class API {
      * @return a new {@code ForLazy3Try} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3> ForLazy3Try<T1, T2, T3> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3) {
+    public static <T1, T2, T3> ForLazy3Try<T1, T2, T3> For(@NonNull Try<T1> ts1, @NonNull Function1<? super T1, Try<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Try<T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6599,7 +6600,7 @@ public final class API {
      * @return a new {@code ForLazy4Try} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4> ForLazy4Try<T1, T2, T3, T4> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4) {
+    public static <T1, T2, T3, T4> ForLazy4Try<T1, T2, T3, T4> For(@NonNull Try<T1> ts1, @NonNull Function1<? super T1, Try<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Try<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6631,7 +6632,7 @@ public final class API {
      * @return a new {@code ForLazy5Try} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5> ForLazy5Try<T1, T2, T3, T4, T5> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5) {
+    public static <T1, T2, T3, T4, T5> ForLazy5Try<T1, T2, T3, T4, T5> For(@NonNull Try<T1> ts1, @NonNull Function1<? super T1, Try<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Try<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6666,7 +6667,7 @@ public final class API {
      * @return a new {@code ForLazy6Try} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6> ForLazy6Try<T1, T2, T3, T4, T5, T6> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6Try<T1, T2, T3, T4, T5, T6> For(@NonNull Try<T1> ts1, @NonNull Function1<? super T1, Try<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Try<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6704,7 +6705,7 @@ public final class API {
      * @return a new {@code ForLazy7Try} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Try<T1, T2, T3, T4, T5, T6, T7> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7Try<T1, T2, T3, T4, T5, T6, T7> For(@NonNull Try<T1> ts1, @NonNull Function1<? super T1, Try<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Try<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6745,7 +6746,7 @@ public final class API {
      * @return a new {@code ForLazy8Try} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Try<T1, T2, T3, T4, T5, T6, T7, T8> For(Try<T1> ts1, Function1<? super T1, Try<T2>> ts2, Function2<? super T1, ? super T2, Try<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Try<T8>> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Try<T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Try<T1> ts1, @NonNull Function1<? super T1, Try<T2>> ts2, @NonNull Function2<? super T1, ? super T2, Try<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Try<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Try<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Try<T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Try<T7>> ts7, @NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Try<T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6775,7 +6776,7 @@ public final class API {
      * @return a new {@code ForLazy2List} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2> ForLazy2List<T1, T2> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2) {
+    public static <T1, T2> ForLazy2List<T1, T2> For(@NonNull List<T1> ts1, @NonNull Function1<? super T1, List<T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2List<>(ts1, ts2);
@@ -6801,7 +6802,7 @@ public final class API {
      * @return a new {@code ForLazy3List} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3> ForLazy3List<T1, T2, T3> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3) {
+    public static <T1, T2, T3> ForLazy3List<T1, T2, T3> For(@NonNull List<T1> ts1, @NonNull Function1<? super T1, List<T2>> ts2, @NonNull Function2<? super T1, ? super T2, List<T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6830,7 +6831,7 @@ public final class API {
      * @return a new {@code ForLazy4List} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4> ForLazy4List<T1, T2, T3, T4> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4) {
+    public static <T1, T2, T3, T4> ForLazy4List<T1, T2, T3, T4> For(@NonNull List<T1> ts1, @NonNull Function1<? super T1, List<T2>> ts2, @NonNull Function2<? super T1, ? super T2, List<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6862,7 +6863,7 @@ public final class API {
      * @return a new {@code ForLazy5List} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5> ForLazy5List<T1, T2, T3, T4, T5> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5) {
+    public static <T1, T2, T3, T4, T5> ForLazy5List<T1, T2, T3, T4, T5> For(@NonNull List<T1> ts1, @NonNull Function1<? super T1, List<T2>> ts2, @NonNull Function2<? super T1, ? super T2, List<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6897,7 +6898,7 @@ public final class API {
      * @return a new {@code ForLazy6List} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6> ForLazy6List<T1, T2, T3, T4, T5, T6> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6) {
+    public static <T1, T2, T3, T4, T5, T6> ForLazy6List<T1, T2, T3, T4, T5, T6> For(@NonNull List<T1> ts1, @NonNull Function1<? super T1, List<T2>> ts2, @NonNull Function2<? super T1, ? super T2, List<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6935,7 +6936,7 @@ public final class API {
      * @return a new {@code ForLazy7List} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7List<T1, T2, T3, T4, T5, T6, T7> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7) {
+    public static <T1, T2, T3, T4, T5, T6, T7> ForLazy7List<T1, T2, T3, T4, T5, T6, T7> For(@NonNull List<T1> ts1, @NonNull Function1<? super T1, List<T2>> ts2, @NonNull Function2<? super T1, ? super T2, List<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -6976,7 +6977,7 @@ public final class API {
      * @return a new {@code ForLazy8List} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8List<T1, T2, T3, T4, T5, T6, T7, T8> For(List<T1> ts1, Function1<? super T1, List<T2>> ts2, Function2<? super T1, ? super T2, List<T3>> ts3, Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, List<T8>> ts8) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8List<T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull List<T1> ts1, @NonNull Function1<? super T1, List<T2>> ts2, @NonNull Function2<? super T1, ? super T2, List<T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, List<T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, List<T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, List<T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, List<T7>> ts7, @NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, List<T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7006,7 +7007,7 @@ public final class API {
      * @return a new {@code ForLazy2Either} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2> ForLazy2Either<L, T1, T2> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2) {
+    public static <L, T1, T2> ForLazy2Either<L, T1, T2> For(@NonNull Either<L, T1> ts1, @NonNull Function1<? super T1, Either<L, T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Either<>(ts1, ts2);
@@ -7032,7 +7033,7 @@ public final class API {
      * @return a new {@code ForLazy3Either} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3> ForLazy3Either<L, T1, T2, T3> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3) {
+    public static <L, T1, T2, T3> ForLazy3Either<L, T1, T2, T3> For(@NonNull Either<L, T1> ts1, @NonNull Function1<? super T1, Either<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Either<L, T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7061,7 +7062,7 @@ public final class API {
      * @return a new {@code ForLazy4Either} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4> ForLazy4Either<L, T1, T2, T3, T4> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4) {
+    public static <L, T1, T2, T3, T4> ForLazy4Either<L, T1, T2, T3, T4> For(@NonNull Either<L, T1> ts1, @NonNull Function1<? super T1, Either<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Either<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7093,7 +7094,7 @@ public final class API {
      * @return a new {@code ForLazy5Either} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5> ForLazy5Either<L, T1, T2, T3, T4, T5> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5) {
+    public static <L, T1, T2, T3, T4, T5> ForLazy5Either<L, T1, T2, T3, T4, T5> For(@NonNull Either<L, T1> ts1, @NonNull Function1<? super T1, Either<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Either<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7128,7 +7129,7 @@ public final class API {
      * @return a new {@code ForLazy6Either} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Either<L, T1, T2, T3, T4, T5, T6> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6) {
+    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Either<L, T1, T2, T3, T4, T5, T6> For(@NonNull Either<L, T1> ts1, @NonNull Function1<? super T1, Either<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Either<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7166,7 +7167,7 @@ public final class API {
      * @return a new {@code ForLazy7Either} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Either<L, T1, T2, T3, T4, T5, T6, T7> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Either<L, T1, T2, T3, T4, T5, T6, T7> For(@NonNull Either<L, T1> ts1, @NonNull Function1<? super T1, Either<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Either<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7207,7 +7208,7 @@ public final class API {
      * @return a new {@code ForLazy8Either} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Either<L, T1> ts1, Function1<? super T1, Either<L, T2>> ts2, Function2<? super T1, ? super T2, Either<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Either<L, T8>> ts8) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Either<L, T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Either<L, T1> ts1, @NonNull Function1<? super T1, Either<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Either<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Either<L, T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Either<L, T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Either<L, T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Either<L, T7>> ts7, @NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Either<L, T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7237,7 +7238,7 @@ public final class API {
      * @return a new {@code ForLazy2Validation} builder of arity 2
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2> ForLazy2Validation<L, T1, T2> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2) {
+    public static <L, T1, T2> ForLazy2Validation<L, T1, T2> For(@NonNull Validation<L, T1> ts1, @NonNull Function1<? super T1, Validation<L, T2>> ts2) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         return new ForLazy2Validation<>(ts1, ts2);
@@ -7263,7 +7264,7 @@ public final class API {
      * @return a new {@code ForLazy3Validation} builder of arity 3
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3> ForLazy3Validation<L, T1, T2, T3> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3) {
+    public static <L, T1, T2, T3> ForLazy3Validation<L, T1, T2, T3> For(@NonNull Validation<L, T1> ts1, @NonNull Function1<? super T1, Validation<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Validation<L, T3>> ts3) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7292,7 +7293,7 @@ public final class API {
      * @return a new {@code ForLazy4Validation} builder of arity 4
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4> ForLazy4Validation<L, T1, T2, T3, T4> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4) {
+    public static <L, T1, T2, T3, T4> ForLazy4Validation<L, T1, T2, T3, T4> For(@NonNull Validation<L, T1> ts1, @NonNull Function1<? super T1, Validation<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Validation<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7324,7 +7325,7 @@ public final class API {
      * @return a new {@code ForLazy5Validation} builder of arity 5
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5> ForLazy5Validation<L, T1, T2, T3, T4, T5> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5) {
+    public static <L, T1, T2, T3, T4, T5> ForLazy5Validation<L, T1, T2, T3, T4, T5> For(@NonNull Validation<L, T1> ts1, @NonNull Function1<? super T1, Validation<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Validation<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7359,7 +7360,7 @@ public final class API {
      * @return a new {@code ForLazy6Validation} builder of arity 6
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Validation<L, T1, T2, T3, T4, T5, T6> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6) {
+    public static <L, T1, T2, T3, T4, T5, T6> ForLazy6Validation<L, T1, T2, T3, T4, T5, T6> For(@NonNull Validation<L, T1> ts1, @NonNull Function1<? super T1, Validation<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Validation<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7397,7 +7398,7 @@ public final class API {
      * @return a new {@code ForLazy7Validation} builder of arity 7
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Validation<L, T1, T2, T3, T4, T5, T6, T7> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7> ForLazy7Validation<L, T1, T2, T3, T4, T5, T6, T7> For(@NonNull Validation<L, T1> ts1, @NonNull Function1<? super T1, Validation<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Validation<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7438,7 +7439,7 @@ public final class API {
      * @return a new {@code ForLazy8Validation} builder of arity 8
      * @throws NullPointerException if any argument is {@code null}
      */
-    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> For(Validation<L, T1> ts1, Function1<? super T1, Validation<L, T2>> ts2, Function2<? super T1, ? super T2, Validation<L, T3>> ts3, Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Validation<L, T8>> ts8) {
+    public static <L, T1, T2, T3, T4, T5, T6, T7, T8> ForLazy8Validation<L, T1, T2, T3, T4, T5, T6, T7, T8> For(@NonNull Validation<L, T1> ts1, @NonNull Function1<? super T1, Validation<L, T2>> ts2, @NonNull Function2<? super T1, ? super T2, Validation<L, T3>> ts3, @NonNull Function3<? super T1, ? super T2, ? super T3, Validation<L, T4>> ts4, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Validation<L, T5>> ts5, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, Validation<L, T6>> ts6, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, Validation<L, T7>> ts7, @NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, Validation<L, T8>> ts8) {
         Objects.requireNonNull(ts1, "ts1 is null");
         Objects.requireNonNull(ts2, "ts2 is null");
         Objects.requireNonNull(ts3, "ts3 is null");
@@ -7482,7 +7483,7 @@ public final class API {
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Option<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+        public <R> Option<R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
@@ -7525,7 +7526,7 @@ public final class API {
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Option<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        public <R> Option<R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -7573,7 +7574,7 @@ public final class API {
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Option<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+        public <R> Option<R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -7626,7 +7627,7 @@ public final class API {
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Option<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+        public <R> Option<R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -7684,7 +7685,7 @@ public final class API {
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Option<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        public <R> Option<R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -7747,7 +7748,7 @@ public final class API {
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Option<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        public <R> Option<R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -7815,7 +7816,7 @@ public final class API {
          * @return an {@code Option} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Option<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        public <R> Option<R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -7867,7 +7868,7 @@ public final class API {
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Future<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+        public <R> Future<R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
@@ -7910,7 +7911,7 @@ public final class API {
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Future<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        public <R> Future<R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -7958,7 +7959,7 @@ public final class API {
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Future<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+        public <R> Future<R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8011,7 +8012,7 @@ public final class API {
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Future<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+        public <R> Future<R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8069,7 +8070,7 @@ public final class API {
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Future<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        public <R> Future<R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8132,7 +8133,7 @@ public final class API {
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Future<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        public <R> Future<R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8200,7 +8201,7 @@ public final class API {
          * @return an {@code Future} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Future<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        public <R> Future<R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8252,7 +8253,7 @@ public final class API {
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Try<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+        public <R> Try<R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
@@ -8295,7 +8296,7 @@ public final class API {
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Try<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        public <R> Try<R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8343,7 +8344,7 @@ public final class API {
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Try<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+        public <R> Try<R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8396,7 +8397,7 @@ public final class API {
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Try<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+        public <R> Try<R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8454,7 +8455,7 @@ public final class API {
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Try<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        public <R> Try<R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8517,7 +8518,7 @@ public final class API {
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Try<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        public <R> Try<R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8585,7 +8586,7 @@ public final class API {
          * @return an {@code Try} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Try<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        public <R> Try<R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8637,7 +8638,7 @@ public final class API {
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> List<R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+        public <R> List<R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
@@ -8680,7 +8681,7 @@ public final class API {
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> List<R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        public <R> List<R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8728,7 +8729,7 @@ public final class API {
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> List<R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+        public <R> List<R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8781,7 +8782,7 @@ public final class API {
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> List<R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+        public <R> List<R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8839,7 +8840,7 @@ public final class API {
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> List<R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        public <R> List<R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8902,7 +8903,7 @@ public final class API {
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> List<R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        public <R> List<R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -8970,7 +8971,7 @@ public final class API {
          * @return an {@code List} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> List<R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        public <R> List<R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9022,7 +9023,7 @@ public final class API {
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Either<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+        public <R> Either<L, R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
@@ -9065,7 +9066,7 @@ public final class API {
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Either<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        public <R> Either<L, R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9113,7 +9114,7 @@ public final class API {
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Either<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+        public <R> Either<L, R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9166,7 +9167,7 @@ public final class API {
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Either<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+        public <R> Either<L, R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9224,7 +9225,7 @@ public final class API {
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Either<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        public <R> Either<L, R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9287,7 +9288,7 @@ public final class API {
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Either<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        public <R> Either<L, R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9355,7 +9356,7 @@ public final class API {
          * @return an {@code Either} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Either<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        public <R> Either<L, R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9407,7 +9408,7 @@ public final class API {
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Validation<L, R> yield(BiFunction<? super T1, ? super T2, ? extends R> f) {
+        public <R> Validation<L, R> yield(@NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).map(t2 -> f.apply(t1, t2));
@@ -9450,7 +9451,7 @@ public final class API {
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Validation<L, R> yield(Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+        public <R> Validation<L, R> yield(@NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9498,7 +9499,7 @@ public final class API {
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Validation<L, R> yield(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+        public <R> Validation<L, R> yield(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9551,7 +9552,7 @@ public final class API {
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Validation<L, R> yield(Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+        public <R> Validation<L, R> yield(@NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9609,7 +9610,7 @@ public final class API {
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Validation<L, R> yield(Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+        public <R> Validation<L, R> yield(@NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9672,7 +9673,7 @@ public final class API {
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Validation<L, R> yield(Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+        public <R> Validation<L, R> yield(@NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9740,7 +9741,7 @@ public final class API {
          * @return an {@code Validation} containing mapped results
          * @throws NullPointerException if {@code f} is {@code null}
          */
-        public <R> Validation<L, R> yield(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+        public <R> Validation<L, R> yield(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
             Objects.requireNonNull(f, "f is null");
             return ts1.flatMap(t1 -> {
               return ts2.apply(t1).flatMap(t2 -> {
@@ -9792,7 +9793,7 @@ public final class API {
      * @return new Case0
      */
     @GwtIncompatible
-    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Function<? super T, ? extends R> f) {
+    public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, @NonNull Function<? super T, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case0<>(pattern, f);
@@ -9808,7 +9809,7 @@ public final class API {
      * @return new Case0
      */
     @GwtIncompatible
-    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, Supplier<? extends R> supplier) {
+    public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
         return new Case0<>(pattern, ignored -> supplier.get());
@@ -9824,7 +9825,7 @@ public final class API {
      * @return new Case0
      */
     @GwtIncompatible
-    public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
+    public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case0<>(pattern, ignored -> retVal);
     }
@@ -9842,7 +9843,7 @@ public final class API {
      * @return new Case1
      */
     @GwtIncompatible
-    public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Function<? super T1, ? extends R> f) {
+    public static <T, T1, R> Case<T, R> Case(@NonNull Pattern1<T, T1> pattern, @NonNull Function<? super T1, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case1<>(pattern, f);
@@ -9859,7 +9860,7 @@ public final class API {
      * @return new Case1
      */
     @GwtIncompatible
-    public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, Supplier<? extends R> supplier) {
+    public static <T, T1, R> Case<T, R> Case(@NonNull Pattern1<T, T1> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
         return new Case1<>(pattern, _1 -> supplier.get());
@@ -9876,7 +9877,7 @@ public final class API {
      * @return new Case1
      */
     @GwtIncompatible
-    public static <T, T1, R> Case<T, R> Case(Pattern1<T, T1> pattern, R retVal) {
+    public static <T, T1, R> Case<T, R> Case(@NonNull Pattern1<T, T1> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case1<>(pattern, _1 -> retVal);
     }
@@ -9895,7 +9896,7 @@ public final class API {
      * @return new Case2
      */
     @GwtIncompatible
-    public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, BiFunction<? super T1, ? super T2, ? extends R> f) {
+    public static <T, T1, T2, R> Case<T, R> Case(@NonNull Pattern2<T, T1, T2> pattern, @NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case2<>(pattern, f);
@@ -9913,7 +9914,7 @@ public final class API {
      * @return new Case2
      */
     @GwtIncompatible
-    public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, Supplier<? extends R> supplier) {
+    public static <T, T1, T2, R> Case<T, R> Case(@NonNull Pattern2<T, T1, T2> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
         return new Case2<>(pattern, (_1, _2) -> supplier.get());
@@ -9931,7 +9932,7 @@ public final class API {
      * @return new Case2
      */
     @GwtIncompatible
-    public static <T, T1, T2, R> Case<T, R> Case(Pattern2<T, T1, T2> pattern, R retVal) {
+    public static <T, T1, T2, R> Case<T, R> Case(@NonNull Pattern2<T, T1, T2> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case2<>(pattern, (_1, _2) -> retVal);
     }
@@ -9951,7 +9952,7 @@ public final class API {
      * @return new Case3
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
+    public static <T, T1, T2, T3, R> Case<T, R> Case(@NonNull Pattern3<T, T1, T2, T3> pattern, @NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case3<>(pattern, f);
@@ -9970,7 +9971,7 @@ public final class API {
      * @return new Case3
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, Supplier<? extends R> supplier) {
+    public static <T, T1, T2, T3, R> Case<T, R> Case(@NonNull Pattern3<T, T1, T2, T3> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
         return new Case3<>(pattern, (_1, _2, _3) -> supplier.get());
@@ -9989,7 +9990,7 @@ public final class API {
      * @return new Case3
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, R> Case<T, R> Case(Pattern3<T, T1, T2, T3> pattern, R retVal) {
+    public static <T, T1, T2, T3, R> Case<T, R> Case(@NonNull Pattern3<T, T1, T2, T3> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case3<>(pattern, (_1, _2, _3) -> retVal);
     }
@@ -10010,7 +10011,7 @@ public final class API {
      * @return new Case4
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
+    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(@NonNull Pattern4<T, T1, T2, T3, T4> pattern, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case4<>(pattern, f);
@@ -10030,7 +10031,7 @@ public final class API {
      * @return new Case4
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, Supplier<? extends R> supplier) {
+    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(@NonNull Pattern4<T, T1, T2, T3, T4> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
         return new Case4<>(pattern, (_1, _2, _3, _4) -> supplier.get());
@@ -10050,7 +10051,7 @@ public final class API {
      * @return new Case4
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(Pattern4<T, T1, T2, T3, T4> pattern, R retVal) {
+    public static <T, T1, T2, T3, T4, R> Case<T, R> Case(@NonNull Pattern4<T, T1, T2, T3, T4> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case4<>(pattern, (_1, _2, _3, _4) -> retVal);
     }
@@ -10072,7 +10073,7 @@ public final class API {
      * @return new Case5
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
+    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(@NonNull Pattern5<T, T1, T2, T3, T4, T5> pattern, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case5<>(pattern, f);
@@ -10093,7 +10094,7 @@ public final class API {
      * @return new Case5
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, Supplier<? extends R> supplier) {
+    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(@NonNull Pattern5<T, T1, T2, T3, T4, T5> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
         return new Case5<>(pattern, (_1, _2, _3, _4, _5) -> supplier.get());
@@ -10114,7 +10115,7 @@ public final class API {
      * @return new Case5
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(Pattern5<T, T1, T2, T3, T4, T5> pattern, R retVal) {
+    public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(@NonNull Pattern5<T, T1, T2, T3, T4, T5> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case5<>(pattern, (_1, _2, _3, _4, _5) -> retVal);
     }
@@ -10137,7 +10138,7 @@ public final class API {
      * @return new Case6
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
+    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(@NonNull Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case6<>(pattern, f);
@@ -10159,7 +10160,7 @@ public final class API {
      * @return new Case6
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, Supplier<? extends R> supplier) {
+    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(@NonNull Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
         return new Case6<>(pattern, (_1, _2, _3, _4, _5, _6) -> supplier.get());
@@ -10181,7 +10182,7 @@ public final class API {
      * @return new Case6
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, R retVal) {
+    public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(@NonNull Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case6<>(pattern, (_1, _2, _3, _4, _5, _6) -> retVal);
     }
@@ -10205,7 +10206,7 @@ public final class API {
      * @return new Case7
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
+    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(@NonNull Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, @NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case7<>(pattern, f);
@@ -10228,7 +10229,7 @@ public final class API {
      * @return new Case7
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, Supplier<? extends R> supplier) {
+    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(@NonNull Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
         return new Case7<>(pattern, (_1, _2, _3, _4, _5, _6, _7) -> supplier.get());
@@ -10251,7 +10252,7 @@ public final class API {
      * @return new Case7
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, R retVal) {
+    public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(@NonNull Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case7<>(pattern, (_1, _2, _3, _4, _5, _6, _7) -> retVal);
     }
@@ -10276,7 +10277,7 @@ public final class API {
      * @return new Case8
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(@NonNull Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, @NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
         return new Case8<>(pattern, f);
@@ -10300,7 +10301,7 @@ public final class API {
      * @return new Case8
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, Supplier<? extends R> supplier) {
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(@NonNull Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
         return new Case8<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8) -> supplier.get());
@@ -10324,7 +10325,7 @@ public final class API {
      * @return new Case8
      */
     @GwtIncompatible
-    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, R retVal) {
+    public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(@NonNull Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case8<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8) -> retVal);
     }
@@ -10432,7 +10433,7 @@ public final class API {
      * @return a new {@code Pattern0} instance
      */
     @GwtIncompatible
-    public static <T> Pattern0<T> $(Predicate<? super T> predicate) {
+    public static <T> Pattern0<T> $(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new Pattern0<T>() {
 
@@ -10478,7 +10479,7 @@ public final class API {
          */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
-        public final <R> R of(Case<? extends T, ? extends R>... cases) {
+        public final <R> R of(@NonNull Case<? extends T, ? extends R> @NonNull ... cases) {
             Objects.requireNonNull(cases, "cases is null");
             for (Case<? extends T, ? extends R> _case : cases) {
                 final Case<T, R> __case = (Case<T, R>) _case;
@@ -10499,7 +10500,7 @@ public final class API {
         */
         @SuppressWarnings({ "unchecked", "varargs" })
         @SafeVarargs
-        public final <R> Option<R> option(Case<? extends T, ? extends R>... cases) {
+        public final <R> Option<R> option(@NonNull Case<? extends T, ? extends R> @NonNull ... cases) {
             Objects.requireNonNull(cases, "cases is null");
             for (Case<? extends T, ? extends R> _case : cases) {
                 final Case<T, R> __case = (Case<T, R>) _case;
@@ -10911,7 +10912,7 @@ public final class API {
              * @param <T>  Class type matched by this pattern
              * @return new Pattern0
              */
-            public static <T> Pattern0<T> of(Class<? super T> type) {
+            public static <T> Pattern0<T> of(@NonNull Class<? super T> type) {
                 return new Pattern0<T>() {
 
                     /**
@@ -10967,7 +10968,7 @@ public final class API {
              * @param <U1>    Member type 1 of the Tuple the composite part of this pattern decomposes to
              * @return new Pattern1
              */
-            public static <T, T1 extends U1, U1> Pattern1<T, T1> of(Class<? super T> type, Pattern<T1, ?> p1, Function<T, Tuple1<U1>> unapply) {
+            public static <T, T1 extends U1, U1> Pattern1<T, T1> of(@NonNull Class<? super T> type, @NonNull Pattern<T1, ?> p1, @NonNull Function<T, Tuple1<U1>> unapply) {
                 return new Pattern1<T, T1>() {
 
                     /**
@@ -11035,7 +11036,7 @@ public final class API {
              * @param <U2>    Member type 2 of the Tuple the composite part of this pattern decomposes to
              * @return new Pattern2
              */
-            public static <T, T1 extends U1, U1, T2 extends U2, U2> Pattern2<T, T1, T2> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Function<T, Tuple2<U1, U2>> unapply) {
+            public static <T, T1 extends U1, U1, T2 extends U2, U2> Pattern2<T, T1, T2> of(@NonNull Class<? super T> type, @NonNull Pattern<T1, ?> p1, @NonNull Pattern<T2, ?> p2, @NonNull Function<T, Tuple2<U1, U2>> unapply) {
                 return new Pattern2<T, T1, T2>() {
 
                     /**
@@ -11108,7 +11109,7 @@ public final class API {
              * @param <U3>    Member type 3 of the Tuple the composite part of this pattern decomposes to
              * @return new Pattern3
              */
-            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3> Pattern3<T, T1, T2, T3> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Function<T, Tuple3<U1, U2, U3>> unapply) {
+            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3> Pattern3<T, T1, T2, T3> of(@NonNull Class<? super T> type, @NonNull Pattern<T1, ?> p1, @NonNull Pattern<T2, ?> p2, @NonNull Pattern<T3, ?> p3, @NonNull Function<T, Tuple3<U1, U2, U3>> unapply) {
                 return new Pattern3<T, T1, T2, T3>() {
 
                     /**
@@ -11186,7 +11187,7 @@ public final class API {
              * @param <U4>    Member type 4 of the Tuple the composite part of this pattern decomposes to
              * @return new Pattern4
              */
-            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4> Pattern4<T, T1, T2, T3, T4> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Function<T, Tuple4<U1, U2, U3, U4>> unapply) {
+            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4> Pattern4<T, T1, T2, T3, T4> of(@NonNull Class<? super T> type, @NonNull Pattern<T1, ?> p1, @NonNull Pattern<T2, ?> p2, @NonNull Pattern<T3, ?> p3, @NonNull Pattern<T4, ?> p4, @NonNull Function<T, Tuple4<U1, U2, U3, U4>> unapply) {
                 return new Pattern4<T, T1, T2, T3, T4>() {
 
                     /**
@@ -11269,7 +11270,7 @@ public final class API {
              * @param <U5>    Member type 5 of the Tuple the composite part of this pattern decomposes to
              * @return new Pattern5
              */
-            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5> Pattern5<T, T1, T2, T3, T4, T5> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Function<T, Tuple5<U1, U2, U3, U4, U5>> unapply) {
+            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5> Pattern5<T, T1, T2, T3, T4, T5> of(@NonNull Class<? super T> type, @NonNull Pattern<T1, ?> p1, @NonNull Pattern<T2, ?> p2, @NonNull Pattern<T3, ?> p3, @NonNull Pattern<T4, ?> p4, @NonNull Pattern<T5, ?> p5, @NonNull Function<T, Tuple5<U1, U2, U3, U4, U5>> unapply) {
                 return new Pattern5<T, T1, T2, T3, T4, T5>() {
 
                     /**
@@ -11357,7 +11358,7 @@ public final class API {
              * @param <U6>    Member type 6 of the Tuple the composite part of this pattern decomposes to
              * @return new Pattern6
              */
-            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6> Pattern6<T, T1, T2, T3, T4, T5, T6> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Function<T, Tuple6<U1, U2, U3, U4, U5, U6>> unapply) {
+            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6> Pattern6<T, T1, T2, T3, T4, T5, T6> of(@NonNull Class<? super T> type, @NonNull Pattern<T1, ?> p1, @NonNull Pattern<T2, ?> p2, @NonNull Pattern<T3, ?> p3, @NonNull Pattern<T4, ?> p4, @NonNull Pattern<T5, ?> p5, @NonNull Pattern<T6, ?> p6, @NonNull Function<T, Tuple6<U1, U2, U3, U4, U5, U6>> unapply) {
                 return new Pattern6<T, T1, T2, T3, T4, T5, T6>() {
 
                     /**
@@ -11450,7 +11451,7 @@ public final class API {
              * @param <U7>    Member type 7 of the Tuple the composite part of this pattern decomposes to
              * @return new Pattern7
              */
-            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7> Pattern7<T, T1, T2, T3, T4, T5, T6, T7> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Function<T, Tuple7<U1, U2, U3, U4, U5, U6, U7>> unapply) {
+            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7> Pattern7<T, T1, T2, T3, T4, T5, T6, T7> of(@NonNull Class<? super T> type, @NonNull Pattern<T1, ?> p1, @NonNull Pattern<T2, ?> p2, @NonNull Pattern<T3, ?> p3, @NonNull Pattern<T4, ?> p4, @NonNull Pattern<T5, ?> p5, @NonNull Pattern<T6, ?> p6, @NonNull Pattern<T7, ?> p7, @NonNull Function<T, Tuple7<U1, U2, U3, U4, U5, U6, U7>> unapply) {
                 return new Pattern7<T, T1, T2, T3, T4, T5, T6, T7>() {
 
                     /**
@@ -11548,7 +11549,7 @@ public final class API {
              * @param <U8>    Member type 8 of the Tuple the composite part of this pattern decomposes to
              * @return new Pattern8
              */
-            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7, T8 extends U8, U8> Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> of(Class<? super T> type, Pattern<T1, ?> p1, Pattern<T2, ?> p2, Pattern<T3, ?> p3, Pattern<T4, ?> p4, Pattern<T5, ?> p5, Pattern<T6, ?> p6, Pattern<T7, ?> p7, Pattern<T8, ?> p8, Function<T, Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>> unapply) {
+            public static <T, T1 extends U1, U1, T2 extends U2, U2, T3 extends U3, U3, T4 extends U4, U4, T5 extends U5, U5, T6 extends U6, U6, T7 extends U7, U7, T8 extends U8, U8> Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> of(@NonNull Class<? super T> type, @NonNull Pattern<T1, ?> p1, @NonNull Pattern<T2, ?> p2, @NonNull Pattern<T3, ?> p3, @NonNull Pattern<T4, ?> p4, @NonNull Pattern<T5, ?> p5, @NonNull Pattern<T6, ?> p6, @NonNull Pattern<T7, ?> p7, @NonNull Pattern<T8, ?> p8, @NonNull Function<T, Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>> unapply) {
                 return new Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8>() {
 
                     /**
