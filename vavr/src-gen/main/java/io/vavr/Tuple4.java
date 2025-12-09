@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A tuple of 4 elements which can be seen as cartesian product of 4 components.
@@ -235,7 +236,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @return A new Tuple of same arity.
      * @throws NullPointerException if {@code mapper} is null
      */
-    public <U1, U2, U3, U4> Tuple4<U1, U2, U3, U4> map(Function4<? super T1, ? super T2, ? super T3, ? super T4, Tuple4<U1, U2, U3, U4>> mapper) {
+    public <U1, U2, U3, U4> Tuple4<U1, U2, U3, U4> map(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Tuple4<U1, U2, U3, U4>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return mapper.apply(_1, _2, _3, _4);
     }
@@ -322,7 +323,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U apply(Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends U> f) {
+    public <U> U apply(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1, _2, _3, _4);
     }
@@ -351,7 +352,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T5> Tuple5<T1, T2, T3, T4, T5> concat(Tuple1<T5> tuple) {
+    public <T5> Tuple5<T1, T2, T3, T4, T5> concat(@NonNull Tuple1<T5> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, _2, _3, _4, tuple._1);
     }
@@ -365,7 +366,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> concat(Tuple2<T5, T6> tuple) {
+    public <T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> concat(@NonNull Tuple2<T5, T6> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, _2, _3, _4, tuple._1, tuple._2);
     }
@@ -380,7 +381,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(Tuple3<T5, T6, T7> tuple) {
+    public <T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(@NonNull Tuple3<T5, T6, T7> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, _2, _3, _4, tuple._1, tuple._2, tuple._3);
     }
@@ -396,7 +397,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @return a new Tuple with the tuple values appended
      * @throws NullPointerException if {@code tuple} is null
      */
-    public <T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(Tuple4<T5, T6, T7, T8> tuple) {
+    public <T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(@NonNull Tuple4<T5, T6, T7, T8> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
         return Tuple.of(_1, _2, _3, _4, tuple._1, tuple._2, tuple._3, tuple._4);
     }

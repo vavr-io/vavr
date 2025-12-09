@@ -59,6 +59,7 @@ def generateMainClasses(): Unit = {
 
     def genAPI(im: ImportManager, packageName: String, className: String): String = {
 
+      val NonNullType = im.getType("org.jspecify.annotations.NonNull")
       val OptionType = im.getType("io.vavr.control.Option")
       val IteratorType = im.getType("io.vavr.collection.Iterator")
       val EitherType = im.getType("io.vavr.control.Either")
@@ -759,7 +760,7 @@ def generateMainClasses(): Unit = {
                   s"$mtype<${parameterInset}T1> ts1"
                 else {
                   val inputTypes = (1 until j).gen(k => s"? super T$k")(", ")
-                  s"Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
+                  s"@NonNull Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
                 }
               }(", ")
 
@@ -873,9 +874,9 @@ def generateMainClasses(): Unit = {
                        */
                       public <R> $rtype<${parameterInset}R> yield(${
                 if (i == 2)
-                  s"BiFunction<? super T1, ? super T2, ? extends R>"
+                  s"@NonNull BiFunction<? super T1, ? super T2, ? extends R>"
                 else
-                  s"Function$i<${(1 to i).map(j => s"? super T$j").mkString(", ")}, ? extends R>"
+                  s"@NonNull Function$i<${(1 to i).map(j => s"? super T$j").mkString(", ")}, ? extends R>"
               } f) {
                           $Objects.requireNonNull(f, "f is null");
                           return $yieldBody;
@@ -921,7 +922,7 @@ def generateMainClasses(): Unit = {
             val isComplex = monadicTypesThatNeedParameter.contains(mtype)
             val parameterInset = (if (isComplex) {"L, "} else "")
             val generics = parameterInset + (1 to i).gen(j => s"T$j")(", ")
-            val params = (1 to i).gen(j => s"$mtype<${parameterInset}T$j> ts$j")(", ")
+            val params = (1 to i).gen(j => s"@NonNull $mtype<${parameterInset}T$j> ts$j")(", ")
             xs"""
               /$javadoc
                * Creates a {@code For}-comprehension of ${i.numerus(mtype)}.
@@ -975,7 +976,7 @@ def generateMainClasses(): Unit = {
                    * @param <R> type of the resulting {@code $rtype} elements
                    * @return an {@code $rtype} of mapped results
                    */
-                  public <R> $rtype<${parameterInset}R> yield($functionType<$args, ? extends R> f) {
+                  public <R> $rtype<${parameterInset}R> yield(@NonNull $functionType<$args, ? extends R> f) {
                       $Objects.requireNonNull(f, "f is null");
                       ${if (i == 1) xs"""
                         return ${cons("ts1")}.map(f);
@@ -1036,7 +1037,7 @@ def generateMainClasses(): Unit = {
            * @return new Case0
            */
           @GwtIncompatible
-          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $FunctionType<? super T, ? extends R> f) {
+          public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, @NonNull $FunctionType<? super T, ? extends R> f) {
               $Objects.requireNonNull(pattern, "pattern is null");
               $Objects.requireNonNull(f, "f is null");
               return new Case0<>(pattern, f);
@@ -1052,7 +1053,7 @@ def generateMainClasses(): Unit = {
            * @return new Case0
            */
           @GwtIncompatible
-          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, $SupplierType<? extends R> supplier) {
+          public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, @NonNull $SupplierType<? extends R> supplier) {
               $Objects.requireNonNull(pattern, "pattern is null");
               $Objects.requireNonNull(supplier, "supplier is null");
               return new Case0<>(pattern, ignored -> supplier.get());
@@ -1068,7 +1069,7 @@ def generateMainClasses(): Unit = {
            * @return new Case0
            */
           @GwtIncompatible
-          public static <T, R> Case<T, R> Case(Pattern0<T> pattern, R retVal) {
+          public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, R retVal) {
               $Objects.requireNonNull(pattern, "pattern is null");
               return new Case0<>(pattern, ignored -> retVal);
           }
@@ -1098,7 +1099,7 @@ def generateMainClasses(): Unit = {
                * @return new Case$i
                */
               @GwtIncompatible
-              public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, $functionType<$argTypes, ? extends R> f) {
+              public static <T, $generics, R> Case<T, R> Case(@NonNull Pattern$i<T, $generics> pattern, @NonNull $functionType<$argTypes, ? extends R> f) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   $Objects.requireNonNull(f, "f is null");
                   return new Case$i<>(pattern, f);
@@ -1115,7 +1116,7 @@ def generateMainClasses(): Unit = {
                * @return new Case$i
                */
               @GwtIncompatible
-              public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, $SupplierType<? extends R> supplier) {
+              public static <T, $generics, R> Case<T, R> Case(@NonNull Pattern$i<T, $generics> pattern, @NonNull $SupplierType<? extends R> supplier) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   $Objects.requireNonNull(supplier, "supplier is null");
                   return new Case$i<>(pattern, $params -> supplier.get());
@@ -1132,7 +1133,7 @@ def generateMainClasses(): Unit = {
                * @return new Case$i
                */
               @GwtIncompatible
-              public static <T, $generics, R> Case<T, R> Case(Pattern$i<T, $generics> pattern, R retVal) {
+              public static <T, $generics, R> Case<T, R> Case(@NonNull Pattern$i<T, $generics> pattern, R retVal) {
                   $Objects.requireNonNull(pattern, "pattern is null");
                   return new Case$i<>(pattern, $params -> retVal);
               }
@@ -1242,7 +1243,7 @@ def generateMainClasses(): Unit = {
            * @return a new {@code Pattern0} instance
            */
           @GwtIncompatible
-          public static <T> Pattern0<T> $$($PredicateType<? super T> predicate) {
+          public static <T> Pattern0<T> $$(@NonNull $PredicateType<? super T> predicate) {
               $Objects.requireNonNull(predicate, "predicate is null");
               return new Pattern0<T>() {
 
@@ -1288,7 +1289,7 @@ def generateMainClasses(): Unit = {
                */
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
-              public final <R> R of(Case<? extends T, ? extends R>... cases) {
+              public final <R> R of(@NonNull Case<? extends T, ? extends R>... cases) {
                   Objects.requireNonNull(cases, "cases is null");
                   for (Case<? extends T, ? extends R> _case : cases) {
                       final Case<T, R> __case = (Case<T, R>) _case;
@@ -1309,7 +1310,7 @@ def generateMainClasses(): Unit = {
               */
               @SuppressWarnings({ "unchecked", "varargs" })
               @SafeVarargs
-              public final <R> $OptionType<R> option(Case<? extends T, ? extends R>... cases) {
+              public final <R> $OptionType<R> option(@NonNull Case<? extends T, ? extends R>... cases) {
                   Objects.requireNonNull(cases, "cases is null");
                   for (Case<? extends T, ? extends R> _case : cases) {
                       final Case<T, R> __case = (Case<T, R>) _case;
@@ -1810,6 +1811,7 @@ def generateMainClasses(): Unit = {
 
         // imports
 
+        val NonNullType = im.getType("org.jspecify.annotations.NonNull")
         val Objects = im.getType("java.util.Objects")
         val Try = if (checked) im.getType("io.vavr.control.Try") else ""
         val Serializable = im.getType("java.io.Serializable")
@@ -1912,7 +1914,7 @@ def generateMainClasses(): Unit = {
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
                * @return a {@code $className}
                */
-              static $fullGenerics $className$fullGenerics of($className$fullGenerics methodReference) {
+              static $fullGenerics $className$fullGenerics of(@NonNull $className$fullGenerics methodReference) {
                   return methodReference;
               }
 
@@ -1924,7 +1926,7 @@ def generateMainClasses(): Unit = {
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
                *         if the function is defined for the given arguments, and {@code None} otherwise.
                */
-              static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsOptionReturnType lift($fullGenericsType partialFunction) {
+              static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsOptionReturnType lift(@NonNull $fullGenericsType partialFunction) {
                   ${
                     val func = "partialFunction"
                     val supplier = if (!checked && i == 0) s"$func::get" else if (checked && i == 0) s"$func::apply" else s"() -> $func.apply($params)"
@@ -1943,7 +1945,7 @@ def generateMainClasses(): Unit = {
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
                *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
                */
-              static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsTryReturnType liftTry($fullGenericsType partialFunction) {
+              static $fullGenerics ${im.getType(s"io.vavr.Function$i")}$genericsTryReturnType liftTry(@NonNull $fullGenericsType partialFunction) {
                   ${
                     val supplier = if (!checked && i == 0) "partialFunction::get" else if (checked && i == 0) "partialFunction::apply" else s"() -> partialFunction.apply($params)"
                     val lambdaArgs = if (i == 1) params else s"($params)"
@@ -2141,7 +2143,7 @@ def generateMainClasses(): Unit = {
                  * @return a new {@code PartialFunction} that has the same behavior like this function but is defined only for those elements that make it through the given {@code Predicate}
                  * @throws NullPointerException if {@code isDefinedAt} is null
                  */
-                default PartialFunction<T1, R> partial(${im.getType("java.util.function.Predicate")}<? super T1> isDefinedAt) {
+                default PartialFunction<T1, R> partial(@NonNull ${im.getType("java.util.function.Predicate")}<? super T1> isDefinedAt) {
                     Objects.requireNonNull(isDefinedAt, "isDefinedAt is null");
                     final Function1<T1, R> self = this;
                     return new PartialFunction<T1, R>() {
@@ -2170,7 +2172,7 @@ def generateMainClasses(): Unit = {
                  * @return a function composed of this and recover
                  * @throws NullPointerException if recover is null
                  */
-                default Function$i$fullGenerics recover(${im.getType("java.util.function.Function")}<? super Throwable, ? extends ${fullGenericsTypeF(checked = false, i)}> recover) {
+                default Function$i$fullGenerics recover(@NonNull ${im.getType("java.util.function.Function")}<? super Throwable, ? extends ${fullGenericsTypeF(checked = false, i)}> recover) {
                     Objects.requireNonNull(recover, "recover is null");
                     return ($params) -> {
                         try {
@@ -2208,7 +2210,7 @@ def generateMainClasses(): Unit = {
                * @return a function composed of this and after
                * @throws NullPointerException if after is null
                */
-              default <V> $className<${genericsFunction}V> andThen($compositionType<? super R, ? extends V> after) {
+              default <V> $className<${genericsFunction}V> andThen(@NonNull $compositionType<? super R, ? extends V> after) {
                   $Objects.requireNonNull(after, "after is null");
                   return ($params) -> after.apply(apply($params));
               }
@@ -2223,7 +2225,7 @@ def generateMainClasses(): Unit = {
                  * @return a function composed of before and this
                  * @throws NullPointerException if before is null
                  */
-                default <V> ${name}1<V, R> compose($compositionType<? super V, ? extends T1> before) {
+                default <V> ${name}1<V, R> compose(@NonNull $compositionType<? super V, ? extends T1> before) {
                     $Objects.requireNonNull(before, "before is null");
                     return v -> apply(before.apply(v));
                 }
@@ -2251,7 +2253,7 @@ def generateMainClasses(): Unit = {
                    * @return a function composed of $fName and this
                    * @throws NullPointerException if $fName is null
                    */
-                  default <S> $className<$generics, R> compose$j(Function1<? super $fGeneric, ? extends T$j> $fName) {
+                  default <S> $className<$generics, R> compose$j(@NonNull Function1<? super $fGeneric, ? extends T$j> $fName) {
                       Objects.requireNonNull($fName, "$fName is null");
                       return ($applicationArgs) -> apply($applyArgs);
                   }
@@ -2307,6 +2309,7 @@ def generateMainClasses(): Unit = {
         case 2 => im.getType("java.util.function.BiFunction")
         case _ => s"Function$i"
       }
+      val NonNullType = im.getType("org.jspecify.annotations.NonNull")
       val Comparator = im.getType("java.util.Comparator")
       val Objects = im.getType("java.util.Objects")
       val Seq = im.getType("io.vavr.collection.Seq")
@@ -2470,7 +2473,7 @@ def generateMainClasses(): Unit = {
                * @return A new Tuple of same arity.
                * @throws NullPointerException if {@code mapper} is null
                */
-              public $resultGenerics $className$resultGenerics map($functionType<$paramTypes, $mapResult> mapper) {
+              public $resultGenerics $className$resultGenerics map(@NonNull $functionType<$paramTypes, $mapResult> mapper) {
                   Objects.requireNonNull(mapper, "mapper is null");
                   ${if (i == 1)
                     "return Tuple.of(mapper.apply(_1));"
@@ -2518,12 +2521,12 @@ def generateMainClasses(): Unit = {
              * @throws NullPointerException if {@code f} is null
              */
             ${if (i == 0) xs"""
-              public <U> U apply($functionType<? extends U> f) {
+              public <U> U apply(@NonNull $functionType<? extends U> f) {
                   $Objects.requireNonNull(f, "f is null");
                   return f.get();
               }
             """ else xs"""
-              public <U> U apply($functionType<$paramTypes, ? extends U> f) {
+              public <U> U apply(@NonNull $functionType<$paramTypes, ? extends U> f) {
                   $Objects.requireNonNull(f, "f is null");
                   return f.apply($params);
               }
@@ -2560,7 +2563,7 @@ def generateMainClasses(): Unit = {
                * @return a new Tuple with the tuple values appended
                * @throws NullPointerException if {@code tuple} is null
                */
-              public <${(i+1 to i+j).gen(k => s"T$k")(", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(", ")}> concat(Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(", ")}> tuple) {
+              public <${(i+1 to i+j).gen(k => s"T$k")(", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(", ")}> concat(@NonNull Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(", ")}> tuple) {
                   Objects.requireNonNull(tuple, "tuple is null");
                   return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}${(1 to j).gen(k => s"tuple._$k")(", ")});
               }
@@ -2616,6 +2619,7 @@ def generateMainClasses(): Unit = {
      * Generates Tuple
      */
     def genBaseTuple(im: ImportManager, packageName: String, className: String): String = {
+      val NonNullType = im.getType("org.jspecify.annotations.NonNull")
 
       val Map = im.getType("java.util.Map")
       val Objects = im.getType("java.util.Objects")
@@ -2692,7 +2696,7 @@ def generateMainClasses(): Unit = {
              * @param tuples an {@code Iterable} of tuples
              * @return a tuple of ${i.numerus(s"{@link $Seq}")}.
              */
-            static <$generics> Tuple$i<$seqs> sequence$i(Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
+            static <$generics> Tuple$i<$seqs> sequence$i(@NonNull Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
                 $Objects.requireNonNull(tuples, "tuples is null");
                 final Stream<Tuple$i<$widenedGenerics>> s = $Stream.ofAll(tuples);
                 return new Tuple$i<>(${(1 to i).gen(j => s"s.map(Tuple$i::_$j)")(s", ")});
@@ -2751,7 +2755,7 @@ def generateMainClasses(): Unit = {
              * @param      entry A {@link java.util.Map.Entry}
              * @return a new {@code Tuple2} containing key and value of the given {@code entry}
              */
-            static <T1, T2> Tuple2<T1, T2> fromEntry($Map.Entry<? extends T1, ? extends T2> entry) {
+            static <T1, T2> Tuple2<T1, T2> fromEntry($Map.@NonNull Entry<? extends T1, ? extends T2> entry) {
                 $Objects.requireNonNull(entry, "entry is null");
                 return new Tuple2<>(entry.getKey(), entry.getValue());
             }

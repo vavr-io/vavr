@@ -31,6 +31,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Represents a function with no arguments.
@@ -92,7 +93,7 @@ public interface CheckedFunction0<R> extends Serializable {
      * @param <R> return type
      * @return a {@code CheckedFunction0}
      */
-    static <R> CheckedFunction0<R> of(CheckedFunction0<R> methodReference) {
+    static <R> CheckedFunction0<R> of(@NonNull CheckedFunction0<R> methodReference) {
         return methodReference;
     }
 
@@ -104,7 +105,7 @@ public interface CheckedFunction0<R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <R> Function0<Option<R>> lift(CheckedFunction0<? extends R> partialFunction) {
+    static <R> Function0<Option<R>> lift(@NonNull CheckedFunction0<? extends R> partialFunction) {
         return () -> Try.<R>of(partialFunction::apply).toOption();
     }
 
@@ -116,7 +117,7 @@ public interface CheckedFunction0<R> extends Serializable {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <R> Function0<Try<R>> liftTry(CheckedFunction0<? extends R> partialFunction) {
+    static <R> Function0<Try<R>> liftTry(@NonNull CheckedFunction0<? extends R> partialFunction) {
         return () -> Try.of(partialFunction::apply);
     }
 
@@ -222,7 +223,7 @@ public interface CheckedFunction0<R> extends Serializable {
      * @return a function composed of this and recover
      * @throws NullPointerException if recover is null
      */
-    default Function0<R> recover(Function<? super Throwable, ? extends Supplier<? extends R>> recover) {
+    default Function0<R> recover(@NonNull Function<? super Throwable, ? extends Supplier<? extends R>> recover) {
         Objects.requireNonNull(recover, "recover is null");
         return () -> {
             try {
@@ -259,7 +260,7 @@ public interface CheckedFunction0<R> extends Serializable {
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> CheckedFunction0<V> andThen(CheckedFunction1<? super R, ? extends V> after) {
+    default <V> CheckedFunction0<V> andThen(@NonNull CheckedFunction1<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return () -> after.apply(apply());
     }

@@ -33,6 +33,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Consumer;
+import org.jspecify.annotations.NonNull;
 
 /**
  * <strong>INTERNAL API - This class is subject to change.</strong>
@@ -184,7 +185,7 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
-    public Future<T> await(long timeout, TimeUnit unit) {
+    public Future<T> await(long timeout, @NonNull TimeUnit unit) {
         final long now = System.nanoTime();
         Objects.requireNonNull(unit, "unit is null");
         if (timeout < 0) {
@@ -339,7 +340,7 @@ final class FutureImpl<T> implements Future<T> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public Future<T> onComplete(Consumer<? super Try<T>> action) {
+    public Future<T> onComplete(@NonNull Consumer<? super Try<T>> action) {
         Objects.requireNonNull(action, "action is null");
         if (isCompleted()) {
             perform(action);

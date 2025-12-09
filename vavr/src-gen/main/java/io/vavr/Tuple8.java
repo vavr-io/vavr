@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
 import java.util.function.Function;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A tuple of 8 elements which can be seen as cartesian product of 8 components.
@@ -391,7 +392,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @return A new Tuple of same arity.
      * @throws NullPointerException if {@code mapper} is null
      */
-    public <U1, U2, U3, U4, U5, U6, U7, U8> Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> map(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>> mapper) {
+    public <U1, U2, U3, U4, U5, U6, U7, U8> Tuple8<U1, U2, U3, U4, U5, U6, U7, U8> map(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, Tuple8<U1, U2, U3, U4, U5, U6, U7, U8>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return mapper.apply(_1, _2, _3, _4, _5, _6, _7, _8);
     }
@@ -542,7 +543,7 @@ public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comp
      * @return An object of type U
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U apply(Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends U> f) {
+    public <U> U apply(@NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(_1, _2, _3, _4, _5, _6, _7, _8);
     }
