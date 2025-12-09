@@ -1326,17 +1326,18 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     static <T, U> Iterator<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         Objects.requireNonNull(f, "the unfold iterating function is null");
         return new AbstractIterator<U>() {
-            private Option<Tuple2<? extends U, ? extends T>> nextVal = f.apply(seed);
+            private Lazy<Option<Tuple2<? extends U, ? extends T>>> nextVal = Lazy.of(() -> f.apply(seed));
 
             @Override
             public boolean hasNext() {
-                return nextVal.isDefined();
+                return nextVal.get().isDefined();
             }
 
             @Override
             public U getNext() {
-                final U result = nextVal.get()._1;
-                nextVal = f.apply(nextVal.get()._2);
+                Tuple2<? extends U, ? extends T> tuple = nextVal.get().get();
+                final U result = tuple._1;
+                nextVal = Lazy.of(() -> f.apply(tuple._2));
                 return result;
             }
         };
@@ -1865,11 +1866,10 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                 public U getNext() {
                     if (isFirst) {
                         isFirst = false;
-                        return acc;
                     } else {
                         acc = operation.apply(acc, that.next());
-                        return acc;
                     }
+                    return acc;
                 }
             };
         }
@@ -2014,7 +2014,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
                             queue = queue.dequeue()._2;
                         }
                     }
-                    return queue.length() > 0;
+                    return !queue.isEmpty();
                 }
 
                 @Override
