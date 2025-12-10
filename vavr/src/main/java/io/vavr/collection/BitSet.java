@@ -28,7 +28,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.function.*;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collector;
 
 /**
@@ -92,12 +97,16 @@ public interface BitSet<T> extends SortedSet<T> {
          */
         public BitSet<T> of(T t) {
             final int value = toInt.apply(t);
-            if (value < BitSetModule.BITS_PER_WORD) {
-                return new BitSetModule.BitSet1<>(fromInt, toInt, 1L << value);
-            } else if (value < 2 * BitSetModule.BITS_PER_WORD) {
-                return new BitSetModule.BitSet2<>(fromInt, toInt, 0L, 1L << value);
-            } else {
-                return empty().add(t);
+            final int index = value >> BitSetModule.ADDRESS_BITS_PER_WORD;
+            final int bit = value & (BitSetModule.BITS_PER_WORD - 1);
+
+            switch (index) {
+                case 0:
+                    return new BitSetModule.BitSet1<>(fromInt, toInt, 1L << bit);
+                case 1:
+                    return new BitSetModule.BitSet2<>(fromInt, toInt, 0L, 1L << bit);
+                default:
+                    return empty().add(t);
             }
         }
 
@@ -1056,7 +1065,8 @@ interface BitSetModule {
                 throw new IllegalArgumentException("bitset element must be >= 0");
             }
             final int index = element >> ADDRESS_BITS_PER_WORD;
-            return index < getWordsNum() && (getWord(index) & (1L << element)) != 0;
+            final int bit = element & (BitSetModule.BITS_PER_WORD - 1);
+            return index < getWordsNum() && (getWord(index) & (1L << bit)) != 0;
         }
 
         @Override
