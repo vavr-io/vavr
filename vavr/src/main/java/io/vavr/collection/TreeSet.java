@@ -83,7 +83,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return empty(Comparators.naturalComparator());
     }
 
-    public static <T> TreeSet<T> empty(Comparator<? super T> comparator) {
+    public static <T> TreeSet<T> empty(@NonNull Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         return new TreeSet<>(RedBlackTree.empty(comparator));
     }

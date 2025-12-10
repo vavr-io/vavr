@@ -22,6 +22,7 @@ import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.jspecify.annotations.NonNull;
 
 /**
  * THIS CLASS IS INTENDED TO BE USED INTERNALLY ONLY!
@@ -125,14 +126,14 @@ class JavaConverters {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean addAll(Collection<? extends T> collection) {
+        public boolean addAll(@NonNull Collection<? extends T> collection) {
             Objects.requireNonNull(collection, "collection is null");
             return setDelegateAndCheckChanged(() -> (C) getDelegate().appendAll(collection));
         }
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean addAll(int index, Collection<? extends T> collection) {
+        public boolean addAll(int index, @NonNull Collection<? extends T> collection) {
             Objects.requireNonNull(collection, "collection is null");
             return setDelegateAndCheckChanged(() -> (C) getDelegate().insertAll(index, collection));
         }
@@ -154,7 +155,7 @@ class JavaConverters {
         }
 
         @Override
-        public boolean containsAll(Collection<?> collection) {
+        public boolean containsAll(@NonNull Collection<?> collection) {
             Objects.requireNonNull(collection, "collection is null");
             @SuppressWarnings("unchecked") final Collection<T> that = (Collection<T>) collection;
             return getDelegate().containsAll(that);
@@ -212,7 +213,7 @@ class JavaConverters {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean removeAll(Collection<?> collection) {
+        public boolean removeAll(@NonNull Collection<?> collection) {
             Objects.requireNonNull(collection, "collection is null");
             @SuppressWarnings("unchecked") final Collection<T> that = (Collection<T>) collection;
             return setDelegateAndCheckChanged(() -> (C) getDelegate().removeAll(that));
@@ -220,7 +221,7 @@ class JavaConverters {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean retainAll(Collection<?> collection) {
+        public boolean retainAll(@NonNull Collection<?> collection) {
             Objects.requireNonNull(collection, "collection is null");
             @SuppressWarnings("unchecked") final Collection<T> that = (Collection<T>) collection;
             return setDelegateAndCheckChanged(() -> (C) getDelegate().retainAll(that));

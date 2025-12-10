@@ -185,7 +185,7 @@ final class FutureImpl<T> implements Future<T> {
     }
 
     @Override
-    public Future<T> await(long timeout, TimeUnit unit) {
+    public Future<T> await(long timeout, @NonNull TimeUnit unit) {
         final long now = System.nanoTime();
         Objects.requireNonNull(unit, "unit is null");
         if (timeout < 0) {

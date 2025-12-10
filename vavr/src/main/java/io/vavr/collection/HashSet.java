@@ -106,7 +106,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SafeVarargs
-    public static <T> HashSet<T> of(T... elements) {
+    public static <T> HashSet<T> of(@NonNull T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         HashArrayMappedTrie<T, T> tree = HashArrayMappedTrie.empty();
         for (T element : elements) {
@@ -125,7 +125,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return An HashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> HashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    public static <T> HashSet<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f, HashSet.empty(), HashSet::of);
     }
@@ -139,7 +139,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return An HashSet of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <T> HashSet<T> fill(int n, Supplier<? extends T> s) {
+    public static <T> HashSet<T> fill(int n, @NonNull Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, HashSet.empty(), HashSet::of);
     }
@@ -152,7 +152,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet containing the given entries
      */
     @SuppressWarnings("unchecked")
-    public static <T> HashSet<T> ofAll(Iterable<? extends T> elements) {
+    public static <T> HashSet<T> ofAll(@NonNull Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof HashSet) {
             return (HashSet<T>) elements;
@@ -181,7 +181,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Boolean values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Boolean> ofAll(boolean... elements) {
+    public static HashSet<Boolean> ofAll(@NonNull boolean... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -193,7 +193,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Byte values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Byte> ofAll(byte... elements) {
+    public static HashSet<Byte> ofAll(@NonNull byte... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -205,7 +205,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Character values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Character> ofAll(char... elements) {
+    public static HashSet<Character> ofAll(@NonNull char... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -217,7 +217,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Double values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Double> ofAll(double... elements) {
+    public static HashSet<Double> ofAll(@NonNull double... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -229,7 +229,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Float values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Float> ofAll(float... elements) {
+    public static HashSet<Float> ofAll(@NonNull float... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -241,7 +241,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Integer values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Integer> ofAll(int... elements) {
+    public static HashSet<Integer> ofAll(@NonNull int... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -253,7 +253,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Long values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Long> ofAll(long... elements) {
+    public static HashSet<Long> ofAll(@NonNull long... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -265,7 +265,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @return A new HashSet of Short values
      * @throws NullPointerException if elements is null
      */
-    public static HashSet<Short> ofAll(short... elements) {
+    public static HashSet<Short> ofAll(@NonNull short... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return HashSet.ofAll(Iterator.ofAll(elements));
     }

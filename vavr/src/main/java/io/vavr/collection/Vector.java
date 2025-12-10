@@ -1246,7 +1246,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return An instance of type {@code U}
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(Function<? super Vector<T>, ? extends U> f) {
+    public <U> U transform(@NonNull Function<? super Vector<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }
