@@ -110,7 +110,7 @@ public interface BitSet<T> extends SortedSet<T> {
          */
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public final BitSet<T> of(T... values) {
+        public final BitSet<T> of(@NonNull T... values) {
             return empty().addAll(Array.wrap(values));
         }
 
@@ -120,7 +120,7 @@ public interface BitSet<T> extends SortedSet<T> {
          * @param values iterable to build the BitSet from
          * @return new BitSet
          */
-        public BitSet<T> ofAll(Iterable<? extends T> values) {
+        public BitSet<T> ofAll(@NonNull Iterable<? extends T> values) {
             Objects.requireNonNull(values, "values is null");
             return empty().addAll(values);
         }
@@ -143,7 +143,7 @@ public interface BitSet<T> extends SortedSet<T> {
          * @param f function to tabulate
          * @return new BitSet
          */
-        public BitSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+        public BitSet<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
             Objects.requireNonNull(f, "f is null");
             return empty().addAll(Collections.tabulate(n, f));
         }
@@ -155,7 +155,7 @@ public interface BitSet<T> extends SortedSet<T> {
          * @param s value supplier
          * @return new BitSet
          */
-        public BitSet<T> fill(int n, Supplier<? extends T> s) {
+        public BitSet<T> fill(int n, @NonNull Supplier<? extends T> s) {
             Objects.requireNonNull(s, "s is null");
             return empty().addAll(Collections.fill(n, s));
         }

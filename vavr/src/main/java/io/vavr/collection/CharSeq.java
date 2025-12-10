@@ -85,7 +85,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A new {@link io.vavr.collection.CharSeq}
      */
     // DEV-NOTE: Needs to be 'of' instead of 'ofAll' because 'ofAll(CharSeq)' is ambiguous.
-    public static CharSeq of(CharSequence sequence) {
+    public static CharSeq of(@NonNull CharSequence sequence) {
         Objects.requireNonNull(sequence, "sequence is null");
         if (sequence instanceof CharSeq) {
             return (CharSeq) sequence;
@@ -111,7 +111,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A string containing the given characters in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    public static CharSeq of(char... characters) {
+    public static CharSeq of(@NonNull char... characters) {
         Objects.requireNonNull(characters, "characters is null");
         if (characters.length == 0) {
             return empty();
@@ -133,7 +133,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @throws NullPointerException if {@code elements} is null or {@code elements} contains null
      */
     @SuppressWarnings("unchecked")
-    public static CharSeq ofAll(Iterable<? extends Character> elements) {
+    public static CharSeq ofAll(@NonNull Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (Collections.isEmpty(elements)){
             return EMPTY;
@@ -161,7 +161,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A CharSeq consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static CharSeq tabulate(int n, Function<? super Integer, ? extends Character> f) {
+    public static CharSeq tabulate(int n, @NonNull Function<? super Integer, ? extends Character> f) {
         Objects.requireNonNull(f, "f is null");
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
@@ -569,7 +569,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
     }
 
-    public CharSeq flatMapChars(CharFunction<? extends CharSequence> mapper) {
+    public CharSeq flatMapChars(@NonNull CharFunction<? extends CharSequence> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
             return this;

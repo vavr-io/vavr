@@ -72,7 +72,7 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
      * @throws NullPointerException if elements is null
      */
     @SuppressWarnings("unchecked")
-    public Q enqueue(T... elements) {
+    public Q enqueue(@NonNull T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return enqueueAll(List.of(elements));
     }

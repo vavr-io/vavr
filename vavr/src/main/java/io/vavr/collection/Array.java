@@ -113,7 +113,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Array<T> of(T... elements) {
+    public static <T> Array<T> of(@NonNull T... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return wrap(copyOf(elements, elements.length));
     }
@@ -130,7 +130,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @throws NullPointerException if {@code elements} is null
      */
     @SuppressWarnings("unchecked")
-    public static <T> Array<T> ofAll(Iterable<? extends T> elements) {
+    public static <T> Array<T> ofAll(@NonNull Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (elements instanceof Array) {
             return (Array<T>) elements;
@@ -161,7 +161,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A new Array of Boolean values
      * @throws NullPointerException if elements is null
      */
-    public static Array<Boolean> ofAll(boolean... elements) {
+    public static Array<Boolean> ofAll(@NonNull boolean... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -173,7 +173,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A new Array of Byte values
      * @throws NullPointerException if elements is null
      */
-    public static Array<Byte> ofAll(byte... elements) {
+    public static Array<Byte> ofAll(@NonNull byte... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -185,7 +185,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A new Array of Character values
      * @throws NullPointerException if elements is null
      */
-    public static Array<Character> ofAll(char... elements) {
+    public static Array<Character> ofAll(@NonNull char... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -197,7 +197,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A new Array of Double values
      * @throws NullPointerException if elements is null
      */
-    public static Array<Double> ofAll(double... elements) {
+    public static Array<Double> ofAll(@NonNull double... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -209,7 +209,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A new Array of Float values
      * @throws NullPointerException if elements is null
      */
-    public static Array<Float> ofAll(float... elements) {
+    public static Array<Float> ofAll(@NonNull float... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -221,7 +221,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A new Array of Integer values
      * @throws NullPointerException if elements is null
      */
-    public static Array<Integer> ofAll(int... elements) {
+    public static Array<Integer> ofAll(@NonNull int... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -233,7 +233,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A new Array of Long values
      * @throws NullPointerException if elements is null
      */
-    public static Array<Long> ofAll(long... elements) {
+    public static Array<Long> ofAll(@NonNull long... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -245,7 +245,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return A new Array of Short values
      * @throws NullPointerException if elements is null
      */
-    public static Array<Short> ofAll(short... elements) {
+    public static Array<Short> ofAll(@NonNull short... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return ofAll(Iterator.ofAll(elements));
     }
@@ -260,7 +260,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return An Array consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Array<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
+    public static <T> Array<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Array::of);
     }
@@ -274,7 +274,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return An Array of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <T> Array<T> fill(int n, Supplier<? extends T> s) {
+    public static <T> Array<T> fill(int n, @NonNull Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Array::of);
     }
