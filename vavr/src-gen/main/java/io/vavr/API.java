@@ -44,22 +44,22 @@ import java.util.function.Supplier;
 /**
  * The most basic Vavr functionality is accessed through this API class.
  *
- * <pre><code>
+ * <pre>{@code 
  * import static io.vavr.API.*;
- * </code></pre>
+ * }</pre>
  *
  * <h2>For-comprehension</h2>
  * <p>
  * The {@code For}-comprehension is syntactic sugar for nested for-loops. We write
  *
- * <pre><code>
+ * <pre>{@code 
  * // lazily evaluated
  * Iterator&lt;R&gt; result = For(iterable1, iterable2, ..., iterableN).yield(f);
- * </code></pre>
+ * }</pre>
  *
  * or
  *
- * <pre><code>
+ * <pre>{@code 
  * Iterator&lt;R&gt; result =
  *     For(iterable1, v1 -&gt;
  *         For(iterable2, v2 -&gt;
@@ -67,11 +67,11 @@ import java.util.function.Supplier;
  *             For(iterableN).yield(vN -&gt; f.apply(v1, v2, ..., vN))
  *         )
  *     );
- * </code></pre>
+ * }</pre>
  *
  * instead of
  *
- * <pre><code>
+ * <pre>{@code 
  * for(T1 v1 : iterable1) {
  *     for (T2 v2 : iterable2) {
  *         ...
@@ -83,7 +83,7 @@ import java.util.function.Supplier;
  *         }
  *     }
  * }
- * </code></pre>
+ * }</pre>
  *
  * Please note that values like Option, Try, Future, etc. are also iterable.
  * <p>
@@ -91,9 +91,9 @@ import java.util.function.Supplier;
  * f: {@code (v1, v2, ..., vN) -> ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
  * mapped cross product elements.
  *
- * <pre><code>
+ * <pre>{@code 
  * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN }
- * </code></pre>
+ * }</pre>
  *
  * As with all Vavr Values, the result of a For-comprehension can be converted
  * to standard Java library and Vavr types.
@@ -113,13 +113,13 @@ public final class API {
      * <p>
      * Example:
      *
-     * <pre><code>
+     * <pre>{@code 
      * public HttpResponse getResponse(HttpRequest request) {
      *     return TODO();
      * }
      *
      * final HttpResponse response = getHttpResponse(TODO());
-     * </code></pre>
+     * }</pre>
      *
      * @param <T> The result type of the missing implementation.
      * @return Nothing - this methods always throws.
@@ -135,13 +135,13 @@ public final class API {
      * <p>
      * Example:
      *
-     * <pre><code>
+     * <pre>{@code 
      * public HttpResponse getResponse(HttpRequest request) {
      *     return TODO("fake response");
      * }
      *
      * final HttpResponse response = getHttpResponse(TODO("fake request"));
-     * </code></pre>
+     * }</pre>
      *
      * @param msg An error message
      * @param <T> The result type of the missing implementation.
@@ -2291,11 +2291,11 @@ public final class API {
      * Runs a {@code unit} of work and returns {@code Void}. This is helpful when a return value is expected,
      * e.g. by {@code Match}:
      *
-     * <pre><code>Match(i).of(
+     * <pre>{@code Match(i).of(
      *     Case($(is(0)), i -&gt; run(() -&gt; System.out.println("zero"))),
      *     Case($(is(1)), i -&gt; run(() -&gt; System.out.println("one"))),
      *     Case($(), o -&gt; run(() -&gt; System.out.println("many")))
-     * )</code></pre>
+     * )}</pre>
      *
      * @param unit A block of code to be run.
      * @return the single instance of {@code Void}, namely {@code null}
@@ -2314,12 +2314,12 @@ public final class API {
      * {@code For(...).yield(...)}.
      * <p>
      * Example:
-     * <pre><code>
+     * <pre>{@code 
      * For(getPersons(), person -&gt;
      *     For(person.getTweets(), tweet -&gt;
      *         For(tweet.getReplies())
      *             .yield(reply -&gt; person + ", " + tweet + ", " + reply)));
-     * </code></pre>
+     * }</pre>
      *
      * @param ts An iterable
      * @param f A function {@code T -> Iterable<U>}
@@ -10380,7 +10380,7 @@ public final class API {
      * <p>
      * This method is intended to be used with lambdas and method references, for example:
      *
-     * <pre><code>
+     * <pre>{@code 
      * String evenOrOdd(int num) {
      *     return Match(num).of(
      *             Case($(i -&gt; i % 2 == 0), "even"),
@@ -10391,18 +10391,18 @@ public final class API {
      * boolean isOdd(int i) {
      *     return i % 2 == 1;
      * }
-     * </code></pre>
+     * }</pre>
      *
      * It is also valid to pass {@code Predicate} instances:
      *
-     * <pre><code>
+     * <pre>{@code 
      * Predicate&lt;Integer&gt; isOdd = i -&gt; i % 2 == 1;
      *
      * Match(num).of(
      *         Case($(i -&gt; i % 2 == 0), "even"),
      *         Case($(isOdd), "odd")
      * );
-     * </code></pre>
+     * }</pre>
      *
      * <strong>Note:</strong> Please take care when matching {@code Predicate} instances. In general,
      * <a href="http://cstheory.stackexchange.com/a/14152" target="_blank">function equality</a>
@@ -10411,21 +10411,21 @@ public final class API {
      * <p>
      * However, this code will fail:
      *
-     * <pre><code>
+     * <pre>{@code 
      * Predicate&lt;Integer&gt; p = i -&gt; true;
      * Match(p).of(
      *     Case($(p), 1) // WRONG! It calls $(Predicate)
      * );
-     * </code></pre>
+     * }</pre>
      *
      * Instead we have to use {@link Predicates#is(Object)}:
      *
-     * <pre><code>
+     * <pre>{@code 
      * Predicate&lt;Integer&gt; p = i -&gt; true;
      * Match(p).of(
      *     Case($(is(p)), 1) // CORRECT! It calls $(T)
      * );
-     * </code></pre>
+     * }</pre>
      *
      * @param <T>       type of the prototype
      * @param predicate the predicate that tests a given value

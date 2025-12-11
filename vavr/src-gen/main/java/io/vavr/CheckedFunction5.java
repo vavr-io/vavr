@@ -78,7 +78,7 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Serializable {
      * </ul>
      *
      * Examples (w.l.o.g. referring to Function1):
-     * <pre><code>// using a lambda expression
+     * <pre>{@code // using a lambda expression
      * Function1&lt;Integer, Integer&gt; add1 = Function1.of(i -&gt; i + 1);
      *
      * // using a method reference (, e.g. Integer method(Integer i) { return i + 1; })
@@ -86,10 +86,10 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Serializable {
      *
      * // using a lambda reference
      * Function1&lt;Integer, Integer&gt; add3 = Function1.of(add1::apply);
-     * </code></pre>
+     * }</pre>
      * <p>
      * <strong>Caution:</strong> Reflection loses type information of lambda references.
-     * <pre><code>// type of a lambda expression
+     * <pre>{@code // type of a lambda expression
      * Type&lt;?, ?&gt; type1 = add1.getType(); // (Integer) -&gt; Integer
      *
      * // type of a method reference
@@ -97,7 +97,7 @@ public interface CheckedFunction5<T1, T2, T3, T4, T5, R> extends Serializable {
      *
      * // type of a lambda reference
      * Type&lt;?, ?&gt; type3 = add3.getType(); // (Object) -&gt; Object
-     * </code></pre>
+     * }</pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
      * @param <R> return type

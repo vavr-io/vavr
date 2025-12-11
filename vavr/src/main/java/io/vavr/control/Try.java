@@ -259,10 +259,10 @@ public interface Try<T> extends Value<T>, Serializable {
      * it is returned unchanged. If the consumer throws an exception, a {@link Failure} containing that exception is returned.
      * <p>
      * Example usage:
-     * <pre><code>
+     * <pre>{@code
      * Try.of(() -> 100)
      *    .andThenTry(i -> System.out.println(i));
-     * </code></pre>
+     * }</pre>
      *
      * @param consumer the checked consumer to execute on the value
      * @return this {@code Try} if it is a {@link Failure} or the consumer succeeds, otherwise a {@link Failure} of the consumer
@@ -307,14 +307,14 @@ public interface Try<T> extends Value<T>, Serializable {
      * a {@link Failure} containing that exception is returned.
      * <p>
      * Example usage with method references:
-     * <pre><code>
+     * <pre>{@code
      * Try.run(A::methodRef)
      *    .andThen(B::methodRef)
      *    .andThen(C::methodRef);
-     * </code></pre>
+     * }</pre>
      *
      * The following two forms are semantically equivalent:
-     * <pre><code>
+     * <pre>{@code
      * Try.run(this::doStuff)
      *    .andThen(this::doMoreStuff)
      *    .andThen(this::doEvenMoreStuff);
@@ -324,7 +324,7 @@ public interface Try<T> extends Value<T>, Serializable {
      *     doMoreStuff();
      *     doEvenMoreStuff();
      * });
-     * </code></pre>
+     * }</pre>
      *
      * @param runnable the checked runnable to execute
      * @return this {@code Try} if it is a {@link Failure} or the runnable succeeds, otherwise a {@link Failure} of the runnable
@@ -668,10 +668,10 @@ public interface Try<T> extends Value<T>, Serializable {
      * This allows chaining of computations that may throw checked exceptions.
      * <p>
      * Example:
-     * <pre><code>
+     * <pre>{@code
      * Try.of(() -> 0)
      *    .mapTry(x -> 1 / x); // division by zero will result in a Failure
-     * </code></pre>
+     * }</pre>
      *
      * @param <U>    the type of the result
      * @param mapper a checked function to apply to the value

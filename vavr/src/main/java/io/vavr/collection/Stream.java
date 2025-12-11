@@ -304,9 +304,9 @@ public interface Stream<T> extends LinearSeq<T> {
     /**
      * Creates a Stream of the given elements.
      *
-     * <pre><code>  Stream.of(1, 2, 3, 4)
+     * <pre>{@code  Stream.of(1, 2, 3, 4)
      * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code></pre>
+     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))}</pre>
      *
      * @param <T>      Component type of the Stream.
      * @param elements Zero or more elements.

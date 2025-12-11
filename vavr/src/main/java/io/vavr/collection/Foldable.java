@@ -31,11 +31,11 @@ import java.util.function.BiFunction;
  * <p>
  * <strong>Example:</strong>
  *
- * <pre><code>
+ * <pre>{@code
  * // Concatenates all elements into a single String: "123"
  * Stream.of("1", "2", "3")
  *       .fold("", (acc, element) -> acc + element);
- * </code></pre>
+ * }</pre>
  *
  * @param <T> the type of elements contained in this foldable structure
  * @author Daniel Dietrich
