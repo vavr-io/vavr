@@ -2755,15 +2755,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Byte value = charSeq.decodeByte();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Byte value = Byte.decode(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return a {@code Byte} object holding the byte value represented by this {@code CharSeq}
      * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable byte.
@@ -2777,15 +2777,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Integer value = charSeq.decodeInteger();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Integer value = Integer.decode(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return an {@code Integer} object holding the int value represented by this {@code CharSeq}
      * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable int.
@@ -2799,15 +2799,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Long value = charSeq.decodeLong();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Long value = Long.decode(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return a {@code Long} object holding the long value represented by this {@code CharSeq}
      * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable long.
@@ -2821,15 +2821,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Short value = charSeq.decodeShort();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Short value = Short.decode(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return a {@code Short} object holding the short value represented by this {@code CharSeq}
      * @throws NumberFormatException if this {@code CharSeq} does not contain a parsable short.
@@ -2843,15 +2843,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * boolean value = charSeq.parseBoolean();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * boolean value = Boolean.parseBoolean(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the boolean represented by this {@code CharSeq}
      */
@@ -2864,15 +2864,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * byte value = charSeq.parseByte();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * byte value = Byte.parseByte(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the byte value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
@@ -2887,15 +2887,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * byte value = charSeq.parseByte(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * byte value = Byte.parseByte(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the byte value represented by this {@code CharSeq} in the specified radix
@@ -2910,15 +2910,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * double value = charSeq.parseDouble();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * double value = Double.parseDouble(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the double value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable double.
@@ -2932,15 +2932,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * float value = charSeq.parseFloat();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * float value = Double.parseFloat(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the float value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable float.
@@ -2954,15 +2954,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * int value = charSeq.parseInt();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * int value = Integer.parseInt(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the int value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
@@ -2977,15 +2977,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * int value = charSeq.parseInt(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * int value = Integer.parseInt(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the int value represented by this {@code CharSeq} in the specified radix
@@ -3000,15 +3000,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * int value = charSeq.parseUnsignedInt();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * int value = Integer.parseUnsignedInt(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the unsigned int value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned int.
@@ -3024,15 +3024,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * int value = charSeq.parseUnsignedInt(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * int value = Integer.parseUnsignedInt(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the unsigned int value represented by this {@code CharSeq} in the specified radix
@@ -3048,15 +3048,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * long value = charSeq.parseLong();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * long value = Long.parseLong(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the long value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
@@ -3071,15 +3071,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * long value = charSeq.parseLong(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * long value = Long.parseLong(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the long value represented by this {@code CharSeq} in the specified radix
@@ -3094,15 +3094,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * long value = charSeq.parseUnsignedLong();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * long value = Long.parseUnsignedLong(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the unsigned long value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable unsigned long.
@@ -3118,15 +3118,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * long value = charSeq.parseUnsignedLong(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * long value = Long.parseUnsignedLong(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the unsigned long value represented by this {@code CharSeq} in the specified radix
@@ -3142,15 +3142,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * short value = charSeq.parseShort();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * short value = Short.parseShort(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the short value represented by this {@code CharSeq} in decimal
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
@@ -3165,15 +3165,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * short value = charSeq.parseShort(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * short value = Short.parseShort(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this {@code CharSeq}
      * @return the short value represented by this {@code CharSeq} in the specified radix
@@ -3188,15 +3188,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Boolean value = charSeq.toBoolean();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Boolean value = Boolean.valueOf(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return the {@code Boolean} value represented by this {@code CharSeq}
      */
@@ -3209,15 +3209,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Byte value = charSeq.toByte();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Byte value = Byte.valueOf(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return a {@code Byte} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable byte.
@@ -3232,15 +3232,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Byte value = charSeq.toByte(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Byte value = Byte.valueOf(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this char sequence
      * @return a {@code Byte} object holding the value represented by this {@code CharSeq}
@@ -3255,15 +3255,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Double value = charSeq.toDouble();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Double value = Double.valueOf(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return a {@code Double} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable double.
@@ -3277,15 +3277,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Float value = charSeq.toFloat();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Float value = Float.valueOf(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return a {@code Float} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable float.
@@ -3299,15 +3299,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Integer value = charSeq.toInteger();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Integer value = Integer.valueOf(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return an {@code Integer} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable int.
@@ -3322,15 +3322,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Integer value = charSeq.toInteger(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Integer value = Integer.valueOf(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this char sequence
      * @return an {@code Integer} object holding the value represented by this {@code CharSeq}
@@ -3345,15 +3345,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Long value = charSeq.toLong();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Long value = Long.valueOf(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return a {@code Long} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable long.
@@ -3368,15 +3368,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Long value = charSeq.toLong(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Long value = Long.valueOf(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this char sequence
      * @return a {@code Long} object holding the value represented by this {@code CharSeq}
@@ -3391,15 +3391,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Short value = charSeq.toShort();
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Short value = Short.valueOf(charSeq.mkString());
-     * </code></pre>
+     * }</pre>
      *
      * @return a {@code Short} object holding the value represented by this {@code CharSeq}
      * @throws NumberFormatException If this {@code CharSeq} does not contain a parsable short.
@@ -3414,15 +3414,15 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * We write
      *
-     * <pre><code>
+     * <pre>{@code
      * Short value = charSeq.toShort(radix);
-     * </code></pre>
+     * }</pre>
      *
      * instead of
      *
-     * <pre><code>
+     * <pre>{@code
      * Short value = Short.valueOf(charSeq.mkString(), radix);
-     * </code></pre>
+     * }</pre>
      *
      * @param radix the radix to be used in interpreting this char sequence
      * @return a {@code Short} object holding the value represented by this {@code CharSeq}

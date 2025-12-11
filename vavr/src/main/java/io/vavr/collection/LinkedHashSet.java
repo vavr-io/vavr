@@ -101,7 +101,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     /**
      * Creates a LinkedHashSet of the given elements.
      *
-     * <pre><code>LinkedHashSet.of(1, 2, 3, 4)</code></pre>
+     * <pre>{@codeLinkedHashSet.of(1, 2, 3, 4)}</pre>
      *
      * @param <T>      Component type of the LinkedHashSet.
      * @param elements Zero or more elements.

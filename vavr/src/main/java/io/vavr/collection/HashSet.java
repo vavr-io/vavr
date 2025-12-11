@@ -97,7 +97,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     /**
      * Creates a HashSet of the given elements.
      *
-     * <pre><code>HashSet.of(1, 2, 3, 4)</code></pre>
+     * <pre>{@codeHashSet.of(1, 2, 3, 4)}</pre>
      *
      * @param <T>      Component type of the HashSet.
      * @param elements Zero or more elements.

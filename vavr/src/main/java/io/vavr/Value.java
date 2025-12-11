@@ -256,21 +256,21 @@ public interface Value<T> extends Iterable<T> {
      * <p>
      * Example:
      *
-     * <pre><code>
+     * <pre>{@code
      * // ((1, 2), ((3))) =&gt; structure: (()(())) values: 1, 2, 3
      * final Value&lt;?&gt; i1 = List.of(List.of(1, 2), Arrays.asList(List.of(3)));
      * final Value&lt;?&gt; i2 = Queue.of(Stream.of(1, 2), List.of(Lazy.of(() -&gt; 3)));
      * assertThat(i1.eq(i2)).isTrue();
-     * </code></pre>
+     * }</pre>
      * <p>
      * Semantics:
      *
-     * <pre><code>
+     * <pre>{@code
      * o == this             : true
      * o instanceof Value    : iterable elements are eq, non-iterable elements equals, for all (o1, o2) in (this, o)
      * o instanceof Iterable : this eq Iterator.of((Iterable&lt;?&gt;) o);
      * otherwise             : false
-     * </code></pre>
+     * }</pre>
      *
      * @param o An object
      * @return true, if this equals o according to the rules defined above, otherwise false.

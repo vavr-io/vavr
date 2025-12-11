@@ -43,7 +43,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 public class TreeTest extends AbstractTraversableTest {
 
     /**
-     * <pre><code>
+     * <pre>{@code
      *         1
      *        / \
      *       /   \
@@ -53,7 +53,7 @@ public class TreeTest extends AbstractTraversableTest {
      *   4   5   6
      *  /       / \
      * 7       8   9
-     * </code></pre>
+     * }</pre>
      */
     private final Tree<Integer> tree = $(1, $(2, $(4, $(7)), $(5)), $(3, $(6, $(8), $(9))));
 
