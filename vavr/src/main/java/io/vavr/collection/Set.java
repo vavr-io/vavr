@@ -241,7 +241,6 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     }
 
     @Override
-    @NonNull
     Iterator<T> iterator();
 
     @Override
@@ -282,13 +281,13 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     Set<T> retainAll(@NonNull Iterable<? extends T> elements);
 
     @Override
-    Set<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    Set<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    <U> Set<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
+    <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
     @Override
-    <U> Set<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
+    <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
     Iterator<? extends Set<T>> slideBy(@NonNull Function<? super T, ?> classifier);

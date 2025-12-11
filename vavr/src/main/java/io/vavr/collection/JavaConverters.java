@@ -133,7 +133,7 @@ class JavaConverters {
 
         @SuppressWarnings("unchecked")
         @Override
-        public boolean addAll(int index, @NonNull Collection<? extends T> collection) {
+        public boolean addAll(int index, Collection<? extends T> collection) {
             Objects.requireNonNull(collection, "collection is null");
             return setDelegateAndCheckChanged(() -> (C) getDelegate().insertAll(index, collection));
         }

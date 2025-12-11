@@ -229,7 +229,7 @@ public interface Value<T> extends Iterable<T> {
      *                    compatible with the accumulator.
      * @return R reduction result
      */
-    default <R> R collect(@NonNull Supplier<R> supplier, @NonNull BiConsumer<R, ? super T> accumulator, @NonNull BiConsumer<R, R> combiner) {
+    default <R> R collect(@NonNull Supplier<R> supplier, BiConsumer<R, ? super T> accumulator, BiConsumer<R, R> combiner) {
         return StreamSupport.stream(spliterator(), false).collect(supplier, accumulator, combiner);
     }
 
@@ -254,7 +254,7 @@ public interface Value<T> extends Iterable<T> {
      * is {@code true} for all corresponding elements {@code x} of this iterable and {@code y} of {@code that},
      * otherwise {@code false}.
      */
-    default <U> boolean corresponds(@NonNull Iterable<U> that, @NonNull BiPredicate<? super T, ? super U> predicate) {
+    default <U> boolean corresponds(@NonNull Iterable<U> that, BiPredicate<? super T, ? super U> predicate) {
         final java.util.Iterator<T> it1 = iterator();
         final java.util.Iterator<U> it2 = that.iterator();
         while (it1.hasNext() && it2.hasNext()) {
@@ -578,7 +578,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A new Iterator
      */
     @Override
-    @NonNull Iterator<T> iterator();
+    Iterator<T> iterator();
 
     // -- conversion methods
 
@@ -886,7 +886,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <MAP>       a sub-type of {@code java.util.Map}
      * @return a new {@code java.util.Map} of type {@code MAP}
      */
-    default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(@NonNull Supplier<MAP> factory, @NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(@NonNull Supplier<MAP> factory, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toJavaMap(factory, t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
@@ -917,7 +917,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <MAP>   a sub-type of {@code java.util.Map}
      * @return a new {@code java.util.Map} of type {@code MAP}
      */
-    default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(@NonNull Supplier<MAP> factory, @NonNull Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K, V, MAP extends java.util.Map<K, V>> MAP toJavaMap(@NonNull Supplier<MAP> factory, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(f, "f is null");
         final MAP map = factory.get();
         if (!isEmpty()) {
@@ -1105,7 +1105,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>         The value type
      * @return A new {@link HashMap}.
      */
-    default <K, V> Map<K, V> toMap(@NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K, V> Map<K, V> toMap(@NonNull Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
@@ -1135,7 +1135,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>         The value type
      * @return A new {@link LinkedHashMap}.
      */
-    default <K, V> Map<K, V> toLinkedMap(@NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K, V> Map<K, V> toLinkedMap(@NonNull Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toLinkedMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
@@ -1165,7 +1165,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>         The value type
      * @return A new {@link TreeMap}.
      */
-    default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(@NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K extends Comparable<? super K>, V> SortedMap<K, V> toSortedMap(@NonNull Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         return toSortedMap(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t)));
@@ -1194,7 +1194,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>         The value type
      * @return A new {@link TreeMap}.
      */
-    default <K, V> SortedMap<K, V> toSortedMap(@NonNull Comparator<? super K> comparator, @NonNull Function<? super T, ? extends K> keyMapper, @NonNull Function<? super T, ? extends V> valueMapper) {
+    default <K, V> SortedMap<K, V> toSortedMap(@NonNull Comparator<? super K> comparator, Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
@@ -1210,7 +1210,7 @@ public interface Value<T> extends Iterable<T> {
      * @param <V>        The value type
      * @return A new {@link TreeMap}.
      */
-    default <K, V> SortedMap<K, V> toSortedMap(@NonNull Comparator<? super K> comparator, @NonNull Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
+    default <K, V> SortedMap<K, V> toSortedMap(@NonNull Comparator<? super K> comparator, Function<? super T, ? extends Tuple2<? extends K, ? extends V>> f) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(f, "f is null");
         final Function<Tuple2<? extends K, ? extends V>, SortedMap<K, V>> ofElement = t -> TreeMap.of(comparator, t);
@@ -1468,7 +1468,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Tree}.
      * @see Tree#build(Iterable, Function, Function)
      */
-    default <ID> List<Tree.Node<T>> toTree(@NonNull Function<? super T, ? extends ID> idMapper, @NonNull Function<? super T, ? extends ID> parentMapper) {
+    default <ID> List<Tree.Node<T>> toTree(@NonNull Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
         return Tree.build(this, idMapper, parentMapper);
     }
 

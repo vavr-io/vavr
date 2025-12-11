@@ -517,7 +517,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a new Seq, where the given elements are inserted into this at the given index
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<T> insertAll(int index, @NonNull Iterable<? extends T> elements);
+    Seq<T> insertAll(int index, Iterable<? extends T> elements);
 
     /**
      * Inserts an element between all elements of this Traversable.
@@ -713,7 +713,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @param replaced the number of elements to drop in the original list
      * @return a new sequence.
      */
-    Seq<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced);
+    Seq<T> patch(int from, Iterable<? extends T> that, int replaced);
 
     /**
      * Computes all unique permutations.
@@ -1082,7 +1082,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a new Seq consisting of all previous elements, with a single one (at the given index), changed to the new value.
      * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
      */
-    Seq<T> update(int index, @NonNull Function<? super T, ? extends T> updater);
+    Seq<T> update(int index, Function<? super T, ? extends T> updater);
 
     /**
      * Searches this sequence for a specific element. The sequence must already be sorted into ascending natural
@@ -1114,7 +1114,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * element would be inserted into the sequence. Note that this guarantees that
      * the return value will be &gt;= 0 if and only if the element is found.
      */
-    int search(T element, @NonNull Comparator<? super T> comparator);
+    int search(T element, Comparator<? super T> comparator);
 
     // -- Adjusted return types of Traversable methods
 
@@ -1197,7 +1197,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     <U> Seq<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    default <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
+    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return reverse().foldLeft(zero, (xs, x) -> f.apply(x, xs));
     }
@@ -1249,13 +1249,13 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
     Seq<T> retainAll(@NonNull Iterable<? extends T> elements);
 
     @Override
-    Seq<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    <U> Seq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
+    <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
     @Override
-    <U> Seq<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
+    <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
     Iterator<? extends Seq<T>> slideBy(@NonNull Function<? super T, ?> classifier);

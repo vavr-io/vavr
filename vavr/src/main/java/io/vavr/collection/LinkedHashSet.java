@@ -129,7 +129,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A LinkedHashSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> LinkedHashSet<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    public static <T> LinkedHashSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f, LinkedHashSet.empty(), LinkedHashSet::of);
     }
@@ -143,7 +143,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A LinkedHashSet of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <T> LinkedHashSet<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    public static <T> LinkedHashSet<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, LinkedHashSet.empty(), LinkedHashSet::of);
     }
@@ -615,7 +615,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
+    public <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
@@ -708,7 +708,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public @NonNull Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         return map.iterator().map(t -> t._1);
     }
 
@@ -809,17 +809,17 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public LinkedHashSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    public LinkedHashSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> LinkedHashSet<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U> LinkedHashSet<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return Collections.scanLeft(this, zero, operation, LinkedHashSet::ofAll);
     }
 
     @Override
-    public <U> LinkedHashSet<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U> LinkedHashSet<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return Collections.scanRight(this, zero, operation, LinkedHashSet::ofAll);
     }
 
@@ -939,7 +939,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public <T1, T2> Tuple2<LinkedHashSet<T1>, LinkedHashSet<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
         return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2));
@@ -947,7 +947,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public <T1, T2, T3> Tuple3<LinkedHashSet<T1>, LinkedHashSet<T2>, LinkedHashSet<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
         return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2), LinkedHashSet.ofAll(t._3));
@@ -959,7 +959,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     @Override
-    public <U, R> LinkedHashSet<R> zipWith(@NonNull Iterable<? extends U> that, @NonNull BiFunction<? super T, ? super U, ? extends R> mapper) {
+    public <U, R> LinkedHashSet<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return LinkedHashSet.ofAll(iterator().zipWith(that, mapper));

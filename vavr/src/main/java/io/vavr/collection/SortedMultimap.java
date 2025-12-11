@@ -76,7 +76,7 @@ public interface SortedMultimap<K, V> extends Multimap<K, V>, Ordered<K> {
     SortedMultimap<K, V> merge(@NonNull Multimap<? extends K, ? extends V> that);
 
     @Override
-    <K2 extends K, V2 extends V> SortedMultimap<K, V> merge(@NonNull Multimap<K2, V2> that, @NonNull BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
+    <K2 extends K, V2 extends V> SortedMultimap<K, V> merge(@NonNull Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
 
     @Override
     SortedMultimap<K, V> put(K key, V value);
@@ -179,7 +179,7 @@ public interface SortedMultimap<K, V> extends Multimap<K, V>, Ordered<K> {
 
     @Override
     SortedMultimap<K, V> scan(Tuple2<K, V> zero,
-                              @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+                              BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
     Iterator<? extends SortedMultimap<K, V>> slideBy(@NonNull Function<? super Tuple2<K, V>, ?> classifier);

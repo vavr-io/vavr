@@ -486,7 +486,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     <U> Traversable<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper);
 
     @Override
-    default <U> U foldLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> f) {
+    default <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         U xs = zero;
         for (T x : this) {
@@ -496,7 +496,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     }
 
     @Override
-    <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f);
+    <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f);
 
     /**
      * Performs an action on each element. In contrast to {@link #forEach(Consumer)},
@@ -753,7 +753,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return A new Iterator of this Traversable elements.
      */
     @Override
-    default @NonNull Iterator<T> iterator() {
+    default Iterator<T> iterator() {
         final Traversable<T> that = this;
         return new AbstractIterator<T>() {
 
@@ -1229,7 +1229,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return a new traversable collection containing the prefix scan of the elements in this traversable collection
      * @throws NullPointerException if {@code operation} is null.
      */
-    Traversable<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     /**
      * Produces a collection containing cumulative results of applying the
@@ -1246,7 +1246,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return collection with intermediate results
      * @throws NullPointerException if {@code operation} is null.
      */
-    <U> Traversable<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
+    <U> Traversable<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
     /**
      * Produces a collection containing cumulative results of applying the
@@ -1264,7 +1264,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @return collection with intermediate results
      * @throws NullPointerException if {@code operation} is null.
      */
-    <U> Traversable<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
+    <U> Traversable<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     /**
      * Returns the single element of this Traversable or throws, if this is empty or contains more than one element.
@@ -1504,7 +1504,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code unzipper} is null
      */
     <T1, T2> Tuple2<? extends Traversable<T1>, ? extends Traversable<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper);
 
     /**
      * Unzips this elements by mapping this elements to triples which are subsequently split into three distinct
@@ -1518,7 +1518,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * @throws NullPointerException if {@code unzipper} is null
      */
     <T1, T2, T3> Tuple3<? extends Traversable<T1>, ? extends Traversable<T2>, ? extends Traversable<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper);
 
     /**
      * Returns a traversable formed from this traversable and another Iterable collection by combining
@@ -1606,7 +1606,7 @@ interface TraversableModule {
      * @param toDouble function which maps elements to {@code double} values
      * @return A pair {@code [sum, size]}, where {@code sum} is the compensated sum and {@code size} is the number of elements which were summed.
      */
-    static <T> double[] neumaierSum(@NonNull Iterable<T> ts, @NonNull ToDoubleFunction<T> toDouble) {
+    static <T> double[] neumaierSum(@NonNull Iterable<T> ts, ToDoubleFunction<T> toDouble) {
         double simpleSum = 0.0;
         double sum = 0.0;
         double compensation = 0.0;

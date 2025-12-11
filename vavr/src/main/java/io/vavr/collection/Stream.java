@@ -229,7 +229,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param <T>  value type
      * @return A new Stream
      */
-    static <T> Stream<T> iterate(T seed, @NonNull Function<? super T, ? extends T> f) {
+    static <T> Stream<T> iterate(T seed, Function<? super T, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Stream.ofAll(Iterator.iterate(seed, f));
     }
@@ -259,7 +259,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream
      */
     @SuppressWarnings("unchecked")
-    static <T> Stream<T> cons(T head, @NonNull Supplier<? extends Stream<? extends T>> tailSupplier) {
+    static <T> Stream<T> cons(T head, Supplier<? extends Stream<? extends T>> tailSupplier) {
         Objects.requireNonNull(tailSupplier, "tailSupplier is null");
         return new ConsImpl<>(head, (Supplier<Stream<T>>) tailSupplier);
     }
@@ -341,7 +341,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A Stream consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> Stream<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    static <T> Stream<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Stream.ofAll(io.vavr.collection.Collections.tabulate(n, f));
     }
@@ -355,7 +355,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A Stream of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    static <T> Stream<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    static <T> Stream<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Stream.ofAll(io.vavr.collection.Collections.fill(n, s));
     }
@@ -751,7 +751,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T, U> Stream<U> unfoldRight(T seed, @NonNull Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
+    static <T, U> Stream<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toStream();
     }
 
@@ -780,7 +780,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T, U> Stream<U> unfoldLeft(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+    static <T, U> Stream<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toStream();
     }
 
@@ -808,7 +808,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return a Stream with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> Stream<T> unfold(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
+    static <T> Stream<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toStream();
     }
 
@@ -1156,7 +1156,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> insertAll(int index, @NonNull Iterable<? extends T> elements) {
+    default Stream<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -1279,7 +1279,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced) {
+    default Stream<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = Math.max(from, 0);
         replaced = Math.max(replaced, 0);
         Stream<T> result = take(from).appendAll(that);
@@ -1447,19 +1447,19 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    default Stream<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    default <U> Stream<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U> Stream<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         // lazily streams the elements of an iterator
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, Iterator::toStream);
     }
 
     // not lazy!
     @Override
-    default <U> Stream<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U> Stream<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, Iterator::toStream);
     }
 
@@ -1661,7 +1661,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default <T1, T2> Tuple2<Stream<T1>, Stream<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple2<? extends T1, ? extends T2>> stream = map(unzipper);
         final Stream<T1> stream1 = stream.map(t -> t._1);
@@ -1671,7 +1671,7 @@ public interface Stream<T> extends LinearSeq<T> {
 
     @Override
     default <T1, T2, T3> Tuple3<Stream<T1>, Stream<T2>, Stream<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Stream<Tuple3<? extends T1, ? extends T2, ? extends T3>> stream = map(unzipper);
         final Stream<T1> stream1 = stream.map(t -> t._1);
@@ -1704,7 +1704,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     @Override
-    default Stream<T> update(int index, @NonNull Function<? super T, ? extends T> updater) {
+    default Stream<T> update(int index, Function<? super T, ? extends T> updater) {
         Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }
@@ -1834,7 +1834,7 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
-        public @NonNull Iterator<T> iterator() {
+        public Iterator<T> iterator() {
             return Iterator.empty();
         }
 
@@ -1899,7 +1899,7 @@ public interface Stream<T> extends LinearSeq<T> {
         }
 
         @Override
-        public @NonNull Iterator<T> iterator() {
+        public Iterator<T> iterator() {
             return new StreamIterator<>(this);
         }
 

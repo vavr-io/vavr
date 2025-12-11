@@ -19,7 +19,6 @@
 package io.vavr;
 
 import java.util.function.Predicate;
-import org.jspecify.annotations.NonNull;
 
 import static io.vavr.CheckedPredicateModule.sneakyThrow;
 
@@ -51,7 +50,7 @@ public interface CheckedPredicate<T> {
      * @return a new {@code CheckedPredicate} wrapping the given method reference
      * @see CheckedFunction1#of(CheckedFunction1)
      */
-    static <T> CheckedPredicate<T> of(@NonNull CheckedPredicate<T> methodReference) {
+    static <T> CheckedPredicate<T> of(CheckedPredicate<T> methodReference) {
         return methodReference;
     }
 

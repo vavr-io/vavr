@@ -399,7 +399,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A List consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> List<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    static <T> List<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return Collections.tabulate(n, f, empty(), List::of);
     }
@@ -413,7 +413,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return A List of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    static <T> List<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    static <T> List<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return Collections.fill(n, s, empty(), List::of);
     }
@@ -681,7 +681,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return a list with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T, U> List<U> unfoldRight(T seed, @NonNull Function<? super T, @NonNull Option<Tuple2<? extends U, ? extends T>>> f) {
+    static <T, U> List<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toList();
     }
 
@@ -710,7 +710,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return a list with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T, U> List<U> unfoldLeft(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+    static <T, U> List<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(Tuple2::swap)))
           .foldLeft(List.empty(), List::prepend);
     }
@@ -739,7 +739,7 @@ public interface List<T> extends LinearSeq<T> {
      * @return a list with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> List<T> unfold(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
+    static <T> List<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f.andThen(tupleOpt -> tupleOpt.map(Tuple2::swap)))
           .foldLeft(List.empty(), List::prepend);
     }
@@ -1001,7 +1001,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> insertAll(int index, @NonNull Iterable<? extends T> elements) {
+    default List<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -1098,7 +1098,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced) {
+    default List<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = Math.max(from, 0);
         replaced = Math.max(replaced, 0);
         List<T> result = take(from).appendAll(that);
@@ -1416,17 +1416,17 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    default List<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    default <U> List<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U> List<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return Collections.scanLeft(this, zero, operation, Iterator::toList);
     }
 
     @Override
-    default <U> List<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U> List<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return Collections.scanRight(this, zero, operation, Iterator::toList);
     }
 
@@ -1652,7 +1652,7 @@ public interface List<T> extends LinearSeq<T> {
 
     @Override
     default <T1, T2> Tuple2<List<T1>, List<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = Nil.instance();
         List<T2> ys = Nil.instance();
@@ -1666,7 +1666,7 @@ public interface List<T> extends LinearSeq<T> {
 
     @Override
     default <T1, T2, T3> Tuple3<List<T1>, List<T2>, List<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         List<T1> xs = Nil.instance();
         List<T2> ys = Nil.instance();
@@ -1708,7 +1708,7 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     @Override
-    default List<T> update(int index, @NonNull Function<? super T, ? extends T> updater) {
+    default List<T> update(int index, Function<? super T, ? extends T> updater) {
         Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }
@@ -2000,7 +2000,7 @@ interface ListModule {
 
     interface SplitAt {
 
-        static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, @NonNull Predicate<? super T> predicate) {
+        static <T> Tuple2<List<T>, List<T>> splitByPredicateReversed(List<T> source, Predicate<? super T> predicate) {
             Objects.requireNonNull(predicate, "predicate is null");
             List<T> init = Nil.instance();
             List<T> tail = source;

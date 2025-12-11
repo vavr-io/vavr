@@ -161,7 +161,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A CharSeq consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static CharSeq tabulate(int n, @NonNull Function<? super Integer, ? extends Character> f) {
+    public static CharSeq tabulate(int n, Function<? super Integer, ? extends Character> f) {
         Objects.requireNonNull(f, "f is null");
         final StringBuilder sb = new StringBuilder();
         for (int i = 0; i < n; i++) {
@@ -624,7 +624,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq insertAll(int index, @NonNull Iterable<? extends Character> elements) {
+    public CharSeq insertAll(int index, Iterable<? extends Character> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -723,7 +723,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq patch(int from, @NonNull Iterable<? extends Character> that, int replaced) {
+    public CharSeq patch(int from, Iterable<? extends Character> that, int replaced) {
         from = from < 0 ? 0 : from > length() ? length() : from;
         replaced = replaced < 0 ? 0 : replaced;
         final StringBuilder sb = new StringBuilder(back.substring(0, from));
@@ -959,17 +959,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq scan(Character zero, @NonNull BiFunction<? super Character, ? super Character, ? extends Character> operation) {
+    public CharSeq scan(Character zero, BiFunction<? super Character, ? super Character, ? extends Character> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, io.vavr.collection.Iterator::toCharSeq);
     }
 
     @Override
-    public <U> IndexedSeq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super Character, ? extends U> operation) {
+    public <U> IndexedSeq<U> scanLeft(U zero, BiFunction<? super U, ? super Character, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, io.vavr.collection.Iterator::toVector);
     }
 
     @Override
-    public <U> IndexedSeq<U> scanRight(U zero, @NonNull BiFunction<? super Character, ? super U, ? extends U> operation) {
+    public <U> IndexedSeq<U> scanRight(U zero, BiFunction<? super Character, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, io.vavr.collection.Iterator::toVector);
     }
 
@@ -1166,7 +1166,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
     }
 
     @Override
-    public CharSeq update(int index, @NonNull Function<? super Character, ? extends Character> updater) {
+    public CharSeq update(int index, Function<? super Character, ? extends Character> updater) {
         Objects.requireNonNull(updater, "updater is null");
         final char c = updater.apply(get(index));
         return update(index, c);

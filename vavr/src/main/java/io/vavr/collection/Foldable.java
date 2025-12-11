@@ -73,7 +73,7 @@ public interface Foldable<T> {
      * @return a folded value
      * @throws NullPointerException if {@code combine} is null
      */
-    default T fold(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> combine) {
+    default T fold(T zero, BiFunction<? super T, ? super T, ? extends T> combine) {
         Objects.requireNonNull(combine, "combine is null");
         return foldLeft(zero, combine);
     }
@@ -94,7 +94,7 @@ public interface Foldable<T> {
      * @return a folded value
      * @throws NullPointerException if {@code combine} is null
      */
-    <U> U foldLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> combine);
+    <U> U foldLeft(U zero, BiFunction<? super U, ? super T, ? extends U> combine);
 
     /**
      * Folds this elements from the right, starting with {@code zero} and successively calling {@code combine}.
@@ -112,7 +112,7 @@ public interface Foldable<T> {
      * @return a folded value
      * @throws NullPointerException if {@code combine} is null
      */
-    <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> combine);
+    <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> combine);
 
     /**
      * Accumulates the elements of this Foldable by successively calling the given operation {@code op}.

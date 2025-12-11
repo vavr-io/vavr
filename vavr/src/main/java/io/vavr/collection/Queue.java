@@ -292,7 +292,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @return A Queue consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Queue<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    public static <T> Queue<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Queue::of);
     }
@@ -306,7 +306,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @return An Queue of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <T> Queue<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    public static <T> Queue<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Queue::of);
     }
@@ -575,7 +575,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @return a Queue with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T, U> Queue<U> unfoldRight(T seed, @NonNull Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
+    public static <T, U> Queue<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toQueue();
     }
 
@@ -604,7 +604,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @return a Queue with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T, U> Queue<U> unfoldLeft(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+    public static <T, U> Queue<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toQueue();
     }
 
@@ -632,7 +632,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * @return a Queue with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Queue<T> unfold(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
+    public static <T> Queue<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toQueue();
     }
 
@@ -907,7 +907,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @SuppressWarnings("unchecked")
     @Override
-    public Queue<T> insertAll(int index, @NonNull Iterable<? extends T> elements) {
+    public Queue<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if (index < 0) {
             throw new IndexOutOfBoundsException("insertAll(" + index + ", elements)");
@@ -1036,7 +1036,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
-    public Queue<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced) {
+    public Queue<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = Math.max(from, 0);
         replaced = Math.max(replaced, 0);
         Queue<T> result = take(from).appendAll(that);
@@ -1135,17 +1135,17 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
-    public Queue<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    public Queue<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> Queue<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U> Queue<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, Iterator::toQueue);
     }
 
     @Override
-    public <U> Queue<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U> Queue<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, Iterator::toQueue);
     }
 
@@ -1322,7 +1322,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
 
     @Override
     public <T1, T2> Tuple2<Queue<T1>, Queue<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return toList().unzip(unzipper).map(io.vavr.collection.List::toQueue, io.vavr.collection.List::toQueue);
     }
@@ -1339,7 +1339,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     @Override
-    public Queue<T> update(int index, @NonNull Function<? super T, ? extends T> updater) {
+    public Queue<T> update(int index, Function<? super T, ? extends T> updater) {
         Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }

@@ -176,7 +176,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> insert(int index, T element);
 
     @Override
-    LinearSeq<T> insertAll(int index, @NonNull Iterable<? extends T> elements);
+    LinearSeq<T> insertAll(int index, Iterable<? extends T> elements);
 
     @Override
     LinearSeq<T> intersperse(T element);
@@ -233,7 +233,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> padTo(int length, T element);
 
     @Override
-    LinearSeq<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced);
+    LinearSeq<T> patch(int from, Iterable<? extends T> that, int replaced);
 
     @Override
     Tuple2<? extends LinearSeq<T>, ? extends LinearSeq<T>> partition(@NonNull Predicate<? super T> predicate);
@@ -299,13 +299,13 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> shuffle();
 
     @Override
-    LinearSeq<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    LinearSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    <U> LinearSeq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
+    <U> LinearSeq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
     @Override
-    <U> LinearSeq<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
+    <U> LinearSeq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
     default int segmentLength(@NonNull Predicate<? super T> predicate, int from) {
@@ -383,7 +383,7 @@ public interface LinearSeq<T> extends Seq<T> {
     LinearSeq<T> update(int index, T element);
 
     @Override
-    LinearSeq<T> update(int index, @NonNull Function<? super T, ? extends T> updater);
+    LinearSeq<T> update(int index, Function<? super T, ? extends T> updater);
 
     @Override
     <U> LinearSeq<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that);
@@ -432,7 +432,7 @@ public interface LinearSeq<T> extends Seq<T> {
      * the return value will be &gt;= 0 if and only if the element is found.
      */
     @Override
-    default int search(T element, @NonNull Comparator<? super T> comparator) {
+    default int search(T element, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         final ToIntFunction<T> comparison = current -> comparator.compare(element, current);
         return LinearSeqModule.Search.linearSearch(this, comparison);

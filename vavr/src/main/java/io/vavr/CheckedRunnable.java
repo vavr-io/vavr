@@ -18,8 +18,6 @@
  */
 package io.vavr;
 
-import org.jspecify.annotations.NonNull;
-
 import static io.vavr.CheckedRunnableModule.sneakyThrow;
 
 /**
@@ -48,7 +46,7 @@ public interface CheckedRunnable {
      * @return a new {@code CheckedRunnable} wrapping the given method reference
      * @see CheckedFunction1#of(CheckedFunction1)
      */
-    static CheckedRunnable of(@NonNull CheckedRunnable methodReference) {
+    static CheckedRunnable of(CheckedRunnable methodReference) {
         return methodReference;
     }
 

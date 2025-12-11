@@ -190,7 +190,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@link Try} containing a {@link Seq} of all mapped results, or a {@link Try.Failure} if any mapping fails
      * @throws NullPointerException if {@code values} or {@code mapper} is {@code null}
      */
-    static <T, U> Try<Seq<U>> traverse(@NonNull Iterable<? extends T> values, @NonNull Function<? super T, ? extends Try<? extends U>> mapper) {
+    static <T, U> Try<Seq<U>> traverse(@NonNull Iterable<? extends T> values, Function<? super T, ? extends Try<? extends U>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
@@ -613,7 +613,7 @@ public interface Try<T> extends Value<T>, Serializable {
     boolean isSuccess();
 
     @Override
-    default @NonNull Iterator<T> iterator() {
+    default Iterator<T> iterator() {
         return isSuccess() ? Iterator.of(get()) : Iterator.empty();
     }
 
@@ -739,7 +739,7 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> onFailure(@NonNull Class<X> exceptionType, @NonNull Consumer<? super X> action) {
+    default <X extends Throwable> Try<T> onFailure(@NonNull Class<X> exceptionType, Consumer<? super X> action) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(action, "action is null");
         if (isFailure() && exceptionType.isAssignableFrom(getCause().getClass())) {
@@ -864,7 +864,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <X>    the type of the result
      * @return the result of applying the corresponding function
      */
-    default <X> X fold(@NonNull Function<? super Throwable, ? extends X> ifFail, @NonNull Function<? super T, ? extends X> f) {
+    default <X> X fold(@NonNull Function<? super Throwable, ? extends X> ifFail, Function<? super T, ? extends X> f) {
         if (isFailure()) {
             return ifFail.apply(getCause());
         } else {
@@ -920,7 +920,7 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> recover(@NonNull Class<X> exceptionType, @NonNull Function<? super X, ? extends T> f) {
+    default <X extends Throwable> Try<T> recover(@NonNull Class<X> exceptionType, Function<? super X, ? extends T> f) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
@@ -963,7 +963,7 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     @GwtIncompatible
     @SuppressWarnings("unchecked")
-    default <X extends Throwable> Try<T> recoverWith(@NonNull Class<X> exceptionType, @NonNull Function<? super X, Try<? extends T>> f) {
+    default <X extends Throwable> Try<T> recoverWith(@NonNull Class<X> exceptionType, Function<? super X, Try<? extends T>> f) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(f, "f is null");
         if (isFailure()) {
@@ -1008,7 +1008,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @throws NullPointerException if {@code exceptionType} or {@code recovered} is null
      */
     @GwtIncompatible
-    default <X extends Throwable> Try<T> recoverWith(@NonNull Class<X> exceptionType, @NonNull Try<? extends T> recovered) {
+    default <X extends Throwable> Try<T> recoverWith(@NonNull Class<X> exceptionType, Try<? extends T> recovered) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(recovered, "recovered is null");
         return (isFailure() && exceptionType.isAssignableFrom(getCause().getClass()))
@@ -1170,7 +1170,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@code Try} containing either the original success value or the result of {@code recoveryAttempt}
      * @throws NullPointerException if {@code exceptionType} or {@code recoveryAttempt} is null
      */
-    default <X extends Throwable> Try<T> recoverAndTry(@NonNull Class<X> exceptionType, @NonNull CheckedFunction0<? extends T> recoveryAttempt) {
+    default <X extends Throwable> Try<T> recoverAndTry(@NonNull Class<X> exceptionType, CheckedFunction0<? extends T> recoveryAttempt) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(recoveryAttempt, "recoveryAttempt is null");
         return isFailure() && exceptionType.isAssignableFrom(getCause().getClass())
@@ -1483,7 +1483,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T2> Type of the 2nd resource.
      * @return a new {@link WithResources2} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable> WithResources2<T1, T2> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable> WithResources2<T1, T2> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier) {
         return new WithResources2<>(t1Supplier, t2Supplier);
     }
 
@@ -1498,7 +1498,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T3> Type of the 3rd resource.
      * @return a new {@link WithResources3} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> WithResources3<T1, T2, T3> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable> WithResources3<T1, T2, T3> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier) {
         return new WithResources3<>(t1Supplier, t2Supplier, t3Supplier);
     }
 
@@ -1515,7 +1515,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T4> Type of the 4th resource.
      * @return a new {@link WithResources4} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> WithResources4<T1, T2, T3, T4> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable> WithResources4<T1, T2, T3, T4> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier) {
         return new WithResources4<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier);
     }
 
@@ -1534,7 +1534,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T5> Type of the 5th resource.
      * @return a new {@link WithResources5} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> WithResources5<T1, T2, T3, T4, T5> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier, @NonNull CheckedFunction0<? extends T5> t5Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable> WithResources5<T1, T2, T3, T4, T5> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier) {
         return new WithResources5<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier);
     }
 
@@ -1555,7 +1555,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T6> Type of the 6th resource.
      * @return a new {@link WithResources6} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> WithResources6<T1, T2, T3, T4, T5, T6> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier, @NonNull CheckedFunction0<? extends T5> t5Supplier, @NonNull CheckedFunction0<? extends T6> t6Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable> WithResources6<T1, T2, T3, T4, T5, T6> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier) {
         return new WithResources6<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier);
     }
 
@@ -1578,7 +1578,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T7> Type of the 7th resource.
      * @return a new {@link WithResources7} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> WithResources7<T1, T2, T3, T4, T5, T6, T7> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier, @NonNull CheckedFunction0<? extends T5> t5Supplier, @NonNull CheckedFunction0<? extends T6> t6Supplier, @NonNull CheckedFunction0<? extends T7> t7Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable> WithResources7<T1, T2, T3, T4, T5, T6, T7> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier) {
         return new WithResources7<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier, t7Supplier);
     }
 
@@ -1603,7 +1603,7 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param <T8> Type of the 8th resource.
      * @return a new {@link WithResources8} instance.
      */
-    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> WithResources8<T1, T2, T3, T4, T5, T6, T7, T8> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier, @NonNull CheckedFunction0<? extends T5> t5Supplier, @NonNull CheckedFunction0<? extends T6> t6Supplier, @NonNull CheckedFunction0<? extends T7> t7Supplier, @NonNull CheckedFunction0<? extends T8> t8Supplier) {
+    static <T1 extends AutoCloseable, T2 extends AutoCloseable, T3 extends AutoCloseable, T4 extends AutoCloseable, T5 extends AutoCloseable, T6 extends AutoCloseable, T7 extends AutoCloseable, T8 extends AutoCloseable> WithResources8<T1, T2, T3, T4, T5, T6, T7, T8> withResources(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier, CheckedFunction0<? extends T8> t8Supplier) {
         return new WithResources8<>(t1Supplier, t2Supplier, t3Supplier, t4Supplier, t5Supplier, t6Supplier, t7Supplier, t8Supplier);
     }
 
@@ -1648,7 +1648,7 @@ public interface Try<T> extends Value<T>, Serializable {
         private final CheckedFunction0<? extends T1> t1Supplier;
         private final CheckedFunction0<? extends T2> t2Supplier;
 
-        private WithResources2(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier) {
+        private WithResources2(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
         }
@@ -1683,7 +1683,7 @@ public interface Try<T> extends Value<T>, Serializable {
         private final CheckedFunction0<? extends T2> t2Supplier;
         private final CheckedFunction0<? extends T3> t3Supplier;
 
-        private WithResources3(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier) {
+        private WithResources3(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1721,7 +1721,7 @@ public interface Try<T> extends Value<T>, Serializable {
         private final CheckedFunction0<? extends T3> t3Supplier;
         private final CheckedFunction0<? extends T4> t4Supplier;
 
-        private WithResources4(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier) {
+        private WithResources4(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1762,7 +1762,7 @@ public interface Try<T> extends Value<T>, Serializable {
         private final CheckedFunction0<? extends T4> t4Supplier;
         private final CheckedFunction0<? extends T5> t5Supplier;
 
-        private WithResources5(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier, @NonNull CheckedFunction0<? extends T5> t5Supplier) {
+        private WithResources5(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1806,7 +1806,7 @@ public interface Try<T> extends Value<T>, Serializable {
         private final CheckedFunction0<? extends T5> t5Supplier;
         private final CheckedFunction0<? extends T6> t6Supplier;
 
-        private WithResources6(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier, @NonNull CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier) {
+        private WithResources6(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1853,7 +1853,7 @@ public interface Try<T> extends Value<T>, Serializable {
         private final CheckedFunction0<? extends T6> t6Supplier;
         private final CheckedFunction0<? extends T7> t7Supplier;
 
-        private WithResources7(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier, @NonNull CheckedFunction0<? extends T5> t5Supplier, @NonNull CheckedFunction0<? extends T6> t6Supplier, @NonNull CheckedFunction0<? extends T7> t7Supplier) {
+        private WithResources7(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;
@@ -1903,7 +1903,7 @@ public interface Try<T> extends Value<T>, Serializable {
         private final CheckedFunction0<? extends T7> t7Supplier;
         private final CheckedFunction0<? extends T8> t8Supplier;
 
-        private WithResources8(@NonNull CheckedFunction0<? extends T1> t1Supplier, @NonNull CheckedFunction0<? extends T2> t2Supplier, @NonNull CheckedFunction0<? extends T3> t3Supplier, @NonNull CheckedFunction0<? extends T4> t4Supplier, @NonNull CheckedFunction0<? extends T5> t5Supplier, @NonNull CheckedFunction0<? extends T6> t6Supplier, @NonNull CheckedFunction0<? extends T7> t7Supplier, @NonNull CheckedFunction0<? extends T8> t8Supplier) {
+        private WithResources8(@NonNull CheckedFunction0<? extends T1> t1Supplier, CheckedFunction0<? extends T2> t2Supplier, CheckedFunction0<? extends T3> t3Supplier, CheckedFunction0<? extends T4> t4Supplier, CheckedFunction0<? extends T5> t5Supplier, CheckedFunction0<? extends T6> t6Supplier, CheckedFunction0<? extends T7> t7Supplier, CheckedFunction0<? extends T8> t8Supplier) {
             this.t1Supplier = t1Supplier;
             this.t2Supplier = t2Supplier;
             this.t3Supplier = t3Supplier;

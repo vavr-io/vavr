@@ -100,7 +100,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return an {@code Option} containing a {@code Seq} of mapped values, or {@code None} if any mapping yields {@code None}
      * @throws NullPointerException if {@code values} or {@code mapper} is null
      */
-    static <T, U> Option<Seq<U>> traverse(@NonNull Iterable<? extends T> values, @NonNull Function<? super T, ? extends Option<? extends U>> mapper) {
+    static <T, U> Option<Seq<U>> traverse(@NonNull Iterable<? extends T> values, Function<? super T, ? extends Option<? extends U>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
@@ -159,7 +159,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return {@code Some} of the supplied value if {@code condition} is true, otherwise {@code None}
      * @throws NullPointerException if {@code supplier} is null
      */
-    static <T> Option<T> when(boolean condition, @NonNull Supplier<? extends T> supplier) {
+    static <T> Option<T> when(boolean condition, Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return condition ? some(supplier.get()) : none();
     }
@@ -435,7 +435,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @return the result of applying {@code f} or {@code ifNone} depending on whether this is {@code Some} or {@code None}
      * @throws NullPointerException if {@code ifNone} or {@code f} is null
      */
-    default <U> U fold(@NonNull Supplier<? extends U> ifNone, @NonNull Function<? super T, ? extends U> f) {
+    default <U> U fold(@NonNull Supplier<? extends U> ifNone, Function<? super T, ? extends U> f) {
         return this.<U>map(f).getOrElse(ifNone);
     }
 
@@ -470,7 +470,7 @@ public interface Option<T> extends Value<T>, Serializable {
     }
 
     @Override
-    default @NonNull Iterator<T> iterator() {
+    default Iterator<T> iterator() {
         return isEmpty() ? Iterator.empty() : Iterator.of(get());
     }
 

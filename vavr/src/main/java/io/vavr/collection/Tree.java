@@ -106,7 +106,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Node<T> of(T value, @NonNull Node<T>... children) {
+    static <T> Node<T> of(T value, Node<T>... children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, io.vavr.collection.List.of(children));
     }
@@ -119,7 +119,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @param <T>      Value type
      * @return A new Node instance.
      */
-    static <T> Node<T> of(T value, @NonNull Iterable<Node<T>> children) {
+    static <T> Node<T> of(T value, Iterable<Node<T>> children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, io.vavr.collection.List.ofAll(children));
     }
@@ -184,7 +184,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return A Tree consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    static <T> Tree<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    static <T> Tree<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Tree::of);
     }
@@ -198,7 +198,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return A Tree of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    static <T> Tree<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    static <T> Tree<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Tree::of);
     }
@@ -240,7 +240,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return a new, non-empty {@code Tree} instance
      * @throws NullPointerException if {@code descend} is null
      */
-    static <T> Node<T> recurse(T seed, @NonNull Function<? super T, ? extends Iterable<? extends T>> descend) {
+    static <T> Node<T> recurse(T seed, Function<? super T, ? extends Iterable<? extends T>> descend) {
         Objects.requireNonNull(descend, "descend is null");
         return Tree.of(seed, Stream.of(seed).flatMap(descend).map(children -> recurse(children, descend)));
     }
@@ -270,7 +270,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return a new, maybe empty {@code List} instance with non-empty {@code Tree} instances
      * @throws NullPointerException if {@code source}, {@code idMapper} or {@code parentMapper} is null
      */
-    static <T, ID> List<Node<T>> build(@NonNull Iterable<? extends T> source, @NonNull Function<? super T, ? extends ID> idMapper, @NonNull Function<? super T, ? extends ID> parentMapper) {
+    static <T, ID> List<Node<T>> build(@NonNull Iterable<? extends T> source, Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
         Objects.requireNonNull(source, "source is null");
         Objects.requireNonNull(source, "idMapper is null");
         Objects.requireNonNull(source, "parentMapper is null");
@@ -565,7 +565,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
+    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isEmpty()) {
             return zero;
@@ -690,17 +690,17 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     }
 
     @Override
-    default Seq<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    default Seq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    default <U> Seq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, io.vavr.collection.Iterator::toStream);
     }
 
     @Override
-    default <U> Seq<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U> Seq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, io.vavr.collection.Iterator::toStream);
     }
 
@@ -782,7 +782,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     default <T1, T2> Tuple2<Tree<T1>, Tree<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (isEmpty()) {
             return Tuple.of(Empty.instance(), Empty.instance());
@@ -794,7 +794,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
     @SuppressWarnings("unchecked")
     @Override
     default <T1, T2, T3> Tuple3<Tree<T1>, Tree<T2>, Tree<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (isEmpty()) {
             return Tuple.of(Empty.instance(), Empty.instance(), Empty.instance());
@@ -1222,7 +1222,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
 interface TreeModule {
 
     @SuppressWarnings("unchecked")
-    static <T, U> Tree<U> flatMap(@NonNull Node<T> node, @NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    static <T, U> Tree<U> flatMap(@NonNull Node<T> node, Function<? super T, ? extends Iterable<? extends U>> mapper) {
         final Tree<U> mapped = ofAll(mapper.apply(node.getValue()));
         if (mapped.isEmpty()) {
             return empty();
@@ -1235,7 +1235,7 @@ interface TreeModule {
         }
     }
 
-    static <T, U> Node<U> map(@NonNull Node<T> node, @NonNull Function<? super T, ? extends U> mapper) {
+    static <T, U> Node<U> map(@NonNull Node<T> node, Function<? super T, ? extends U> mapper) {
         final U value = mapper.apply(node.getValue());
         final io.vavr.collection.List<Node<U>> children = node.getChildren().map(child -> map(child, mapper));
         return new Node<>(value, children);
@@ -1298,7 +1298,7 @@ interface TreeModule {
     }
 
     static <T, T1, T2> Tuple2<Node<T1>, Node<T2>> unzip(@NonNull Node<T> node,
-                                                        @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+                                                        Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         final Tuple2<? extends T1, ? extends T2> value = unzipper.apply(node.getValue());
         final io.vavr.collection.List<Tuple2<Node<T1>, Node<T2>>> children = node
                 .getChildren()
@@ -1309,7 +1309,7 @@ interface TreeModule {
     }
 
     static <T, T1, T2, T3> Tuple3<Node<T1>, Node<T2>, Node<T3>> unzip3(@NonNull Node<T> node,
-                                                                       @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+                                                                       Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
         final io.vavr.collection.List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
                 .map(child -> unzip3(child, unzipper));

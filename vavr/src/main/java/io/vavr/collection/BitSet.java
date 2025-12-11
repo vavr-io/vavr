@@ -152,7 +152,7 @@ public interface BitSet<T> extends SortedSet<T> {
          * @param f function to tabulate
          * @return new BitSet
          */
-        public BitSet<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+        public BitSet<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
             Objects.requireNonNull(f, "f is null");
             return empty().addAll(Collections.tabulate(n, f));
         }
@@ -164,7 +164,7 @@ public interface BitSet<T> extends SortedSet<T> {
          * @param s value supplier
          * @return new BitSet
          */
-        public BitSet<T> fill(int n, @NonNull Supplier<? extends T> s) {
+        public BitSet<T> fill(int n, Supplier<? extends T> s) {
             Objects.requireNonNull(s, "s is null");
             return empty().addAll(Collections.fill(n, s));
         }
@@ -584,7 +584,7 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    default <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
+    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
@@ -708,15 +708,15 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     @Override
-    BitSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    default <U> Set<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
     }
 
     @Override
-    default <U> Set<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return Collections.scanRight(this, zero, operation, HashSet::ofAll);
     }
 
@@ -776,7 +776,7 @@ public interface BitSet<T> extends SortedSet<T> {
 
     @Override
     default <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip(unzipper).map(i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
                 i2 -> TreeSet.ofAll(Comparators.naturalComparator(), i2));
@@ -784,7 +784,7 @@ public interface BitSet<T> extends SortedSet<T> {
 
     @Override
     default <T1, T2, T3> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip3(unzipper).map(
                 i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
@@ -1000,7 +1000,7 @@ interface BitSetModule {
         }
 
         @Override
-        public BitSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+        public BitSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
             return Collections.scanLeft(this, zero, operation, this::createFromAll);
         }
 
@@ -1082,7 +1082,7 @@ interface BitSetModule {
         }
 
         @Override
-        public @NonNull Iterator<T> iterator() {
+        public Iterator<T> iterator() {
             return new BitSetIterator<>(this);
         }
 

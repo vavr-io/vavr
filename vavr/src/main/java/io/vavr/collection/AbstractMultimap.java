@@ -118,7 +118,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
-    public <K2, V2> Multimap<K2, V2> bimap(@NonNull Function<? super K, ? extends K2> keyMapper, @NonNull Function<? super V, ? extends V2> valueMapper) {
+    public <K2, V2> Multimap<K2, V2> bimap(@NonNull Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper) {
         Objects.requireNonNull(keyMapper, "keyMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
@@ -405,7 +405,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
     }
 
     @Override
-    public @NonNull Iterator<Tuple2<K, V>> iterator() {
+    public Iterator<Tuple2<K, V>> iterator() {
         if (containerType == ContainerType.SORTED_SET) {
             return back.iterator().flatMap(t -> t._2.iterator().map(v -> Tuple.of(t._1, v)));
         } else {
@@ -434,7 +434,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @SuppressWarnings("unchecked")
     @Override
-    public <K2 extends K, V2 extends V> M merge(@NonNull Multimap<K2, V2> that, @NonNull BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
+    public <K2 extends K, V2 extends V> M merge(@NonNull Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(collisionResolution, "collisionResolution is null");
         if (isEmpty()) {
@@ -542,7 +542,7 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     @SuppressWarnings("unchecked")
     @Override
-    public M scan(Tuple2<K, V> zero, @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
+    public M scan(Tuple2<K, V> zero, BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
         return (M) Collections.scanLeft(this, zero, operation, this::createFromEntries);
     }
 

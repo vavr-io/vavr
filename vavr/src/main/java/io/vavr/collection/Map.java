@@ -183,7 +183,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @return a new {@code Map}
      * @throws NullPointerException if {@code keyMapper} or {@code valueMapper} is null
      */
-    <K2, V2> Map<K2, V2> bimap(@NonNull Function<? super K, ? extends K2> keyMapper, @NonNull Function<? super V, ? extends V2> valueMapper);
+    <K2, V2> Map<K2, V2> bimap(@NonNull Function<? super K, ? extends K2> keyMapper, Function<? super V, ? extends V2> valueMapper);
 
     @Override
     default boolean contains(@NonNull Tuple2<K, V> element) {
@@ -199,7 +199,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @param mappingFunction mapping function
      * @return the {@link Tuple2} of current or modified map and existing or computed value associated with the specified key
      */
-    Tuple2<V, ? extends Map<K, V>> computeIfAbsent(K key, @NonNull Function<? super K, ? extends V> mappingFunction);
+    Tuple2<V, ? extends Map<K, V>> computeIfAbsent(K key, Function<? super K, ? extends V> mappingFunction);
 
     /**
      * If the value for the specified key is present, attempts to
@@ -210,7 +210,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @return the {@link Tuple2} of current or modified map and the {@code Some} of the value associated
      * with the specified key, or {@code None} if none
      */
-    Tuple2<Option<V>, ? extends Map<K, V>> computeIfPresent(K key, @NonNull BiFunction<? super K, ? super V, ? extends V> remappingFunction);
+    Tuple2<Option<V>, ? extends Map<K, V>> computeIfPresent(K key, BiFunction<? super K, ? super V, ? extends V> remappingFunction);
 
     /**
      * Returns <code>true</code> if this map contains a mapping for the specified key.
@@ -315,7 +315,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     }
 
     @Override
-    default <U> U foldRight(U zero, @NonNull BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
+    default <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
@@ -364,7 +364,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     }
 
     @Override
-    @NonNull
     Iterator<Tuple2<K, V>> iterator();
 
     /**
@@ -473,7 +472,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @return a new {@code Map}
      * @throws NullPointerException if {@code keyMapper} is null
      */
-    <K2> Map<K2, V> mapKeys(@NonNull Function<? super K, ? extends K2> keyMapper, @NonNull BiFunction<? super V, ? super V, ? extends V> valueMerge);
+    <K2> Map<K2, V> mapKeys(@NonNull Function<? super K, ? extends K2> keyMapper, BiFunction<? super V, ? super V, ? extends V> valueMerge);
 
     /**
      * Maps the values of this {@code Map} while preserving the corresponding keys.
@@ -509,7 +508,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @return A merged map
      * @throws NullPointerException if that map or the given collision resolution function is null
      */
-    <U extends V> Map<K, V> merge(@NonNull Map<? extends K, U> that, @NonNull BiFunction<? super V, ? super U, ? extends V> collisionResolution);
+    <U extends V> Map<K, V> merge(@NonNull Map<? extends K, U> that, BiFunction<? super V, ? super U, ? extends V> collisionResolution);
 
     /**
      * Associates the specified value with the specified key in this map.
@@ -542,7 +541,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @param merge function taking the old and new values and merging them.
      * @return A new Map containing these elements and that entry.
      */
-    <U extends V> Map<K, V> put(K key, U value, @NonNull BiFunction<? super V, ? super U, ? extends V> merge);
+    <U extends V> Map<K, V> put(K key, U value, BiFunction<? super V, ? super U, ? extends V> merge);
 
     /**
      * Convenience method for {@code put(entry._1, entry._2, merge)}.
@@ -552,7 +551,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      * @param merge function taking the old and new values and merging them.
      * @return A new Map containing these elements and that entry.
      */
-    <U extends V> Map<K, V> put(@NonNull Tuple2<? extends K, U> entry, @NonNull BiFunction<? super V, ? super U, ? extends V> merge);
+    <U extends V> Map<K, V> put(@NonNull Tuple2<? extends K, U> entry, BiFunction<? super V, ? super U, ? extends V> merge);
 
     /**
      * Removes the mapping for a key from this map if it is present.
@@ -606,12 +605,12 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     Map<K, V> removeValues(@NonNull Predicate<? super V> predicate);
 
     @Override
-    default <U> Seq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, io.vavr.collection.Iterator::toVector);
     }
 
     @Override
-    default <U> Seq<U> scanRight(U zero, @NonNull BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+    default <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, io.vavr.collection.Iterator::toVector);
     }
 
@@ -661,7 +660,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
 
     @Override
     default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(
-      @NonNull Function<? super Tuple2<K, V>, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      Function<? super Tuple2<K, V>, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
     }
@@ -813,7 +812,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     Map<K, V> peek(@NonNull Consumer<? super Tuple2<K, V>> action);
 
     @Override
-    Map<K, V> replace(@NonNull Tuple2<K, V> currentElement, @NonNull Tuple2<K, V> newElement);
+    Map<K, V> replace(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
     /**
      * Replaces the entry for the specified key only if it is currently mapped to some value.
@@ -850,7 +849,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
 
     @Override
     Map<K, V> scan(@NonNull Tuple2<K, V> zero,
-                   @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+                   BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
     io.vavr.collection.Iterator<? extends Map<K, V>> slideBy(@NonNull Function<? super Tuple2<K, V>, ?> classifier);

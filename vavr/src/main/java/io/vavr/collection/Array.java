@@ -272,7 +272,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return An Array consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Array<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    public static <T> Array<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Array::of);
     }
@@ -286,7 +286,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * @return An Array of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <T> Array<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    public static <T> Array<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Array::of);
     }
@@ -700,7 +700,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @SuppressWarnings("unchecked")
     @Override
-    public @NonNull Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         return new AbstractIterator<T>() {
             private int index = 0;
 
@@ -922,7 +922,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> insertAll(int index, @NonNull Iterable<? extends T> elements) {
+    public Array<T> insertAll(int index, Iterable<? extends T> elements) {
         if (index < 0 || index > length()) {
             throw new IndexOutOfBoundsException("insert(" + index + ", e) on Array of length " + length());
         }
@@ -1025,7 +1025,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced) {
+    public Array<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = Math.max(from, 0);
         replaced = Math.max(replaced, 0);
         Array<T> result = take(from).appendAll(that);
@@ -1228,17 +1228,17 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    public Array<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> Array<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U> Array<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, Array::ofAll);
     }
 
     @Override
-    public <U> Array<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U> Array<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, Array::ofAll);
     }
 
@@ -1436,7 +1436,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
 
     @Override
     public <T1, T2> Tuple2<Array<T1>, Array<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (isEmpty()) {
             return Tuple.of(empty(), empty());
@@ -1483,7 +1483,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Array<T> update(int index, @NonNull Function<? super T, ? extends T> updater) {
+    public Array<T> update(int index, Function<? super T, ? extends T> updater) {
         Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }

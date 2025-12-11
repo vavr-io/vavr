@@ -1217,7 +1217,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <T1, T2> Tuple2<Iterator<T1>, Iterator<T2>> unzip(
-      @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
+      Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (!hasNext()) {
             return Tuple.of(empty(), empty());
@@ -1229,7 +1229,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     @Override
     default <T1, T2, T3> Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> unzip3(
-      @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         if (!hasNext()) {
             return Tuple.of(empty(), empty(), empty());
@@ -1577,7 +1577,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
+    default <U> U foldRight(U zero, BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return Stream.ofAll(this).foldRight(zero, f);
     }
@@ -1660,7 +1660,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default @NonNull Iterator<T> iterator() {
+    default Iterator<T> iterator() {
         return this;
     }
 
@@ -1842,12 +1842,12 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
     }
 
     @Override
-    default Traversable<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    default Traversable<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    default <U> Iterator<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    default <U> Iterator<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         if (isEmpty()) {
             return of(zero);
@@ -1878,7 +1878,7 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
 
     // not lazy!
     @Override
-    default <U> Iterator<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    default <U> Iterator<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         Objects.requireNonNull(operation, "operation is null");
         if (isEmpty()) {
             return of(zero);

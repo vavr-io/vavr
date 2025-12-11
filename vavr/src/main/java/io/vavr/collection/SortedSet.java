@@ -188,15 +188,15 @@ public interface SortedSet<T> extends Set<T>, Ordered<T> {
     SortedSet<T> retainAll(@NonNull Iterable<? extends T> elements);
 
     @Override
-    SortedSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    SortedSet<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     // DEV-NOTE: The return type is either Set or SortedSet, depending whether U is Comparable
     @Override
-    <U> Set<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
+    <U> Set<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
     // DEV-NOTE: The return type is either Set or SortedSet, depending whether U is Comparable
     @Override
-    <U> Set<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
+    <U> Set<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
     Iterator<? extends SortedSet<T>> slideBy(@NonNull Function<? super T, ?> classifier);

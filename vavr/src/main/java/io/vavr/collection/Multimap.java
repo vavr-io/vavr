@@ -357,7 +357,6 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     }
 
     @Override
-    @NonNull
     Iterator<Tuple2<K, V>> iterator();
 
     /**
@@ -457,7 +456,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
      * @return A merged multimap
      * @throws NullPointerException if that multimap or the given collision resolution function is null
      */
-    <K2 extends K, V2 extends V> Multimap<K, V> merge(@NonNull Multimap<K2, V2> that, @NonNull BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
+    <K2 extends K, V2 extends V> Multimap<K, V> merge(@NonNull Multimap<K2, V2> that, BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
 
     /**
      * Associates the specified value with the specified key in this multimap.
@@ -540,12 +539,12 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     Multimap<K, V> removeValues(@NonNull Predicate<? super V> predicate);
 
     @Override
-    default <U> Seq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
+    default <U> Seq<U> scanLeft(U zero, BiFunction<? super U, ? super Tuple2<K, V>, ? extends U> operation) {
         return Collections.scanLeft(this, zero, operation, Iterator::toVector);
     }
 
     @Override
-    default <U> Seq<U> scanRight(U zero, @NonNull BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
+    default <U> Seq<U> scanRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> operation) {
         return Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
@@ -591,7 +590,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
 
     @Override
     default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(
-      @NonNull Function<? super Tuple2<K, V>, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
+      Function<? super Tuple2<K, V>, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
     }
@@ -674,7 +673,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     }
 
     @Override
-    default <U> U foldRight(U zero, @NonNull BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
+    default <U> U foldRight(U zero, BiFunction<? super Tuple2<K, V>, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return iterator().foldRight(zero, f);
     }
@@ -741,7 +740,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
 
     @Override
     Multimap<K, V> scan(Tuple2<K, V> zero,
-                        @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+                        BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
 
     @Override
     Iterator<? extends Multimap<K, V>> slideBy(@NonNull Function<? super Tuple2<K, V>, ?> classifier);

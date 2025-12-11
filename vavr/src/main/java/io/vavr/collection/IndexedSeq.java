@@ -192,7 +192,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> insert(int index, T element);
 
     @Override
-    IndexedSeq<T> insertAll(int index, @NonNull Iterable<? extends T> elements);
+    IndexedSeq<T> insertAll(int index, Iterable<? extends T> elements);
 
     @Override
     IndexedSeq<T> intersperse(T element);
@@ -251,7 +251,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> padTo(int length, T element);
 
     @Override
-    IndexedSeq<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced);
+    IndexedSeq<T> patch(int from, Iterable<? extends T> that, int replaced);
 
     @Override
     Tuple2<? extends IndexedSeq<T>, ? extends IndexedSeq<T>> partition(@NonNull Predicate<? super T> predicate);
@@ -326,13 +326,13 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> rotateRight(int n);
 
     @Override
-    IndexedSeq<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation);
+    IndexedSeq<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation);
 
     @Override
-    <U> IndexedSeq<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation);
+    <U> IndexedSeq<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation);
 
     @Override
-    <U> IndexedSeq<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation);
+    <U> IndexedSeq<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation);
 
     @Override
     default int segmentLength(@NonNull Predicate<? super T> predicate, int from) {
@@ -444,7 +444,7 @@ public interface IndexedSeq<T> extends Seq<T> {
     IndexedSeq<T> update(int index, T element);
 
     @Override
-    IndexedSeq<T> update(int index, @NonNull Function<? super T, ? extends T> updater);
+    IndexedSeq<T> update(int index, Function<? super T, ? extends T> updater);
 
     @Override
     <U> IndexedSeq<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that);
@@ -496,7 +496,7 @@ public interface IndexedSeq<T> extends Seq<T> {
      * the return value will be &gt;= 0 if and only if the element is found.
      */
     @Override
-    default int search(T element, @NonNull Comparator<? super T> comparator) {
+    default int search(T element, Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         IntUnaryOperator comparison = midIndex -> {
             T midVal = get(midIndex);

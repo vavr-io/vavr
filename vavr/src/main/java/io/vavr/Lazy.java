@@ -33,7 +33,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import org.jspecify.annotations.NonNull;
 
 /**
  * Represents a lazily evaluated value. Unlike a standard {@link java.util.function.Supplier}, 
@@ -97,7 +96,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * @return a new {@code Lazy} instance
      */
     @SuppressWarnings("unchecked")
-    public static <T> Lazy<T> of(@NonNull Supplier<? extends T> supplier) {
+    public static <T> Lazy<T> of(Supplier<? extends T> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         if (supplier instanceof Lazy) {
             return (Lazy<T>) supplier;
@@ -118,7 +117,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * @throws NullPointerException if {@code values} is null
      */
     @SuppressWarnings("Convert2MethodRef") // TODO should be fixed in JDK 9 and Idea
-    public static <T> Lazy<Seq<T>> sequence(@NonNull Iterable<? extends Lazy<? extends T>> values) {
+    public static <T> Lazy<Seq<T>> sequence(Iterable<? extends Lazy<? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
         return Lazy.of(() -> Vector.ofAll(values).map(lazy -> lazy.get()));
     }
@@ -134,7 +133,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      */
     @GwtIncompatible("reflection is not supported")
     @SuppressWarnings("unchecked")
-    public static <T> T val(@NonNull Supplier<? extends T> supplier, @NonNull Class<T> type) {
+    public static <T> T val(Supplier<? extends T> supplier, Class<T> type) {
         Objects.requireNonNull(supplier, "supplier is null");
         Objects.requireNonNull(type, "type is null");
         if (!type.isInterface()) {
@@ -145,7 +144,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
         return (T) Proxy.newProxyInstance(type.getClassLoader(), new Class<?>[] { type }, handler);
     }
 
-    public Option<T> filter(@NonNull Predicate<? super T> predicate) {
+    public Option<T> filter(Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final T v = get();
         return predicate.test(v) ? Option.some(v) : Option.none();
@@ -219,12 +218,12 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     @Override
-    public @NonNull Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         return Iterator.of(get());
     }
 
     @Override
-    public <U> Lazy<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    public <U> Lazy<U> map(Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return Lazy.of(() -> mapper.apply(get()));
     }
@@ -240,7 +239,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     @Override
-    public Lazy<T> peek(@NonNull Consumer<? super T> action) {
+    public Lazy<T> peek(Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         action.accept(get());
         return this;
@@ -255,7 +254,7 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
      * @return a new {@code Lazy} instance containing the transformed value
      * @throws NullPointerException if {@code f} is null
      */
-    public <U> U transform(@NonNull Function<? super Lazy<T>, ? extends U> f) {
+    public <U> U transform(Function<? super Lazy<T>, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         return f.apply(this);
     }

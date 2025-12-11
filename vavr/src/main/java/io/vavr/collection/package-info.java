@@ -58,4 +58,7 @@
  * <li><small>linear</small>&nbsp;&middot;&nbsp;linear time</li>
  * </ul>
  */
+@NullMarked
 package io.vavr.collection;
+
+import org.jspecify.annotations.NullMarked;

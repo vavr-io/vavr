@@ -137,7 +137,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A Vector consisting of elements {@code f(0),f(1), ..., f(n - 1)}
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Vector<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
+    public static <T> Vector<T> tabulate(int n, Function<? super Integer, ? extends T> f) {
         Objects.requireNonNull(f, "f is null");
         return io.vavr.collection.Collections.tabulate(n, f, empty(), Vector::of);
     }
@@ -151,7 +151,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return A Vector of size {@code n}, where each element contains the result supplied by {@code s}.
      * @throws NullPointerException if {@code s} is null
      */
-    public static <T> Vector<T> fill(int n, @NonNull Supplier<? extends T> s) {
+    public static <T> Vector<T> fill(int n, Supplier<? extends T> s) {
         Objects.requireNonNull(s, "s is null");
         return io.vavr.collection.Collections.fill(n, s, empty(), Vector::of);
     }
@@ -555,7 +555,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a Vector with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T, U> Vector<U> unfoldRight(T seed, @NonNull Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
+    public static <T, U> Vector<U> unfoldRight(T seed, Function<? super T, Option<Tuple2<? extends U, ? extends T>>> f) {
         return Iterator.unfoldRight(seed, f).toVector();
     }
 
@@ -584,7 +584,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a Vector with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T, U> Vector<U> unfoldLeft(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
+    public static <T, U> Vector<U> unfoldLeft(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends U>>> f) {
         return Iterator.unfoldLeft(seed, f).toVector();
     }
 
@@ -612,7 +612,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * @return a Vector with the values built up by the iteration
      * @throws NullPointerException if {@code f} is null
      */
-    public static <T> Vector<T> unfold(T seed, @NonNull Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
+    public static <T> Vector<T> unfold(T seed, Function<? super T, Option<Tuple2<? extends T, ? extends T>>> f) {
         return Iterator.unfold(seed, f).toVector();
     }
 
@@ -803,7 +803,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public Vector<T> insert(int index, T element) { return insertAll(index, Iterator.of(element)); }
 
     @Override
-    public Vector<T> insertAll(int index, @NonNull Iterable<? extends T> elements) {
+    public Vector<T> insertAll(int index, Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
         if ((index >= 0) && (index <= length())) {
             final Vector<T> begin = take(index).appendAll(elements);
@@ -846,7 +846,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     public boolean isTraversableAgain() { return true; }
 
     @Override
-    public @NonNull Iterator<T> iterator() {
+    public Iterator<T> iterator() {
         return isEmpty() ? Iterator.empty()
                          : trie.iterator();
     }
@@ -910,7 +910,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> patch(int from, @NonNull Iterable<? extends T> that, int replaced) {
+    public Vector<T> patch(int from, Iterable<? extends T> that, int replaced) {
         from = Math.max(from, 0);
         replaced = Math.max(replaced, 0);
 
@@ -1075,17 +1075,17 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    public Vector<T> scan(T zero, BiFunction<? super T, ? super T, ? extends T> operation) {
         return scanLeft(zero, operation);
     }
 
     @Override
-    public <U> Vector<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    public <U> Vector<U> scanLeft(U zero, BiFunction<? super U, ? super T, ? extends U> operation) {
         return io.vavr.collection.Collections.scanLeft(this, zero, operation, Iterator::toVector);
     }
 
     @Override
-    public <U> Vector<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    public <U> Vector<U> scanRight(U zero, BiFunction<? super T, ? super U, ? extends U> operation) {
         return io.vavr.collection.Collections.scanRight(this, zero, operation, Iterator::toVector);
     }
 
@@ -1289,7 +1289,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     @Override
-    public Vector<T> update(int index, @NonNull Function<? super T, ? extends T> updater) {
+    public Vector<T> update(int index, Function<? super T, ? extends T> updater) {
         Objects.requireNonNull(updater, "updater is null");
         return update(index, updater.apply(get(index)));
     }

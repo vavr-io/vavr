@@ -101,7 +101,7 @@ public interface Promise<T> {
      * @return a {@code Promise} completed with the given failure
      * @throws NullPointerException if {@code executor} or {@code exception} is null
      */
-    static <T> Promise<T> failed(@NonNull Executor executor, @NonNull Throwable exception) {
+    static <T> Promise<T> failed(@NonNull Executor executor, Throwable exception) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(exception, "exception is null");
         return Promise.<T> make(executor).failure(exception);
@@ -130,7 +130,7 @@ public interface Promise<T> {
      * @return a {@code Promise} already completed with the given {@code Try} result
      * @throws NullPointerException if {@code executor} or {@code result} is null
      */
-    static <T> Promise<T> fromTry(@NonNull Executor executor, @NonNull Try<? extends T> result) {
+    static <T> Promise<T> fromTry(@NonNull Executor executor, Try<? extends T> result) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(result, "result is null");
         return Promise.<T> make(executor).complete(result);

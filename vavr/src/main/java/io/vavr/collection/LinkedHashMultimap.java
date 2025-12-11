@@ -155,8 +155,8 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
          * @return A new Multimap
          */
         public <T, K, V2 extends V> LinkedHashMultimap<K, V2> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
-                                                                    @NonNull Function<? super T, ? extends K> keyMapper,
-                                                                    @NonNull Function<? super T, ? extends V2> valueMapper) {
+                                                                    Function<? super T, ? extends K> keyMapper,
+                                                                    Function<? super T, ? extends V2> valueMapper) {
             return Multimaps.ofStream(empty(), stream, keyMapper, valueMapper);
         }
 
@@ -171,7 +171,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
          * @return A new Multimap
          */
         public <T, K, V2 extends V> LinkedHashMultimap<K, V2> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
-                                                                    @NonNull Function<? super T, Tuple2<? extends K, ? extends V2>> entryMapper) {
+                                                                    Function<? super T, Tuple2<? extends K, ? extends V2>> entryMapper) {
             return Multimaps.ofStream(empty(), stream, entryMapper);
         }
 
@@ -187,7 +187,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
          * @throws NullPointerException if {@code f} is null
          */
         @SuppressWarnings("unchecked")
-        public <K, V2 extends V> LinkedHashMultimap<K, V2> tabulate(int n, @NonNull Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
+        public <K, V2 extends V> LinkedHashMultimap<K, V2> tabulate(int n, Function<? super Integer, ? extends Tuple2<? extends K, ? extends V2>> f) {
             Objects.requireNonNull(f, "f is null");
             return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V2>>) f));
         }
@@ -203,7 +203,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
          * @throws NullPointerException if {@code s} is null
          */
         @SuppressWarnings("unchecked")
-        public <K, V2 extends V> LinkedHashMultimap<K, V2> fill(int n, @NonNull Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
+        public <K, V2 extends V> LinkedHashMultimap<K, V2> fill(int n, Supplier<? extends Tuple2<? extends K, ? extends V2>> s) {
             Objects.requireNonNull(s, "s is null");
             return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V2>>) s));
         }
@@ -218,7 +218,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
          * @return A LinkedHashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
          */
         @SuppressWarnings("unchecked")
-        public <K, V2 extends V> LinkedHashMultimap<K, V2> fill(int n, @NonNull Tuple2<? extends K, ? extends V2> element) {
+        public <K, V2 extends V> LinkedHashMultimap<K, V2> fill(int n, Tuple2<? extends K, ? extends V2> element) {
             return ofEntries(Collections.fillObject(n, element));
         }
 
