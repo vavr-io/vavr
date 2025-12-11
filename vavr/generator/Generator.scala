@@ -136,7 +136,7 @@ def generateMainClasses(): Unit = {
          */
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public static <T> $returnType<T> $name(T... elements) {
+        public static <T> $returnType<T> $name(@$NonNullType T... elements) {
             return $traversableType.of(elements);
         }
       """
@@ -161,7 +161,7 @@ def generateMainClasses(): Unit = {
          * @param comparator The comparator used to sort the elements
          * @return A new {@link $traversableType} empty instance
          */
-        public static <T extends Comparable<? super T>> $returnType<T> $name($JavaComparatorType<? super T> comparator) {
+        public static <T extends Comparable<? super T>> $returnType<T> $name(@$NonNullType $JavaComparatorType<? super T> comparator) {
             return $traversableType.empty(comparator);
         }
 
@@ -184,7 +184,7 @@ def generateMainClasses(): Unit = {
          * @param element    An element.
          * @return A new {@link $traversableType} instance containing the given element
          */
-        public static <T> $returnType<T> $name($JavaComparatorType<? super T> comparator, T element) {
+        public static <T> $returnType<T> $name(@$NonNullType $JavaComparatorType<? super T> comparator, T element) {
             return $traversableType.of(comparator, element);
         }
 
@@ -197,7 +197,7 @@ def generateMainClasses(): Unit = {
          */
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public static <T extends Comparable<? super T>> $returnType<T> $name(T... elements) {
+        public static <T extends Comparable<? super T>> $returnType<T> $name(@$NonNullType T... elements) {
             return $traversableType.of(elements);
         }
 
@@ -211,7 +211,7 @@ def generateMainClasses(): Unit = {
          */
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public static <T> $returnType<T> $name($JavaComparatorType<? super T> comparator, T... elements) {
+        public static <T> $returnType<T> $name(@$NonNullType $JavaComparatorType<? super T> comparator, @$NonNullType T... elements) {
             return $traversableType.of(comparator, elements);
         }
       """
@@ -242,7 +242,7 @@ def generateMainClasses(): Unit = {
         @Deprecated
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public static <K, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
+        public static <K, V> $returnType<K, V> $name(@$NonNullType Tuple2<? extends K, ? extends V>... entries) {
             return $mapType.ofEntries(entries);
         }
 
@@ -283,7 +283,7 @@ def generateMainClasses(): Unit = {
          * @param keyComparator The comparator used to sort the entries by their key
          * @return A new empty {@link $mapType} instance
          */
-        public static <K, V> $returnType<K, V> $name($JavaComparatorType<? super K> keyComparator) {
+        public static <K, V> $returnType<K, V> $name(@$NonNullType $JavaComparatorType<? super K> keyComparator) {
             return $mapType.empty(keyComparator);
         }
 
@@ -297,7 +297,7 @@ def generateMainClasses(): Unit = {
          * @param value         A singleton map value.
          * @return A new {@link $mapType} instance containing the given entry
          */
-        public static <K, V> $returnType<K, V> $name(Comparator<? super K> keyComparator, K key, V value) {
+        public static <K, V> $returnType<K, V> $name(@$NonNullType Comparator<? super K> keyComparator, K key, V value) {
             return $mapType.of(keyComparator, key, value);
         }
 
@@ -313,7 +313,7 @@ def generateMainClasses(): Unit = {
         @Deprecated
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(Tuple2<? extends K, ? extends V>... entries) {
+        public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(@$NonNullType Tuple2<? extends K, ? extends V>... entries) {
             return $mapType.ofEntries(entries);
         }
 
@@ -330,7 +330,7 @@ def generateMainClasses(): Unit = {
         @Deprecated
         @SuppressWarnings("varargs")
         @SafeVarargs
-        public static <K, V> $returnType<K, V> $name($JavaComparatorType<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
+        public static <K, V> $returnType<K, V> $name(@$NonNullType $JavaComparatorType<? super K> keyComparator, @$NonNullType Tuple2<? extends K, ? extends V>... entries) {
             return $mapType.ofEntries(keyComparator, entries);
         }
 
@@ -345,6 +345,7 @@ def generateMainClasses(): Unit = {
          */
         @Deprecated
         public static <K extends Comparable<? super K>, V> $returnType<K, V> $name($JavaMapType<? extends K, ? extends V> map) {
+            $Objects.requireNonNull(map, "map is null");
             return $mapType.ofAll(map);
         }
 
@@ -382,7 +383,7 @@ def generateMainClasses(): Unit = {
                * @param methodReference A method reference
                * @return A {@link Function$i}
                */
-              public static $fullGenerics Function$i$fullGenerics Function(Function$i$fullGenerics methodReference) {
+              public static $fullGenerics Function$i$fullGenerics Function(@$NonNullType Function$i$fullGenerics methodReference) {
                   return Function$i.of(methodReference);
               }
             """
@@ -401,7 +402,7 @@ def generateMainClasses(): Unit = {
                * @param methodReference A method reference
                * @return A {@link CheckedFunction$i}
                */
-              public static $fullGenerics CheckedFunction$i$fullGenerics CheckedFunction(CheckedFunction$i$fullGenerics methodReference) {
+              public static $fullGenerics CheckedFunction$i$fullGenerics CheckedFunction(@$NonNullType CheckedFunction$i$fullGenerics methodReference) {
                   return CheckedFunction$i.of(methodReference);
               }
             """
@@ -420,7 +421,7 @@ def generateMainClasses(): Unit = {
                * @param f    A method reference
                * @return An unchecked wrapper of supplied {@link CheckedFunction$i}
                */
-              public static $fullGenerics Function$i$fullGenerics unchecked(CheckedFunction$i$fullGenerics f) {
+              public static $fullGenerics Function$i$fullGenerics unchecked(@$NonNullType CheckedFunction$i$fullGenerics f) {
                   return f.unchecked();
               }
             """
@@ -496,7 +497,7 @@ def generateMainClasses(): Unit = {
            * @return A new {@link $FutureType} instance.
            * @throws NullPointerException if computation is null.
            */
-          public static <T> $FutureType<T> Future($CheckedFunction0Type<? extends T> computation) {
+          public static <T> $FutureType<T> Future(@$NonNullType $CheckedFunction0Type<? extends T> computation) {
               return $FutureType.of(computation);
           }
 
@@ -509,7 +510,7 @@ def generateMainClasses(): Unit = {
            * @return A new {@link $FutureType} instance.
            * @throws NullPointerException if one of executorService or computation is null.
            */
-          public static <T> $FutureType<T> Future($ExecutorType executorService, $CheckedFunction0Type<? extends T> computation) {
+          public static <T> $FutureType<T> Future(@$NonNullType $ExecutorType executorService, @$NonNullType $CheckedFunction0Type<? extends T> computation) {
               return $FutureType.of(executorService, computation);
           }
 
@@ -533,7 +534,7 @@ def generateMainClasses(): Unit = {
            * @return A succeeded {@link $FutureType}.
            * @throws NullPointerException if executorService is null
            */
-          public static <T> $FutureType<T> Future($ExecutorType executorService, T result) {
+          public static <T> $FutureType<T> Future(@$NonNullType $ExecutorType executorService, T result) {
               return $FutureType.successful(executorService, result);
           }
 
@@ -546,7 +547,7 @@ def generateMainClasses(): Unit = {
            * @param supplier A supplier
            * @return A new instance of {@link Lazy}
            */
-          public static <T> Lazy<T> Lazy($SupplierType<? extends T> supplier) {
+          public static <T> Lazy<T> Lazy(@$NonNullType $SupplierType<? extends T> supplier) {
               return Lazy.of(supplier);
           }
 
@@ -596,7 +597,7 @@ def generateMainClasses(): Unit = {
            * @return {@link $TryType.Success} if no exception occurs, otherwise {@link $TryType.Failure} if an
            * exception occurs calling {@code supplier.get()}.
            */
-          public static <T> $TryType<T> Try($CheckedFunction0Type<? extends T> supplier) {
+          public static <T> $TryType<T> Try(@$NonNullType $CheckedFunction0Type<? extends T> supplier) {
               return $TryType.of(supplier);
           }
 
@@ -620,7 +621,7 @@ def generateMainClasses(): Unit = {
            * @return A new {@link $TryType.Failure}.
            */
           @SuppressWarnings("unchecked")
-          public static <T> $TryType.Failure<T> Failure(Throwable exception) {
+          public static <T> $TryType.Failure<T> Failure(@$NonNullType Throwable exception) {
               return ($TryType.Failure<T>) $TryType.failure(exception);
           }
 
@@ -673,7 +674,7 @@ def generateMainClasses(): Unit = {
            * @return A new {@link $CharSeqType} instance containing the given characters in the same order.
            * @throws NullPointerException if {@code elements} is null
            */
-          public static $CharSeqType CharSeq(char... characters) {
+          public static $CharSeqType CharSeq(@$NonNullType char... characters) {
               return $CharSeqType.of(characters);
           }
 
@@ -683,7 +684,7 @@ def generateMainClasses(): Unit = {
            * @param sequence {@code CharSequence} instance.
            * @return A new {@link $CharSeqType} instance
            */
-          public static $CharSeqType CharSeq(CharSequence sequence) {
+          public static $CharSeqType CharSeq(@$NonNullType CharSequence sequence) {
               return $CharSeqType.of(sequence);
           }
 
@@ -737,7 +738,7 @@ def generateMainClasses(): Unit = {
            * @param unit A block of code to be run.
            * @return the single instance of {@code Void}, namely {@code null}
            */
-          public static Void run(Runnable unit) {
+          public static Void run(@$NonNullType Runnable unit) {
               unit.run();
               return null;
           }
@@ -913,7 +914,7 @@ def generateMainClasses(): Unit = {
            * @param <U> component type of the resulting {@code Iterator}
            * @return A new Iterator
            */
-          public static <T, U> $IteratorType<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
+          public static <T, U> $IteratorType<U> For(@$NonNullType Iterable<T> ts, @$NonNullType Function<? super T, ? extends Iterable<U>> f) {
               return $IteratorType.ofAll(ts).flatMap(f);
           }
 
@@ -1678,7 +1679,7 @@ def generateMainClasses(): Unit = {
            * @param args   Arguments referenced by the format specifiers
            */
           @GwtIncompatible
-          public static void printf(String format, Object... args) {
+          public static void printf(@$NonNullType String format, @$NonNullType Object... args) {
               System.out.printf(format, args);
           }
 

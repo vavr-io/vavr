@@ -170,7 +170,7 @@ public final class API {
      * @param args   Arguments referenced by the format specifiers
      */
     @GwtIncompatible
-    public static void printf(String format, Object... args) {
+    public static void printf(@NonNull String format, @NonNull Object... args) {
         System.out.printf(format, args);
     }
 
@@ -203,7 +203,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function0}
      */
-    public static <R> Function0<R> Function(Function0<R> methodReference) {
+    public static <R> Function0<R> Function(@NonNull Function0<R> methodReference) {
         return Function0.of(methodReference);
     }
 
@@ -215,7 +215,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function1}
      */
-    public static <T1, R> Function1<T1, R> Function(Function1<T1, R> methodReference) {
+    public static <T1, R> Function1<T1, R> Function(@NonNull Function1<T1, R> methodReference) {
         return Function1.of(methodReference);
     }
 
@@ -228,7 +228,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function2}
      */
-    public static <T1, T2, R> Function2<T1, T2, R> Function(Function2<T1, T2, R> methodReference) {
+    public static <T1, T2, R> Function2<T1, T2, R> Function(@NonNull Function2<T1, T2, R> methodReference) {
         return Function2.of(methodReference);
     }
 
@@ -242,7 +242,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function3}
      */
-    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> Function(Function3<T1, T2, T3, R> methodReference) {
+    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> Function(@NonNull Function3<T1, T2, T3, R> methodReference) {
         return Function3.of(methodReference);
     }
 
@@ -257,7 +257,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function4}
      */
-    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> Function(Function4<T1, T2, T3, T4, R> methodReference) {
+    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> Function(@NonNull Function4<T1, T2, T3, T4, R> methodReference) {
         return Function4.of(methodReference);
     }
 
@@ -273,7 +273,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function5}
      */
-    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> Function(Function5<T1, T2, T3, T4, T5, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> Function(@NonNull Function5<T1, T2, T3, T4, T5, R> methodReference) {
         return Function5.of(methodReference);
     }
 
@@ -290,7 +290,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function6}
      */
-    public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> Function(Function6<T1, T2, T3, T4, T5, T6, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> Function(@NonNull Function6<T1, T2, T3, T4, T5, T6, R> methodReference) {
         return Function6.of(methodReference);
     }
 
@@ -308,7 +308,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function7}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> Function(Function7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> Function(@NonNull Function7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
         return Function7.of(methodReference);
     }
 
@@ -327,7 +327,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link Function8}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> Function(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> Function(@NonNull Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
         return Function8.of(methodReference);
     }
 
@@ -340,7 +340,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction0}
      */
-    public static <R> CheckedFunction0<R> CheckedFunction(CheckedFunction0<R> methodReference) {
+    public static <R> CheckedFunction0<R> CheckedFunction(@NonNull CheckedFunction0<R> methodReference) {
         return CheckedFunction0.of(methodReference);
     }
 
@@ -352,7 +352,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction1}
      */
-    public static <T1, R> CheckedFunction1<T1, R> CheckedFunction(CheckedFunction1<T1, R> methodReference) {
+    public static <T1, R> CheckedFunction1<T1, R> CheckedFunction(@NonNull CheckedFunction1<T1, R> methodReference) {
         return CheckedFunction1.of(methodReference);
     }
 
@@ -365,7 +365,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction2}
      */
-    public static <T1, T2, R> CheckedFunction2<T1, T2, R> CheckedFunction(CheckedFunction2<T1, T2, R> methodReference) {
+    public static <T1, T2, R> CheckedFunction2<T1, T2, R> CheckedFunction(@NonNull CheckedFunction2<T1, T2, R> methodReference) {
         return CheckedFunction2.of(methodReference);
     }
 
@@ -379,7 +379,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction3}
      */
-    public static <T1, T2, T3, R> CheckedFunction3<T1, T2, T3, R> CheckedFunction(CheckedFunction3<T1, T2, T3, R> methodReference) {
+    public static <T1, T2, T3, R> CheckedFunction3<T1, T2, T3, R> CheckedFunction(@NonNull CheckedFunction3<T1, T2, T3, R> methodReference) {
         return CheckedFunction3.of(methodReference);
     }
 
@@ -394,7 +394,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction4}
      */
-    public static <T1, T2, T3, T4, R> CheckedFunction4<T1, T2, T3, T4, R> CheckedFunction(CheckedFunction4<T1, T2, T3, T4, R> methodReference) {
+    public static <T1, T2, T3, T4, R> CheckedFunction4<T1, T2, T3, T4, R> CheckedFunction(@NonNull CheckedFunction4<T1, T2, T3, T4, R> methodReference) {
         return CheckedFunction4.of(methodReference);
     }
 
@@ -410,7 +410,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction5}
      */
-    public static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> CheckedFunction(CheckedFunction5<T1, T2, T3, T4, T5, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, R> CheckedFunction5<T1, T2, T3, T4, T5, R> CheckedFunction(@NonNull CheckedFunction5<T1, T2, T3, T4, T5, R> methodReference) {
         return CheckedFunction5.of(methodReference);
     }
 
@@ -427,7 +427,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction6}
      */
-    public static <T1, T2, T3, T4, T5, T6, R> CheckedFunction6<T1, T2, T3, T4, T5, T6, R> CheckedFunction(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, R> CheckedFunction6<T1, T2, T3, T4, T5, T6, R> CheckedFunction(@NonNull CheckedFunction6<T1, T2, T3, T4, T5, T6, R> methodReference) {
         return CheckedFunction6.of(methodReference);
     }
 
@@ -445,7 +445,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction7}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> CheckedFunction(@NonNull CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> methodReference) {
         return CheckedFunction7.of(methodReference);
     }
 
@@ -464,7 +464,7 @@ public final class API {
      * @param methodReference A method reference
      * @return A {@link CheckedFunction8}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> CheckedFunction(@NonNull CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> methodReference) {
         return CheckedFunction8.of(methodReference);
     }
 
@@ -477,7 +477,7 @@ public final class API {
      * @param f    A method reference
      * @return An unchecked wrapper of supplied {@link CheckedFunction0}
      */
-    public static <R> Function0<R> unchecked(CheckedFunction0<R> f) {
+    public static <R> Function0<R> unchecked(@NonNull CheckedFunction0<R> f) {
         return f.unchecked();
     }
 
@@ -489,7 +489,7 @@ public final class API {
      * @param f    A method reference
      * @return An unchecked wrapper of supplied {@link CheckedFunction1}
      */
-    public static <T1, R> Function1<T1, R> unchecked(CheckedFunction1<T1, R> f) {
+    public static <T1, R> Function1<T1, R> unchecked(@NonNull CheckedFunction1<T1, R> f) {
         return f.unchecked();
     }
 
@@ -502,7 +502,7 @@ public final class API {
      * @param f    A method reference
      * @return An unchecked wrapper of supplied {@link CheckedFunction2}
      */
-    public static <T1, T2, R> Function2<T1, T2, R> unchecked(CheckedFunction2<T1, T2, R> f) {
+    public static <T1, T2, R> Function2<T1, T2, R> unchecked(@NonNull CheckedFunction2<T1, T2, R> f) {
         return f.unchecked();
     }
 
@@ -516,7 +516,7 @@ public final class API {
      * @param f    A method reference
      * @return An unchecked wrapper of supplied {@link CheckedFunction3}
      */
-    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> unchecked(CheckedFunction3<T1, T2, T3, R> f) {
+    public static <T1, T2, T3, R> Function3<T1, T2, T3, R> unchecked(@NonNull CheckedFunction3<T1, T2, T3, R> f) {
         return f.unchecked();
     }
 
@@ -531,7 +531,7 @@ public final class API {
      * @param f    A method reference
      * @return An unchecked wrapper of supplied {@link CheckedFunction4}
      */
-    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> unchecked(CheckedFunction4<T1, T2, T3, T4, R> f) {
+    public static <T1, T2, T3, T4, R> Function4<T1, T2, T3, T4, R> unchecked(@NonNull CheckedFunction4<T1, T2, T3, T4, R> f) {
         return f.unchecked();
     }
 
@@ -547,7 +547,7 @@ public final class API {
      * @param f    A method reference
      * @return An unchecked wrapper of supplied {@link CheckedFunction5}
      */
-    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> unchecked(CheckedFunction5<T1, T2, T3, T4, T5, R> f) {
+    public static <T1, T2, T3, T4, T5, R> Function5<T1, T2, T3, T4, T5, R> unchecked(@NonNull CheckedFunction5<T1, T2, T3, T4, T5, R> f) {
         return f.unchecked();
     }
 
@@ -564,7 +564,7 @@ public final class API {
      * @param f    A method reference
      * @return An unchecked wrapper of supplied {@link CheckedFunction6}
      */
-    public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> unchecked(CheckedFunction6<T1, T2, T3, T4, T5, T6, R> f) {
+    public static <T1, T2, T3, T4, T5, T6, R> Function6<T1, T2, T3, T4, T5, T6, R> unchecked(@NonNull CheckedFunction6<T1, T2, T3, T4, T5, T6, R> f) {
         return f.unchecked();
     }
 
@@ -582,7 +582,7 @@ public final class API {
      * @param f    A method reference
      * @return An unchecked wrapper of supplied {@link CheckedFunction7}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> unchecked(CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> f) {
+    public static <T1, T2, T3, T4, T5, T6, T7, R> Function7<T1, T2, T3, T4, T5, T6, T7, R> unchecked(@NonNull CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> f) {
         return f.unchecked();
     }
 
@@ -601,7 +601,7 @@ public final class API {
      * @param f    A method reference
      * @return An unchecked wrapper of supplied {@link CheckedFunction8}
      */
-    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked(CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
+    public static <T1, T2, T3, T4, T5, T6, T7, T8, R> Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> unchecked(@NonNull CheckedFunction8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
         return f.unchecked();
     }
 
@@ -814,7 +814,7 @@ public final class API {
      * @return A new {@link Future} instance.
      * @throws NullPointerException if computation is null.
      */
-    public static <T> Future<T> Future(CheckedFunction0<? extends T> computation) {
+    public static <T> Future<T> Future(@NonNull CheckedFunction0<? extends T> computation) {
         return Future.of(computation);
     }
 
@@ -827,7 +827,7 @@ public final class API {
      * @return A new {@link Future} instance.
      * @throws NullPointerException if one of executorService or computation is null.
      */
-    public static <T> Future<T> Future(Executor executorService, CheckedFunction0<? extends T> computation) {
+    public static <T> Future<T> Future(@NonNull Executor executorService, @NonNull CheckedFunction0<? extends T> computation) {
         return Future.of(executorService, computation);
     }
 
@@ -851,7 +851,7 @@ public final class API {
      * @return A succeeded {@link Future}.
      * @throws NullPointerException if executorService is null
      */
-    public static <T> Future<T> Future(Executor executorService, T result) {
+    public static <T> Future<T> Future(@NonNull Executor executorService, T result) {
         return Future.successful(executorService, result);
     }
 
@@ -864,7 +864,7 @@ public final class API {
      * @param supplier A supplier
      * @return A new instance of {@link Lazy}
      */
-    public static <T> Lazy<T> Lazy(Supplier<? extends T> supplier) {
+    public static <T> Lazy<T> Lazy(@NonNull Supplier<? extends T> supplier) {
         return Lazy.of(supplier);
     }
 
@@ -914,7 +914,7 @@ public final class API {
      * @return {@link Try.Success} if no exception occurs, otherwise {@link Try.Failure} if an
      * exception occurs calling {@code supplier.get()}.
      */
-    public static <T> Try<T> Try(CheckedFunction0<? extends T> supplier) {
+    public static <T> Try<T> Try(@NonNull CheckedFunction0<? extends T> supplier) {
         return Try.of(supplier);
     }
 
@@ -938,7 +938,7 @@ public final class API {
      * @return A new {@link Try.Failure}.
      */
     @SuppressWarnings("unchecked")
-    public static <T> Try.Failure<T> Failure(Throwable exception) {
+    public static <T> Try.Failure<T> Failure(@NonNull Throwable exception) {
         return (Try.Failure<T>) Try.failure(exception);
     }
 
@@ -991,7 +991,7 @@ public final class API {
      * @return A new {@link CharSeq} instance containing the given characters in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    public static CharSeq CharSeq(char... characters) {
+    public static CharSeq CharSeq(@NonNull char... characters) {
         return CharSeq.of(characters);
     }
 
@@ -1001,7 +1001,7 @@ public final class API {
      * @param sequence {@code CharSequence} instance.
      * @return A new {@link CharSeq} instance
      */
-    public static CharSeq CharSeq(CharSequence sequence) {
+    public static CharSeq CharSeq(@NonNull CharSequence sequence) {
         return CharSeq.of(sequence);
     }
 
@@ -1026,7 +1026,7 @@ public final class API {
      * @param comparator The comparator used to sort the elements
      * @return A new {@link PriorityQueue} empty instance
      */
-    public static <T extends Comparable<? super T>> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator) {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> PriorityQueue(@NonNull Comparator<? super T> comparator) {
         return PriorityQueue.empty(comparator);
     }
 
@@ -1049,7 +1049,7 @@ public final class API {
      * @param element    An element.
      * @return A new {@link PriorityQueue} instance containing the given element
      */
-    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, T element) {
+    public static <T> PriorityQueue<T> PriorityQueue(@NonNull Comparator<? super T> comparator, T element) {
         return PriorityQueue.of(comparator, element);
     }
 
@@ -1062,7 +1062,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T extends Comparable<? super T>> PriorityQueue<T> PriorityQueue(T... elements) {
+    public static <T extends Comparable<? super T>> PriorityQueue<T> PriorityQueue(@NonNull T... elements) {
         return PriorityQueue.of(elements);
     }
 
@@ -1076,7 +1076,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> PriorityQueue<T> PriorityQueue(Comparator<? super T> comparator, T... elements) {
+    public static <T> PriorityQueue<T> PriorityQueue(@NonNull Comparator<? super T> comparator, @NonNull T... elements) {
         return PriorityQueue.of(comparator, elements);
     }
 
@@ -1115,7 +1115,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Seq<T> Seq(T... elements) {
+    public static <T> Seq<T> Seq(@NonNull T... elements) {
         return List.of(elements);
     }
     // -- IndexedSeq
@@ -1151,7 +1151,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> IndexedSeq<T> IndexedSeq(T... elements) {
+    public static <T> IndexedSeq<T> IndexedSeq(@NonNull T... elements) {
         return Vector.of(elements);
     }
     // -- Array
@@ -1187,7 +1187,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Array<T> Array(T... elements) {
+    public static <T> Array<T> Array(@NonNull T... elements) {
         return Array.of(elements);
     }
     // -- List
@@ -1223,7 +1223,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> List<T> List(T... elements) {
+    public static <T> List<T> List(@NonNull T... elements) {
         return List.of(elements);
     }
     // -- Queue
@@ -1259,7 +1259,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Queue<T> Queue(T... elements) {
+    public static <T> Queue<T> Queue(@NonNull T... elements) {
         return Queue.of(elements);
     }
     // -- Stream
@@ -1295,7 +1295,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Stream<T> Stream(T... elements) {
+    public static <T> Stream<T> Stream(@NonNull T... elements) {
         return Stream.of(elements);
     }
     // -- Vector
@@ -1331,7 +1331,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Vector<T> Vector(T... elements) {
+    public static <T> Vector<T> Vector(@NonNull T... elements) {
         return Vector.of(elements);
     }
 
@@ -1370,7 +1370,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Set<T> Set(T... elements) {
+    public static <T> Set<T> Set(@NonNull T... elements) {
         return HashSet.of(elements);
     }
     // -- LinkedSet
@@ -1406,7 +1406,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> Set<T> LinkedSet(T... elements) {
+    public static <T> Set<T> LinkedSet(@NonNull T... elements) {
         return LinkedHashSet.of(elements);
     }
     // -- SortedSet
@@ -1428,7 +1428,7 @@ public final class API {
      * @param comparator The comparator used to sort the elements
      * @return A new {@link TreeSet} empty instance
      */
-    public static <T extends Comparable<? super T>> SortedSet<T> SortedSet(Comparator<? super T> comparator) {
+    public static <T extends Comparable<? super T>> SortedSet<T> SortedSet(@NonNull Comparator<? super T> comparator) {
         return TreeSet.empty(comparator);
     }
 
@@ -1451,7 +1451,7 @@ public final class API {
      * @param element    An element.
      * @return A new {@link TreeSet} instance containing the given element
      */
-    public static <T> SortedSet<T> SortedSet(Comparator<? super T> comparator, T element) {
+    public static <T> SortedSet<T> SortedSet(@NonNull Comparator<? super T> comparator, T element) {
         return TreeSet.of(comparator, element);
     }
 
@@ -1464,7 +1464,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T extends Comparable<? super T>> SortedSet<T> SortedSet(T... elements) {
+    public static <T extends Comparable<? super T>> SortedSet<T> SortedSet(@NonNull T... elements) {
         return TreeSet.of(elements);
     }
 
@@ -1478,7 +1478,7 @@ public final class API {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> SortedSet<T> SortedSet(Comparator<? super T> comparator, T... elements) {
+    public static <T> SortedSet<T> SortedSet(@NonNull Comparator<? super T> comparator, @NonNull T... elements) {
         return TreeSet.of(comparator, elements);
     }
 
@@ -1509,7 +1509,7 @@ public final class API {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K, V> Map<K, V> Map(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> Map<K, V> Map(@NonNull Tuple2<? extends K, ? extends V>... entries) {
         return HashMap.ofEntries(entries);
     }
 
@@ -1757,7 +1757,7 @@ public final class API {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K, V> Map<K, V> LinkedMap(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> Map<K, V> LinkedMap(@NonNull Tuple2<? extends K, ? extends V>... entries) {
         return LinkedHashMap.ofEntries(entries);
     }
 
@@ -1999,7 +1999,7 @@ public final class API {
      * @param keyComparator The comparator used to sort the entries by their key
      * @return A new empty {@link TreeMap} instance
      */
-    public static <K, V> SortedMap<K, V> SortedMap(Comparator<? super K> keyComparator) {
+    public static <K, V> SortedMap<K, V> SortedMap(@NonNull Comparator<? super K> keyComparator) {
         return TreeMap.empty(keyComparator);
     }
 
@@ -2013,7 +2013,7 @@ public final class API {
      * @param value         A singleton map value.
      * @return A new {@link TreeMap} instance containing the given entry
      */
-    public static <K, V> SortedMap<K, V> SortedMap(Comparator<? super K> keyComparator, K key, V value) {
+    public static <K, V> SortedMap<K, V> SortedMap(@NonNull Comparator<? super K> keyComparator, K key, V value) {
         return TreeMap.of(keyComparator, key, value);
     }
 
@@ -2029,7 +2029,7 @@ public final class API {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(Tuple2<? extends K, ? extends V>... entries) {
+    public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(@NonNull Tuple2<? extends K, ? extends V>... entries) {
         return TreeMap.ofEntries(entries);
     }
 
@@ -2046,7 +2046,7 @@ public final class API {
     @Deprecated
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <K, V> SortedMap<K, V> SortedMap(Comparator<? super K> keyComparator, Tuple2<? extends K, ? extends V>... entries) {
+    public static <K, V> SortedMap<K, V> SortedMap(@NonNull Comparator<? super K> keyComparator, @NonNull Tuple2<? extends K, ? extends V>... entries) {
         return TreeMap.ofEntries(keyComparator, entries);
     }
 
@@ -2061,6 +2061,7 @@ public final class API {
      */
     @Deprecated
     public static <K extends Comparable<? super K>, V> SortedMap<K, V> SortedMap(java.util.Map<? extends K, ? extends V> map) {
+        Objects.requireNonNull(map, "map is null");
         return TreeMap.ofAll(map);
     }
 
@@ -2301,7 +2302,7 @@ public final class API {
      * @param unit A block of code to be run.
      * @return the single instance of {@code Void}, namely {@code null}
      */
-    public static Void run(Runnable unit) {
+    public static Void run(@NonNull Runnable unit) {
         unit.run();
         return null;
     }
@@ -2328,7 +2329,7 @@ public final class API {
      * @param <U> component type of the resulting {@code Iterator}
      * @return A new Iterator
      */
-    public static <T, U> Iterator<U> For(Iterable<T> ts, Function<? super T, ? extends Iterable<U>> f) {
+    public static <T, U> Iterator<U> For(@NonNull Iterable<T> ts, @NonNull Function<? super T, ? extends Iterable<U>> f) {
         return Iterator.ofAll(ts).flatMap(f);
     }
 
