@@ -727,11 +727,11 @@ def generateMainClasses(): Unit = {
            * Runs a {@code unit} of work and returns {@code Void}. This is helpful when a return value is expected,
            * e.g. by {@code Match}:
            *
-           * <pre><code>Match(i).of(
+           * <pre>{@code Match(i).of(
            *     Case($$(is(0)), i -&gt; run(() -&gt; System.out.println("zero"))),
            *     Case($$(is(1)), i -&gt; run(() -&gt; System.out.println("one"))),
            *     Case($$(), o -&gt; run(() -&gt; System.out.println("many")))
-           * )</code></pre>
+           * )}</pre>
            *
            * @param unit A block of code to be run.
            * @return the single instance of {@code Void}, namely {@code null}
@@ -899,12 +899,12 @@ def generateMainClasses(): Unit = {
            * {@code For(...).yield(...)}.
            * <p>
            * Example:
-           * <pre><code>
+           * <pre>{@code 
            * For(getPersons(), person -&gt;
            *     For(person.getTweets(), tweet -&gt;
            *         For(tweet.getReplies())
            *             .yield(reply -&gt; person + ", " + tweet + ", " + reply)));
-           * </code></pre>
+           * }</pre>
            *
            * @param ts An iterable
            * @param f A function {@code T -> Iterable<U>}
@@ -1190,7 +1190,7 @@ def generateMainClasses(): Unit = {
            * <p>
            * This method is intended to be used with lambdas and method references, for example:
            *
-           * <pre><code>
+           * <pre>{@code 
            * String evenOrOdd(int num) {
            *     return Match(num).of(
            *             Case($$(i -&gt; i % 2 == 0), "even"),
@@ -1201,18 +1201,18 @@ def generateMainClasses(): Unit = {
            * boolean isOdd(int i) {
            *     return i % 2 == 1;
            * }
-           * </code></pre>
+           * }</pre>
            *
            * It is also valid to pass {@code Predicate} instances:
            *
-           * <pre><code>
+           * <pre>{@code 
            * Predicate&lt;Integer&gt; isOdd = i -&gt; i % 2 == 1;
            *
            * Match(num).of(
            *         Case($$(i -&gt; i % 2 == 0), "even"),
            *         Case($$(isOdd), "odd")
            * );
-           * </code></pre>
+           * }</pre>
            *
            * <strong>Note:</strong> Please take care when matching {@code Predicate} instances. In general,
            * <a href="http://cstheory.stackexchange.com/a/14152" target="_blank">function equality</a>
@@ -1221,21 +1221,21 @@ def generateMainClasses(): Unit = {
            * <p>
            * However, this code will fail:
            *
-           * <pre><code>
+           * <pre>{@code 
            * Predicate&lt;Integer&gt; p = i -&gt; true;
            * Match(p).of(
            *     Case($$(p), 1) // WRONG! It calls $$(Predicate)
            * );
-           * </code></pre>
+           * }</pre>
            *
            * Instead we have to use {@link Predicates#is(Object)}:
            *
-           * <pre><code>
+           * <pre>{@code 
            * Predicate&lt;Integer&gt; p = i -&gt; true;
            * Match(p).of(
            *     Case($$(is(p)), 1) // CORRECT! It calls $$(T)
            * );
-           * </code></pre>
+           * }</pre>
            *
            * @param <T>       type of the prototype
            * @param predicate the predicate that tests a given value
@@ -1621,13 +1621,13 @@ def generateMainClasses(): Unit = {
            * <p>
            * Example:
            *
-           * <pre><code>
+           * <pre>{@code 
            * public HttpResponse getResponse(HttpRequest request) {
            *     return TODO();
            * }
            *
            * final HttpResponse response = getHttpResponse(TODO());
-           * </code></pre>
+           * }</pre>
            *
            * @param <T> The result type of the missing implementation.
            * @return Nothing - this methods always throws.
@@ -1643,13 +1643,13 @@ def generateMainClasses(): Unit = {
            * <p>
            * Example:
            *
-           * <pre><code>
+           * <pre>{@code 
            * public HttpResponse getResponse(HttpRequest request) {
            *     return TODO("fake response");
            * }
            *
            * final HttpResponse response = getHttpResponse(TODO("fake request"));
-           * </code></pre>
+           * }</pre>
            *
            * @param msg An error message
            * @param <T> The result type of the missing implementation.
@@ -1703,22 +1703,22 @@ def generateMainClasses(): Unit = {
         /**
          * The most basic Vavr functionality is accessed through this API class.
          *
-         * <pre><code>
+         * <pre>{@code 
          * import static io.vavr.API.*;
-         * </code></pre>
+         * }</pre>
          *
          * <h2>For-comprehension</h2>
          * <p>
          * The {@code For}-comprehension is syntactic sugar for nested for-loops. We write
          *
-         * <pre><code>
+         * <pre>{@code 
          * // lazily evaluated
          * Iterator&lt;R&gt; result = For(iterable1, iterable2, ..., iterableN).yield(f);
-         * </code></pre>
+         * }</pre>
          *
          * or
          *
-         * <pre><code>
+         * <pre>{@code 
          * Iterator&lt;R&gt; result =
          *     For(iterable1, v1 -&gt;
          *         For(iterable2, v2 -&gt;
@@ -1726,11 +1726,11 @@ def generateMainClasses(): Unit = {
          *             For(iterableN).yield(vN -&gt; f.apply(v1, v2, ..., vN))
          *         )
          *     );
-         * </code></pre>
+         * }</pre>
          *
          * instead of
          *
-         * <pre><code>
+         * <pre>{@code 
          * for(T1 v1 : iterable1) {
          *     for (T2 v2 : iterable2) {
          *         ...
@@ -1742,7 +1742,7 @@ def generateMainClasses(): Unit = {
          *         }
          *     }
          * }
-         * </code></pre>
+         * }</pre>
          *
          * Please note that values like Option, Try, Future, etc. are also iterable.
          * <p>
@@ -1750,9 +1750,9 @@ def generateMainClasses(): Unit = {
          * f: {@code (v1, v2, ..., vN) -> ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
          * mapped cross product elements.
          *
-         * <pre><code>
+         * <pre>{@code 
          * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN }
-         * </code></pre>
+         * }</pre>
          *
          * As with all Vavr Values, the result of a For-comprehension can be converted
          * to standard Java library and Vavr types.
@@ -1887,7 +1887,7 @@ def generateMainClasses(): Unit = {
                * </ul>
                *
                * Examples (w.l.o.g. referring to Function1):
-               * <pre><code>// using a lambda expression
+               * <pre>{@code // using a lambda expression
                * Function1&lt;Integer, Integer&gt; add1 = Function1.of(i -&gt; i + 1);
                *
                * // using a method reference (, e.g. Integer method(Integer i) { return i + 1; })
@@ -1895,10 +1895,10 @@ def generateMainClasses(): Unit = {
                *
                * // using a lambda reference
                * Function1&lt;Integer, Integer&gt; add3 = Function1.of(add1::apply);
-               * </code></pre>
+               * }</pre>
                * <p>
                * <strong>Caution:</strong> Reflection loses type information of lambda references.
-               * <pre><code>// type of a lambda expression
+               * <pre>{@code // type of a lambda expression
                * Type&lt;?, ?&gt; type1 = add1.getType(); // (Integer) -&gt; Integer
                *
                * // type of a method reference
@@ -1906,7 +1906,7 @@ def generateMainClasses(): Unit = {
                *
                * // type of a lambda reference
                * Type&lt;?, ?&gt; type3 = add3.getType(); // (Object) -&gt; Object
-               * </code></pre>
+               * }</pre>
                *
                * @param methodReference (typically) a method reference, e.g. {@code Type::method}
                ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
