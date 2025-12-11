@@ -63,6 +63,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.StreamSupport;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.API.Invalid;
 import static io.vavr.API.Left;
@@ -431,7 +432,7 @@ public interface Value<T> extends Iterable<T> {
      *
      * @return A value of type {@code T} or {@code null}.
      */
-    default T getOrNull() {
+    default @Nullable T getOrNull() {
         return isEmpty() ? null : get();
     }
 
@@ -1468,7 +1469,7 @@ public interface Value<T> extends Iterable<T> {
      * @return A new {@link Tree}.
      * @see Tree#build(Iterable, Function, Function)
      */
-    default <ID> List<Tree.Node<T>> toTree(@NonNull Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
+    default <ID> List<Tree.Node<T>> toTree(@NonNull Function<? super T, ? extends ID> idMapper, Function<? super T, @Nullable ? extends ID> parentMapper) {
         return Tree.build(this, idMapper, parentMapper);
     }
 

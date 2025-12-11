@@ -33,6 +33,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 /**
  * A replacement for {@link java.util.Optional}.
@@ -119,7 +120,7 @@ public interface Option<T> extends Value<T>, Serializable {
      * @param <T>   the value type
      * @return a {@code Some} containing {@code value}
      */
-    static <T> Option<T> some(T value) {
+    static <T> Option<T> some(@Nullable T value) {
         return new Some<>(value);
     }
 

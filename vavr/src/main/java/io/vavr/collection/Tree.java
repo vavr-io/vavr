@@ -29,6 +29,7 @@ import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collector;
 import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 import static io.vavr.collection.Tree.*;
 import static io.vavr.collection.Tree.Order.PRE_ORDER;
@@ -270,7 +271,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * @return a new, maybe empty {@code List} instance with non-empty {@code Tree} instances
      * @throws NullPointerException if {@code source}, {@code idMapper} or {@code parentMapper} is null
      */
-    static <T, ID> List<Node<T>> build(@NonNull Iterable<? extends T> source, Function<? super T, ? extends ID> idMapper, Function<? super T, ? extends ID> parentMapper) {
+    static <T, ID> List<Node<T>> build(@NonNull Iterable<? extends T> source, Function<? super T, ? extends ID> idMapper, Function<? super T, @Nullable ? extends ID> parentMapper) {
         Objects.requireNonNull(source, "source is null");
         Objects.requireNonNull(source, "idMapper is null");
         Objects.requireNonNull(source, "parentMapper is null");
