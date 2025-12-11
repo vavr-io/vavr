@@ -1514,7 +1514,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private static <K, V> TreeMap<K, V> createFromPairs(@NonNull EntryComparator<K, V> entryComparator, @NonNull Object... pairs) {
+    private static <K, V> TreeMap<K, V> createFromPairs(@NonNull EntryComparator<K, V> entryComparator, @NonNull Object @NonNull ... pairs) {
         RedBlackTree<Tuple2<K, V>> tree = RedBlackTree.empty(entryComparator);
         for (int i = 0; i < pairs.length; i += 2) {
             final K key = (K) pairs[i];

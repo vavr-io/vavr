@@ -185,7 +185,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Boolean values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Boolean> ofAll(@NonNull boolean... elements) {
+    public static LinkedHashSet<Boolean> ofAll(@NonNull boolean @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -197,7 +197,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Byte values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Byte> ofAll(@NonNull byte... elements) {
+    public static LinkedHashSet<Byte> ofAll(@NonNull byte @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -209,7 +209,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Character values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Character> ofAll(@NonNull char... elements) {
+    public static LinkedHashSet<Character> ofAll(@NonNull char @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -221,7 +221,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Double values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Double> ofAll(@NonNull double... elements) {
+    public static LinkedHashSet<Double> ofAll(@NonNull double @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -233,7 +233,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Float values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Float> ofAll(@NonNull float... elements) {
+    public static LinkedHashSet<Float> ofAll(@NonNull float @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -245,7 +245,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Integer values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Integer> ofAll(@NonNull int... elements) {
+    public static LinkedHashSet<Integer> ofAll(@NonNull int @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -257,7 +257,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Long values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Long> ofAll(@NonNull long... elements) {
+    public static LinkedHashSet<Long> ofAll(@NonNull long @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }
@@ -269,7 +269,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * @return A new LinkedHashSet of Short values
      * @throws NullPointerException if elements is null
      */
-    public static LinkedHashSet<Short> ofAll(@NonNull short... elements) {
+    public static LinkedHashSet<Short> ofAll(@NonNull short @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return LinkedHashSet.ofAll(Iterator.ofAll(elements));
     }

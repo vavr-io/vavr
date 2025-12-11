@@ -106,7 +106,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Node<T> of(T value, @NonNull Node<T>... children) {
+    static <T> Node<T> of(T value, @NonNull Node<T> @NonNull ... children) {
         Objects.requireNonNull(children, "children is null");
         return new Node<>(value, io.vavr.collection.List.of(children));
     }

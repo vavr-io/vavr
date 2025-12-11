@@ -653,7 +653,7 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     @GwtIncompatible
     @SuppressWarnings({ "unchecked", "varargs" })
-    default Try<T> mapFailure(Match.@NonNull Case<? extends Throwable, ? extends Throwable>... cases) {
+    default Try<T> mapFailure(Match.@NonNull Case<? extends Throwable, ? extends Throwable> @NonNull ... cases) {
         if (isSuccess()) {
             return this;
         } else {

@@ -111,7 +111,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * @return A string containing the given characters in the same order.
      * @throws NullPointerException if {@code elements} is null
      */
-    public static CharSeq of(@NonNull char... characters) {
+    public static CharSeq of(@NonNull char @NonNull ... characters) {
         Objects.requireNonNull(characters, "characters is null");
         if (characters.length == 0) {
             return empty();

@@ -121,7 +121,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
     @SuppressWarnings("varargs")
     @SafeVarargs
-    public static <T> TreeSet<T> of(@NonNull Comparator<? super T> comparator, T... values) {
+    public static <T> TreeSet<T> of(@NonNull Comparator<? super T> comparator, T @NonNull ... values) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(values, "values is null");
         return new TreeSet<>(RedBlackTree.of(comparator, values));

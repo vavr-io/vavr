@@ -143,7 +143,7 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     @SuppressWarnings("varargs")
     @SafeVarargs
-    static <T> Stream<T> concat(@NonNull Iterable<? extends T>... iterables) {
+    static <T> Stream<T> concat(@NonNull Iterable<? extends T> @NonNull ... iterables) {
         return Iterator.concat(iterables).toStream();
     }
 
@@ -411,7 +411,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Boolean values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Boolean> ofAll(@NonNull boolean... elements) {
+    static Stream<Boolean> ofAll(@NonNull boolean @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -423,7 +423,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Byte values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Byte> ofAll(@NonNull byte... elements) {
+    static Stream<Byte> ofAll(@NonNull byte @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -435,7 +435,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Character values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Character> ofAll(@NonNull char... elements) {
+    static Stream<Character> ofAll(@NonNull char @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -447,7 +447,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Double values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Double> ofAll(@NonNull double... elements) {
+    static Stream<Double> ofAll(@NonNull double @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -459,7 +459,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Float values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Float> ofAll(@NonNull float... elements) {
+    static Stream<Float> ofAll(@NonNull float @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -471,7 +471,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Integer values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Integer> ofAll(@NonNull int... elements) {
+    static Stream<Integer> ofAll(@NonNull int @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -483,7 +483,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Long values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Long> ofAll(@NonNull long... elements) {
+    static Stream<Long> ofAll(@NonNull long @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
@@ -495,7 +495,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * @return A new Stream of Short values
      * @throws NullPointerException if elements is null
      */
-    static Stream<Short> ofAll(@NonNull short... elements) {
+    static Stream<Short> ofAll(@NonNull short @NonNull ... elements) {
         Objects.requireNonNull(elements, "elements is null");
         return Stream.ofAll(Iterator.ofAll(elements));
     }
