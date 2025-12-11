@@ -229,7 +229,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * [].combinations() = [[]]
      *
      * [1,2,3].combinations() = [
@@ -238,7 +238,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      *   [1,2], [1,3], [2,3], // k = 2
      *   [1,2,3]              // k = 3
      * ]
-     * </code>
+     * }
      * </pre>
      *
      * @return the combinations of this
@@ -273,10 +273,10 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * // = List of Tuples (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (3, 1), (3, 2), (3, 3)
      * List.of(1, 2, 3).crossProduct();
-     * </code>
+     * }
      * </pre>
      *
      * @return a new Iterator containing the square of {@code this}
@@ -290,20 +290,20 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * // = ((A,A), (A,B), (A,C), ..., (B,A), (B,B), ..., (Z,Y), (Z,Z))
      * CharSeq.rangeClosed('A', 'Z').crossProduct(2);
-     * </code>
+     * }
      * </pre>
      * <p>
      * Cartesian power of negative value will return empty iterator.
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * // = ()
      * CharSeq.rangeClosed('A', 'Z').crossProduct(-1);
-     * </code>
+     * }
      * </pre>
      *
      * @param power the number of cartesian multiplications
@@ -316,10 +316,10 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * // = List of Tuples (1, 'a'), (1, 'b'), (2, 'a'), (2, 'b'), (3, 'a'), (3, 'b')
      * List.of(1, 2, 3).crossProduct(List.of('a', 'b');
-     * </code>
+     * }
      * </pre>
      *
      * @param that Another iterable
@@ -719,7 +719,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * [].permutations() = []
      *
      * [1,2,3].permutations() = [
@@ -730,7 +730,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      *   [3,1,2],
      *   [3,2,1]
      * ]
-     * </code>
+     * }
      * </pre>
      *
      * @return this unique permutations
@@ -897,13 +897,13 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * Examples:
      *
      * <pre>
-     * <code>
+     * {@code
      * List.of(1, 2, 3, 4).slice(1, 3); // = (2, 3)
      * List.of(1, 2, 3, 4).slice(0, 4); // = (1, 2, 3, 4)
      * List.of(1, 2, 3, 4).slice(2, 2); // = ()
      * List.of(1, 2).slice(1, 0);       // = ()
      * List.of(1, 2).slice(-10, 10);    // = (1, 2)
-     * </code>
+     * }
      * </pre>
      *
      * See also {@link #subSequence(int, int)} which throws in some cases instead of returning a sequence.
@@ -1017,13 +1017,13 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * Examples:
      *
      * <pre>
-     * <code>
+     * {@code
      * List.of(1, 2).subSequence(0);     // = (1, 2)
      * List.of(1, 2).subSequence(1);     // = (2)
      * List.of(1, 2).subSequence(2);     // = ()
      * List.of(1, 2).subSequence(10);    // throws IndexOutOfBoundsException
      * List.of(1, 2).subSequence(-10);   // throws IndexOutOfBoundsException
-     * </code>
+     * }
      * </pre>
      *
      * See also {@link #drop(int)} which is similar but does not throw.
@@ -1042,14 +1042,14 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * Examples:
      *
      * <pre>
-     * <code>
+     * {@code
      * List.of(1, 2, 3, 4).subSequence(1, 3); // = (2, 3)
      * List.of(1, 2, 3, 4).subSequence(0, 4); // = (1, 2, 3, 4)
      * List.of(1, 2, 3, 4).subSequence(2, 2); // = ()
      * List.of(1, 2).subSequence(1, 0);       // throws IndexOutOfBoundsException
      * List.of(1, 2).subSequence(-10, 1);     // throws IndexOutOfBoundsException
      * List.of(1, 2).subSequence(0, 10);      // throws IndexOutOfBoundsException
-     * </code>
+     * }
      * </pre>
      *
      * See also {@link #slice(int, int)} which returns an empty sequence instead of throwing.

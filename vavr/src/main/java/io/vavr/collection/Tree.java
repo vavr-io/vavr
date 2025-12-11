@@ -1170,7 +1170,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      * <p>
      * Example tree:
      * <pre>
-     * <code>
+     * {@code
      *         1
      *        / \
      *       /   \
@@ -1180,7 +1180,7 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      *   4   5   6
      *  /       / \
      * 7       8   9
-     * </code>
+     * }
      * </pre>
      * <p>
      * See also

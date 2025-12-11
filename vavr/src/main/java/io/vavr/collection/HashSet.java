@@ -274,11 +274,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * HashSet.range(0, 0)  // = HashSet()
      * HashSet.range(2, 0)  // = HashSet()
      * HashSet.range(-2, 2) // = HashSet(-2, -1, 0, 1)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -299,12 +299,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * HashSet.rangeBy(1, 3, 1)  // = HashSet(1, 2)
      * HashSet.rangeBy(1, 4, 2)  // = HashSet(1, 3)
      * HashSet.rangeBy(4, 1, -2) // = HashSet(4, 2)
      * HashSet.rangeBy(4, 1, 2)  // = HashSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -333,11 +333,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * HashSet.range(0L, 0L)  // = HashSet()
      * HashSet.range(2L, 0L)  // = HashSet()
      * HashSet.range(-2L, 2L) // = HashSet(-2L, -1L, 0L, 1L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -354,12 +354,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * HashSet.rangeBy(1L, 3L, 1L)  // = HashSet(1L, 2L)
      * HashSet.rangeBy(1L, 4L, 2L)  // = HashSet(1L, 3L)
      * HashSet.rangeBy(4L, 1L, -2L) // = HashSet(4L, 2L)
      * HashSet.rangeBy(4L, 1L, 2L)  // = HashSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -379,11 +379,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * HashSet.rangeClosed(0, 0)  // = HashSet(0)
      * HashSet.rangeClosed(2, 0)  // = HashSet()
      * HashSet.rangeClosed(-2, 2) // = HashSet(-2, -1, 0, 1, 2)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -404,12 +404,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * HashSet.rangeClosedBy(1, 3, 1)  // = HashSet(1, 2, 3)
      * HashSet.rangeClosedBy(1, 4, 2)  // = HashSet(1, 3)
      * HashSet.rangeClosedBy(4, 1, -2) // = HashSet(4, 2)
      * HashSet.rangeClosedBy(4, 1, 2)  // = HashSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -438,11 +438,11 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * HashSet.rangeClosed(0L, 0L)  // = HashSet(0L)
      * HashSet.rangeClosed(2L, 0L)  // = HashSet()
      * HashSet.rangeClosed(-2L, 2L) // = HashSet(-2L, -1L, 0L, 1L, 2L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -459,12 +459,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * HashSet.rangeClosedBy(1L, 3L, 1L)  // = HashSet(1L, 2L, 3L)
      * HashSet.rangeClosedBy(1L, 4L, 2L)  // = HashSet(1L, 3L)
      * HashSet.rangeClosedBy(4L, 1L, -2L) // = HashSet(4L, 2L)
      * HashSet.rangeClosedBy(4L, 1L, 2L)  // = HashSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number

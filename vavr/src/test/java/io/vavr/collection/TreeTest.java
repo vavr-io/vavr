@@ -271,7 +271,7 @@ public class TreeTest extends AbstractTraversableTest {
     /**
      * Example tree:
      * <pre>
-     * <code>
+     * {@code
      *  1
      *        / \
      *       /   \
@@ -281,7 +281,7 @@ public class TreeTest extends AbstractTraversableTest {
      *   4   5   6
      *  /       / \
      * 7       8   9
-     * </code>
+     * }
      * </pre>
      */
     @Test

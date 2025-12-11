@@ -321,11 +321,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Vector.range(0, 0)  // = Vector()
      * Vector.range(2, 0)  // = Vector()
      * Vector.range(-2, 2) // = Vector(-2, -1, 0, 1)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -342,12 +342,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Vector.rangeBy(1, 3, 1)  // = Vector(1, 2)
      * Vector.rangeBy(1, 4, 2)  // = Vector(1, 3)
      * Vector.rangeBy(4, 1, -2) // = Vector(4, 2)
      * Vector.rangeBy(4, 1, 2)  // = Vector()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -367,11 +367,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Vector.range(0L, 0L)  // = Vector()
      * Vector.range(2L, 0L)  // = Vector()
      * Vector.range(-2L, 2L) // = Vector(-2L, -1L, 0L, 1L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -388,12 +388,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Vector.rangeBy(1L, 3L, 1L)  // = Vector(1L, 2L)
      * Vector.rangeBy(1L, 4L, 2L)  // = Vector(1L, 3L)
      * Vector.rangeBy(4L, 1L, -2L) // = Vector(4L, 2L)
      * Vector.rangeBy(4L, 1L, 2L)  // = Vector()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -426,11 +426,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Vector.rangeClosed(0, 0)  // = Vector(0)
      * Vector.rangeClosed(2, 0)  // = Vector()
      * Vector.rangeClosed(-2, 2) // = Vector(-2, -1, 0, 1, 2)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -447,12 +447,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Vector.rangeClosedBy(1, 3, 1)  // = Vector(1, 2, 3)
      * Vector.rangeClosedBy(1, 4, 2)  // = Vector(1, 3)
      * Vector.rangeClosedBy(4, 1, -2) // = Vector(4, 2)
      * Vector.rangeClosedBy(4, 1, 2)  // = Vector()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -472,11 +472,11 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Vector.rangeClosed(0L, 0L)  // = Vector(0L)
      * Vector.rangeClosed(2L, 0L)  // = Vector()
      * Vector.rangeClosed(-2L, 2L) // = Vector(-2L, -1L, 0L, 1L, 2L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -493,12 +493,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Vector.rangeClosedBy(1L, 3L, 1L)  // = Vector(1L, 2L, 3L)
      * Vector.rangeClosedBy(1L, 4L, 2L)  // = Vector(1L, 3L)
      * Vector.rangeClosedBy(4L, 1L, -2L) // = Vector(4L, 2L)
      * Vector.rangeClosedBy(4L, 1L, 2L)  // = Vector()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -539,12 +539,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Vector.unfoldRight(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
      * // Vector(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -568,12 +568,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Vector.unfoldLeft(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -597,12 +597,12 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Vector.unfold(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds and unfolded values

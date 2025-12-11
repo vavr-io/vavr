@@ -66,7 +66,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * Methods to obtain a {@code List}:
  *
  * <pre>
- * <code>
+ * {@code
  * // factory methods
  * List.empty()                        // = List.of() = Nil.instance()
  * List.of(x)                          // = new Cons&lt;&gt;(x, Nil.instance())
@@ -77,7 +77,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * // int sequences
  * List.range(0, 3)              // = 0, 1, 2
  * List.rangeClosed(0, 3)        // = 0, 1, 2, 3
- * </code>
+ * }
  * </pre>
  *
  * Note: A {@code List} is primarily a {@code Seq} and extends {@code Stack} for technical reasons (so {@code Stack} does not need to wrap {@code List}).
@@ -94,7 +94,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * Factory method applications:
  *
  * <pre>
- * <code>
+ * {@code
  * List&lt;Integer&gt;       s1 = List.of(1);
  * List&lt;Integer&gt;       s2 = List.of(1, 2, 3);
  *                           // = List.of(new Integer[] {1, 2, 3});
@@ -107,16 +107,16 @@ import static io.vavr.collection.JavaConverters.ListView;
  *
  * // cuckoo's egg
  * List&lt;Integer[]&gt;     s7 = List.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
- * </code>
+ * }
  * </pre>
  *
  * Example: Converting a String to digits
  *
  * <pre>
- * <code>
+ * {@code
  * // = List(1, 2, 3)
  * List.of("123".toCharArray()).map(c -&gt; Character.digit(c, 10))
- * </code>
+ * }
  * </pre>
  *
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 7 ff.). Cambridge, 2003.
@@ -210,11 +210,11 @@ public interface List<T> extends LinearSeq<T> {
     /**
      * Creates a List of the given elements.
      * <pre>
-     * <code>
+     * {@code
      *   List.of(1, 2, 3, 4)
      * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
      * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>      Component type of the List.
@@ -447,11 +447,11 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.range(0, 0)  // = List()
      * List.range(2, 0)  // = List()
      * List.range(-2, 2) // = List(-2, -1, 0, 1)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -468,12 +468,12 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.rangeBy(1, 3, 1)  // = List(1, 2)
      * List.rangeBy(1, 4, 2)  // = List(1, 3)
      * List.rangeBy(4, 1, -2) // = List(4, 2)
      * List.rangeBy(4, 1, 2)  // = List()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -493,11 +493,11 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.range(0L, 0L)  // = List()
      * List.range(2L, 0L)  // = List()
      * List.range(-2L, 2L) // = List(-2L, -1L, 0L, 1L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -514,12 +514,12 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.rangeBy(1L, 3L, 1L)  // = List(1L, 2L)
      * List.rangeBy(1L, 4L, 2L)  // = List(1L, 3L)
      * List.rangeBy(4L, 1L, -2L) // = List(4L, 2L)
      * List.rangeBy(4L, 1L, 2L)  // = List()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -552,11 +552,11 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.rangeClosed(0, 0)  // = List(0)
      * List.rangeClosed(2, 0)  // = List()
      * List.rangeClosed(-2, 2) // = List(-2, -1, 0, 1, 2)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -573,12 +573,12 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.rangeClosedBy(1, 3, 1)  // = List(1, 2, 3)
      * List.rangeClosedBy(1, 4, 2)  // = List(1, 3)
      * List.rangeClosedBy(4, 1, -2) // = List(4, 2)
      * List.rangeClosedBy(4, 1, 2)  // = List()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -598,11 +598,11 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.rangeClosed(0L, 0L)  // = List(0L)
      * List.rangeClosed(2L, 0L)  // = List()
      * List.rangeClosed(-2L, 2L) // = List(-2L, -1L, 0L, 1L, 2L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -619,12 +619,12 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.rangeClosedBy(1L, 3L, 1L)  // = List(1L, 2L, 3L)
      * List.rangeClosedBy(1L, 4L, 2L)  // = List(1L, 3L)
      * List.rangeClosedBy(4L, 1L, -2L) // = List(4L, 2L)
      * List.rangeClosedBy(4L, 1L, 2L)  // = List()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -665,12 +665,12 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * List.unfoldRight(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
      * // List(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -694,12 +694,12 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * List.unfoldLeft(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -724,12 +724,12 @@ public interface List<T> extends LinearSeq<T> {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * List.unfold(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds and unfolded values

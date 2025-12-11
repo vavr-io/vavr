@@ -316,11 +316,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * TreeSet.range(0, 0)  // = TreeSet()
      * TreeSet.range(2, 0)  // = TreeSet()
      * TreeSet.range(-2, 2) // = TreeSet(-2, -1, 0, 1)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -341,12 +341,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * TreeSet.rangeBy(1, 3, 1)  // = TreeSet(1, 2)
      * TreeSet.rangeBy(1, 4, 2)  // = TreeSet(1, 3)
      * TreeSet.rangeBy(4, 1, -2) // = TreeSet(4, 2)
      * TreeSet.rangeBy(4, 1, 2)  // = TreeSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -375,11 +375,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * TreeSet.range(0L, 0L)  // = TreeSet()
      * TreeSet.range(2L, 0L)  // = TreeSet()
      * TreeSet.range(-2L, 2L) // = TreeSet(-2L, -1L, 0L, 1L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -396,12 +396,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * TreeSet.rangeBy(1L, 3L, 1L)  // = TreeSet(1L, 2L)
      * TreeSet.rangeBy(1L, 4L, 2L)  // = TreeSet(1L, 3L)
      * TreeSet.rangeBy(4L, 1L, -2L) // = TreeSet(4L, 2L)
      * TreeSet.rangeBy(4L, 1L, 2L)  // = TreeSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -421,11 +421,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * TreeSet.rangeClosed(0, 0)  // = TreeSet(0)
      * TreeSet.rangeClosed(2, 0)  // = TreeSet()
      * TreeSet.rangeClosed(-2, 2) // = TreeSet(-2, -1, 0, 1, 2)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -446,12 +446,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * TreeSet.rangeClosedBy(1, 3, 1)  // = TreeSet(1, 2, 3)
      * TreeSet.rangeClosedBy(1, 4, 2)  // = TreeSet(1, 3)
      * TreeSet.rangeClosedBy(4, 1, -2) // = TreeSet(4, 2)
      * TreeSet.rangeClosedBy(4, 1, 2)  // = TreeSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -480,11 +480,11 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * TreeSet.rangeClosed(0L, 0L)  // = TreeSet(0L)
      * TreeSet.rangeClosed(2L, 0L)  // = TreeSet()
      * TreeSet.rangeClosed(-2L, 2L) // = TreeSet(-2L, -1L, 0L, 1L, 2L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -501,12 +501,12 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * TreeSet.rangeClosedBy(1L, 3L, 1L)  // = TreeSet(1L, 2L, 3L)
      * TreeSet.rangeClosedBy(1L, 4L, 2L)  // = TreeSet(1L, 3L)
      * TreeSet.rangeClosedBy(4L, 1L, -2L) // = TreeSet(4L, 2L)
      * TreeSet.rangeClosedBy(4L, 1L, 2L)  // = TreeSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number

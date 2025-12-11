@@ -186,10 +186,10 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * CharSeq.range('a', 'c')  // = "ab"
      * CharSeq.range('c', 'a')  // = ""
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first character
@@ -209,10 +209,10 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * CharSeq.rangeClosed('a', 'c')  // = "abc"
      * CharSeq.rangeClosed('c', 'a')  // = ""
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first character
@@ -229,12 +229,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * CharSeq.rangeClosedBy('a', 'c', 1)  // = ('a', 'b', 'c')
      * CharSeq.rangeClosedBy('a', 'd', 2)  // = ('a', 'c')
      * CharSeq.rangeClosedBy('d', 'a', -2) // = ('d', 'b')
      * CharSeq.rangeClosedBy('d', 'a', 2)  // = ()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first character
@@ -257,12 +257,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * CharSeq.unfoldRight('j', x -&gt; x == 'a'
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(new Character(x), (char)(x-1))));
      * // CharSeq.of("jihgfedcb"))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -285,12 +285,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * CharSeq.unfoldLeft('j', x -&gt; x == 'a'
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;((char)(x-1), new Character(x))));
      * // CharSeq.of("bcdefghij"))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -313,12 +313,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * CharSeq.unfold('j', x -&gt; x == 'a'
      *                ? Option.none()
      *                : Option.of(new Tuple2&lt;&gt;((char)(x-1), new Character(x))));
      * // CharSeq.of("bcdefghij"))
-     * </code>
+     * }
      * </pre>
      *
      * @param seed the start value for the iteration
@@ -2285,12 +2285,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <i>str</i>{@code .replaceFirst(}<i>regex</i>{@code ,} <i>repl</i>{@code )}
      * yields exactly the same result as the expression
      * <blockquote>
-     * <code>
+     * {@code
      * {@link Pattern}.{@link
      * Pattern#compile compile}(<i>regex</i>).{@link
      * Pattern#matcher(CharSequence) matcher}(<i>str</i>).{@link
      * java.util.regex.Matcher#replaceFirst replaceFirst}(<i>repl</i>)
-     * </code>
+     * }
      * </blockquote>
      * Note that backslashes ({@code \}) and dollar signs ({@code $}) in the
      * replacement string may cause the results to be different than if it were
@@ -2318,12 +2318,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <i>str</i>{@code .replaceAll(}<i>regex</i>{@code ,} <i>repl</i>{@code )}
      * yields exactly the same result as the expression
      * <blockquote>
-     * <code>
+     * {@code
      * {@link Pattern}.{@link
      * Pattern#compile compile}(<i>regex</i>).{@link
      * Pattern#matcher(CharSequence) matcher}(<i>str</i>).{@link
      * java.util.regex.Matcher#replaceAll replaceAll}(<i>repl</i>)
-     * </code>
+     * }
      * </blockquote>
      * Note that backslashes ({@code \}) and dollar signs ({@code $}) in the
      * replacement string may cause the results to be different than if it were
@@ -2452,11 +2452,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <i>str.</i>{@code split(}<i>regex</i>{@code ,}&nbsp;<i>n</i>{@code )}
      * yields the same result as the expression
      * <blockquote>
-     * <code>
+     * {@code
      * {@link Pattern}.{@link
      * Pattern#compile compile}(<i>regex</i>).{@link
      * Pattern#split(CharSequence, int) split}(<i>str</i>,&nbsp;<i>n</i>)
-     * </code>
+     * }
      * </blockquote>
      *
      * @param regex the delimiting regular expression

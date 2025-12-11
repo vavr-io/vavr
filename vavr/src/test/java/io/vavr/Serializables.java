@@ -49,13 +49,13 @@ public final class Serializables {
      * Examples:
      *
      * <pre>
-     * <code>
+     * {@code
      * // variable assignment
      * final CharSequence s = deserialize(serialize("test"));
      *
      * // type casting
      * final int i = ((String) deserialize(serialize("test"))).length();
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>        Target type the deserialized object will be casted to.
