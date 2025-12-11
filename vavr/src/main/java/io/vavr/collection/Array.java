@@ -308,11 +308,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Array.range(0, 0)  // = Array()
      * Array.range(2, 0)  // = Array()
      * Array.range(-2, 2) // = Array(-2, -1, 0, 1)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -329,12 +329,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Array.rangeBy(1, 3, 1)  // = Array(1, 2)
      * Array.rangeBy(1, 4, 2)  // = Array(1, 3)
      * Array.rangeBy(4, 1, -2) // = Array(4, 2)
      * Array.rangeBy(4, 1, 2)  // = Array()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -354,11 +354,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Array.range(0L, 0L)  // = Array()
      * Array.range(2L, 0L)  // = Array()
      * Array.range(-2L, 2L) // = Array(-2L, -1L, 0L, 1L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -375,12 +375,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Array.rangeBy(1L, 3L, 1L)  // = Array(1L, 2L)
      * Array.rangeBy(1L, 4L, 2L)  // = Array(1L, 3L)
      * Array.rangeBy(4L, 1L, -2L) // = Array(4L, 2L)
      * Array.rangeBy(4L, 1L, 2L)  // = Array()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -413,11 +413,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Array.rangeClosed(0, 0)  // = Array(0)
      * Array.rangeClosed(2, 0)  // = Array()
      * Array.rangeClosed(-2, 2) // = Array(-2, -1, 0, 1, 2)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -434,12 +434,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Array.rangeClosedBy(1, 3, 1)  // = Array(1, 2, 3)
      * Array.rangeClosedBy(1, 4, 2)  // = Array(1, 3)
      * Array.rangeClosedBy(4, 1, -2) // = Array(4, 2)
      * Array.rangeClosedBy(4, 1, 2)  // = Array()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -459,11 +459,11 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Array.rangeClosed(0L, 0L)  // = Array(0L)
      * Array.rangeClosed(2L, 0L)  // = Array()
      * Array.rangeClosed(-2L, 2L) // = Array(-2L, -1L, 0L, 1L, 2L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -480,12 +480,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Array.rangeClosedBy(1L, 3L, 1L)  // = Array(1L, 2L, 3L)
      * Array.rangeClosedBy(1L, 4L, 2L)  // = Array(1L, 3L)
      * Array.rangeClosedBy(4L, 1L, -2L) // = Array(4L, 2L)
      * Array.rangeClosedBy(4L, 1L, 2L)  // = Array()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -525,12 +525,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Array.unfoldRight(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;gt;(x, x-1)));
      * // Array(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -554,12 +554,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Array.unfoldLeft(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;gt;(x-1, x)));
      * // Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -583,12 +583,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Array.unfold(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;gt;(x-1, x)));
      * // Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds and unfolded values

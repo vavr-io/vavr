@@ -662,7 +662,7 @@ public interface Future<T> extends Value<T> {
      * <ul>
      *     <li>
      *         If all given futures succeed, the resulting future also succeeds:
-     *         <pre><code>
+     *         <pre>{@code
      * // = Future(Success(Seq(1, 2)))
      * sequence(
      *     List.of(
@@ -670,11 +670,11 @@ public interface Future<T> extends Value<T> {
      *         Future.of(() -> 2)
      *     )
      * );
-     *         </code></pre>
+     *         }</pre>
      *     </li>
      *     <li>
      *         If any given future fails, the resulting future fails as well:
-     *         <pre><code>
+     *         <pre>{@code
      * // = Future(Failure(Error))
      * sequence(
      *     List.of(
@@ -682,7 +682,7 @@ public interface Future<T> extends Value<T> {
      *         Future.of(() -> { throw new Error(); })
      *     )
      * );
-     *         </code></pre>
+     *         }</pre>
      *     </li>
      * </ul>
      *
@@ -798,12 +798,12 @@ public interface Future<T> extends Value<T> {
      * are executed based on the value of the original {@code Future}.</p>
      *
      * <p>Example:</p>
-     * <pre><code>
+     * <pre>{@code
      * // prints Success(1)
      * Future.of(() -> 1)
      *       .andThen(t -> { throw new Error(""); })
      *       .andThen(System.out::println);
-     * </code></pre>
+     * }</pre>
      *
      * @param action a side-effecting action to perform after the future completes
      * @return a new {@code Future} containing the original result, completed after the action executes
@@ -943,14 +943,14 @@ public interface Future<T> extends Value<T> {
      * If both {@code Future}s fail, the failure of this {@code Future} is returned.
      *
      * <p>Example:</p>
-     * <pre><code>
+     * <pre>{@code
      * Future&lt;Integer&gt; future = Future.of(() -> { throw new Error(); });
      * Future&lt;Integer&gt; that = Future.of(() -> 1);
      * Future&lt;Integer&gt; result = future.fallbackTo(that);
      *
      * // prints Success(1)
      * result.onComplete(System.out::println);
-     * </code></pre>
+     * }</pre>
      *
      * @param that a fallback {@code Future} to use if this one fails
      * @return a new {@code Future} representing the result or fallback
@@ -1084,11 +1084,11 @@ public interface Future<T> extends Value<T> {
      * Handles a failure of this {@code Future} by mapping the exception to a new result.
      *
      * <p>Example:</p>
-     * <pre><code>
+     * <pre>{@code
      * // = "oh!"
      * Future.of(() -> { throw new Error("oh!"); })
      *       .recover(Throwable::getMessage);
-     * </code></pre>
+     * }</pre>
      *
      * @param f a function that maps the failure exception to a new value
      * @return a new {@code Future} containing either the original success or the recovered value
@@ -1103,11 +1103,11 @@ public interface Future<T> extends Value<T> {
      * Handles a failure of this {@code Future} by returning the result of another {@code Future}.
      *
      * <p>Example:</p>
-     * <pre><code>
+     * <pre>{@code
      * // = "oh!"
      * Future.of(() -> { throw new Error("oh!"); })
      *       .recoverWith(ex -> Future.of(() -> ex.getMessage()));
-     * </code></pre>
+     * }</pre>
      *
      * @param f a function that maps the failure exception to a new {@code Future}
      * @return a new {@code Future} containing either the original success or the result of the recovered {@code Future}

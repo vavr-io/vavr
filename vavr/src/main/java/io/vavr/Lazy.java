@@ -42,18 +42,18 @@ import java.util.function.Supplier;
  * a specific state. Therefore, it does not provide operations like {@code flatMap} or {@code orElse}.</p>
  *
  * <p>Example usage:</p>
- * <pre><code>
+ * <pre>{@code
  * final Lazy&lt;Double&gt; l = Lazy.of(Math::random);
  * l.isEvaluated(); // false
  * double value = l.get(); // evaluates and returns a random number, e.g., 0.123
  * l.isEvaluated(); // true
  * double memoizedValue = l.get(); // returns the same value as before, e.g., 0.123
- * </code></pre>
+ * }</pre>
  *
  * <p>Creating a <em>truly lazy</em> value for an interface type:</p>
- * <pre><code>
+ * <pre>{@code
  * final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);
- * </code></pre>
+ * }</pre>
  *
  * @param <T> the type of the lazily evaluated value
  * @author Daniel Dietrich

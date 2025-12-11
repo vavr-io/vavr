@@ -101,7 +101,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     /**
      * Creates a LinkedHashSet of the given elements.
      *
-     * <pre><code>LinkedHashSet.of(1, 2, 3, 4)</code></pre>
+     * <pre>{@code LinkedHashSet.of(1, 2, 3, 4)}</pre>
      *
      * @param <T>      Component type of the LinkedHashSet.
      * @param elements Zero or more elements.
@@ -278,11 +278,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * LinkedHashSet.range(0, 0)  // = LinkedHashSet()
      * LinkedHashSet.range(2, 0)  // = LinkedHashSet()
      * LinkedHashSet.range(-2, 2) // = LinkedHashSet(-2, -1, 0, 1)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -303,12 +303,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * LinkedHashSet.rangeBy(1, 3, 1)  // = LinkedHashSet(1, 2)
      * LinkedHashSet.rangeBy(1, 4, 2)  // = LinkedHashSet(1, 3)
      * LinkedHashSet.rangeBy(4, 1, -2) // = LinkedHashSet(4, 2)
      * LinkedHashSet.rangeBy(4, 1, 2)  // = LinkedHashSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -337,11 +337,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * LinkedHashSet.range(0L, 0L)  // = LinkedHashSet()
      * LinkedHashSet.range(2L, 0L)  // = LinkedHashSet()
      * LinkedHashSet.range(-2L, 2L) // = LinkedHashSet(-2L, -1L, 0L, 1L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -358,12 +358,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * LinkedHashSet.rangeBy(1L, 3L, 1L)  // = LinkedHashSet(1L, 2L)
      * LinkedHashSet.rangeBy(1L, 4L, 2L)  // = LinkedHashSet(1L, 3L)
      * LinkedHashSet.rangeBy(4L, 1L, -2L) // = LinkedHashSet(4L, 2L)
      * LinkedHashSet.rangeBy(4L, 1L, 2L)  // = LinkedHashSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -383,11 +383,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * LinkedHashSet.rangeClosed(0, 0)  // = LinkedHashSet(0)
      * LinkedHashSet.rangeClosed(2, 0)  // = LinkedHashSet()
      * LinkedHashSet.rangeClosed(-2, 2) // = LinkedHashSet(-2, -1, 0, 1, 2)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -408,12 +408,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * LinkedHashSet.rangeClosedBy(1, 3, 1)  // = LinkedHashSet(1, 2, 3)
      * LinkedHashSet.rangeClosedBy(1, 4, 2)  // = LinkedHashSet(1, 3)
      * LinkedHashSet.rangeClosedBy(4, 1, -2) // = LinkedHashSet(4, 2)
      * LinkedHashSet.rangeClosedBy(4, 1, 2)  // = LinkedHashSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -442,11 +442,11 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * LinkedHashSet.rangeClosed(0L, 0L)  // = LinkedHashSet(0L)
      * LinkedHashSet.rangeClosed(2L, 0L)  // = LinkedHashSet()
      * LinkedHashSet.rangeClosed(-2L, 2L) // = LinkedHashSet(-2L, -1L, 0L, 1L, 2L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -463,12 +463,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * LinkedHashSet.rangeClosedBy(1L, 3L, 1L)  // = LinkedHashSet(1L, 2L, 3L)
      * LinkedHashSet.rangeClosedBy(1L, 4L, 2L)  // = LinkedHashSet(1L, 3L)
      * LinkedHashSet.rangeClosedBy(4L, 1L, -2L) // = LinkedHashSet(4L, 2L)
      * LinkedHashSet.rangeClosedBy(4L, 1L, 2L)  // = LinkedHashSet()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number

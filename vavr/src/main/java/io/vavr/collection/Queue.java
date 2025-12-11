@@ -340,11 +340,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Queue.range(0, 0)  // = Queue()
      * Queue.range(2, 0)  // = Queue()
      * Queue.range(-2, 2) // = Queue(-2, -1, 0, 1)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -361,12 +361,12 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Queue.rangeBy(1, 3, 1)  // = Queue(1, 2)
      * Queue.rangeBy(1, 4, 2)  // = Queue(1, 3)
      * Queue.rangeBy(4, 1, -2) // = Queue(4, 2)
      * Queue.rangeBy(4, 1, 2)  // = Queue()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -386,11 +386,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Queue.range(0L, 0L)  // = Queue()
      * Queue.range(2L, 0L)  // = Queue()
      * Queue.range(-2L, 2L) // = Queue(-2L, -1L, 0L, 1L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -407,12 +407,12 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Queue.rangeBy(1L, 3L, 1L)  // = Queue(1L, 2L)
      * Queue.rangeBy(1L, 4L, 2L)  // = Queue(1L, 3L)
      * Queue.rangeBy(4L, 1L, -2L) // = Queue(4L, 2L)
      * Queue.rangeBy(4L, 1L, 2L)  // = Queue()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -445,11 +445,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Queue.rangeClosed(0, 0)  // = Queue(0)
      * Queue.rangeClosed(2, 0)  // = Queue()
      * Queue.rangeClosed(-2, 2) // = Queue(-2, -1, 0, 1, 2)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -466,12 +466,12 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Queue.rangeClosedBy(1, 3, 1)  // = Queue(1, 2, 3)
      * Queue.rangeClosedBy(1, 4, 2)  // = Queue(1, 3)
      * Queue.rangeClosedBy(4, 1, -2) // = Queue(4, 2)
      * Queue.rangeClosedBy(4, 1, 2)  // = Queue()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -491,11 +491,11 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Queue.rangeClosed(0L, 0L)  // = Queue(0L)
      * Queue.rangeClosed(2L, 0L)  // = Queue()
      * Queue.rangeClosed(-2L, 2L) // = Queue(-2L, -1L, 0L, 1L, 2L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -529,12 +529,12 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Queue.rangeClosedBy(1L, 3L, 1L)  // = Queue(1L, 2L, 3L)
      * Queue.rangeClosedBy(1L, 4L, 2L)  // = Queue(1L, 3L)
      * Queue.rangeClosedBy(4L, 1L, -2L) // = Queue(4L, 2L)
      * Queue.rangeClosedBy(4L, 1L, 2L)  // = Queue()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -559,12 +559,12 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Queue.unfoldRight(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
      * // Queue(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -588,12 +588,12 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Queue.unfoldLeft(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Queue(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -617,12 +617,12 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Queue.unfold(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Queue(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds and unfolded values
