@@ -293,6 +293,36 @@
     </build>
     <profiles>
         <profile>
+            <!-- https://github.com/jspecify/jspecify/issues/302 -->
+            <id>jdk8-no-werror</id>
+            <activation>
+                <jdk>[1.8,1.8]</jdk>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>${maven.compiler.version}</version>
+                        <configuration>
+                            <source>${java.version}</source>
+                            <target>${java.version}</target>
+                            <showDeprecation>true</showDeprecation>
+                            <showWarnings>true</showWarnings>
+                            <compilerArgs>
+                                <arg>-Xlint:all</arg>
+                                <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
+                                <arg>-Xlint:-processing</arg>
+                                <!-- Enable Java 9 compilation with 1.8 compatibility -->
+                                <arg>-Xlint:-options</arg>
+                            </compilerArgs>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
             <id>sonatype-oss-release</id>
             <modules>
                 <module>vavr</module>

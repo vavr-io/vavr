@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import org.jspecify.annotations.NonNull;
 
 /**
  * An implementation similar to Scalaz's 
@@ -114,7 +115,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return A {@code Valid(either.get())} if either is a Right, otherwise {@code Invalid(either.getLeft())}.
      * @throws NullPointerException if either is null
      */
-    static <E, T> Validation<E, T> fromEither(Either<E, T> either) {
+    static <E, T> Validation<E, T> fromEither(@NonNull Either<E, T> either) {
         Objects.requireNonNull(either, "either is null");
         return either.isRight() ? valid(either.get()) : invalid(either.getLeft());
     }
@@ -127,7 +128,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return A {@code Valid(t.get())} if t is a Success, otherwise {@code Invalid(t.getCause())}.
      * @throws NullPointerException if {@code t} is null
      */
-    static <T> Validation<Throwable, T> fromTry(Try<? extends T> t) {
+    static <T> Validation<Throwable, T> fromTry(@NonNull Try<? extends T> t) {
         Objects.requireNonNull(t, "t is null");
         return t.isSuccess() ? valid(t.get()) : invalid(t.getCause());
     }
@@ -144,7 +145,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * or an invalid Validation containing an accumulated List of errors.
      * @throws NullPointerException if values is null
      */
-    static <E, T> Validation<Seq<E>, Seq<T>> sequence(Iterable<? extends Validation<? extends Seq<? extends E>, ? extends T>> values) {
+    static <E, T> Validation<Seq<E>, Seq<T>> sequence(@NonNull Iterable<? extends Validation<? extends Seq<? extends E>, ? extends T>> values) {
         Objects.requireNonNull(values, "values is null");
         List<E> errors = List.empty();
         List<T> list = List.empty();
@@ -170,7 +171,9 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return A {@code Validation} of a {@link Seq} of results.
      * @throws NullPointerException if values or f is null.
      */
-    static <E, T, U> Validation<Seq<E>, Seq<U>> traverse(Iterable<? extends T> values, Function<? super T, ? extends Validation<? extends Seq<? extends E>, ? extends U>> mapper) {
+    static <E, T, U> Validation<Seq<E>, Seq<U>> traverse(
+      @NonNull Iterable<? extends T> values, 
+      @NonNull Function<? super T, ? extends Validation<? extends Seq<? extends E>, ? extends U>> mapper) {
         Objects.requireNonNull(values, "values is null");
         Objects.requireNonNull(mapper, "mapper is null");
         return sequence(Iterator.ofAll(values).map(mapper));
@@ -206,7 +209,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      *
      * @throws NullPointerException if any of the arguments is null
      */
-    static <E, T> Validation<E, T> cond(boolean test, Supplier<? extends T> valid, Supplier<? extends E> error) {
+    static <E, T> Validation<E, T> cond(boolean test, @NonNull Supplier<? extends T> valid, @NonNull Supplier<? extends E> error) {
         Objects.requireNonNull(valid, "valid is null");
         Objects.requireNonNull(error, "error is null");
 
@@ -228,7 +231,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      *
      * @throws NullPointerException if any of the arguments is null
      */
-    static <E, T> Validation<E, T> cond(boolean test, T valid, E error) {
+    static <E, T> Validation<E, T> cond(boolean test, @NonNull T valid, @NonNull E error) {
         Objects.requireNonNull(valid, "valid is null");
         Objects.requireNonNull(error, "error is null");
 
@@ -246,7 +249,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Builder&lt;E,T1,T2&gt;
      * @throws NullPointerException if validation1 or validation2 is null
      */
-    static <E, T1, T2> Builder<E, T1, T2> combine(Validation<E, T1> validation1, Validation<E, T2> validation2) {
+    static <E, T1, T2> Builder<E, T1, T2> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         return new Builder<>(validation1, validation2);
@@ -265,7 +268,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Builder3&lt;E,T1,T2,T3&gt;
      * @throws NullPointerException if validation1, validation2 or validation3 is null
      */
-    static <E, T1, T2, T3> Builder3<E, T1, T2, T3> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3) {
+    static <E, T1, T2, T3> Builder3<E, T1, T2, T3> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -287,7 +290,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4&gt;
      * @throws NullPointerException if validation1, validation2, validation3 or validation4 is null
      */
-    static <E, T1, T2, T3, T4> Builder4<E, T1, T2, T3, T4> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4) {
+    static <E, T1, T2, T3, T4> Builder4<E, T1, T2, T3, T4> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -312,7 +315,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4 or validation5 is null
      */
-    static <E, T1, T2, T3, T4, T5> Builder5<E, T1, T2, T3, T4, T5> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5) {
+    static <E, T1, T2, T3, T4, T5> Builder5<E, T1, T2, T3, T4, T5> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4, @NonNull Validation<E, T5> validation5) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -340,7 +343,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5 or validation6 is null
      */
-    static <E, T1, T2, T3, T4, T5, T6> Builder6<E, T1, T2, T3, T4, T5, T6> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6) {
+    static <E, T1, T2, T3, T4, T5, T6> Builder6<E, T1, T2, T3, T4, T5, T6> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4, @NonNull Validation<E, T5> validation5, @NonNull Validation<E, T6> validation6) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -371,7 +374,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6 or validation7 is null
      */
-    static <E, T1, T2, T3, T4, T5, T6, T7> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7) {
+    static <E, T1, T2, T3, T4, T5, T6, T7> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4, @NonNull Validation<E, T5> validation5, @NonNull Validation<E, T6> validation6, @NonNull Validation<E, T7> validation7) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -405,7 +408,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7,T8&gt;
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6, validation7 or validation8 is null
      */
-    static <E, T1, T2, T3, T4, T5, T6, T7, T8> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(Validation<E, T1> validation1, Validation<E, T2> validation2, Validation<E, T3> validation3, Validation<E, T4> validation4, Validation<E, T5> validation5, Validation<E, T6> validation6, Validation<E, T7> validation7, Validation<E, T8> validation8) {
+    static <E, T1, T2, T3, T4, T5, T6, T7, T8> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4, @NonNull Validation<E, T5> validation5, @NonNull Validation<E, T6> validation6, @NonNull Validation<E, T7> validation7, @NonNull Validation<E, T8> validation8) {
         Objects.requireNonNull(validation1, "validation1 is null");
         Objects.requireNonNull(validation2, "validation2 is null");
         Objects.requireNonNull(validation3, "validation3 is null");
@@ -438,7 +441,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return this {@code Validation} if it is valid, otherwise return the alternative.
      */
     @SuppressWarnings("unchecked")
-    default Validation<E, T> orElse(Validation<? extends E, ? extends T> other) {
+    default Validation<E, T> orElse(@NonNull Validation<? extends E, ? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return isValid() ? this : (Validation<E, T>) other;
     }
@@ -450,7 +453,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return this {@code Validation} if it is valid, otherwise return the result of evaluating supplier.
      */
     @SuppressWarnings("unchecked")
-    default Validation<E, T> orElse(Supplier<Validation<? extends E, ? extends T>> supplier) {
+    default Validation<E, T> orElse(@NonNull Supplier<Validation<? extends E, ? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return isValid() ? this : (Validation<E, T>) supplier.get();
     }
@@ -476,7 +479,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return the value, if the underlying Validation is a Valid, or else the alternative value
      * provided by {@code other} by applying the error.
      */
-    default T getOrElseGet(Function<? super E, ? extends T> other) {
+    default T getOrElseGet(@NonNull Function<? super E, ? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         if (isValid()) {
             return get();
@@ -519,7 +522,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @throws NullPointerException if action is null
      */
     @Override
-    default void forEach(Consumer<? super T> action) {
+    default void forEach(@NonNull Consumer<? super T> action) {
         Objects.requireNonNull(action, "action is null");
         if (isValid()) {
             action.accept(get());
@@ -541,7 +544,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return {@code ifValid.apply(get())} if this is valid, otherwise {@code ifInvalid.apply(getError())}.
      * @throws NullPointerException if one of the given mappers {@code ifInvalid} or {@code ifValid} is null
      */
-    default <U> U fold(Function<? super E, ? extends U> ifInvalid, Function<? super T, ? extends U> ifValid) {
+    default <U> U fold(@NonNull Function<? super E, ? extends U> ifInvalid, @NonNull Function<? super T, ? extends U> ifValid) {
         Objects.requireNonNull(ifInvalid, "ifInvalid is null");
         Objects.requireNonNull(ifValid, "ifValid is null");
         return isValid() ? ifValid.apply(get()) : ifInvalid.apply(getError());
@@ -564,7 +567,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     @Override
-    default <U> Validation<E, U> map(Function<? super T, ? extends U> f) {
+    default <U> Validation<E, U> map(@NonNull Function<? super T, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
             return Validation.invalid(this.getError());
@@ -588,7 +591,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Validation&lt;U,R&gt;
      * @throws NullPointerException if invalidMapper or validMapper is null
      */
-    default <E2, T2> Validation<E2, T2> bimap(Function<? super E, ? extends E2> errorMapper, Function<? super T, ? extends T2> valueMapper) {
+    default <E2, T2> Validation<E2, T2> bimap(@NonNull Function<? super E, ? extends E2> errorMapper, @NonNull Function<? super T, ? extends T2> valueMapper) {
         Objects.requireNonNull(errorMapper, "errorMapper is null");
         Objects.requireNonNull(valueMapper, "valueMapper is null");
         if (isInvalid()) {
@@ -609,7 +612,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @return an instance of Validation&lt;U,T&gt;
      * @throws NullPointerException if mapping operation f is null
      */
-    default <U> Validation<U, T> mapError(Function<? super E, ? extends U> f) {
+    default <U> Validation<U, T> mapError(@NonNull Function<? super E, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
         if (isInvalid()) {
             final E error = this.getError();
@@ -619,7 +622,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         }
     }
 
-    default <U> Validation<Seq<E>, U> ap(Validation<Seq<E>, ? extends Function<? super T, ? extends U>> validation) {
+    default <U> Validation<Seq<E>, U> ap(@NonNull Validation<Seq<E>, ? extends Function<? super T, ? extends U>> validation) {
         Objects.requireNonNull(validation, "validation is null");
         if (isValid()) {
             if (validation.isValid()) {
@@ -656,19 +659,19 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     // -- Implementation of Value
 
-    default Option<Validation<E, T>> filter(Predicate<? super T> predicate) {
+    default Option<Validation<E, T>> filter(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isInvalid() || predicate.test(get()) ? Option.some(this) : Option.none();
     }
 
     @SuppressWarnings("unchecked")
-    default <U> Validation<E, U> flatMap(Function<? super T, ? extends Validation<E, ? extends U>> mapper) {
+    default <U> Validation<E, U> flatMap(@NonNull Function<? super T, ? extends Validation<E, ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return isInvalid() ? (Validation<E, U>) this : (Validation<E, U>) mapper.apply(get());
     }
 
     @Override
-    default Validation<E, T> peek(Consumer<? super T> action) {
+    default Validation<E, T> peek(@NonNull Consumer<? super T> action) {
         if (isValid()) {
             action.accept(get());
         }
@@ -701,7 +704,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
     }
 
     @Override
-    default Iterator<T> iterator() {
+    default @NonNull Iterator<T> iterator() {
         return isValid() ? Iterator.of(get()) : Iterator.empty();
     }
 

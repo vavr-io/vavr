@@ -20,6 +20,7 @@ package io.vavr;
 
 import io.vavr.control.Option;
 import java.util.function.Function;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Represents a partial function {@code T -> R} that may not be defined for all input values of type {@code T}.
@@ -34,7 +35,6 @@ import java.util.function.Function;
  * @param <R> the type of the function output (the <em>codomain</em>)
  * @author Daniel Dietrich
  */
-
 public interface PartialFunction<T, R> extends Function1<T, R> {
 
     /**
@@ -54,7 +54,7 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
      * @param <R> the type of the function output (the <em>codomain</em>)
      * @return a partial function that is defined only for inputs for which the {@code totalFunction} returns a defined {@code Option}
      */
-    static <T, R> PartialFunction<T, R> unlift(Function<? super T, ? extends Option<? extends R>> totalFunction) {
+    static <T, R> PartialFunction<T, R> unlift(@NonNull Function<? super T, ? extends Option<? extends R>> totalFunction) {
         return new PartialFunction<T, R>() {
 
             private static final long serialVersionUID = 1L;

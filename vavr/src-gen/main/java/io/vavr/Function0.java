@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Represents a function with no arguments.
@@ -90,7 +91,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @param <R> return type
      * @return a {@code Function0}
      */
-    static <R> Function0<R> of(Function0<R> methodReference) {
+    static <R> Function0<R> of(@NonNull Function0<R> methodReference) {
         return methodReference;
     }
 
@@ -102,7 +103,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
      *         if the function is defined for the given arguments, and {@code None} otherwise.
      */
-    static <R> Function0<Option<R>> lift(Supplier<? extends R> partialFunction) {
+    static <R> Function0<Option<R>> lift(@NonNull Supplier<? extends R> partialFunction) {
         return () -> Try.<R>of(partialFunction::get).toOption();
     }
 
@@ -114,7 +115,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
      *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
      */
-    static <R> Function0<Try<R>> liftTry(Supplier<? extends R> partialFunction) {
+    static <R> Function0<Try<R>> liftTry(@NonNull Supplier<? extends R> partialFunction) {
         return () -> Try.of(partialFunction::get);
     }
 
@@ -218,7 +219,7 @@ public interface Function0<R> extends Serializable, Supplier<R> {
      * @return a function composed of this and after
      * @throws NullPointerException if after is null
      */
-    default <V> Function0<V> andThen(Function<? super R, ? extends V> after) {
+    default <V> Function0<V> andThen(@NonNull Function<? super R, ? extends V> after) {
         Objects.requireNonNull(after, "after is null");
         return () -> after.apply(apply());
     }
