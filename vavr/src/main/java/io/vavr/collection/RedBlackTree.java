@@ -262,13 +262,13 @@ interface RedBlackTree<T> extends Iterable<T>, Serializable {
      * <p>
      * Example:
      *
-     * <pre><code>
+     * <pre>{@code
      *       4
      *      / \
      *     2   6
      *    / \ / \
      *   1  3 5  7
-     * </code></pre>
+     * }</pre>
      *
      * Iteration order: 1, 2, 3, 4, 5, 6, 7
      * <p>

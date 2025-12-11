@@ -554,14 +554,14 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * </ul>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * [].grouped(1) = []
      * [].grouped(0) throws
      * [].grouped(-1) throws
      * [1,2,3,4].grouped(2) = [[1,2],[3,4]]
      * [1,2,3,4,5].grouped(2) = [[1,2],[3,4],[5]]
      * [1,2,3,4].grouped(5) = [[1,2,3,4]]
-     * </code>
+     * }
      * </pre>
      *
      * Please note that {@code grouped(int)} is a special case of {@linkplain #sliding(int, int)}, i.e.
@@ -824,13 +824,13 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.empty().max()             // = None
      * List.of(1, 2, 3).max()         // = Some(3)
      * List.of("a", "b", "c").max()   // = Some("c")
      * List.of(1.0, Double.NaN).max() // = NaN
      * List.of(1, "a").max()          // throws
-     * </code>
+     * }
      * </pre>
      *
      * @return {@code Some(maximum)} of this elements or {@code None} if this is empty
@@ -892,13 +892,13 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.empty().min()             // = None
      * List.of(1, 2, 3).min()         // = Some(1)
      * List.of("a", "b", "c").min()   // = Some("a")
      * List.of(1.0, Double.NaN).min() // = NaN
      * List.of(1, "a").min()          // throws
-     * </code>
+     * }
      * </pre>
      *
      * There is an exception for {@link Double} and {@link Float}: The minimum is defined to be {@code NaN} if
@@ -1096,12 +1096,12 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.empty().product()              // = 1
      * List.of(1, 2, 3).product()          // = 6L
      * List.of(0.1, 0.2, 0.3).product()    // = 0.006
      * List.of("apple", "pear").product()  // throws
-     * </code>
+     * }
      * </pre>
      *
      * Please also see {@link #fold(Object, BiFunction)}, a way to do a type-safe multiplication of elements.
@@ -1339,13 +1339,13 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * [].sliding(1,1) = []
      * [1,2,3,4,5].sliding(2,3) = [[1,2],[4,5]]
      * [1,2,3,4,5].sliding(2,4) = [[1,2],[5]]
      * [1,2,3,4,5].sliding(2,5) = [[1,2]]
      * [1,2,3,4].sliding(5,3) = [[1,2,3,4],[4]]
-     * </code>
+     * }
      * </pre>
      *
      * @param size a positive window size
@@ -1391,12 +1391,12 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * List.empty().sum()              // = 0
      * List.of(1, 2, 3).sum()          // = 6L
      * List.of(0.1, 0.2, 0.3).sum()    // = 0.6
      * List.of("apple", "pear").sum()  // throws
-     * </code>
+     * }
      * </pre>
      *
      * Please also see {@link #fold(Object, BiFunction)}, a way to do a type-safe summation of elements.

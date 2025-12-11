@@ -41,7 +41,7 @@ import java.util.function.Supplier;
  * </p>
  *
  * <pre>
- * <code>
+ * {@code
  * // Validation construction:
  *
  * // Valid
@@ -66,7 +66,7 @@ import java.util.function.Supplier;
  * // Another way to combine validations:
  * Validation&lt;List&lt;String&gt;, Person&gt; result3 =
  *     Validation.combine(valid1, valid2, valid3).ap(f);
- * </code>
+ * }
  * </pre>
  *
  * @param <E> the type of values in the case of invalid

@@ -48,7 +48,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * Methods to obtain a {@code Stream}:
  *
  * <pre>
- * <code>
+ * {@code
  * // factory methods
  * Stream.empty()                  // = Stream.of() = Nil.instance()
  * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
@@ -65,13 +65,13 @@ import static io.vavr.collection.JavaConverters.ListView;
  * Stream.cons(Object, Supplier)   // e.g. Stream.cons(current, () -&gt; next(current));
  * Stream.continually(Supplier)    // e.g. Stream.continually(Math::random);
  * Stream.iterate(Object, Function)// e.g. Stream.iterate(1, i -&gt; i * 2);
- * </code>
+ * }
  * </pre>
  *
  * Factory method applications:
  *
  * <pre>
- * <code>
+ * {@code
  * Stream&lt;Integer&gt;       s1 = Stream.of(1);
  * Stream&lt;Integer&gt;       s2 = Stream.of(1, 2, 3);
  *                       // = Stream.of(new Integer[] {1, 2, 3});
@@ -84,13 +84,13 @@ import static io.vavr.collection.JavaConverters.ListView;
  *
  * // cuckoo's egg
  * Stream&lt;Integer[]&gt;     s7 = Stream.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
- * </code>
+ * }
  * </pre>
  *
  * Example: Generating prime numbers
  *
  * <pre>
- * <code>
+ * {@code
  * // = Stream(2L, 3L, 5L, 7L, ...)
  * Stream.iterate(2L, PrimeNumbers::nextPrimeFrom)
  *
@@ -103,7 +103,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * static boolean isPrime(long num) {
  *     return !Stream.rangeClosed(2L, (long) Math.sqrt(num)).exists(d -&gt; num % d == 0);
  * }
- * </code>
+ * }
  * </pre>
  *
  * See Okasaki, Chris: <em>Purely Functional Data Structures</em> (p. 34 ff.). Cambridge, 2003.
@@ -304,9 +304,9 @@ public interface Stream<T> extends LinearSeq<T> {
     /**
      * Creates a Stream of the given elements.
      *
-     * <pre><code>  Stream.of(1, 2, 3, 4)
+     * <pre>{@code  Stream.of(1, 2, 3, 4)
      * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))</code></pre>
+     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))}</pre>
      *
      * @param <T>      Component type of the Stream.
      * @param elements Zero or more elements.
@@ -517,11 +517,11 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Stream.range(0, 0)  // = Stream()
      * Stream.range(2, 0)  // = Stream()
      * Stream.range(-2, 2) // = Stream(-2, -1, 0, 1)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -538,12 +538,12 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Stream.rangeBy(1, 3, 1)  // = Stream(1, 2)
      * Stream.rangeBy(1, 4, 2)  // = Stream(1, 3)
      * Stream.rangeBy(4, 1, -2) // = Stream(4, 2)
      * Stream.rangeBy(4, 1, 2)  // = Stream()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -563,11 +563,11 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Stream.range(0L, 0L)  // = Stream()
      * Stream.range(2L, 0L)  // = Stream()
      * Stream.range(-2L, 2L) // = Stream(-2L, -1L, 0L, 1L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -584,12 +584,12 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Stream.rangeBy(1L, 3L, 1L)  // = Stream(1L, 2L)
      * Stream.rangeBy(1L, 4L, 2L)  // = Stream(1L, 3L)
      * Stream.rangeBy(4L, 1L, -2L) // = Stream(4L, 2L)
      * Stream.rangeBy(4L, 1L, 2L)  // = Stream()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -622,11 +622,11 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Stream.rangeClosed(0, 0)  // = Stream(0)
      * Stream.rangeClosed(2, 0)  // = Stream()
      * Stream.rangeClosed(-2, 2) // = Stream(-2, -1, 0, 1, 2)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -643,12 +643,12 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Stream.rangeClosedBy(1, 3, 1)  // = Stream(1, 2, 3)
      * Stream.rangeClosedBy(1, 4, 2)  // = Stream(1, 3)
      * Stream.rangeClosedBy(4, 1, -2) // = Stream(4, 2)
      * Stream.rangeClosedBy(4, 1, 2)  // = Stream()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -668,11 +668,11 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Stream.rangeClosed(0L, 0L)  // = Stream(0L)
      * Stream.rangeClosed(2L, 0L)  // = Stream()
      * Stream.rangeClosed(-2L, 2L) // = Stream(-2L, -1L, 0L, 1L, 2L)
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -689,12 +689,12 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Examples:
      * <pre>
-     * <code>
+     * {@code
      * Stream.rangeClosedBy(1L, 3L, 1L)  // = Stream(1L, 2L, 3L)
      * Stream.rangeClosedBy(1L, 4L, 2L)  // = Stream(1L, 3L)
      * Stream.rangeClosedBy(4L, 1L, -2L) // = Stream(4L, 2L)
      * Stream.rangeClosedBy(4L, 1L, 2L)  // = Stream()
-     * </code>
+     * }
      * </pre>
      *
      * @param from        the first number
@@ -735,12 +735,12 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Stream.unfoldRight(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
      * // Stream(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -764,12 +764,12 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Stream.unfoldLeft(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Stream(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds
@@ -793,12 +793,12 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * Stream.unfold(10, x -&gt; x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Stream(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
-     * </code>
+     * }
      * </pre>
      *
      * @param <T>  type of seeds and unfolded values
@@ -846,15 +846,15 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Well known Scala code for Fibonacci infinite sequence
      * <pre>
-     * <code>
+     * {@code
      * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t =&gt; t._1 + t._2 }
-     * </code>
+     * }
      * </pre>
      * can be transformed to
      * <pre>
-     * <code>
+     * {@code
      * Stream.of(0, 1).appendSelf(self -&gt; self.zip(self.tail()).map(t -&gt; t._1 + t._2));
-     * </code>
+     * }
      * </pre>
      *
      * @param mapper an mapper
@@ -914,10 +914,10 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * // = 1, 2, 3, 1, 2, 3, 1, 2, 3, ...
      * Stream.of(1, 2, 3).cycle();
-     * </code>
+     * }
      * </pre>
      *
      * @return A new Stream containing this elements cycled.
@@ -931,7 +931,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * <p>
      * Example:
      * <pre>
-     * <code>
+     * {@code
      * // = empty
      * Stream.of(1, 2, 3).cycle(0);
      *
@@ -940,7 +940,7 @@ public interface Stream<T> extends LinearSeq<T> {
      *
      * // = 1, 2, 3, 1, 2, 3, 1, 2, 3
      * Stream.of(1, 2, 3).cycle(3);
-     * </code>
+     * }
      * </pre>
      *
      * @param count the number of cycles to be performed

@@ -449,7 +449,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      * <p>
      * If this {@code Either} is a {@link Either.Left}, no operation is performed and it is returned unchanged.
      *
-     * <pre><code>
+     * <pre>{@code
      * import static io.vavr.API.*;
      *
      * // = Right("A")
@@ -457,7 +457,7 @@ public interface Either<L, R> extends Value<R>, Serializable {
      *
      * // = Left(1)
      * Left(1).map(String::toUpperCase);
-     * </code></pre>
+     * }</pre>
      *
      * @param mapper a function to transform the right value
      * @param <U>    the type of the right value in the resulting {@code Either}
