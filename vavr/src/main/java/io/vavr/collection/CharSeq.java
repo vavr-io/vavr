@@ -1526,8 +1526,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * java.nio.charset.CharsetEncoder} class should be used when more control
      * over the encoding process is required.
      *
-     * @param charsetName The name of a supported {@linkplain java.nio.charset.Charset
-     *                    charset}
+     * @param charsetName The name of a supported {@linkplain java.nio.charset.Charset charset}
      * @return The resultant byte array
      * @throws UnsupportedEncodingException If the named charset is not supported
      */
@@ -2252,8 +2251,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <i>str</i>{@code .matches(}<i>regex</i>{@code )} yields exactly the
      * same result as the expression
      * <blockquote>
-     * {@link Pattern}.{@link Pattern#matches(String, CharSequence)
-     * matches(<i>regex</i>, <i>str</i>)}
+     * {@link Pattern#matches(String, CharSequence) Pattern.matches}(<i>regex</i>, <i>str</i>)
      * </blockquote>
      *
      * @param regex the regular expression to which this string is to be matched
@@ -2287,10 +2285,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * yields exactly the same result as the expression
      * <blockquote>
      * {@code
-     * {@link Pattern}.{@link
-     * Pattern#compile(String) compile}(<i>regex</i>).{@link
-     * Pattern#matcher(CharSequence) matcher}(<i>str</i>).{@link
-     * java.util.regex.Matcher#replaceFirst replaceFirst}(<i>repl</i>)
+     * Pattern.compile(<i>regex</i>).matcher(<i>str</i>).replaceFirst(<i>repl</i>)
      * }
      * </blockquote>
      * Note that backslashes ({@code \}) and dollar signs ({@code $}) in the
@@ -2320,10 +2315,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * yields exactly the same result as the expression
      * <blockquote>
      * {@code
-     * {@link Pattern}.{@link
-     * Pattern#compile(String) compile}(<i>regex</i>).{@link
-     * Pattern#matcher(CharSequence) matcher}(<i>str</i>).{@link
-     * java.util.regex.Matcher#replaceAll replaceAll}(<i>repl</i>)
+     * Pattern.compile(<i>regex</i>).matcher(<i>str</i>).replaceAll(<i>repl</i>)
      * }
      * </blockquote>
      * Note that backslashes ({@code \}) and dollar signs ({@code $}) in the
@@ -2454,9 +2446,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * yields the same result as the expression
      * <blockquote>
      * {@code
-     * {@link Pattern}.{@link
-     * Pattern#compile(String) compile}(<i>regex</i>).{@link
-     * Pattern#split(CharSequence, int) split}(<i>str</i>,&nbsp;<i>n</i>)
+     * Pattern.compile(<i>regex</i>).split(<i>str</i>,&nbsp;<i>n</i>)
      * }
      * </blockquote>
      *
