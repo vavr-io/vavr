@@ -31,55 +31,14 @@ import org.jspecify.annotations.NonNull;
 /**
  * An immutable {@code Set} interface.
  * <p>
- * CAUTION: The Vavr {@code Set} implementations generally support {@code null} elements. However {@code SortedSet}
- * implementations require an element {@code Comparator}, which may not support {@code null} elements.
+ * Vavr {@code Set} implementations generally support {@code null} elements,
+ * but {@code SortedSet} implementations require a {@link Comparator}, which may not support {@code null}.
  * <p>
- * Examples:
+ * Supports standard set operations like addition, removal, union, intersection, and difference.
+ * Can be converted to a Java {@link java.util.Set}.
  *
- * <pre>{@code Set<?> addNull(Set<?> set) {
- *
- *     // CAUTION: Do not expect a Set to accept null values in general!
- *     return set.add(null);
- *
- * }
- *
- * void test() {
- *
- *     // ok
- *     addNull(HashSet.of(1));
- *
- *     // ok
- *     addNull(TreeSet.of(nullsFirst(naturalOrder()), 1));
- *
- *     // ok
- *     addNull(TreeSet.empty());
- *
- *     // throws NPE!
- *     addNull(TreeSet.of(1));
- *
- * }}</pre>
- *
- * <p>
- * Basic operations:
- *
- * <ul>
- * <li>{@link #add(Object)}</li>
- * <li>{@link #addAll(Iterable)}</li>
- * <li>{@link #diff(Set)}</li>
- * <li>{@link #intersect(Set)}</li>
- * <li>{@link #remove(Object)}</li>
- * <li>{@link #removeAll(Iterable)}</li>
- * <li>{@link #union(Set)}</li>
- * </ul>
- *
- * Conversion:
- *
- * <ul>
- * <li>{@link #toJavaSet()}</li>
- * </ul>
- *
- * @param <T> Component type
- * @author Daniel Dietrich, Ruslan Sennov
+ * @param <T> component type
+ * @author Daniel Dietrich
  */
 public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializable {
 
@@ -100,18 +59,20 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     }
 
     /**
-     * Add the given element to this set, if it is not already contained.
+     * Returns a new set containing all elements of this set plus the given element,
+     * if it was not already present.
      *
-     * @param element The element to be added.
-     * @return A new set containing all elements of this set and also {@code element}.
+     * @param element the element to add
+     * @return a new set including the element
      */
     Set<T> add(T element);
 
     /**
-     * Adds all of the given elements to this set, if not already contained.
+     * Returns a new set containing all elements of this set plus the given elements,
+     * excluding duplicates.
      *
-     * @param elements The elements to be added.
-     * @return A new set containing all elements of this set and the given {@code elements}, if not already contained.
+     * @param elements the elements to add
+     * @return a new set including the additional elements
      */
     Set<T> addAll(@NonNull Iterable<? extends T> elements);
 
@@ -131,44 +92,39 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     }
 
     /**
-     * Calculates the difference between this set and another set.
-     * <p>
-     * See also {@link #removeAll(Iterable)}.
+     * Returns a new set containing all elements of this set except those in the given set.
      *
-     * @param that Elements to be removed from this set.
-     * @return A new Set containing all elements of this set which are not located in {@code that} set.
+     * @param that the set of elements to remove
+     * @return a new set without the specified elements
      */
     Set<T> diff(@NonNull Set<? extends T> that);
 
     /**
-     * Computes the intersection between this set and another set.
-     * <p>
-     * See also {@link #retainAll(Iterable)}.
+     * Returns a new set containing only the elements present in both this set and the given set.
      *
-     * @param that the set to intersect with.
-     * @return A new Set consisting of all elements that are both in this set and in the given set {@code that}.
+     * @param that the set to intersect with
+     * @return a new set with elements common to both sets
      */
     Set<T> intersect(@NonNull Set<? extends T> that);
 
     /**
-     * Removes a specific element from this set, if present.
+     * Returns a new set with the given element removed, if it was present.
      *
-     * @param element The element to be removed from this set.
-     * @return A new set consisting of the elements of this set, without the given {@code element}.
+     * @param element the element to remove
+     * @return a new set without the specified element
      */
     Set<T> remove(T element);
 
     /**
-     * Removes all of the given elements from this set, if present.
+     * Returns a new set with all given elements removed, if present.
      *
-     * @param elements The elements to be removed from this set.
-     * @return A new set consisting of the elements of this set, without the given {@code elements}.
+     * @param elements the elements to remove
+     * @return a new set without the specified elements
      */
     Set<T> removeAll(@NonNull Iterable<? extends T> elements);
 
     /**
-     * Converts this Vavr {@code Set} to a {@code java.util.Set} while preserving characteristics
-     * like insertion order ({@code LinkedHashSet}) and sort order ({@code SortedSet}).
+     * Converts this Vavr set to a {@code java.util.Set}, preserving insertion or sort order.
      *
      * @return a new {@code java.util.Set} instance
      */
@@ -176,12 +132,10 @@ public interface Set<T> extends Traversable<T>, Function1<T, Boolean>, Serializa
     java.util.Set<T> toJavaSet();
 
     /**
-     * Adds all of the elements of {@code that} set to this set, if not already present.
-     * <p>
-     * See also {@link #addAll(Iterable)}.
+     * Returns a new set containing all distinct elements from this set and the given set.
      *
-     * @param that The set to form the union with.
-     * @return A new set that contains all distinct elements of this and {@code that} set.
+     * @param that the set to union with
+     * @return a new set with all elements from both sets
      */
     Set<T> union(@NonNull Set<? extends T> that);
 

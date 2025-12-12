@@ -29,11 +29,12 @@ import java.util.function.*;
 import org.jspecify.annotations.NonNull;
 
 /**
- * Interface for immutable, indexed sequences.
- * <p>
- * Efficient random access is characteristic for indexed sequences.
+ * Represents an immutable, indexed sequence of elements.
  *
- * @param <T> component type
+ * <p>
+ * Indexed sequences provide efficient random access and preserve element order.
+ *
+ * @param <T> the element type
  * @author Daniel Dietrich
  */
 public interface IndexedSeq<T> extends Seq<T> {
@@ -41,13 +42,14 @@ public interface IndexedSeq<T> extends Seq<T> {
     long serialVersionUID = 1L;
 
     /**
-     * Narrows a widened {@code IndexedSeq<? extends T>} to {@code IndexedSeq<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a widened {@code IndexedSeq<? extends T>} to {@code IndexedSeq<T>}.
      *
-     * @param indexedSeq An {@code IndexedSeq}.
-     * @param <T>        Component type of the {@code IndexedSeq}.
-     * @return the given {@code indexedSeq} instance as narrowed type {@code IndexedSeq<T>}.
+     * <p>
+     * This is safe for immutable, read-only sequences, which are covariant.
+     *
+     * @param indexedSeq an {@code IndexedSeq} instance
+     * @param <T>        the target element type
+     * @return the same {@code IndexedSeq} instance with the narrowed type
      */
     @SuppressWarnings("unchecked")
     static <T> IndexedSeq<T> narrow(IndexedSeq<? extends T> indexedSeq) {

@@ -157,7 +157,7 @@ public final class API {
     /**
      * Shortcut for {@code System.out.print(obj)}. See {@link PrintStream#print(Object)}.
      *
-     * @param obj The <code>Object</code> to be printed
+     * @param obj The {@code>Object} to be printed
      */
     public static void print(Object obj) {
         System.out.print(obj);
@@ -177,7 +177,7 @@ public final class API {
     /**
      * Shortcut for {@code System.out.println(obj)}. See {@link PrintStream#println(Object)}.
      *
-     * @param obj The <code>Object</code> to be printed
+     * @param obj The {@code Object} to be printed
      */
     public static void println(Object obj) {
         System.out.println(obj);
