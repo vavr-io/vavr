@@ -1,0 +1,12 @@
+name: autoupdate
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  autoupdate:
+    uses: vavr-io/workflows/.github/workflows/autoupdate.yml@main
+    secrets:
+      AUTOUPDATE_GITHUB_TOKEN: ${{ secrets.AUTOUPDATE_GITHUB_TOKEN }}
