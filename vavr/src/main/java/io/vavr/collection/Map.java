@@ -29,72 +29,17 @@ import org.jspecify.annotations.NonNull;
  * An immutable {@code Map} interface.
  *
  * <p>
- * Basic operations:
- *
- * <ul>
- * <li>{@link #containsKey(Object)}</li>
- * <li>{@link #containsValue(Object)}</li>
- * <li>{@link #get(Object)}</li>
- * <li>{@link #keySet()}</li>
- * <li>{@link #merge(Map)}</li>
- * <li>{@link #merge(Map, BiFunction)}</li>
- * <li>{@link #put(Object, Object)}</li>
- * <li>{@link #put(Tuple2)}</li>
- * <li>{@link #put(Object, Object, BiFunction)}</li>
- * <li>{@link #put(Tuple2, BiFunction)}</li>
- * <li>{@link #values()}</li>
- * </ul>
- *
- * Conversion:
- *
- * <ul>
- * <li>{@link #toJavaMap()}</li>
- * </ul>
- *
- * Filtering:
- *
- * <ul>
- * <li>{@link #filter(BiPredicate)}</li>
- * <li>{@link #filterKeys(Predicate)}</li>
- * <li>{@link #filterValues(Predicate)}</li>
- * <li>{@link #reject(BiPredicate)}</li>
- * <li>{@link #rejectKeys(Predicate)}</li>
- * <li>{@link #rejectValues(Predicate)}</li>
- * <li>{@link #remove(Object)}</li>
- * <li>{@link #removeAll(Iterable)}</li>
- * </ul>
- *
- * Iteration:
- *
- * <ul>
- * <li>{@link #forEach(BiConsumer)}</li>
- * <li>{@link #iterator(BiFunction)}</li>
- * <li>{@link #keysIterator()}</li>
- * <li>{@link #valuesIterator()}</li>
- * </ul>
- *
- * Transformation:
- *
- * <ul>
- * <li>{@link #bimap(Function, Function)}</li>
- * <li>{@link #flatMap(BiFunction)}</li>
- * <li>{@link #lift()}</li>
- * <li>{@link #map(BiFunction)}</li>
- * <li>{@link #mapKeys(Function)}</li>
- * <li>{@link #mapKeys(Function, BiFunction)}</li>
- * <li>{@link #mapValues(Function)}</li>
- * <li>{@link #transform(Function)}</li>
- * <li>{@link #unzip(BiFunction)}</li>
- * <li>{@link #unzip3(BiFunction)}</li>
- * <li>{@link #withDefault(Function)}</li>
- * <li>{@link #withDefaultValue(Object)}</li>
- * </ul>
+ * Represents a collection of key-value pairs with immutable operations. 
+ * Supports typical map operations such as querying, updating, filtering,
+ * transforming, and iterating over entries. Provides convenient methods 
+ * for converting to standard Java maps and for working with default values.
  *
  * @param <K> Key type
  * @param <V> Value type
- * @author Daniel Dietrich, Ruslan Sennov
+ * @author Daniel Dietrich, Ruslan Sennov, Grzegorz Piwowarek
  */
 public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, V>, Serializable {
+
 
     long serialVersionUID = 1L;
 
@@ -114,31 +59,29 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     }
 
     /**
-     * Convenience factory method to create a key/value pair.
-     * <p>
-     * If imported statically, this method allows to create a {@link Map} with arbitrary entries in a readable and
-     * type-safe way, e.g.:
-     * <pre>
-     * {@code
+     * Creates a key/value pair for use with {@link Map} factories.
      *
+     * <p>
+     * When imported statically, this method enables constructing maps in a
+     * readable and type-safe way, for example:
+     * <pre>{@code
      * HashMap.ofEntries(
      *     entry(k1, v1),
      *     entry(k2, v2),
      *     entry(k3, v3)
      * );
-     *
-     * }
-     * </pre>
+     * }</pre>
      *
      * @param key   the entry's key
      * @param value the entry's value
-     * @param <K>   Key type
-     * @param <V>   Value type
+     * @param <K>   key type
+     * @param <V>   value type
      * @return a key/value pair
      */
     static <K, V> Tuple2<K, V> entry(K key, V value) {
         return Tuple.of(key, value);
     }
+
 
     @Deprecated
     @Override
@@ -310,8 +253,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     @Override
     default <U> Seq<U> flatMap(@NonNull Function<? super Tuple2<K, V>, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        // don't remove cast, doesn't compile in Eclipse without it
-        return (Seq<U>) iterator().flatMap(mapper).toStream();
+        return iterator().flatMap(mapper).toStream();
     }
 
     @Override
@@ -422,7 +364,6 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     @Override
     default <U> Seq<U> map(@NonNull Function<? super Tuple2<K, V>, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        // don't remove cast, doesn't compile in Eclipse without it
         return (Seq<U>) iterator().map(mapper).toStream();
     }
 

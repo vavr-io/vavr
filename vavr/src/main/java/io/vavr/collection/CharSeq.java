@@ -1526,8 +1526,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * java.nio.charset.CharsetEncoder} class should be used when more control
      * over the encoding process is required.
      *
-     * @param charsetName The name of a supported {@linkplain java.nio.charset.Charset
-     *                    charset}
+     * @param charsetName The name of a supported {@linkplain java.nio.charset.Charset charset}
      * @return The resultant byte array
      * @throws UnsupportedEncodingException If the named charset is not supported
      */
