@@ -31,14 +31,18 @@ import java.util.stream.Collector;
 import org.jspecify.annotations.NonNull;
 
 /**
- * SortedMap implementation, backed by a Red/Black Tree.
+ * An immutable {@link SortedMap} implementation backed by a Red-Black tree.
  *
- * @param <K> Key type
- * @param <V> Value type
+ * <p>
+ * Provides efficient sorted key access and typical map operations in a functional style.
+ *
+ * @param <K> the type of keys maintained by this map
+ * @param <V> the type of mapped values
  * @author Daniel Dietrich
  */
-// DEV-NOTE: use entries.min().get() in favor of iterator().next(), it is faster!
+// DEV-NOTE: prefer entries.min().get() over iterator().next() for better performance
 public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
+
 
     private static final long serialVersionUID = 1L;
 

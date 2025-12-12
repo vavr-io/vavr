@@ -70,125 +70,27 @@ import static io.vavr.API.Right;
 import static io.vavr.API.Valid;
 
 /**
- * Represents a value in a functional programming context. A {@code Value} models the outcome of a computation
- * that may or may not produce a result, similar to the result of a partially applied function.
+ * Represents a value in a functional programming context.
+ *
  * <p>
- * A {@code Value} may be present or absent. When absent, it is considered <em>empty</em>. The meaning of the
- * empty state depends on the concrete implementation and usage context - it may represent an undefined value,
- * a failed computation, or the absence of elements.
+ * A {@code Value} models the outcome of a computation that may or may not produce a result. 
+ * It can be present or absent (empty), where the meaning of "empty" depends on the concrete implementation - it may represent an undefined value, a failed computation, or absence of elements.
+ *
  * <p>
- * Basic operations:
- *
+ * This interface provides methods for:
  * <ul>
- * <li>{@link #get()}</li>
- * <li>{@link #getOrElse(Object)}</li>
- * <li>{@link #getOrElse(Supplier)}</li>
- * <li>{@link #getOrElseThrow(Supplier)}</li>
- * <li>{@link #getOrElseTry(CheckedFunction0)}</li>
- * <li>{@link #getOrNull()}</li>
- * <li>{@link #map(Function)}</li>
- * <li>{@link #mapTo(Object)}</li>
- * <li>{@link #mapToVoid()}</li>
- * <li>{@link #stringPrefix()}</li>
+ *     <li>Accessing and retrieving the wrapped value safely, with defaults or exceptions.</li>
+ *     <li>Transforming the value with functional operations such as {@code map} and {@code flatMap}.</li>
+ *     <li>Checking equality and correspondence with other values or collections.</li>
+ *     <li>Iterating over the value or performing side-effects.</li>
+ *     <li>Testing characteristics like emptiness, laziness, or single-valuedness.</li>
+ *     <li>Converting to other types, including Java collections, streams, {@code Option}, {@code Try}, {@code Either}, and validation types.</li>
  * </ul>
  *
- * Equality checks:
+ * <p><strong>Note:</strong> Subclasses must define appropriate {@code flatMap} signatures.
  *
- * <ul>
- * <li>{@link #corresponds(Iterable, BiPredicate)}</li>
- * <li>{@link #eq(Object)}</li>
- * </ul>
- *
- * Iterable extensions:
- *
- * <ul>
- * <li>{@link #contains(Object)}</li>
- * <li>{@link #exists(Predicate)}</li>
- * <li>{@link #forAll(Predicate)}</li>
- * <li>{@link #forEach(Consumer)}</li>
- * <li>{@link #iterator()}</li>
- * </ul>
- *
- * Side-effects:
- *
- * <ul>
- * <li>{@link #out(PrintStream)}</li>
- * <li>{@link #out(PrintWriter)}</li>
- * <li>{@link #peek(Consumer)}</li>
- * <li>{@link #stderr()}</li>
- * <li>{@link #stdout()}</li>
- * </ul>
- *
- * Tests:
- *
- * <ul>
- * <li>{@link #isAsync()}</li>
- * <li>{@link #isEmpty()}</li>
- * <li>{@link #isLazy()}</li>
- * <li>{@link #isSingleValued()}</li>
- * </ul>
- *
- * Type conversion:
- *
- * <ul>
- * <li>{@link #collect(Collector)}</li>
- * <li>{@link #collect(Supplier, BiConsumer, BiConsumer)}</li>
- * <li>{@link #toArray()}</li>
- * <li>{@link #toCharSeq()}</li>
- * <li>{@link #toEither(Object)}</li>
- * <li>{@link #toEither(Supplier)}</li>
- * <li>{@link #toInvalid(Object)}</li>
- * <li>{@link #toInvalid(Supplier)}</li>
- * <li>{@link #toJavaArray()}</li>
- * <li>{@link #toJavaArray(Class)}</li>
- * <li>{@link #toJavaCollection(Function)}</li>
- * <li>{@link #toJavaList()}</li>
- * <li>{@link #toJavaList(Function)}</li>
- * <li>{@link #toJavaMap(Function)}</li>
- * <li>{@link #toJavaMap(Supplier, Function)}</li>
- * <li>{@link #toJavaMap(Supplier, Function, Function)} </li>
- * <li>{@link #toJavaOptional()}</li>
- * <li>{@link #toJavaParallelStream()}</li>
- * <li>{@link #toJavaSet()}</li>
- * <li>{@link #toJavaSet(Function)}</li>
- * <li>{@link #toJavaStream()}</li>
- * <li>{@link #toLeft(Object)}</li>
- * <li>{@link #toLeft(Supplier)}</li>
- * <li>{@link #toLinkedMap(Function)}</li>
- * <li>{@link #toLinkedMap(Function, Function)}</li>
- * <li>{@link #toLinkedSet()}</li>
- * <li>{@link #toList()}</li>
- * <li>{@link #toMap(Function)}</li>
- * <li>{@link #toMap(Function, Function)}</li>
- * <li>{@link #toOption()}</li>
- * <li>{@link #toPriorityQueue()}</li>
- * <li>{@link #toPriorityQueue(Comparator)}</li>
- * <li>{@link #toQueue()}</li>
- * <li>{@link #toRight(Object)}</li>
- * <li>{@link #toRight(Supplier)}</li>
- * <li>{@link #toSet()}</li>
- * <li>{@link #toSortedMap(Comparator, Function)}</li>
- * <li>{@link #toSortedMap(Comparator, Function, Function)}</li>
- * <li>{@link #toSortedMap(Function)}</li>
- * <li>{@link #toSortedMap(Function, Function)}</li>
- * <li>{@link #toSortedSet()}</li>
- * <li>{@link #toSortedSet(Comparator)}</li>
- * <li>{@link #toStream()}</li>
- * <li>{@link #toString()}</li>
- * <li>{@link #toTree()}</li>
- * <li>{@link #toTry()}</li>
- * <li>{@link #toTry(Supplier)}</li>
- * <li>{@link #toValid(Object)}</li>
- * <li>{@link #toValid(Supplier)}</li>
- * <li>{@link #toValidation(Object)}</li>
- * <li>{@link #toValidation(Supplier)}</li>
- * <li>{@link #toVector()}</li>
- * </ul>
- *
- * <strong>Please note:</strong> flatMap signatures are manifold and have to be declared by subclasses of Value.
- *
- * @param <T> The type of the wrapped value.
- * @author Daniel Dietrich
+ * @param <T> the type of the wrapped value
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public interface Value<T> extends Iterable<T> {
 
@@ -1584,8 +1486,8 @@ interface ValueModule {
     static <T, R extends java.util.Collection<T>> R toJavaCollection(
             Value<T> value, Function<Integer, R> containerSupplier, int defaultInitialCapacity) {
         final int size;
-        if (value instanceof Traversable && ((Traversable) value).isTraversableAgain() && !value.isLazy()) {
-            size = ((Traversable) value).size();
+        if (value instanceof Traversable && ((Traversable<?>) value).isTraversableAgain() && !value.isLazy()) {
+            size = ((Traversable<?>) value).size();
         } else {
             size = defaultInitialCapacity;
         }
