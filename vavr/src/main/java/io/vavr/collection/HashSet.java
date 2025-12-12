@@ -71,13 +71,13 @@ public final class HashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code HashSet<? extends T>} to {@code HashSet<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code HashSet<? extends T>} to {@code HashSet<T>} via a
+     * type-safe cast. Safe here because the set is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param hashSet A {@code HashSet}.
-     * @param <T>     Component type of the {@code HashSet}.
-     * @return the given {@code hashSet} instance as narrowed type {@code HashSet<T>}.
+     * @param hashSet the set to narrow
+     * @param <T>     the target element type
+     * @return the same set viewed as {@code HashSet<T>}
      */
     @SuppressWarnings("unchecked")
     public static <T> HashSet<T> narrow(HashSet<? extends T> hashSet) {

@@ -110,13 +110,13 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
     }
 
     /**
-     * Narrows a widened {@code Queue<? extends T>} to {@code Queue<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code Queue<? extends T>} to {@code Queue<T>} via a
+     * type-safe cast. Safe here because the queue is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param queue An {@code Queue}.
-     * @param <T>   Component type of the {@code Queue}.
-     * @return the given {@code queue} instance as narrowed type {@code Queue<T>}.
+     * @param queue the queue to narrow
+     * @param <T>   the target element type
+     * @return the same queue viewed as {@code Queue<T>}
      */
     @SuppressWarnings("unchecked")
     public static <T> Queue<T> narrow(Queue<? extends T> queue) {

@@ -91,13 +91,13 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code Array<? extends T>} to {@code Array<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code Array<? extends T>} to {@code Array<T>} via a
+     * type-safe cast. Safe here because the array is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param array An {@code Array}.
-     * @param <T>   Component type of the {@code Array}.
-     * @return the given {@code array} instance as narrowed type {@code Array<T>}.
+     * @param array the array to narrow
+     * @param <T>   the target element type
+     * @return the same array viewed as {@code Array<T>}
      */
     @SuppressWarnings("unchecked")
     public static <T> Array<T> narrow(Array<? extends T> array) {

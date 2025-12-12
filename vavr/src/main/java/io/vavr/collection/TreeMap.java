@@ -185,16 +185,16 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code TreeMap<? extends K, ? extends V>} to {@code TreeMap<K, V>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code TreeMap<? extends K, ? extends V>} to {@code TreeMap<K, V>} via a
+     * type-safe cast. Safe here because the map is immutable and no elements
+     * can be added that would violate the type (covariance)
      * <p>
      * CAUTION: If {@code K} is narrowed, the underlying {@code Comparator} might fail!
      *
-     * @param treeMap A {@code TreeMap}.
-     * @param <K>     Key type
-     * @param <V>     Value type
-     * @return the given {@code treeMap} instance as narrowed type {@code TreeMap<K, V>}.
+     * @param treeMap the map to narrow
+     * @param <K>     the target key type
+     * @param <V>     the target value type
+     * @return the same map viewed as {@code TreeMap<K, V>}
      */
     @SuppressWarnings("unchecked")
     public static <K, V> TreeMap<K, V> narrow(TreeMap<? extends K, ? extends V> treeMap) {
