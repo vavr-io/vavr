@@ -190,13 +190,13 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     }
 
     /**
-     * Narrows a widened {@code PriorityQueue<? extends T>} to {@code PriorityQueue<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code PriorityQueue<? extends T>} to {@code PriorityQueue<T>} via a
+     * type-safe cast. Safe here because the queue is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param queue An {@code PriorityQueue}.
-     * @param <T>   Component type of the {@code PriorityQueue}.
-     * @return the given {@code PriorityQueue} instance as narrowed type {@code PriorityQueue<T>}.
+     * @param queue the queue to narrow
+     * @param <T>   the target element type
+     * @return the same queue viewed as {@code PriorityQueue<T>}
      */
     @SuppressWarnings("unchecked")
     public static <T> PriorityQueue<T> narrow(PriorityQueue<? extends T> queue) {

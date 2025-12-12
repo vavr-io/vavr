@@ -116,14 +116,14 @@ public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code LinkedHashMap<? extends K, ? extends V>} to {@code LinkedHashMap<K, V>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code LinkedHashMap<? extends K, ? extends V>} to {@code LinkedHashMap<K, V>} via a
+     * type-safe cast. Safe here because the map is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param linkedHashMap A {@code LinkedHashMap}.
-     * @param <K>           Key type
-     * @param <V>           Value type
-     * @return the given {@code linkedHashMap} instance as narrowed type {@code LinkedHashMap<K, V>}.
+     * @param linkedHashMap the map to narrow
+     * @param <K>           the target key type
+     * @param <V>           the target value type
+     * @return the same map viewed as {@code LinkedHashMap<K, V>}
      */
     @SuppressWarnings("unchecked")
     public static <K, V> LinkedHashMap<K, V> narrow(@NonNull LinkedHashMap<? extends K, ? extends V> linkedHashMap) {

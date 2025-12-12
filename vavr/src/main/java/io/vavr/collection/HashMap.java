@@ -116,14 +116,14 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code HashMap<? extends K, ? extends V>} to {@code HashMap<K, V>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code HashMap<? extends K, ? extends V>} to {@code HashMap<K, V>} via a
+     * type-safe cast. Safe here because the map is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param hashMap A {@code HashMap}.
-     * @param <K>     Key type
-     * @param <V>     Value type
-     * @return the given {@code hashMap} instance as narrowed type {@code HashMap<K, V>}.
+     * @param hashMap the map to narrow
+     * @param <K>     the target key type
+     * @param <V>     the target value type
+     * @return the same map viewed as {@code HashMap<K, V>}
      */
     @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> narrow(HashMap<? extends K, ? extends V> hashMap) {

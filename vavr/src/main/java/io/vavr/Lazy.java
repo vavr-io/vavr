@@ -76,12 +76,13 @@ public final class Lazy<T> implements Value<T>, Supplier<T>, Serializable {
     }
 
     /**
-     * Narrows a {@code Lazy<? extends T>} to {@code Lazy<T>} via a type-safe cast.
-     * This is safe because immutable or read-only collections are covariant.
+     * Narrows a {@code Lazy<? extends T>} to {@code Lazy<T>} via a
+     * type-safe cast. Safe here because the lazy value is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param lazy the {@code Lazy} instance to narrow
-     * @param <T>  the type of the value
-     * @return the given {@code lazy} instance as a {@code Lazy<T>}
+     * @param lazy the lazy value to narrow
+     * @param <T>  the target element type
+     * @return the same lazy value viewed as {@code Lazy<T>}
      */
     @SuppressWarnings("unchecked")
     public static <T> Lazy<T> narrow(Lazy<? extends T> lazy) {

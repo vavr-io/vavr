@@ -478,14 +478,14 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
     }
 
     /**
-     * Narrows a widened {@code HashMultimap<? extends K, ? extends V>} to {@code HashMultimap<K, V>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code HashMultimap<? extends K, ? extends V>} to {@code HashMultimap<K, V>} via a
+     * type-safe cast. Safe here because the multimap is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param map A {@code Map}.
-     * @param <K> Key type
-     * @param <V> Value type
-     * @return the given {@code multimap} instance as narrowed type {@code Multimap<K, V>}.
+     * @param map the multimap to narrow
+     * @param <K> the target key type
+     * @param <V> the target value type
+     * @return the same multimap viewed as {@code HashMultimap<K, V>}
      */
     @SuppressWarnings("unchecked")
     public static <K, V> HashMultimap<K, V> narrow(HashMultimap<? extends K, ? extends V> map) {
