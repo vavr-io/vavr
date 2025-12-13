@@ -324,9 +324,6 @@
         </profile>
         <profile>
             <id>sonatype-oss-release</id>
-            <modules>
-                <module>vavr</module>
-            </modules>
             <build>
                 <plugins>
                     <plugin>
