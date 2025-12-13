@@ -1069,12 +1069,14 @@ public class FutureTest extends AbstractValueTest {
         assertThat(Future.failed(new Error("!")).toTry()).isEqualTo(Try.failure(new Error("!")));
     }
 
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        final String transformed = Future.of(() -> 42).transform(f -> String.valueOf(f.get()));
-        assertThat(transformed).isEqualTo("42");
+    @Nested
+    class TransformTests {
+        
+        @Test
+        void shouldTransform() {
+            final String transformed = Future.of(() -> 42).transform(f -> String.valueOf(f.get()));
+            assertThat(transformed).isEqualTo("42");
+        }
     }
 
     // -- transformValue()

@@ -41,6 +41,7 @@ import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.LongAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.StringAssert;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static java.util.Arrays.asList;
@@ -3396,12 +3397,14 @@ public class CharSeqTest {
         return Stream.continually(source).take(times).mkString();
     }
 
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        final String transformed = CharSeq.of('0').transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("0");
+    @Nested
+    class TransformTests {
+        
+        @Test
+        void shouldTransform() {
+            final String transformed = CharSeq.of('0').transform(v -> String.valueOf(v.get()));
+            assertThat(transformed).isEqualTo("0");
+        }
     }
 
     // -- scan, scanLeft, scanRight

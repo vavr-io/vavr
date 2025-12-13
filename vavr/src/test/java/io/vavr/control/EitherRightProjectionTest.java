@@ -23,6 +23,7 @@ import io.vavr.AbstractValueTest;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
 import java.util.*;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.vavr.API.Left;
@@ -189,12 +190,14 @@ public class EitherRightProjectionTest extends AbstractValueTest {
         assertThat(Either.<Integer, String> right("1").right().toJavaOptional()).isEqualTo(Optional.of("1"));
     }
 
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        final String transformed = of(1).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("1");
+    @Nested
+    class TransformTests {
+        
+        @Test
+        void shouldTransform() {
+            final String transformed = of(1).transform(v -> String.valueOf(v.get()));
+            assertThat(transformed).isEqualTo("1");
+        }
     }
 
     // filter

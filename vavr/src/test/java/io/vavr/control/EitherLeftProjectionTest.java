@@ -30,6 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Spliterator;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -404,12 +405,14 @@ public class EitherLeftProjectionTest extends AbstractValueTest {
         assertThat(Either.right(1).left().toString()).isEqualTo("LeftProjection(Right(1))");
     }
 
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        final String transformed = of(1).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("1");
+    @Nested
+    class TransformTests {
+        
+        @Test
+        void shouldTransform() {
+            final String transformed = of(1).transform(v -> String.valueOf(v.get()));
+            assertThat(transformed).isEqualTo("1");
+        }
     }
 
     // -- spliterator

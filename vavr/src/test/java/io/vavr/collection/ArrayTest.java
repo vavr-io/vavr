@@ -30,6 +30,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class ArrayTest extends AbstractIndexedSeqTest {
@@ -258,12 +259,14 @@ public class ArrayTest extends AbstractIndexedSeqTest {
         assertThat(count.get()).isEqualTo(3);
     }
 
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("42");
+    @Nested
+    class TransformTests {
+        
+        @Test
+        void shouldTransform() {
+            String transformed = of(42).transform(v -> String.valueOf(v.get()));
+            assertThat(transformed).isEqualTo("42");
+        }
     }
 
     // -- unfold

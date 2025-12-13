@@ -26,6 +26,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.vavr.TestComparators.toStringComparator;
@@ -377,12 +378,14 @@ public class TreeSetTest extends AbstractSortedSetTest {
         assertThat(value.toSortedSet().mkString(",")).isEqualTo("3,2,1");
     }
 
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("42");
+    @Nested
+    class TransformTests {
+        
+        @Test
+        void shouldTransform() {
+            final String transformed = of(42).transform(v -> String.valueOf(v.get()));
+            assertThat(transformed).isEqualTo("42");
+        }
     }
 
     // -- helpers
