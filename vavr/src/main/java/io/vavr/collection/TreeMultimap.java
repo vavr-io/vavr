@@ -954,6 +954,6 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
 
     @Override
     public java.util.SortedMap<K, Collection<V>> toJavaMap() {
-        return toJavaMap(new java.util.TreeMap<>());
+        return toJavaMap(new java.util.TreeMap<>(comparator()));
     }
 }

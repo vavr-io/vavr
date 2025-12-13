@@ -4,12 +4,14 @@ import io.vavr.Tuple2;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Stream;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.TestTemplate;
 
 public class TreeMultimapTest extends AbstractMultimapTest {
@@ -195,6 +197,21 @@ public class TreeMultimapTest extends AbstractMultimapTest {
             default:
                 throw new RuntimeException();
         }
+    }
+    
+    // -- toJavaMap
+    
+    @TestTemplate
+    public void shouldReturnJavaMapSortedUsingSameComparator() {
+        final TreeMultimap<String, String> vavrMap = TreeMultimap.withSeq().of(Comparator.comparing(String::length), "aa", "aa", "b", "b");
+
+        final LinkedList<String> orderedJavaMapKeys = new LinkedList<>();
+        final LinkedList<String> orderedVavrMapKeys = new LinkedList<>();
+        vavrMap.forEach((k,v) -> orderedVavrMapKeys.add(k));
+        vavrMap.toJavaMap().forEach((k, v) -> orderedJavaMapKeys.add(k));
+        
+        Assertions.assertThat(orderedJavaMapKeys).containsExactly("b", "aa");
+        Assertions.assertThat(orderedVavrMapKeys).containsExactly("b", "aa");
     }
 
     // -- static narrow
