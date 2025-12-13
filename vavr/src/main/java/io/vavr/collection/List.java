@@ -148,9 +148,9 @@ public interface List<T> extends LinearSeq<T> {
     }
 
     /**
-     * Returns the single instance of Nil. Convenience method for {@code Nil.instance()} .
+     * Returns the single instance of Nil. Convenience method for {@code Nil.instance()}.
      * <p>
-     * Note: this method intentionally returns type {@code List} and not {@code Nil}. This comes handy when folding.
+     * Note: this method intentionally returns type {@code List} and not {@code Nil}. This comes in handy when folding.
      * If you explicitly need type {@code Nil} use {@linkplain Nil#instance()}.
      *
      * @param <T> Component type of Nil, determined by type inference in the particular context.
