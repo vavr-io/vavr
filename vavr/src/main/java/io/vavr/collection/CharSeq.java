@@ -369,11 +369,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         } else if (times == 1) {
             return this;
         } else {
-            final int finalLength = length() * times;
+            final int length = length();
+            // Check for integer overflow: if length * times would overflow, throw an exception
+            if (times > Integer.MAX_VALUE / length) {
+                throw new IllegalArgumentException("Result of repeat would exceed maximum array size");
+            }
+            final int finalLength = length * times;
             final char[] result = new char[finalLength];
-            back.getChars(0, length(), result, 0);
+            back.getChars(0, length, result, 0);
 
-            int i = length();
+            int i = length;
             for (; i <= (finalLength >>> 1); i <<= 1) {
                 System.arraycopy(result, 0, result, i, i);
             }

@@ -310,6 +310,20 @@ public class ArrayTest extends AbstractIndexedSeqTest {
                 .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
     }
 
+    // -- intersperse
+
+    @Test
+    public void shouldIntersperseNormally() {
+        // Test that normal intersperse operations work correctly
+        // The overflow protection is in place but cannot be tested without OOM
+        // since we would need to allocate an array of size > (Integer.MAX_VALUE + 1) / 2
+        final Array<Integer> testArray = Array.range(0, 10);
+        final Array<Integer> result = testArray.intersperse(-1);
+        assertThat(result).hasSize(19); // 10 elements + 9 separators
+        assertThat(result.head()).isEqualTo(0);
+        assertThat(result.get(1)).isEqualTo(-1);
+    }
+
     // -- toString
 
     @Test

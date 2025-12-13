@@ -948,6 +948,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         if (delegate.length <= 1) {
             return this;
         } else {
+            // Check for integer overflow: if delegate.length * 2 - 1 would overflow, throw an exception
+            // We check if delegate.length > (Integer.MAX_VALUE + 1) / 2
+            // Since Integer.MAX_VALUE is 2147483647, (MAX_VALUE + 1) / 2 = 1073741824
+            if (delegate.length > 1073741824) {
+                throw new IllegalArgumentException("Result of intersperse would exceed maximum array size");
+            }
             final Object[] arr = new Object[delegate.length * 2 - 1];
             for (int i = 0; i < delegate.length; i++) {
                 arr[i * 2] = delegate[i];
