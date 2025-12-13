@@ -280,9 +280,6 @@
                             </goals>
                         </execution>
                     </executions>
-                    <configuration>
-                        <stylesheetfile>${basedir}/.javadoc/stylesheet.css</stylesheetfile>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.felix</groupId>
