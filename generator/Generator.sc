@@ -2636,6 +2636,7 @@ def generateTestClasses(): Unit = {
     genVavrFile("io.vavr", s"APITest", baseDir = TARGET_TEST)((im: ImportManager, packageName, className) => {
 
       val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
+      val nested = im.getType("org.junit.jupiter.api.Nested")
       val test = im.getType("org.junit.jupiter.api.Test")
 
       val API = im.getType("io.vavr.API")
@@ -2914,9 +2915,13 @@ def generateTestClasses(): Unit = {
                 $AssertionsExtensions.assertThat($API.class).isNotInstantiable();
             }
 
-            // -- shortcuts
+            @Nested
+            class Shortcuts {
 
-            ${genShortcutsTests(im, packageName, className)}
+                ${genShortcutsTests(im, packageName, className)}
+
+            }
+
 
             //
             // Alias should return not null.
@@ -2925,157 +2930,168 @@ def generateTestClasses(): Unit = {
 
             ${genAliasesTests(im, packageName, className)}
 
-            // -- run
+            @Nested
+            class Run {
 
-            @$test
-            public void shouldRunUnitAndReturnVoid() {
-                int[] i = { 0 };
-                Void nothing = run(() -> i[0]++);
-                $assertThat(nothing).isNull();
-                $assertThat(i[0]).isEqualTo(1);
-            }
-
-            // -- For
-
-            @$test
-            public void shouldIterateFor1UsingSimpleYield() {
-                final $ListType<Integer> list = List.of(1, 2, 3);
-                final $ListType<Integer> actual = For(list).yield().toList();
-                $assertThat(actual).isEqualTo(list);
-            }
-
-            ${(1 to N).gen(i => xs"""
-              @$test
-              public void shouldIterateFor$ListType$i() {
-                  final $ListType<Integer> result = For(
-                      ${(1 to i).gen(j => s"$ListType.of(1, 2, 3)")(",\n")}
-                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")}).toList();
-                  $assertThat(result.length()).isEqualTo((int) Math.pow(3, $i));
-                  $assertThat(result.head()).isEqualTo($i);
-                  $assertThat(result.last()).isEqualTo(3 * $i);
-              }
-            """)("\n\n")}
-
-            ${monadicTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
-              @$test
-              public void shouldIterateFor$mtype$i() {
-                  final $mtype<Integer> result = For(
-                      ${(1 to i).gen(j => s"$mtype.of($j)")(",\n")}
-                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
-                  $assertThat(result.get()).isEqualTo(${(1 to i).sum});
-              }
-            """})("\n\n"))("\n\n")}
-
-            ${monadicFunctionTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
-              @$test
-              public void shouldIterateFor$mtype$i() {
-                  final ${if(mtype == "Either") mtype + "<Object, Integer>" else mtype + "<Integer>"}result = For(
-                      ${(1 to i).gen(j => s"${if(mtype == "Either")  mtype + s".right($j)" else  mtype + s".of(() -> $j)"}")(",\n")}
-                  ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
-                  $assertThat(result.get()).isEqualTo(${(1 to i).sum});
-              }
-            """})("\n\n"))("\n\n")}
-
-            @$test
-            public void shouldIterateNestedFor() {
-                final $ListType<String> result =
-                        For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
-                                For(${im.getType("io.vavr.collection.List")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
-                assertThat(result).isEqualTo($ListType.of("1:a", "1:b", "2:a", "2:b"));
-            }
-
-            // -- Match
-
-            @$test
-            public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
-                final Match.Case<Object, Integer> _case = Case($$(ignored -> true), ignored -> 1);
-                assertThat(_case.isDefinedAt(null)).isTrue();
-                assertThat(_case.apply(null)).isEqualTo(1);
-            }
-
-            @$test
-            public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
-                assertThat(Case($$(ignored -> false), ignored -> 1).isDefinedAt(null)).isFalse();
-            }
-
-            @$test
-            public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
-                final Match.Case<Object, Integer> _case = Case($$(ignored -> true), 1);
-                assertThat(_case.isDefinedAt(null)).isTrue();
-                assertThat(_case.apply(null)).isEqualTo(1);
-            }
-
-            @$test
-            public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
-                assertThat(Case($$(ignored -> false), 1).isDefinedAt(null)).isFalse();
-            }
-
-            @$test
-            public void shouldPassIssue2401() {
-                final $SeqType<String> empty = $StreamType.empty();
-                try {
-                    Match(empty).of(
-                            Case($$($ListType.empty()), ignored -> "list")
-                    );
-                    fail("expected MatchError");
-                } catch (MatchError err) {
-                    // ok!
-                }
-            }
-
-            @$test
-            public void shouldCatchClassCastExceptionWhenPredicateHasDifferentType() {
-                try {
-                    final Object o = "";
-                    Match(o).of(
-                            Case($$((Integer i) -> true), "never")
-                    );
-                    fail("expected MatchError");
-                } catch (MatchError err) {
-                    // ok!
-                }
-            }
-
-            // -- Match patterns
-
-            static class ClzMatch {}
-            static class ClzMatch1 extends ClzMatch {}
-            static class ClzMatch2 extends ClzMatch {}
-
-            ${(1 to N).gen(i => {
-
-              im.getStatic("io.vavr.API.*")
-              im.getStatic("io.vavr.Patterns.*")
-
-              xs"""
                 @$test
-                public void shouldMatchPattern$i() {
-                    final Tuple$i<${(1 to i).gen(j => s"Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(", ")});
-                    final String func = Match(tuple).of(
-                            Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "fail"),
-                            Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "okFunc")
-                    );
-                    assertThat(func).isEqualTo("okFunc");
-                    final String supp = Match(tuple).of(
-                            Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), () -> "fail"),
-                            Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), () -> "okSupp")
-                    );
-                    assertThat(supp).isEqualTo("okSupp");
-                    final String val = Match(tuple).of(
-                            Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), "fail"),
-                            Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), "okVal")
-                    );
-                    assertThat(val).isEqualTo("okVal");
-
-                    final ClzMatch c = new ClzMatch2();
-                    final String match = Match(c).of(
-                            Case(Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "fail"),
-                            Case(Match.Pattern$i.of(ClzMatch2.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "okMatch")
-                    );
-                    assertThat(match).isEqualTo("okMatch");
+                public void shouldRunUnitAndReturnVoid() {
+                    int[] i = { 0 };
+                    Void nothing = run(() -> i[0]++);
+                    $assertThat(nothing).isNull();
+                    $assertThat(i[0]).isEqualTo(1);
                 }
-              """
-            })("\n\n")}
+
+            }
+
+            @Nested
+            class For {
+
+                @$test
+                public void shouldIterateFor1UsingSimpleYield() {
+                    final $ListType<Integer> list = List.of(1, 2, 3);
+                    final $ListType<Integer> actual = For(list).yield().toList();
+                    $assertThat(actual).isEqualTo(list);
+                }
+
+                ${(1 to N).gen(i => xs"""
+                  @$test
+                  public void shouldIterateFor$ListType$i() {
+                      final $ListType<Integer> result = For(
+                          ${(1 to i).gen(j => s"$ListType.of(1, 2, 3)")(",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")}).toList();
+                      $assertThat(result.length()).isEqualTo((int) Math.pow(3, $i));
+                      $assertThat(result.head()).isEqualTo($i);
+                      $assertThat(result.last()).isEqualTo(3 * $i);
+                  }
+                """)("\n\n")}
+
+                ${monadicTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
+                  @$test
+                  public void shouldIterateFor$mtype$i() {
+                      final $mtype<Integer> result = For(
+                          ${(1 to i).gen(j => s"$mtype.of($j)")(",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                      $assertThat(result.get()).isEqualTo(${(1 to i).sum});
+                  }
+                """})("\n\n"))("\n\n")}
+
+                ${monadicFunctionTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
+                  @$test
+                  public void shouldIterateFor$mtype$i() {
+                      final ${if(mtype == "Either") mtype + "<Object, Integer>" else mtype + "<Integer>"}result = For(
+                          ${(1 to i).gen(j => s"${if(mtype == "Either")  mtype + s".right($j)" else  mtype + s".of(() -> $j)"}")(",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                      $assertThat(result.get()).isEqualTo(${(1 to i).sum});
+                  }
+                """})("\n\n"))("\n\n")}
+
+                @$test
+                public void shouldIterateNestedFor() {
+                    final $ListType<String> result =
+                            For(${im.getType("java.util.Arrays")}.asList(1, 2), i ->
+                                    For(${im.getType("io.vavr.collection.List")}.of('a', 'b')).yield(c -> i + ":" + c)).toList();
+                    assertThat(result).isEqualTo($ListType.of("1:a", "1:b", "2:a", "2:b"));
+                }
+
+            }
+
+            @Nested
+            class MatchTest {
+
+                @$test
+                public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndSupplier() {
+                    final Match.Case<Object, Integer> _case = Case($$(ignored -> true), ignored -> 1);
+                    assertThat(_case.isDefinedAt(null)).isTrue();
+                    assertThat(_case.apply(null)).isEqualTo(1);
+                }
+
+                @$test
+                public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndSupplier() {
+                    assertThat(Case($$(ignored -> false), ignored -> 1).isDefinedAt(null)).isFalse();
+                }
+
+                @$test
+                public void shouldReturnSomeWhenApplyingCaseGivenPredicateAndValue() {
+                    final Match.Case<Object, Integer> _case = Case($$(ignored -> true), 1);
+                    assertThat(_case.isDefinedAt(null)).isTrue();
+                    assertThat(_case.apply(null)).isEqualTo(1);
+                }
+
+                @$test
+                public void shouldReturnNoneWhenApplyingCaseGivenPredicateAndValue() {
+                    assertThat(Case($$(ignored -> false), 1).isDefinedAt(null)).isFalse();
+                }
+
+                @$test
+                public void shouldPassIssue2401() {
+                    final $SeqType<String> empty = $StreamType.empty();
+                    try {
+                        Match(empty).of(
+                                Case($$($ListType.empty()), ignored -> "list")
+                        );
+                        fail("expected MatchError");
+                    } catch (MatchError err) {
+                        // ok!
+                    }
+                }
+
+                @$test
+                public void shouldCatchClassCastExceptionWhenPredicateHasDifferentType() {
+                    try {
+                        final Object o = "";
+                        Match(o).of(
+                                Case($$((Integer i) -> true), "never")
+                        );
+                        fail("expected MatchError");
+                    } catch (MatchError err) {
+                        // ok!
+                    }
+                }
+
+            }
+
+            @Nested
+            class MatchPatterns {
+
+                class ClzMatch {}
+                class ClzMatch1 extends ClzMatch {}
+                class ClzMatch2 extends ClzMatch {}
+
+                ${(1 to N).gen(i => {
+
+                  im.getStatic("io.vavr.API.*")
+                  im.getStatic("io.vavr.Patterns.*")
+
+                  xs"""
+                    @$test
+                    public void shouldMatchPattern$i() {
+                        final Tuple$i<${(1 to i).gen(j => s"Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(", ")});
+                        final String func = Match(tuple).of(
+                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "fail"),
+                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "okFunc")
+                        );
+                        assertThat(func).isEqualTo("okFunc");
+                        final String supp = Match(tuple).of(
+                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), () -> "fail"),
+                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), () -> "okSupp")
+                        );
+                        assertThat(supp).isEqualTo("okSupp");
+                        final String val = Match(tuple).of(
+                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), "fail"),
+                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), "okVal")
+                        );
+                        assertThat(val).isEqualTo("okVal");
+
+                        final ClzMatch c = new ClzMatch2();
+                        final String match = Match(c).of(
+                                Case(Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "fail"),
+                                Case(Match.Pattern$i.of(ClzMatch2.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "okMatch")
+                        );
+                        assertThat(match).isEqualTo("okMatch");
+                    }
+                  """
+                })("\n\n")}
+            }
         }
       """
     })
