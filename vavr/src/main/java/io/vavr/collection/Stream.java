@@ -51,8 +51,8 @@ import static io.vavr.collection.JavaConverters.ListView;
  * <pre>
  * {@code
  * // factory methods
- * Stream.empty()                  // = Stream.of() = Nil.instance()
- * Stream.of(x)                    // = new Cons&lt;&gt;(x, Nil.instance())
+ * Stream.empty()                  // = Stream.of() = Empty.instance()
+ * Stream.of(x)                    // = new Cons&lt;&gt;(x, Empty.instance())
  * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
  * Stream.ofAll(Iterable)          // e.g. Stream.ofAll(List.of(1, 2, 3)) = 1, 2, 3
  * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(1, 2, 3) = 1, 2, 3
@@ -265,12 +265,12 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
-     * Returns the single instance of Nil. Convenience method for {@code Nil.instance()}.
+     * Returns the single instance of Empty. Convenience method for {@code Empty.instance()}.
      * <p>
-     * Note: this method intentionally returns type {@code Stream} and not {@code Nil}. This comes handy when folding.
-     * If you explicitly need type {@code Nil} use {@linkplain Empty#instance()}.
+     * Note: this method intentionally returns type {@code Stream} and not {@code Empty}. This comes in handy when folding.
+     * If you explicitly need type {@code Empty} use {@linkplain Empty#instance()}.
      *
-     * @param <T> Component type of Nil, determined by type inference in the particular context.
+     * @param <T> Component type of Empty, determined by type inference in the particular context.
      * @return The empty list.
      */
     static <T> Stream<T> empty() {
@@ -306,8 +306,8 @@ public interface Stream<T> extends LinearSeq<T> {
      * Creates a Stream of the given elements.
      *
      * <pre>{@code  Stream.of(1, 2, 3, 4)
-     * = Nil.instance().prepend(4).prepend(3).prepend(2).prepend(1)
-     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Nil.instance()))))}</pre>
+     * = Empty.instance().prepend(4).prepend(3).prepend(2).prepend(1)
+     * = new Cons(1, new Cons(2, new Cons(3, new Cons(4, Empty.instance()))))}</pre>
      *
      * @param <T>      Component type of the Stream.
      * @param elements Zero or more elements.
