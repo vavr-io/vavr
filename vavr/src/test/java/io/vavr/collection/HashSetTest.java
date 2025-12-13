@@ -34,6 +34,7 @@ import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.LongAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.assertj.core.api.StringAssert;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -315,12 +316,14 @@ public class HashSetTest extends AbstractSetTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("42");
+    @Nested
+    class TransformTests {
+        
+        @Test
+        void shouldTransform() {
+            final String transformed = of(42).transform(v -> String.valueOf(v.get()));
+            assertThat(transformed).isEqualTo("42");
+        }
     }
 
     // HashSet special cases

@@ -33,6 +33,7 @@ import java.util.stream.Collector;
 import org.assertj.core.api.IterableAssert;
 import org.assertj.core.api.ObjectAssert;
 import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -720,12 +721,14 @@ public class TreeTest extends AbstractTraversableTest {
         assertThat($(0).hashCode()).isGreaterThan(1);
     }
 
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        final String transformed = $(42, $(2), $(3)).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("42");
+    @Nested
+    class TransformTests {
+        
+        @Test
+        void shouldTransform() {
+            final String transformed = $(42, $(2), $(3)).transform(v -> String.valueOf(v.get()));
+            assertThat(transformed).isEqualTo("42");
+        }
     }
 
     // toString
