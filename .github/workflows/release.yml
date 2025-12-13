@@ -1,58 +1,21 @@
 name: release
+
 on:
   workflow_dispatch:
     inputs:
       release-tag:
         description: 'Tag to release (must start with "v", e.g., v1.2.3)'
         required: true
-
-permissions:
-  contents: write
+        type: string
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        java: [ '21' ]
-        architecture: [ 'x64' ]
-
-    name: Release ${{ github.event.inputs.release-tag }}
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          ref: ${{ github.event.inputs.release-tag }}
-
-      - name: Validate release tag format
-        run: |
-          TAG="${{ github.event.inputs.release-tag }}"
-          
-          if [[ ! "$TAG" =~ ^v[0-9]+(\.[0-9]+)*(-[a-zA-Z0-9]+)?$ ]]; then
-            echo "❌ Invalid tag format: '${{ github.event.inputs.release-tag }}'"
-            echo "✅ Tag must start with 'v' and follow semantic versioning (e.g., v1.0.0 or v1.2.3-RC1)"
-            exit 1
-          fi
-          
-          if ! git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
-            echo "❌ Tag '$TAG' does not exist in the repository"
-            exit 1
-          fi
-
-      - name: Setup JDK
-        uses: actions/setup-java@v5
-        with:
-          distribution: 'temurin'
-          java-version: '21'
-          cache: 'maven'
-          server-id: central
-          server-username: CENTRAL_USERNAME
-          server-password: CENTRAL_PASSWORD
-          gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-
-      - name: Release
-        run: mvn -B --no-transfer-progress -Pmaven-central-release -DskipTests=true deploy
-        env:
-          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
-          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
-
+  release:
+    uses: vavr-io/workflows/.github/workflows/release.yml@main
+    with:
+      java-version: 21
+      release-tag: ${{ inputs.release-tag }}
+    secrets:
+      CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+      CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+      MAVEN_GPG_PRIVATE_KEY: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
+      MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
