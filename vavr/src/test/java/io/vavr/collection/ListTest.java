@@ -208,263 +208,449 @@ public class ListTest extends AbstractLinearSeqTest {
         return 1;
     }
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowList() {
-        final List<Double> doubles = of(1.0d);
-        final List<Number> numbers = List.narrow(doubles);
-        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
-    }
-
-    // -- static ofAll
-
-    @Test
-    public void shouldAcceptNavigableSet() {
-        final java.util.TreeSet<Integer> javaSet = new java.util.TreeSet<>();
-        javaSet.add(2);
-        javaSet.add(1);
-        assertThat(List.ofAll(javaSet)).isEqualTo(List.of(1, 2));
-    }
-
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfList() {
-        final List<Integer> source = ofAll(1, 2, 3);
-        final List<Integer> target = List.ofAll(source);
-        assertThat(target).isSameAs(source);
-    }
-
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
-        final JavaConverters.ListView<Integer, List<Integer>> source = JavaConverters
-          .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
-        final List<Integer> target = List.ofAll(source);
-        assertThat(target).isSameAs(source.getDelegate());
-    }
-
-    // -- partition
-
-    @Test
-    public void shouldPartitionInOneIteration() {
-        final AtomicInteger count = new AtomicInteger(0);
-        final Tuple2<List<Integer>, List<Integer>> results = of(1, 2, 3).partition(i -> {
-            count.incrementAndGet();
-            return true;
-        });
-        assertThat(results._1).isEqualTo(of(1, 2, 3));
-        assertThat(results._2).isEqualTo(of());
-        assertThat(count.get()).isEqualTo(3);
-    }
-
-    // -- peek
-
-    @Test
-    public void shouldFailPeekOfNil() {
-        assertThrows(NoSuchElementException.class, () -> empty().peek());
-    }
-
-    @Test
-    public void shouldPeekOfNonNil() {
-        assertThat(of(1).peek()).isEqualTo(1);
-        assertThat(of(1, 2).peek()).isEqualTo(1);
-    }
-
-    // -- peekOption
-
-    @Test
-    public void shouldPeekOption() {
-        assertThat(empty().peekOption()).isSameAs(Option.none());
-        assertThat(of(1).peekOption()).isEqualTo(Option.of(1));
-        assertThat(of(1, 2).peekOption()).isEqualTo(Option.of(1));
-    }
-
-    // -- pop
-
-    @Test
-    public void shouldFailPopOfNil() {
-        assertThrows(NoSuchElementException.class, () -> empty().pop());
-    }
-
-    @Test
-    public void shouldPopOfNonNil() {
-        assertThat(of(1).pop()).isSameAs(empty());
-        assertThat(of(1, 2).pop()).isEqualTo(of(2));
-    }
-
-    // -- popOption
-
-    @Test
-    public void shouldPopOption() {
-        assertThat(empty().popOption()).isSameAs(Option.none());
-        assertThat(of(1).popOption()).isEqualTo(Option.of(empty()));
-        assertThat(of(1, 2).popOption()).isEqualTo(Option.of(of(2)));
-    }
-
-    // -- pop2
-
-    @Test
-    public void shouldFailPop2OfNil() {
-        assertThrows(NoSuchElementException.class, () -> empty().pop2());
-    }
-
-    @Test
-    public void shouldPop2OfNonNil() {
-        assertThat(of(1).pop2()).isEqualTo(Tuple.of(1, empty()));
-        assertThat(of(1, 2).pop2()).isEqualTo(Tuple.of(1, of(2)));
-    }
-
-    // -- pop2Option
-
-    @Test
-    public void shouldPop2Option() {
-        assertThat(empty().pop2Option()).isSameAs(Option.none());
-        assertThat(of(1).pop2Option()).isEqualTo(Option.of(Tuple.of(1, empty())));
-        assertThat(of(1, 2).pop2Option()).isEqualTo(Option.of(Tuple.of(1, of(2))));
-    }
-
-    // -- push
-
-    @Test
-    public void shouldPushElements() {
-        assertThat(empty().push(1)).isEqualTo(of(1));
-        assertThat(empty().push(1, 2, 3)).isEqualTo(of(3, 2, 1));
-        assertThat(empty().pushAll(of(1, 2, 3))).isEqualTo(of(3, 2, 1));
-        assertThat(of(0).push(1)).isEqualTo(of(1, 0));
-        assertThat(of(0).push(1, 2, 3)).isEqualTo(of(3, 2, 1, 0));
-        assertThat(of(0).pushAll(of(1, 2, 3))).isEqualTo(of(3, 2, 1, 0));
-    }
-
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("42");
-    }
-
-    // -- toString
-
-    @Test
-    public void shouldStringifyNil() {
-        assertThat(empty().toString()).isEqualTo("List()");
-    }
-
-    @Test
-    public void shouldStringifyNonNil() {
-        assertThat(of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
-    }
-
-    // -- unfold
-
-    @Test
-    public void shouldUnfoldRightToEmpty() {
-        assertThat(List.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldUnfoldRightSimpleList() {
-        assertThat(
-          List.unfoldRight(10, x -> x == 0
-            ? Option.none()
-            : Option.of(new Tuple2<>(x, x - 1))))
-          .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
-    }
-
-    @Test
-    public void shouldUnfoldLeftToEmpty() {
-        assertThat(List.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldUnfoldLeftSimpleList() {
-        assertThat(
-          List.unfoldLeft(10, x -> x == 0
-            ? Option.none()
-            : Option.of(new Tuple2<>(x - 1, x))))
-          .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
-
-    @Test
-    public void shouldUnfoldToEmpty() {
-        assertThat(List.unfold(0, x -> Option.none())).isEqualTo(empty());
-    }
-
-    @Test
-    public void shouldUnfoldSimpleList() {
-        assertThat(
-          List.unfold(10, x -> x == 0
-            ? Option.none()
-            : Option.of(new Tuple2<>(x - 1, x))))
-          .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
-    }
-
-    // -- Cons test
-
-    @Test
-    public void shouldNotSerializeEnclosingClass() {
-        assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(List.of(1)));
-    }
-
-    @Test
-    public void shouldNotDeserializeListWithSizeLessThanOne() {
-        assertThrows(InvalidObjectException.class, () -> {
-            try {
-                /*
-                 * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
-                 * of List elements is gathered dynamically.
-                 */
-                final byte[] listWithOneElement = Serializables.serialize(List.of(0));
-                final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
-                int index = -1;
-                for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
-                    final byte b1 = listWithOneElement[i];
-                    final byte b2 = listWithTwoElements[i];
-                    if (b1 != b2) {
-                        if (b1 != 1 || b2 != 2) {
-                            throw new IllegalStateException("Difference does not indicate number of elements.");
-                        } else {
-                            index = i;
-                        }
-                    }
-                }
-                if (index == -1) {
-                    throw new IllegalStateException("Hack incomplete - index not found");
-                }
-                /*
-                 * Hack the serialized data and fake zero elements.
-                 */
-                listWithOneElement[index] = 0;
-                Serializables.deserialize(listWithOneElement);
-            } catch (IllegalStateException x) {
-                throw (x.getCause() != null) ? x.getCause() : x;
-            }
-        });
-    }
-
     //fixme: delete, when useIsEqualToInsteadOfIsSameAs() will be eliminated from AbstractValueTest class
     @Override
     protected boolean useIsEqualToInsteadOfIsSameAs() {
         return false;
     }
 
-    // -- toList
-
-    @Test
-    public void shouldReturnSelfOnConvertToList() {
-        final Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toList()).isSameAs(value);
+    @org.junit.jupiter.api.Nested
+    class StaticNarrowTests {
     }
 
-    // -- spliterator
-
-    @Test
-    public void shouldHaveSizedSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+    @org.junit.jupiter.api.Nested
+    class StaticOfAllTests {
     }
 
-    @Test
-    public void shouldReturnSizeWhenSpliterator() {
-        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+    @org.junit.jupiter.api.Nested
+    class PartitionTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PeekTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PeekOptionTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PopTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PopOptionTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class Pop2Tests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class Pop2OptionTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PushTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class TransformTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class ToStringTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class UnfoldTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class ConsTestTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class ToListTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class SpliteratorTests {
+    }
+
+    @org.junit.jupiter.api.Nested
+    class StaticNarrowTests {
+
+        
+                
+                    // -- static narrow
+                
+                    @Test
+                    public void shouldNarrowList() {
+                        final List<Double> doubles = of(1.0d);
+                        final List<Number> numbers = List.narrow(doubles);
+                        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+                        assertThat(actual).isEqualTo(3);
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class StaticOfAllTests {
+
+        
+                
+                    // -- static ofAll
+                
+                    @Test
+                    public void shouldAcceptNavigableSet() {
+                        final java.util.TreeSet<Integer> javaSet = new java.util.TreeSet<>();
+                        javaSet.add(2);
+                        javaSet.add(1);
+                        assertThat(List.ofAll(javaSet)).isEqualTo(List.of(1, 2));
+                    }
+
+        
+                
+                    @Test
+                    public void shouldReturnSelfWhenIterableIsInstanceOfList() {
+                        final List<Integer> source = ofAll(1, 2, 3);
+                        final List<Integer> target = List.ofAll(source);
+                        assertThat(target).isSameAs(source);
+                    }
+
+        
+                
+                    @Test
+                    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+                        final JavaConverters.ListView<Integer, List<Integer>> source = JavaConverters
+                          .asJava(ofAll(1, 2, 3), JavaConverters.ChangePolicy.IMMUTABLE);
+                        final List<Integer> target = List.ofAll(source);
+                        assertThat(target).isSameAs(source.getDelegate());
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PartitionTests {
+
+        
+                
+                    // -- partition
+                
+                    @Test
+                    public void shouldPartitionInOneIteration() {
+                        final AtomicInteger count = new AtomicInteger(0);
+                        final Tuple2<List<Integer>, List<Integer>> results = of(1, 2, 3).partition(i -> {
+                            count.incrementAndGet();
+                            return true;
+                        });
+                        assertThat(results._1).isEqualTo(of(1, 2, 3));
+                        assertThat(results._2).isEqualTo(of());
+                        assertThat(count.get()).isEqualTo(3);
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PeekTests {
+
+        
+                
+                    // -- peek
+                
+                    @Test
+                    public void shouldFailPeekOfNil() {
+                        assertThrows(NoSuchElementException.class, () -> empty().peek());
+                    }
+
+        
+                
+                    @Test
+                    public void shouldPeekOfNonNil() {
+                        assertThat(of(1).peek()).isEqualTo(1);
+                        assertThat(of(1, 2).peek()).isEqualTo(1);
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PeekOptionTests {
+
+        
+                
+                    // -- peekOption
+                
+                    @Test
+                    public void shouldPeekOption() {
+                        assertThat(empty().peekOption()).isSameAs(Option.none());
+                        assertThat(of(1).peekOption()).isEqualTo(Option.of(1));
+                        assertThat(of(1, 2).peekOption()).isEqualTo(Option.of(1));
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PopTests {
+
+        
+                
+                    // -- pop
+                
+                    @Test
+                    public void shouldFailPopOfNil() {
+                        assertThrows(NoSuchElementException.class, () -> empty().pop());
+                    }
+
+        
+                
+                    @Test
+                    public void shouldPopOfNonNil() {
+                        assertThat(of(1).pop()).isSameAs(empty());
+                        assertThat(of(1, 2).pop()).isEqualTo(of(2));
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PopOptionTests {
+
+        
+                
+                    // -- popOption
+                
+                    @Test
+                    public void shouldPopOption() {
+                        assertThat(empty().popOption()).isSameAs(Option.none());
+                        assertThat(of(1).popOption()).isEqualTo(Option.of(empty()));
+                        assertThat(of(1, 2).popOption()).isEqualTo(Option.of(of(2)));
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class Pop2Tests {
+
+        
+                
+                    // -- pop2
+                
+                    @Test
+                    public void shouldFailPop2OfNil() {
+                        assertThrows(NoSuchElementException.class, () -> empty().pop2());
+                    }
+
+        
+                
+                    @Test
+                    public void shouldPop2OfNonNil() {
+                        assertThat(of(1).pop2()).isEqualTo(Tuple.of(1, empty()));
+                        assertThat(of(1, 2).pop2()).isEqualTo(Tuple.of(1, of(2)));
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class Pop2OptionTests {
+
+        
+                
+                    // -- pop2Option
+                
+                    @Test
+                    public void shouldPop2Option() {
+                        assertThat(empty().pop2Option()).isSameAs(Option.none());
+                        assertThat(of(1).pop2Option()).isEqualTo(Option.of(Tuple.of(1, empty())));
+                        assertThat(of(1, 2).pop2Option()).isEqualTo(Option.of(Tuple.of(1, of(2))));
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class PushTests {
+
+        
+                
+                    // -- push
+                
+                    @Test
+                    public void shouldPushElements() {
+                        assertThat(empty().push(1)).isEqualTo(of(1));
+                        assertThat(empty().push(1, 2, 3)).isEqualTo(of(3, 2, 1));
+                        assertThat(empty().pushAll(of(1, 2, 3))).isEqualTo(of(3, 2, 1));
+                        assertThat(of(0).push(1)).isEqualTo(of(1, 0));
+                        assertThat(of(0).push(1, 2, 3)).isEqualTo(of(3, 2, 1, 0));
+                        assertThat(of(0).pushAll(of(1, 2, 3))).isEqualTo(of(3, 2, 1, 0));
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class TransformTests {
+
+        
+                
+                    // -- transform()
+                
+                    @Test
+                    public void shouldTransform() {
+                        final String transformed = of(42).transform(v -> String.valueOf(v.get()));
+                        assertThat(transformed).isEqualTo("42");
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class ToStringTests {
+
+        
+                
+                    // -- toString
+                
+                    @Test
+                    public void shouldStringifyNil() {
+                        assertThat(empty().toString()).isEqualTo("List()");
+                    }
+
+        
+                
+                    @Test
+                    public void shouldStringifyNonNil() {
+                        assertThat(of(1, 2, 3).toString()).isEqualTo("List(1, 2, 3)");
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class UnfoldTests {
+
+        
+                
+                    // -- unfold
+                
+                    @Test
+                    public void shouldUnfoldRightToEmpty() {
+                        assertThat(List.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldRightSimpleList() {
+                        assertThat(
+                          List.unfoldRight(10, x -> x == 0
+                            ? Option.none()
+                            : Option.of(new Tuple2<>(x, x - 1))))
+                          .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldLeftToEmpty() {
+                        assertThat(List.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldLeftSimpleList() {
+                        assertThat(
+                          List.unfoldLeft(10, x -> x == 0
+                            ? Option.none()
+                            : Option.of(new Tuple2<>(x - 1, x))))
+                          .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldToEmpty() {
+                        assertThat(List.unfold(0, x -> Option.none())).isEqualTo(empty());
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldSimpleList() {
+                        assertThat(
+                          List.unfold(10, x -> x == 0
+                            ? Option.none()
+                            : Option.of(new Tuple2<>(x - 1, x))))
+                          .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class ConsTestTests {
+
+        
+                
+                    // -- Cons test
+                
+                    @Test
+                    public void shouldNotSerializeEnclosingClass() {
+                        assertThrows(InvalidObjectException.class, () -> Serializables.callReadObject(List.of(1)));
+                    }
+
+        
+                
+                    @Test
+                    public void shouldNotDeserializeListWithSizeLessThanOne() {
+                        assertThrows(InvalidObjectException.class, () -> {
+                            try {
+                                /*
+                                 * This implementation is stable regarding jvm impl changes of object serialization. The index of the number
+                                 * of List elements is gathered dynamically.
+                                 */
+                                final byte[] listWithOneElement = Serializables.serialize(List.of(0));
+                                final byte[] listWithTwoElements = Serializables.serialize(List.of(0, 0));
+                                int index = -1;
+                                for (int i = 0; i < listWithOneElement.length && index == -1; i++) {
+                                    final byte b1 = listWithOneElement[i];
+                                    final byte b2 = listWithTwoElements[i];
+                                    if (b1 != b2) {
+                                        if (b1 != 1 || b2 != 2) {
+                                            throw new IllegalStateException("Difference does not indicate number of elements.");
+                                        } else {
+                                            index = i;
+                                        }
+                                    }
+                                }
+                                if (index == -1) {
+                                    throw new IllegalStateException("Hack incomplete - index not found");
+                                }
+                                /*
+                                 * Hack the serialized data and fake zero elements.
+                                 */
+                                listWithOneElement[index] = 0;
+                                Serializables.deserialize(listWithOneElement);
+                            } catch (IllegalStateException x) {
+                                throw (x.getCause() != null) ? x.getCause() : x;
+                            }
+                        });
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class ToListTests {
+
+        
+                
+                    // -- toList
+                
+                    @Test
+                    public void shouldReturnSelfOnConvertToList() {
+                        final Value<Integer> value = of(1, 2, 3);
+                        assertThat(value.toList()).isSameAs(value);
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class SpliteratorTests {
+
+        
+                
+                    // -- spliterator
+                
+                    @Test
+                    public void shouldHaveSizedSpliterator() {
+                        assertThat(of(1, 2, 3).spliterator().hasCharacteristics(Spliterator.SIZED | Spliterator.SUBSIZED)).isTrue();
+                    }
+
+        
+                
+                    @Test
+                    public void shouldReturnSizeWhenSpliterator() {
+                        assertThat(of(1, 2, 3).spliterator().getExactSizeIfKnown()).isEqualTo(3);
+                    }
     }
 }

@@ -208,125 +208,219 @@ public class ArrayTest extends AbstractIndexedSeqTest {
         return false;
     }
 
-    // -- static narrow
-
-    @Test
-    public void shouldNarrowArray() {
-        final Array<Double> doubles = of(1.0d);
-        final Array<Number> numbers = Array.narrow(doubles);
-        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
+    @org.junit.jupiter.api.Nested
+    class StaticNarrowTests {
     }
 
-    // -- static ofAll
-
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfArray() {
-        final Array<Integer> source = ofAll(1, 2, 3);
-        final Array<Integer> target = Array.ofAll(source);
-        assertThat(target).isSameAs(source);
+    @org.junit.jupiter.api.Nested
+    class StaticOfAllTests {
     }
 
-    @Test
-    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
-        final ListView<Integer, Array<Integer>> source = JavaConverters
-                .asJava(ofAll(1, 2, 3), ChangePolicy.IMMUTABLE);
-        final Array<Integer> target = Array.ofAll(source);
-        assertThat(target).isSameAs(source.getDelegate());
+    @org.junit.jupiter.api.Nested
+    class GetTests {
     }
 
-    // -- get()
-
-    @Test
-    public void shouldThrowExceptionWhenGetIndexEqualToLength() {
-        final Array<Integer> array = of(1);
-        Assertions.assertThatThrownBy(() -> array.get(1))
-            .isInstanceOf(IndexOutOfBoundsException.class).hasMessage("get(1)");
+    @org.junit.jupiter.api.Nested
+    class PartitionTests {
     }
 
-    // -- partition
-
-    @Test
-    public void shouldPartitionInOneIteration() {
-        final AtomicInteger count = new AtomicInteger(0);
-        final Tuple2<Array<Integer>, Array<Integer>> results = of(1, 2, 3).partition(i -> {
-            count.incrementAndGet();
-            return true;
-        });
-        assertThat(results._1).isEqualTo(of(1, 2, 3));
-        assertThat(results._2).isEqualTo(of());
-        assertThat(count.get()).isEqualTo(3);
+    @org.junit.jupiter.api.Nested
+    class TransformTests {
     }
 
-    // -- transform()
-
-    @Test
-    public void shouldTransform() {
-        String transformed = of(42).transform(v -> String.valueOf(v.get()));
-        assertThat(transformed).isEqualTo("42");
+    @org.junit.jupiter.api.Nested
+    class UnfoldTests {
     }
 
-    // -- unfold
-
-    @Test
-    public void shouldUnfoldRightToEmpty() {
-        assertThat(Array.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+    @org.junit.jupiter.api.Nested
+    class ToStringTests {
     }
 
-    @Test
-    public void shouldUnfoldRightSimpleArray() {
-        assertThat(
-                Array.unfoldRight(10, x -> x == 0
-                                           ? Option.none()
-                                           : Option.of(new Tuple2<>(x, x - 1))))
-                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+    @org.junit.jupiter.api.Nested
+    class ToArrayTests {
     }
 
-    @Test
-    public void shouldUnfoldLeftToEmpty() {
-        assertThat(Array.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+    @org.junit.jupiter.api.Nested
+    class StaticNarrowTests {
+
+        
+                
+                    // -- static narrow
+                
+                    @Test
+                    public void shouldNarrowArray() {
+                        final Array<Double> doubles = of(1.0d);
+                        final Array<Number> numbers = Array.narrow(doubles);
+                        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+                        assertThat(actual).isEqualTo(3);
+                    }
     }
 
-    @Test
-    public void shouldUnfoldLeftSimpleArray() {
-        assertThat(
-                Array.unfoldLeft(10, x -> x == 0
-                                          ? Option.none()
-                                          : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    @org.junit.jupiter.api.Nested
+    class StaticOfAllTests {
+
+        
+                
+                    // -- static ofAll
+                
+                    @Test
+                    public void shouldReturnSelfWhenIterableIsInstanceOfArray() {
+                        final Array<Integer> source = ofAll(1, 2, 3);
+                        final Array<Integer> target = Array.ofAll(source);
+                        assertThat(target).isSameAs(source);
+                    }
+
+        
+                
+                    @Test
+                    public void shouldReturnSelfWhenIterableIsInstanceOfListView() {
+                        final ListView<Integer, Array<Integer>> source = JavaConverters
+                                .asJava(ofAll(1, 2, 3), ChangePolicy.IMMUTABLE);
+                        final Array<Integer> target = Array.ofAll(source);
+                        assertThat(target).isSameAs(source.getDelegate());
+                    }
     }
 
-    @Test
-    public void shouldUnfoldToEmpty() {
-        assertThat(Array.unfold(0, x -> Option.none())).isEqualTo(empty());
+    @org.junit.jupiter.api.Nested
+    class GetTests {
+
+        
+                
+                    // -- get()
+                
+                    @Test
+                    public void shouldThrowExceptionWhenGetIndexEqualToLength() {
+                        final Array<Integer> array = of(1);
+                        Assertions.assertThatThrownBy(() -> array.get(1))
+                            .isInstanceOf(IndexOutOfBoundsException.class).hasMessage("get(1)");
+                    }
     }
 
-    @Test
-    public void shouldUnfoldSimpleArray() {
-        assertThat(
-                Array.unfold(10, x -> x == 0
-                                      ? Option.none()
-                                      : Option.of(new Tuple2<>(x - 1, x))))
-                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+    @org.junit.jupiter.api.Nested
+    class PartitionTests {
+
+        
+                
+                    // -- partition
+                
+                    @Test
+                    public void shouldPartitionInOneIteration() {
+                        final AtomicInteger count = new AtomicInteger(0);
+                        final Tuple2<Array<Integer>, Array<Integer>> results = of(1, 2, 3).partition(i -> {
+                            count.incrementAndGet();
+                            return true;
+                        });
+                        assertThat(results._1).isEqualTo(of(1, 2, 3));
+                        assertThat(results._2).isEqualTo(of());
+                        assertThat(count.get()).isEqualTo(3);
+                    }
     }
 
-    // -- toString
+    @org.junit.jupiter.api.Nested
+    class TransformTests {
 
-    @Test
-    public void shouldStringifyNil() {
-        assertThat(empty().toString()).isEqualTo("Array()");
+        
+                
+                    // -- transform()
+                
+                    @Test
+                    public void shouldTransform() {
+                        String transformed = of(42).transform(v -> String.valueOf(v.get()));
+                        assertThat(transformed).isEqualTo("42");
+                    }
     }
 
-    @Test
-    public void shouldStringifyNonNil() {
-        assertThat(of(1, 2, 3).toString()).isEqualTo("Array(1, 2, 3)");
+    @org.junit.jupiter.api.Nested
+    class UnfoldTests {
+
+        
+                
+                    // -- unfold
+                
+                    @Test
+                    public void shouldUnfoldRightToEmpty() {
+                        assertThat(Array.unfoldRight(0, x -> Option.none())).isEqualTo(empty());
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldRightSimpleArray() {
+                        assertThat(
+                                Array.unfoldRight(10, x -> x == 0
+                                                           ? Option.none()
+                                                           : Option.of(new Tuple2<>(x, x - 1))))
+                                .isEqualTo(of(10, 9, 8, 7, 6, 5, 4, 3, 2, 1));
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldLeftToEmpty() {
+                        assertThat(Array.unfoldLeft(0, x -> Option.none())).isEqualTo(empty());
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldLeftSimpleArray() {
+                        assertThat(
+                                Array.unfoldLeft(10, x -> x == 0
+                                                          ? Option.none()
+                                                          : Option.of(new Tuple2<>(x - 1, x))))
+                                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldToEmpty() {
+                        assertThat(Array.unfold(0, x -> Option.none())).isEqualTo(empty());
+                    }
+
+        
+                
+                    @Test
+                    public void shouldUnfoldSimpleArray() {
+                        assertThat(
+                                Array.unfold(10, x -> x == 0
+                                                      ? Option.none()
+                                                      : Option.of(new Tuple2<>(x - 1, x))))
+                                .isEqualTo(of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10));
+                    }
     }
 
-    // -- toArray
+    @org.junit.jupiter.api.Nested
+    class ToStringTests {
 
-    @Test
-    public void shouldReturnSelfOnConvertToArray() {
-        Value<Integer> value = of(1, 2, 3);
-        assertThat(value.toArray()).isSameAs(value);
+        
+                
+                    // -- toString
+                
+                    @Test
+                    public void shouldStringifyNil() {
+                        assertThat(empty().toString()).isEqualTo("Array()");
+                    }
+
+        
+                
+                    @Test
+                    public void shouldStringifyNonNil() {
+                        assertThat(of(1, 2, 3).toString()).isEqualTo("Array(1, 2, 3)");
+                    }
+    }
+
+    @org.junit.jupiter.api.Nested
+    class ToArrayTests {
+
+        
+                
+                    // -- toArray
+                
+                    @Test
+                    public void shouldReturnSelfOnConvertToArray() {
+                        Value<Integer> value = of(1, 2, 3);
+                        assertThat(value.toArray()).isSameAs(value);
+                    }
     }
 }
