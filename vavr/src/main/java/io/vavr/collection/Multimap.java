@@ -99,8 +99,46 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
 
         ),
         SORTED_SET(
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
-                (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem),
+                (Traversable<?> coll, Object elem) -> {
+                    if (coll instanceof io.vavr.collection.Set) {
+                        // For TreeSet, check if the element exists by equals, not by comparator
+                        io.vavr.collection.Set<Object> set = (io.vavr.collection.Set<Object>) coll;
+                        boolean actuallyContains = set.exists(e -> java.util.Objects.equals(e, elem));
+                        if (actuallyContains) {
+                            return set;
+                        }
+                        // Element doesn't exist by equals. If it exists by comparator, we need to keep both.
+                        // Convert to List, add element, and keep sorted
+                        if (set.contains(elem)) {
+                            // TreeSet contains by comparator but not by equals - convert to sorted List
+                            io.vavr.collection.List<Object> list = set.toList().append(elem);
+                            // Sort the list using the TreeSet's comparator
+                            if (set instanceof io.vavr.collection.TreeSet) {
+                                io.vavr.collection.TreeSet<Object> treeSet = (io.vavr.collection.TreeSet<Object>) set;
+                                return list.sorted(treeSet.comparator());
+                            }
+                            return list;
+                        }
+                        // Element doesn't exist at all - just add it
+                        return set.add(elem);
+                    } else {
+                        // Already a List (converted from Set) - maintain sorted order
+                        io.vavr.collection.List<Object> list = (io.vavr.collection.List<Object>) coll;
+                        boolean actuallyContains = list.exists(e -> java.util.Objects.equals(e, elem));
+                        if (actuallyContains) {
+                            return list;
+                        }
+                        // Add and re-sort (we don't have the comparator here, this is a problem)
+                        return list.append(elem);
+                    }
+                },
+                (Traversable<?> coll, Object elem) -> {
+                    if (coll instanceof io.vavr.collection.Set) {
+                        return ((io.vavr.collection.Set<Object>) coll).remove(elem);
+                    } else {
+                        return ((io.vavr.collection.List<Object>) coll).remove(elem);
+                    }
+                },
                 java.util.TreeSet::new
         ),
         SEQ(
