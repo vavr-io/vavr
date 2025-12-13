@@ -81,7 +81,7 @@ public interface Future<T> extends Value<T> {
      * ensure that all running async tasks complete before program termination.
      *
      * @see ForkJoinPool#awaitQuiescence(long, TimeUnit)
-     * @deprecated Will be removed in Vavr 1.0. Use {@link #DEFAULT_EXECUTOR instead}.
+     * @deprecated Will be removed in Vavr 1.0. Use {@link #DEFAULT_EXECUTOR} instead.
      */
     @Deprecated()
     ExecutorService DEFAULT_EXECUTOR_SERVICE = ForkJoinPool.commonPool();
