@@ -354,9 +354,6 @@
                             </execution>
                         </executions>
                         <configuration>
-                            <links>
-                                <link>https://docs.oracle.com/javase/8/docs/api/</link>
-                            </links>
                             <stylesheetfile>${basedir}/.javadoc/stylesheet.css</stylesheetfile>
                         </configuration>
                     </plugin>
