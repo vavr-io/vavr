@@ -89,15 +89,15 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code TreeSet<? extends T>} to {@code TreeSet<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code TreeSet<? extends T>} to {@code TreeSet<T>} via a
+     * type-safe cast. Safe here because the set is immutable and no elements
+     * can be added that would violate the type (covariance)
      * <p>
      * CAUTION: The underlying {@code Comparator} might fail!
      *
-     * @param treeSet A {@code TreeSet}.
-     * @param <T>     Component type of the {@code TreeSet}.
-     * @return the given {@code treeSet} instance as narrowed type {@code TreeSet<T>}.
+     * @param treeSet the set to narrow
+     * @param <T>     the target element type
+     * @return the same set viewed as {@code TreeSet<T>}
      */
     @SuppressWarnings("unchecked")
     public static <T> TreeSet<T> narrow(TreeSet<? extends T> treeSet) {

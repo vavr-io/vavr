@@ -75,13 +75,13 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code LinkedHashSet<? extends T>} to {@code LinkedHashSet<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code LinkedHashSet<? extends T>} to {@code LinkedHashSet<T>} via a
+     * type-safe cast. Safe here because the set is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param linkedHashSet A {@code LinkedHashSet}.
-     * @param <T>           Component type of the {@code linkedHashSet}.
-     * @return the given {@code linkedHashSet} instance as narrowed type {@code LinkedHashSet<T>}.
+     * @param linkedHashSet the set to narrow
+     * @param <T>           the target element type
+     * @return the same set viewed as {@code LinkedHashSet<T>}
      */
     @SuppressWarnings("unchecked")
     public static <T> LinkedHashSet<T> narrow(LinkedHashSet<? extends T> linkedHashSet) {

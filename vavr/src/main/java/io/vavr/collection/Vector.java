@@ -90,13 +90,13 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
     }
 
     /**
-     * Narrows a widened {@code Vector<? extends T>} to {@code Vector<T>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code Vector<? extends T>} to {@code Vector<T>} via a
+     * type-safe cast. Safe here because the vector is immutable and no elements
+     * can be added that would violate the type (covariance)
      *
-     * @param vector An {@code Vector}.
-     * @param <T>    Component type of the {@code Vector}.
-     * @return the given {@code vector} instance as narrowed type {@code Vector<T>}.
+     * @param vector the vector to narrow
+     * @param <T>    the target element type
+     * @return the same vector viewed as {@code Vector<T>}
      */
     @SuppressWarnings("unchecked")
     public static <T> Vector<T> narrow(Vector<? extends T> vector) { return (Vector<T>) vector; }

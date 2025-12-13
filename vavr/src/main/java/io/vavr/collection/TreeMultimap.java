@@ -906,14 +906,16 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
     }
 
     /**
-     * Narrows a widened {@code HashMultimap<? extends K, ? extends V>} to {@code HashMultimap<K, V>}
-     * by performing a type safe-cast. This is eligible because immutable/read-only
-     * collections are covariant.
+     * Narrows a {@code TreeMultimap<? extends K, ? extends V>} to {@code TreeMultimap<K, V>} via a
+     * type-safe cast. Safe here because the multimap is immutable and no elements
+     * can be added that would violate the type (covariance)
+     * <p>
+     * CAUTION: If {@code K} is narrowed, the underlying {@code Comparator} might fail!
      *
-     * @param map A {@code Map}.
-     * @param <K> Key type
-     * @param <V> Value type
-     * @return the given {@code multimap} instance as narrowed type {@code Multimap<K, V>}.
+     * @param map the multimap to narrow
+     * @param <K> the target key type
+     * @param <V> the target value type
+     * @return the same multimap viewed as {@code TreeMultimap<K, V>}
      */
     @SuppressWarnings("unchecked")
     public static <K, V> TreeMultimap<K, V> narrow(TreeMultimap<? extends K, ? extends V> map) {
