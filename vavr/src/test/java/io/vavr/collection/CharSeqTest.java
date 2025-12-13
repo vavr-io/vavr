@@ -3399,15 +3399,13 @@ public class CharSeqTest {
     @Test
     public void shouldThrowOnRepeatOverflow() {
         // Create a CharSeq that when multiplied would overflow
-        // Integer.MAX_VALUE / 2 + 1 elements repeated 2 times would overflow
-        // We'll use a smaller but still problematic size for testing
+        // We create a string of length 1000 and repeat it (Integer.MAX_VALUE / 100 + 1) times
+        // This should overflow: 1000 * (Integer.MAX_VALUE / 100 + 1) > Integer.MAX_VALUE
         final StringBuilder sb = new StringBuilder();
-        final int largeSize = Integer.MAX_VALUE / 100;
         for (int i = 0; i < 1000; i++) {
             sb.append('x');
         }
         final CharSeq seq = CharSeq.of(sb.toString());
-        // This should overflow: 1000 * (Integer.MAX_VALUE / 100 + 1) > Integer.MAX_VALUE
         assertThrows(IllegalArgumentException.class, () -> seq.repeat(Integer.MAX_VALUE / 100 + 1));
     }
 

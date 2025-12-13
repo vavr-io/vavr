@@ -371,6 +371,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         } else {
             final int length = length();
             // Check for integer overflow: if length * times would overflow, throw an exception
+            // Note: length > 0 at this point because isEmpty() check above ensures it
             if (times > Integer.MAX_VALUE / length) {
                 throw new IllegalArgumentException("Result of repeat would exceed maximum array size");
             }
