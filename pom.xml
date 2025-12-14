@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.vavr</groupId>
     <artifactId>vavr-parent</artifactId>
-    <version>0.11.1-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Vavr Parent</name>
     <description>Vavr (formerly called Javaslang) is an object-functional language extension to Java 8+.</description>
@@ -39,7 +39,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <assertj.core.version>3.27.6</assertj.core.version>
         <eclipse.lifecycle.mapping.version>1.0.0</eclipse.lifecycle.mapping.version>
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
         <jmh.version>1.37</jmh.version>
         <junit.version>5.13.4</junit.version>
         <maven.enforcer.version>3.6.2</maven.enforcer.version>
