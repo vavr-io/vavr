@@ -177,7 +177,7 @@
                         <mavenExecutorId>forked-path</mavenExecutorId>
                         <useReleaseProfile>false</useReleaseProfile>
                         <!-- Honor arguments passed via command line -->
-                        <arguments>${arguments} -Psonatype-oss-release</arguments>
+                        <arguments>${arguments} -Pmaven-central-release</arguments>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -340,7 +340,7 @@
             </build>
         </profile>
         <profile>
-            <id>sonatype-oss-release</id>
+            <id>maven-central-release</id>
             <build>
                 <plugins>
                     <plugin>
