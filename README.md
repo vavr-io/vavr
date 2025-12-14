@@ -34,12 +34,12 @@ Led and maintained by [@pivovarit](http://github.com/pivovarit)
     <dependency>
         <groupId>io.vavr</groupId>
         <artifactId>vavr</artifactId>
-        <version>0.10.7</version>
+        <version>0.11.0</version>
     </dependency>
 
 ### Gradle Dependency
 
-    implementation 'io.vavr:vavr:0.10.7'
+    implementation 'io.vavr:vavr:0.11.0'
 
 ## Using Vavr
 
