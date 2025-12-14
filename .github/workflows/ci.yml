@@ -48,7 +48,7 @@ jobs:
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
 
       - name: Deploy Snapshot
-        run: mvn -B --no-transfer-progress -Psonatype-oss-release -Prelease-sign-artifacts -DskipTests=true deploy
+        run: mvn -B --no-transfer-progress -Pmaven-central-release -Prelease-sign-artifacts -DskipTests=true deploy
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
