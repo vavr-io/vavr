@@ -312,7 +312,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.rangeBy(from, toExclusive, step)));
     }
 
-    @GwtIncompatible
     public static Vector<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(ArrayType.<double[]> asPrimitives(double.class, Iterator.rangeBy(from, toExclusive, step)));
     }
@@ -417,7 +416,6 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.rangeClosedBy(from, toInclusive, step)));
     }
 
-    @GwtIncompatible
     public static Vector<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(ArrayType.<double[]> asPrimitives(double.class, Iterator.rangeClosedBy(from, toInclusive, step)));
     }
@@ -631,25 +629,21 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return new Vector<>(trie.appendAll(iterable));
     }
 
-    @GwtIncompatible
     @Override
     public java.util.List<T> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public Vector<T> asJava(@NonNull Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public java.util.List<T> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     public Vector<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);

@@ -156,7 +156,6 @@ public final class Predicates {
      * @throws NullPointerException if {@code type} is null
      */
     // DEV-NOTE: We need Class<? extends T> instead of Class<T>, see {@link TryTest#shouldRecoverSuccessUsingCase()}
-    @GwtIncompatible
     public static <T> Predicate<T> instanceOf(@NonNull Class<? extends T> type) {
         Objects.requireNonNull(type, "type is null");
         return obj -> obj != null && type.isAssignableFrom(obj.getClass());

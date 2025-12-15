@@ -651,7 +651,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @param cases a possibly non-exhaustive sequence of match cases to handle the cause
      * @return a new {@code Try} with a mapped cause if a match is found, otherwise this {@code Try}
      */
-    @GwtIncompatible
     @SuppressWarnings({ "unchecked", "varargs" })
     default Try<T> mapFailure(Match.@NonNull Case<? extends Throwable, ? extends Throwable> @NonNull ... cases) {
         if (isSuccess()) {
@@ -737,7 +736,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return this {@code Try} instance
      * @throws NullPointerException if {@code exceptionType} or {@code action} is null
      */
-    @GwtIncompatible
     @SuppressWarnings("unchecked")
     default <X extends Throwable> Try<T> onFailure(@NonNull Class<X> exceptionType, @NonNull Consumer<? super X> action) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
@@ -918,7 +916,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@code Success} with the recovered value if the exception matches, otherwise this {@code Try}
      * @throws NullPointerException if {@code exceptionType} or {@code f} is null
      */
-    @GwtIncompatible
     @SuppressWarnings("unchecked")
     default <X extends Throwable> Try<T> recover(@NonNull Class<X> exceptionType, @NonNull Function<? super X, ? extends T> f) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
@@ -961,7 +958,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@code Try} representing the recovered value if the exception matches, otherwise this {@code Try}
      * @throws NullPointerException if {@code exceptionType} or {@code f} is null
      */
-    @GwtIncompatible
     @SuppressWarnings("unchecked")
     default <X extends Throwable> Try<T> recoverWith(@NonNull Class<X> exceptionType, @NonNull Function<? super X, Try<? extends T>> f) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
@@ -1007,7 +1003,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return the given {@code recovered} if the exception matches, otherwise this {@code Try}
      * @throws NullPointerException if {@code exceptionType} or {@code recovered} is null
      */
-    @GwtIncompatible
     default <X extends Throwable> Try<T> recoverWith(@NonNull Class<X> exceptionType, @NonNull Try<? extends T> recovered) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         Objects.requireNonNull(recovered, "recovered is null");
@@ -1044,7 +1039,6 @@ public interface Try<T> extends Value<T>, Serializable {
      * @return a {@code Try} containing the recovery value if the exception matches, otherwise this {@code Try}
      * @throws NullPointerException if {@code exceptionType} is null
      */
-    @GwtIncompatible
     default <X extends Throwable> Try<T> recover(@NonNull Class<X> exceptionType, T value) {
         Objects.requireNonNull(exceptionType, "exceptionType is null");
         return (isFailure() && exceptionType.isAssignableFrom(getCause().getClass()))

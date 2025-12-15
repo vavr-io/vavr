@@ -438,7 +438,6 @@ public interface List<T> extends LinearSeq<T> {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
-    @GwtIncompatible
     static List<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -543,7 +542,6 @@ public interface List<T> extends LinearSeq<T> {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
-    @GwtIncompatible
     static List<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
@@ -755,25 +753,21 @@ public interface List<T> extends LinearSeq<T> {
         return List.<T> ofAll(elements).prependAll(this);
     }
 
-    @GwtIncompatible
     @Override
     default java.util.List<T> asJava() {
         return JavaConverters.asJava(this, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     default List<T> asJava(@NonNull Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, IMMUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     default java.util.List<T> asJavaMutable() {
         return JavaConverters.asJava(this, MUTABLE);
     }
 
-    @GwtIncompatible
     @Override
     default List<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action) {
         return Collections.asJava(this, action, MUTABLE);
@@ -1884,7 +1878,6 @@ public interface List<T> extends LinearSeq<T> {
          *
          * @return A SerializationProxy for this enclosing class.
          */
-        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private Object writeReplace() {
             return new SerializationProxy<>(this);
         }
@@ -1897,7 +1890,6 @@ public interface List<T> extends LinearSeq<T> {
          * @param stream An object serialization stream.
          * @throws java.io.InvalidObjectException This method will throw with the message "Proxy required".
          */
-        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private void readObject(ObjectInputStream stream) throws InvalidObjectException {
             throw new InvalidObjectException("Proxy required");
         }
@@ -1910,7 +1902,6 @@ public interface List<T> extends LinearSeq<T> {
          */
         // DEV NOTE: The serialization proxy pattern is not compatible with non-final, i.e. extendable,
         // classes. Also, it may not be compatible with circular object graphs.
-        @GwtIncompatible("The Java serialization protocol is explicitly not supported")
         private static final class SerializationProxy<T> implements Serializable {
 
             private static final long serialVersionUID = 1L;

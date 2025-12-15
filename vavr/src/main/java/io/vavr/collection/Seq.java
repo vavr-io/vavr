@@ -124,7 +124,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      *
      * @return an immutable {@link java.util.List} view of this sequence
      */
-    @GwtIncompatible
     java.util.List<T> asJava();
 
 
@@ -139,7 +138,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return this sequence
      * @see Seq#asJava()
      */
-    @GwtIncompatible
     Seq<T> asJava(@NonNull Consumer<? super java.util.List<T>> action);
 
     /**
@@ -153,7 +151,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return a mutable {@link java.util.List} view of this sequence
      * @see Seq#asJava()
      */
-    @GwtIncompatible
     java.util.List<T> asJavaMutable();
 
     /**
@@ -171,7 +168,6 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      * @return this sequence or a new sequence reflecting modifications made through the view
      * @see Seq#asJavaMutable()
      */
-    @GwtIncompatible
     Seq<T> asJavaMutable(@NonNull Consumer<? super java.util.List<T>> action);
 
     /**
