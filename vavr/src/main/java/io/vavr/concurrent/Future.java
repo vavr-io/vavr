@@ -317,7 +317,6 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the given {@link java.util.concurrent.CompletableFuture}
      * @throws NullPointerException if {@code future} is null
      */
-    @GwtIncompatible
     static <T> Future<T> fromCompletableFuture(@NonNull CompletableFuture<T> future) {
         return fromCompletableFuture(DEFAULT_EXECUTOR, future);
     }
@@ -332,7 +331,6 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing the result of the given {@link java.util.concurrent.CompletableFuture}
      * @throws NullPointerException if {@code executor} or {@code future} is null
      */
-    @GwtIncompatible
     static <T> Future<T> fromCompletableFuture(@NonNull Executor executor, @NonNull CompletableFuture<T> future) {
         Objects.requireNonNull(executor, "executor is null");
         Objects.requireNonNull(future, "future is null");
@@ -744,7 +742,6 @@ public interface Future<T> extends Value<T> {
     }
 
     @Override
-    @GwtIncompatible
     default CompletableFuture<T> toCompletableFuture() {
         final CompletableFuture<T> future = new CompletableFuture<>();
         onSuccess(future::complete);

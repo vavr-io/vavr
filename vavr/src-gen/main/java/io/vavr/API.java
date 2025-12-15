@@ -169,7 +169,6 @@ public final class API {
      * @param format A format string as described in {@link Formatter}.
      * @param args   Arguments referenced by the format specifiers
      */
-    @GwtIncompatible
     public static void printf(String format, Object... args) {
         System.out.printf(format, args);
     }
@@ -9774,7 +9773,6 @@ public final class API {
      * @param <T> type of the value
      * @return a new {@code Match} instance
      */
-    @GwtIncompatible
     public static <T> Match<T> Match(T value) {
         return new Match<>(value);
     }
@@ -9792,7 +9790,6 @@ public final class API {
      * @param f       Matched value consumer
      * @return new Case0
      */
-    @GwtIncompatible
     public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, @NonNull Function<? super T, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
@@ -9808,7 +9805,6 @@ public final class API {
      * @param supplier Matched value supplier
      * @return new Case0
      */
-    @GwtIncompatible
     public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
@@ -9824,7 +9820,6 @@ public final class API {
      * @param retVal  Constant value to return
      * @return new Case0
      */
-    @GwtIncompatible
     public static <T, R> Case<T, R> Case(@NonNull Pattern0<T> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case0<>(pattern, ignored -> retVal);
@@ -9842,7 +9837,6 @@ public final class API {
      * @param f        Matched value consumer
      * @return new Case1
      */
-    @GwtIncompatible
     public static <T, T1, R> Case<T, R> Case(@NonNull Pattern1<T, T1> pattern, @NonNull Function<? super T1, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
@@ -9859,7 +9853,6 @@ public final class API {
      * @param supplier Matched value supplier
      * @return new Case1
      */
-    @GwtIncompatible
     public static <T, T1, R> Case<T, R> Case(@NonNull Pattern1<T, T1> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
@@ -9876,7 +9869,6 @@ public final class API {
      * @param retVal   Constant value to return
      * @return new Case1
      */
-    @GwtIncompatible
     public static <T, T1, R> Case<T, R> Case(@NonNull Pattern1<T, T1> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case1<>(pattern, _1 -> retVal);
@@ -9895,7 +9887,6 @@ public final class API {
      * @param f        Matched value consumer
      * @return new Case2
      */
-    @GwtIncompatible
     public static <T, T1, T2, R> Case<T, R> Case(@NonNull Pattern2<T, T1, T2> pattern, @NonNull BiFunction<? super T1, ? super T2, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
@@ -9913,7 +9904,6 @@ public final class API {
      * @param supplier Matched value supplier
      * @return new Case2
      */
-    @GwtIncompatible
     public static <T, T1, T2, R> Case<T, R> Case(@NonNull Pattern2<T, T1, T2> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
@@ -9931,7 +9921,6 @@ public final class API {
      * @param retVal   Constant value to return
      * @return new Case2
      */
-    @GwtIncompatible
     public static <T, T1, T2, R> Case<T, R> Case(@NonNull Pattern2<T, T1, T2> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case2<>(pattern, (_1, _2) -> retVal);
@@ -9951,7 +9940,6 @@ public final class API {
      * @param f        Matched value consumer
      * @return new Case3
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, R> Case<T, R> Case(@NonNull Pattern3<T, T1, T2, T3> pattern, @NonNull Function3<? super T1, ? super T2, ? super T3, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
@@ -9970,7 +9958,6 @@ public final class API {
      * @param supplier Matched value supplier
      * @return new Case3
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, R> Case<T, R> Case(@NonNull Pattern3<T, T1, T2, T3> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
@@ -9989,7 +9976,6 @@ public final class API {
      * @param retVal   Constant value to return
      * @return new Case3
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, R> Case<T, R> Case(@NonNull Pattern3<T, T1, T2, T3> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case3<>(pattern, (_1, _2, _3) -> retVal);
@@ -10010,7 +9996,6 @@ public final class API {
      * @param f        Matched value consumer
      * @return new Case4
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, R> Case<T, R> Case(@NonNull Pattern4<T, T1, T2, T3, T4> pattern, @NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
@@ -10030,7 +10015,6 @@ public final class API {
      * @param supplier Matched value supplier
      * @return new Case4
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, R> Case<T, R> Case(@NonNull Pattern4<T, T1, T2, T3, T4> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
@@ -10050,7 +10034,6 @@ public final class API {
      * @param retVal   Constant value to return
      * @return new Case4
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, R> Case<T, R> Case(@NonNull Pattern4<T, T1, T2, T3, T4> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case4<>(pattern, (_1, _2, _3, _4) -> retVal);
@@ -10072,7 +10055,6 @@ public final class API {
      * @param f        Matched value consumer
      * @return new Case5
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(@NonNull Pattern5<T, T1, T2, T3, T4, T5> pattern, @NonNull Function5<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
@@ -10093,7 +10075,6 @@ public final class API {
      * @param supplier Matched value supplier
      * @return new Case5
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(@NonNull Pattern5<T, T1, T2, T3, T4, T5> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
@@ -10114,7 +10095,6 @@ public final class API {
      * @param retVal   Constant value to return
      * @return new Case5
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, R> Case<T, R> Case(@NonNull Pattern5<T, T1, T2, T3, T4, T5> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case5<>(pattern, (_1, _2, _3, _4, _5) -> retVal);
@@ -10137,7 +10117,6 @@ public final class API {
      * @param f        Matched value consumer
      * @return new Case6
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(@NonNull Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, @NonNull Function6<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
@@ -10159,7 +10138,6 @@ public final class API {
      * @param supplier Matched value supplier
      * @return new Case6
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(@NonNull Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
@@ -10181,7 +10159,6 @@ public final class API {
      * @param retVal   Constant value to return
      * @return new Case6
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, R> Case<T, R> Case(@NonNull Pattern6<T, T1, T2, T3, T4, T5, T6> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case6<>(pattern, (_1, _2, _3, _4, _5, _6) -> retVal);
@@ -10205,7 +10182,6 @@ public final class API {
      * @param f        Matched value consumer
      * @return new Case7
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(@NonNull Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, @NonNull Function7<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
@@ -10228,7 +10204,6 @@ public final class API {
      * @param supplier Matched value supplier
      * @return new Case7
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(@NonNull Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
@@ -10251,7 +10226,6 @@ public final class API {
      * @param retVal   Constant value to return
      * @return new Case7
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, R> Case<T, R> Case(@NonNull Pattern7<T, T1, T2, T3, T4, T5, T6, T7> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case7<>(pattern, (_1, _2, _3, _4, _5, _6, _7) -> retVal);
@@ -10276,7 +10250,6 @@ public final class API {
      * @param f        Matched value consumer
      * @return new Case8
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(@NonNull Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, @NonNull Function8<? super T1, ? super T2, ? super T3, ? super T4, ? super T5, ? super T6, ? super T7, ? super T8, ? extends R> f) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(f, "f is null");
@@ -10300,7 +10273,6 @@ public final class API {
      * @param supplier Matched value supplier
      * @return new Case8
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(@NonNull Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, @NonNull Supplier<? extends R> supplier) {
         Objects.requireNonNull(pattern, "pattern is null");
         Objects.requireNonNull(supplier, "supplier is null");
@@ -10324,7 +10296,6 @@ public final class API {
      * @param retVal   Constant value to return
      * @return new Case8
      */
-    @GwtIncompatible
     public static <T, T1, T2, T3, T4, T5, T6, T7, T8, R> Case<T, R> Case(@NonNull Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> pattern, R retVal) {
         Objects.requireNonNull(pattern, "pattern is null");
         return new Case8<>(pattern, (_1, _2, _3, _4, _5, _6, _7, _8) -> retVal);
@@ -10340,7 +10311,6 @@ public final class API {
      * @param <T> injected type of the underlying value
      * @return a new {@code Pattern0} instance
      */
-    @GwtIncompatible
     public static <T> Pattern0<T> $() {
         return Pattern0.any();
     }
@@ -10352,7 +10322,6 @@ public final class API {
      * @param prototype the value that should be equal to the underlying object
      * @return a new {@code Pattern0} instance
      */
-    @GwtIncompatible
     public static <T> Pattern0<T> $(T prototype) {
         return new Pattern0<T>() {
 
@@ -10432,7 +10401,6 @@ public final class API {
      * @param predicate the predicate that tests a given value
      * @return a new {@code Pattern0} instance
      */
-    @GwtIncompatible
     public static <T> Pattern0<T> $(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return new Pattern0<T>() {
@@ -10459,7 +10427,6 @@ public final class API {
      * Scala-like structural pattern matching for Java. Instances are obtained via {@link API#Match(Object)}.
      * @param <T> type of the object that is matched
      */
-    @GwtIncompatible
     public static final class Match<T> {
 
         private final T value;
