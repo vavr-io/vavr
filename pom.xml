@@ -61,7 +61,7 @@
         <maven.exec.version>3.6.2</maven.exec.version>
         <moditect.version>1.3.0.Final</moditect.version>
         <scala.maven.version>4.9.8</scala.maven.version>
-        <scala.version>3.5.1</scala.version>
+        <scala.version>3.7.4</scala.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -171,7 +171,6 @@
                     <artifactId>maven-release-plugin</artifactId>
                     <version>${maven.release.version}</version>
                     <configuration>
-                        <!-- Simple tag names -->
                         <tagNameFormat>v@{project.version}</tagNameFormat>
                         <!-- Circumvent maven-gpg-plugin bug -->
                         <mavenExecutorId>forked-path</mavenExecutorId>

@@ -249,18 +249,18 @@ def generateMainClasses(): Unit = {
         ${(1 to VARARGS).gen(i => {
           xs"""
             /$javadoc
-             * Alias for {@link $mapType#of(${(1 to i).gen(j => "Object, Object")(", ")})}
+             * Alias for {@link $mapType#of(${(1 to i).gen(j => "Object, Object")(using ", ")})}
              *
              * @param <K> The key type.
              * @param <V> The value type.
              ${(1 to i).gen(j => s"* @param k$j  The key${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${ if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
              * @return A new {@link $mapType} instance containing the given entries
              */
-            public static <K, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(", ")}) {
-                return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(", ")});
+            public static <K, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(using ", ")}) {
+                return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(using ", ")});
             }
           """
-        })("\n\n")}
+        })(using "\n\n")}
       """
 
       def genSortedMapAliases(mapType: String, returnType: String, name: String) = xs"""
@@ -350,17 +350,17 @@ def generateMainClasses(): Unit = {
 
         ${(1 to VARARGS).gen(i => xs"""
           /$javadoc
-           * Alias for {@link $mapType#of(${(1 to i).gen(j => s"${if (mapType.equals("TreeMap")) s"Comparable" else s"Object"}, Object")(", ")})}
+           * Alias for {@link $mapType#of(${(1 to i).gen(j => s"${if (mapType.equals("TreeMap")) s"Comparable" else s"Object"}, Object")(using ", ")})}
            *
            * @param <K> The key type.
            * @param <V> The value type.
            ${(1 to i).gen(j => s"* @param k$j  The key${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n* @param v$j  The value${if (i > 1) s" of the ${j.ordinal} pair" else ""}\n")}
            * @return A new {@link $mapType} instance containing the given entries
            */
-          public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(", ")}) {
-              return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(", ")});
+          public static <K extends Comparable<? super K>, V> $returnType<K, V> $name(${(1 to i).gen(j => xs"K k$j, V v$j")(using ", ")}) {
+              return $mapType.of(${(1 to i).gen(j => xs"k$j, v$j")(using ", ")});
           }
-        """)("\n\n")}
+        """)(using "\n\n")}
       """
 
       def genAliases(im: ImportManager, packageName: String, className: String): String = {
@@ -372,13 +372,13 @@ def generateMainClasses(): Unit = {
           // -- Function
 
           ${(0 to N).gen(i => {
-            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val generics = (1 to i).gen(j => s"T$j")(using ", ")
             val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
             xs"""
               /$javadoc
                * Alias for {@link Function$i#of(Function$i)}
                *
-               ${(0 to i).gen(j => if (j == 0) "* @param <R>             return type" else s"* @param <T$j>${if (j < 10) " " else ""}           type of the ${j.ordinal} argument")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R>             return type" else s"* @param <T$j>${if (j < 10) " " else ""}           type of the ${j.ordinal} argument")(using "\n")}
                * @param methodReference A method reference
                * @return A {@link Function$i}
                */
@@ -386,18 +386,18 @@ def generateMainClasses(): Unit = {
                   return Function$i.of(methodReference);
               }
             """
-          })("\n\n")}
+          })(using "\n\n")}
 
           // -- CheckedFunction
 
           ${(0 to N).gen(i => {
-            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val generics = (1 to i).gen(j => s"T$j")(using ", ")
             val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
             xs"""
               /$javadoc
                * Alias for {@link CheckedFunction$i#of(CheckedFunction$i)}
                *
-               ${(0 to i).gen(j => if (j == 0) "* @param <R>             return type" else s"* @param <T$j>            type of the ${j.ordinal} argument")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R>             return type" else s"* @param <T$j>            type of the ${j.ordinal} argument")(using "\n")}
                * @param methodReference A method reference
                * @return A {@link CheckedFunction$i}
                */
@@ -405,18 +405,18 @@ def generateMainClasses(): Unit = {
                   return CheckedFunction$i.of(methodReference);
               }
             """
-          })("\n\n")}
+          })(using "\n\n")}
 
           // -- unchecked
 
           ${(0 to N).gen(i => {
-            val generics = (1 to i).gen(j => s"T$j")(", ")
+            val generics = (1 to i).gen(j => s"T$j")(using ", ")
             val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
             xs"""
               /$javadoc
                * Alias for {@link CheckedFunction$i#unchecked}
                *
-               ${(0 to i).gen(j => if (j == 0) "* @param <R>  return type" else s"* @param <T$j> type of the ${j.ordinal} argument")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R>  return type" else s"* @param <T$j> type of the ${j.ordinal} argument")(using "\n")}
                * @param f    A method reference
                * @return An unchecked wrapper of supplied {@link CheckedFunction$i}
                */
@@ -424,7 +424,7 @@ def generateMainClasses(): Unit = {
                   return f.unchecked();
               }
             """
-          })("\n\n")}
+          })(using "\n\n")}
 
           // -- Tuple
 
@@ -438,25 +438,25 @@ def generateMainClasses(): Unit = {
           }
 
           ${(1 to N).gen(i => {
-            val generics = (1 to i).gen(j => s"T$j")(", ")
-            val links = (1 to i).gen(j => s"Object")(", ")
-            val params = (1 to i).gen(j => s"T$j t$j")(", ")
-            val args = (1 to i).gen(j => s"t$j")(", ")
+            val generics = (1 to i).gen(j => s"T$j")(using ", ")
+            val links = (1 to i).gen(j => s"Object")(using ", ")
+            val params = (1 to i).gen(j => s"T$j t$j")(using ", ")
+            val args = (1 to i).gen(j => s"t$j")(using ", ")
             xs"""
               /$javadoc
                * Alias for {@link Tuple#of($links)}
                *
                * Creates a tuple of ${i.numerus("element")}.
                *
-               ${(1 to i).gen(j => s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
-               ${(1 to i).gen(j => s"* @param t$j   the ${j.ordinal} element")("\n")}
+               ${(1 to i).gen(j => s"* @param <T$j> type of the ${j.ordinal} element")(using "\n")}
+               ${(1 to i).gen(j => s"* @param t$j   the ${j.ordinal} element")(using "\n")}
                * @return a tuple of ${i.numerus("element")}.
                */
               public static <$generics> Tuple$i<$generics> Tuple($params) {
                   return Tuple.of($args);
               }
             """
-          })("\n\n")}
+          })(using "\n\n")}
 
           // -- Either
 
@@ -753,18 +753,18 @@ def generateMainClasses(): Unit = {
               val forClassName = s"ForLazy$i$mtype"
               val isComplex = monadicTypesThatNeedParameter.contains(mtype)
               val parameterInset = if (isComplex) "L, " else ""
-              val generics = parameterInset + (1 to i).gen(j => s"T$j")(", ")
+              val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
 
               val params = (1 to i).gen { j =>
                 if (j == 1)
                   s"@NonNull $mtype<${parameterInset}T1> ts1"
                 else {
-                  val inputTypes = (1 until j).gen(k => s"? super T$k")(", ")
+                  val inputTypes = (1 until j).gen(k => s"? super T$k")(using ", ")
                   s"@NonNull Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
                 }
-              }(", ")
+              }(using ", ")
 
-              val ctorArgs = (1 to i).gen(j => s"ts$j")(", ")
+              val ctorArgs = (1 to i).gen(j => s"ts$j")(using ", ")
 
               xs"""
                     /$javadoc
@@ -776,18 +776,18 @@ def generateMainClasses(): Unit = {
                      * lazy comprehension; underlying effects are evaluated when {@code yield(...)}
                      * is invoked.</p>
                      *
-                     ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} ${mtype}")("\n")}
+                     ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} ${mtype}")(using "\n")}
                      ${if (isComplex) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
-                     ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")("\n")}
+                     ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
                      * @return a new {@code $forClassName} builder of arity $i
                      * @throws NullPointerException if any argument is {@code null}
                      */
                     public static <$generics> $forClassName<$generics> For($params) {
-                        ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
+                        ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")(using "\n")}
                         return new $forClassName<>($ctorArgs);
                     }
                   """
-            })("\n\n"))("\n\n")
+            })(using "\n\n"))(using "\n\n")
         }
 
           ${
@@ -797,27 +797,27 @@ def generateMainClasses(): Unit = {
               val rtype = mtype
               val forClassName = s"ForLazy$i$mtype"
               val parameterInset = if (monadicTypesThatNeedParameter.contains(mtype)) "L, " else ""
-              val generics = parameterInset + (1 to i).gen(j => s"T$j")(", ")
+              val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
 
               val fields = (1 to i).gen { j =>
                 if (j == 1)
                   s"private final $mtype<${parameterInset}T1> ts1;"
                 else {
-                  val inputTypes = (1 until j).gen(k => s"? super T$k")(", ")
+                  val inputTypes = (1 until j).gen(k => s"? super T$k")(using ", ")
                   s"private final Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j;"
                 }
-              }("\n")
+              }(using "\n")
 
               val ctorParams = (1 to i).gen { j =>
                 if (j == 1)
                   s"$mtype<${parameterInset}T1> ts1"
                 else {
-                  val inputTypes = (1 until j).gen(k => s"? super T$k")(", ")
+                  val inputTypes = (1 until j).gen(k => s"? super T$k")(using ", ")
                   s"Function${j - 1}<$inputTypes, $mtype<${parameterInset}T$j>> ts$j"
                 }
-              }(", ")
+              }(using ", ")
 
-              val assignments = (1 to i).gen(j => s"this.ts$j = ts$j;")("\n")
+              val assignments = (1 to i).gen(j => s"this.ts$j = ts$j;")(using "\n")
 
               val yieldBody = {
                 def nestedLambda(j: Int): String = {
@@ -851,7 +851,7 @@ def generateMainClasses(): Unit = {
                    * only when {@code yield(...)} is invoked.</p>
                    *
                    ${if (monadicTypesThatNeedParameter.contains(mtype)) s"* @param <L> the common left-hand type of all ${mtype}s\n" else ""}
-                   ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")("\n")}
+                   ${(1 to i).gen(j => s"* @param <T$j> the component type of the ${j.ordinal} ${mtype}")(using "\n")}
                    */
                   public static class $forClassName<$generics> {
 
@@ -883,7 +883,7 @@ def generateMainClasses(): Unit = {
                       }
                   }
                 """
-            })("\n\n"))("\n\n")
+            })(using "\n\n"))(using "\n\n")
         }
         """
       }
@@ -921,29 +921,29 @@ def generateMainClasses(): Unit = {
             val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
             val isComplex = monadicTypesThatNeedParameter.contains(mtype)
             val parameterInset = (if (isComplex) {"L, "} else "")
-            val generics = parameterInset + (1 to i).gen(j => s"T$j")(", ")
-            val params = (1 to i).gen(j => s"@NonNull $mtype<${parameterInset}T$j> ts$j")(", ")
+            val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
+            val params = (1 to i).gen(j => s"@NonNull $mtype<${parameterInset}T$j> ts$j")(using ", ")
             xs"""
               /$javadoc
                * Creates a {@code For}-comprehension of ${i.numerus(mtype)}.
-               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} $mtype")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param ts$j the ${j.ordinal} $mtype")(using "\n")}
                ${if (isComplex) s"* @param <L> left-hand type of all ${mtype}s\n" else ""}
-               ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} $mtype")("\n")}
+               ${(1 to i).gen(j => s"* @param <T$j> component type of the ${j.ordinal} $mtype")(using "\n")}
                * @return a new {@code For}-comprehension of arity $i
                */
               public static <$generics> $forClassName<$generics> For($params) {
-                  ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")("\n")}
-                  return new $forClassName<>(${(1 to i).gen(j => s"ts$j")(", ")});
+                  ${(1 to i).gen(j => xs"""$Objects.requireNonNull(ts$j, "ts$j is null");""")(using "\n")}
+                  return new $forClassName<>(${(1 to i).gen(j => s"ts$j")(using ", ")});
               }
             """
-          })("\n\n"))("\n\n")}
+          })(using "\n\n"))(using "\n\n")}
 
            ${monadicTypesFor.gen(mtype => (1 to N).gen(i => {
             val rtype = if (mtype == "Iterable") { IteratorType } else { mtype }
             val cons: String => String = if (mtype == "Iterable") { m => s"$IteratorType.ofAll($m)" } else { m => m }
             val forClassName = if (mtype == "Iterable") { s"For$i" } else { s"For$i$mtype" }
             val parameterInset = (if (monadicTypesThatNeedParameter.contains(mtype)) { "L, " } else "")
-            val generics = parameterInset + (1 to i).gen(j => s"T$j")(", ")
+            val generics = parameterInset + (1 to i).gen(j => s"T$j")(using ", ")
             val functionType = i match {
               case 1 => FunctionType
               case 2 => BiFunctionType
@@ -954,7 +954,7 @@ def generateMainClasses(): Unit = {
               s"\n* @param <L> The left-hand type of all {@link $mtype}s"
             } else { "" })
             val typeDocs = (1 to i).gen(j => s"* @param <T$j> component type of {@link $mtype} number $j\n")
-            val args = (1 to i).gen(j => s"? super T$j")(", ")
+            val args = (1 to i).gen(j => s"? super T$j")(using ", ")
             xs"""
               /$javadoc
                * For-comprehension with ${i.numerus(mtype)}.
@@ -963,10 +963,10 @@ def generateMainClasses(): Unit = {
                */
               public static class $forClassName<$generics> {
 
-                  ${(1 to i).gen(j => xs"""private final $mtype<${parameterInset}T$j> ts$j;""")("\n")}
+                  ${(1 to i).gen(j => xs"""private final $mtype<${parameterInset}T$j> ts$j;""")(using "\n")}
 
-                  private $forClassName(${(1 to i).gen(j => s"$mtype<${parameterInset}T$j> ts$j")(", ")}) {
-                      ${(1 to i).gen(j => xs"""this.ts$j = ts$j;""")("\n")}
+                  private $forClassName(${(1 to i).gen(j => s"$mtype<${parameterInset}T$j> ts$j")(using ", ")}) {
+                      ${(1 to i).gen(j => xs"""this.ts$j = ts$j;""")(using "\n")}
                   }
 
                   /$javadoc
@@ -982,8 +982,8 @@ def generateMainClasses(): Unit = {
                         return ${cons("ts1")}.map(f);
                       """ else xs"""
                         return
-                            ${(1 until i).gen(j => s"${cons(s"ts$j")}.flatMap(t$j ->")("\n")}
-                            ${cons(s"ts$i")}.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(", ")}))${")" * (i - 1)};
+                            ${(1 until i).gen(j => s"${cons(s"ts$j")}.flatMap(t$j ->")(using "\n")}
+                            ${cons(s"ts$i")}.map(t$i -> f.apply(${(1 to i).gen(j => s"t$j")(using ", ")}))${")" * (i - 1)};
                       """}
                   }
 
@@ -999,7 +999,7 @@ def generateMainClasses(): Unit = {
                   """)}
               }
             """
-          })("\n\n"))("\n\n")}
+          })(using "\n\n"))(using "\n\n")}
         """
       }
 
@@ -1071,9 +1071,9 @@ def generateMainClasses(): Unit = {
           }
 
           ${(1 to N).gen(i => {
-            val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
-            val generics = (1 to i).gen(j => s"T$j")(", ")
-            val params = (i > 1).gen("(") + (1 to i).gen(j => s"_$j")(", ") + (i > 1).gen(")")
+            val argTypes = (1 to i).gen(j => s"? super T$j")(using ", ")
+            val generics = (1 to i).gen(j => s"T$j")(using ", ")
+            val params = (i > 1).gen("(") + (1 to i).gen(j => s"_$j")(using ", ") + (i > 1).gen(")")
             val functionType = i match {
               case 1 => FunctionType
               case 2 => BiFunctionType
@@ -1131,7 +1131,7 @@ def generateMainClasses(): Unit = {
                   return new Case$i<>(pattern, $params -> retVal);
               }
             """
-          })("\n\n")}
+          })(using "\n\n")}
 
           // PRE-DEFINED PATTERNS
 
@@ -1359,8 +1359,8 @@ def generateMainClasses(): Unit = {
               }
 
               ${(1 to N).gen(i => {
-                val argTypes = (1 to i).gen(j => s"? super T$j")(", ")
-                val generics = (1 to i).gen(j => s"T$j")(", ")
+                val argTypes = (1 to i).gen(j => s"? super T$j")(using ", ")
+                val generics = (1 to i).gen(j => s"T$j")(using ", ")
                 val functionType = i match {
                   case 1 => FunctionType
                   case 2 => BiFunctionType
@@ -1410,7 +1410,7 @@ def generateMainClasses(): Unit = {
                       }
                   }
                 """
-              })("\n\n")}
+              })(using "\n\n")}
 
               // -- PATTERNS
 
@@ -1510,12 +1510,12 @@ def generateMainClasses(): Unit = {
               }
 
               ${(1 to N).gen(i => {
-                val declaredGenerics = (1 to i).gen(j => s"T$j extends U$j, U$j")(", ")
-                val resultGenerics = (1 to i).gen(j => s"T$j")(", ")
+                val declaredGenerics = (1 to i).gen(j => s"T$j extends U$j, U$j")(using ", ")
+                val resultGenerics = (1 to i).gen(j => s"T$j")(using ", ")
                 val resultType = if (i == 1) resultGenerics else s"Tuple$i<$resultGenerics>"
-                val unapplyGenerics = (1 to i).gen(j => s"U$j")(", ")
+                val unapplyGenerics = (1 to i).gen(j => s"U$j")(using ", ")
                 val unapplyTupleType = s"Tuple$i<$unapplyGenerics>"
-                val args = (1 to i).gen(j => s"@NonNull Pattern<T$j, ?> p$j")(", ")
+                val args = (1 to i).gen(j => s"@NonNull Pattern<T$j, ?> p$j")(using ", ")
                 val typeDocs = (1 to i).gen(j => s"* @param <T$j> Member type $j of the composite part this pattern decomposes\n")
                 val staticOfTypeDocs = (1 to i).gen(j =>
                   xs"""
@@ -1573,7 +1573,7 @@ def generateMainClasses(): Unit = {
                                   if (type.isInstance(obj)) {
                                       final $unapplyTupleType u = unapply.apply(obj);
                                       return
-                                              ${(1 to i).gen(j => s"((Pattern<U$j, ?>) p$j).isDefinedAt(u._$j)")(" &&\n")};
+                                              ${(1 to i).gen(j => s"((Pattern<U$j, ?>) p$j).isDefinedAt(u._$j)")(using " &&\n")};
                                   } else {
                                       return false;
                                   }
@@ -1592,7 +1592,7 @@ def generateMainClasses(): Unit = {
                        }
                   }
                 """
-              })("\n\n")}
+              })(using "\n\n")}
           }
         """
 
@@ -1745,7 +1745,7 @@ def generateMainClasses(): Unit = {
          *
          * As with all Vavr Values, the result of a For-comprehension can be converted
          * to standard Java library and Vavr types.
-         * @author Daniel Dietrich
+         * @author Daniel Dietrich, Grzegorz Piwowarek
          */
         public final class API {
 
@@ -1780,21 +1780,21 @@ def generateMainClasses(): Unit = {
 
       def genFunction(name: String, checked: Boolean)(im: ImportManager, packageName: String, className: String): String = {
 
-        val generics = (1 to i).gen(j => s"T$j")(", ")
+        val generics = (1 to i).gen(j => s"T$j")(using ", ")
         val fullGenerics = s"<${(i > 0).gen(s"$generics, ")}R>"
-        val wideGenerics = (1 to i).gen(j => s"? super T$j")(", ")
+        val wideGenerics = (1 to i).gen(j => s"? super T$j")(using ", ")
         val fullWideGenerics = s"<${(i > 0).gen(s"$wideGenerics, ")}? extends R>"
-        val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(", ")
+        val genericsReversed = (1 to i).reverse.gen(j => s"T$j")(using ", ")
         val genericsTuple = if (i > 0) s"<$generics>" else ""
         val genericsFunction = if (i > 0) s"$generics, " else ""
         val genericsReversedFunction = if (i > 0) s"$genericsReversed, " else ""
         val genericsOptionReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("io.vavr.control.Option")}<R>>"
         val genericsTryReturnType = s"<${(i > 0).gen(s"$generics, ")}${im.getType("io.vavr.control.Try")}<R>>"
-        val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(" -> ")
-        val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
-        val params = (1 to i).gen(j => s"t$j")(", ")
-        val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(", ")
-        val tupled = (1 to i).gen(j => s"t._$j")(", ")
+        val curried = if (i == 0) "v" else (1 to i).gen(j => s"t$j")(using " -> ")
+        val paramsDecl = (1 to i).gen(j => s"T$j t$j")(using ", ")
+        val params = (1 to i).gen(j => s"t$j")(using ", ")
+        val paramsReversed = (1 to i).reverse.gen(j => s"t$j")(using ", ")
+        val tupled = (1 to i).gen(j => s"t._$j")(using ", ")
         val compositionType = if(checked) "CheckedFunction1" else im.getType("java.util.function.Function")
 
         // imports
@@ -1844,7 +1844,7 @@ def generateMainClasses(): Unit = {
         xs"""
           /**
            * Represents a function with ${arguments(i)}.
-           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the function")("\n")}
+           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> argument $j of the function")(using "\n")}
            * @param <R> return type of the function
            * @author Daniel Dietrich
            */
@@ -1860,7 +1860,7 @@ def generateMainClasses(): Unit = {
                * Returns a function that always returns the constant
                * value that you give in parameter.
                *
-               ${(1 to i).gen(j => s"* @param <T$j> generic parameter type $j of the resulting function")("\n")}
+               ${(1 to i).gen(j => s"* @param <T$j> generic parameter type $j of the resulting function")(using "\n")}
                * @param <R> the result type
                * @param value the value to be returned
                * @return a function always returning the given value
@@ -1899,7 +1899,7 @@ def generateMainClasses(): Unit = {
                * }</pre>
                *
                * @param methodReference (typically) a method reference, e.g. {@code Type::method}
-               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")(using "\n")}
                * @return a {@code $className}
                */
               static $fullGenerics $className$fullGenerics of(@NonNull $className$fullGenerics methodReference) {
@@ -1910,7 +1910,7 @@ def generateMainClasses(): Unit = {
                * Lifts the given {@code partialFunction} into a total function that returns an {@code Option} result.
                *
                * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")(using "\n")}
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Some(result)}
                *         if the function is defined for the given arguments, and {@code None} otherwise.
                */
@@ -1929,7 +1929,7 @@ def generateMainClasses(): Unit = {
                * Lifts the given {@code partialFunction} into a total function that returns an {@code Try} result.
                *
                * @param partialFunction a function that is not defined for all values of the domain (e.g. by throwing)
-               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")(using "\n")}
                * @return a function that applies arguments to the given {@code partialFunction} and returns {@code Success(result)}
                *         if the function is defined for the given arguments, and {@code Failure(throwable)} otherwise.
                */
@@ -1947,7 +1947,7 @@ def generateMainClasses(): Unit = {
                * Narrows the given {@code $className$fullWideGenerics} to {@code $className$fullGenerics}
                *
                * @param f A {@code $className}
-               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "* @param <R> return type" else s"* @param <T$j> ${j.ordinal} argument")(using "\n")}
                * @return the given {@code f} instance as narrowed type {@code $className$fullGenerics}
                */
               @SuppressWarnings("unchecked")
@@ -1969,30 +1969,30 @@ def generateMainClasses(): Unit = {
 
               /$javadoc
                * Applies this function to ${arguments(i)} and returns the result.
-               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j argument $j")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j argument $j")(using "\n")}
                * @return the result of function application
                * ${checked.gen("@throws Throwable if something goes wrong applying this function to the given arguments")}
                */
               R apply($paramsDecl)${checked.gen(" throws Throwable")};
 
               ${(1 until i).gen(j => {
-                val partialApplicationArgs = (1 to j).gen(k => s"T$k t$k")(", ")
-                val resultFunctionGenerics = (j+1 to i).gen(k => s"T$k")(", ")
-                val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
-                val fixedApplyArgs = (1 to j).gen(k => s"t$k")(", ")
-                val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(", ")
+                val partialApplicationArgs = (1 to j).gen(k => s"T$k t$k")(using ", ")
+                val resultFunctionGenerics = (j+1 to i).gen(k => s"T$k")(using ", ")
+                val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(using ", ")
+                val fixedApplyArgs = (1 to j).gen(k => s"t$k")(using ", ")
+                val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(using ", ")
                 xs"""
                   /$javadoc
                    * Applies this function partially to ${j.numerus("argument")}.
                    *
-                   ${(1 to j).gen(k => s"* @param t$k argument $k")("\n")}
+                   ${(1 to j).gen(k => s"* @param t$k argument $k")(using "\n")}
                    * @return a partial application of this function
                    */
                   default $name${i - j}<$resultFunctionGenerics, R> apply($partialApplicationArgs) {
                       return ($resultFunctionArgs) -> apply($fixedApplyArgs, $variableApplyArgs);
                   }
                 """
-              })("\n\n")}
+              })(using "\n\n")}
 
               ${(i == 0 && !checked).gen(
                 xs"""
@@ -2222,11 +2222,11 @@ def generateMainClasses(): Unit = {
               ${(1 to i).gen(j => {
                 val fName = s"before"
                 val fGeneric = "S"
-                val applicationArgs = (1 to i).gen(k => if (k == j) s"$fGeneric ${fGeneric.toLowerCase}" else s"T$k t$k")(", ")
-                val generics = (1 to i).gen(k => if (k == j) "S" else s"T$k")(", ")
-                val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(", ")
-                val applyArgs = (1 to i).gen(k => if (k ==j) s"$fName.apply(${fGeneric.toLowerCase})" else s"t$k")(", ")
-                val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(", ")
+                val applicationArgs = (1 to i).gen(k => if (k == j) s"$fGeneric ${fGeneric.toLowerCase}" else s"T$k t$k")(using ", ")
+                val generics = (1 to i).gen(k => if (k == j) "S" else s"T$k")(using ", ")
+                val resultFunctionArgs = (j+1 to i).gen(k => s"T$k t$k")(using ", ")
+                val applyArgs = (1 to i).gen(k => if (k ==j) s"$fName.apply(${fGeneric.toLowerCase})" else s"t$k")(using ", ")
+                val variableApplyArgs = (j+1 to i).gen(k => s"t$k")(using ", ")
                 val docAdd = i match
                   case 1 => ""
                   case 2 => " and the other argument"
@@ -2246,7 +2246,7 @@ def generateMainClasses(): Unit = {
                       return ($applicationArgs) -> apply($applyArgs);
                   }
                 """
-              })("\n\n")}
+              })(using "\n\n")}
           }
 
           ${checked.gen(xs"""
@@ -2279,18 +2279,18 @@ def generateMainClasses(): Unit = {
      * Generates Tuple1..N
      */
     def genTuple(i: Int)(im: ImportManager, packageName: String, className: String): String = {
-      val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"T$j")(", ")}>"
-      val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
-      val params = (1 to i).gen(j => s"_$j")(", ")
-      val paramTypes = (1 to i).gen(j => s"? super T$j")(", ")
-      val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(", ")}>"
+      val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"T$j")(using ", ")}>"
+      val paramsDecl = (1 to i).gen(j => s"T$j t$j")(using ", ")
+      val params = (1 to i).gen(j => s"_$j")(using ", ")
+      val paramTypes = (1 to i).gen(j => s"? super T$j")(using ", ")
+      val resultGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j")(using ", ")}>"
       val mapResult = i match {
         case 0 => ""
         case 1 => "? extends U1"
-        case _ => s"Tuple$i<${(1 to i).gen(j => s"U$j")(", ")}>"
+        case _ => s"Tuple$i<${(1 to i).gen(j => s"U$j")(using ", ")}>"
       }
-      val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(", ")}>"
-      val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(", ")}>"
+      val comparableGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"U$j extends Comparable<? super U$j>")(using ", ")}>"
+      val untyped = if (i == 0) "" else s"<${(1 to i).gen(j => "?")(using ", ")}>"
       val functionType = i match {
         case 0 => im.getType("java.util.function.Supplier")
         case 1 => im.getType("java.util.function.Function")
@@ -2310,7 +2310,7 @@ def generateMainClasses(): Unit = {
       xs"""
         /**
          * A tuple of ${i.numerus("element")} which can be seen as cartesian product of ${i.numerus("component")}.
-         ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
+         ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")(using "\n")}
          * @author Daniel Dietrich
          */
         public final class $className$generics implements Tuple, Comparable<$className$generics>, ${im.getType("java.io.Serializable")} {
@@ -2323,7 +2323,7 @@ def generateMainClasses(): Unit = {
                */
               @SuppressWarnings("serial") // Conditionally serializable
               public final T$j _$j;
-            """)("\n\n")}
+            """)(using "\n\n")}
 
             ${if (i == 0) xs"""
               /$javadoc
@@ -2351,14 +2351,14 @@ def generateMainClasses(): Unit = {
             """ else xs"""
               /$javadoc
                * Constructs a tuple of ${i.numerus("element")}.
-               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j the ${j.ordinal} element")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param t$j the ${j.ordinal} element")(using "\n")}
                */
               public $className($paramsDecl) {
-                  ${(1 to i).gen(j => s"this._$j = t$j;")("\n")}
+                  ${(1 to i).gen(j => s"this._$j = t$j;")(using "\n")}
               }
             """}
 
-            public static $generics $Comparator<$className$generics> comparator(${(1 to i).gen(j => s"$Comparator<? super T$j> t${j}Comp")(", ")}) {
+            public static $generics $Comparator<$className$generics> comparator(${(1 to i).gen(j => s"$Comparator<? super T$j> t${j}Comp")(using ", ")}) {
                 ${if (i == 0) xs"""
                   return COMPARATOR;
                 """ else xs"""
@@ -2368,7 +2368,7 @@ def generateMainClasses(): Unit = {
                         if (check$j != 0) {
                             return check$j;
                         }
-                      """)("\n\n")}
+                      """)(using "\n\n")}
 
                       // all components are equal
                       return 0;
@@ -2387,7 +2387,7 @@ def generateMainClasses(): Unit = {
                     if (check$j != 0) {
                         return check$j;
                     }
-                  """)("\n\n")}
+                  """)(using "\n\n")}
 
                   // all components are equal
                   return 0;
@@ -2425,9 +2425,9 @@ def generateMainClasses(): Unit = {
                * @return a copy of this tuple with a new value for the ${j.ordinal} element of this Tuple.
                */
               public $className$generics update$j(T$j value) {
-                  return new $className<>(${(1 until j).gen(k => s"_$k")(", ")}${(j > 1).gen(", ")}value${(j < i).gen(", ")}${((j + 1) to i).gen(k => s"_$k")(", ")});
+                  return new $className<>(${(1 until j).gen(k => s"_$k")(using ", ")}${(j > 1).gen(", ")}value${(j < i).gen(", ")}${((j + 1) to i).gen(k => s"_$k")(using ", ")});
               }
-            """)("\n\n")}
+            """)(using "\n\n")}
 
             ${(i == 2).gen(xs"""
               /$javadoc
@@ -2457,7 +2457,7 @@ def generateMainClasses(): Unit = {
                * Maps the components of this tuple using a mapper function.
                *
                * @param mapper the mapper function
-               ${(1 to i).gen(j => s"* @param <U$j> new type of the ${j.ordinal} component")("\n")}
+               ${(1 to i).gen(j => s"* @param <U$j> new type of the ${j.ordinal} component")(using "\n")}
                * @return A new Tuple of same arity.
                * @throws NullPointerException if {@code mapper} is null
                */
@@ -2474,14 +2474,14 @@ def generateMainClasses(): Unit = {
             ${(i > 1).gen(xs"""
               /$javadoc
                * Maps the components of this tuple using a mapper function for each component.
-               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param f$j the mapper function of the ${j.ordinal} component")("\n")}
-               ${(1 to i).gen(j => s"* @param <U$j> new type of the ${j.ordinal} component")("\n")}
+               ${(0 to i).gen(j => if (j == 0) "*" else s"* @param f$j the mapper function of the ${j.ordinal} component")(using "\n")}
+               ${(1 to i).gen(j => s"* @param <U$j> new type of the ${j.ordinal} component")(using "\n")}
                * @return A new Tuple of same arity.
                * @throws NullPointerException if one of the arguments is null
                */
-              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"@NonNull ${im.getType("java.util.function.Function")}<? super T$j, ? extends U$j> f$j")(", ")}) {
-                  ${(1 to i).gen(j => s"""Objects.requireNonNull(f$j, "f$j is null");""")("\n")}
-                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(", ")});
+              public $resultGenerics $className$resultGenerics map(${(1 to i).gen(j => s"@NonNull ${im.getType("java.util.function.Function")}<? super T$j, ? extends U$j> f$j")(using ", ")}) {
+                  ${(1 to i).gen(j => s"""Objects.requireNonNull(f$j, "f$j is null");""")(using "\n")}
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(j => s"f$j.apply(_$j)")(using ", ")});
               }
             """)}
 
@@ -2493,12 +2493,12 @@ def generateMainClasses(): Unit = {
                * @param mapper A mapping function
                * @return a new tuple based on this tuple and substituted ${j.ordinal} component
                */
-              public <U> $className<${(1 to i).gen(k => if (j == k) "U" else s"T$k")(", ")}> map$j(${im.getType("java.util.function.Function")}<? super T$j, ? extends U> mapper) {
+              public <U> $className<${(1 to i).gen(k => if (j == k) "U" else s"T$k")(using ", ")}> map$j(${im.getType("java.util.function.Function")}<? super T$j, ? extends U> mapper) {
                   Objects.requireNonNull(mapper, "mapper is null");
                   final U u = mapper.apply(_$j);
-                  return Tuple.of(${(1 to i).gen(k => if (j == k) "u" else s"_$k")(", ")});
+                  return Tuple.of(${(1 to i).gen(k => if (j == k) "u" else s"_$k")(using ", ")});
               }
-            """)("\n\n")}
+            """)(using "\n\n")}
 
             /**
              * Transforms this tuple to an object of type U.
@@ -2537,8 +2537,8 @@ def generateMainClasses(): Unit = {
                * @param t${i+1} the value to append
                * @return a new Tuple with the value appended
                */
-              public <T${i+1}> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(", ")}> append(T${i+1} t${i+1}) {
-                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}t${i+1});
+              public <T${i+1}> Tuple${i+1}<${(1 to i+1).gen(j => s"T$j")(using ", ")}> append(T${i+1} t${i+1}) {
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(using ", ")}${(i > 0).gen(", ")}t${i+1});
               }
             """)}
 
@@ -2546,16 +2546,16 @@ def generateMainClasses(): Unit = {
               /$javadoc
                * Concat a tuple's values to this tuple.
                *
-               ${(i+1 to i+j).gen(k => s"* @param <T$k> the type of the ${k.ordinal} value in the tuple")("\n")}
+               ${(i+1 to i+j).gen(k => s"* @param <T$k> the type of the ${k.ordinal} value in the tuple")(using "\n")}
                * @param tuple the tuple to concat
                * @return a new Tuple with the tuple values appended
                * @throws NullPointerException if {@code tuple} is null
                */
-              public <${(i+1 to i+j).gen(k => s"T$k")(", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(", ")}> concat(@NonNull Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(", ")}> tuple) {
+              public <${(i+1 to i+j).gen(k => s"T$k")(using ", ")}> Tuple${i+j}<${(1 to i+j).gen(k => s"T$k")(using ", ")}> concat(@NonNull Tuple$j<${(i+1 to i+j).gen(k => s"T$k")(using ", ")}> tuple) {
                   Objects.requireNonNull(tuple, "tuple is null");
-                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(", ")}${(i > 0).gen(", ")}${(1 to j).gen(k => s"tuple._$k")(", ")});
+                  return ${im.getType("io.vavr.Tuple")}.of(${(1 to i).gen(k => s"_$k")(using ", ")}${(i > 0).gen(", ")}${(1 to j).gen(k => s"tuple._$k")(using ", ")});
               }
-            """)("\n\n")}
+            """)(using "\n\n")}
 
             // -- Object
 
@@ -2570,19 +2570,19 @@ def generateMainClasses(): Unit = {
                       return false;
                   } else {
                       final $className$untyped that = ($className$untyped) o;
-                      return ${(1 to i).gen(j => s"${im.getType("java.util.Objects")}.equals(this._$j, that._$j)")("\n                             && ")};
+                      return ${(1 to i).gen(j => s"${im.getType("java.util.Objects")}.equals(this._$j, that._$j)")(using "\n                             && ")};
                   }"""
                 }
             }
 
             @Override
             public int hashCode() {
-                return ${if (i == 0) "1" else s"""Tuple.hash(${(1 to i).gen(j => s"_$j")(", ")})"""};
+                return ${if (i == 0) "1" else s"""Tuple.hash(${(1 to i).gen(j => s"_$j")(using ", ")})"""};
             }
 
             @Override
             public String toString() {
-                return ${if (i == 0) "\"()\"" else s""""(" + ${(1 to i).gen(j => s"_$j")(" + \", \" + ")} + ")""""};
+                return ${if (i == 0) "\"()\"" else s""""(" + ${(1 to i).gen(j => s"_$j")(using " + \", \" + ")} + ")""""};
             }
 
             ${(i == 0).gen(xs"""
@@ -2614,15 +2614,15 @@ def generateMainClasses(): Unit = {
       val Seq = im.getType("io.vavr.collection.Seq")
 
       def genFactoryMethod(i: Int) = {
-        val generics = (1 to i).gen(j => s"T$j")(", ")
-        val paramsDecl = (1 to i).gen(j => s"T$j t$j")(", ")
-        val params = (1 to i).gen(j => s"t$j")(", ")
-        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
+        val generics = (1 to i).gen(j => s"T$j")(using ", ")
+        val paramsDecl = (1 to i).gen(j => s"T$j t$j")(using ", ")
+        val params = (1 to i).gen(j => s"t$j")(using ", ")
+        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(using ", ")
         xs"""
           /**
            * Creates a tuple of ${i.numerus("element")}.
-           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")("\n")}
-           ${(1 to i).gen(j => s"* @param t$j the ${j.ordinal} element")("\n")}
+           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param <T$j> type of the ${j.ordinal} element")(using "\n")}
+           ${(1 to i).gen(j => s"* @param t$j the ${j.ordinal} element")(using "\n")}
            * @return a tuple of ${i.numerus("element")}.
            */
           static <$generics> Tuple$i<$generics> of($paramsDecl) {
@@ -2632,11 +2632,11 @@ def generateMainClasses(): Unit = {
       }
 
       def genHashMethod(i: Int) = {
-        val paramsDecl = (1 to i).gen(j => s"Object o$j")(", ")
+        val paramsDecl = (1 to i).gen(j => s"Object o$j")(using ", ")
         xs"""
           /**
            * Return the order-dependent hash of the ${i.numerus("given value")}.
-           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param o$j the ${j.ordinal} value to hash")("\n")}
+           ${(0 to i).gen(j => if (j == 0) "*" else s"* @param o$j the ${j.ordinal} value to hash")(using "\n")}
            * @return the same result as {@link $Objects#${if (i == 1) "hashCode(Object)" else "hash(Object...)"}}
            */
           static int hash($paramsDecl) {
@@ -2645,7 +2645,7 @@ def generateMainClasses(): Unit = {
               } else {
                 xs"""
                   int result = 1;
-                  ${(1 to i).gen(j => s"result = 31 * result + hash(o$j);")("\n")}
+                  ${(1 to i).gen(j => s"result = 31 * result + hash(o$j);")(using "\n")}
                   return result;
                 """
               }}
@@ -2654,14 +2654,14 @@ def generateMainClasses(): Unit = {
       }
 
       def genNarrowMethod(i: Int) = {
-        val generics = (1 to i).gen(j => s"T$j")(", ")
-        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
+        val generics = (1 to i).gen(j => s"T$j")(using ", ")
+        val wideGenerics = (1 to i).gen(j => s"? extends T$j")(using ", ")
         xs"""
           /**
            * Narrows a widened {@code Tuple$i<$wideGenerics>} to {@code Tuple$i<$generics>}.
            * This is eligible because immutable/read-only tuples are covariant.
            * @param t A {@code Tuple$i}.
-           ${(1 to i).gen(j => s"* @param <T$j> the ${j.ordinal} component type")("\n")}
+           ${(1 to i).gen(j => s"* @param <T$j> the ${j.ordinal} component type")(using "\n")}
            * @return the given {@code t} instance as narrowed type {@code Tuple$i<$generics>}.
            */
           @SuppressWarnings("unchecked")
@@ -2672,22 +2672,22 @@ def generateMainClasses(): Unit = {
       }
 
       def genSeqMethod(i: Int) = {
-        val generics = (1 to i).gen(j => s"T$j")(", ")
-        val seqs = (1 to i).gen(j => s"Seq<T$j>")(", ")
+        val generics = (1 to i).gen(j => s"T$j")(using ", ")
+        val seqs = (1 to i).gen(j => s"Seq<T$j>")(using ", ")
         val Stream = im.getType("io.vavr.collection.Stream")
-        val widenedGenerics = (1 to i).gen(j => s"? extends T$j")(", ")
+        val widenedGenerics = (1 to i).gen(j => s"? extends T$j")(using ", ")
         xs"""
             /**
              * Turns a sequence of {@code Tuple$i} into a Tuple$i of {@code Seq}${(i > 1).gen("s")}.
              *
-             ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type")("\n")}
+             ${(1 to i).gen(j => s"* @param <T$j> ${j.ordinal} component type")(using "\n")}
              * @param tuples an {@code Iterable} of tuples
              * @return a tuple of ${i.numerus(s"{@link $Seq}")}.
              */
             static <$generics> Tuple$i<$seqs> sequence$i(@NonNull Iterable<? extends Tuple$i<$widenedGenerics>> tuples) {
                 $Objects.requireNonNull(tuples, "tuples is null");
                 final Stream<Tuple$i<$widenedGenerics>> s = $Stream.ofAll(tuples);
-                return new Tuple$i<>(${(1 to i).gen(j => s"s.map(Tuple$i::_$j)")(s", ")});
+                return new Tuple$i<>(${(1 to i).gen(j => s"s.map(Tuple$i::_$j)")(using s", ")});
             }
         """
       }
@@ -2748,13 +2748,13 @@ def generateMainClasses(): Unit = {
                 return new Tuple2<>(entry.getKey(), entry.getValue());
             }
 
-            ${(1 to N).gen(genFactoryMethod)("\n\n")}
+            ${(1 to N).gen(genFactoryMethod)(using "\n\n")}
 
-            ${(1 to N).gen(genHashMethod)("\n\n")}
+            ${(1 to N).gen(genHashMethod)(using "\n\n")}
 
-            ${(1 to N).gen(genNarrowMethod)("\n\n")}
+            ${(1 to N).gen(genNarrowMethod)(using "\n\n")}
 
-            ${(1 to N).gen(genSeqMethod)("\n\n")}
+            ${(1 to N).gen(genSeqMethod)(using "\n\n")}
 
         }
       """
@@ -2903,7 +2903,7 @@ def generateMainClasses(): Unit = {
 
           ${types.keys.toSeq.gen(arrayType =>
             genArrayType(arrayType)(im, packageName, arrayType.capitalize + className)
-          )("\n\n")}
+          )(using "\n\n")}
       }
     """)
 
@@ -3081,11 +3081,11 @@ def generateTestClasses(): Unit = {
             xs"""
               @$test
               public void shouldCreate${func}From${i}Pairs() {
-                $MapType<Integer, Integer> map = $func(${(1 to i).gen(j => s"$j, ${j*2}")(", ")});
-                ${(1 to i).gen(j => s"assertThat(map.apply($j)).isEqualTo(${j*2});")("\n")}
+                $MapType<Integer, Integer> map = $func(${(1 to i).gen(j => s"$j, ${j*2}")(using ", ")});
+                ${(1 to i).gen(j => s"assertThat(map.apply($j)).isEqualTo(${j*2});")(using "\n")}
               }
             """
-          })("\n\n")}
+          })(using "\n\n")}
 
         """
       }
@@ -3105,7 +3105,7 @@ def generateTestClasses(): Unit = {
       def genAliasesTests(im: ImportManager, packageName: String, className: String): String = {
         xs"""
           ${(0 to N).gen(i => {
-            val params = (1 to i).gen(j => s"v$j")(", ")
+            val params = (1 to i).gen(j => s"v$j")(using ", ")
             xs"""
               @$test
               public void shouldFunction${i}ReturnNotNull() {
@@ -3118,15 +3118,15 @@ def generateTestClasses(): Unit = {
               }
 
             """
-          })("\n\n")}
+          })(using "\n\n")}
 
           ${(0 to N).gen(i => {
-            val params = (1 to i).gen(j => s"v$j")(", ")
+            val params = (1 to i).gen(j => s"v$j")(using ", ")
             genExtAliasTest(s"Unchecked${i}ReturnNonCheckedFunction", "unchecked", s"($params) -> null", s"isInstanceOf(Function$i.class)")
-          })("\n\n")}
+          })(using "\n\n")}
 
           ${(0 to N).gen(i => {
-            val params = (1 to i).gen(j => s"$j")(", ")
+            val params = (1 to i).gen(j => s"$j")(using ", ")
             xs"""
               @$test
               public void shouldTuple${i}ReturnNotNull() {
@@ -3134,7 +3134,7 @@ def generateTestClasses(): Unit = {
               }
 
             """
-          })("\n\n")}
+          })(using "\n\n")}
 
           ${Seq("Right", "Left").gen(name => {
             xs"""
@@ -3144,7 +3144,7 @@ def generateTestClasses(): Unit = {
               }
 
             """
-          })("\n\n")}
+          })(using "\n\n")}
 
           ${genFutureTests("Supplier", "() -> 1", success = true)}
 
@@ -3281,13 +3281,13 @@ def generateTestClasses(): Unit = {
                   @$test
                   public void shouldIterateFor$ListType$i() {
                       final $ListType<Integer> result = For(
-                          ${(1 to i).gen(j => s"$ListType.of(1, 2, 3)")(",\n")}
-                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")}).toList();
+                          ${(1 to i).gen(j => s"$ListType.of(1, 2, 3)")(using ",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(using ", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(using " + ")}).toList();
                       $assertThat(result.length()).isEqualTo((int) Math.pow(3, $i));
                       $assertThat(result.head()).isEqualTo($i);
                       $assertThat(result.last()).isEqualTo(3 * $i);
                   }
-                """)("\n\n")}
+                """)(using "\n\n")}
 
                 ${monadicTypesFor.gen(mtype => (1 to N).gen(i =>
                   val (parameterInset, builderName) = monadicTypeMetadataFor(mtype);
@@ -3296,8 +3296,8 @@ def generateTestClasses(): Unit = {
                   @$test
                   public void shouldIterateFor$mtype$i() {
                       final $mtype<${parameterInset}Integer> result = For(
-                          ${(1 to i).gen(j => s"$mtype.${builderName}($j)")(",\n")}
-                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                          ${(1 to i).gen(j => s"$mtype.${builderName}($j)")(using ",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(using ", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(using " + ")});
                       $assertThat(result.get()).isEqualTo(${(1 to i).sum});
                   }
 
@@ -3310,26 +3310,26 @@ def generateTestClasses(): Unit = {
                               val args = (1 until j).map(k => s"r$k").mkString(", ")
                               val argsUsed = (1 until j).map(k => s"r$k").mkString(" + ")
                               s"($args) -> $mtype.${builderName}(${argsUsed} + $j)"
-                          } )(",\n")}
-                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                          } )(using ",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(using ", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(using " + ")});
 
                       // Each step builds on the sum of all previous results plus its index
                       // This forms a sequence rₙ = 2ⁿ - 1, and the yield sums all rᵢ.
                       // Hence total = Σ(2ⁱ - 1) for i = 1..n = (2ⁿ⁺¹ - 2) - n
                       assertThat(result.get()).isEqualTo((1 << ($i + 1)) - 2 - $i);
                   }
-                """})("\n\n"))("\n\n")}
+                """})(using "\n\n"))(using "\n\n")}
 
 
                 ${monadicFunctionTypesFor.gen(mtype => (1 to N).gen(i => { xs"""
                   @$test
                   public void shouldIterateFor$mtype$i() {
                       final $mtype<Integer> result = For(
-                          ${(1 to i).gen(j => s"$mtype.of(() -> $j)")(",\n")}
-                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(" + ")});
+                          ${(1 to i).gen(j => s"$mtype.of(() -> $j)")(using ",\n")}
+                      ).yield(${(i > 1).gen("(")}${(1 to i).gen(j => s"i$j")(using ", ")}${(i > 1).gen(")")} -> ${(1 to i).gen(j => s"i$j")(using " + ")});
                       $assertThat(result.get()).isEqualTo(${(1 to i).sum});
                   }
-                """})("\n\n"))("\n\n")}
+                """})(using "\n\n"))(using "\n\n")}
 
                 @$test
                 public void shouldIterateNestedFor() {
@@ -3411,32 +3411,32 @@ def generateTestClasses(): Unit = {
                   xs"""
                     @$test
                     public void shouldMatchPattern$i() {
-                        final Tuple$i<${(1 to i).gen(j => s"Integer")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(", ")});
+                        final Tuple$i<${(1 to i).gen(j => s"Integer")(using ", ")}> tuple = Tuple.of(${(1 to i).gen(j => s"1")(using ", ")});
                         final String func = Match(tuple).of(
-                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "fail"),
-                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), (${(1 to i).gen(j => s"m$j")(", ")}) -> "okFunc")
+                                Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), (${(1 to i).gen(j => s"m$j")(using ", ")}) -> "fail"),
+                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(using ", ")}), (${(1 to i).gen(j => s"m$j")(using ", ")}) -> "okFunc")
                         );
                         assertThat(func).isEqualTo("okFunc");
                         final String supp = Match(tuple).of(
                                 Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), () -> "fail"),
-                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), () -> "okSupp")
+                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(using ", ")}), () -> "okSupp")
                         );
                         assertThat(supp).isEqualTo("okSupp");
                         final String val = Match(tuple).of(
                                 Case($$Tuple$i($d(0)${(2 to i).gen(j => s", $d()")}), "fail"),
-                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(", ")}), "okVal")
+                                Case($$Tuple$i(${(1 to i).gen(j => s"$d()")(using ", ")}), "okVal")
                         );
                         assertThat(val).isEqualTo("okVal");
 
                         final ClzMatch c = new ClzMatch2();
                         final String match = Match(c).of(
-                                Case(Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "fail"),
-                                Case(Match.Pattern$i.of(ClzMatch2.class, ${(1 to i).gen(j => s"$d()")(", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(", ")})), "okMatch")
+                                Case(Match.Pattern$i.of(ClzMatch1.class, ${(1 to i).gen(j => s"$d()")(using ", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(using ", ")})), "fail"),
+                                Case(Match.Pattern$i.of(ClzMatch2.class, ${(1 to i).gen(j => s"$d()")(using ", ")}, t -> Tuple.of(${(1 to i).gen(j => s"null")(using ", ")})), "okMatch")
                         );
                         assertThat(match).isEqualTo("okMatch");
                     }
                   """
-                })("\n\n")}
+                })(using "\n\n")}
 
             }
         }
@@ -3459,14 +3459,14 @@ def generateTestClasses(): Unit = {
         val AtomicInteger = im.getType("java.util.concurrent.atomic.AtomicInteger")
         val nested = im.getType("org.junit.jupiter.api.Nested")
 
-        val functionArgsDecl = (1 to i).gen(j => s"Object o$j")(", ")
-        val functionArgs = (1 to i).gen(j => s"o$j")(", ")
-        val generics = (1 to i + 1).gen(j => "Object")(", ")
+        val functionArgsDecl = (1 to i).gen(j => s"Object o$j")(using ", ")
+        val functionArgs = (1 to i).gen(j => s"o$j")(using ", ")
+        val generics = (1 to i + 1).gen(j => "Object")(using ", ")
 
         val test = im.getType("org.junit.jupiter.api.Test")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
         val assertThrows = im.getStatic("org.junit.jupiter.api.Assertions.assertThrows")
-        val recFuncF1 = if (i == 0) "11;" else s"i1 <= 0 ? i1 : $className.recurrent2.apply(${(1 to i).gen(j => s"i$j" + (j == 1).gen(s" - 1"))(", ")}) + 1;"
+        val recFuncF1 = if (i == 0) "11;" else s"i1 <= 0 ? i1 : $className.recurrent2.apply(${(1 to i).gen(j => s"i$j" + (j == 1).gen(s" - 1"))(using ", ")}) + 1;"
 
         def curriedType(max: Int, function: String): String = max match {
           case 0 => s"${function}0<Object>"
@@ -3474,12 +3474,12 @@ def generateTestClasses(): Unit = {
           case _ => s"Function1<Object, ${curriedType(max - 1, function)}>"
         }
 
-        val wideGenericArgs = (1 to i).gen(j => "Number")(", ")
+        val wideGenericArgs = (1 to i).gen(j => "Number")(using ", ")
         val wideGenericResult = "String"
-        val wideFunctionPattern = (1 to i).gen(j => "%s")(", ")
-        val narrowGenericArgs = (1 to i).gen(j => "Integer")(", ")
+        val wideFunctionPattern = (1 to i).gen(j => "%s")(using ", ")
+        val narrowGenericArgs = (1 to i).gen(j => "Integer")(using ", ")
         val narrowGenericResult = im.getType("java.lang.CharSequence")
-        val narrowArgs = (1 to i).gen(j => j.toString)(", ")
+        val narrowArgs = (1 to i).gen(j => j.toString)(using ", ")
 
         xs"""
           public class $className {
@@ -3525,9 +3525,9 @@ def generateTestClasses(): Unit = {
                 public void shouldPartiallyApply()${checked.gen(" throws Throwable")} {
                     final $name$i<$generics> f = ($functionArgs) -> null;
                     ${(1 until i).gen(j => {
-                      val partialArgs = (1 to j).gen(k => "null")(", ")
+                      val partialArgs = (1 to j).gen(k => "null")(using ", ")
                       s"$assertThat(f.apply($partialArgs)).isNotNull();"
-                    })("\n")}
+                    })(using "\n")}
                 }
               """)}
 
@@ -3540,7 +3540,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldConstant()${checked.gen(" throws Throwable")} {
                   final $name$i<$generics> f = $name$i.constant(6);
-                  $assertThat(f.apply(${(1 to i).gen(j => s"$j")(", ")})).isEqualTo(6);
+                  $assertThat(f.apply(${(1 to i).gen(j => s"$j")(using ", ")})).isEqualTo(6);
               }
 
               @$test
@@ -3553,7 +3553,7 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldTuple() {
                   final $name$i<$generics> f = ($functionArgs) -> null;
-                  final ${name}1<Tuple$i${(i > 0).gen(s"<${(1 to i).gen(j => "Object")(", ")}>")}, Object> tupled = f.tupled();
+                  final ${name}1<Tuple$i${(i > 0).gen(s"<${(1 to i).gen(j => "Object")(using ", ")}>")}, Object> tupled = f.tupled();
                   $assertThat(tupled).isNotNull();
               }
 
@@ -3566,40 +3566,40 @@ def generateTestClasses(): Unit = {
               @$test
               public void shouldMemoize()${checked.gen(" throws Throwable")} {
                   final $AtomicInteger integer = new $AtomicInteger();
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> ${(1 to i).gen(j => s"i$j")(" + ")}${(i > 0).gen(" + ")}integer.getAndIncrement();
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> f = (${(1 to i).gen(j => s"i$j")(using ", ")}) -> ${(1 to i).gen(j => s"i$j")(using " + ")}${(i > 0).gen(" + ")}integer.getAndIncrement();
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> memo = f.memoized();
                   // should apply f on first apply()
-                  final int expected = memo.apply(${(1 to i).gen(j => s"$j")(", ")});
+                  final int expected = memo.apply(${(1 to i).gen(j => s"$j")(using ", ")});
                   // should return memoized value of second apply()
-                  $assertThat(memo.apply(${(1 to i).gen(j => s"$j")(", ")})).isEqualTo(expected);
+                  $assertThat(memo.apply(${(1 to i).gen(j => s"$j")(using ", ")})).isEqualTo(expected);
                   ${(i > 0).gen(xs"""
                     $comment should calculate new values when called subsequently with different parameters
-                    $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(" + ")} + 1);
+                    $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(using ", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(using " + ")} + 1);
                     $comment should return memoized value of second apply() (for new value)
-                    $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(" + ")} + 1);
+                    $assertThat(memo.apply(${(1 to i).gen(j => s"${j + 1} ")(using ", ")})).isEqualTo(${(1 to i).gen(j => s"${j + 1} ")(using " + ")} + 1);
                   """)}
               }
 
               @$test
               public void shouldNotMemoizeAlreadyMemoizedFunction()${checked.gen(" throws Throwable")} {
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> f = (${(1 to i).gen(j => s"i$j")(using ", ")}) -> null;
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> memo = f.memoized();
                   $assertThat(memo.memoized() == memo).isTrue();
               }
 
               ${(i > 0).gen(xs"""
                 @$test
                 public void shouldMemoizeValueGivenNullArguments()${checked.gen(" throws Throwable")} {
-                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                    final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
-                    $assertThat(memo.apply(${(1 to i).gen(j => "null")(", ")})).isNull();
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> f = (${(1 to i).gen(j => s"i$j")(using ", ")}) -> null;
+                    final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> memo = f.memoized();
+                    $assertThat(memo.apply(${(1 to i).gen(j => "null")(using ", ")})).isNull();
                 }
               """)}
 
               @$test
               public void shouldRecognizeMemoizedFunctions() {
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> f = (${(1 to i).gen(j => s"i$j")(", ")}) -> null;
-                  final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> memo = f.memoized();
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> f = (${(1 to i).gen(j => s"i$j")(using ", ")}) -> null;
+                  final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> memo = f.memoized();
                   $assertThat(f.isMemoized()).isFalse();
                   $assertThat(memo.isMemoized()).isTrue();
               }
@@ -3630,10 +3630,10 @@ def generateTestClasses(): Unit = {
                 @$test
                 public void shouldLiftTryPartialFunction() {
                     $AtomicInteger integer = new $AtomicInteger();
-                    $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> divByZero = (${(1 to i).gen(j => s"i$j")(", ")}) -> 10 / integer.get();
-                    $name$i<${(1 to i).gen(j => "Integer, ")("")}Try<Integer>> divByZeroTry = $name$i.liftTry(divByZero);
+                    $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> divByZero = (${(1 to i).gen(j => s"i$j")(using ", ")}) -> 10 / integer.get();
+                    $name$i<${(1 to i).gen(j => "Integer, ")(using "")}Try<Integer>> divByZeroTry = $name$i.liftTry(divByZero);
 
-                    ${im.getType("io.vavr.control.Try")}<Integer> res = divByZeroTry.apply(${(1 to i).gen(j => s"0")(", ")});
+                    ${im.getType("io.vavr.control.Try")}<Integer> res = divByZeroTry.apply(${(1 to i).gen(j => s"0")(using ", ")});
                     assertThat(res.isFailure()).isTrue();
                     assertThat(res.getCause()).isNotNull();
                     assertThat(res.getCause().getMessage()).isEqualToIgnoringCase("/ by zero");
@@ -3718,15 +3718,15 @@ def generateTestClasses(): Unit = {
                 """)}
                 ${(i > 0).gen(xs"""
                   ${
-                    val types = s"<${(1 to i).gen(j => "String")(", ")}, MessageDigest>"
+                    val types = s"<${(1 to i).gen(j => "String")(using ", ")}, MessageDigest>"
                     def toArgList (s: String) = s.split("", i).mkString("\"", "\", \"", "\"") + (s.length + 2 to i).gen(j => ", \"\"")
                     xs"""
 
-                      private static final $name$i$types digest = (${(1 to i).gen(j => s"s$j")(", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(" + ")});
+                      private static final $name$i$types digest = (${(1 to i).gen(j => s"s$j")(using ", ")}) -> ${im.getType("java.security.MessageDigest")}.getInstance(${(1 to i).gen(j => s"s$j")(using " + ")});
 
                       @$test
                       public void shouldRecover() {
-                          final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> (${(1 to i).gen(j => s"s$j")(", ")}) -> null);
+                          final Function$i<${(1 to i).gen(j => "String")(using ", ")}, MessageDigest> recover = digest.recover(throwable -> (${(1 to i).gen(j => s"s$j")(using ", ")}) -> null);
                           final MessageDigest md5 = recover.apply(${toArgList("MD5")});
                           assertThat(md5).isNotNull();
                           assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
@@ -3736,7 +3736,7 @@ def generateTestClasses(): Unit = {
 
                       @$test
                       public void shouldRecoverNonNull() {
-                          final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> recover = digest.recover(throwable -> null);
+                          final Function$i<${(1 to i).gen(j => "String")(using ", ")}, MessageDigest> recover = digest.recover(throwable -> null);
                           final MessageDigest md5 = recover.apply(${toArgList("MD5")});
                           assertThat(md5).isNotNull();
                           assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
@@ -3750,7 +3750,7 @@ def generateTestClasses(): Unit = {
 
                       @$test
                       public void shouldUncheckedWork() {
-                          final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
+                          final Function$i<${(1 to i).gen(j => "String")(using ", ")}, MessageDigest> unchecked = digest.unchecked();
                           final MessageDigest md5 = unchecked.apply(${toArgList("MD5")});
                           assertThat(md5).isNotNull();
                           assertThat(md5.getAlgorithm()).isEqualToIgnoringCase("MD5");
@@ -3760,14 +3760,14 @@ def generateTestClasses(): Unit = {
                       @$test
                       public void shouldUncheckedThrowIllegalState() {
                           $assertThrows(${im.getType("java.security.NoSuchAlgorithmException")}.class, () -> {
-                              final Function$i<${(1 to i).gen(j => "String")(", ")}, MessageDigest> unchecked = digest.unchecked();
+                              final Function$i<${(1 to i).gen(j => "String")(using ", ")}, MessageDigest> unchecked = digest.unchecked();
                               unchecked.apply(${toArgList("Unknown")}); $comment Look ma, we throw an undeclared checked exception!
                           });
                       }
 
                       @$test
                       public void shouldLiftTryPartialFunction() {
-                          final Function$i<${(1 to i).gen(j => "String")(", ")}, Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
+                          final Function$i<${(1 to i).gen(j => "String")(using ", ")}, Try<MessageDigest>> liftTry = $name$i.liftTry(digest);
                           final ${im.getType("io.vavr.control.Try")}<MessageDigest> md5 = liftTry.apply(${toArgList("MD5")});
                           assertThat(md5.isSuccess()).isTrue();
                           assertThat(md5.get()).isNotNull();
@@ -3783,15 +3783,15 @@ def generateTestClasses(): Unit = {
                 """)}
               """)}
 
-              private static final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent1 = (${(1 to i).gen(j => s"i$j")(", ")}) -> $recFuncF1
+              private static final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> recurrent1 = (${(1 to i).gen(j => s"i$j")(using ", ")}) -> $recFuncF1
               ${(i > 0).gen(xs"""
-                private static final $name$i<${(1 to i + 1).gen(j => "Integer")(", ")}> recurrent2 = $className.recurrent1.memoized();
+                private static final $name$i<${(1 to i + 1).gen(j => "Integer")(using ", ")}> recurrent2 = $className.recurrent1.memoized();
               """)}
 
               @$test
               public void shouldCalculatedRecursively()${checked.gen(" throws Throwable")} {
-                  assertThat(recurrent1.apply(${(1 to i).gen(j => "11")(", ")})).isEqualTo(11);
-                  ${(i > 0).gen(s"assertThat(recurrent1.apply(${(1 to i).gen(j => "22")(", ")})).isEqualTo(22);")}
+                  assertThat(recurrent1.apply(${(1 to i).gen(j => "11")(using ", ")})).isEqualTo(11);
+                  ${(i > 0).gen(s"assertThat(recurrent1.apply(${(1 to i).gen(j => "22")(using ", ")})).isEqualTo(22);")}
               }
 
               @$test
@@ -3805,11 +3805,11 @@ def generateTestClasses(): Unit = {
               @Nested
               class ComposeTests {
                 ${(1 to i).gen(j =>
-                  val genArgs = (1 to i).gen(k => "String")(", ")
-                  val params = (1 to i).gen(k => s"String s$k")(", ")
-                  val values = (1 to i).gen(k => if (k == j) "\"xx\"" else s"\"s$k\"")(", ")
-                  val expected = (1 to i).gen(k => if (k == j) "XX" else s"s$k")("")
-                  val concat = (1 to i).gen(k => s"s$k")(" + ")
+                  val genArgs = (1 to i).gen(k => "String")(using ", ")
+                  val params = (1 to i).gen(k => s"String s$k")(using ", ")
+                  val values = (1 to i).gen(k => if (k == j) "\"xx\"" else s"\"s$k\"")(using ", ")
+                  val expected = (1 to i).gen(k => if (k == j) "XX" else s"s$k")(using "")
+                  val concat = (1 to i).gen(k => s"s$k")(using " + ")
                   xs"""
 
                   @$test
@@ -3864,13 +3864,13 @@ def generateTestClasses(): Unit = {
         public void shouldConstructFrom${arity}Entries${if(builderComparator) "WithBuilderComparator" else ""}${if(keyComparator) "WithKeyComparator" else ""}${mapBuilder.capitalize}() {
           final $map<Integer, String> map =
             $map${if (mapBuilder.isEmpty) "" else s".$mapBuilder"}${if (builderComparator) s"($naturalComparator())" else if (mapBuilder.isEmpty) "" else "()"}
-            .of(${if(keyComparator) s"$naturalComparator(), " else ""}${(1 to arity).gen(j => s"""$j, "$j"""")(", ")});
+            .of(${if(keyComparator) s"$naturalComparator(), " else ""}${(1 to arity).gen(j => s"""$j, "$j"""")(using ", ")});
           $assertThat(map.size()).isEqualTo($arity);
           ${(1 to arity).gen(j => {
             s"""${if (mapBuilder.isEmpty) "" else s"$assertThat(map.get($j).get() instanceof ${im.getType(s"io.vavr.collection.${mapBuilder.substring(4)}")}).isTrue();\n"}$assertThat(map.get($j).get()${if (mapName.contains("Multimap")) ".head()" else ""}).isEqualTo("$j");"""
-          })("\n")}
+          })(using "\n")}
         }
-      """)("\n\n")
+      """)(using "\n\n")
     }
 
     def genMapOfEntriesTest(mapName: String): Unit = {
@@ -3907,7 +3907,7 @@ def generateTestClasses(): Unit = {
   def genTupleTests(): Unit = {
 
     def genArgsForComparing(digits: Int, p: Int): String = {
-      (1 to digits).gen(i => if(i == p) "1" else "0")(", ")
+      (1 to digits).gen(i => if(i == p) "1" else "0")(using ", ")
     }
 
     (0 to N).foreach(i => {
@@ -3921,10 +3921,10 @@ def generateTestClasses(): Unit = {
         val stream = if (i == 0) "" else im.getType("io.vavr.collection.Stream")
         val comparator = im.getType("java.util.Comparator")
         val assertThat = im.getStatic("org.assertj.core.api.Assertions.assertThat")
-        val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Object")(", ")}>"
-        val intGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Integer")(", ")}>"
-        val functionArgs = if (i == 0) "()" else s"${(i > 1).gen("(") + (1 to i).gen(j => s"o$j")(", ") + (i > 1).gen(")")}"
-        val nullArgs = (1 to i).gen(j => "null")(", ")
+        val generics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Object")(using ", ")}>"
+        val intGenerics = if (i == 0) "" else s"<${(1 to i).gen(j => s"Integer")(using ", ")}>"
+        val functionArgs = if (i == 0) "()" else s"${(i > 1).gen("(") + (1 to i).gen(j => s"o$j")(using ", ") + (i > 1).gen(")")}"
+        val nullArgs = (1 to i).gen(j => "null")(using ", ")
         if(i==2){
           im.getType("java.util.AbstractMap")
           im.getType("java.util.Map")
@@ -3949,7 +3949,7 @@ def generateTestClasses(): Unit = {
               ${(i > 0).gen(xs"""
                 @$test
                 public void shouldReturnElements() {
-                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j")(", ")});
+                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j")(using ", ")});
                     ${(1 to i).gen(j => s"$assertThat(tuple._$j).isEqualTo($j);\n")}
                 }
               """)}
@@ -3958,10 +3958,10 @@ def generateTestClasses(): Unit = {
                 xs"""
                   @$test
                   public void shouldUpdate$j() {
-                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j")(", ")}).update$j(42);
+                    final Tuple$i$intGenerics tuple = createIntTuple(${(1 to i).gen(j => s"$j")(using ", ")}).update$j(42);
                     ${(1 to i).gen(k => s"$assertThat(tuple._$k).isEqualTo(${if (j == k) 42 else k});\n")}
                   }
-                """)("\n\n")}
+                """)(using "\n\n")}
 
               @$test
               public void shouldConvertToSeq() {
@@ -3986,7 +3986,7 @@ def generateTestClasses(): Unit = {
                     $assertThat(intTupleComparator.compare(t0, t$j)).isNegative();
                     $assertThat(intTupleComparator.compare(t$j, t0)).isPositive();
                 }
-              """)("\n\n")}
+              """)(using "\n\n")}
 
               ${(i == 2).gen(xs"""
                 @$test
@@ -4019,15 +4019,15 @@ def generateTestClasses(): Unit = {
                 @$test
                 public void shouldMapComponents() {
                   final Tuple$i$generics tuple = createTuple();
-                  ${(1 to i).gen(j => xs"""final Function1<Object, Object> f$j = Function1.identity();""")("\n")}
-                  final Tuple$i$generics actual = tuple.map(${(1 to i).gen(j => s"f$j")(", ")});
+                  ${(1 to i).gen(j => xs"""final Function1<Object, Object> f$j = Function1.identity();""")(using "\n")}
+                  final Tuple$i$generics actual = tuple.map(${(1 to i).gen(j => s"f$j")(using ", ")});
                   $assertThat(actual).isEqualTo(tuple);
                 }
 
                 @$test
                 public void shouldReturnTuple${i}OfSequence$i() {
-                  final $seq<Tuple$i<${(1 to i).gen(j => xs"Integer")(", ")}>> iterable = $list.of(${(1 to i).gen(j => xs"Tuple.of(${(1 to i).gen(k => xs"${k+2*j-1}")(", ")})")(", ")});
-                  final Tuple$i<${(1 to i).gen(j => xs"$seq<Integer>")(", ")}> expected = Tuple.of(${(1 to i).gen(j => xs"$stream.of(${(1 to i).gen(k => xs"${2*k+j-1}")(", ")})")(", ")});
+                  final $seq<Tuple$i<${(1 to i).gen(j => xs"Integer")(using ", ")}>> iterable = $list.of(${(1 to i).gen(j => xs"Tuple.of(${(1 to i).gen(k => xs"${k+2*j-1}")(using ", ")})")(using ", ")});
+                  final Tuple$i<${(1 to i).gen(j => xs"$seq<Integer>")(using ", ")}> expected = Tuple.of(${(1 to i).gen(j => xs"$stream.of(${(1 to i).gen(k => xs"${2*k+j-1}")(using ", ")})")(using ", ")});
                   $assertThat(Tuple.sequence$i(iterable)).isEqualTo(expected);
                 }
               """)}
@@ -4035,16 +4035,16 @@ def generateTestClasses(): Unit = {
               ${(i > 1).gen(xs"""
                 @$test
                 public void shouldReturnTuple${i}OfSequence1() {
-                  final $seq<Tuple$i<${(1 to i).gen(j => xs"Integer")(", ")}>> iterable = $list.of(Tuple.of(${(1 to i).gen(k => xs"$k")(", ")}));
-                  final Tuple$i<${(1 to i).gen(j => xs"$seq<Integer>")(", ")}> expected = Tuple.of(${(1 to i).gen(j => xs"$stream.of($j)")(", ")});
+                  final $seq<Tuple$i<${(1 to i).gen(j => xs"Integer")(using ", ")}>> iterable = $list.of(Tuple.of(${(1 to i).gen(k => xs"$k")(using ", ")}));
+                  final Tuple$i<${(1 to i).gen(j => xs"$seq<Integer>")(using ", ")}> expected = Tuple.of(${(1 to i).gen(j => xs"$stream.of($j)")(using ", ")});
                   $assertThat(Tuple.sequence$i(iterable)).isEqualTo(expected);
                 }
               """)}
 
               ${(i > 1) `gen` (1 to i).gen(j => {
-                val substitutedResultTypes = if (i == 0) "" else s"<${(1 to i).gen(k => if (k == j) "String" else "Integer")(", ")}>"
-                val ones = (1 to i).gen(_ => "1")(", ")
-                val result = (1 to i).gen(k => if (k == j) "\"X\"" else "1")(", ")
+                val substitutedResultTypes = if (i == 0) "" else s"<${(1 to i).gen(k => if (k == j) "String" else "Integer")(using ", ")}>"
+                val ones = (1 to i).gen(_ => "1")(using ", ")
+                val result = (1 to i).gen(k => if (k == j) "\"X\"" else "1")(using ", ")
                 xs"""
                   @$test
                   public void shouldMap${j.ordinal}Component() {
@@ -4053,7 +4053,7 @@ def generateTestClasses(): Unit = {
                     assertThat(actual).isEqualTo(expected);
                   }
                 """
-              })("\n\n")}
+              })(using "\n\n")}
 
               @$test
               public void shouldApplyTuple() {
@@ -4065,8 +4065,8 @@ def generateTestClasses(): Unit = {
               ${(i < N).gen(xs"""
                 @$test
                 public void shouldAppendValue() {
-                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(", ")})"}.append(${i+1});
-                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(", ")}> expected = Tuple.of(${(1 to i+1).gen(j => xs"$j")(", ")});
+                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(using ", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(using ", ")})"}.append(${i+1});
+                    final Tuple${i+1}<${(1 to i+1).gen(j => s"Integer")(using ", ")}> expected = Tuple.of(${(1 to i+1).gen(j => xs"$j")(using ", ")});
                     assertThat(actual).isEqualTo(expected);
                 }
               """)}
@@ -4074,11 +4074,11 @@ def generateTestClasses(): Unit = {
               ${(i < N) `gen` (1 to N-i).gen(j => xs"""
                 @$test
                 public void shouldConcatTuple$j() {
-                    final Tuple${i+j}<${(1 to i+j).gen(j => s"Integer")(", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(", ")})"}.concat(Tuple.of(${(i+1 to i+j).gen(k => s"$k")(", ")}));
-                    final Tuple${i+j}<${(1 to i+j).gen(j => s"Integer")(", ")}> expected = Tuple.of(${(1 to i+j).gen(j => xs"$j")(", ")});
+                    final Tuple${i+j}<${(1 to i+j).gen(j => s"Integer")(using ", ")}> actual = ${ if (i == 0) "Tuple0.instance()" else s"Tuple.of(${(1 to i).gen(j => xs"$j")(using ", ")})"}.concat(Tuple.of(${(i+1 to i+j).gen(k => s"$k")(using ", ")}));
+                    final Tuple${i+j}<${(1 to i+j).gen(j => s"Integer")(using ", ")}> expected = Tuple.of(${(1 to i+j).gen(j => xs"$j")(using ", ")});
                     assertThat(actual).isEqualTo(expected);
                 }
-              """)("\n\n")}
+              """)(using "\n\n")}
 
               @$test
               public void shouldRecognizeEquality() {
@@ -4097,11 +4097,11 @@ def generateTestClasses(): Unit = {
               ${(i > 0).gen(xs"""
                 @$test
                 public void shouldRecognizeNonEqualityPerComponent() {
-                    final Tuple$i<${(1 to i).gen(_ => "String")(", ")}> tuple = Tuple.of(${(1 to i).gen(j => "\"" + j + "\"")(", ")});
+                    final Tuple$i<${(1 to i).gen(_ => "String")(using ", ")}> tuple = Tuple.of(${(1 to i).gen(j => "\"" + j + "\"")(using ", ")});
                     ${(1 to i).gen(j => {
-                      val that = "Tuple.of(" + (1 to i).gen(k => if (j == k) "\"X\"" else "\"" + k + "\"")(", ") + ")"
+                      val that = "Tuple.of(" + (1 to i).gen(k => if (j == k) "\"X\"" else "\"" + k + "\"")(using ", ") + ")"
                       s"$assertThat(tuple.equals($that)).isFalse();"
-                    })("\n")}
+                    })(using "\n")}
                 }
               """)}
 
@@ -4119,14 +4119,14 @@ def generateTestClasses(): Unit = {
                   $assertThat(actual).isEqualTo(expected);
               }
 
-              private $comparator<Tuple$i$intGenerics> intTupleComparator = Tuple$i.comparator(${(1 to i).gen($j => s"Integer::compare")(", ")});
+              private $comparator<Tuple$i$intGenerics> intTupleComparator = Tuple$i.comparator(${(1 to i).gen($j => s"Integer::compare")(using ", ")});
 
               private Tuple$i$generics createTuple() {
                   return ${if (i == 0) "Tuple0.instance()" else s"new Tuple$i<>($nullArgs)"};
               }
 
-              private Tuple$i$intGenerics createIntTuple(${(1 to i).gen(j => s"Integer i$j")(", ")}) {
-                  return ${if (i == 0) "Tuple0.instance()" else s"new Tuple$i<>(${(1 to i).gen(j => s"i$j")(", ")})"};
+              private Tuple$i$intGenerics createIntTuple(${(1 to i).gen(j => s"Integer i$j")(using ", ")}) {
+                  return ${if (i == 0) "Tuple0.instance()" else s"new Tuple$i<>(${(1 to i).gen(j => s"i$j")(using ", ")})"};
               }
           }
         """
@@ -4163,7 +4163,7 @@ def genVavrFile(packageName: String, className: String, baseDir: String = TARGET
      * See the License for the specific language governing permissions and
      * limitations under the License.
      */
-  """)(gen)(CHARSET)
+  """)(gen)(using CHARSET)
 
 /*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-*\
      J A V A   G E N E R A T O R   F R A M E W O R K
@@ -4344,8 +4344,8 @@ object Generator {
   /**
    * Generates a String based on ints within a specific range.
    * {{{
-   * (1 to 3).gen(i => s"x$i")(", ") // x1, x2, x3
-   * (1 to 3).reverse.gen(i -> s"x$i")(", ") // x3, x2, x1
+   * (1 to 3).gen(i => s"x$i")(using ", ") // x1, x2, x3
+   * (1 to 3).reverse.gen(i -> s"x$i")(using ", ") // x3, x2, x1
    * }}}
    *
    * @param range A Range
@@ -4361,7 +4361,7 @@ object Generator {
    * // val a = "A"
    * // val b = "B"
    * // val c = "C"
-   * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")("\n")
+   * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")(using "\n")
    * }}}
    *
    * @param iterable An Interable
@@ -4385,7 +4385,7 @@ object Generator {
    * Generates a String based on a tuple of objects. Objects are converted to Strings via toString.
    * {{{
    * // val seq = Seq("a", "1", "true")
-   * s"val seq = Seq(${("a", 1, true).gen(s => s""""$s"""")(", ")})"
+   * s"val seq = Seq(${("a", 1, true).gen(s => s""""$s"""")(using ", ")})"
    * }}}
    *
    * @param tuple A Tuple
