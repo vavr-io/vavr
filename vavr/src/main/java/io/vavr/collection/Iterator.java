@@ -2093,7 +2093,7 @@ interface IteratorModule {
      * considered equal if they are positioned at the same element.
      * <p>
      * Given that most methods on iterators will make the original iterator
-     * unfit for further use, this methods provides a reliable way of calling
+     * unfit for further use, this method provides a reliable way of calling
      * multiple such methods on an iterator.
      *
      * @return a pair of iterators
