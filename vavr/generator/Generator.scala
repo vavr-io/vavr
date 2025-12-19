@@ -1620,8 +1620,8 @@ def generateMainClasses(): Unit = {
            * }</pre>
            *
            * @param <T> The result type of the missing implementation.
-           * @return Nothing - this methods always throws.
-           * @throws NotImplementedError when this methods is called
+           * @return Nothing - this method always throws.
+           * @throws NotImplementedError when this method is called
            * @see NotImplementedError#NotImplementedError()
            */
           public static <T> T TODO() {
@@ -1643,8 +1643,8 @@ def generateMainClasses(): Unit = {
            *
            * @param msg An error message
            * @param <T> The result type of the missing implementation.
-           * @return Nothing - this methods always throws.
-           * @throws NotImplementedError when this methods is called
+           * @return Nothing - this method always throws.
+           * @throws NotImplementedError when this method is called
            * @see NotImplementedError#NotImplementedError(String)
            */
           public static <T> T TODO(String msg) {
