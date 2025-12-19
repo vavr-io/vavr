@@ -98,7 +98,7 @@ import org.jspecify.annotations.NonNull;
  *
  * As with all Vavr Values, the result of a For-comprehension can be converted
  * to standard Java library and Vavr types.
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
 public final class API {
 
