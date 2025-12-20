@@ -171,7 +171,7 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     /**
-     * Returns new {@link BitSet} Builder with custom conversion functions between Integer and type T
+     * Returns a new {@link BitSet} Builder with custom conversion functions between Integer and type T
      *
      * @param <T> Component type
      * @param fromInt function to convert from Integer to T
@@ -183,7 +183,7 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     /**
-     * Returns new {@link BitSet} Builder for enum type
+     * Returns a new {@link BitSet} Builder for enum type
      *
      * @param <T> Enum type
      * @param enumClass the enum class
@@ -195,7 +195,7 @@ public interface BitSet<T> extends SortedSet<T> {
     }
 
     /**
-     * Returns new {@link BitSet} Builder for type {@link Character}
+     * Returns a new {@link BitSet} Builder for type {@link Character}
      *
      * @return new Builder
      */
