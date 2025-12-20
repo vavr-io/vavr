@@ -87,6 +87,11 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
         return new Builder<>(ContainerType.SORTED_SET, () -> TreeSet.empty(comparator));
     }
 
+    /**
+     * Builder for creating {@code HashMultimap} instances with different container types.
+     *
+     * @param <V> The value type
+     */
     public static class Builder<V> {
 
         private final ContainerType containerType;
