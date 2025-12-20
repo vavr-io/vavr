@@ -88,21 +88,37 @@ import org.jspecify.annotations.NonNull;
  */
 public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, Traversable<V>>, Serializable {
 
+    /**
+     * Serialization version identifier for this interface.
+     */
     long serialVersionUID = 1L;
 
+    /**
+     * Defines the type of container used to store values associated with keys in a Multimap.
+     * Each type determines how values are stored and how add/remove operations behave.
+     */
     @SuppressWarnings("unchecked")
     enum ContainerType {
+        /**
+         * Values are stored in a {@link Set}, ensuring uniqueness of values per key.
+         */
         SET(
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem),
                 java.util.HashSet::new
 
         ),
+        /**
+         * Values are stored in a sorted {@link Set}, ensuring uniqueness and natural ordering of values per key.
+         */
         SORTED_SET(
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).add(elem),
                 (Traversable<?> set, Object elem) -> ((Set<Object>) set).remove(elem),
                 java.util.TreeSet::new
         ),
+        /**
+         * Values are stored in a {@link Seq}, allowing duplicate values per key and preserving insertion order.
+         */
         SEQ(
                 (Traversable<?> seq, Object elem) -> ((io.vavr.collection.List<Object>) seq).append(elem),
                 (Traversable<?> seq, Object elem) -> ((io.vavr.collection.List<Object>) seq).remove(elem),
@@ -573,6 +589,16 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
         return f.apply(this);
     }
 
+    /**
+     * Unzips the entries of this {@code Multimap} by mapping each key-value pair to a pair
+     * and splitting them into two separate {@code Seq} collections.
+     *
+     * @param unzipper a function that maps keys and values of this {@code Multimap} to pairs
+     * @param <T1>     type of the first element in the resulting pairs
+     * @param <T2>     type of the second element in the resulting pairs
+     * @return a {@code Tuple2} containing two {@code Seq} collections with the split elements
+     * @throws NullPointerException if {@code unzipper} is null
+     */
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(@NonNull BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return unzip(entry -> unzipper.apply(entry._1, entry._2));
@@ -584,6 +610,17 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
         return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
     }
 
+    /**
+     * Unzips the entries of this {@code Multimap} by mapping each key-value pair to a triple
+     * and splitting them into three separate {@code Seq} collections.
+     *
+     * @param unzipper a function that maps keys and values of this {@code Multimap} to triples
+     * @param <T1>     type of the first element in the resulting triples
+     * @param <T2>     type of the second element in the resulting triples
+     * @param <T3>     type of the third element in the resulting triples
+     * @return a {@code Tuple3} containing three {@code Seq} collections with the split elements
+     * @throws NullPointerException if {@code unzipper} is null
+     */
     default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(@NonNull BiFunction<? super K, ? super V, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return unzip3(entry -> unzipper.apply(entry._1, entry._2));
