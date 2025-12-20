@@ -42,22 +42,57 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
 
     private static final long serialVersionUID = 1L;
 
+    /**
+     * Returns a builder for TreeMultimap instances where values are stored in a sequence.
+     * Values for each key will be stored in a Vavr List, allowing duplicates and preserving insertion order.
+     *
+     * @param <V> The value type
+     * @return A new Builder for creating TreeMultimap instances with sequence-based value storage
+     */
     public static <V> Builder<V> withSeq() {
         return new Builder<>(ContainerType.SEQ, List::empty);
     }
 
+    /**
+     * Returns a builder for TreeMultimap instances where values are stored in a set.
+     * Values for each key will be stored in a Vavr HashSet, ensuring uniqueness without guaranteed order.
+     *
+     * @param <V> The value type
+     * @return A new Builder for creating TreeMultimap instances with set-based value storage
+     */
     public static <V> Builder<V> withSet() {
         return new Builder<>(ContainerType.SET, HashSet::empty);
     }
 
+    /**
+     * Returns a builder for TreeMultimap instances where values are stored in a sorted set.
+     * Values for each key will be stored in a Vavr TreeSet, ensuring uniqueness and natural ordering.
+     * Value type must be Comparable.
+     *
+     * @param <V> The value type, must extend Comparable
+     * @return A new Builder for creating TreeMultimap instances with sorted set-based value storage
+     */
     public static <V extends Comparable<?>> Builder<V> withSortedSet() {
         return new Builder<>(ContainerType.SORTED_SET, TreeSet::empty);
     }
 
+    /**
+     * Returns a builder for TreeMultimap instances where values are stored in a sorted set with a custom comparator.
+     * Values for each key will be stored in a Vavr TreeSet, ensuring uniqueness and ordering based on the provided comparator.
+     *
+     * @param <V> The value type
+     * @param comparator The comparator used to sort values
+     * @return A new Builder for creating TreeMultimap instances with sorted set-based value storage using the given comparator
+     */
     public static <V> Builder<V> withSortedSet(Comparator<? super V> comparator) {
         return new Builder<>(ContainerType.SORTED_SET, () -> TreeSet.empty(comparator));
     }
 
+    /**
+     * Builder for creating {@code TreeMultimap} instances with different container types.
+     *
+     * @param <V> The value type
+     */
     public static class Builder<V> {
 
         private final ContainerType containerType;
