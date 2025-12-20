@@ -47,6 +47,12 @@ public final class HashSet<T> implements Set<T>, Serializable {
         this.tree = tree;
     }
 
+    /**
+     * Returns the empty HashSet.
+     *
+     * @param <T> Component type
+     * @return The empty HashSet.
+     */
     @SuppressWarnings("unchecked")
     public static <T> HashSet<T> empty() {
         return (HashSet<T>) EMPTY;
@@ -290,6 +296,22 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return HashSet.ofAll(Iterator.range(from, toExclusive));
     }
 
+    /**
+     * Creates a HashSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * HashSet.range('a', 'a')  // = HashSet()
+     * HashSet.range('c', 'a')  // = HashSet()
+     * HashSet.range('a', 'd')  // = HashSet('a', 'b', 'c')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @return a range of char values as specified or the empty range if {@code from >= toExclusive}
+     */
     public static HashSet<Character> range(char from, char toExclusive) {
         return HashSet.ofAll(Iterator.range(from, toExclusive));
     }
@@ -320,10 +342,54 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return HashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a HashSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * HashSet.rangeBy('a', 'c', 1)  // = HashSet('a', 'b')
+     * HashSet.rangeBy('a', 'd', 2)  // = HashSet('a', 'c')
+     * HashSet.rangeBy('d', 'a', -2) // = HashSet('d', 'b')
+     * HashSet.rangeBy('d', 'a', 2)  // = HashSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static HashSet<Character> rangeBy(char from, char toExclusive, int step) {
         return HashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a HashSet of double numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * HashSet.rangeBy(1.0, 3.0, 1.0)  // = HashSet(1.0, 2.0)
+     * HashSet.rangeBy(1.0, 4.0, 2.0)  // = HashSet(1.0, 3.0)
+     * HashSet.rangeBy(4.0, 1.0, -2.0) // = HashSet(4.0, 2.0)
+     * HashSet.rangeBy(4.0, 1.0, 2.0)  // = HashSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toExclusive the last double + 1
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static HashSet<Double> rangeBy(double from, double toExclusive, double step) {
         return HashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -395,6 +461,22 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return HashSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
+    /**
+     * Creates a HashSet of char numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * HashSet.rangeClosed('a', 'a')  // = HashSet('a')
+     * HashSet.rangeClosed('c', 'a')  // = HashSet()
+     * HashSet.rangeClosed('a', 'c')  // = HashSet('a', 'b', 'c')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @return a range of char values as specified or the empty range if {@code from > toInclusive}
+     */
     public static HashSet<Character> rangeClosed(char from, char toInclusive) {
         return HashSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
@@ -425,10 +507,54 @@ public final class HashSet<T> implements Set<T>, Serializable {
         return HashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a HashSet of char numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * HashSet.rangeClosedBy('a', 'c', 1)  // = HashSet('a', 'b', 'c')
+     * HashSet.rangeClosedBy('a', 'd', 2)  // = HashSet('a', 'c')
+     * HashSet.rangeClosedBy('d', 'a', -2) // = HashSet('d', 'b')
+     * HashSet.rangeClosedBy('d', 'a', 2)  // = HashSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static HashSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return HashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a HashSet of double numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * HashSet.rangeClosedBy(1.0, 3.0, 1.0)  // = HashSet(1.0, 2.0, 3.0)
+     * HashSet.rangeClosedBy(1.0, 4.0, 2.0)  // = HashSet(1.0, 3.0)
+     * HashSet.rangeClosedBy(4.0, 1.0, -2.0) // = HashSet(4.0, 2.0)
+     * HashSet.rangeClosedBy(4.0, 1.0, 2.0)  // = HashSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toInclusive the last double
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static HashSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return HashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
