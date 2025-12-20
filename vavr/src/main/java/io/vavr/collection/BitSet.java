@@ -1213,7 +1213,7 @@ interface BitSetModule {
 
         /** The bit elements stored as a single long value. */
         private final long elements;
-        /** The number of set bits (length) in this BitSet. */
+        /** The number of set bits in this BitSet. */
         private final int len;
 
         BitSet1(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long elements) {
@@ -1280,10 +1280,10 @@ interface BitSetModule {
         private static final long serialVersionUID = 1L;
 
         /** The first 64 bits stored as a long value. */
-        private final long elements1, 
+        private final long elements1;
         /** The second 64 bits stored as a long value. */
-        elements2;
-        /** The number of set bits (length) in this BitSet. */
+        private final long elements2;
+        /** The number of set bits in this BitSet. */
         private final int len;
 
         BitSet2(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long elements1, long elements2) {
@@ -1363,7 +1363,7 @@ interface BitSetModule {
 
         /** The bit elements stored as an array of long values. */
         private final long[] elements;
-        /** The number of set bits (length) in this BitSet. */
+        /** The number of set bits in this BitSet. */
         private final int len;
 
         BitSetN(Function1<Integer, T> fromInt, Function1<T, Integer> toInt, long[] elements) {
