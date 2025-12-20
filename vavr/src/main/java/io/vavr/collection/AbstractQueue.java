@@ -158,11 +158,26 @@ abstract class AbstractQueue<T, Q extends AbstractQueue<T, Q>> implements Traver
         return Collections.retainAll((Q) this, elements);
     }
 
+    /**
+     * Removes all occurrences of the specified elements from this Queue.
+     *
+     * @param elements the elements to be removed
+     * @return a new Queue with all occurrences of the specified elements removed
+     * @throws NullPointerException if {@code elements} is null
+     */
     @SuppressWarnings("unchecked")
     public Q removeAll(@NonNull Iterable<? extends T> elements) {
         return Collections.removeAll((Q) this, elements);
     }
 
+    /**
+     * Removes all elements from this Queue that satisfy the given predicate.
+     *
+     * @param predicate the predicate used to test elements
+     * @return a new Queue with all elements that satisfy the predicate removed
+     * @throws NullPointerException if {@code predicate} is null
+     * @deprecated Use {@link #reject(Predicate)} instead
+     */
     @Deprecated
     public Q removeAll(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
