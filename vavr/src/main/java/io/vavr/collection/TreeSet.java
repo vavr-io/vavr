@@ -332,6 +332,22 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return TreeSet.ofAll(Iterator.range(from, toExclusive));
     }
 
+    /**
+     * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * TreeSet.range('a', 'a')  // = TreeSet()
+     * TreeSet.range('b', 'a')  // = TreeSet()
+     * TreeSet.range('a', 'c')  // = TreeSet('a', 'b')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @return a range of char values as specified or the empty range if {@code from >= toExclusive}
+     */
     public static TreeSet<Character> range(char from, char toExclusive) {
         return TreeSet.ofAll(Iterator.range(from, toExclusive));
     }
@@ -362,10 +378,54 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * TreeSet.rangeBy('a', 'c', 1)  // = TreeSet('a', 'b')
+     * TreeSet.rangeBy('a', 'd', 2)  // = TreeSet('a', 'c')
+     * TreeSet.rangeBy('d', 'a', -2) // = TreeSet('d', 'b')
+     * TreeSet.rangeBy('d', 'a', 2)  // = TreeSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static TreeSet<Character> rangeBy(char from, char toExclusive, int step) {
         return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a TreeSet of double numbers starting from {@code from}, extending up to (but not including) {@code toExclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * TreeSet.rangeBy(1.0, 3.0, 1.0)  // = TreeSet(1.0, 2.0)
+     * TreeSet.rangeBy(1.0, 4.0, 2.0)  // = TreeSet(1.0, 3.0)
+     * TreeSet.rangeBy(4.0, 1.0, -2.0) // = TreeSet(4.0, 2.0)
+     * TreeSet.rangeBy(4.0, 1.0, 2.0)  // = TreeSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toExclusive the upper bound (exclusive)
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static TreeSet<Double> rangeBy(double from, double toExclusive, double step) {
         return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -437,6 +497,22 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
+    /**
+     * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * TreeSet.rangeClosed('a', 'a')  // = TreeSet('a')
+     * TreeSet.rangeClosed('b', 'a')  // = TreeSet()
+     * TreeSet.rangeClosed('a', 'c')  // = TreeSet('a', 'b', 'c')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @return a range of char values as specified or the empty range if {@code from > toInclusive}
+     */
     public static TreeSet<Character> rangeClosed(char from, char toInclusive) {
         return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
@@ -467,10 +543,54 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
         return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * TreeSet.rangeClosedBy('a', 'c', 1)  // = TreeSet('a', 'b', 'c')
+     * TreeSet.rangeClosedBy('a', 'd', 2)  // = TreeSet('a', 'c')
+     * TreeSet.rangeClosedBy('d', 'a', -2) // = TreeSet('d', 'b')
+     * TreeSet.rangeClosedBy('d', 'a', 2)  // = TreeSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static TreeSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a TreeSet of double numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * TreeSet.rangeClosedBy(1.0, 3.0, 1.0)  // = TreeSet(1.0, 2.0, 3.0)
+     * TreeSet.rangeClosedBy(1.0, 4.0, 2.0)  // = TreeSet(1.0, 3.0)
+     * TreeSet.rangeClosedBy(4.0, 1.0, -2.0) // = TreeSet(4.0, 2.0)
+     * TreeSet.rangeClosedBy(4.0, 1.0, 2.0)  // = TreeSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toInclusive the last double
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static TreeSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));

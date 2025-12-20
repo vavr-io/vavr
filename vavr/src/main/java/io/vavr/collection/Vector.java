@@ -304,14 +304,74 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return ofAll(BitMappedTrie.ofAll(elements));
     }
 
+    /**
+     * Creates a Vector of char numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Vector.range('a', 'a')  // = Vector()
+     * Vector.range('b', 'a')  // = Vector()
+     * Vector.range('a', 'c')  // = Vector('a', 'b')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @return a range of char values as specified or the empty range if {@code from >= toExclusive}
+     */
     public static Vector<Character> range(char from, char toExclusive) {
         return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.range(from, toExclusive)));
     }
 
+    /**
+     * Creates a Vector of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Vector.rangeBy('a', 'c', 1)  // = Vector('a', 'b')
+     * Vector.rangeBy('a', 'd', 2)  // = Vector('a', 'c')
+     * Vector.rangeBy('d', 'a', -2) // = Vector('d', 'b')
+     * Vector.rangeBy('d', 'a', 2)  // = Vector()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static Vector<Character> rangeBy(char from, char toExclusive, int step) {
         return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.rangeBy(from, toExclusive, step)));
     }
 
+    /**
+     * Creates a Vector of double numbers starting from {@code from}, extending up to (but not including) {@code toExclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Vector.rangeBy(1.0, 3.0, 1.0)  // = Vector(1.0, 2.0)
+     * Vector.rangeBy(1.0, 4.0, 2.0)  // = Vector(1.0, 3.0)
+     * Vector.rangeBy(4.0, 1.0, -2.0) // = Vector(4.0, 2.0)
+     * Vector.rangeBy(4.0, 1.0, 2.0)  // = Vector()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toExclusive the upper bound (exclusive)
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static Vector<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(ArrayType.<double[]> asPrimitives(double.class, Iterator.rangeBy(from, toExclusive, step)));
@@ -409,14 +469,74 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         return ofAll(ArrayType.<long[]> asPrimitives(long.class, Iterator.rangeBy(from, toExclusive, step)));
     }
 
+    /**
+     * Creates a Vector of char numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Vector.rangeClosed('a', 'a')  // = Vector('a')
+     * Vector.rangeClosed('b', 'a')  // = Vector()
+     * Vector.rangeClosed('a', 'c')  // = Vector('a', 'b', 'c')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @return a range of char values as specified or the empty range if {@code from > toInclusive}
+     */
     public static Vector<Character> rangeClosed(char from, char toInclusive) {
         return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.rangeClosed(from, toInclusive)));
     }
 
+    /**
+     * Creates a Vector of char numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Vector.rangeClosedBy('a', 'c', 1)  // = Vector('a', 'b', 'c')
+     * Vector.rangeClosedBy('a', 'd', 2)  // = Vector('a', 'c')
+     * Vector.rangeClosedBy('d', 'a', -2) // = Vector('d', 'b')
+     * Vector.rangeClosedBy('d', 'a', 2)  // = Vector()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static Vector<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return ofAll(ArrayType.<char[]> asPrimitives(char.class, Iterator.rangeClosedBy(from, toInclusive, step)));
     }
 
+    /**
+     * Creates a Vector of double numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Vector.rangeClosedBy(1.0, 3.0, 1.0)  // = Vector(1.0, 2.0, 3.0)
+     * Vector.rangeClosedBy(1.0, 4.0, 2.0)  // = Vector(1.0, 3.0)
+     * Vector.rangeClosedBy(4.0, 1.0, -2.0) // = Vector(4.0, 2.0)
+     * Vector.rangeClosedBy(4.0, 1.0, 2.0)  // = Vector()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toInclusive the last double
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static Vector<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(ArrayType.<double[]> asPrimitives(double.class, Iterator.rangeClosedBy(from, toInclusive, step)));
