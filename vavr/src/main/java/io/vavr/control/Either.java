@@ -68,6 +68,9 @@ import org.jspecify.annotations.NonNull;
  */
 public interface Either<L, R> extends Value<R>, Serializable {
 
+    /**
+     * Serialization version identifier.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -569,12 +572,24 @@ public interface Either<L, R> extends Value<R>, Serializable {
         return isLeft();
     }
 
+    /**
+     * Returns this {@code Either} if it is a {@link Either.Right}, otherwise returns the given {@code other} Either.
+     *
+     * @param other an alternative {@code Either}
+     * @return this {@code Either} if it is a {@code Right}, otherwise {@code other}
+     */
     @SuppressWarnings("unchecked")
     default Either<L, R> orElse(@NonNull Either<? extends L, ? extends R> other) {
         Objects.requireNonNull(other, "other is null");
         return isRight() ? this : (Either<L, R>) other;
     }
 
+    /**
+     * Returns this {@code Either} if it is a {@link Either.Right}, otherwise returns the result of evaluating the given {@code supplier}.
+     *
+     * @param supplier a supplier of an alternative {@code Either}
+     * @return this {@code Either} if it is a {@code Right}, otherwise the result of {@code supplier}
+     */
     @SuppressWarnings("unchecked")
     default Either<L, R> orElse(@NonNull Supplier<? extends Either<? extends L, ? extends R>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
@@ -629,6 +644,14 @@ public interface Either<L, R> extends Value<R>, Serializable {
         return this;
     }
 
+    /**
+     * Performs the given action on the left value if this is a {@link Either.Left}.
+     * <p>
+     * If this is a {@link Either.Right}, no action is performed.
+     *
+     * @param action a consumer that processes the left value
+     * @return this {@code Either}
+     */
     default Either<L, R> peekLeft(@NonNull Consumer<? super L> action) {
         Objects.requireNonNull(action, "action is null");
         if (isLeft()) {
@@ -683,6 +706,15 @@ public interface Either<L, R> extends Value<R>, Serializable {
             this.either = either;
         }
 
+        /**
+         * Applies a transformation to both left and right values of the projected {@code Either} and returns a new {@code LeftProjection}.
+         *
+         * @param leftMapper  function to transform the left value
+         * @param rightMapper function to transform the right value
+         * @param <L2>        the type of the left value in the resulting projection
+         * @param <R2>        the type of the right value in the resulting projection
+         * @return a new {@code LeftProjection} with the transformed values
+         */
         public <L2, R2> LeftProjection<L2, R2> bimap(Function<? super L, ? extends L2> leftMapper, @NonNull Function<? super R, ? extends R2> rightMapper) {
             return either.<L2, R2>bimap(leftMapper, rightMapper).left();
         }
@@ -738,12 +770,24 @@ public interface Either<L, R> extends Value<R>, Serializable {
             }
         }
 
+        /**
+         * Returns this {@code LeftProjection} if the underlying {@code Either} is a {@link Either.Left}, otherwise returns the given {@code other} projection.
+         *
+         * @param other an alternative {@code LeftProjection}
+         * @return this projection if the underlying {@code Either} is a {@code Left}, otherwise {@code other}
+         */
         @SuppressWarnings("unchecked")
         public LeftProjection<L, R> orElse(@NonNull LeftProjection<? extends L, ? extends R> other) {
             Objects.requireNonNull(other, "other is null");
             return either.isLeft() ? this : (LeftProjection<L, R>) other;
         }
 
+        /**
+         * Returns this {@code LeftProjection} if the underlying {@code Either} is a {@link Either.Left}, otherwise returns the result of evaluating the given {@code supplier}.
+         *
+         * @param supplier a supplier of an alternative {@code LeftProjection}
+         * @return this projection if the underlying {@code Either} is a {@code Left}, otherwise the result of {@code supplier}
+         */
         @SuppressWarnings("unchecked")
         public LeftProjection<L, R> orElse(@NonNull Supplier<? extends LeftProjection<? extends L, ? extends R>> supplier) {
             Objects.requireNonNull(supplier, "supplier is null");
@@ -952,6 +996,15 @@ public interface Either<L, R> extends Value<R>, Serializable {
             this.either = either;
         }
 
+        /**
+         * Applies a transformation to both left and right values of the projected {@code Either} and returns a new {@code RightProjection}.
+         *
+         * @param leftMapper  function to transform the left value
+         * @param rightMapper function to transform the right value
+         * @param <L2>        the type of the left value in the resulting projection
+         * @param <R2>        the type of the right value in the resulting projection
+         * @return a new {@code RightProjection} with the transformed values
+         */
         public <L2, R2> RightProjection<L2, R2> bimap(@NonNull Function<? super L, ? extends L2> leftMapper, @NonNull Function<? super R, ? extends R2> rightMapper) {
             return either.<L2, R2>bimap(leftMapper, rightMapper).right();
         }
@@ -1007,12 +1060,24 @@ public interface Either<L, R> extends Value<R>, Serializable {
             }
         }
 
+        /**
+         * Returns this {@code RightProjection} if the underlying {@code Either} is a {@link Either.Right}, otherwise returns the given {@code other} projection.
+         *
+         * @param other an alternative {@code RightProjection}
+         * @return this projection if the underlying {@code Either} is a {@code Right}, otherwise {@code other}
+         */
         @SuppressWarnings("unchecked")
         public RightProjection<L, R> orElse(@NonNull RightProjection<? extends L, ? extends R> other) {
             Objects.requireNonNull(other, "other is null");
             return either.isRight() ? this : (RightProjection<L, R>) other;
         }
 
+        /**
+         * Returns this {@code RightProjection} if the underlying {@code Either} is a {@link Either.Right}, otherwise returns the result of evaluating the given {@code supplier}.
+         *
+         * @param supplier a supplier of an alternative {@code RightProjection}
+         * @return this projection if the underlying {@code Either} is a {@code Right}, otherwise the result of {@code supplier}
+         */
         @SuppressWarnings("unchecked")
         public RightProjection<L, R> orElse(@NonNull Supplier<? extends RightProjection<? extends L, ? extends R>> supplier) {
             Objects.requireNonNull(supplier, "supplier is null");
@@ -1320,6 +1385,13 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
     }
 
+    /**
+     * An exception wrapper used to propagate values through exception handling mechanisms.
+     * <p>
+     * This class wraps a value in an exception to enable using exception-based control flow
+     * when working with Either. It is not possible to use a generic type parameter for the
+     * exception type due to Java type system limitations.
+     */
     // it's not possible to use a generic type parameter for the exception type
     class Failure extends Exception {
 
@@ -1328,11 +1400,21 @@ public interface Either<L, R> extends Value<R>, Serializable {
         @SuppressWarnings("serial") // Conditionally serializable
         private final Object value;
 
+        /**
+         * Constructs a new {@code Failure} wrapping the given value.
+         *
+         * @param value the value to wrap
+         */
         public Failure(Object value) {
             super("wrapped value representing a failure");
             this.value = value;
         }
 
+        /**
+         * Returns the wrapped value.
+         *
+         * @return the wrapped value
+         */
         public Object getValue() {
             return value;
         }
