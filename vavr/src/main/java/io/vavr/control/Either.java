@@ -69,7 +69,7 @@ import org.jspecify.annotations.NonNull;
 public interface Either<L, R> extends Value<R>, Serializable {
 
     /**
-     * Serialization version identifier.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 
@@ -707,7 +707,12 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         /**
-         * Applies a transformation to both left and right values of the projected {@code Either} and returns a new {@code LeftProjection}.
+         * Applies transformations to the underlying {@code Either} by delegating to {@link Either#bimap(Function, Function)}
+         * and returns the left projection of the result.
+         * <ul>
+         *   <li>If the underlying {@code Either} is a {@link Either.Left}, {@code leftMapper} is applied to the left value.</li>
+         *   <li>If the underlying {@code Either} is a {@link Either.Right}, {@code rightMapper} is applied to the right value.</li>
+         * </ul>
          *
          * @param leftMapper  function to transform the left value
          * @param rightMapper function to transform the right value
@@ -997,7 +1002,12 @@ public interface Either<L, R> extends Value<R>, Serializable {
         }
 
         /**
-         * Applies a transformation to both left and right values of the projected {@code Either} and returns a new {@code RightProjection}.
+         * Applies transformations to the underlying {@code Either} by delegating to {@link Either#bimap(Function, Function)}
+         * and returns the right projection of the result.
+         * <ul>
+         *   <li>If the underlying {@code Either} is a {@link Either.Left}, {@code leftMapper} is applied to the left value.</li>
+         *   <li>If the underlying {@code Either} is a {@link Either.Right}, {@code rightMapper} is applied to the right value.</li>
+         * </ul>
          *
          * @param leftMapper  function to transform the left value
          * @param rightMapper function to transform the right value
