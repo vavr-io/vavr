@@ -44,7 +44,7 @@ import org.jspecify.annotations.NonNull;
 public interface SortedSet<T> extends Set<T>, Ordered<T> {
 
     /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 

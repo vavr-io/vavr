@@ -46,7 +46,7 @@ import org.jspecify.annotations.NonNull;
 public interface BitSet<T> extends SortedSet<T> {
 
     /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 

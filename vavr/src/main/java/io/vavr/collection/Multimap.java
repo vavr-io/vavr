@@ -89,7 +89,7 @@ import org.jspecify.annotations.NonNull;
 public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, Traversable<V>>, Serializable {
 
     /**
-     * Serialization version identifier for this interface.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 
