@@ -214,14 +214,14 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <pre>
      * {@code
      * CharSeq.rangeBy('a', 'e', 2)  // = "ac"
-     * CharSeq.rangeBy('a', 'e', -2) // = ""
+     * CharSeq.rangeBy('e', 'a', -2) // = "ec"
      * }
      * </pre>
      *
      * @param from        the first character
      * @param toExclusive the successor of the last character
      * @param step        the step
-     * @return a range of characters as specified or the empty range if {@code from >= toExclusive} and {@code step > 0} or {@code from <= toExclusive} and {@code step < 0}
+     * @return a range of characters from {@code from} (inclusive) to {@code toExclusive} (exclusive) by {@code step}, or an empty CharSeq if the parameters would result in an empty range
      */
     public static CharSeq rangeBy(char from, char toExclusive, int step) {
         return new CharSeq(io.vavr.collection.Iterator.rangeBy(from, toExclusive, step).mkString());
