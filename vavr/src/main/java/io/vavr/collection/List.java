@@ -128,7 +128,7 @@ import static io.vavr.collection.JavaConverters.ListView;
 public interface List<T> extends LinearSeq<T> {
 
     /**
-     * Version ID for serialization.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 

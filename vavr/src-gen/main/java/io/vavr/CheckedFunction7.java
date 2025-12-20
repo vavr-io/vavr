@@ -52,7 +52,7 @@ import org.jspecify.annotations.NonNull;
 public interface CheckedFunction7<T1, T2, T3, T4, T5, T6, T7, R> extends Serializable {
 
     /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 

@@ -47,7 +47,7 @@ import org.jspecify.annotations.NonNull;
 public interface Function4<T1, T2, T3, T4, R> extends Serializable {
 
     /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 
