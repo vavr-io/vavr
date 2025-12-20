@@ -323,14 +323,65 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         return io.vavr.collection.Collections.fillObject(n, element, empty(), Queue::of);
     }
 
+    /**
+     * Creates a Queue of characters starting from {@code from} (inclusive)
+     * up to {@code toExclusive} (exclusive).
+     *
+     * <p>Examples:
+     * <pre>
+     * Queue.range('a', 'c')  // = Queue('a', 'b')
+     * Queue.range('c', 'a')  // = Queue()
+     * </pre>
+     *
+     * @param from        the first character (inclusive)
+     * @param toExclusive the end character (exclusive)
+     * @return a Queue over the specified character range, or empty if {@code from >= toExclusive}
+     */
     public static Queue<Character> range(char from, char toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
     }
 
+    /**
+     * Creates a Queue of characters starting from {@code from} (inclusive)
+     * up to {@code toExclusive} (exclusive), advancing by the specified {@code step}.
+     *
+     * <p>Examples:
+     * <pre>
+     * Queue.rangeBy('a', 'c', 1)  // = Queue('a', 'b')
+     * Queue.rangeBy('a', 'd', 2)  // = Queue('a', 'c')
+     * Queue.rangeBy('d', 'a', -2) // = Queue('d', 'b')
+     * Queue.rangeBy('d', 'a', 2)  // = Queue()
+     * </pre>
+     *
+     * @param from        the first character (inclusive)
+     * @param toExclusive the end character (exclusive)
+     * @param step        the increment; must not be zero
+     * @return a Queue over the specified character range, or empty if the step
+     *         direction does not match the direction from {@code from} to {@code toExclusive}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static Queue<Character> rangeBy(char from, char toExclusive, int step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a Queue of double values starting from {@code from} (inclusive)
+     * up to {@code toExclusive} (exclusive), advancing by the specified {@code step}.
+     *
+     * <p>Examples:
+     * <pre>
+     * Queue.rangeBy(0.0, 1.0, 0.25)   // = Queue(0.0, 0.25, 0.5, 0.75)
+     * Queue.rangeBy(1.0, 0.0, -0.25)  // = Queue(1.0, 0.75, 0.5, 0.25)
+     * Queue.rangeBy(0.0, 1.0, -0.25)  // = Queue()
+     * </pre>
+     *
+     * @param from        the first double value (inclusive)
+     * @param toExclusive the end value (exclusive)
+     * @param step        the increment; must not be zero
+     * @return a Queue over the specified double range, or empty if the step
+     *         direction does not match the direction from {@code from} to {@code toExclusive}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static Queue<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -428,14 +479,65 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a Queue of characters starting from {@code from} (inclusive)
+     * up to {@code toInclusive} (inclusive).
+     *
+     * <p>Examples:
+     * <pre>
+     * Queue.rangeClosed('a', 'c')  // = Queue('a', 'b', 'c')
+     * Queue.rangeClosed('c', 'a')  // = Queue()
+     * </pre>
+     *
+     * @param from        the first character (inclusive)
+     * @param toInclusive the last character (inclusive)
+     * @return a Queue over the specified character range, or empty if {@code from > toInclusive}
+     */
     public static Queue<Character> rangeClosed(char from, char toInclusive) {
         return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
+    /**
+     * Creates a Queue of characters starting from {@code from} (inclusive)
+     * up to {@code toInclusive} (inclusive), advancing by the specified {@code step}.
+     *
+     * <p>Examples:
+     * <pre>
+     * Queue.rangeClosedBy('a', 'c', 1)   // = Queue('a', 'b', 'c')
+     * Queue.rangeClosedBy('a', 'd', 2)   // = Queue('a', 'c')
+     * Queue.rangeClosedBy('d', 'a', -2)  // = Queue('d', 'b')
+     * Queue.rangeClosedBy('d', 'a', 2)   // = Queue()
+     * </pre>
+     *
+     * @param from        the first character (inclusive)
+     * @param toInclusive the last character (inclusive)
+     * @param step        the increment; must not be zero
+     * @return a Queue over the specified character range, or empty if the step
+     *         direction does not match the direction from {@code from} to {@code toInclusive}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static Queue<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a Queue of double values starting from {@code from} (inclusive)
+     * up to {@code toInclusive} (inclusive), advancing by the specified {@code step}.
+     *
+     * <p>Examples:
+     * <pre>
+     * Queue.rangeClosedBy(0.0, 1.0, 0.25)   // = Queue(0.0, 0.25, 0.5, 0.75, 1.0)
+     * Queue.rangeClosedBy(1.0, 0.0, -0.25)  // = Queue(1.0, 0.75, 0.5, 0.25, 0.0)
+     * Queue.rangeClosedBy(0.0, 1.0, -0.25)  // = Queue()
+     * </pre>
+     *
+     * @param from        the first double value (inclusive)
+     * @param toInclusive the last value (inclusive)
+     * @param step        the increment; must not be zero
+     * @return a Queue over the specified double range, or empty if the step
+     *         direction does not match the direction from {@code from} to {@code toInclusive}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static Queue<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
