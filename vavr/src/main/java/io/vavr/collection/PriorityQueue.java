@@ -122,6 +122,13 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         }
     }
 
+    /**
+     * Merges this PriorityQueue with another PriorityQueue.
+     * Both queues must use the same comparator.
+     *
+     * @param target A PriorityQueue
+     * @return A new PriorityQueue containing elements from both queues in priority order.
+     */
     public PriorityQueue<T> merge(PriorityQueue<T> target) {
         final Seq<Node<T>> meld = meld(comparator, this.forest, target.forest);
         return with(meld, this.size + target.size);
@@ -167,6 +174,13 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         return empty(Comparators.naturalComparator());
     }
 
+    /**
+     * Returns an empty PriorityQueue with the given comparator.
+     *
+     * @param comparator The comparator used to order the elements
+     * @param <T>        Component type
+     * @return The empty PriorityQueue.
+     */
     public static <T> PriorityQueue<T> empty(Comparator<? super T> comparator) {
         return new PriorityQueue<>(comparator, io.vavr.collection.List.empty(), 0);
     }
@@ -203,28 +217,77 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         return (PriorityQueue<T>) queue;
     }
 
+    /**
+     * Returns a singleton {@code PriorityQueue}, i.e. a {@code PriorityQueue} of one element.
+     *
+     * @param element The element
+     * @param <T>     Component type
+     * @return A new PriorityQueue instance containing the given element
+     */
     public static <T extends Comparable<? super T>> PriorityQueue<T> of(T element) {
         return of(Comparators.naturalComparator(), element);
     }
 
+    /**
+     * Creates a PriorityQueue of the given elements.
+     *
+     * @param elements Zero or more elements.
+     * @param <T>      Component type
+     * @return A PriorityQueue containing the given elements.
+     * @throws NullPointerException if elements is null
+     */
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> PriorityQueue<T> of(T... elements) {
         return ofAll(Comparators.naturalComparator(), io.vavr.collection.List.of(elements));
     }
 
+    /**
+     * Returns a singleton {@code PriorityQueue}, i.e. a {@code PriorityQueue} of one element with the given comparator.
+     *
+     * @param comparator The comparator used to order the elements
+     * @param element    The element
+     * @param <T>        Component type
+     * @return A new PriorityQueue instance containing the given element
+     */
     public static <T> PriorityQueue<T> of(Comparator<? super T> comparator, T element) {
         return ofAll(comparator, io.vavr.collection.List.of(element));
     }
 
+    /**
+     * Creates a PriorityQueue of the given elements with the given comparator.
+     *
+     * @param comparator The comparator used to order the elements
+     * @param elements   Zero or more elements.
+     * @param <T>        Component type
+     * @return A PriorityQueue containing the given elements.
+     * @throws NullPointerException if comparator or elements is null
+     */
     @SuppressWarnings("unchecked")
     public static <T> PriorityQueue<T> of(@NonNull Comparator<? super T> comparator, T @NonNull ... elements) {
         return ofAll(comparator, io.vavr.collection.List.of(elements));
     }
 
+    /**
+     * Creates a PriorityQueue of the given elements.
+     *
+     * @param elements An Iterable of elements.
+     * @param <T>      Component type
+     * @return A PriorityQueue containing the given elements in priority order.
+     * @throws NullPointerException if elements is null
+     */
     public static <T extends Comparable<? super T>> PriorityQueue<T> ofAll(@NonNull Iterable<? extends T> elements) {
         return ofAll(Comparators.naturalComparator(), elements);
     }
 
+    /**
+     * Creates a PriorityQueue of the given elements with the given comparator.
+     *
+     * @param comparator The comparator used to order the elements
+     * @param elements   An Iterable of elements.
+     * @param <T>        Component type
+     * @return A PriorityQueue containing the given elements in priority order.
+     * @throws NullPointerException if comparator or elements is null
+     */
     @SuppressWarnings("unchecked")
     public static <T> PriorityQueue<T> ofAll(@NonNull Comparator<? super T> comparator, @NonNull Iterable<? extends T> elements) {
         Objects.requireNonNull(elements, "elements is null");
@@ -241,10 +304,25 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         }
     }
 
+    /**
+     * Creates a PriorityQueue from a {@link java.util.stream.Stream}.
+     *
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A PriorityQueue containing the given elements in priority order.
+     */
     public static <T extends Comparable<? super T>> PriorityQueue<T> ofAll(java.util.stream.Stream<? extends T> javaStream) {
         return ofAll(Comparators.naturalComparator(), io.vavr.collection.Iterator.ofAll(javaStream.iterator()));
     }
 
+    /**
+     * Creates a PriorityQueue from a {@link java.util.stream.Stream} with the given comparator.
+     *
+     * @param comparator The comparator used to order the elements
+     * @param javaStream A {@link java.util.stream.Stream}
+     * @param <T>        Component type of the Stream.
+     * @return A PriorityQueue containing the given elements in priority order.
+     */
     public static <T> PriorityQueue<T> ofAll(Comparator<? super T> comparator, java.util.stream.Stream<? extends T> javaStream) {
         return ofAll(comparator, io.vavr.collection.Iterator.ofAll(javaStream.iterator()));
     }
@@ -368,6 +446,16 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         return flatMap(Comparators.naturalComparator(), mapper);
     }
 
+    /**
+     * Returns a new PriorityQueue that contains the elements of this PriorityQueue
+     * transformed by the given mapper function and flattened with the given comparator.
+     *
+     * @param comparator The comparator used to order the elements
+     * @param mapper     A function which maps elements of this PriorityQueue to Iterables of type U
+     * @param <U>        The result type
+     * @return A new PriorityQueue
+     * @throws NullPointerException if comparator or mapper is null
+     */
     public <U> PriorityQueue<U> flatMap(@NonNull Comparator<U> comparator, @NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(mapper, "mapper is null");
@@ -470,6 +558,16 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         return map(ignored -> null);
     }
 
+    /**
+     * Returns a new PriorityQueue that contains the elements of this PriorityQueue
+     * transformed by the given mapper function with the given comparator.
+     *
+     * @param comparator The comparator used to order the elements
+     * @param mapper     A function which maps elements of this PriorityQueue to elements of type U
+     * @param <U>        The result type
+     * @return A new PriorityQueue
+     * @throws NullPointerException if comparator or mapper is null
+     */
     public <U> PriorityQueue<U> map(@NonNull Comparator<U> comparator, @NonNull Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(comparator, "comparator is null");
         Objects.requireNonNull(mapper, "mapper is null");
