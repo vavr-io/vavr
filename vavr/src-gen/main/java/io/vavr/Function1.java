@@ -45,7 +45,7 @@ import org.jspecify.annotations.NonNull;
 public interface Function1<T1, R> extends Serializable, Function<T1, R> {
 
     /**
-     * The serial version UID for serialization.
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
      */
     long serialVersionUID = 1L;
 
@@ -246,9 +246,6 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
         final Function1<T1, R> self = this;
         return new PartialFunction<T1, R>() {
 
-            /**
-             * The serial version UID for serialization.
-             */
             private static final long serialVersionUID = 1L;
 
             @Override

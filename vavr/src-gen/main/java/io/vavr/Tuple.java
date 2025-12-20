@@ -37,9 +37,6 @@ import org.jspecify.annotations.NonNull;
  */
 public interface Tuple extends Serializable {
 
-    /**
-     * The serial version UID for serialization.
-     */
     long serialVersionUID = 1L;
 
     /**

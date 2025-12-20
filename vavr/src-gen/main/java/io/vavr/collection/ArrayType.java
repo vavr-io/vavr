@@ -34,9 +34,6 @@ import java.util.Collection;
  */
 interface ArrayType<T> extends Serializable {
 
-    /**
-     * The serial version UID for serialization.
-     */
     long serialVersionUID = 1L;
 
     @SuppressWarnings("unchecked")
@@ -151,9 +148,6 @@ interface ArrayType<T> extends Serializable {
     }
 
     final class BooleanArrayType implements ArrayType<Boolean>, Serializable {
-        /**
-         * The serial version UID for serialization.
-         */
         private static final long serialVersionUID = 1L;
         static final BooleanArrayType INSTANCE = new BooleanArrayType();
         static final boolean[] EMPTY = new boolean[0];
@@ -195,9 +189,6 @@ interface ArrayType<T> extends Serializable {
     }
 
     final class ByteArrayType implements ArrayType<Byte>, Serializable {
-        /**
-         * The serial version UID for serialization.
-         */
         private static final long serialVersionUID = 1L;
         static final ByteArrayType INSTANCE = new ByteArrayType();
         static final byte[] EMPTY = new byte[0];
@@ -239,9 +230,6 @@ interface ArrayType<T> extends Serializable {
     }
 
     final class CharArrayType implements ArrayType<Character>, Serializable {
-        /**
-         * The serial version UID for serialization.
-         */
         private static final long serialVersionUID = 1L;
         static final CharArrayType INSTANCE = new CharArrayType();
         static final char[] EMPTY = new char[0];
@@ -283,9 +271,6 @@ interface ArrayType<T> extends Serializable {
     }
 
     final class DoubleArrayType implements ArrayType<Double>, Serializable {
-        /**
-         * The serial version UID for serialization.
-         */
         private static final long serialVersionUID = 1L;
         static final DoubleArrayType INSTANCE = new DoubleArrayType();
         static final double[] EMPTY = new double[0];
@@ -327,9 +312,6 @@ interface ArrayType<T> extends Serializable {
     }
 
     final class FloatArrayType implements ArrayType<Float>, Serializable {
-        /**
-         * The serial version UID for serialization.
-         */
         private static final long serialVersionUID = 1L;
         static final FloatArrayType INSTANCE = new FloatArrayType();
         static final float[] EMPTY = new float[0];
@@ -371,9 +353,6 @@ interface ArrayType<T> extends Serializable {
     }
 
     final class IntArrayType implements ArrayType<Integer>, Serializable {
-        /**
-         * The serial version UID for serialization.
-         */
         private static final long serialVersionUID = 1L;
         static final IntArrayType INSTANCE = new IntArrayType();
         static final int[] EMPTY = new int[0];
@@ -415,9 +394,6 @@ interface ArrayType<T> extends Serializable {
     }
 
     final class LongArrayType implements ArrayType<Long>, Serializable {
-        /**
-         * The serial version UID for serialization.
-         */
         private static final long serialVersionUID = 1L;
         static final LongArrayType INSTANCE = new LongArrayType();
         static final long[] EMPTY = new long[0];
@@ -459,9 +435,6 @@ interface ArrayType<T> extends Serializable {
     }
 
     final class ShortArrayType implements ArrayType<Short>, Serializable {
-        /**
-         * The serial version UID for serialization.
-         */
         private static final long serialVersionUID = 1L;
         static final ShortArrayType INSTANCE = new ShortArrayType();
         static final short[] EMPTY = new short[0];
@@ -503,9 +476,6 @@ interface ArrayType<T> extends Serializable {
     }
 
     final class ObjectArrayType implements ArrayType<Object>, Serializable {
-        /**
-         * The serial version UID for serialization.
-         */
         private static final long serialVersionUID = 1L;
         static final ObjectArrayType INSTANCE = new ObjectArrayType();
         static final Object[] EMPTY = new Object[0];

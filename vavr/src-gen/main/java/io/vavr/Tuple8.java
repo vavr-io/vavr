@@ -46,9 +46,6 @@ import org.jspecify.annotations.NonNull;
  */
 public final class Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> implements Tuple, Comparable<Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>>, Serializable {
 
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1L;
 
     /**

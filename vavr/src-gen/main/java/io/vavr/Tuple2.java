@@ -43,9 +43,6 @@ import org.jspecify.annotations.NonNull;
  */
 public final class Tuple2<T1, T2> implements Tuple, Comparable<Tuple2<T1, T2>>, Serializable {
 
-    /**
-     * The serial version UID for serialization.
-     */
     private static final long serialVersionUID = 1L;
 
     /**
