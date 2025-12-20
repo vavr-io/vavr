@@ -234,7 +234,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param elements Zero or more elements.
      * @param <T>      Component type
      * @return A PriorityQueue containing the given elements.
-     * @throws NullPointerException if {@code elements} is null
+     * @throws NullPointerException if elements is null
      */
     @SuppressWarnings("unchecked")
     public static <T extends Comparable<? super T>> PriorityQueue<T> of(T... elements) {
@@ -260,7 +260,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param elements   Zero or more elements.
      * @param <T>        Component type
      * @return A PriorityQueue containing the given elements.
-     * @throws NullPointerException if {@code comparator} or {@code elements} is null
+     * @throws NullPointerException if comparator or elements is null
      */
     @SuppressWarnings("unchecked")
     public static <T> PriorityQueue<T> of(@NonNull Comparator<? super T> comparator, T @NonNull ... elements) {
@@ -273,7 +273,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param elements An Iterable of elements.
      * @param <T>      Component type
      * @return A PriorityQueue containing the given elements in priority order.
-     * @throws NullPointerException if {@code elements} is null
+     * @throws NullPointerException if elements is null
      */
     public static <T extends Comparable<? super T>> PriorityQueue<T> ofAll(@NonNull Iterable<? extends T> elements) {
         return ofAll(Comparators.naturalComparator(), elements);
@@ -286,7 +286,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param elements   An Iterable of elements.
      * @param <T>        Component type
      * @return A PriorityQueue containing the given elements in priority order.
-     * @throws NullPointerException if {@code comparator} or {@code elements} is null
+     * @throws NullPointerException if comparator or elements is null
      */
     @SuppressWarnings("unchecked")
     public static <T> PriorityQueue<T> ofAll(@NonNull Comparator<? super T> comparator, @NonNull Iterable<? extends T> elements) {
@@ -454,7 +454,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param mapper     A function which maps elements of this PriorityQueue to Iterables of type U
      * @param <U>        The result type
      * @return A new PriorityQueue
-     * @throws NullPointerException if {@code comparator} or {@code mapper} is null
+     * @throws NullPointerException if comparator or mapper is null
      */
     public <U> PriorityQueue<U> flatMap(@NonNull Comparator<U> comparator, @NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
         Objects.requireNonNull(comparator, "comparator is null");
@@ -566,7 +566,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
      * @param mapper     A function which maps elements of this PriorityQueue to elements of type U
      * @param <U>        The result type
      * @return A new PriorityQueue
-     * @throws NullPointerException if {@code comparator} or {@code mapper} is null
+     * @throws NullPointerException if comparator or mapper is null
      */
     public <U> PriorityQueue<U> map(@NonNull Comparator<U> comparator, @NonNull Function<? super T, ? extends U> mapper) {
         Objects.requireNonNull(comparator, "comparator is null");
