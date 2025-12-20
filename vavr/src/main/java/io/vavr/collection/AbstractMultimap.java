@@ -44,7 +44,9 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
 
     private static final long serialVersionUID = 1L;
 
+    /** The backing map that stores the key-value pairs. */
     protected final Map<K, Traversable<V>> back;
+    /** A supplier that creates empty containers for new key entries. */
     protected final SerializableSupplier<Traversable<?>> emptyContainer;
     private final ContainerType containerType;
 
@@ -649,6 +651,13 @@ abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multi
         return toJavaMap(new java.util.HashMap<>());
     }
 
+    /**
+     * Converts this {@code Multimap} to a Java {@code Map} using the provided map instance.
+     *
+     * @param javaMap The Java map instance to populate with this multimap's entries
+     * @param <JM>    The type of the Java map
+     * @return The populated Java map
+     */
     protected <JM extends java.util.Map<K, Collection<V>>> JM toJavaMap(JM javaMap) {
         for (Tuple2<K, V> t : this) {
             javaMap.computeIfAbsent(t._1, k -> containerType.instantiate()).add(t._2);

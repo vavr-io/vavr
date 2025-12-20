@@ -110,6 +110,13 @@ public final class HashMap<K, V> implements Map<K, V>, Serializable {
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
+    /**
+     * Returns the empty HashMap.
+     *
+     * @param <K> The key type
+     * @param <V> The value type
+     * @return A new empty HashMap.
+     */
     @SuppressWarnings("unchecked")
     public static <K, V> HashMap<K, V> empty() {
         return (HashMap<K, V>) EMPTY;
