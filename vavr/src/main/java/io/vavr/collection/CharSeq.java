@@ -57,6 +57,11 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         this.back = javaString;
     }
 
+    /**
+     * Returns the empty CharSeq.
+     *
+     * @return An empty CharSeq
+     */
     public static CharSeq empty() {
         return EMPTY;
     }
@@ -201,6 +206,23 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return new CharSeq(io.vavr.collection.Iterator.range(from, toExclusive).mkString());
     }
 
+    /**
+     * Creates a CharSeq starting from character {@code from}, extending to character {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * CharSeq.rangeBy('a', 'e', 2)  // = "ac"
+     * CharSeq.rangeBy('e', 'a', -2) // = "ec"
+     * }
+     * </pre>
+     *
+     * @param from        the first character
+     * @param toExclusive the successor of the last character
+     * @param step        the step
+     * @return a range of characters from {@code from} (inclusive) to {@code toExclusive} (exclusive) by {@code step}, or an empty CharSeq if the parameters would result in an empty range
+     */
     public static CharSeq rangeBy(char from, char toExclusive, int step) {
         return new CharSeq(io.vavr.collection.Iterator.rangeBy(from, toExclusive, step).mkString());
     }
@@ -565,6 +587,17 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         }
     }
 
+    /**
+     * FlatMaps this {@code CharSeq} to a new {@code CharSeq} by applying a {@code CharFunction} to each character,
+     * which returns a {@code CharSequence}, and concatenating the results.
+     * <p>
+     * This is a specialized version of {@link #flatMap(Function)} for primitive characters that returns a {@code CharSeq}
+     * instead of an {@code IndexedSeq<Character>}.
+     *
+     * @param mapper A mapper that takes a char and returns a CharSequence
+     * @return A new CharSeq containing the concatenated results
+     * @throws NullPointerException if {@code mapper} is null
+     */
     public CharSeq flatMapChars(@NonNull CharFunction<? extends CharSequence> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
@@ -733,6 +766,16 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
         return sb.length() == 0 ? EMPTY : of(sb);
     }
 
+    /**
+     * Maps this {@code CharSeq} to a new {@code CharSeq} by applying a {@code CharUnaryOperator} to each character.
+     * <p>
+     * This is a specialized version of {@link #map(Function)} for primitive characters that returns a {@code CharSeq}
+     * instead of an {@code IndexedSeq<Character>}.
+     *
+     * @param mapper A mapper that takes a char and returns a char
+     * @return A new CharSeq containing the mapped characters
+     * @throws NullPointerException if {@code mapper} is null
+     */
     public CharSeq mapChars(CharUnaryOperator mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         if (isEmpty()) {
@@ -3433,13 +3476,39 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
 
     // -- functional interfaces
 
+    /**
+     * Represents an operation on a single {@code char}-valued operand that produces
+     * a {@code char}-valued result. This is the primitive type specialization of
+     * {@link java.util.function.UnaryOperator} for {@code char}.
+     *
+     * @see java.util.function.UnaryOperator
+     */
     @FunctionalInterface
     public interface CharUnaryOperator {
+        /**
+         * Applies this operator to the given operand.
+         *
+         * @param c the operand
+         * @return the operator result
+         */
         char apply(char c);
     }
 
+    /**
+     * Represents a function that accepts a {@code char}-valued argument and produces a result.
+     * This is the {@code char}-consuming primitive specialization for {@link java.util.function.Function}.
+     *
+     * @param <R> the type of the result of the function
+     * @see java.util.function.Function
+     */
     @FunctionalInterface
     public interface CharFunction<R> {
+        /**
+         * Applies this function to the given argument.
+         *
+         * @param c the function argument
+         * @return the function result
+         */
         R apply(char c);
     }
 }
