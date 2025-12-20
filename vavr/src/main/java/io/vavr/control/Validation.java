@@ -79,7 +79,7 @@ import org.jspecify.annotations.NonNull;
 public interface Validation<E, T> extends Value<T>, Serializable {
 
     /**
-     * The serial version uid.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 
