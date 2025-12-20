@@ -78,6 +78,9 @@ import org.jspecify.annotations.NonNull;
  */
 public interface Validation<E, T> extends Value<T>, Serializable {
 
+    /**
+     * The serial version uid.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -622,6 +625,15 @@ public interface Validation<E, T> extends Value<T>, Serializable {
         }
     }
 
+    /**
+     * Applies a validation containing a function to this validation's value, combining errors if both are invalid.
+     * This is the applicative functor's ap operation for Validation.
+     *
+     * @param <U>        type of the result of applying the function
+     * @param validation the validation containing the function to apply
+     * @return a valid Validation with the result if both are valid, otherwise an invalid Validation with accumulated errors
+     * @throws NullPointerException if validation is null
+     */
     default <U> Validation<Seq<E>, U> ap(@NonNull Validation<Seq<E>, ? extends Function<? super T, ? extends U>> validation) {
         Objects.requireNonNull(validation, "validation is null");
         if (isValid()) {
@@ -659,11 +671,28 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     // -- Implementation of Value
 
+    /**
+     * Filters this {@code Validation} by testing a predicate on the value.
+     * If this is an Invalid or if the predicate matches, returns Some of this Validation,
+     * otherwise returns None.
+     *
+     * @param predicate A predicate to test the value
+     * @return {@code Some(this)} if this is an Invalid or the predicate matches, otherwise {@code None}
+     * @throws NullPointerException if predicate is null
+     */
     default Option<Validation<E, T>> filter(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         return isInvalid() || predicate.test(get()) ? Option.some(this) : Option.none();
     }
 
+    /**
+     * FlatMaps the value of this Validation if it is valid, otherwise returns this Invalid.
+     *
+     * @param <U>    type of the returned Validation value
+     * @param mapper the mapper function to apply to the value
+     * @return a new Validation
+     * @throws NullPointerException if mapper is null
+     */
     @SuppressWarnings("unchecked")
     default <U> Validation<E, U> flatMap(@NonNull Function<? super T, ? extends Validation<E, ? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
@@ -836,6 +865,14 @@ public interface Validation<E, T> extends Value<T>, Serializable {
 
     }
 
+    /**
+     * A builder that holds two Validation instances, used for combining validations
+     * and applying functions that take two arguments.
+     *
+     * @param <E>  type of error
+     * @param <T1> type of first valid value
+     * @param <T2> type of second valid value
+     */
     final class Builder<E, T1, T2> {
 
         private Validation<E, T1> v1;
@@ -846,16 +883,40 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v2 = v2;
         }
 
+        /**
+         * Applies a binary function to the values of the two validations held by this builder.
+         * If all validations are valid, the function is applied. Otherwise, errors are accumulated.
+         *
+         * @param <R> type of the result
+         * @param f   the function to apply
+         * @return a Validation with the result or accumulated errors
+         */
         public <R> Validation<Seq<E>, R> ap(Function2<T1, T2, R> f) {
             return v2.ap(v1.ap(Validation.valid(f.curried())));
         }
 
+        /**
+         * Combines this builder with another validation, creating a Builder3.
+         *
+         * @param <T3> type of third valid value
+         * @param v3   the third validation
+         * @return a new Builder3 instance
+         */
         public <T3> Builder3<E, T1, T2, T3> combine(Validation<E, T3> v3) {
             return new Builder3<>(v1, v2, v3);
         }
 
     }
 
+    /**
+     * A builder that holds three Validation instances, used for combining validations
+     * and applying functions that take three arguments.
+     *
+     * @param <E>  type of error
+     * @param <T1> type of first valid value
+     * @param <T2> type of second valid value
+     * @param <T3> type of third valid value
+     */
     final class Builder3<E, T1, T2, T3> {
 
         private Validation<E, T1> v1;
@@ -868,16 +929,41 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v3 = v3;
         }
 
+        /**
+         * Applies a ternary function to the values of the three validations held by this builder.
+         * If all validations are valid, the function is applied. Otherwise, errors are accumulated.
+         *
+         * @param <R> type of the result
+         * @param f   the function to apply
+         * @return a Validation with the result or accumulated errors
+         */
         public <R> Validation<Seq<E>, R> ap(Function3<T1, T2, T3, R> f) {
             return v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))));
         }
 
+        /**
+         * Combines this builder with another validation, creating a Builder4.
+         *
+         * @param <T4> type of fourth valid value
+         * @param v4   the fourth validation
+         * @return a new Builder4 instance
+         */
         public <T4> Builder4<E, T1, T2, T3, T4> combine(Validation<E, T4> v4) {
             return new Builder4<>(v1, v2, v3, v4);
         }
 
     }
 
+    /**
+     * A builder that holds four Validation instances, used for combining validations
+     * and applying functions that take four arguments.
+     *
+     * @param <E>  type of error
+     * @param <T1> type of first valid value
+     * @param <T2> type of second valid value
+     * @param <T3> type of third valid value
+     * @param <T4> type of fourth valid value
+     */
     final class Builder4<E, T1, T2, T3, T4> {
 
         private Validation<E, T1> v1;
@@ -892,16 +978,42 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v4 = v4;
         }
 
+        /**
+         * Applies a quaternary function to the values of the four validations held by this builder.
+         * If all validations are valid, the function is applied. Otherwise, errors are accumulated.
+         *
+         * @param <R> type of the result
+         * @param f   the function to apply
+         * @return a Validation with the result or accumulated errors
+         */
         public <R> Validation<Seq<E>, R> ap(Function4<T1, T2, T3, T4, R> f) {
             return v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))));
         }
 
+        /**
+         * Combines this builder with another validation, creating a Builder5.
+         *
+         * @param <T5> type of fifth valid value
+         * @param v5   the fifth validation
+         * @return a new Builder5 instance
+         */
         public <T5> Builder5<E, T1, T2, T3, T4, T5> combine(Validation<E, T5> v5) {
             return new Builder5<>(v1, v2, v3, v4, v5);
         }
 
     }
 
+    /**
+     * A builder that holds five Validation instances, used for combining validations
+     * and applying functions that take five arguments.
+     *
+     * @param <E>  type of error
+     * @param <T1> type of first valid value
+     * @param <T2> type of second valid value
+     * @param <T3> type of third valid value
+     * @param <T4> type of fourth valid value
+     * @param <T5> type of fifth valid value
+     */
     final class Builder5<E, T1, T2, T3, T4, T5> {
 
         private Validation<E, T1> v1;
@@ -918,16 +1030,43 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v5 = v5;
         }
 
+        /**
+         * Applies a quinary function to the values of the five validations held by this builder.
+         * If all validations are valid, the function is applied. Otherwise, errors are accumulated.
+         *
+         * @param <R> type of the result
+         * @param f   the function to apply
+         * @return a Validation with the result or accumulated errors
+         */
         public <R> Validation<Seq<E>, R> ap(Function5<T1, T2, T3, T4, T5, R> f) {
             return v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))));
         }
 
+        /**
+         * Combines this builder with another validation, creating a Builder6.
+         *
+         * @param <T6> type of sixth valid value
+         * @param v6   the sixth validation
+         * @return a new Builder6 instance
+         */
         public <T6> Builder6<E, T1, T2, T3, T4, T5, T6> combine(Validation<E, T6> v6) {
             return new Builder6<>(v1, v2, v3, v4, v5, v6);
         }
 
     }
 
+    /**
+     * A builder that holds six Validation instances, used for combining validations
+     * and applying functions that take six arguments.
+     *
+     * @param <E>  type of error
+     * @param <T1> type of first valid value
+     * @param <T2> type of second valid value
+     * @param <T3> type of third valid value
+     * @param <T4> type of fourth valid value
+     * @param <T5> type of fifth valid value
+     * @param <T6> type of sixth valid value
+     */
     final class Builder6<E, T1, T2, T3, T4, T5, T6> {
 
         private Validation<E, T1> v1;
@@ -946,16 +1085,44 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v6 = v6;
         }
 
+        /**
+         * Applies a senary function to the values of the six validations held by this builder.
+         * If all validations are valid, the function is applied. Otherwise, errors are accumulated.
+         *
+         * @param <R> type of the result
+         * @param f   the function to apply
+         * @return a Validation with the result or accumulated errors
+         */
         public <R> Validation<Seq<E>, R> ap(Function6<T1, T2, T3, T4, T5, T6, R> f) {
             return v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))));
         }
 
+        /**
+         * Combines this builder with another validation, creating a Builder7.
+         *
+         * @param <T7> type of seventh valid value
+         * @param v7   the seventh validation
+         * @return a new Builder7 instance
+         */
         public <T7> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(Validation<E, T7> v7) {
             return new Builder7<>(v1, v2, v3, v4, v5, v6, v7);
         }
 
     }
 
+    /**
+     * A builder that holds seven Validation instances, used for combining validations
+     * and applying functions that take seven arguments.
+     *
+     * @param <E>  type of error
+     * @param <T1> type of first valid value
+     * @param <T2> type of second valid value
+     * @param <T3> type of third valid value
+     * @param <T4> type of fourth valid value
+     * @param <T5> type of fifth valid value
+     * @param <T6> type of sixth valid value
+     * @param <T7> type of seventh valid value
+     */
     final class Builder7<E, T1, T2, T3, T4, T5, T6, T7> {
 
         private Validation<E, T1> v1;
@@ -976,16 +1143,45 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v7 = v7;
         }
 
+        /**
+         * Applies a septenary function to the values of the seven validations held by this builder.
+         * If all validations are valid, the function is applied. Otherwise, errors are accumulated.
+         *
+         * @param <R> type of the result
+         * @param f   the function to apply
+         * @return a Validation with the result or accumulated errors
+         */
         public <R> Validation<Seq<E>, R> ap(Function7<T1, T2, T3, T4, T5, T6, T7, R> f) {
             return v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried()))))))));
         }
 
+        /**
+         * Combines this builder with another validation, creating a Builder8.
+         *
+         * @param <T8> type of eighth valid value
+         * @param v8   the eighth validation
+         * @return a new Builder8 instance
+         */
         public <T8> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(Validation<E, T8> v8) {
             return new Builder8<>(v1, v2, v3, v4, v5, v6, v7, v8);
         }
 
     }
 
+    /**
+     * A builder that holds eight Validation instances, used for combining validations
+     * and applying functions that take eight arguments.
+     *
+     * @param <E>  type of error
+     * @param <T1> type of first valid value
+     * @param <T2> type of second valid value
+     * @param <T3> type of third valid value
+     * @param <T4> type of fourth valid value
+     * @param <T5> type of fifth valid value
+     * @param <T6> type of sixth valid value
+     * @param <T7> type of seventh valid value
+     * @param <T8> type of eighth valid value
+     */
     final class Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> {
 
         private Validation<E, T1> v1;
@@ -1008,6 +1204,14 @@ public interface Validation<E, T> extends Value<T>, Serializable {
             this.v8 = v8;
         }
 
+        /**
+         * Applies an octonary function to the values of the eight validations held by this builder.
+         * If all validations are valid, the function is applied. Otherwise, errors are accumulated.
+         *
+         * @param <R> type of the result
+         * @param f   the function to apply
+         * @return a Validation with the result or accumulated errors
+         */
         public <R> Validation<Seq<E>, R> ap(Function8<T1, T2, T3, T4, T5, T6, T7, T8, R> f) {
             return v8.ap(v7.ap(v6.ap(v5.ap(v4.ap(v3.ap(v2.ap(v1.ap(Validation.valid(f.curried())))))))));
         }
