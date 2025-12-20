@@ -564,7 +564,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * </pre>
      *
      * @param from        the first double
-     * @param toExclusive the last double + 1
+     * @param toExclusive the upper bound (exclusive)
      * @param step        the step
      * @return a range of double values as specified or {@code Nil} if<br>
      * {@code from >= toExclusive} and {@code step > 0} or<br>
