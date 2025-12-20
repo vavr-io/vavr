@@ -405,7 +405,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
     }
 
     /**
-     * Creates a TreeSet of double numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * Creates a TreeSet of double numbers starting from {@code from}, extending up to (but not including) {@code toExclusive},
      * with {@code step}.
      * <p>
      * Examples:
@@ -419,7 +419,7 @@ public final class TreeSet<T> implements SortedSet<T>, Serializable {
      * </pre>
      *
      * @param from        the first double
-     * @param toExclusive the last double + 1
+     * @param toExclusive the upper bound (exclusive)
      * @param step        the step
      * @return a range of double values as specified or the empty range if<br>
      * {@code from >= toExclusive} and {@code step > 0} or<br>
