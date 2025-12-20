@@ -592,8 +592,11 @@ interface HashArrayMappedTrieModule {
 
         private static final long serialVersionUID = 1L;
 
+        /** Bitmap indicating which hash fragments have corresponding child nodes. */
         private final int bitmap;
+        /** Total number of key-value pairs in this node and its children. */
         private final int size;
+        /** Array of child nodes indexed by compressed bitmap indices. */
         @SuppressWarnings("serial") // Conditionally serializable
         private final Object[] subNodes;
 
@@ -708,9 +711,12 @@ interface HashArrayMappedTrieModule {
 
         private static final long serialVersionUID = 1L;
 
+        /** Array of child nodes, one for each possible hash fragment (size = BUCKET_SIZE). */
         @SuppressWarnings("serial") // Conditionally serializable
         private final Object[] subNodes;
+        /** Number of non-empty child nodes in the subNodes array. */
         private final int count;
+        /** Total number of key-value pairs in this node and its children. */
         private final int size;
 
         ArrayNode(int count, int size, Object[] subNodes) {
