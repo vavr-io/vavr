@@ -40,7 +40,9 @@ import org.jspecify.annotations.NonNull;
  */
 public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, V>, Serializable {
 
-
+    /**
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -580,10 +582,27 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
         return f.apply(this);
     }
 
+    /**
+     * Unzips the entries of this {@code Map} by treating each key-value pair as an element,
+     * and splitting them into two separate {@code Seq} collections - one for keys and one for values.
+     *
+     * @return a {@code Tuple2} containing two {@code Seq} collections: first with all keys, second with all values
+     */
     default Tuple2<Seq<K>, Seq<V>> unzip() {
         return unzip(Function.identity());
     }
 
+    /**
+     * Unzips the entries of this {@code Map} by mapping each key-value pair to a tuple.
+     * The unzipper function transforms each entry into a {@code Tuple2}, and then all first elements
+     * are collected into the first {@code Seq} and all second elements into the second {@code Seq}.
+     *
+     * @param unzipper a function that maps key-value pairs of this {@code Map} to tuples
+     * @param <T1>     type of the first element in the resulting pairs
+     * @param <T2>     type of the second element in the resulting pairs
+     * @return a {@code Tuple2} containing two {@code Seq} collections with the split elements
+     * @throws NullPointerException if {@code unzipper} is null
+     */
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(@NonNull BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return unzip(entry -> unzipper.apply(entry._1, entry._2));
@@ -595,6 +614,20 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
         return iterator().unzip(unzipper).map(Stream::ofAll, Stream::ofAll);
     }
 
+    /**
+     * Unzips the entries of this {@code Map} by mapping each key-value pair to a triple.
+     * The unzipper function transforms each entry into a {@code Tuple3}, and then elements are
+     * distributed to respective {@code Seq} collections by their position in the tuple: all first
+     * elements into the first {@code Seq}, all second elements into the second {@code Seq},
+     * and all third elements into the third {@code Seq}.
+     *
+     * @param unzipper a function that maps key-value pairs of this {@code Map} to triples
+     * @param <T1>     type of the first element in the resulting triples
+     * @param <T2>     type of the second element in the resulting triples
+     * @param <T3>     type of the third element in the resulting triples
+     * @return a {@code Tuple3} containing three {@code Seq} collections with the split elements
+     * @throws NullPointerException if {@code unzipper} is null
+     */
     default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(@NonNull BiFunction<? super K, ? super V, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         return unzip3(entry -> unzipper.apply(entry._1, entry._2));
