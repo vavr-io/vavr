@@ -541,8 +541,8 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param toExclusive the last char + 1
      * @param step        the step
      * @return a range of char values as specified or {@code Nil} if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Character> rangeBy(char from, char toExclusive, int step) {
@@ -567,8 +567,8 @@ public interface Stream<T> extends LinearSeq<T> {
      * @param toExclusive the last double + 1
      * @param step        the step
      * @return a range of double values as specified or {@code Nil} if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     static Stream<Double> rangeBy(double from, double toExclusive, double step) {
