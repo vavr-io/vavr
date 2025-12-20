@@ -593,8 +593,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     }
 
     /**
-     * Unzips the entries of this {@code Map} by mapping each key-value pair to a tuple
-     * and splitting them into two separate {@code Seq} collections.
+     * Unzips the entries of this {@code Map} by mapping each key-value pair to a tuple.
+     * The unzipper function transforms each entry into a {@code Tuple2}, and then all first elements
+     * are collected into the first {@code Seq} and all second elements into the second {@code Seq}.
      *
      * @param unzipper a function that maps key-value pairs of this {@code Map} to tuples
      * @param <T1>     type of the first element in the resulting pairs
@@ -614,8 +615,11 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     }
 
     /**
-     * Unzips the entries of this {@code Map} by mapping each key-value pair to a triple
-     * and splitting them into three separate {@code Seq} collections.
+     * Unzips the entries of this {@code Map} by mapping each key-value pair to a triple.
+     * The unzipper function transforms each entry into a {@code Tuple3}, and then elements are
+     * distributed to respective {@code Seq} collections by their position in the tuple: all first
+     * elements into the first {@code Seq}, all second elements into the second {@code Seq},
+     * and all third elements into the third {@code Seq}.
      *
      * @param unzipper a function that maps key-value pairs of this {@code Map} to triples
      * @param <T1>     type of the first element in the resulting triples
