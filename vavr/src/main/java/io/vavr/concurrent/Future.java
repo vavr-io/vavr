@@ -1204,11 +1204,33 @@ public interface Future<T> extends Value<T> {
 
     // -- Value & Monad implementation
 
+    /**
+     * Transforms the value of this {@code Future} using the given {@link Function} if it completes successfully,
+     * or returns a {@code Future} with the failure if this {@code Future} fails.
+     * <p>
+     * This is a shortcut for {@link #flatMapTry(CheckedFunction1)}.
+     *
+     * @param mapper a function mapping the value to another {@code Future}
+     * @param <U>    the type of the resulting {@code Future}
+     * @return a new {@code Future} resulting from applying the mapper, or a {@code Future} with the failure if this {@code Future} fails
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     */
     default <U> Future<U> flatMap(@NonNull Function<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return flatMapTry(mapper::apply);
     }
 
+    /**
+     * Transforms the value of this {@code Future} using the given {@link CheckedFunction1} if it completes successfully,
+     * or returns a {@code Future} with the failure if this {@code Future} fails.
+     * <p>
+     * If applying the mapper throws an exception, a {@code Future} containing the exception is returned.
+     *
+     * @param mapper a checked function mapping the value to another {@code Future}
+     * @param <U>    the type of the resulting {@code Future}
+     * @return a new {@code Future} resulting from applying the mapper, or a {@code Future} with the failure if this {@code Future} fails
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     */
     default <U> Future<U> flatMapTry(@NonNull CheckedFunction1<? super T, ? extends Future<? extends U>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return run(executor(), complete ->
@@ -1307,11 +1329,34 @@ public interface Future<T> extends Value<T> {
         return map(ignored -> null);
     }
 
+    /**
+     * Maps the value of this {@code Future} to a new value using the given {@link CheckedFunction1} if it completes successfully.
+     * <p>
+     * If applying the mapper throws an exception, a {@code Future} containing the exception is returned.
+     * <p>
+     * Example:
+     * <pre>{@code
+     * Future.of(() -> 0)
+     *       .mapTry(x -> 1 / x); // division by zero will result in a failed Future
+     * }</pre>
+     *
+     * @param <U>    the type of the result
+     * @param mapper a checked function to apply to the value
+     * @return a new {@code Future} containing the mapped value if this {@code Future} completes successfully, otherwise a {@code Future} with the failure
+     * @throws NullPointerException if {@code mapper} is {@code null}
+     */
     default <U> Future<U> mapTry(@NonNull CheckedFunction1<? super T, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
         return transformValue(t -> t.mapTry(mapper));
     }
 
+    /**
+     * Returns this {@code Future} if it completes successfully, or the given alternative {@code Future} if this {@code Future} fails.
+     *
+     * @param other the alternative {@code Future} to return if this {@code Future} fails
+     * @return this {@code Future} if it completes successfully, otherwise {@code other}
+     * @throws NullPointerException if {@code other} is null
+     */
     default Future<T> orElse(@NonNull Future<? extends T> other) {
         Objects.requireNonNull(other, "other is null");
         return run(executor(), complete ->
@@ -1325,6 +1370,15 @@ public interface Future<T> extends Value<T> {
         );
     }
 
+    /**
+     * Returns this {@code Future} if it completes successfully, or a {@code Future} supplied by the given {@link Supplier} if this {@code Future} fails.
+     * <p>
+     * The supplier is only invoked if this {@code Future} fails.
+     *
+     * @param supplier a supplier of an alternative {@code Future}
+     * @return this {@code Future} if it completes successfully, otherwise the {@code Future} returned by {@code supplier}
+     * @throws NullPointerException if {@code supplier} is null
+     */
     default Future<T> orElse(@NonNull Supplier<? extends Future<? extends T>> supplier) {
         Objects.requireNonNull(supplier, "supplier is null");
         return run(executor(), complete ->
