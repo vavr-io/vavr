@@ -1321,7 +1321,7 @@ def generateMainClasses(): Unit = {
               public interface Case<T, R> extends $PartialFunctionType<T, R> {
 
                   /**
-                   * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                   * The serial version UID for serialization.
                    */
                   long serialVersionUID = 1L;
               }
@@ -1335,7 +1335,7 @@ def generateMainClasses(): Unit = {
               public static final class Case0<T, R> implements Case<T, R> {
 
                   /$javadoc
-                   * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                   * The serial version UID for serialization.
                    */
                   private static final long serialVersionUID = 1L;
 
@@ -1383,7 +1383,7 @@ def generateMainClasses(): Unit = {
                   public static final class Case$i<T, $generics, R> implements Case<T, R> {
 
                       /$javadoc
-                       * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                       * The serial version UID for serialization.
                        */
                       private static final long serialVersionUID = 1L;
 
@@ -1436,7 +1436,7 @@ def generateMainClasses(): Unit = {
               public static abstract class Pattern0<T> implements Pattern<T, T> {
 
                   /$javadoc
-                   * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                   * The serial version UID for serialization.
                    */
                   private static final long serialVersionUID = 1L;
 
@@ -1482,7 +1482,7 @@ def generateMainClasses(): Unit = {
                       return new Pattern0<T>() {
 
                           /$javadoc
-                           * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                           * The serial version UID for serialization.
                            */
                           private static final long serialVersionUID = 1L;
 
@@ -1534,7 +1534,7 @@ def generateMainClasses(): Unit = {
                   public static abstract class Pattern$i<T, $resultGenerics> implements Pattern<T, $resultType> {
 
                       /$javadoc
-                       * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                       * The serial version UID for serialization.
                        */
                       private static final long serialVersionUID = 1L;
 
@@ -1553,7 +1553,7 @@ def generateMainClasses(): Unit = {
                           return new Pattern$i<T, $resultGenerics>() {
 
                               /$javadoc
-                               * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                               * The serial version UID for serialization.
                                */
                               private static final long serialVersionUID = 1L;
 
@@ -1852,7 +1852,7 @@ def generateMainClasses(): Unit = {
           public interface $className$fullGenerics extends $Serializable$additionalExtends {
 
               /$javadoc
-               * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+               * The serial version UID for serialization.
                */
               long serialVersionUID = 1L;
 
