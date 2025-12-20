@@ -114,6 +114,9 @@ import static io.vavr.collection.JavaConverters.ListView;
  */
 public interface Stream<T> extends LinearSeq<T> {
 
+    /**
+     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -500,14 +503,74 @@ public interface Stream<T> extends LinearSeq<T> {
         return Stream.ofAll(Iterator.ofAll(elements));
     }
 
+    /**
+     * Creates a Stream of char numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Stream.range('a', 'a')  // = Stream()
+     * Stream.range('c', 'a')  // = Stream()
+     * Stream.range('a', 'd')  // = Stream('a', 'b', 'c')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @return a range of char values as specified or {@code Nil} if {@code from >= toExclusive}
+     */
     static Stream<Character> range(char from, char toExclusive) {
         return Stream.ofAll(Iterator.range(from, toExclusive));
     }
 
+    /**
+     * Creates a Stream of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Stream.rangeBy('a', 'c', 1)  // = Stream('a', 'b')
+     * Stream.rangeBy('a', 'd', 2)  // = Stream('a', 'c')
+     * Stream.rangeBy('d', 'a', -2) // = Stream('d', 'b')
+     * Stream.rangeBy('d', 'a', 2)  // = Stream()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @param step        the step
+     * @return a range of char values as specified or {@code Nil} if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static Stream<Character> rangeBy(char from, char toExclusive, int step) {
         return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a Stream of double numbers starting from {@code from}, extending up to but not including {@code toExclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Stream.rangeBy(1.0, 3.0, 1.0)  // = Stream(1.0, 2.0)
+     * Stream.rangeBy(1.0, 4.0, 2.0)  // = Stream(1.0, 3.0)
+     * Stream.rangeBy(4.0, 1.0, -2.0) // = Stream(4.0, 2.0)
+     * Stream.rangeBy(4.0, 1.0, 2.0)  // = Stream()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toExclusive the upper bound (exclusive)
+     * @param step        the step
+     * @return a range of double values as specified or {@code Nil} if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     static Stream<Double> rangeBy(double from, double toExclusive, double step) {
         return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -605,6 +668,22 @@ public interface Stream<T> extends LinearSeq<T> {
         return Stream.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a Stream of char numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Stream.rangeClosed('a', 'a')  // = Stream('a')
+     * Stream.rangeClosed('c', 'a')  // = Stream()
+     * Stream.rangeClosed('a', 'd')  // = Stream('a', 'b', 'c', 'd')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @return a range of char values as specified or {@code Nil} if {@code from > toInclusive}
+     */
     static Stream<Character> rangeClosed(char from, char toInclusive) {
         return Stream.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
