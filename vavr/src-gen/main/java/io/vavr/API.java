@@ -10489,7 +10489,7 @@ public final class API {
         public interface Case<T, R> extends PartialFunction<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             long serialVersionUID = 1L;
         }
@@ -10503,7 +10503,7 @@ public final class API {
         public static final class Case0<T, R> implements Case<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10536,7 +10536,7 @@ public final class API {
         public static final class Case1<T, T1, R> implements Case<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10570,7 +10570,7 @@ public final class API {
         public static final class Case2<T, T1, T2, R> implements Case<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10605,7 +10605,7 @@ public final class API {
         public static final class Case3<T, T1, T2, T3, R> implements Case<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10641,7 +10641,7 @@ public final class API {
         public static final class Case4<T, T1, T2, T3, T4, R> implements Case<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10678,7 +10678,7 @@ public final class API {
         public static final class Case5<T, T1, T2, T3, T4, T5, R> implements Case<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10716,7 +10716,7 @@ public final class API {
         public static final class Case6<T, T1, T2, T3, T4, T5, T6, R> implements Case<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10755,7 +10755,7 @@ public final class API {
         public static final class Case7<T, T1, T2, T3, T4, T5, T6, T7, R> implements Case<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10795,7 +10795,7 @@ public final class API {
         public static final class Case8<T, T1, T2, T3, T4, T5, T6, T7, T8, R> implements Case<T, R> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10842,7 +10842,7 @@ public final class API {
         public static abstract class Pattern0<T> implements Pattern<T, T> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10883,7 +10883,7 @@ public final class API {
                 return new Pattern0<T>() {
 
                     /**
-                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     * The serial version UID for serialization.
                      */
                     private static final long serialVersionUID = 1L;
 
@@ -10919,7 +10919,7 @@ public final class API {
         public static abstract class Pattern1<T, T1> implements Pattern<T, T1> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -10939,7 +10939,7 @@ public final class API {
                 return new Pattern1<T, T1>() {
 
                     /**
-                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     * The serial version UID for serialization.
                      */
                     private static final long serialVersionUID = 1L;
 
@@ -10984,7 +10984,7 @@ public final class API {
         public static abstract class Pattern2<T, T1, T2> implements Pattern<T, Tuple2<T1, T2>> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -11007,7 +11007,7 @@ public final class API {
                 return new Pattern2<T, T1, T2>() {
 
                     /**
-                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     * The serial version UID for serialization.
                      */
                     private static final long serialVersionUID = 1L;
 
@@ -11054,7 +11054,7 @@ public final class API {
         public static abstract class Pattern3<T, T1, T2, T3> implements Pattern<T, Tuple3<T1, T2, T3>> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -11080,7 +11080,7 @@ public final class API {
                 return new Pattern3<T, T1, T2, T3>() {
 
                     /**
-                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     * The serial version UID for serialization.
                      */
                     private static final long serialVersionUID = 1L;
 
@@ -11129,7 +11129,7 @@ public final class API {
         public static abstract class Pattern4<T, T1, T2, T3, T4> implements Pattern<T, Tuple4<T1, T2, T3, T4>> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -11158,7 +11158,7 @@ public final class API {
                 return new Pattern4<T, T1, T2, T3, T4>() {
 
                     /**
-                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     * The serial version UID for serialization.
                      */
                     private static final long serialVersionUID = 1L;
 
@@ -11209,7 +11209,7 @@ public final class API {
         public static abstract class Pattern5<T, T1, T2, T3, T4, T5> implements Pattern<T, Tuple5<T1, T2, T3, T4, T5>> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -11241,7 +11241,7 @@ public final class API {
                 return new Pattern5<T, T1, T2, T3, T4, T5>() {
 
                     /**
-                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     * The serial version UID for serialization.
                      */
                     private static final long serialVersionUID = 1L;
 
@@ -11294,7 +11294,7 @@ public final class API {
         public static abstract class Pattern6<T, T1, T2, T3, T4, T5, T6> implements Pattern<T, Tuple6<T1, T2, T3, T4, T5, T6>> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -11329,7 +11329,7 @@ public final class API {
                 return new Pattern6<T, T1, T2, T3, T4, T5, T6>() {
 
                     /**
-                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     * The serial version UID for serialization.
                      */
                     private static final long serialVersionUID = 1L;
 
@@ -11384,7 +11384,7 @@ public final class API {
         public static abstract class Pattern7<T, T1, T2, T3, T4, T5, T6, T7> implements Pattern<T, Tuple7<T1, T2, T3, T4, T5, T6, T7>> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -11422,7 +11422,7 @@ public final class API {
                 return new Pattern7<T, T1, T2, T3, T4, T5, T6, T7>() {
 
                     /**
-                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     * The serial version UID for serialization.
                      */
                     private static final long serialVersionUID = 1L;
 
@@ -11479,7 +11479,7 @@ public final class API {
         public static abstract class Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8> implements Pattern<T, Tuple8<T1, T2, T3, T4, T5, T6, T7, T8>> {
 
             /**
-             * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+             * The serial version UID for serialization.
              */
             private static final long serialVersionUID = 1L;
 
@@ -11520,7 +11520,7 @@ public final class API {
                 return new Pattern8<T, T1, T2, T3, T4, T5, T6, T7, T8>() {
 
                     /**
-                     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+                     * The serial version UID for serialization.
                      */
                     private static final long serialVersionUID = 1L;
 
