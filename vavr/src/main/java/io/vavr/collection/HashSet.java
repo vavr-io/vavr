@@ -360,8 +360,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param toExclusive the last char + 1
      * @param step        the step
      * @return a range of char values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static HashSet<Character> rangeBy(char from, char toExclusive, int step) {
@@ -386,8 +386,8 @@ public final class HashSet<T> implements Set<T>, Serializable {
      * @param toExclusive the last double + 1
      * @param step        the step
      * @return a range of double values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
      * @throws IllegalArgumentException if {@code step} is zero
      */
     public static HashSet<Double> rangeBy(double from, double toExclusive, double step) {
