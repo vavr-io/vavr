@@ -84,7 +84,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
      * @param comparator The comparator used to sort values
      * @return A new Builder for creating TreeMultimap instances with sorted set-based value storage using the given comparator
      */
-    public static <V> Builder<V> withSortedSet(Comparator<? super V> comparator) {
+    public static <V> Builder<V> withSortedSet(@NonNull Comparator<? super V> comparator) {
         return new Builder<>(ContainerType.SORTED_SET, () -> TreeSet.empty(comparator));
     }
 
