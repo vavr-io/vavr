@@ -28,7 +28,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vavr-match-processor</artifactId>
-            <version>0.11.0</version>
+            <version>0.11.1-SNAPSHOT</version>
             <optional>true</optional>
         </dependency>
 
