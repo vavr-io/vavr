@@ -85,6 +85,12 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return Collector.of(supplier, accumulator, combiner, finisher);
     }
 
+    /**
+     * Returns the empty Array.
+     *
+     * @param <T> Component type
+     * @return The empty Array.
+     */
     @SuppressWarnings("unchecked")
     public static <T> Array<T> empty() {
         return (Array<T>) EMPTY;
@@ -303,14 +309,74 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return io.vavr.collection.Collections.fillObject(n, element, empty(), Array::of);
     }
 
+    /**
+     * Creates an Array of char numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Array.range('a', 'a')  // = Array()
+     * Array.range('c', 'a')  // = Array()
+     * Array.range('a', 'd')  // = Array('a', 'b', 'c')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @return a range of char values as specified or the empty range if {@code from >= toExclusive}
+     */
     public static Array<Character> range(char from, char toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
     }
 
+    /**
+     * Creates an Array of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Array.rangeBy('a', 'c', 1)  // = Array('a', 'b')
+     * Array.rangeBy('a', 'd', 2)  // = Array('a', 'c')
+     * Array.rangeBy('d', 'a', -2) // = Array('d', 'b')
+     * Array.rangeBy('d', 'a', 2)  // = Array()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static Array<Character> rangeBy(char from, char toExclusive, int step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates an Array of double numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Array.rangeBy(1.0, 3.0, 1.0)  // = Array(1.0, 2.0)
+     * Array.rangeBy(1.0, 4.0, 2.0)  // = Array(1.0, 3.0)
+     * Array.rangeBy(4.0, 1.0, -2.0) // = Array(4.0, 2.0)
+     * Array.rangeBy(4.0, 1.0, 2.0)  // = Array()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toExclusive the last double + 1
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from >= toInclusive} and {@code step > 0} or<br>
+     * {@code from <= toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static Array<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -408,14 +474,74 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates an Array of char numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Array.rangeClosed('a', 'a')  // = Array('a')
+     * Array.rangeClosed('c', 'a')  // = Array()
+     * Array.rangeClosed('a', 'c')  // = Array('a', 'b', 'c')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @return a range of char values as specified or the empty range if {@code from > toInclusive}
+     */
     public static Array<Character> rangeClosed(char from, char toInclusive) {
         return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
+    /**
+     * Creates an Array of char numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Array.rangeClosedBy('a', 'c', 1)  // = Array('a', 'b', 'c')
+     * Array.rangeClosedBy('a', 'd', 2)  // = Array('a', 'c')
+     * Array.rangeClosedBy('d', 'a', -2) // = Array('d', 'b')
+     * Array.rangeClosedBy('d', 'a', 2)  // = Array()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static Array<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates an Array of double numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * Array.rangeClosedBy(1.0, 3.0, 1.0)  // = Array(1.0, 2.0, 3.0)
+     * Array.rangeClosedBy(1.0, 4.0, 2.0)  // = Array(1.0, 3.0)
+     * Array.rangeClosedBy(4.0, 1.0, -2.0) // = Array(4.0, 2.0)
+     * Array.rangeClosedBy(4.0, 1.0, 2.0)  // = Array()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toInclusive the last double
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static Array<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
