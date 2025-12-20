@@ -596,6 +596,11 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
         return iterator().unzip3(unzipper).map(Stream::ofAll, Stream::ofAll, Stream::ofAll);
     }
 
+    /**
+     * Returns a {@link Traversable} containing all the values of this {@code Multimap}.
+     *
+     * @return a new {@link Traversable}
+     */
     Traversable<V> values();
 
     @Override
