@@ -550,7 +550,7 @@ public interface Stream<T> extends LinearSeq<T> {
     }
 
     /**
-     * Creates a Stream of double numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * Creates a Stream of double numbers starting from {@code from}, extending up to but not including {@code toExclusive},
      * with {@code step}.
      * <p>
      * Examples:
