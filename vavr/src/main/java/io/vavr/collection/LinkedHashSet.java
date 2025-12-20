@@ -47,6 +47,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         this.map = map;
     }
 
+    /**
+     * Returns the empty LinkedHashSet.
+     *
+     * @param <T> Component type
+     * @return The empty LinkedHashSet.
+     */
     @SuppressWarnings("unchecked")
     public static <T> LinkedHashSet<T> empty() {
         return (LinkedHashSet<T>) EMPTY;
@@ -294,6 +300,22 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return LinkedHashSet.ofAll(Iterator.range(from, toExclusive));
     }
 
+    /**
+     * Creates a LinkedHashSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * LinkedHashSet.range('a', 'a')  // = LinkedHashSet()
+     * LinkedHashSet.range('c', 'a')  // = LinkedHashSet()
+     * LinkedHashSet.range('a', 'c')  // = LinkedHashSet('a', 'b')
+     * }
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @return a range of char values as specified or the empty range if {@code from >= toExclusive}
+     */
     public static LinkedHashSet<Character> range(char from, char toExclusive) {
         return LinkedHashSet.ofAll(Iterator.range(from, toExclusive));
     }
@@ -324,10 +346,54 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return LinkedHashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a LinkedHashSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * LinkedHashSet.rangeBy('a', 'c', 1)  // = LinkedHashSet('a', 'b')
+     * LinkedHashSet.rangeBy('a', 'd', 2)  // = LinkedHashSet('a', 'c')
+     * LinkedHashSet.rangeBy('d', 'a', -2) // = LinkedHashSet('d', 'b')
+     * LinkedHashSet.rangeBy('d', 'a', 2)  // = LinkedHashSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static LinkedHashSet<Character> rangeBy(char from, char toExclusive, int step) {
         return LinkedHashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a LinkedHashSet of double numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * LinkedHashSet.rangeBy(1.0, 3.0, 1.0)  // = LinkedHashSet(1.0, 2.0)
+     * LinkedHashSet.rangeBy(1.0, 4.0, 2.0)  // = LinkedHashSet(1.0, 3.0)
+     * LinkedHashSet.rangeBy(4.0, 1.0, -2.0) // = LinkedHashSet(4.0, 2.0)
+     * LinkedHashSet.rangeBy(4.0, 1.0, 2.0)  // = LinkedHashSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toExclusive the last number + 1
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static LinkedHashSet<Double> rangeBy(double from, double toExclusive, double step) {
         return LinkedHashSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
@@ -399,6 +465,22 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return LinkedHashSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
+    /**
+     * Creates a LinkedHashSet of char numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * LinkedHashSet.rangeClosed('a', 'a')  // = LinkedHashSet('a')
+     * LinkedHashSet.rangeClosed('c', 'a')  // = LinkedHashSet()
+     * LinkedHashSet.rangeClosed('a', 'c')  // = LinkedHashSet('a', 'b', 'c')
+     * }
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @return a range of char values as specified or the empty range if {@code from > toInclusive}
+     */
     public static LinkedHashSet<Character> rangeClosed(char from, char toInclusive) {
         return LinkedHashSet.ofAll(Iterator.rangeClosed(from, toInclusive));
     }
@@ -429,10 +511,54 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
         return LinkedHashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a LinkedHashSet of char numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * LinkedHashSet.rangeClosedBy('a', 'c', 1)  // = LinkedHashSet('a', 'b', 'c')
+     * LinkedHashSet.rangeClosedBy('a', 'd', 2)  // = LinkedHashSet('a', 'c')
+     * LinkedHashSet.rangeClosedBy('d', 'a', -2) // = LinkedHashSet('d', 'b')
+     * LinkedHashSet.rangeClosedBy('d', 'a', 2)  // = LinkedHashSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     public static LinkedHashSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return LinkedHashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a LinkedHashSet of double numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * LinkedHashSet.rangeClosedBy(1.0, 3.0, 1.0)  // = LinkedHashSet(1.0, 2.0, 3.0)
+     * LinkedHashSet.rangeClosedBy(1.0, 4.0, 2.0)  // = LinkedHashSet(1.0, 3.0)
+     * LinkedHashSet.rangeClosedBy(4.0, 1.0, -2.0) // = LinkedHashSet(4.0, 2.0)
+     * LinkedHashSet.rangeClosedBy(4.0, 1.0, 2.0)  // = LinkedHashSet()
+     * }
+     * </pre>
+     *
+     * @param from        the first number
+     * @param toInclusive the last number
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     @GwtIncompatible
     public static LinkedHashSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return LinkedHashSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
