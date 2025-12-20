@@ -176,7 +176,7 @@ public interface BitSet<T> extends SortedSet<T> {
      * @param <T> Component type
      * @param fromInt function to convert from Integer to T
      * @param toInt function to convert from T to Integer
-     * @return a new Builder
+     * @return new Builder
      */
     static <T> Builder<T> withRelations(Function1<Integer, T> fromInt, Function1<T, Integer> toInt) {
         return new Builder<>(fromInt, toInt);
@@ -187,7 +187,7 @@ public interface BitSet<T> extends SortedSet<T> {
      *
      * @param <T> Enum type
      * @param enumClass the enum class
-     * @return a new Builder
+     * @return new Builder
      */
     @SuppressWarnings("RedundantTypeArguments")
     static <T extends Enum<T>> Builder<T> withEnum(Class<T> enumClass) {
@@ -197,7 +197,7 @@ public interface BitSet<T> extends SortedSet<T> {
     /**
      * Returns new {@link BitSet} Builder for type {@link Character}
      *
-     * @return a new Builder
+     * @return new Builder
      */
     static Builder<Character> withCharacters() {
         return new Builder<>(i -> (char) i.intValue(), c -> (int) c);
