@@ -521,11 +521,52 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         return rangeBy((int) from, (int) toExclusive, step).map(i -> (char) i.shortValue());
     }
 
+    /**
+     * Creates an {@code Iterator} of double values starting from {@code from} (inclusive)
+     * up to {@code toExclusive} (exclusive), advancing by the specified {@code step}.
+     *
+     * <p>Examples:
+     * <pre>
+     * Iterator.rangeBy(1.0, 3.0, 1.0)   // yields 1.0, 2.0
+     * Iterator.rangeBy(1.0, 4.0, 2.0)   // yields 1.0, 3.0
+     * Iterator.rangeBy(4.0, 1.0, -2.0)  // yields 4.0, 2.0
+     * Iterator.rangeBy(4.0, 1.0, 2.0)   // yields no elements
+     * </pre>
+     *
+     * @param from        the first number (inclusive)
+     * @param toExclusive the end number (exclusive)
+     * @param step        the increment; must not be zero
+     * @return an iterator over the specified range, or empty if the step direction does not match the
+     *         direction from {@code from} to {@code toExclusive}, or if {@code from == toExclusive}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static Iterator<Double> rangeBy(double from, double toExclusive, double step) {
         final BigDecimal fromDecimal = asDecimal(from), toDecimal = asDecimal(toExclusive), stepDecimal = asDecimal(step);
         return rangeBy(fromDecimal, toDecimal, stepDecimal).map(BigDecimal::doubleValue);
     }
 
+    /**
+     * Creates an {@code Iterator} of {@code BigDecimal} values starting from {@code from} (inclusive)
+     * up to {@code toExclusive} (exclusive), advancing by the specified {@code step}.
+     *
+     * <p>This method provides precise decimal arithmetic suitable for financial calculations
+     * and other scenarios where exact decimal representation is required.
+     *
+     * <p>Examples:
+     * <pre>
+     * Iterator.rangeBy(new BigDecimal("1.0"), new BigDecimal("3.0"), new BigDecimal("1.0"))   // yields 1.0, 2.0
+     * Iterator.rangeBy(new BigDecimal("1.0"), new BigDecimal("4.0"), new BigDecimal("2.0"))   // yields 1.0, 3.0
+     * Iterator.rangeBy(new BigDecimal("4.0"), new BigDecimal("1.0"), new BigDecimal("-2.0"))  // yields 4.0, 2.0
+     * Iterator.rangeBy(new BigDecimal("4.0"), new BigDecimal("1.0"), new BigDecimal("2.0"))   // yields no elements
+     * </pre>
+     *
+     * @param from        the first number (inclusive)
+     * @param toExclusive the end number (exclusive)
+     * @param step        the increment; must not be zero
+     * @return an iterator over the specified range, or empty if the step direction does not match the
+     *         direction from {@code from} to {@code toExclusive}, or if {@code from == toExclusive}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static Iterator<BigDecimal> rangeBy(BigDecimal from, BigDecimal toExclusive, BigDecimal step) {
         if (step.signum() == 0) {
             throw new IllegalArgumentException("step cannot be 0");
@@ -698,6 +739,26 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         return rangeClosedBy((int) from, (int) toInclusive, step).map(i -> (char) i.shortValue());
     }
 
+    /**
+     * Creates an {@code Iterator} of double values starting from {@code from} (inclusive)
+     * up to {@code toInclusive} (inclusive), advancing by the specified {@code step}.
+     *
+     * <p>Examples:
+     * <pre>
+     * Iterator.rangeClosedBy(1.0, 3.0, 1.0)   // yields 1.0, 2.0, 3.0
+     * Iterator.rangeClosedBy(1.0, 4.0, 2.0)   // yields 1.0, 3.0
+     * Iterator.rangeClosedBy(4.0, 1.0, -2.0)  // yields 4.0, 2.0
+     * Iterator.rangeClosedBy(4.0, 1.0, 2.0)   // yields no elements
+     * </pre>
+     *
+     * @param from        the first number (inclusive)
+     * @param toInclusive the last number (inclusive)
+     * @param step        the increment; must not be zero
+     * @return an iterator over the specified range, or empty if the step
+     *         direction does not match the direction from {@code from} to {@code toInclusive},
+     *         or if {@code from == toInclusive} it returns a singleton iterator
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static Iterator<Double> rangeClosedBy(double from, double toInclusive, double step) {
         if (from == toInclusive) {
             return of(from);
@@ -1091,6 +1152,24 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         return filter(partialFunction::isDefinedAt).map(partialFunction::apply);
     }
 
+    /**
+     * Returns a new {@code Iterator} that yields the elements of this iterator
+     * followed by all elements of the specified iterator.
+     *
+     * <p>This method appends the elements from {@code that} to the end of this
+     * iterator, creating a concatenated sequence.
+     *
+     * <p>Examples:
+     * <pre>
+     * Iterator.of(1, 2).concat(Iterator.of(3, 4))  // yields 1, 2, 3, 4
+     * Iterator.empty().concat(Iterator.of(1, 2))   // yields 1, 2
+     * Iterator.of(1, 2).concat(Iterator.empty())   // yields 1, 2
+     * </pre>
+     *
+     * @param that the iterator whose elements should be appended
+     * @return a new iterator containing elements from both iterators
+     * @throws NullPointerException if {@code that} is {@code null}
+     */
     // DEV-NOTE: cannot use arg Iterable, it would be ambiguous
     default Iterator<T> concat(java.util.Iterator<? extends T> that) {
         Objects.requireNonNull(that, "that is null");
@@ -1386,6 +1465,22 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
+    /**
+     * Returns a new {@code Iterator} containing the elements of this instance without duplicates,
+     * keeping the last occurrence of each duplicate element, as determined by the given {@code comparator}.
+     *
+     * <p>When multiple elements are considered equal according to the comparator, only the
+     * last occurrence in the sequence is retained.
+     *
+     * <p>Examples:
+     * <pre>
+     * Iterator.of(1, 2, 2, 3, 1).distinctByKeepLast(Comparator.naturalOrder())  // yields 2, 3, 1
+     * </pre>
+     *
+     * @param comparator the comparator used to determine equality
+     * @return a new iterator containing distinct elements, keeping the last occurrence of duplicates
+     * @throws NullPointerException if {@code comparator} is {@code null}
+     */
     default Iterator<T> distinctByKeepLast(Comparator<? super T> comparator) {
         Objects.requireNonNull(comparator, "comparator is null");
         if (!hasNext()) {
@@ -1398,6 +1493,24 @@ public interface Iterator<T> extends java.util.Iterator<T>, Traversable<T> {
         }
     }
 
+    /**
+     * Returns a new {@code Iterator} containing the elements of this instance without duplicates,
+     * keeping the last occurrence of each duplicate element, based on keys extracted from elements
+     * using {@code keyExtractor}.
+     *
+     * <p>When multiple elements have the same extracted key, only the last occurrence in the
+     * sequence is retained.
+     *
+     * <p>Examples:
+     * <pre>
+     * Iterator.of("a", "ab", "abc", "b").distinctByKeepLast(String::length)  // yields "abc", "b"
+     * </pre>
+     *
+     * @param keyExtractor function used to extract the key from elements
+     * @param <U>          the type of the extracted key
+     * @return a new iterator containing distinct elements, keeping the last occurrence of duplicates
+     * @throws NullPointerException if {@code keyExtractor} is {@code null}
+     */
     default <U> Iterator<T> distinctByKeepLast(Function<? super T, ? extends U> keyExtractor) {
         Objects.requireNonNull(keyExtractor, "keyExtractor is null");
         if (!hasNext()) {
