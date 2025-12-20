@@ -127,6 +127,9 @@ import static io.vavr.collection.JavaConverters.ListView;
  */
 public interface List<T> extends LinearSeq<T> {
 
+    /**
+     * Version ID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -430,14 +433,74 @@ public interface List<T> extends LinearSeq<T> {
         return Collections.fillObject(n, element, empty(), List::of);
     }
 
+    /**
+     * Creates a List of char numbers starting from {@code from}, extending to {@code toExclusive - 1}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * List.range('a', 'a')  // = List()
+     * List.range('c', 'a')  // = List()
+     * List.range('a', 'd')  // = List('a', 'b', 'c')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @return a range of char values as specified or the empty range if {@code from >= toExclusive}
+     */
     static List<Character> range(char from, char toExclusive) {
         return ofAll(Iterator.range(from, toExclusive));
     }
 
+    /**
+     * Creates a List of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * List.rangeBy('a', 'c', 1)  // = List('a', 'b')
+     * List.rangeBy('a', 'd', 2)  // = List('a', 'c')
+     * List.rangeBy('d', 'a', -2) // = List('d', 'b')
+     * List.rangeBy('d', 'a', 2)  // = List()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toExclusive the last char + 1
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static List<Character> rangeBy(char from, char toExclusive, int step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a List of double numbers starting from {@code from}, extending up to but not including {@code toExclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * List.rangeBy(1.0, 3.0, 1.0)  // = List(1.0, 2.0)
+     * List.rangeBy(1.0, 4.0, 2.0)  // = List(1.0, 3.0)
+     * List.rangeBy(4.0, 1.0, -2.0) // = List(4.0, 2.0)
+     * List.rangeBy(4.0, 1.0, 2.0)  // = List()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toExclusive the upper bound (exclusive)
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from >= toExclusive} and {@code step > 0} or<br>
+     * {@code from <= toExclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static List<Double> rangeBy(double from, double toExclusive, double step) {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
@@ -534,14 +597,74 @@ public interface List<T> extends LinearSeq<T> {
         return ofAll(Iterator.rangeBy(from, toExclusive, step));
     }
 
+    /**
+     * Creates a List of char numbers starting from {@code from}, extending to {@code toInclusive}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * List.rangeClosed('a', 'a')  // = List('a')
+     * List.rangeClosed('c', 'a')  // = List()
+     * List.rangeClosed('a', 'd')  // = List('a', 'b', 'c', 'd')
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @return a range of char values as specified or the empty range if {@code from > toInclusive}
+     */
     static List<Character> rangeClosed(char from, char toInclusive) {
         return ofAll(Iterator.rangeClosed(from, toInclusive));
     }
 
+    /**
+     * Creates a List of char numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * List.rangeClosedBy('a', 'c', 1)  // = List('a', 'b', 'c')
+     * List.rangeClosedBy('a', 'd', 2)  // = List('a', 'c')
+     * List.rangeClosedBy('d', 'a', -2) // = List('d', 'b')
+     * List.rangeClosedBy('d', 'a', 2)  // = List()
+     * }
+     * </pre>
+     *
+     * @param from        the first char
+     * @param toInclusive the last char
+     * @param step        the step
+     * @return a range of char values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static List<Character> rangeClosedBy(char from, char toInclusive, int step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
 
+    /**
+     * Creates a List of double numbers starting from {@code from}, extending to {@code toInclusive},
+     * with {@code step}.
+     * <p>
+     * Examples:
+     * <pre>
+     * {@code
+     * List.rangeClosedBy(1.0, 3.0, 1.0)  // = List(1.0, 2.0, 3.0)
+     * List.rangeClosedBy(1.0, 4.0, 2.0)  // = List(1.0, 3.0)
+     * List.rangeClosedBy(4.0, 1.0, -2.0) // = List(4.0, 2.0)
+     * List.rangeClosedBy(4.0, 1.0, 2.0)  // = List()
+     * }
+     * </pre>
+     *
+     * @param from        the first double
+     * @param toInclusive the upper bound (inclusive)
+     * @param step        the step
+     * @return a range of double values as specified or the empty range if<br>
+     * {@code from > toInclusive} and {@code step > 0} or<br>
+     * {@code from < toInclusive} and {@code step < 0}
+     * @throws IllegalArgumentException if {@code step} is zero
+     */
     static List<Double> rangeClosedBy(double from, double toInclusive, double step) {
         return ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
     }
