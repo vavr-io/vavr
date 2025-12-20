@@ -37,6 +37,9 @@ import org.jspecify.annotations.NonNull;
  */
 public interface LinearSeq<T> extends Seq<T> {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -70,6 +73,9 @@ public interface LinearSeq<T> extends Seq<T> {
     @Override
     default PartialFunction<Integer, T> asPartialFunction() throws IndexOutOfBoundsException {
         return new PartialFunction<Integer, T>() {
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
             @Override
             public T apply(Integer index) {

@@ -38,7 +38,7 @@ import org.jspecify.annotations.NonNull;
 public interface PartialFunction<T, R> extends Function1<T, R> {
 
     /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 
@@ -57,6 +57,9 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
     static <T, R> PartialFunction<T, R> unlift(@NonNull Function<? super T, ? extends Option<? extends R>> totalFunction) {
         return new PartialFunction<T, R>() {
 
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
 
             @Override
@@ -85,6 +88,9 @@ public interface PartialFunction<T, R> extends Function1<T, R> {
     static <T, V extends Value<T>> PartialFunction<V, T> getIfDefined() {
         return new PartialFunction<V, T>() {
 
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
 
             @Override

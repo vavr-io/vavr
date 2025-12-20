@@ -128,7 +128,7 @@ import static io.vavr.collection.JavaConverters.ListView;
 public interface List<T> extends LinearSeq<T> {
 
     /**
-     * Version ID for serialization.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 
@@ -1866,6 +1866,9 @@ public interface List<T> extends LinearSeq<T> {
      */
     final class Nil<T> implements List<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private static final Nil<?> INSTANCE = new Nil<>();
@@ -1939,6 +1942,9 @@ public interface List<T> extends LinearSeq<T> {
     // DEV NOTE: class declared final because of serialization proxy pattern (see Effective Java, 2nd ed., p. 315)
     final class Cons<T> implements List<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -2027,6 +2033,9 @@ public interface List<T> extends LinearSeq<T> {
         // classes. Also, it may not be compatible with circular object graphs.
         private static final class SerializationProxy<T> implements Serializable {
 
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
 
             // the instance to be serialized/deserialized

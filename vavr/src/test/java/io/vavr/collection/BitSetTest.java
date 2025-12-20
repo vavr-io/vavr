@@ -576,6 +576,9 @@ public class BitSetTest extends AbstractSortedSetTest {
 
     private static final class Mapper<T> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable

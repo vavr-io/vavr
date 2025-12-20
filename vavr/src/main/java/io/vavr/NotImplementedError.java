@@ -25,6 +25,9 @@ package io.vavr;
  */
 public class NotImplementedError extends Error {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     /**

@@ -38,6 +38,9 @@ import org.jspecify.annotations.NonNull;
  */
 public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private static final LinkedHashMap<?, ?> EMPTY = new LinkedHashMap<>(Queue.empty(), HashMap.empty());

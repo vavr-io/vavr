@@ -57,6 +57,9 @@ import static io.vavr.collection.JavaConverters.ListView;
  */
 public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements LinearSeq<T> {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private static final Queue<?> EMPTY = new Queue<>(io.vavr.collection.List.empty(), io.vavr.collection.List.empty());

@@ -41,6 +41,9 @@ import static io.vavr.collection.Tree.Order.PRE_ORDER;
  */
 public interface Tree<T> extends Traversable<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -871,6 +874,9 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     final class Node<T> implements Tree<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -1016,6 +1022,9 @@ public interface Tree<T> extends Traversable<T>, Serializable {
         // classes. Also, it may not be compatible with circular object graphs.
         private static final class SerializationProxy<T> implements Serializable {
 
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
 
             // the instance to be serialized/deserialized
@@ -1082,6 +1091,9 @@ public interface Tree<T> extends Traversable<T>, Serializable {
      */
     final class Empty<T> implements Tree<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private static final Empty<?> INSTANCE = new Empty<>();

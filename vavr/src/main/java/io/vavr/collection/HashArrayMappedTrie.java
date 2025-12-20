@@ -37,6 +37,9 @@ import static java.util.Arrays.copyOf;
  */
 interface HashArrayMappedTrie<K, V> extends Iterable<Tuple2<K, V>>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     static final long serialVersionUID = 1L;
 
     static <K, V> HashArrayMappedTrie<K, V> empty() {
@@ -167,6 +170,9 @@ interface HashArrayMappedTrieModule {
      */
     abstract class AbstractNode<K, V> implements HashArrayMappedTrie<K, V> {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         static final int SIZE = 5;
@@ -271,6 +277,9 @@ interface HashArrayMappedTrieModule {
      */
     final class EmptyNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private static final EmptyNode<?, ?> INSTANCE = new EmptyNode<>();
@@ -332,6 +341,9 @@ interface HashArrayMappedTrieModule {
      */
     abstract class LeafNode<K, V> extends AbstractNode<K, V> {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         abstract K key();
@@ -372,6 +384,9 @@ interface HashArrayMappedTrieModule {
      */
     final class LeafSingleton<K, V> extends LeafNode<K, V> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private final int hash;
@@ -443,6 +458,9 @@ interface HashArrayMappedTrieModule {
      */
     final class LeafList<K, V> extends LeafNode<K, V> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private final int hash;
@@ -590,6 +608,9 @@ interface HashArrayMappedTrieModule {
      */
     final class IndexedNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private final int bitmap;
@@ -706,6 +727,9 @@ interface HashArrayMappedTrieModule {
      */
     final class ArrayNode<K, V> extends AbstractNode<K, V> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable

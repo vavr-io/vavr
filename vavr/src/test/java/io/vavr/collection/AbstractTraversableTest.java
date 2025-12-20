@@ -315,6 +315,9 @@ public abstract class AbstractTraversableTest extends AbstractValueTest {
     @TestTemplate
     public void shouldCollectUsingPartialFunction() {
         final PartialFunction<Integer, String> pf = new PartialFunction<Integer, String>() {
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
 
             @Override

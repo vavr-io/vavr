@@ -115,7 +115,7 @@ import static io.vavr.collection.JavaConverters.ListView;
 public interface Stream<T> extends LinearSeq<T> {
 
     /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 
@@ -1877,6 +1877,9 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     final class Empty<T> implements Stream<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private static final Empty<?> INSTANCE = new Empty<>();
@@ -1949,6 +1952,9 @@ public interface Stream<T> extends LinearSeq<T> {
      */
     abstract class Cons<T> implements Stream<T> {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -2012,6 +2018,9 @@ interface StreamModule {
 
     final class ConsImpl<T> extends Cons<T> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         ConsImpl(T head, Supplier<Stream<T>> tail) {
@@ -2034,6 +2043,9 @@ interface StreamModule {
 
     final class AppendElements<T> extends Cons<T> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private final io.vavr.collection.Queue<T> queue;
@@ -2089,6 +2101,9 @@ interface StreamModule {
     // classes. Also, it may not be compatible with circular object graphs.
     final class SerializationProxy<T> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized

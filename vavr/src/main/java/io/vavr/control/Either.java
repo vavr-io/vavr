@@ -1275,6 +1275,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      */
     final class Left<L, R> implements Either<L, R>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -1340,6 +1343,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
      */
     final class Right<L, R> implements Either<L, R>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -1405,6 +1411,9 @@ public interface Either<L, R> extends Value<R>, Serializable {
     // it's not possible to use a generic type parameter for the exception type
     class Failure extends Exception {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable

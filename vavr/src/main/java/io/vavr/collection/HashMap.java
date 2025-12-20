@@ -40,6 +40,9 @@ import org.jspecify.annotations.NonNull;
  */
 public final class HashMap<K, V> implements Map<K, V>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private static final HashMap<?, ?> EMPTY = new HashMap<>(HashArrayMappedTrie.empty());

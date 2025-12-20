@@ -37,6 +37,9 @@ import org.jspecify.annotations.NonNull;
  */
 public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private static final LinkedHashSet<?> EMPTY = new LinkedHashSet<>(LinkedHashMap.empty());
@@ -1173,6 +1176,9 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     // classes. Also, it may not be compatible with circular object graphs.
     private static final class SerializationProxy<T> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         // the instance to be serialized/deserialized

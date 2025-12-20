@@ -46,7 +46,7 @@ import org.jspecify.annotations.NonNull;
 public interface BitSet<T> extends SortedSet<T> {
 
     /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 
@@ -854,6 +854,9 @@ interface BitSetModule {
 
     abstract class AbstractBitSet<T> implements BitSet<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         final Function1<Integer, T> fromInt;
@@ -1207,6 +1210,9 @@ interface BitSetModule {
 
     class BitSet1<T> extends AbstractBitSet<T> {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private final long elements;
@@ -1273,6 +1279,9 @@ interface BitSetModule {
 
     class BitSet2<T> extends AbstractBitSet<T> {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private final long elements1, elements2;
@@ -1351,6 +1360,9 @@ interface BitSetModule {
 
     class BitSetN<T> extends AbstractBitSet<T> {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private final long[] elements;

@@ -48,6 +48,9 @@ import org.jspecify.annotations.NonNull;
  */
 public interface Option<T> extends Value<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -493,6 +496,9 @@ public interface Option<T> extends Value<T>, Serializable {
      */
     final class Some<T> implements Option<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -546,6 +552,9 @@ public interface Option<T> extends Value<T>, Serializable {
      */
     final class None<T> implements Option<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         /**

@@ -38,6 +38,9 @@ import org.jspecify.annotations.NonNull;
 // DEV-NOTE: it is not possible to create an EMPTY TreeSet without a Comparator type in scope
 public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private final RedBlackTree<T> tree;

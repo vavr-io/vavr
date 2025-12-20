@@ -46,6 +46,9 @@ import static io.vavr.collection.RedBlackTree.Color.RED;
  */
 interface RedBlackTree<T> extends Iterable<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     static <T> RedBlackTree<T> empty(Comparator<? super T> comparator) {
@@ -339,6 +342,9 @@ interface RedBlackTreeModule {
      */
     final class Node<T> implements RedBlackTree<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         final Color color;
@@ -820,6 +826,9 @@ interface RedBlackTreeModule {
      */
     final class Empty<T> implements RedBlackTree<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable

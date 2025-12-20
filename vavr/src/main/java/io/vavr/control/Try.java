@@ -59,6 +59,9 @@ import static io.vavr.control.TryModule.sneakyThrow;
  */
 public interface Try<T> extends Value<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -1312,6 +1315,9 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class Success<T> implements Try<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -1389,6 +1395,9 @@ public interface Try<T> extends Value<T>, Serializable {
      */
     final class Failure<T> implements Try<T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         private final Throwable cause;

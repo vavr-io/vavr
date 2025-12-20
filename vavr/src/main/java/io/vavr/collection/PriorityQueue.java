@@ -35,6 +35,9 @@ import static io.vavr.collection.PriorityQueueBase.*;
  */
 public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, PriorityQueue<T>> implements Serializable, Ordered<T> {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("serial") // Conditionally serializable
@@ -899,6 +902,9 @@ final class PriorityQueueBase {
     /* Based on http://www.brics.dk/RS/96/37/BRICS-RS-96-37.pdf */
     static final class Node<T> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable

@@ -39,6 +39,9 @@ import org.jspecify.annotations.NonNull;
  */
 public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultimap<K, V>> implements Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     /**

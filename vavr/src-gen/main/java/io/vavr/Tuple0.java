@@ -38,6 +38,9 @@ import org.jspecify.annotations.NonNull;
  */
 public final class Tuple0 implements Tuple, Comparable<Tuple0>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     /**

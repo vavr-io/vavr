@@ -42,6 +42,9 @@ import static io.vavr.API.Tuple;
  */
 abstract class AbstractMultimap<K, V, M extends Multimap<K, V>> implements Multimap<K, V> {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     /** The backing map that stores the key-value pairs. */

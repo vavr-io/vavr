@@ -44,6 +44,9 @@ import org.jspecify.annotations.NonNull;
 public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private final RedBlackTree<Tuple2<K, V>> entries;
@@ -1544,6 +1547,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
     private interface EntryComparator<K, V> extends Comparator<Tuple2<K, V>>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         long serialVersionUID = 1L;
 
         static <K, V> EntryComparator<K, V> of(@NonNull Comparator<? super K> keyComparator) {
@@ -1561,6 +1567,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
         final class Specific<K, V> implements EntryComparator<K, V> {
 
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
 
             @SuppressWarnings("serial") // Conditionally serializable
@@ -1584,6 +1593,9 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
         final class Natural<K, V> implements EntryComparator<K, V> {
 
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
 
             private static final Natural<?, ?> INSTANCE = new Natural<>();

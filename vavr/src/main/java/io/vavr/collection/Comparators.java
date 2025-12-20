@@ -48,6 +48,9 @@ final class Comparators {
 
 final class NaturalComparator<T> implements Comparator<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private static final NaturalComparator<?> INSTANCE = new NaturalComparator<>();

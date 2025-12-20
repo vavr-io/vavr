@@ -52,6 +52,9 @@ import static java.util.Arrays.sort;
  * @author Ruslan Sennov, Daniel Dietrich
  */
 public final class Array<T> implements IndexedSeq<T>, Serializable {
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private static final Array<?> EMPTY = new Array<>(new Object[0]);

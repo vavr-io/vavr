@@ -27,6 +27,9 @@ import java.util.NoSuchElementException;
  */
 public class MatchError extends NoSuchElementException {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     @SuppressWarnings("serial") // Conditionally serializable

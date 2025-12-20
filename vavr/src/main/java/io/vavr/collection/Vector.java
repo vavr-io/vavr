@@ -42,6 +42,9 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * @author Ruslan Sennov, Pap Lőrinc
  */
 public final class Vector<T> implements IndexedSeq<T>, Serializable {
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private static final Vector<?> EMPTY = new Vector<>(BitMappedTrie.empty());

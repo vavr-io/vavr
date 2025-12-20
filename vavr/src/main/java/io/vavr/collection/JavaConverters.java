@@ -59,6 +59,9 @@ class JavaConverters {
      */
     private static abstract class HasDelegate<C extends Traversable<?>> implements Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -103,6 +106,9 @@ class JavaConverters {
 
     static class ListView<T, C extends Seq<T>> extends HasDelegate<C> implements java.util.List<T> {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         ListView(C delegate, boolean mutable) {

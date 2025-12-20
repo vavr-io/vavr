@@ -78,6 +78,9 @@ import org.jspecify.annotations.NonNull;
  */
 public interface Validation<E, T> extends Value<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     long serialVersionUID = 1L;
 
     /**
@@ -716,6 +719,9 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      */
     final class Valid<E, T> implements Validation<E, T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable
@@ -780,6 +786,9 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      */
     final class Invalid<E, T> implements Validation<E, T>, Serializable {
 
+        /**
+         * The serial version UID for serialization.
+         */
         private static final long serialVersionUID = 1L;
 
         @SuppressWarnings("serial") // Conditionally serializable

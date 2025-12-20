@@ -51,6 +51,9 @@ final class BitMappedTrie<T> implements Serializable {
     static int digit(int num, int depthShift) { return lastDigit(firstDigit(num, depthShift)); }
     static int lastDigit(int num) { return num & BRANCHING_MASK; }
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private static final BitMappedTrie<?> EMPTY = new BitMappedTrie<>(obj(), obj().empty(), 0, 0, 0);

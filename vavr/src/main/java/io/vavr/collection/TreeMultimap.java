@@ -40,6 +40,9 @@ import org.jspecify.annotations.NonNull;
  */
 public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultimap<K, V>> implements Serializable, SortedMultimap<K, V> {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     public static <V> Builder<V> withSeq() {

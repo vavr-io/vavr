@@ -41,7 +41,7 @@ import org.jspecify.annotations.NonNull;
 public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K, V>, Serializable {
 
     /**
-     * The <a href="https://docs.oracle.com/javase/8/docs/api/index.html">serial version uid</a>.
+     * The serial version UID for serialization.
      */
     long serialVersionUID = 1L;
 
@@ -101,6 +101,9 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      */
     default PartialFunction<K, V> asPartialFunction() throws IndexOutOfBoundsException {
         return new PartialFunction<K, V>() {
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
             @Override
             public V apply(K key) {

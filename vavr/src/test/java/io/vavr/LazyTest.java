@@ -391,6 +391,9 @@ public class LazyTest extends AbstractValueTest {
  */
 final class Undefined<T> implements Value<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     static final Undefined<?> INSTANCE = new Undefined<>();

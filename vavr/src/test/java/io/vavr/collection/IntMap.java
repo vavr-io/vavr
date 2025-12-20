@@ -32,6 +32,9 @@ import org.jspecify.annotations.NonNull;
 
 public final class IntMap<T> implements Traversable<T>, Serializable {
 
+    /**
+     * The serial version UID for serialization.
+     */
     private static final long serialVersionUID = 1L;
 
     private final Map<Integer, T> original;
@@ -93,6 +96,9 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     public <R> Seq<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
         Objects.requireNonNull(partialFunction, "partialFunction is null");
         final PartialFunction<Tuple2<Integer, T>, R> pf = new PartialFunction<Tuple2<Integer, T>, R>() {
+            /**
+             * The serial version UID for serialization.
+             */
             private static final long serialVersionUID = 1L;
             @Override
             public R apply(Tuple2<Integer, T> entry) {
