@@ -22,7 +22,7 @@ import io.vavr.control.Try;
 public interface Task<T> {
 
     /**
-     * Runs the task. Non-fatal errors are catched by a {@link Future}.
+     * Runs the task. Non-fatal errors are caught by a {@link Future}.
      *
      * @param complete a function that completes this task
      * @throws Throwable if an error occurs

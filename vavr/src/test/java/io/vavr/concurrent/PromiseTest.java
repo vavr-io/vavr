@@ -101,7 +101,7 @@ public class PromiseTest {
             }
 
             private void continueDoingSomethingUnrelated() {
-                System.out.println("Unreleated stuff");
+                System.out.println("Unrelated stuff");
             }
 
             private void startDoingSomething() {
