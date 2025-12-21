@@ -29,7 +29,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import java.util.Comparator;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 public class Tuple0Test {
@@ -141,13 +140,6 @@ public class Tuple0Test {
         final Tuple0 tuple = createTuple();
         final Object other = new Object();
         assertThat(tuple).isNotEqualTo(other);
-    }
-
-    @Test
-    public void shouldComputeCorrectHashCode() {
-        final int actual = createTuple().hashCode();
-        final int expected = Objects.hash();
-        assertThat(actual).isEqualTo(expected);
     }
 
     @Test

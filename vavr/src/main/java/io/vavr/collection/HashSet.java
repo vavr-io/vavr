@@ -942,7 +942,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
     public Tuple2<HashSet<T>, HashSet<T>> span(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);
-        return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
+        return Tuple.of(HashSet.ofAll(t._1()), HashSet.ofAll(t._2()));
     }
 
     @Override
@@ -1036,7 +1036,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
       @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
-        return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2));
+        return Tuple.of(HashSet.ofAll(t._1()), HashSet.ofAll(t._2()));
     }
 
     @Override
@@ -1044,7 +1044,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
       @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
-        return Tuple.of(HashSet.ofAll(t._1), HashSet.ofAll(t._2), HashSet.ofAll(t._3));
+        return Tuple.of(HashSet.ofAll(t._1()), HashSet.ofAll(t._2()), HashSet.ofAll(t._3()));
     }
 
     @Override
@@ -1170,7 +1170,7 @@ public final class HashSet<T> implements Set<T>, Serializable {
             s.defaultWriteObject();
             s.writeInt(tree.size());
             for (Tuple2<T, T> e : tree) {
-                s.writeObject(e._1);
+                s.writeObject(e._1());
             }
         }
 

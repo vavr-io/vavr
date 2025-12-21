@@ -109,7 +109,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
 
     @Test
     public void shouldKeepOrder() {
-        final List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').foldLeft(List.empty(), (s, t) -> s.append(t._2));
+        final List<Character> actual = LinkedHashMap.<Integer, Character> empty().put(3, 'a').put(2, 'b').put(1, 'c').foldLeft(List.empty(), (s, t) -> s.append(t._2()));
         Assertions.assertThat(actual).isEqualTo(List.of('a', 'b', 'c'));
     }
 
@@ -234,7 +234,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
                 .put(Tuple.of(2, "b"))
                 .put(Tuple.of(3, "c"))
                 .put(Tuple.of(4, "d"));
-        final Map<Integer, String> result = map.scan(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
+        final Map<Integer, String> result = map.scan(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1() + t2._1(), t1._2() + t2._2()));
         assertThat(result).isEqualTo(LinkedHashMap.empty()
                 .put(0, "x")
                 .put(1, "xa")
@@ -250,7 +250,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
                 .put(Tuple.of(2, "b"))
                 .put(Tuple.of(3, "c"))
                 .put(Tuple.of(4, "d"));
-        final Seq<Tuple2<Integer, String>> result = map.scanLeft(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
+        final Seq<Tuple2<Integer, String>> result = map.scanLeft(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1() + t2._1(), t1._2() + t2._2()));
         assertThat(result).isEqualTo(List.of(
                 Tuple.of(0, "x"),
                 Tuple.of(1, "xa"),
@@ -266,7 +266,7 @@ public class LinkedHashMapTest extends AbstractMapTest {
                 .put(Tuple.of(2, "b"))
                 .put(Tuple.of(3, "c"))
                 .put(Tuple.of(4, "d"));
-        final Seq<Tuple2<Integer, String>> result = map.scanRight(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1 + t2._1, t1._2 + t2._2));
+        final Seq<Tuple2<Integer, String>> result = map.scanRight(Tuple.of(0, "x"), (t1, t2) -> Tuple.of(t1._1() + t2._1(), t1._2() + t2._2()));
         assertThat(result).isEqualTo(List.of(
                 Tuple.of(10, "abcdx"),
                 Tuple.of(9, "bcdx"),

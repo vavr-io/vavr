@@ -833,12 +833,12 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
 
     @Override
     public @NonNull Iterator<T> iterator() {
-        return map.iterator().map(t -> t._1);
+        return map.iterator().map(Tuple2::_1);
     }
 
     @Override
     public T last() {
-        return map.last()._1;
+        return map.last()._1();
     }
 
     @Override
@@ -966,7 +966,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
     public Tuple2<LinkedHashSet<T>, LinkedHashSet<T>> span(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> t = iterator().span(predicate);
-        return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2));
+        return Tuple.of(LinkedHashSet.ofAll(t._1()), LinkedHashSet.ofAll(t._2()));
     }
 
     @Override
@@ -1066,7 +1066,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
       @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple2<Iterator<T1>, Iterator<T2>> t = iterator().unzip(unzipper);
-        return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2));
+        return Tuple.of(LinkedHashSet.ofAll(t._1()), LinkedHashSet.ofAll(t._2()));
     }
 
     @Override
@@ -1074,7 +1074,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
       @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple3<Iterator<T1>, Iterator<T2>, Iterator<T3>> t = iterator().unzip3(unzipper);
-        return Tuple.of(LinkedHashSet.ofAll(t._1), LinkedHashSet.ofAll(t._2), LinkedHashSet.ofAll(t._3));
+        return Tuple.of(LinkedHashSet.ofAll(t._1()), LinkedHashSet.ofAll(t._2()), LinkedHashSet.ofAll(t._3()));
     }
 
     @Override
@@ -1200,7 +1200,7 @@ public final class LinkedHashSet<T> implements Set<T>, Serializable {
             s.defaultWriteObject();
             s.writeInt(map.size());
             for (Tuple2<T, Object> e : map) {
-                s.writeObject(e._1);
+                s.writeObject(e._1());
             }
         }
 

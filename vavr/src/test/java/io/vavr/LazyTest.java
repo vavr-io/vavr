@@ -287,7 +287,7 @@ public class LazyTest extends AbstractValueTest {
                 return Tuple.of(lazy, expected);
             }).flatMap(t -> range(0, 5).map(j -> runAsync(() -> {
                         while (!canProceed.get()) { /* busy wait */ }
-                        assertThat(t._1.get()).isEqualTo(t._2);
+                        assertThat(t._1().get()).isEqualTo(t._2());
                     }))
             );
 
