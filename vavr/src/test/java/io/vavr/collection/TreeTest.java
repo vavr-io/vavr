@@ -98,8 +98,8 @@ public class TreeTest extends AbstractTraversableTest {
                 if (actual instanceof Tuple2) {
                     final Tuple2<?, ?> t1 = (Tuple2<?, ?>) actual;
                     final Tuple2<?, ?> t2 = (Tuple2<?, ?>) expected;
-                    assertThat((Iterable<?>) t1._1).isEqualTo(t2._1);
-                    assertThat((Iterable<?>) t1._2).isEqualTo(t2._2);
+                    assertThat((Iterable<?>) t1._1()).isEqualTo(t2._1());
+                    assertThat((Iterable<?>) t1._2()).isEqualTo(t2._2());
                     return this;
                 } else {
                     return super.isEqualTo(expected);
@@ -591,7 +591,7 @@ public class TreeTest extends AbstractTraversableTest {
         final int length = List
                 .of(1, 2, 4, 7, 5, 3, 6, 8, 9)
                 .zip(tree)
-                .filter(t -> Objects.equals(t._1, t._2))
+                .filter(t -> Objects.equals(t._1(), t._2()))
                 .length();
         assertThat(length).isEqualTo(9);
     }

@@ -1299,8 +1299,8 @@ interface TreeModule {
         final io.vavr.collection.List<Tuple2<Node<T1>, Node<T2>>> children = node
                 .getChildren()
                 .map(child -> unzip(child, unzipper));
-        final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
-        final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
+        final Node<T1> node1 = new Node<>(value._1(), children.map(Tuple2::_1));
+        final Node<T2> node2 = new Node<>(value._2(), children.map(Tuple2::_2));
         return Tuple.of(node1, node2);
     }
 
@@ -1309,9 +1309,9 @@ interface TreeModule {
         final Tuple3<? extends T1, ? extends T2, ? extends T3> value = unzipper.apply(node.getValue());
         final io.vavr.collection.List<Tuple3<Node<T1>, Node<T2>, Node<T3>>> children = node.getChildren()
                 .map(child -> unzip3(child, unzipper));
-        final Node<T1> node1 = new Node<>(value._1, children.map(t -> t._1));
-        final Node<T2> node2 = new Node<>(value._2, children.map(t -> t._2));
-        final Node<T3> node3 = new Node<>(value._3, children.map(t -> t._3));
+        final Node<T1> node1 = new Node<>(value._1(), children.map(Tuple3::_1));
+        final Node<T2> node2 = new Node<>(value._2(), children.map(Tuple3::_2));
+        final Node<T3> node3 = new Node<>(value._3(), children.map(Tuple3::_3));
         return Tuple.of(node1, node2, node3);
     }
 

@@ -467,10 +467,10 @@ interface LinearSeqModule {
                 if (r == null) {
                     return result;
                 }
-                if (index + r._2 <= end) {
-                    result = index + r._2;
-                    index += r._2 + 1;
-                    source = r._1.tail();
+                if (index + r._2() <= end) {
+                    result = index + r._2();
+                    index += r._2() + 1;
+                    source = r._1().tail();
                 } else {
                     return result;
                 }

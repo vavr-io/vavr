@@ -206,7 +206,7 @@ public interface Function3<T1, T2, T3, R> extends Serializable {
      * @return a tupled function equivalent to this.
      */
     default Function1<Tuple3<T1, T2, T3>, R> tupled() {
-        return t -> apply(t._1, t._2, t._3);
+        return t -> apply(t._1(), t._2(), t._3());
     }
 
     /**

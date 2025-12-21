@@ -81,7 +81,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
     default <K> Option<Map<K, T>> arrangeBy(@NonNull Function<? super T, ? extends K> getKey) {
         Objects.requireNonNull(getKey, "getKey is null");
         return Option.of(groupBy(getKey).mapValues(Traversable<T>::singleOption))
-          .filter(map -> !map.exists(kv -> kv._2.isEmpty()))
+          .filter(map -> !map.exists(kv -> kv._2().isEmpty()))
           .map(map -> Map.narrow(map.mapValues(Option::get)));
     }
 

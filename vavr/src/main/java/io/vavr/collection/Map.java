@@ -132,7 +132,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
 
     @Override
     default boolean contains(@NonNull Tuple2<K, V> element) {
-        return get(element._1).map(v -> Objects.equals(v, element._2)).getOrElse(false);
+        return get(element._1()).map(v -> Objects.equals(v, element._2())).getOrElse(false);
     }
 
     /**
@@ -273,7 +273,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     default void forEach(@NonNull BiConsumer<K, V> action) {
         Objects.requireNonNull(action, "action is null");
         for (Tuple2<K, V> t : this) {
-            action.accept(t._1, t._2);
+            action.accept(t._1(), t._2());
         }
     }
 
@@ -320,7 +320,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      */
     default <U> Iterator<U> iterator(@NonNull BiFunction<K, V, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return iterator().map(t -> mapper.apply(t._1, t._2));
+        return iterator().map(t -> mapper.apply(t._1(), t._2()));
     }
 
     /**
@@ -605,7 +605,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      */
     default <T1, T2> Tuple2<Seq<T1>, Seq<T2>> unzip(@NonNull BiFunction<? super K, ? super V, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        return unzip(entry -> unzipper.apply(entry._1, entry._2));
+        return unzip(entry -> unzipper.apply(entry._1(), entry._2()));
     }
 
     @Override
@@ -630,7 +630,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
      */
     default <T1, T2, T3> Tuple3<Seq<T1>, Seq<T2>, Seq<T3>> unzip3(@NonNull BiFunction<? super K, ? super V, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
-        return unzip3(entry -> unzipper.apply(entry._1, entry._2));
+        return unzip3(entry -> unzipper.apply(entry._1(), entry._2()));
     }
 
     @Override
