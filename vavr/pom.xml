@@ -3,7 +3,7 @@
     <parent>
         <groupId>io.vavr</groupId>
         <artifactId>vavr-parent</artifactId>
-        <version>0.11.1-SNAPSHOT</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>vavr</artifactId>
@@ -70,13 +70,6 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <annotationProcessors>
-                        <annotationProcessor>
-                            io.vavr.match.PatternsProcessor
-                        </annotationProcessor>
-                    </annotationProcessors>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -89,35 +82,6 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-            </plugin>
-            <plugin>
-                <groupId>org.moditect</groupId>
-                <artifactId>moditect-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>add-module-infos</id>
-                        <goals>
-                            <goal>add-module-info</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <jvmVersion>9</jvmVersion>
-                            <module>
-                                <moduleInfoSource>
-                                    module io.vavr {
-                                        exports io.vavr;
-                                        exports io.vavr.collection;
-                                        exports io.vavr.control;
-                                        exports io.vavr.concurrent;
-                                        requires io.vavr.match;
-                                        requires static org.jspecify;
-                                    }
-                                </moduleInfoSource>
-                            </module>
-                            <overwriteExistingFiles>true</overwriteExistingFiles>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
