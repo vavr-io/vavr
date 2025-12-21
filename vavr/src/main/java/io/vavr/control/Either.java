@@ -368,6 +368,29 @@ public interface Either<L, R> extends Value<R>, Serializable {
     }
 
     /**
+     * Returns {@code Right} of the value supplied by {@code rightSupplier} if {@code condition} is true,
+     * or {@code Left} of the value supplied by {@code leftSupplier} if {@code condition} is false.
+     *
+     * @param <L>            the left type
+     * @param <R>            the right type
+     * @param condition      the condition to test
+     * @param leftSupplier   a supplier of the left value
+     * @param rightSupplier  a supplier of the right value, may return {@code null}
+     * @return {@code Right} if {@code condition} is true, otherwise {@code Left}
+     * @throws NullPointerException if any supplier is null
+     */
+    static <L, R> Either<L, R> when(boolean condition,
+      @NonNull Supplier<? extends L> leftSupplier,
+      @NonNull Supplier<? extends R> rightSupplier) {
+        Objects.requireNonNull(leftSupplier, "leftSupplier is null");
+        Objects.requireNonNull(rightSupplier, "rightSupplier is null");
+
+        return condition
+          ? Either.right(rightSupplier.get())
+          : Either.left(leftSupplier.get());
+    }
+
+    /**
      * Returns the right value of this {@code Either}, or an alternative value if this is a {@link Either.Left}.
      *
      * @param other a function that converts a left value to an alternative right value

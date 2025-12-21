@@ -96,29 +96,31 @@ public class OptionTest extends AbstractValueTest {
         final Option<?> some = Option.some(null);
         assertThat(some.get()).isEqualTo(null);
     }
+    
+    @Nested
+    public class WhenTests {
+        
+        @Test
+        public void shouldWrapIfTrue() {
+            assertThat(Option.when(true, () -> null)).isEqualTo(Option.some(null));
+            assertThat(Option.when(true, (Object) null)).isEqualTo(Option.some(null));
+        }
 
-    @Test
-    public void shouldWrapIfTrue() {
-        assertThat(Option.when(true, () -> null)).isEqualTo(Option.some(null));
-        assertThat(Option.when(true, (Object) null)).isEqualTo(Option.some(null));
-    }
+        @Test
+        public void shouldNotWrapIfFalse() {
+            assertThat(Option.when(false, () -> null)).isEqualTo(Option.none());
+            assertThat(Option.when(false, (Object) null)).isEqualTo(Option.none());
+        }
 
-    @Test
-    public void shouldNotWrapIfFalse() {
-        assertThat(Option.when(false, () -> null)).isEqualTo(Option.none());
-        assertThat(Option.when(false, (Object) null)).isEqualTo(Option.none());
-    }
+        @Test
+        public void shouldNotExecuteIfFalse() {
+            assertThat(Option.when(false, () -> {throw new RuntimeException();})).isEqualTo(Option.none());
+        }
 
-    @Test
-    public void shouldNotExecuteIfFalse() {
-        assertThat(Option.when(false, () -> {
-            throw new RuntimeException();
-        })).isEqualTo(Option.none());
-    }
-
-    @Test
-    public void shouldThrowExceptionOnWhenWithProvider() {
-        assertThrows(NullPointerException.class, () -> assertThat(Option.when(false, (Supplier<?>) null)).isEqualTo(Option.none()));
+        @Test
+        public void shouldThrowExceptionOnWhenWithProvider() {
+            assertThrows(NullPointerException.class, () -> assertThat(Option.when(false, (Supplier<?>) null)).isEqualTo(Option.none()));
+        }
     }
 
     @Test

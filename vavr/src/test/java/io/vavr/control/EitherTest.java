@@ -315,6 +315,40 @@ public class EitherTest extends AbstractValueTest {
             assertThat(actual).isEqualTo(expected);
         }
     }
+    
+    @Nested
+    public class WhenTests {
+        
+        @Test
+        public void shouldReturnRightIfTrue() {
+            assertThat(Either.when(true, () -> "left", () -> null)).isEqualTo(Either.right(null));
+        }
+
+        @Test
+        public void shouldReturnLeftIfFalse() {
+            assertThat(Either.when(false, () -> null, () -> "right")).isEqualTo(Either.left(null));
+        }
+
+        @Test
+        public void shouldNotExecuteLeftSupplierIfTrue() {
+            assertThat(Either.when(true, () -> { throw new RuntimeException("left executed"); }, () -> "right")).isEqualTo(Either.right("right"));
+        }
+
+        @Test
+        public void shouldNotExecuteRightSupplierIfFalse() {
+            assertThat(Either.when(false, () -> "left", () -> { throw new RuntimeException("right executed"); })).isEqualTo(Either.left("left"));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenLeftSupplierIsNull() {
+            assertThrows(NullPointerException.class, () -> Either.when(false, null, () -> "right"));
+        }
+
+        @Test
+        public void shouldThrowExceptionWhenRightSupplierIsNull() {
+            assertThrows(NullPointerException.class, () -> Either.when(true, () -> "left", null));
+        }
+    }
 
     @Nested
     public class NarrowTests {
