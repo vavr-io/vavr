@@ -90,7 +90,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
             Objects.requireNonNull(entries, "entries is null");
             LinkedHashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
-                result = result.put(entry._1, entry._2);
+                result = result.put(entry._1(), entry._2());
             }
             return result;
         }
@@ -108,7 +108,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
             Objects.requireNonNull(entries, "entries is null");
             LinkedHashMultimap<K, V2> result = empty();
             for (Tuple2<? extends K, ? extends V2> entry : entries) {
-                result = result.put(entry._1, entry._2);
+                result = result.put(entry._1(), entry._2());
             }
             return result;
         }
@@ -454,7 +454,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
          */
         public <K, V2 extends V> LinkedHashMultimap<K, V2> of(Tuple2<? extends K, ? extends V2> entry) {
             final LinkedHashMultimap<K, V2> e = empty();
-            return e.put(entry._1, entry._2);
+            return e.put(entry._1(), entry._2());
         }
 
         /**

@@ -301,8 +301,8 @@ public class CharSeqTest {
             count.incrementAndGet();
             return true;
         });
-        assertThat(results._1).isEqualTo(CharSeq.of('1', '2', '3'));
-        assertThat(results._2).isEqualTo(CharSeq.of());
+        assertThat(results._1()).isEqualTo(CharSeq.of('1', '2', '3'));
+        assertThat(results._2()).isEqualTo(CharSeq.of());
         assertThat(count.get()).isEqualTo(3);
     }
 

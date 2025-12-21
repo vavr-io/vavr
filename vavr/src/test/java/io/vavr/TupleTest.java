@@ -106,7 +106,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple1() {
         final Tuple1<?> t = tuple1();
-        assertThat(t.hashCode()).isEqualTo(Tuple.hash(t._1));
+        assertThat(t.hashCode()).isEqualTo(Tuple.hash(t._1()));
     }
 
     @Test
@@ -160,7 +160,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple2() {
         final Tuple2<?, ?> t = tuple2();
-        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2));
+        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1(), t._2()));
     }
 
     @Test
@@ -218,7 +218,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple3() {
         final Tuple3<?, ?, ?> t = tuple3();
-        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2, t._3));
+        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1(), t._2(), t._3()));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple4() {
         final Tuple4<?, ?, ?, ?> t = tuple4();
-        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2, t._3, t._4));
+        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1(), t._2(), t._3(), t._4()));
     }
 
     @Test
@@ -319,7 +319,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple5() {
         final Tuple5<?, ?, ?, ?, ?> t = tuple5();
-        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2, t._3, t._4, t._5));
+        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1(), t._2(), t._3(), t._4(), t._5()));
     }
 
     @Test
@@ -371,7 +371,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple6() {
         final Tuple6<?, ?, ?, ?, ?, ?> t = tuple6();
-        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2, t._3, t._4, t._5, t._6));
+        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1(), t._2(), t._3(), t._4(), t._5(), t._6()));
     }
 
     @Test
@@ -424,7 +424,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple7() {
         final Tuple7<?, ?, ?, ?, ?, ?, ?> t = tuple7();
-        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2, t._3, t._4, t._5, t._6, t._7));
+        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1(), t._2(), t._3(), t._4(), t._5(), t._6(), t._7()));
     }
 
     @Test
@@ -478,7 +478,7 @@ public class TupleTest {
     @Test
     public void shouldHashTuple8() {
         final Tuple8<?, ?, ?, ?, ?, ?, ?, ?> t = tuple8();
-        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1, t._2, t._3, t._4, t._5, t._6, t._7, t._8));
+        assertThat(t.hashCode()).isEqualTo(Objects.hash(t._1(), t._2(), t._3(), t._4(), t._5(), t._6(), t._7(), t._8()));
     }
 
     @Test

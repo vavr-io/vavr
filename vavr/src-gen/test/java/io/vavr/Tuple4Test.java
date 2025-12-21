@@ -50,46 +50,46 @@ public class Tuple4Test {
     @Test
     public void shouldReturnElements() {
         final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4);
-        assertThat(tuple._1).isEqualTo(1);
-        assertThat(tuple._2).isEqualTo(2);
-        assertThat(tuple._3).isEqualTo(3);
-        assertThat(tuple._4).isEqualTo(4);
+        assertThat(tuple._1()).isEqualTo(1);
+        assertThat(tuple._2()).isEqualTo(2);
+        assertThat(tuple._3()).isEqualTo(3);
+        assertThat(tuple._4()).isEqualTo(4);
     }
 
     @Test
     public void shouldUpdate1() {
       final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4).update1(42);
-      assertThat(tuple._1).isEqualTo(42);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
+      assertThat(tuple._1()).isEqualTo(42);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
     }
 
     @Test
     public void shouldUpdate2() {
       final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4).update2(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(42);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(4);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(42);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(4);
     }
 
     @Test
     public void shouldUpdate3() {
       final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4).update3(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(42);
-      assertThat(tuple._4).isEqualTo(4);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(42);
+      assertThat(tuple._4()).isEqualTo(4);
     }
 
     @Test
     public void shouldUpdate4() {
       final Tuple4<Integer, Integer, Integer, Integer> tuple = createIntTuple(1, 2, 3, 4).update4(42);
-      assertThat(tuple._1).isEqualTo(1);
-      assertThat(tuple._2).isEqualTo(2);
-      assertThat(tuple._3).isEqualTo(3);
-      assertThat(tuple._4).isEqualTo(42);
+      assertThat(tuple._1()).isEqualTo(1);
+      assertThat(tuple._2()).isEqualTo(2);
+      assertThat(tuple._3()).isEqualTo(3);
+      assertThat(tuple._4()).isEqualTo(42);
     }
 
     @Test

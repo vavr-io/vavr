@@ -38,50 +38,11 @@ import org.jspecify.annotations.NonNull;
  * @param <T2> type of the 2nd element
  * @param <T3> type of the 3rd element
  * @param <T4> type of the 4th element
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
-public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1, T2, T3, T4>>, Serializable {
+public record Tuple4<T1, T2, T3, T4>( @SuppressWarnings("serial") T1 _1, @SuppressWarnings("serial") T2 _2, @SuppressWarnings("serial") T3 _3, @SuppressWarnings("serial") T4 _4) implements Tuple, Comparable<Tuple4<T1, T2, T3, T4>>, Serializable {
 
     private static final long serialVersionUID = 1L;
-
-    /**
-     * The 1st element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T1 _1;
-
-    /**
-     * The 2nd element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T2 _2;
-
-    /**
-     * The 3rd element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T3 _3;
-
-    /**
-     * The 4th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T4 _4;
-
-    /**
-     * Constructs a tuple of 4 elements.
-     *
-     * @param t1 the 1st element
-     * @param t2 the 2nd element
-     * @param t3 the 3rd element
-     * @param t4 the 4th element
-     */
-    public Tuple4(T1 t1, T2 t2, T3 t3, T4 t4) {
-        this._1 = t1;
-        this._2 = t2;
-        this._3 = t3;
-        this._4 = t4;
-    }
 
     public static <T1, T2, T3, T4> Comparator<Tuple4<T1, T2, T3, T4>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp) {
         return (Comparator<Tuple4<T1, T2, T3, T4>> & Serializable) (t1, t2) -> {
@@ -150,15 +111,6 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     }
 
     /**
-     * Getter of the 1st element of this tuple.
-     *
-     * @return the 1st element of this Tuple.
-     */
-    public T1 _1() {
-        return _1;
-    }
-
-    /**
      * Sets the 1st element of this tuple to the given {@code value}.
      *
      * @param value the new value
@@ -166,15 +118,6 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public Tuple4<T1, T2, T3, T4> update1(T1 value) {
         return new Tuple4<>(value, _2, _3, _4);
-    }
-
-    /**
-     * Getter of the 2nd element of this tuple.
-     *
-     * @return the 2nd element of this Tuple.
-     */
-    public T2 _2() {
-        return _2;
     }
 
     /**
@@ -188,15 +131,6 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     }
 
     /**
-     * Getter of the 3rd element of this tuple.
-     *
-     * @return the 3rd element of this Tuple.
-     */
-    public T3 _3() {
-        return _3;
-    }
-
-    /**
      * Sets the 3rd element of this tuple to the given {@code value}.
      *
      * @param value the new value
@@ -204,15 +138,6 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public Tuple4<T1, T2, T3, T4> update3(T3 value) {
         return new Tuple4<>(_1, _2, value, _4);
-    }
-
-    /**
-     * Getter of the 4th element of this tuple.
-     *
-     * @return the 4th element of this Tuple.
-     */
-    public T4 _4() {
-        return _4;
     }
 
     /**
@@ -354,7 +279,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public <T5> Tuple5<T1, T2, T3, T4, T5> concat(@NonNull Tuple1<T5> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
-        return Tuple.of(_1, _2, _3, _4, tuple._1);
+        return Tuple.of(_1, _2, _3, _4, tuple._1());
     }
 
     /**
@@ -368,7 +293,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public <T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> concat(@NonNull Tuple2<T5, T6> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
-        return Tuple.of(_1, _2, _3, _4, tuple._1, tuple._2);
+        return Tuple.of(_1, _2, _3, _4, tuple._1(), tuple._2());
     }
 
     /**
@@ -383,7 +308,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public <T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(@NonNull Tuple3<T5, T6, T7> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
-        return Tuple.of(_1, _2, _3, _4, tuple._1, tuple._2, tuple._3);
+        return Tuple.of(_1, _2, _3, _4, tuple._1(), tuple._2(), tuple._3());
     }
 
     /**
@@ -399,7 +324,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public <T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(@NonNull Tuple4<T5, T6, T7, T8> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
-        return Tuple.of(_1, _2, _3, _4, tuple._1, tuple._2, tuple._3, tuple._4);
+        return Tuple.of(_1, _2, _3, _4, tuple._1(), tuple._2(), tuple._3(), tuple._4());
     }
 
     // -- Object
