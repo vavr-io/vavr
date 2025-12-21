@@ -249,8 +249,8 @@ public class VectorTest extends AbstractIndexedSeqTest {
             count.incrementAndGet();
             return true;
         });
-        assertThat(results._1).isEqualTo(ofAll(1, 2, 3));
-        assertThat(results._2).isEmpty();
+        assertThat(results._1()).isEqualTo(ofAll(1, 2, 3));
+        assertThat(results._2()).isEmpty();
         assertThat(count.get()).isEqualTo(3);
     }
 

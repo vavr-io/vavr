@@ -1611,7 +1611,7 @@ public interface List<T> extends LinearSeq<T> {
     default Tuple2<List<T>, List<T>> span(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
         final Tuple2<Iterator<T>, Iterator<T>> itt = iterator().span(predicate);
-        return Tuple.of(ofAll(itt._1), ofAll(itt._2));
+        return Tuple.of(ofAll(itt._1()), ofAll(itt._2()));
     }
 
     @Override
@@ -1636,10 +1636,10 @@ public interface List<T> extends LinearSeq<T> {
             return Tuple.of(empty(), empty());
         } else {
             final Tuple2<List<T>, List<T>> t = SplitAt.splitByPredicateReversed(this, predicate);
-            if (t._2.isEmpty()) {
+            if (t._2().isEmpty()) {
                 return Tuple.of(this, empty());
             } else {
-                return Tuple.of(t._1.reverse(), t._2);
+                return Tuple.of(t._1().reverse(), t._2());
             }
         }
     }
@@ -1650,10 +1650,10 @@ public interface List<T> extends LinearSeq<T> {
             return Tuple.of(empty(), empty());
         } else {
             final Tuple2<List<T>, List<T>> t = SplitAt.splitByPredicateReversed(this, predicate);
-            if (t._2.isEmpty() || t._2.tail().isEmpty()) {
+            if (t._2().isEmpty() || t._2().tail().isEmpty()) {
                 return Tuple.of(this, empty());
             } else {
-                return Tuple.of(t._1.prepend(t._2.head()).reverse(), t._2.tail());
+                return Tuple.of(t._1().prepend(t._2().head()).reverse(), t._2().tail());
             }
         }
     }
@@ -1775,8 +1775,8 @@ public interface List<T> extends LinearSeq<T> {
         List<T2> ys = Nil.instance();
         for (T element : this) {
             final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(element);
-            xs = xs.prepend(t._1);
-            ys = ys.prepend(t._2);
+            xs = xs.prepend(t._1());
+            ys = ys.prepend(t._2());
         }
         return Tuple.of(xs.reverse(), ys.reverse());
     }
@@ -1790,9 +1790,9 @@ public interface List<T> extends LinearSeq<T> {
         List<T3> zs = Nil.instance();
         for (T element : this) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(element);
-            xs = xs.prepend(t._1);
-            ys = ys.prepend(t._2);
-            zs = zs.prepend(t._3);
+            xs = xs.prepend(t._1());
+            ys = ys.prepend(t._2());
+            zs = zs.prepend(t._3());
         }
         return Tuple.of(xs.reverse(), ys.reverse(), zs.reverse());
     }
@@ -2106,7 +2106,7 @@ interface ListModule {
                 return List.of(List.empty());
             } else {
                 return elements.zipWithIndex().flatMap(
-                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1))
+                        t -> apply(elements.drop(t._2() + 1), (k - 1)).map(c -> c.prepend(t._1()))
                 );
             }
         }

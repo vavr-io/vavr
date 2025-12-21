@@ -96,11 +96,11 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
             private static final long serialVersionUID = 1L;
             @Override
             public R apply(Tuple2<Integer, T> entry) {
-                return partialFunction.apply(entry._2);
+                return partialFunction.apply(entry._2());
             }
             @Override
             public boolean isDefinedAt(Tuple2<Integer, T> entry) {
-                return partialFunction.isDefinedAt(entry._2);
+                return partialFunction.isDefinedAt(entry._2());
             }
         };
         return original.collect(pf);
@@ -113,12 +113,12 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> distinctBy(@NonNull Comparator<? super T> comparator) {
-        return unit(original.distinctBy((o1, o2) -> comparator.compare(o1._2, o2._2)));
+        return unit(original.distinctBy((o1, o2) -> comparator.compare(o1._2(), o2._2())));
     }
 
     @Override
     public <U> IntMap<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
-        return unit(original.distinctBy(f -> keyExtractor.apply(f._2)));
+        return unit(original.distinctBy(f -> keyExtractor.apply(f._2())));
     }
 
     @Override
@@ -135,38 +135,38 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> dropUntil(@NonNull Predicate<? super T> predicate) {
-        return unit(original.dropUntil(p -> predicate.test(p._2)));
+        return unit(original.dropUntil(p -> predicate.test(p._2())));
     }
 
     @Override
     public IntMap<T> dropWhile(@NonNull Predicate<? super T> predicate) {
-        return unit(original.dropWhile(p -> predicate.test(p._2)));
+        return unit(original.dropWhile(p -> predicate.test(p._2())));
     }
 
     @Override
     public IntMap<T> filter(@NonNull Predicate<? super T> predicate) {
-        return unit(original.filter(p -> predicate.test(p._2)));
+        return unit(original.filter(p -> predicate.test(p._2())));
     }
 
     @Override
     public IntMap<T> reject(@NonNull Predicate<? super T> predicate) {
-        return unit(original.reject(p -> predicate.test(p._2)));
+        return unit(original.reject(p -> predicate.test(p._2())));
     }
 
     @Override
     public <U> Seq<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return original.flatMap(e -> mapper.apply(e._2));
+        return original.flatMap(e -> mapper.apply(e._2()));
     }
 
     @Override
     public <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
         Objects.requireNonNull(f, "f is null");
-        return original.foldRight(zero, (e, u) -> f.apply(e._2, u));
+        return original.foldRight(zero, (e, u) -> f.apply(e._2(), u));
     }
 
     @Override
     public <C> Map<C, ? extends IntMap<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
-        return original.groupBy(e -> classifier.apply(e._2)).map((k, v) -> Tuple.of(k, IntMap.of(v)));
+        return original.groupBy(e -> classifier.apply(e._2())).map((k, v) -> Tuple.of(k, IntMap.of(v)));
     }
 
     @Override
@@ -181,12 +181,12 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public T head() {
-        return original.head()._2;
+        return original.head()._2();
     }
 
     @Override
     public Option<T> headOption() {
-        return original.headOption().map(o -> o._2);
+        return original.headOption().map(o -> o._2());
     }
 
     @Override
@@ -211,7 +211,7 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public T last() {
-        return original.last()._2;
+        return original.last()._2();
     }
 
     @Override
@@ -221,7 +221,7 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public <U> Seq<U> map(@NonNull Function<? super T, ? extends U> mapper) {
-        return original.map(e -> mapper.apply(e._2));
+        return original.map(e -> mapper.apply(e._2()));
     }
 
     @Override
@@ -236,30 +236,30 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public IntMap<T> orElse(Iterable<? extends T> other) {
-        return unit(original.orElse(List.ofAll(other).zipWithIndex().map(t -> Tuple.of(t._2, t._1))));
+        return unit(original.orElse(List.ofAll(other).zipWithIndex().map(t -> Tuple.of(t._2(), t._1()))));
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public IntMap<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
-        return unit(original.orElse(() -> (Iterable<? extends Tuple2<Integer, T>>) List.ofAll(supplier.get()).zipWithIndex().map(t -> Tuple.of(t._2, t._1))));
+        return unit(original.orElse(() -> (Iterable<? extends Tuple2<Integer, T>>) List.ofAll(supplier.get()).zipWithIndex().map(t -> Tuple.of(t._2(), t._1()))));
     }
 
     @Override
     public Tuple2<IntMap<T>, IntMap<T>> partition(@NonNull Predicate<? super T> predicate) {
         Objects.requireNonNull(predicate, "predicate is null");
-        return original.partition(p -> predicate.test(p._2)).map(IntMap::of, IntMap::of);
+        return original.partition(p -> predicate.test(p._2())).map(IntMap::of, IntMap::of);
     }
 
     @Override
     public IntMap<T> peek(@NonNull Consumer<? super T> action) {
-        original.peek(e -> action.accept(e._2));
+        original.peek(e -> action.accept(e._2()));
         return this;
     }
 
     @Override
     public IntMap<T> replace(T currentElement, T newElement) {
-        final Option<Tuple2<Integer, T>> currentEntryOpt = original.find(e -> e._2.equals(currentElement));
+        final Option<Tuple2<Integer, T>> currentEntryOpt = original.find(e -> e._2().equals(currentElement));
         if (currentEntryOpt.isDefined()) {
             final Tuple2<Integer, T> currentEntry = currentEntryOpt.get();
             return unit(original.replace(currentEntry, Tuple.of(original.size() + 1, newElement)));
@@ -271,8 +271,8 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public IntMap<T> replaceAll(T currentElement, T newElement) {
         Map<Integer, T> result = original;
-        for (Tuple2<Integer, T> entry : original.filter(e -> e._2.equals(currentElement))) {
-            result = result.replaceAll(entry, Tuple.of(entry._1, newElement));
+        for (Tuple2<Integer, T> entry : original.filter(e -> e._2().equals(currentElement))) {
+            result = result.replaceAll(entry, Tuple.of(entry._1(), newElement));
         }
         return unit(result);
     }
@@ -280,28 +280,28 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
     @Override
     public IntMap<T> retainAll(@NonNull Iterable<? extends T> elements) {
         final Set<T> elementsSet = HashSet.ofAll(elements);
-        return unit(original.retainAll(original.filter(e -> elementsSet.contains(e._2))));
+        return unit(original.retainAll(original.filter(e -> elementsSet.contains(e._2()))));
     }
 
     @Override
     public Traversable<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
         final int[] index = new int[] { 0 };
-        return original.scan(Tuple.of(-1, zero), (i, t) -> Tuple.of(index[0]++, operation.apply(i._2, t._2))).values();
+        return original.scan(Tuple.of(-1, zero), (i, t) -> Tuple.of(index[0]++, operation.apply(i._2(), t._2()))).values();
     }
 
     @Override
     public <U> Traversable<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
-        return original.scanLeft(zero, (i, t) -> operation.apply(i, t._2));
+        return original.scanLeft(zero, (i, t) -> operation.apply(i, t._2()));
     }
 
     @Override
     public <U> Traversable<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
-        return original.scanRight(zero, (t, i) -> operation.apply(t._2, i));
+        return original.scanRight(zero, (t, i) -> operation.apply(t._2(), i));
     }
 
     @Override
     public Iterator<IntMap<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
-        return original.slideBy(e -> classifier.apply(e._2)).map(IntMap::of);
+        return original.slideBy(e -> classifier.apply(e._2())).map(IntMap::of);
     }
 
     @Override
@@ -316,7 +316,7 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Tuple2<? extends IntMap<T>, ? extends IntMap<T>> span(@NonNull Predicate<? super T> predicate) {
-        return original.span(p -> predicate.test(p._2)).map(IntMap::of, IntMap::of);
+        return original.span(p -> predicate.test(p._2())).map(IntMap::of, IntMap::of);
     }
 
     public Spliterator<T> spliterator() {
@@ -329,7 +329,7 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
             @Override
             public boolean tryAdvance(Consumer<? super T> action) {
-                return spliterator.tryAdvance(a -> action.accept(a._2));
+                return spliterator.tryAdvance(a -> action.accept(a._2()));
             }
 
             @Override
@@ -380,12 +380,12 @@ public final class IntMap<T> implements Traversable<T>, Serializable {
 
     @Override
     public Traversable<T> takeUntil(@NonNull Predicate<? super T> predicate) {
-        return unit(original.takeUntil(p -> predicate.test(p._2)));
+        return unit(original.takeUntil(p -> predicate.test(p._2())));
     }
 
     @Override
     public IntMap<T> takeWhile(@NonNull Predicate<? super T> predicate) {
-        return unit(original.takeWhile(p -> predicate.test(p._2)));
+        return unit(original.takeWhile(p -> predicate.test(p._2())));
     }
 
     @Override

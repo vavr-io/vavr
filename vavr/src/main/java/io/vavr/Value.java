@@ -819,11 +819,11 @@ public interface Value<T> extends Iterable<T> {
         if (!isEmpty()) {
             if (isSingleValued()) {
                 final Tuple2<? extends K, ? extends V> entry = f.apply(get());
-                map.put(entry._1, entry._2);
+                map.put(entry._1(), entry._2());
             } else {
                 for (T a : this) {
                     final Tuple2<? extends K, ? extends V> entry = f.apply(a);
-                    map.put(entry._1, entry._2);
+                    map.put(entry._1(), entry._2());
                 }
             }
         }
