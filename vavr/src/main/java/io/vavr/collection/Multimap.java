@@ -487,7 +487,7 @@ public interface Multimap<K, V> extends Traversable<Tuple2<K, V>>, PartialFuncti
     Multimap<K, V> put(K key, V value);
 
     /**
-     * Convenience method for {@code put(entry._1, entry._2)}.
+     * Convenience method for {@code put(entry._1(), entry._2())}.
      *
      * @param entry A Tuple2 containing the key and value
      * @return A new Multimap containing these elements and that entry.

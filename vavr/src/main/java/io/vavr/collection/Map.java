@@ -466,7 +466,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     Map<K, V> put(K key, V value);
 
     /**
-     * Convenience method for {@code put(entry._1, entry._2)}.
+     * Convenience method for {@code put(entry._1(), entry._2())}.
      *
      * @param entry A Tuple2 containing the key and value
      * @return A new Map containing these elements and that entry.
@@ -488,7 +488,7 @@ public interface Map<K, V> extends Traversable<Tuple2<K, V>>, PartialFunction<K,
     <U extends V> Map<K, V> put(K key, U value, @NonNull BiFunction<? super V, ? super U, ? extends V> merge);
 
     /**
-     * Convenience method for {@code put(entry._1, entry._2, merge)}.
+     * Convenience method for {@code put(entry._1(), entry._2(), merge)}.
      *
      * @param <U>   the value type
      * @param entry A Tuple2 containing the key and value

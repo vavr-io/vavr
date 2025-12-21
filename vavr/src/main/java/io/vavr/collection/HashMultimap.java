@@ -250,7 +250,7 @@ public final class HashMultimap<K, V> extends AbstractMultimap<K, V, HashMultima
          * @param <V2>    The value type
          * @param n       The number of elements in the HashMultimap
          * @param element The element
-         * @return A HashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         * @return A HashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2()}.
          */
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> HashMultimap<K, V2> fill(int n, @NonNull Tuple2<? extends K, ? extends V2> element) {

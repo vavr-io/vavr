@@ -215,7 +215,7 @@ public final class LinkedHashMultimap<K, V> extends AbstractMultimap<K, V, Linke
          * @param <V2>    The value type
          * @param n       The number of elements in the LinkedHashMultimap
          * @param element The element
-         * @return A LinkedHashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         * @return A LinkedHashMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2()}.
          */
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> LinkedHashMultimap<K, V2> fill(int n, @NonNull Tuple2<? extends K, ? extends V2> element) {

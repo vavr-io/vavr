@@ -402,7 +402,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @param <V2>    The value type
          * @param n       The number of elements in the TreeMultimap
          * @param element The element
-         * @return A TreeMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         * @return A TreeMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2()}.
          */
         @SuppressWarnings("unchecked")
         public <K extends Comparable<? super K>, V2 extends V> TreeMultimap<K, V2> fill(int n, @NonNull Tuple2<? extends K, ? extends V2> element) {
@@ -417,7 +417,7 @@ public final class TreeMultimap<K, V> extends AbstractMultimap<K, V, TreeMultima
          * @param keyComparator The comparator used to sort the entries by their key
          * @param n             The number of elements in the TreeMultimap
          * @param element       The element
-         * @return A TreeMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2}.
+         * @return A TreeMultimap of size {@code 1}, where each element contains {@code n} values of {@code element._2()}.
          */
         @SuppressWarnings("unchecked")
         public <K, V2 extends V> TreeMultimap<K, V2> fill(Comparator<? super K> keyComparator, int n, @NonNull Tuple2<? extends K, ? extends V2> element) {
