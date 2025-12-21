@@ -384,7 +384,7 @@ public class LazyTest extends AbstractValueTest {
 
 /**
  * Lazy can't be empty. It is a placeholder for an existing value, but only evaluated when needed.
- * In order to re-use existing unit tests, that are valid for all Value implementations,
+ * In order to reuse existing unit tests, that are valid for all Value implementations,
  * we provide here an _imaginary_ empty Lazy implementation, called 'undefined'.
  * <p>
  * Note: It is no good idea to leak it outside of the test scope into the core library (otherwise Undefined will be the new null).

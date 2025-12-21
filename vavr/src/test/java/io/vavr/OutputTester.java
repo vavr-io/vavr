@@ -42,7 +42,7 @@ public class OutputTester {
     /**
      * Obtain a stream that fails on every attempt to write a byte.
      *
-     * @return a new stram that will fail immediately.
+     * @return a new stream that will fail immediately.
      */
     public static PrintStream failingPrintStream() {
         return new PrintStream(failingOutputStream());
@@ -51,7 +51,7 @@ public class OutputTester {
     /**
      * Obtain a writer that fails on every attempt to write a byte.
      *
-     * @return a new stram that will fail immediately.
+     * @return a new stream that will fail immediately.
      */
     public static PrintWriter failingPrintWriter() {
         return new PrintWriter(failingOutputStream());

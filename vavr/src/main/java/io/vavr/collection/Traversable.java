@@ -512,7 +512,7 @@ public interface Traversable<T> extends Foldable<T>, Value<T> {
      *
      * <p>Note that these algorithms may change in future Vavr versions. Hash codes are generally <em>not</em> cached,
      * unlike size/length, because caching would increase memory usage due to persistent tree-based structures.
-     * Computing the hash code is linear in time, O(n). For frequently re-used collections (e.g., as {@code HashMap} keys),
+     * Computing the hash code is linear in time, O(n). For frequently reused collections (e.g., as {@code HashMap} keys),
      * caching can be done externally using a wrapper, for example:</p>
      *
      * <pre>{@code

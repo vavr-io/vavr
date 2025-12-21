@@ -4364,7 +4364,7 @@ object Generator {
    * Seq("a", "b", "c").gen(s => raw"""val $s = "${s.toUpperCase}"""")(using "\n")
    * }}}
    *
-   * @param iterable An Interable
+   * @param iterable An Iterable
    */
   implicit class IterableExtensions(iterable: Iterable[Any]) {
     def gen(f: String => String = identity)(implicit delimiter: String = ""): String =
