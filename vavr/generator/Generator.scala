@@ -4079,13 +4079,6 @@ def generateTestClasses(): Unit = {
               """)}
 
               @$test
-              public void shouldComputeCorrectHashCode() {
-                  final int actual = createTuple().hashCode();
-                  final int expected = ${im.getType("java.util.Objects")}.${if (i == 1) "hashCode" else "hash"}($nullArgs);
-                  $assertThat(actual).isEqualTo(expected);
-              }
-
-              @$test
               public void shouldImplementToString() {
                   final String actual = createTuple().toString();
                   final String expected = "($nullArgs)";

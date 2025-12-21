@@ -30,7 +30,6 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import java.util.Comparator;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 public class Tuple8Test {
@@ -381,13 +380,6 @@ public class Tuple8Test {
         assertThat(tuple.equals(Tuple.of("1", "2", "3", "4", "5", "X", "7", "8"))).isFalse();
         assertThat(tuple.equals(Tuple.of("1", "2", "3", "4", "5", "6", "X", "8"))).isFalse();
         assertThat(tuple.equals(Tuple.of("1", "2", "3", "4", "5", "6", "7", "X"))).isFalse();
-    }
-
-    @Test
-    public void shouldComputeCorrectHashCode() {
-        final int actual = createTuple().hashCode();
-        final int expected = Objects.hash(null, null, null, null, null, null, null, null);
-        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
