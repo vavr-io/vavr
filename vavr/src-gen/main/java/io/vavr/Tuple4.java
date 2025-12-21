@@ -37,50 +37,9 @@ import org.jspecify.annotations.NonNull;
  * @param <T2> type of the 2nd element
  * @param <T3> type of the 3rd element
  * @param <T4> type of the 4th element
- * @author Daniel Dietrich
+ * @author Daniel Dietrich, Grzegorz Piwowarek
  */
-public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1, T2, T3, T4>>, Serializable {
-
-    private static final long serialVersionUID = 1L;
-
-    /**
-     * The 1st element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T1 _1;
-
-    /**
-     * The 2nd element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T2 _2;
-
-    /**
-     * The 3rd element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T3 _3;
-
-    /**
-     * The 4th element of this tuple.
-     */
-    @SuppressWarnings("serial") // Conditionally serializable
-    public final T4 _4;
-
-    /**
-     * Constructs a tuple of 4 elements.
-     *
-     * @param t1 the 1st element
-     * @param t2 the 2nd element
-     * @param t3 the 3rd element
-     * @param t4 the 4th element
-     */
-    public Tuple4(T1 t1, T2 t2, T3 t3, T4 t4) {
-        this._1 = t1;
-        this._2 = t2;
-        this._3 = t3;
-        this._4 = t4;
-    }
+public record Tuple4<T1, T2, T3, T4>(T1 _1, T2 _2, T3 _3, T4 _4) implements Tuple, Comparable<Tuple4<T1, T2, T3, T4>>, Serializable {
 
     public static <T1, T2, T3, T4> Comparator<Tuple4<T1, T2, T3, T4>> comparator(Comparator<? super T1> t1Comp, Comparator<? super T2> t2Comp, Comparator<? super T3> t3Comp, Comparator<? super T4> t4Comp) {
         return (Comparator<Tuple4<T1, T2, T3, T4>> & Serializable) (t1, t2) -> {
@@ -98,14 +57,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
             if (check3 != 0) {
                 return check3;
             }
-
-            final int check4 = t4Comp.compare(t1._4, t2._4);
-            if (check4 != 0) {
-                return check4;
-            }
-
-            // all components are equal
-            return 0;
+            return t4Comp.compare(t1._4, t2._4);
         };
     }
 
@@ -128,14 +80,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
         if (check3 != 0) {
             return check3;
         }
-
-        final int check4 = t1._4.compareTo(t2._4);
-        if (check4 != 0) {
-            return check4;
-        }
-
-        // all components are equal
-        return 0;
+        return t1._4.compareTo(t2._4);
     }
 
     @Override
@@ -149,15 +94,6 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     }
 
     /**
-     * Getter of the 1st element of this tuple.
-     *
-     * @return the 1st element of this Tuple.
-     */
-    public T1 _1() {
-        return _1;
-    }
-
-    /**
      * Sets the 1st element of this tuple to the given {@code value}.
      *
      * @param value the new value
@@ -165,15 +101,6 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public Tuple4<T1, T2, T3, T4> update1(T1 value) {
         return new Tuple4<>(value, _2, _3, _4);
-    }
-
-    /**
-     * Getter of the 2nd element of this tuple.
-     *
-     * @return the 2nd element of this Tuple.
-     */
-    public T2 _2() {
-        return _2;
     }
 
     /**
@@ -187,15 +114,6 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
     }
 
     /**
-     * Getter of the 3rd element of this tuple.
-     *
-     * @return the 3rd element of this Tuple.
-     */
-    public T3 _3() {
-        return _3;
-    }
-
-    /**
      * Sets the 3rd element of this tuple to the given {@code value}.
      *
      * @param value the new value
@@ -203,15 +121,6 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public Tuple4<T1, T2, T3, T4> update3(T3 value) {
         return new Tuple4<>(_1, _2, value, _4);
-    }
-
-    /**
-     * Getter of the 4th element of this tuple.
-     *
-     * @return the 4th element of this Tuple.
-     */
-    public T4 _4() {
-        return _4;
     }
 
     /**
@@ -232,7 +141,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @param <U2> new type of the 2nd component
      * @param <U3> new type of the 3rd component
      * @param <U4> new type of the 4th component
-     * @return A new Tuple of same arity.
+     * @return A new Tuple of the same arity.
      * @throws NullPointerException if {@code mapper} is null
      */
     public <U1, U2, U3, U4> Tuple4<U1, U2, U3, U4> map(@NonNull Function4<? super T1, ? super T2, ? super T3, ? super T4, Tuple4<U1, U2, U3, U4>> mapper) {
@@ -251,7 +160,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @param <U2> new type of the 2nd component
      * @param <U3> new type of the 3rd component
      * @param <U4> new type of the 4th component
-     * @return A new Tuple of same arity.
+     * @return A new Tuple of the same arity.
      * @throws NullPointerException if one of the arguments is null
      */
     public <U1, U2, U3, U4> Tuple4<U1, U2, U3, U4> map(@NonNull Function<? super T1, ? extends U1> f1, @NonNull Function<? super T2, ? extends U2> f2, @NonNull Function<? super T3, ? extends U3> f3, @NonNull Function<? super T4, ? extends U4> f4) {
@@ -269,10 +178,9 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 1st component
      */
-    public <U> Tuple4<U, T2, T3, T4> map1(Function<? super T1, ? extends U> mapper) {
+    public <U> Tuple4<U, T2, T3, T4> map1(@NonNull Function<? super T1, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_1);
-        return Tuple.of(u, _2, _3, _4);
+        return Tuple.of(mapper.apply(_1), _2, _3, _4);
     }
 
     /**
@@ -282,10 +190,9 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 2nd component
      */
-    public <U> Tuple4<T1, U, T3, T4> map2(Function<? super T2, ? extends U> mapper) {
+    public <U> Tuple4<T1, U, T3, T4> map2(@NonNull Function<? super T2, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_2);
-        return Tuple.of(_1, u, _3, _4);
+        return Tuple.of(_1, mapper.apply(_2), _3, _4);
     }
 
     /**
@@ -295,10 +202,9 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 3rd component
      */
-    public <U> Tuple4<T1, T2, U, T4> map3(Function<? super T3, ? extends U> mapper) {
+    public <U> Tuple4<T1, T2, U, T4> map3(@NonNull Function<? super T3, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_3);
-        return Tuple.of(_1, _2, u, _4);
+        return Tuple.of(_1, _2, mapper.apply(_3), _4);
     }
 
     /**
@@ -308,10 +214,9 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      * @param mapper A mapping function
      * @return a new tuple based on this tuple and substituted 4th component
      */
-    public <U> Tuple4<T1, T2, T3, U> map4(Function<? super T4, ? extends U> mapper) {
+    public <U> Tuple4<T1, T2, T3, U> map4(@NonNull Function<? super T4, ? extends U> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        final U u = mapper.apply(_4);
-        return Tuple.of(_1, _2, _3, u);
+        return Tuple.of(_1, _2, _3, mapper.apply(_4));
     }
 
     /**
@@ -353,7 +258,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public <T5> Tuple5<T1, T2, T3, T4, T5> concat(@NonNull Tuple1<T5> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
-        return Tuple.of(_1, _2, _3, _4, tuple._1);
+        return Tuple.of(_1, _2, _3, _4, tuple._1());
     }
 
     /**
@@ -367,7 +272,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public <T5, T6> Tuple6<T1, T2, T3, T4, T5, T6> concat(@NonNull Tuple2<T5, T6> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
-        return Tuple.of(_1, _2, _3, _4, tuple._1, tuple._2);
+        return Tuple.of(_1, _2, _3, _4, tuple._1(), tuple._2());
     }
 
     /**
@@ -382,7 +287,7 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public <T5, T6, T7> Tuple7<T1, T2, T3, T4, T5, T6, T7> concat(@NonNull Tuple3<T5, T6, T7> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
-        return Tuple.of(_1, _2, _3, _4, tuple._1, tuple._2, tuple._3);
+        return Tuple.of(_1, _2, _3, _4, tuple._1(), tuple._2(), tuple._3());
     }
 
     /**
@@ -398,33 +303,11 @@ public final class Tuple4<T1, T2, T3, T4> implements Tuple, Comparable<Tuple4<T1
      */
     public <T5, T6, T7, T8> Tuple8<T1, T2, T3, T4, T5, T6, T7, T8> concat(@NonNull Tuple4<T5, T6, T7, T8> tuple) {
         Objects.requireNonNull(tuple, "tuple is null");
-        return Tuple.of(_1, _2, _3, _4, tuple._1, tuple._2, tuple._3, tuple._4);
-    }
-
-    // -- Object
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        } else if (!(o instanceof Tuple4)) {
-            return false;
-        } else {
-            final Tuple4<?, ?, ?, ?> that = (Tuple4<?, ?, ?, ?>) o;
-            return Objects.equals(this._1, that._1)
-                  && Objects.equals(this._2, that._2)
-                  && Objects.equals(this._3, that._3)
-                  && Objects.equals(this._4, that._4);
-        }
+        return Tuple.of(_1, _2, _3, _4, tuple._1(), tuple._2(), tuple._3(), tuple._4());
     }
 
     @Override
-    public int hashCode() {
-        return Tuple.hash(_1, _2, _3, _4);
-    }
-
-    @Override
-    public String toString() {
+    public @NonNull String toString() {
         return "(" + _1 + ", " + _2 + ", " + _3 + ", " + _4 + ")";
     }
 

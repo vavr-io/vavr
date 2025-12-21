@@ -48,8 +48,8 @@ public class Euler21Test {
     private static int sumOfDivisors(int n) {
         return 1 + Stream.rangeClosed(2, (int) Math.sqrt(n))
                 .map(d -> Tuple.of(d, n / d))
-                .filter(t -> t._1 * t._2 == n && !Objects.equals(t._1, t._2))
-                .map(t -> t._1 + t._2)
+                .filter(t -> t._1() * t._2() == n && !Objects.equals(t._1(), t._2()))
+                .map(t -> t._1() + t._2())
                 .foldLeft(0, (sum, x) -> sum + x);
     }
 
