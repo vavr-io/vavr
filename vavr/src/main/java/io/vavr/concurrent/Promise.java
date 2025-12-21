@@ -22,7 +22,6 @@ import io.vavr.control.Try;
 import java.util.Objects;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ForkJoinPool;
 import org.jspecify.annotations.NonNull;
 
 import static io.vavr.concurrent.Future.DEFAULT_EXECUTOR;
@@ -137,8 +136,7 @@ public interface Promise<T> {
     }
 
     /**
-     * Creates a new {@code Promise} that is not yet completed, using the {@link Future#DEFAULT_EXECUTOR}
-     * (typically {@link ForkJoinPool#commonPool()}) for asynchronous operations.
+     * Creates a new {@code Promise} that is not yet completed, using Virtual Threads for asynchronous operations.
      *
      * @param <T> the type of the value that will complete the {@code Promise}
      * @return a new, uncompleted {@code Promise}
