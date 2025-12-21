@@ -181,7 +181,7 @@ public interface Function1<T1, R> extends Serializable, Function<T1, R> {
      * @return a tupled function equivalent to this.
      */
     default Function1<Tuple1<T1>, R> tupled() {
-        return t -> apply(t._1);
+        return t -> apply(t._1());
     }
 
     /**

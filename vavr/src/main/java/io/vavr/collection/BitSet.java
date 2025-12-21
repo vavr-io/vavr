@@ -836,7 +836,7 @@ public interface BitSet<T> extends SortedSet<T> {
     @Override
     default TreeSet<Tuple2<T, Integer>> zipWithIndex() {
         final Comparator<? super T> component1Comparator = comparator();
-        final Comparator<Tuple2<T, Integer>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
+        final Comparator<Tuple2<T, Integer>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1(), t2._1());
         return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
     }
 

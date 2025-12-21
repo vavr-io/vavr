@@ -108,7 +108,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         if (isEmpty()) {
             throw new UnsupportedOperationException("tail of empty " + stringPrefix());
         } else {
-            return dequeue()._2;
+            return dequeue()._2();
         }
     }
 
@@ -118,7 +118,7 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
             throw new NoSuchElementException("dequeue of empty " + stringPrefix());
         } else {
             final Tuple2<T, Seq<Node<T>>> dequeue = deleteMin(comparator, this.forest);
-            return Tuple.of(dequeue._1, with(dequeue._2, this.size - 1));
+            return Tuple.of(dequeue._1(), with(dequeue._2(), this.size - 1));
         }
     }
 
@@ -376,8 +376,8 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
         io.vavr.collection.List<T> results = io.vavr.collection.List.empty();
         for (PriorityQueue<T> queue = this; !queue.isEmpty(); ) {
             final Tuple2<T, PriorityQueue<T>> dequeue = queue.dequeue();
-            results = results.prepend(dequeue._1);
-            queue = dequeue._2;
+            results = results.prepend(dequeue._1());
+            queue = dequeue._2();
         }
         return results.reverse();
     }
@@ -697,14 +697,14 @@ public final class PriorityQueue<T> extends io.vavr.collection.AbstractQueue<T, 
     public <T1, T2> Tuple2<? extends PriorityQueue<T1>, ? extends PriorityQueue<T2>> unzip(@NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple2<io.vavr.collection.Iterator<T1>, io.vavr.collection.Iterator<T2>> unzip = iterator().unzip(unzipper);
-        return Tuple.of(ofAll(Comparators.naturalComparator(), unzip._1), ofAll(Comparators.naturalComparator(), unzip._2));
+        return Tuple.of(ofAll(Comparators.naturalComparator(), unzip._1()), ofAll(Comparators.naturalComparator(), unzip._2()));
     }
 
     @Override
     public <T1, T2, T3> Tuple3<? extends PriorityQueue<T1>, ? extends PriorityQueue<T2>, ? extends PriorityQueue<T3>> unzip3(@NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
         Objects.requireNonNull(unzipper, "unzipper is null");
         final Tuple3<io.vavr.collection.Iterator<T1>, io.vavr.collection.Iterator<T2>, io.vavr.collection.Iterator<T3>> unzip3 = iterator().unzip3(unzipper);
-        return Tuple.of(ofAll(Comparators.naturalComparator(), unzip3._1), ofAll(Comparators.naturalComparator(), unzip3._2), ofAll(Comparators.naturalComparator(), unzip3._3));
+        return Tuple.of(ofAll(Comparators.naturalComparator(), unzip3._1()), ofAll(Comparators.naturalComparator(), unzip3._2()), ofAll(Comparators.naturalComparator(), unzip3._3()));
     }
 
     @Override

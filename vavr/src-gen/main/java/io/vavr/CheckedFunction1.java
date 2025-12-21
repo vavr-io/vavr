@@ -182,7 +182,7 @@ public interface CheckedFunction1<T1, R> extends Serializable {
      * @return a tupled function equivalent to this.
      */
     default CheckedFunction1<Tuple1<T1>, R> tupled() {
-        return t -> apply(t._1);
+        return t -> apply(t._1());
     }
 
     /**

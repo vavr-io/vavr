@@ -59,9 +59,9 @@ public class Euler28Test {
     }
 
     private static Stream<Long> diagonalNumbersInSpiralWithSide(long maxSideLength) {
-        return Stream.iterate(Tuple.of(1, center()), t -> Tuple.of(nextSideLength(t._1), nextRoundOfCorners(t._2.last(), nextSideLength(t._1))))
-                .takeWhile(t -> t._1 <= maxSideLength)
-                .flatMap(t -> t._2);
+        return Stream.iterate(Tuple.of(1, center()), t -> Tuple.of(nextSideLength(t._1()), nextRoundOfCorners(t._2().last(), nextSideLength(t._1()))))
+                .takeWhile(t -> t._1() <= maxSideLength)
+                .flatMap(t -> t._2());
     }
 
     private static Stream<Long> center() {

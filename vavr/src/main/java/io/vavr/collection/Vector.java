@@ -1372,8 +1372,8 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         Vector<T2> ys = empty();
         for (int i = 0; i < length(); i++) {
             final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(get(i));
-            xs = xs.append(t._1);
-            ys = ys.append(t._2);
+            xs = xs.append(t._1());
+            ys = ys.append(t._2());
         }
         return Tuple.of(xs, ys);
     }
@@ -1386,9 +1386,9 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
         Vector<T3> zs = empty();
         for (int i = 0; i < length(); i++) {
             final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
-            xs = xs.append(t._1);
-            ys = ys.append(t._2);
-            zs = zs.append(t._3);
+            xs = xs.append(t._1());
+            ys = ys.append(t._2());
+            zs = zs.append(t._3());
         }
         return Tuple.of(xs, ys, zs);
     }
@@ -1462,7 +1462,7 @@ interface VectorModule {
             return (k == 0)
                    ? Vector.of(Vector.empty())
                    : elements.zipWithIndex().flatMap(
-                    t -> apply(elements.drop(t._2 + 1), (k - 1)).map((Vector<T> c) -> c.prepend(t._1)));
+                    t -> apply(elements.drop(t._2() + 1), (k - 1)).map((Vector<T> c) -> c.prepend(t._1())));
         }
     }
 }

@@ -480,8 +480,8 @@ public class StreamTest extends AbstractLinearSeqTest {
             count.incrementAndGet();
             return true;
         });
-        assertThat(results._1).isEqualTo(of(1, 2, 3));
-        assertThat(results._2).isEqualTo(of());
+        assertThat(results._1()).isEqualTo(of(1, 2, 3));
+        assertThat(results._2()).isEqualTo(of());
         assertThat(count.get()).isEqualTo(6);
     }
 
@@ -497,10 +497,10 @@ public class StreamTest extends AbstractLinearSeqTest {
             return i % 2 == 0;
         });
         assertThat(itemsCalled).containsExactly(0, 1);
-        assertThat(results._1.head()).isEqualTo(0);
-        assertThat(results._2.head()).isEqualTo(1);
-        assertThat(results._1.take(3)).isEqualTo(of(0, 2, 4));
-        assertThat(results._2.take(3)).isEqualTo(of(1, 3, 5));
+        assertThat(results._1().head()).isEqualTo(0);
+        assertThat(results._2().head()).isEqualTo(1);
+        assertThat(results._1().take(3)).isEqualTo(of(0, 2, 4));
+        assertThat(results._2().take(3)).isEqualTo(of(1, 3, 5));
         assertThat(itemsCalled).containsExactly(0, 1, 2, 3, 4, 5);
     }
 
@@ -528,7 +528,7 @@ public class StreamTest extends AbstractLinearSeqTest {
 
     @Test
     public void shouldRecurrentlyCalculateFibonacci() {
-        assertThat(Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1 + t._2)).take(10))
+        assertThat(Stream.of(1, 1).appendSelf(self -> self.zip(self.tail()).map(t -> t._1() + t._2())).take(10))
                 .isEqualTo(Stream.of(1, 1, 2, 3, 5, 8, 13, 21, 34, 55));
     }
 

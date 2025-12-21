@@ -1565,8 +1565,8 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             final Object[] ys = new Object[delegate.length];
             for (int i = 0; i < delegate.length; i++) {
                 final Tuple2<? extends T1, ? extends T2> t = unzipper.apply(get(i));
-                xs[i] = t._1;
-                ys[i] = t._2;
+                xs[i] = t._1();
+                ys[i] = t._2();
             }
             return Tuple.of(wrap(xs), wrap(ys));
         }
@@ -1583,9 +1583,9 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
             final Object[] zs = new Object[delegate.length];
             for (int i = 0; i < delegate.length; i++) {
                 final Tuple3<? extends T1, ? extends T2, ? extends T3> t = unzipper.apply(get(i));
-                xs[i] = t._1;
-                ys[i] = t._2;
-                zs[i] = t._3;
+                xs[i] = t._1();
+                ys[i] = t._2();
+                zs[i] = t._3();
             }
             return Tuple.of(wrap(xs), wrap(ys), wrap(zs));
         }
@@ -1676,7 +1676,7 @@ interface ArrayModule {
                 return Array.of(Array.empty());
             } else {
                 return elements.zipWithIndex().flatMap(
-                        t -> apply(elements.drop(t._2 + 1), (k - 1)).map(c -> c.prepend(t._1))
+                        t -> apply(elements.drop(t._2() + 1), (k - 1)).map(c -> c.prepend(t._1()))
                 );
             }
         }

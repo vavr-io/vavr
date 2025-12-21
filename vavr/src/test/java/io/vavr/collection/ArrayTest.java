@@ -254,8 +254,8 @@ public class ArrayTest extends AbstractIndexedSeqTest {
             count.incrementAndGet();
             return true;
         });
-        assertThat(results._1).isEqualTo(of(1, 2, 3));
-        assertThat(results._2).isEqualTo(of());
+        assertThat(results._1()).isEqualTo(of(1, 2, 3));
+        assertThat(results._2()).isEqualTo(of());
         assertThat(count.get()).isEqualTo(3);
     }
 
