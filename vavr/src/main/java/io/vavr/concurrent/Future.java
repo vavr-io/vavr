@@ -56,67 +56,16 @@ import org.jspecify.annotations.NonNull;
  * @param <T> the type of the computation result
  * @author Daniel Dietrich, Grzegorz Piwowarek
  */
-@SuppressWarnings("deprecation")
 public interface Future<T> extends Value<T> {
 
-    /**
-     * The default executor service is {@link ForkJoinPool#commonPool()}.
-     * <p>
-     * Facts about ForkJoinPool:
-     *
-     * <ul>
-     * <li>It is work-stealing, i.e. all threads in the pool attempt to find work submitted to the pool.
-     * Especially this is efficient under heavy load (many small tasks), e.g. when tasks create subtasks
-     * (recursive threads).</li>
-     * <li>The ForkJoinPool is dynamic, it has a maximum of 32767 running threads. Compared to fixed-size pools,
-     * this reduces the risk of dead-locks.</li>
-     * <li>The commonPool() is shared across the entire VM. Keep this in mind when also using
-     * {@link java.util.stream.Stream#parallel()} and {@link java.util.concurrent.CompletableFuture}}</li>
-     * </ul>
-     *
-     * The ForkJoinPool creates daemon threads but its run state is unaffected by attempts to shutdown() or shutdownNow().
-     * However, all running tasks are immediately terminated upon program System.exit(int).
-     * <p>
-     * IMPORTANT: Invoke {@code ForkJoinPool.commonPool().awaitQuiescence(long, TimeUnit)} before exit in order to
-     * ensure that all running async tasks complete before program termination.
-     *
-     * @see ForkJoinPool#awaitQuiescence(long, TimeUnit)
-     * @deprecated Will be removed in Vavr 1.0. Use {@link #DEFAULT_EXECUTOR} instead.
-     */
-    @Deprecated()
-    ExecutorService DEFAULT_EXECUTOR_SERVICE = ForkJoinPool.commonPool();
-
-    /**
-     * The default executor is {@link ForkJoinPool#commonPool()}.
-     * <p>
-     * Facts about ForkJoinPool:
-     *
-     * <ul>
-     * <li>It is work-stealing, i.e. all threads in the pool attempt to find work submitted to the pool.
-     * Especially this is efficient under heavy load (many small tasks), e.g. when tasks create subtasks
-     * (recursive threads).</li>
-     * <li>The ForkJoinPool is dynamic, it has a maximum of 32767 running threads. Compared to fixed-size pools,
-     * this reduces the risk of dead-locks.</li>
-     * <li>The commonPool() is shared across the entire VM. Keep this in mind when also using
-     * {@link java.util.stream.Stream#parallel()} and {@link java.util.concurrent.CompletableFuture}}</li>
-     * </ul>
-     *
-     * The ForkJoinPool creates daemon threads but its run state is unaffected by attempts to shutdown() or shutdownNow().
-     * However, all running tasks are immediately terminated upon program System.exit(int).
-     * <p>
-     * IMPORTANT: Invoke {@code ForkJoinPool.commonPool().awaitQuiescence(long, TimeUnit)} before exit in order to
-     * ensure that all running async tasks complete before program termination.
-     *
-     * @see ForkJoinPool#awaitQuiescence(long, TimeUnit)
-     */
-    Executor DEFAULT_EXECUTOR = DEFAULT_EXECUTOR_SERVICE;
+    Executor DEFAULT_EXECUTOR = Executors.newVirtualThreadPerTaskExecutor();
 
     /**
      * Creates a failed {@code Future} with the given {@code exception}, using the {@link #DEFAULT_EXECUTOR}
      * to execute callbacks.
      *
      * @param exception the exception that caused the failure
-     * @param <T>       the type of a successful result
+     * @param <T>       the type of successful result
      * @return a failed {@code Future} containing the given exception
      * @throws NullPointerException if {@code exception} is null
      */
@@ -130,7 +79,7 @@ public interface Future<T> extends Value<T> {
      *
      * @param executor  the {@link Executor} to run asynchronous handlers
      * @param exception the exception that caused the failure
-     * @param <T>       the type of a successful result
+     * @param <T>       the type of successful result
      * @return a failed {@code Future} containing the given exception
      * @throws NullPointerException if {@code executor} or {@code exception} is null
      */
@@ -381,100 +330,6 @@ public interface Future<T> extends Value<T> {
     @SuppressWarnings("unchecked")
     static <T> Future<T> narrow(Future<? extends T> future) {
         return (Future<T>) future;
-    }
-
-    /**
-     * Starts an asynchronous computation using the {@link #DEFAULT_EXECUTOR}.
-     *
-     * @param computation the computation to execute asynchronously
-     * @param <T>         the type of the computation result
-     * @return a new {@code Future} containing the result of the computation
-     * @throws NullPointerException if {@code computation} is null
-     * @deprecated This method will be removed. Use {@code Future.of(supplier::get)} instead of {@code Future.ofSupplier(supplier)}.
-     */
-    @Deprecated
-    static <T> Future<T> ofSupplier(@NonNull Supplier<? extends T> computation) {
-        Objects.requireNonNull(computation, "computation is null");
-        return of(DEFAULT_EXECUTOR, computation::get);
-    }
-
-    /**
-     * Starts an asynchronous computation, backed by the given {@link Executor}.
-     *
-     * @param executor An executor service.
-     * @param computation A computation.
-     * @param <T>      Type of the computation result.
-     * @return A new Future instance
-     * @throws NullPointerException if one of executor or computation is null.
-     * @deprecated Will be removed. Use {@code Future.of(executor, supplier::get)} instead of {@code Future.ofSupplier(executor, supplier)}.
-     */
-    @Deprecated
-    static <T> Future<T> ofSupplier(@NonNull Executor executor, @NonNull Supplier<? extends T> computation) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(computation, "computation is null");
-        return of(executor, computation::get);
-    }
-
-    /**
-     * Starts an asynchronous computation, backed by the {@link #DEFAULT_EXECUTOR}.
-     *
-     * @param computation A computation
-     * @param <T>      Type of the computation result.
-     * @return A new Future instance
-     * @throws NullPointerException if computation is null.
-     * @deprecated Will be removed. Use {@code Future.of(callable::call)} instead of {@code Future.ofCallable(callable)}.
-     */
-    @Deprecated
-    static <T> Future<T> ofCallable(@NonNull Callable<? extends T> computation) {
-        Objects.requireNonNull(computation, "computation is null");
-        return of(DEFAULT_EXECUTOR, computation::call);
-    }
-
-    /**
-     * Starts an asynchronous computation, backed by the given {@link Executor}.
-     *
-     * @param executor An executor service.
-     * @param computation A computation.
-     * @param <T>      Type of the computation result.
-     * @return A new Future instance
-     * @throws NullPointerException if one of executor or computation is null.
-     * @deprecated Will be removed. Use {@code Future.of(executor, callable::call)} instead of {@code Future.ofCallable(executor, callable)}.
-     */
-    @Deprecated
-    static <T> Future<T> ofCallable(@NonNull Executor executor, @NonNull Callable<? extends T> computation) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(computation, "computation is null");
-        return of(executor, computation::call);
-    }
-
-    /**
-     * Starts an asynchronous computation, backed by the {@link #DEFAULT_EXECUTOR}.
-     *
-     * @param computation A computation
-     * @return A new Future instance
-     * @throws NullPointerException if computation is null.
-     * @deprecated Will be removed. Use {@code Future.of(runnable::run)} instead of {@code Future.runRunnable(runnable)}.
-     */
-    @Deprecated
-    static Future<Void> runRunnable(@NonNull Runnable computation) {
-        Objects.requireNonNull(computation, "computation is null");
-        return run(DEFAULT_EXECUTOR, computation::run);
-    }
-
-    /**
-     * Starts an asynchronous computation, backed by the given {@link Executor}.
-     *
-     * @param executor An executor service.
-     * @param computation A computation.
-     * @return A new Future instance
-     * @throws NullPointerException if one of executor or computation is null.
-     * @deprecated Will be removed. Use {@code Future.of(executor, runnable::run)} instead of {@code Future.runRunnable(executor, runnable)}.
-     */
-    @Deprecated
-    static Future<Void> runRunnable(@NonNull Executor executor, @NonNull Runnable computation) {
-        Objects.requireNonNull(executor, "executor is null");
-        Objects.requireNonNull(computation, "computation is null");
-        return run(executor, computation::run);
     }
 
     /**
@@ -1184,7 +1039,7 @@ public interface Future<T> extends Value<T> {
      * @return a new {@code Future} containing either a failure or the combined result
      * @throws NullPointerException if {@code that} or {@code combinator} is null
      */
-    @SuppressWarnings({"deprecation", "unchecked"})
+    @SuppressWarnings({"unchecked"})
     default <U, R> Future<R> zipWith(@NonNull Future<? extends U> that, @NonNull BiFunction<? super T, ? super U, ? extends R> combinator) {
         Objects.requireNonNull(that, "that is null");
         Objects.requireNonNull(combinator, "combinator is null");
