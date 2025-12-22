@@ -58,7 +58,7 @@
         <maven.surefire.version>3.5.4</maven.surefire.version>
         <spotless.version>3.1.0</spotless.version>
         <maven.source.version>3.4.0</maven.source.version>
-        <maven.exec.version>3.6.2</maven.exec.version>
+        <maven.exec.version>3.6.3</maven.exec.version>
         <scala.maven.version>4.9.8</scala.maven.version>
         <scala.version>3.7.4</scala.version>
     </properties>
