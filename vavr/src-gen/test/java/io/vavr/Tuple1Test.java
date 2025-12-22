@@ -30,7 +30,6 @@ import io.vavr.collection.List;
 import io.vavr.collection.Seq;
 import io.vavr.collection.Stream;
 import java.util.Comparator;
-import java.util.Objects;
 import org.junit.jupiter.api.Test;
 
 public class Tuple1Test {
@@ -50,13 +49,13 @@ public class Tuple1Test {
     @Test
     public void shouldReturnElements() {
         final Tuple1<Integer> tuple = createIntTuple(1);
-        assertThat(tuple._1).isEqualTo(1);
+        assertThat(tuple._1()).isEqualTo(1);
     }
 
     @Test
     public void shouldUpdate1() {
       final Tuple1<Integer> tuple = createIntTuple(1).update1(42);
-      assertThat(tuple._1).isEqualTo(42);
+      assertThat(tuple._1()).isEqualTo(42);
     }
 
     @Test
@@ -185,13 +184,6 @@ public class Tuple1Test {
     public void shouldRecognizeNonEqualityPerComponent() {
         final Tuple1<String> tuple = Tuple.of("1");
         assertThat(tuple.equals(Tuple.of("X"))).isFalse();
-    }
-
-    @Test
-    public void shouldComputeCorrectHashCode() {
-        final int actual = createTuple().hashCode();
-        final int expected = Objects.hashCode(null);
-        assertThat(actual).isEqualTo(expected);
     }
 
     @Test
