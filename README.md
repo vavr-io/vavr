@@ -53,6 +53,13 @@ See [User Guide](http://docs.vavr.io) and/or [Javadoc](http://www.javadoc.io/doc
 * Create -javadoc.jar: `mvn javadoc:jar`
 * Create -source.jar: `mvn source:jar`
 
+### Code Generator
+
+Vavr uses a Scala-based code generator to produce much of its source code, including Function and Tuple variants. The generator ensures consistency and reduces maintenance overhead.
+
+* **Documentation**: See [GENERATOR.md](./GENERATOR.md) for comprehensive documentation on how the code generator works
+* **Regenerating code**: `mvn generate-sources`
+
 ### Contributing
 
 Currently, there are two significant branches:
