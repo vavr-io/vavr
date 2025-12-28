@@ -3,17 +3,16 @@ package io.vavr.control;
 import java.util.List;
 import java.util.Objects;
 
-// TODO should we generate this file and add more permutations of parameter types?
-
 /**
  * Utility that allows to compute hashcodes without var-arg conversion into arrays for common
  * types of vavr.
  *
  * @author Sebastian Zarnekow
- * @deprecated Will be removed from public API
  */
-@Deprecated
-public interface HashCodes {
+class HashCodes {
+
+    private HashCodes() {
+    }
 
     /**
      * Returns the hashcode of the given value.
