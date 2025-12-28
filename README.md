@@ -2,7 +2,7 @@
 
 [![Build Status](https://github.com/vavr-io/vavr/actions/workflows/ci.yml/badge.svg)](https://github.com/vavr-io/vavr/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
-![Maven Central Version](https://img.shields.io/maven-central/v/io.vavr/vavr?versionPrefix=0)
+[![Maven Central Version](https://img.shields.io/maven-central/v/io.vavr/vavr?versionPrefix=0)](https://central.sonatype.com/artifact/io.vavr/vavr/versions)
 [![Code Coverage](https://codecov.io/gh/vavr-io/vavr/branch/master/graph/badge.svg)](https://codecov.io/gh/vavr-io/vavr)
 
 ```text
