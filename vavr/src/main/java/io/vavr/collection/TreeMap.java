@@ -1422,7 +1422,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
     private static <K, V, K2, V2> TreeMap<K2, V2> flatMap(@NonNull TreeMap<K, V> map, @NonNull EntryComparator<K2, V2> entryComparator,
             BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
         Objects.requireNonNull(mapper, "mapper is null");
-        return createTreeMap(entryComparator, map.entries.iterator().flatMap(entry -> mapper.apply(entry._1, entry._2)));
+        return createTreeMap(entryComparator, map.entries.iterator().flatMap(entry -> mapper.apply(entry._1(), entry._2())));
     }
 
     private static <K, K2, V, V2> TreeMap<K2, V2> map(@NonNull TreeMap<K, V> map, @NonNull EntryComparator<K2, V2> entryComparator,
@@ -1573,7 +1573,7 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
 
             @Override
             public int compare(Tuple2<K, V> e1, Tuple2<K, V> e2) {
-                return keyComparator.compare(e1._1, e2._1);
+                return keyComparator.compare(e1._1(), e2._1());
             }
 
             @Override
@@ -1600,8 +1600,8 @@ public final class TreeMap<K, V> implements SortedMap<K, V>, Serializable {
             @SuppressWarnings("unchecked")
             @Override
             public int compare(Tuple2<K, V> e1, Tuple2<K, V> e2) {
-                final K key1 = e1._1;
-                final K key2 = e2._1;
+                final K key1 = e1._1();
+                final K key2 = e2._1();
                 return ((Comparable<K>) key1).compareTo(key2);
             }
 
