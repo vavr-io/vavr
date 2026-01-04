@@ -21,19 +21,19 @@ package io.vavr.collection;
 import java.util.Comparator;
 
 /**
- * A collection whose elements are arranged according to a well-defined order.
- * Implementations expose the {@link Comparator} used to determine that order.
+ * A collection whose elements are arranged according to a well-defined order. Implementations
+ * expose the {@link Comparator} used to determine that order.
  *
  * @param <T> the element type
  * @author Ruslan Sennov, Daniel Dietrich
  */
 public interface Ordered<T> {
 
-    /**
-     * Returns the comparator that governs the ordering of elements in this collection.
-     * The returned comparator must be consistent with the collection's iteration order.
-     *
-     * @return the comparator defining the element order
-     */
-    Comparator<T> comparator();
+  /**
+   * Returns the comparator that governs the ordering of elements in this collection. The returned
+   * comparator must be consistent with the collection's iteration order.
+   *
+   * @return the comparator defining the element order
+   */
+  Comparator<T> comparator();
 }

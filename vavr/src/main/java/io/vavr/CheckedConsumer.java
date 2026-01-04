@@ -32,74 +32,77 @@ import static io.vavr.CheckedConsumerModule.sneakyThrow;
 @FunctionalInterface
 public interface CheckedConsumer<T> {
 
-    /**
-     * Creates a {@code CheckedConsumer} from the given method reference or lambda.
-     *
-     * <p>Example usage:</p>
-     * <pre>{@code
-     * final CheckedConsumer<Value> checkedConsumer = CheckedConsumer.of(Value::stdout);
-     * final Consumer<Value> consumer = checkedConsumer.unchecked();
-     *
-     * // prints "Hi" to the console
-     * consumer.accept(CharSeq.of("Hi!"));
-     *
-     * // may throw an exception
-     * consumer.accept(null);
-     * }</pre>
-     *
-     * @param methodReference typically a method reference, e.g. {@code Type::method}
-     * @param <T> the type of values accepted by the consumer
-     * @return a new {@code CheckedConsumer} wrapping the given method reference
-     * @see CheckedFunction1#of(CheckedFunction1)
-     */
-    static <T> CheckedConsumer<T> of(@NonNull CheckedConsumer<T> methodReference) {
-        return methodReference;
-    }
+  /**
+   * Creates a {@code CheckedConsumer} from the given method reference or lambda.
+   *
+   * <p>Example usage:
+   *
+   * <pre>{@code
+   * final CheckedConsumer<Value> checkedConsumer = CheckedConsumer.of(Value::stdout);
+   * final Consumer<Value> consumer = checkedConsumer.unchecked();
+   *
+   * // prints "Hi" to the console
+   * consumer.accept(CharSeq.of("Hi!"));
+   *
+   * // may throw an exception
+   * consumer.accept(null);
+   * }</pre>
+   *
+   * @param methodReference typically a method reference, e.g. {@code Type::method}
+   * @param <T> the type of values accepted by the consumer
+   * @return a new {@code CheckedConsumer} wrapping the given method reference
+   * @see CheckedFunction1#of(CheckedFunction1)
+   */
+  static <T> CheckedConsumer<T> of(@NonNull CheckedConsumer<T> methodReference) {
+    return methodReference;
+  }
 
-    /**
-     * Performs an action on the given value, potentially causing side-effects.
-     *
-     * @param t the input value of type {@code T}
-     * @throws Throwable if an error occurs during execution
-     */
-    void accept(T t) throws Throwable;
+  /**
+   * Performs an action on the given value, potentially causing side-effects.
+   *
+   * @param t the input value of type {@code T}
+   * @throws Throwable if an error occurs during execution
+   */
+  void accept(T t) throws Throwable;
 
-    /**
-     * Returns a composed {@code CheckedConsumer} that performs, in sequence, 
-     * {@code this.accept(t)} followed by {@code after.accept(t)} for the same input {@code t}.
-     *
-     * @param after the action to execute after this action
-     * @return a new {@code CheckedConsumer} that chains {@code this} and {@code after}
-     * @throws NullPointerException if {@code after} is null
-     */
-    default CheckedConsumer<T> andThen(@NonNull CheckedConsumer<? super T> after) {
-        Objects.requireNonNull(after, "after is null");
-        return (T t) -> { accept(t); after.accept(t); };
-    }
+  /**
+   * Returns a composed {@code CheckedConsumer} that performs, in sequence, {@code this.accept(t)}
+   * followed by {@code after.accept(t)} for the same input {@code t}.
+   *
+   * @param after the action to execute after this action
+   * @return a new {@code CheckedConsumer} that chains {@code this} and {@code after}
+   * @throws NullPointerException if {@code after} is null
+   */
+  default CheckedConsumer<T> andThen(@NonNull CheckedConsumer<? super T> after) {
+    Objects.requireNonNull(after, "after is null");
+    return (T t) -> {
+      accept(t);
+      after.accept(t);
+    };
+  }
 
-    /**
-     * Returns an unchecked {@link Consumer} that <em>sneakily throws</em> any exception 
-     * encountered while accepting a value.
-     *
-     * @return a {@link Consumer} that may throw any {@link Throwable} without declaring it
-     */
-    default Consumer<T> unchecked() {
-        return t -> {
-            try {
-                accept(t);
-            } catch(Throwable x) {
-                sneakyThrow(x);
-            }
-        };
-    }
+  /**
+   * Returns an unchecked {@link Consumer} that <em>sneakily throws</em> any exception encountered
+   * while accepting a value.
+   *
+   * @return a {@link Consumer} that may throw any {@link Throwable} without declaring it
+   */
+  default Consumer<T> unchecked() {
+    return t -> {
+      try {
+        accept(t);
+      } catch (Throwable x) {
+        sneakyThrow(x);
+      }
+    };
+  }
 }
 
 interface CheckedConsumerModule {
 
-    // DEV-NOTE: we do not plan to expose this as public API
-    @SuppressWarnings("unchecked")
-    static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
-        throw (T) t;
-    }
-
+  // DEV-NOTE: we do not plan to expose this as public API
+  @SuppressWarnings("unchecked")
+  static <T extends Throwable, R> R sneakyThrow(Throwable t) throws T {
+    throw (T) t;
+  }
 }

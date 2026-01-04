@@ -34,184 +34,191 @@ import org.jspecify.annotations.NonNull;
  */
 public interface SortedMultimap<K, V> extends Multimap<K, V>, Ordered<K> {
 
-    /**
-     * The serial version UID for serialization.
-     */
-    long serialVersionUID = 1L;
+  /** The serial version UID for serialization. */
+  long serialVersionUID = 1L;
 
-    /**
-     * Narrows a widened {@code SortedMultimap<? extends K, ? extends V>} to {@code SortedMultimap<K, V>}
-     * by performing a type-safe cast. This is eligible because immutable/read-only
-     * collections are covariant.
-     *
-     * @param map A {@code SortedMultimap}.
-     * @param <K> Key type
-     * @param <V> Value type
-     * @return the given {@code multimap} instance as narrowed type {@code SortedMultimap<K, V>}.
-     */
-    @SuppressWarnings("unchecked")
-    static <K, V> SortedMultimap<K, V> narrow(SortedMultimap<? extends K, ? extends V> map) {
-        return (SortedMultimap<K, V>) map;
-    }
+  /**
+   * Narrows a widened {@code SortedMultimap<? extends K, ? extends V>} to {@code SortedMultimap<K,
+   * V>} by performing a type-safe cast. This is eligible because immutable/read-only collections
+   * are covariant.
+   *
+   * @param map A {@code SortedMultimap}.
+   * @param <K> Key type
+   * @param <V> Value type
+   * @return the given {@code multimap} instance as narrowed type {@code SortedMultimap<K, V>}.
+   */
+  @SuppressWarnings("unchecked")
+  static <K, V> SortedMultimap<K, V> narrow(SortedMultimap<? extends K, ? extends V> map) {
+    return (SortedMultimap<K, V>) map;
+  }
 
-    @Override
-    SortedMultimap<K, V> filter(@NonNull BiPredicate<? super K, ? super V> predicate);
+  @Override
+  SortedMultimap<K, V> filter(@NonNull BiPredicate<? super K, ? super V> predicate);
 
-    @Override
-    SortedMultimap<K, V> reject(@NonNull BiPredicate<? super K, ? super V> predicate);
+  @Override
+  SortedMultimap<K, V> reject(@NonNull BiPredicate<? super K, ? super V> predicate);
 
-    @Override
-    SortedMultimap<K, V> filterKeys(@NonNull Predicate<? super K> predicate);
+  @Override
+  SortedMultimap<K, V> filterKeys(@NonNull Predicate<? super K> predicate);
 
-    @Override
-    SortedMultimap<K, V> rejectKeys(@NonNull Predicate<? super K> predicate);
+  @Override
+  SortedMultimap<K, V> rejectKeys(@NonNull Predicate<? super K> predicate);
 
-    @Override
-    SortedMultimap<K, V> filterValues(@NonNull Predicate<? super V> predicate);
+  @Override
+  SortedMultimap<K, V> filterValues(@NonNull Predicate<? super V> predicate);
 
-    @Override
-    SortedMultimap<K, V> rejectValues(@NonNull Predicate<? super V> predicate);
+  @Override
+  SortedMultimap<K, V> rejectValues(@NonNull Predicate<? super V> predicate);
 
-    @Override
-    SortedSet<K> keySet();
+  @Override
+  SortedSet<K> keySet();
 
-    @Override
-    SortedMultimap<K, V> merge(@NonNull Multimap<? extends K, ? extends V> that);
+  @Override
+  SortedMultimap<K, V> merge(@NonNull Multimap<? extends K, ? extends V> that);
 
-    @Override
-    <K2 extends K, V2 extends V> SortedMultimap<K, V> merge(@NonNull Multimap<K2, V2> that, @NonNull BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
+  @Override
+  <K2 extends K, V2 extends V> SortedMultimap<K, V> merge(
+      @NonNull Multimap<K2, V2> that,
+      @NonNull BiFunction<Traversable<V>, Traversable<V2>, Traversable<V>> collisionResolution);
 
-    @Override
-    SortedMultimap<K, V> put(K key, V value);
+  @Override
+  SortedMultimap<K, V> put(K key, V value);
 
-    @Override
-    SortedMultimap<K, V> put(@NonNull Tuple2<? extends K, ? extends V> entry);
+  @Override
+  SortedMultimap<K, V> put(@NonNull Tuple2<? extends K, ? extends V> entry);
 
-    @Override
-    SortedMultimap<K, V> remove(K key);
+  @Override
+  SortedMultimap<K, V> remove(K key);
 
-    @Override
-    SortedMultimap<K, V> remove(K key, V value);
+  @Override
+  SortedMultimap<K, V> remove(K key, V value);
 
-    @Override
-    @Deprecated
-    SortedMultimap<K, V> removeAll(@NonNull BiPredicate<? super K, ? super V> predicate);
+  @Override
+  @Deprecated
+  SortedMultimap<K, V> removeAll(@NonNull BiPredicate<? super K, ? super V> predicate);
 
-    @Override
-    SortedMultimap<K, V> removeAll(@NonNull Iterable<? extends K> keys);
+  @Override
+  SortedMultimap<K, V> removeAll(@NonNull Iterable<? extends K> keys);
 
-    @Override
-    @Deprecated
-    SortedMultimap<K, V> removeKeys(@NonNull Predicate<? super K> predicate);
+  @Override
+  @Deprecated
+  SortedMultimap<K, V> removeKeys(@NonNull Predicate<? super K> predicate);
 
-    @Override
-    @Deprecated
-    SortedMultimap<K, V> removeValues(@NonNull Predicate<? super V> predicate);
+  @Override
+  @Deprecated
+  SortedMultimap<K, V> removeValues(@NonNull Predicate<? super V> predicate);
 
-    @Override
-    java.util.SortedMap<K, Collection<V>> toJavaMap();
+  @Override
+  java.util.SortedMap<K, Collection<V>> toJavaMap();
 
-    @Override
-    SortedMultimap<K, V> distinct();
+  @Override
+  SortedMultimap<K, V> distinct();
 
-    @Override
-    SortedMultimap<K, V> distinctBy(@NonNull Comparator<? super Tuple2<K, V>> comparator);
+  @Override
+  SortedMultimap<K, V> distinctBy(@NonNull Comparator<? super Tuple2<K, V>> comparator);
 
-    @Override
-    <U> SortedMultimap<K, V> distinctBy(@NonNull Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
+  @Override
+  <U> SortedMultimap<K, V> distinctBy(
+      @NonNull Function<? super Tuple2<K, V>, ? extends U> keyExtractor);
 
-    @Override
-    SortedMultimap<K, V> drop(int n);
+  @Override
+  SortedMultimap<K, V> drop(int n);
 
-    @Override
-    SortedMultimap<K, V> dropRight(int n);
+  @Override
+  SortedMultimap<K, V> dropRight(int n);
 
-    @Override
-    SortedMultimap<K, V> dropUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate);
+  @Override
+  SortedMultimap<K, V> dropUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
-    @Override
-    SortedMultimap<K, V> dropWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate);
+  @Override
+  SortedMultimap<K, V> dropWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
-    @Override
-    SortedMultimap<K, V> filter(@NonNull Predicate<? super Tuple2<K, V>> predicate);
+  @Override
+  SortedMultimap<K, V> filter(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
-    @Override
-    SortedMultimap<K, V> reject(@NonNull Predicate<? super Tuple2<K, V>> predicate);
+  @Override
+  SortedMultimap<K, V> reject(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
-    @Override
-    <C> Map<C, ? extends SortedMultimap<K, V>> groupBy(@NonNull Function<? super Tuple2<K, V>, ? extends C> classifier);
+  @Override
+  <C> Map<C, ? extends SortedMultimap<K, V>> groupBy(
+      @NonNull Function<? super Tuple2<K, V>, ? extends C> classifier);
 
-    @Override
-    Iterator<? extends SortedMultimap<K, V>> grouped(int size);
+  @Override
+  Iterator<? extends SortedMultimap<K, V>> grouped(int size);
 
-    @Override
-    SortedMultimap<K, V> init();
+  @Override
+  SortedMultimap<K, V> init();
 
-    @Override
-    Option<? extends SortedMultimap<K, V>> initOption();
+  @Override
+  Option<? extends SortedMultimap<K, V>> initOption();
 
-    @Override
-    SortedMultimap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other);
+  @Override
+  SortedMultimap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other);
 
-    @Override
-    SortedMultimap<K, V> orElse(@NonNull Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier);
+  @Override
+  SortedMultimap<K, V> orElse(
+      @NonNull Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier);
 
-    @Override
-    Tuple2<? extends SortedMultimap<K, V>, ? extends SortedMultimap<K, V>> partition(@NonNull Predicate<? super Tuple2<K, V>> predicate);
+  @Override
+  Tuple2<? extends SortedMultimap<K, V>, ? extends SortedMultimap<K, V>> partition(
+      @NonNull Predicate<? super Tuple2<K, V>> predicate);
 
-    @Override
-    SortedMultimap<K, V> peek(@NonNull Consumer<? super Tuple2<K, V>> action);
+  @Override
+  SortedMultimap<K, V> peek(@NonNull Consumer<? super Tuple2<K, V>> action);
 
-    @Override
-    SortedMultimap<K, V> replace(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+  @Override
+  SortedMultimap<K, V> replace(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
-    @Override
-    SortedMultimap<K, V> replaceAll(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
+  @Override
+  SortedMultimap<K, V> replaceAll(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement);
 
-    @Override
-    SortedMultimap<K, V> replaceValue(K key, V value);
+  @Override
+  SortedMultimap<K, V> replaceValue(K key, V value);
 
-    @Override
-    SortedMultimap<K, V> replace(K key, V oldValue, V newValue);
+  @Override
+  SortedMultimap<K, V> replace(K key, V oldValue, V newValue);
 
-    @Override
-    SortedMultimap<K, V> replaceAll(@NonNull BiFunction<? super K, ? super V, ? extends V> function);
+  @Override
+  SortedMultimap<K, V> replaceAll(@NonNull BiFunction<? super K, ? super V, ? extends V> function);
 
-    @Override
-    SortedMultimap<K, V> retainAll(@NonNull Iterable<? extends Tuple2<K, V>> elements);
+  @Override
+  SortedMultimap<K, V> retainAll(@NonNull Iterable<? extends Tuple2<K, V>> elements);
 
-    @Override
-    SortedMultimap<K, V> scan(Tuple2<K, V> zero,
-                              @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation);
+  @Override
+  SortedMultimap<K, V> scan(
+      Tuple2<K, V> zero,
+      @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>>
+          operation);
 
-    @Override
-    Iterator<? extends SortedMultimap<K, V>> slideBy(@NonNull Function<? super Tuple2<K, V>, ?> classifier);
+  @Override
+  Iterator<? extends SortedMultimap<K, V>> slideBy(
+      @NonNull Function<? super Tuple2<K, V>, ?> classifier);
 
-    @Override
-    Iterator<? extends SortedMultimap<K, V>> sliding(int size);
+  @Override
+  Iterator<? extends SortedMultimap<K, V>> sliding(int size);
 
-    @Override
-    Iterator<? extends SortedMultimap<K, V>> sliding(int size, int step);
+  @Override
+  Iterator<? extends SortedMultimap<K, V>> sliding(int size, int step);
 
-    @Override
-    Tuple2<? extends SortedMultimap<K, V>, ? extends SortedMultimap<K, V>> span(@NonNull Predicate<? super Tuple2<K, V>> predicate);
+  @Override
+  Tuple2<? extends SortedMultimap<K, V>, ? extends SortedMultimap<K, V>> span(
+      @NonNull Predicate<? super Tuple2<K, V>> predicate);
 
-    @Override
-    SortedMultimap<K, V> tail();
+  @Override
+  SortedMultimap<K, V> tail();
 
-    @Override
-    Option<? extends SortedMultimap<K, V>> tailOption();
+  @Override
+  Option<? extends SortedMultimap<K, V>> tailOption();
 
-    @Override
-    SortedMultimap<K, V> take(int n);
+  @Override
+  SortedMultimap<K, V> take(int n);
 
-    @Override
-    SortedMultimap<K, V> takeRight(int n);
+  @Override
+  SortedMultimap<K, V> takeRight(int n);
 
-    @Override
-    SortedMultimap<K, V> takeUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate);
+  @Override
+  SortedMultimap<K, V> takeUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 
-    @Override
-    SortedMultimap<K, V> takeWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate);
-
+  @Override
+  SortedMultimap<K, V> takeWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate);
 }

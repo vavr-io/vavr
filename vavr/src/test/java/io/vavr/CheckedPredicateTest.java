@@ -26,44 +26,49 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CheckedPredicateTest {
 
-    // -- of
+  // -- of
 
-    @Test
-    public void shouldCreateCheckedPredicateUsingLambda() {
-        final CheckedPredicate<Object> predicate = CheckedPredicate.of(obj -> true);
-        assertThat(predicate).isNotNull();
+  @Test
+  public void shouldCreateCheckedPredicateUsingLambda() {
+    final CheckedPredicate<Object> predicate = CheckedPredicate.of(obj -> true);
+    assertThat(predicate).isNotNull();
+  }
+
+  @Test
+  public void shouldCreateCheckedPredicateUsingMethodReference() {
+    final CheckedPredicate<Object> predicate = CheckedPredicate.of(CheckedPredicateTest::test);
+    assertThat(predicate).isNotNull();
+  }
+
+  private static boolean test(Object obj) {
+    return true;
+  }
+
+  // -- unchecked
+
+  @Test
+  public void shouldApplyAnUncheckedFunctionThatDoesNotThrow() {
+    final Predicate<Object> preciate = CheckedPredicate.of(obj -> true).unchecked();
+    try {
+      preciate.test(null);
+    } catch (Throwable x) {
+      Assertions.fail("Did not excepect an exception but received: " + x.getMessage());
     }
+  }
 
-    @Test
-    public void shouldCreateCheckedPredicateUsingMethodReference() {
-        final CheckedPredicate<Object> predicate = CheckedPredicate.of(CheckedPredicateTest::test);
-        assertThat(predicate).isNotNull();
+  @Test
+  public void shouldApplyAnUncheckedFunctionThatThrows() {
+    final Predicate<Object> preciate =
+        CheckedPredicate.of(
+                obj -> {
+                  throw new Error();
+                })
+            .unchecked();
+    try {
+      preciate.test(null);
+      Assertions.fail("Did excepect an exception.");
+    } catch (Error x) {
+      // ok!
     }
-
-    private static boolean test(Object obj) {
-        return true;
-    }
-
-    // -- unchecked
-
-    @Test
-    public void shouldApplyAnUncheckedFunctionThatDoesNotThrow() {
-        final Predicate<Object> preciate = CheckedPredicate.of(obj -> true).unchecked();
-        try {
-            preciate.test(null);
-        } catch(Throwable x) {
-            Assertions.fail("Did not excepect an exception but received: " + x.getMessage());
-        }
-    }
-
-    @Test
-    public void shouldApplyAnUncheckedFunctionThatThrows() {
-        final Predicate<Object> preciate = CheckedPredicate.of(obj -> { throw new Error(); }).unchecked();
-        try {
-            preciate.test(null);
-            Assertions.fail("Did excepect an exception.");
-        } catch(Error x) {
-            // ok!
-        }
-    }
+  }
 }

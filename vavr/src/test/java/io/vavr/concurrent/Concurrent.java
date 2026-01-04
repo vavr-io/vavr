@@ -27,49 +27,46 @@ import static org.assertj.core.api.Assertions.fail;
 
 final class Concurrent {
 
-    private static final Random RND = new Random();
+  private static final Random RND = new Random();
 
-    // Max sleep time to delay computation
-    private static final int SLEEP_MAX_MILLIS = 150;
+  // Max sleep time to delay computation
+  private static final int SLEEP_MAX_MILLIS = 150;
 
-    private Concurrent() {
-    }
+  private Concurrent() {}
 
-    static void waitUntil(Supplier<Boolean> condition) {
-        long millis = 1;
-        boolean interrupted = false;
-        while (!interrupted && !condition.get()) {
-            if (millis > 4096) {
-                fail("Condition not met.");
-            } else {
-                try {
-                    Thread.sleep(millis);
-                    millis = millis << 1;
-                } catch(InterruptedException x) {
-                    interrupted = true;
-                }
-            }
+  static void waitUntil(Supplier<Boolean> condition) {
+    long millis = 1;
+    boolean interrupted = false;
+    while (!interrupted && !condition.get()) {
+      if (millis > 4096) {
+        fail("Condition not met.");
+      } else {
+        try {
+          Thread.sleep(millis);
+          millis = millis << 1;
+        } catch (InterruptedException x) {
+          interrupted = true;
         }
+      }
     }
+  }
 
-    /**
-     * Block current thread a random time between 0 and {@link #SLEEP_MAX_MILLIS} ms.
-     */
-    static void zZz() {
-        Try.run(() -> Thread.sleep(RND.nextInt(SLEEP_MAX_MILLIS)));
-    }
+  /** Block current thread a random time between 0 and {@link #SLEEP_MAX_MILLIS} ms. */
+  static void zZz() {
+    Try.run(() -> Thread.sleep(RND.nextInt(SLEEP_MAX_MILLIS)));
+  }
 
-    static <T> CheckedFunction0<T> zZz(T value) {
-        return () -> {
-            zZz();
-            return value;
-        };
-    }
+  static <T> CheckedFunction0<T> zZz(T value) {
+    return () -> {
+      zZz();
+      return value;
+    };
+  }
 
-    static <T, X extends Throwable> CheckedFunction0<T> zZz(X exception) {
-        return () -> {
-            zZz();
-            throw exception;
-        };
-    }
+  static <T, X extends Throwable> CheckedFunction0<T> zZz(X exception) {
+    return () -> {
+      zZz();
+      throw exception;
+    };
+  }
 }

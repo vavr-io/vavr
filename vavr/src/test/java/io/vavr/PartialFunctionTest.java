@@ -29,54 +29,56 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class PartialFunctionTest {
 
-    @Test
-    public void shouldReturnSome() {
-        Option<String> oneToOne = HashMap.of(1, "One").lift().apply(1);
-        assertThat(oneToOne).isEqualTo(Option.some("One"));
-    }
+  @Test
+  public void shouldReturnSome() {
+    Option<String> oneToOne = HashMap.of(1, "One").lift().apply(1);
+    assertThat(oneToOne).isEqualTo(Option.some("One"));
+  }
 
-    @Test
-    public void shouldReturnNone() {
-        Option<String> oneToOne = HashMap.<Integer, String>empty().lift().apply(1);
-        assertThat(oneToOne).isEqualTo(Option.none());
-    }
+  @Test
+  public void shouldReturnNone() {
+    Option<String> oneToOne = HashMap.<Integer, String>empty().lift().apply(1);
+    assertThat(oneToOne).isEqualTo(Option.none());
+  }
 
-    @Test
-    public void shouldUnliftTotalFunctionReturningAnOption() {
-        final Predicate<Number> isEven = n -> n.intValue() % 2 == 0;
-        final Function1<Number, Option<String>> totalFunction = n -> isEven.test(n) ? Option.some("even") : Option.none();
+  @Test
+  public void shouldUnliftTotalFunctionReturningAnOption() {
+    final Predicate<Number> isEven = n -> n.intValue() % 2 == 0;
+    final Function1<Number, Option<String>> totalFunction =
+        n -> isEven.test(n) ? Option.some("even") : Option.none();
 
-        final PartialFunction<Integer, CharSequence> partialFunction = PartialFunction.unlift(totalFunction);
+    final PartialFunction<Integer, CharSequence> partialFunction =
+        PartialFunction.unlift(totalFunction);
 
-        assertThat(partialFunction.isDefinedAt(1)).isFalse();
-        assertThat(partialFunction.isDefinedAt(2)).isTrue();
-        assertThat(partialFunction.apply(2)).isEqualTo("even");
-    }
+    assertThat(partialFunction.isDefinedAt(1)).isFalse();
+    assertThat(partialFunction.isDefinedAt(2)).isTrue();
+    assertThat(partialFunction.apply(2)).isEqualTo("even");
+  }
 
-    @Test
-    public void shouldNotBeDefinedAtLeft() {
-        final Either<RuntimeException, Object> left = Either.left(new RuntimeException());
+  @Test
+  public void shouldNotBeDefinedAtLeft() {
+    final Either<RuntimeException, Object> left = Either.left(new RuntimeException());
 
-        assertThat(PartialFunction.getIfDefined().isDefinedAt(left)).isFalse();
-    }
+    assertThat(PartialFunction.getIfDefined().isDefinedAt(left)).isFalse();
+  }
 
-    @Test
-    public void shouldBeDefinedAtRight() {
-        Either<Object, Number> right = Either.right(42);
+  @Test
+  public void shouldBeDefinedAtRight() {
+    Either<Object, Number> right = Either.right(42);
 
-        PartialFunction<Either<Object, Number>, Number> ifDefined = PartialFunction.getIfDefined();
+    PartialFunction<Either<Object, Number>, Number> ifDefined = PartialFunction.getIfDefined();
 
-        assertThat(ifDefined.isDefinedAt(right)).isTrue();
-        assertThat(ifDefined.apply(right)).isEqualTo(42);
-    }
+    assertThat(ifDefined.isDefinedAt(right)).isTrue();
+    assertThat(ifDefined.apply(right)).isEqualTo(42);
+  }
 
-    @Test
-    public void shouldCollectSomeValuesAndIgnoreNone() {
-        final List<Integer> evenNumbers = List.range(0, 10)
-          .map(n -> n % 2 == 0 ? Option.some(n) : Option.<Integer>none())
-          .collect(PartialFunction.getIfDefined());
+  @Test
+  public void shouldCollectSomeValuesAndIgnoreNone() {
+    final List<Integer> evenNumbers =
+        List.range(0, 10)
+            .map(n -> n % 2 == 0 ? Option.some(n) : Option.<Integer>none())
+            .collect(PartialFunction.getIfDefined());
 
-        assertThat(evenNumbers).containsExactly(0, 2, 4, 6, 8);
-    }
-
+    assertThat(evenNumbers).containsExactly(0, 2, 4, 6, 8);
+  }
 }

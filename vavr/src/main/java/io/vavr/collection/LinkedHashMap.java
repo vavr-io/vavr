@@ -30,7 +30,8 @@ import java.util.stream.Collector;
 import org.jspecify.annotations.NonNull;
 
 /**
- * An immutable {@code LinkedHashMap} implementation that has predictable (insertion-order) iteration.
+ * An immutable {@code LinkedHashMap} implementation that has predictable (insertion-order)
+ * iteration.
  *
  * @param <K> Key type
  * @param <V> Value type
@@ -38,1018 +39,1177 @@ import org.jspecify.annotations.NonNull;
  */
 public final class LinkedHashMap<K, V> implements Map<K, V>, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private static final LinkedHashMap<?, ?> EMPTY = new LinkedHashMap<>(Queue.empty(), HashMap.empty());
+  private static final LinkedHashMap<?, ?> EMPTY =
+      new LinkedHashMap<>(Queue.empty(), HashMap.empty());
 
-    private final Queue<Tuple2<K, V>> list;
-    private final HashMap<K, V> map;
+  private final Queue<Tuple2<K, V>> list;
+  private final HashMap<K, V> map;
 
-    private LinkedHashMap(Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
-        this.list = list;
-        this.map = map;
-    }
+  private LinkedHashMap(Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
+    this.list = list;
+    this.map = map;
+  }
 
-    /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link LinkedHashMap}.
-     *
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A {@link LinkedHashMap} Collector.
-     */
-    public static <K, V> Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, LinkedHashMap<K, V>> collector() {
-        final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
+  /**
+   * Returns a {@link java.util.stream.Collector} which may be used in conjunction with {@link
+   * java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link LinkedHashMap}.
+   *
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A {@link LinkedHashMap} Collector.
+   */
+  public static <K, V>
+      Collector<Tuple2<K, V>, ArrayList<Tuple2<K, V>>, LinkedHashMap<K, V>> collector() {
+    final Supplier<ArrayList<Tuple2<K, V>>> supplier = ArrayList::new;
+    final BiConsumer<ArrayList<Tuple2<K, V>>, Tuple2<K, V>> accumulator = ArrayList::add;
+    final BinaryOperator<ArrayList<Tuple2<K, V>>> combiner =
+        (left, right) -> {
+          left.addAll(right);
+          return left;
         };
-        final Function<ArrayList<Tuple2<K, V>>, LinkedHashMap<K, V>> finisher = LinkedHashMap::ofEntries;
-        return Collector.of(supplier, accumulator, combiner, finisher);
-    }
+    final Function<ArrayList<Tuple2<K, V>>, LinkedHashMap<K, V>> finisher =
+        LinkedHashMap::ofEntries;
+    return Collector.of(supplier, accumulator, combiner, finisher);
+  }
 
-    /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link LinkedHashMap}.
-     *
-     * @param keyMapper The key mapper
-     * @param <K> The key type
-     * @param <V> The value type
-     * @param <T> Initial {@link java.util.stream.Stream} elements type
-     * @return A {@link LinkedHashMap} Collector.
-     */
-    public static <K, V, T extends V> Collector<T, ArrayList<T>, LinkedHashMap<K, V>> collector(@NonNull Function<? super T, ? extends K> keyMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        return LinkedHashMap.collector(keyMapper, v -> v);
-    }
+  /**
+   * Returns a {@link java.util.stream.Collector} which may be used in conjunction with {@link
+   * java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link LinkedHashMap}.
+   *
+   * @param keyMapper The key mapper
+   * @param <K> The key type
+   * @param <V> The value type
+   * @param <T> Initial {@link java.util.stream.Stream} elements type
+   * @return A {@link LinkedHashMap} Collector.
+   */
+  public static <K, V, T extends V> Collector<T, ArrayList<T>, LinkedHashMap<K, V>> collector(
+      @NonNull Function<? super T, ? extends K> keyMapper) {
+    Objects.requireNonNull(keyMapper, "keyMapper is null");
+    return LinkedHashMap.collector(keyMapper, v -> v);
+  }
 
-    /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link LinkedHashMap}.
-     *
-     * @param keyMapper The key mapper
-     * @param valueMapper The value mapper
-     * @param <K> The key type
-     * @param <V> The value type
-     * @param <T> Initial {@link java.util.stream.Stream} elements type
-     * @return A {@link LinkedHashMap} Collector.
-     */
-    public static <K, V, T> Collector<T, ArrayList<T>, LinkedHashMap<K, V>> collector(
-            Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
+  /**
+   * Returns a {@link java.util.stream.Collector} which may be used in conjunction with {@link
+   * java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link LinkedHashMap}.
+   *
+   * @param keyMapper The key mapper
+   * @param valueMapper The value mapper
+   * @param <K> The key type
+   * @param <V> The value type
+   * @param <T> Initial {@link java.util.stream.Stream} elements type
+   * @return A {@link LinkedHashMap} Collector.
+   */
+  public static <K, V, T> Collector<T, ArrayList<T>, LinkedHashMap<K, V>> collector(
+      Function<? super T, ? extends K> keyMapper, Function<? super T, ? extends V> valueMapper) {
+    Objects.requireNonNull(keyMapper, "keyMapper is null");
+    Objects.requireNonNull(valueMapper, "valueMapper is null");
+    final Supplier<ArrayList<T>> supplier = ArrayList::new;
+    final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
+    final BinaryOperator<ArrayList<T>> combiner =
+        (left, right) -> {
+          left.addAll(right);
+          return left;
         };
-        final Function<ArrayList<T>, LinkedHashMap<K, V>> finisher = arr -> LinkedHashMap.ofEntries(Iterator.ofAll(arr)
-                .map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t))));
-        return Collector.of(supplier, accumulator, combiner, finisher);
-    }
+    final Function<ArrayList<T>, LinkedHashMap<K, V>> finisher =
+        arr ->
+            LinkedHashMap.ofEntries(
+                Iterator.ofAll(arr).map(t -> Tuple.of(keyMapper.apply(t), valueMapper.apply(t))));
+    return Collector.of(supplier, accumulator, combiner, finisher);
+  }
 
-    @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> empty() {
-        return (LinkedHashMap<K, V>) EMPTY;
-    }
+  @SuppressWarnings("unchecked")
+  public static <K, V> LinkedHashMap<K, V> empty() {
+    return (LinkedHashMap<K, V>) EMPTY;
+  }
 
-    /**
-     * Narrows a {@code LinkedHashMap<? extends K, ? extends V>} to {@code LinkedHashMap<K, V>} via a
-     * type-safe cast. Safe here because the map is immutable and no elements
-     * can be added that would violate the type (covariance)
-     *
-     * @param linkedHashMap the map to narrow
-     * @param <K>           the target key type
-     * @param <V>           the target value type
-     * @return the same map viewed as {@code LinkedHashMap<K, V>}
-     */
-    @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> narrow(@NonNull LinkedHashMap<? extends K, ? extends V> linkedHashMap) {
-        return (LinkedHashMap<K, V>) linkedHashMap;
-    }
+  /**
+   * Narrows a {@code LinkedHashMap<? extends K, ? extends V>} to {@code LinkedHashMap<K, V>} via a
+   * type-safe cast. Safe here because the map is immutable and no elements can be added that would
+   * violate the type (covariance)
+   *
+   * @param linkedHashMap the map to narrow
+   * @param <K> the target key type
+   * @param <V> the target value type
+   * @return the same map viewed as {@code LinkedHashMap<K, V>}
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> LinkedHashMap<K, V> narrow(
+      @NonNull LinkedHashMap<? extends K, ? extends V> linkedHashMap) {
+    return (LinkedHashMap<K, V>) linkedHashMap;
+  }
 
-    /**
-     * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
-     *
-     * @param entry A map entry.
-     * @param <K>   The key type
-     * @param <V>   The value type
-     * @return A new Map containing the given entry
-     */
-    @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> of(@NonNull Tuple2<? extends K, ? extends V> entry) {
-        final HashMap<K, V> map = HashMap.of(entry);
-        final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>) entry);
-        return wrap(list, map);
-    }
+  /**
+   * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
+   *
+   * @param entry A map entry.
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entry
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> LinkedHashMap<K, V> of(@NonNull Tuple2<? extends K, ? extends V> entry) {
+    final HashMap<K, V> map = HashMap.of(entry);
+    final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>) entry);
+    return wrap(list, map);
+  }
 
-    /**
-     * Returns a {@code LinkedHashMap}, from a source java.util.Map.
-     *
-     * @param map A map
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given map
-     */
-    public static <K, V> LinkedHashMap<K, V> ofAll(java.util.@NonNull Map<? extends K, ? extends V> map) {
-        Objects.requireNonNull(map, "map is null");
-        LinkedHashMap<K, V> result = LinkedHashMap.empty();
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
-            result = result.put(entry.getKey(), entry.getValue());
-        }
-        return result;
+  /**
+   * Returns a {@code LinkedHashMap}, from a source java.util.Map.
+   *
+   * @param map A map
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given map
+   */
+  public static <K, V> LinkedHashMap<K, V> ofAll(
+      java.util.@NonNull Map<? extends K, ? extends V> map) {
+    Objects.requireNonNull(map, "map is null");
+    LinkedHashMap<K, V> result = LinkedHashMap.empty();
+    for (java.util.Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
+      result = result.put(entry.getKey(), entry.getValue());
     }
+    return result;
+  }
 
-    /**
-     * Returns a {@code LinkedHashMap}, from entries mapped from stream.
-     *
-     * @param stream      the source stream
-     * @param entryMapper the entry mapper
-     * @param <T>         The stream element type
-     * @param <K>         The key type
-     * @param <V>         The value type
-     * @return A new Map
-     */
-    public static <T, K, V> LinkedHashMap<K, V> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
-            Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
-        return Maps.ofStream(empty(), stream, entryMapper);
+  /**
+   * Returns a {@code LinkedHashMap}, from entries mapped from stream.
+   *
+   * @param stream the source stream
+   * @param entryMapper the entry mapper
+   * @param <T> The stream element type
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map
+   */
+  public static <T, K, V> LinkedHashMap<K, V> ofAll(
+      java.util.stream.@NonNull Stream<? extends T> stream,
+      Function<? super T, Tuple2<? extends K, ? extends V>> entryMapper) {
+    return Maps.ofStream(empty(), stream, entryMapper);
+  }
+
+  /**
+   * Returns a {@code LinkedHashMap}, from entries mapped from stream.
+   *
+   * @param stream the source stream
+   * @param keyMapper the key mapper
+   * @param valueMapper the value mapper
+   * @param <T> The stream element type
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map
+   */
+  public static <T, K, V> LinkedHashMap<K, V> ofAll(
+      java.util.stream.@NonNull Stream<? extends T> stream,
+      Function<? super T, ? extends K> keyMapper,
+      Function<? super T, ? extends V> valueMapper) {
+    return Maps.ofStream(empty(), stream, keyMapper, valueMapper);
+  }
+
+  /**
+   * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
+   *
+   * @param key A singleton map key.
+   * @param value A singleton map value.
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entry
+   */
+  public static <K, V> LinkedHashMap<K, V> of(K key, V value) {
+    final HashMap<K, V> map = HashMap.of(key, value);
+    final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(key, value));
+    return wrap(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given list of key-value pairs.
+   *
+   * @param k1 a key for the map
+   * @param v1 the value for k1
+   * @param k2 a key for the map
+   * @param v2 the value for k2
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2) {
+    final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2);
+    final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2));
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given list of key-value pairs.
+   *
+   * @param k1 a key for the map
+   * @param v1 the value for k1
+   * @param k2 a key for the map
+   * @param v2 the value for k2
+   * @param k3 a key for the map
+   * @param v3 the value for k3
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
+    final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3);
+    final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3));
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given list of key-value pairs.
+   *
+   * @param k1 a key for the map
+   * @param v1 the value for k1
+   * @param k2 a key for the map
+   * @param v2 the value for k2
+   * @param k3 a key for the map
+   * @param v3 the value for k3
+   * @param k4 a key for the map
+   * @param v4 the value for k4
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
+    final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4);
+    final Queue<Tuple2<K, V>> list =
+        Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4));
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given list of key-value pairs.
+   *
+   * @param k1 a key for the map
+   * @param v1 the value for k1
+   * @param k2 a key for the map
+   * @param v2 the value for k2
+   * @param k3 a key for the map
+   * @param v3 the value for k3
+   * @param k4 a key for the map
+   * @param v4 the value for k4
+   * @param k5 a key for the map
+   * @param v5 the value for k5
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  public static <K, V> LinkedHashMap<K, V> of(
+      K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
+    final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
+    final Queue<Tuple2<K, V>> list =
+        Queue.of(
+            Tuple.of(k1, v1),
+            Tuple.of(k2, v2),
+            Tuple.of(k3, v3),
+            Tuple.of(k4, v4),
+            Tuple.of(k5, v5));
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given list of key-value pairs.
+   *
+   * @param k1 a key for the map
+   * @param v1 the value for k1
+   * @param k2 a key for the map
+   * @param v2 the value for k2
+   * @param k3 a key for the map
+   * @param v3 the value for k3
+   * @param k4 a key for the map
+   * @param v4 the value for k4
+   * @param k5 a key for the map
+   * @param v5 the value for k5
+   * @param k6 a key for the map
+   * @param v6 the value for k6
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  public static <K, V> LinkedHashMap<K, V> of(
+      K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
+    final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
+    final Queue<Tuple2<K, V>> list =
+        Queue.of(
+            Tuple.of(k1, v1),
+            Tuple.of(k2, v2),
+            Tuple.of(k3, v3),
+            Tuple.of(k4, v4),
+            Tuple.of(k5, v5),
+            Tuple.of(k6, v6));
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given list of key-value pairs.
+   *
+   * @param k1 a key for the map
+   * @param v1 the value for k1
+   * @param k2 a key for the map
+   * @param v2 the value for k2
+   * @param k3 a key for the map
+   * @param v3 the value for k3
+   * @param k4 a key for the map
+   * @param v4 the value for k4
+   * @param k5 a key for the map
+   * @param v5 the value for k5
+   * @param k6 a key for the map
+   * @param v6 the value for k6
+   * @param k7 a key for the map
+   * @param v7 the value for k7
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  public static <K, V> LinkedHashMap<K, V> of(
+      K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
+    final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
+    final Queue<Tuple2<K, V>> list =
+        Queue.of(
+            Tuple.of(k1, v1),
+            Tuple.of(k2, v2),
+            Tuple.of(k3, v3),
+            Tuple.of(k4, v4),
+            Tuple.of(k5, v5),
+            Tuple.of(k6, v6),
+            Tuple.of(k7, v7));
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given list of key-value pairs.
+   *
+   * @param k1 a key for the map
+   * @param v1 the value for k1
+   * @param k2 a key for the map
+   * @param v2 the value for k2
+   * @param k3 a key for the map
+   * @param v3 the value for k3
+   * @param k4 a key for the map
+   * @param v4 the value for k4
+   * @param k5 a key for the map
+   * @param v5 the value for k5
+   * @param k6 a key for the map
+   * @param v6 the value for k6
+   * @param k7 a key for the map
+   * @param v7 the value for k7
+   * @param k8 a key for the map
+   * @param v8 the value for k8
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  public static <K, V> LinkedHashMap<K, V> of(
+      K k1,
+      V v1,
+      K k2,
+      V v2,
+      K k3,
+      V v3,
+      K k4,
+      V v4,
+      K k5,
+      V v5,
+      K k6,
+      V v6,
+      K k7,
+      V v7,
+      K k8,
+      V v8) {
+    final HashMap<K, V> map =
+        HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
+    final Queue<Tuple2<K, V>> list =
+        Queue.of(
+            Tuple.of(k1, v1),
+            Tuple.of(k2, v2),
+            Tuple.of(k3, v3),
+            Tuple.of(k4, v4),
+            Tuple.of(k5, v5),
+            Tuple.of(k6, v6),
+            Tuple.of(k7, v7),
+            Tuple.of(k8, v8));
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given list of key-value pairs.
+   *
+   * @param k1 a key for the map
+   * @param v1 the value for k1
+   * @param k2 a key for the map
+   * @param v2 the value for k2
+   * @param k3 a key for the map
+   * @param v3 the value for k3
+   * @param k4 a key for the map
+   * @param v4 the value for k4
+   * @param k5 a key for the map
+   * @param v5 the value for k5
+   * @param k6 a key for the map
+   * @param v6 the value for k6
+   * @param k7 a key for the map
+   * @param v7 the value for k7
+   * @param k8 a key for the map
+   * @param v8 the value for k8
+   * @param k9 a key for the map
+   * @param v9 the value for k9
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  public static <K, V> LinkedHashMap<K, V> of(
+      K k1,
+      V v1,
+      K k2,
+      V v2,
+      K k3,
+      V v3,
+      K k4,
+      V v4,
+      K k5,
+      V v5,
+      K k6,
+      V v6,
+      K k7,
+      V v7,
+      K k8,
+      V v8,
+      K k9,
+      V v9) {
+    final HashMap<K, V> map =
+        HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
+    final Queue<Tuple2<K, V>> list =
+        Queue.of(
+            Tuple.of(k1, v1),
+            Tuple.of(k2, v2),
+            Tuple.of(k3, v3),
+            Tuple.of(k4, v4),
+            Tuple.of(k5, v5),
+            Tuple.of(k6, v6),
+            Tuple.of(k7, v7),
+            Tuple.of(k8, v8),
+            Tuple.of(k9, v9));
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given list of key-value pairs.
+   *
+   * @param k1 a key for the map
+   * @param v1 the value for k1
+   * @param k2 a key for the map
+   * @param v2 the value for k2
+   * @param k3 a key for the map
+   * @param v3 the value for k3
+   * @param k4 a key for the map
+   * @param v4 the value for k4
+   * @param k5 a key for the map
+   * @param v5 the value for k5
+   * @param k6 a key for the map
+   * @param v6 the value for k6
+   * @param k7 a key for the map
+   * @param v7 the value for k7
+   * @param k8 a key for the map
+   * @param v8 the value for k8
+   * @param k9 a key for the map
+   * @param v9 the value for k9
+   * @param k10 a key for the map
+   * @param v10 the value for k10
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  public static <K, V> LinkedHashMap<K, V> of(
+      K k1,
+      V v1,
+      K k2,
+      V v2,
+      K k3,
+      V v3,
+      K k4,
+      V v4,
+      K k5,
+      V v5,
+      K k6,
+      V v6,
+      K k7,
+      V v7,
+      K k8,
+      V v8,
+      K k9,
+      V v9,
+      K k10,
+      V v10) {
+    final HashMap<K, V> map =
+        HashMap.of(
+            k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
+    final Queue<Tuple2<K, V>> list =
+        Queue.of(
+            Tuple.of(k1, v1),
+            Tuple.of(k2, v2),
+            Tuple.of(k3, v3),
+            Tuple.of(k4, v4),
+            Tuple.of(k5, v5),
+            Tuple.of(k6, v6),
+            Tuple.of(k7, v7),
+            Tuple.of(k8, v8),
+            Tuple.of(k9, v9),
+            Tuple.of(k10, v10));
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Returns a LinkedHashMap containing {@code n} values of a given Function {@code f} over a range
+   * of integer values from 0 to {@code n - 1}.
+   *
+   * @param <K> The key type
+   * @param <V> The value type
+   * @param n The number of elements in the LinkedHashMap
+   * @param f The Function computing element values
+   * @return A LinkedHashMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+   * @throws NullPointerException if {@code f} is null
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> LinkedHashMap<K, V> tabulate(
+      int n, @NonNull Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
+    Objects.requireNonNull(f, "f is null");
+    return ofEntries(
+        Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
+  }
+
+  /**
+   * Returns a LinkedHashMap containing tuples returned by {@code n} calls to a given Supplier
+   * {@code s}.
+   *
+   * @param <K> The key type
+   * @param <V> The value type
+   * @param n The number of elements in the LinkedHashMap
+   * @param s The Supplier computing element values
+   * @return A LinkedHashMap of size {@code n}, where each element contains the result supplied by
+   *     {@code s}.
+   * @throws NullPointerException if {@code s} is null
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> LinkedHashMap<K, V> fill(
+      int n, @NonNull Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
+    Objects.requireNonNull(s, "s is null");
+    return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given entries.
+   *
+   * @param entries Map entries
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> LinkedHashMap<K, V> ofEntries(
+      java.util.Map.@NonNull Entry<? extends K, ? extends V> @NonNull ... entries) {
+    HashMap<K, V> map = HashMap.empty();
+    Queue<Tuple2<K, V>> list = Queue.empty();
+    for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
+      final Tuple2<K, V> tuple = Tuple.of(entry.getKey(), entry.getValue());
+      map = map.put(tuple);
+      list = list.append(tuple);
     }
+    return wrapNonUnique(list, map);
+  }
 
-    /**
-     * Returns a {@code LinkedHashMap}, from entries mapped from stream.
-     *
-     * @param stream      the source stream
-     * @param keyMapper   the key mapper
-     * @param valueMapper the value mapper
-     * @param <T>         The stream element type
-     * @param <K>         The key type
-     * @param <V>         The value type
-     * @return A new Map
-     */
-    public static <T, K, V> LinkedHashMap<K, V> ofAll(java.util.stream.@NonNull Stream<? extends T> stream,
-            Function<? super T, ? extends K> keyMapper,
-            Function<? super T, ? extends V> valueMapper) {
-        return Maps.ofStream(empty(), stream, keyMapper, valueMapper);
+  /**
+   * Creates a LinkedHashMap of the given entries.
+   *
+   * @param entries Map entries
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> LinkedHashMap<K, V> ofEntries(
+      @NonNull Tuple2<? extends K, ? extends V> @NonNull ... entries) {
+    final HashMap<K, V> map = HashMap.ofEntries(entries);
+    final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>[]) entries);
+    return wrapNonUnique(list, map);
+  }
+
+  /**
+   * Creates a LinkedHashMap of the given entries.
+   *
+   * @param entries Map entries
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given entries
+   */
+  @SuppressWarnings("unchecked")
+  public static <K, V> LinkedHashMap<K, V> ofEntries(
+      @NonNull Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
+    Objects.requireNonNull(entries, "entries is null");
+    if (entries instanceof LinkedHashMap) {
+      return (LinkedHashMap<K, V>) entries;
+    } else {
+      HashMap<K, V> map = HashMap.empty();
+      Queue<Tuple2<K, V>> list = Queue.empty();
+      for (Tuple2<? extends K, ? extends V> entry : entries) {
+        map = map.put(entry);
+        list = list.append((Tuple2<K, V>) entry);
+      }
+      return wrapNonUnique(list, map);
     }
+  }
 
-    /**
-     * Returns a singleton {@code LinkedHashMap}, i.e. a {@code LinkedHashMap} of one element.
-     *
-     * @param key   A singleton map key.
-     * @param value A singleton map value.
-     * @param <K>   The key type
-     * @param <V>   The value type
-     * @return A new Map containing the given entry
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K key, V value) {
-        final HashMap<K, V> map = HashMap.of(key, value);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(key, value));
-        return wrap(list, map);
-    }
+  @Override
+  public <K2, V2> LinkedHashMap<K2, V2> bimap(
+      @NonNull Function<? super K, ? extends K2> keyMapper,
+      @NonNull Function<? super V, ? extends V2> valueMapper) {
+    Objects.requireNonNull(keyMapper, "keyMapper is null");
+    Objects.requireNonNull(valueMapper, "valueMapper is null");
+    final Iterator<Tuple2<K2, V2>> entries =
+        iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
+    return LinkedHashMap.ofEntries(entries);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @param k1  a key for the map
-     * @param v1  the value for k1
-     * @param k2  a key for the map
-     * @param v2  the value for k2
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given entries
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2) {
-        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2));
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public Tuple2<V, LinkedHashMap<K, V>> computeIfAbsent(
+      K key, @NonNull Function<? super K, ? extends V> mappingFunction) {
+    return Maps.computeIfAbsent(this, key, mappingFunction);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @param k1  a key for the map
-     * @param v1  the value for k1
-     * @param k2  a key for the map
-     * @param v2  the value for k2
-     * @param k3  a key for the map
-     * @param v3  the value for k3
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given entries
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3) {
-        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3));
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public Tuple2<Option<V>, LinkedHashMap<K, V>> computeIfPresent(
+      K key, @NonNull BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+    return Maps.computeIfPresent(this, key, remappingFunction);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @param k1  a key for the map
-     * @param v1  the value for k1
-     * @param k2  a key for the map
-     * @param v2  the value for k2
-     * @param k3  a key for the map
-     * @param v3  the value for k3
-     * @param k4  a key for the map
-     * @param v4  the value for k4
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given entries
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4) {
-        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4));
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public boolean containsKey(K key) {
+    return map.containsKey(key);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @param k1  a key for the map
-     * @param v1  the value for k1
-     * @param k2  a key for the map
-     * @param v2  the value for k2
-     * @param k3  a key for the map
-     * @param v3  the value for k3
-     * @param k4  a key for the map
-     * @param v4  the value for k4
-     * @param k5  a key for the map
-     * @param v5  the value for k5
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given entries
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5) {
-        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5));
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public LinkedHashMap<K, V> distinct() {
+    return Maps.distinct(this);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @param k1  a key for the map
-     * @param v1  the value for k1
-     * @param k2  a key for the map
-     * @param v2  the value for k2
-     * @param k3  a key for the map
-     * @param v3  the value for k3
-     * @param k4  a key for the map
-     * @param v4  the value for k4
-     * @param k5  a key for the map
-     * @param v5  the value for k5
-     * @param k6  a key for the map
-     * @param v6  the value for k6
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given entries
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6) {
-        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6));
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public LinkedHashMap<K, V> distinctBy(@NonNull Comparator<? super Tuple2<K, V>> comparator) {
+    return Maps.distinctBy(this, this::createFromEntries, comparator);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @param k1  a key for the map
-     * @param v1  the value for k1
-     * @param k2  a key for the map
-     * @param v2  the value for k2
-     * @param k3  a key for the map
-     * @param v3  the value for k3
-     * @param k4  a key for the map
-     * @param v4  the value for k4
-     * @param k5  a key for the map
-     * @param v5  the value for k5
-     * @param k6  a key for the map
-     * @param v6  the value for k6
-     * @param k7  a key for the map
-     * @param v7  the value for k7
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given entries
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7) {
-        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7));
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public <U> LinkedHashMap<K, V> distinctBy(
+      @NonNull Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
+    return Maps.distinctBy(this, this::createFromEntries, keyExtractor);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @param k1  a key for the map
-     * @param v1  the value for k1
-     * @param k2  a key for the map
-     * @param v2  the value for k2
-     * @param k3  a key for the map
-     * @param v3  the value for k3
-     * @param k4  a key for the map
-     * @param v4  the value for k4
-     * @param k5  a key for the map
-     * @param v5  the value for k5
-     * @param k6  a key for the map
-     * @param v6  the value for k6
-     * @param k7  a key for the map
-     * @param v7  the value for k7
-     * @param k8  a key for the map
-     * @param v8  the value for k8
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given entries
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8) {
-        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7), Tuple.of(k8, v8));
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public LinkedHashMap<K, V> drop(int n) {
+    return Maps.drop(this, this::createFromEntries, LinkedHashMap::empty, n);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @param k1  a key for the map
-     * @param v1  the value for k1
-     * @param k2  a key for the map
-     * @param v2  the value for k2
-     * @param k3  a key for the map
-     * @param v3  the value for k3
-     * @param k4  a key for the map
-     * @param v4  the value for k4
-     * @param k5  a key for the map
-     * @param v5  the value for k5
-     * @param k6  a key for the map
-     * @param v6  the value for k6
-     * @param k7  a key for the map
-     * @param v7  the value for k7
-     * @param k8  a key for the map
-     * @param v8  the value for k8
-     * @param k9  a key for the map
-     * @param v9  the value for k9
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given entries
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9) {
-        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7), Tuple.of(k8, v8), Tuple.of(k9, v9));
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public LinkedHashMap<K, V> dropRight(int n) {
+    return Maps.dropRight(this, this::createFromEntries, LinkedHashMap::empty, n);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given list of key-value pairs.
-     *
-     * @param k1  a key for the map
-     * @param v1  the value for k1
-     * @param k2  a key for the map
-     * @param v2  the value for k2
-     * @param k3  a key for the map
-     * @param v3  the value for k3
-     * @param k4  a key for the map
-     * @param v4  the value for k4
-     * @param k5  a key for the map
-     * @param v5  the value for k5
-     * @param k6  a key for the map
-     * @param v6  the value for k6
-     * @param k7  a key for the map
-     * @param v7  the value for k7
-     * @param k8  a key for the map
-     * @param v8  the value for k8
-     * @param k9  a key for the map
-     * @param v9  the value for k9
-     * @param k10 a key for the map
-     * @param v10 the value for k10
-     * @param <K> The key type
-     * @param <V> The value type
-     * @return A new Map containing the given entries
-     */
-    public static <K, V> LinkedHashMap<K, V> of(K k1, V v1, K k2, V v2, K k3, V v3, K k4, V v4, K k5, V v5, K k6, V v6, K k7, V v7, K k8, V v8, K k9, V v9, K k10, V v10) {
-        final HashMap<K, V> map = HashMap.of(k1, v1, k2, v2, k3, v3, k4, v4, k5, v5, k6, v6, k7, v7, k8, v8, k9, v9, k10, v10);
-        final Queue<Tuple2<K, V>> list = Queue.of(Tuple.of(k1, v1), Tuple.of(k2, v2), Tuple.of(k3, v3), Tuple.of(k4, v4), Tuple.of(k5, v5), Tuple.of(k6, v6), Tuple.of(k7, v7), Tuple.of(k8, v8), Tuple.of(k9, v9), Tuple.of(k10, v10));
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public LinkedHashMap<K, V> dropUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    return Maps.dropUntil(this, this::createFromEntries, predicate);
+  }
 
-    /**
-     * Returns a LinkedHashMap containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
-     *
-     * @param <K> The key type
-     * @param <V> The value type
-     * @param n   The number of elements in the LinkedHashMap
-     * @param f   The Function computing element values
-     * @return A LinkedHashMap consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code f} is null
-     */
-    @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> tabulate(int n, @NonNull Function<? super Integer, ? extends Tuple2<? extends K, ? extends V>> f) {
-        Objects.requireNonNull(f, "f is null");
-        return ofEntries(Collections.tabulate(n, (Function<? super Integer, ? extends Tuple2<K, V>>) f));
-    }
+  @Override
+  public LinkedHashMap<K, V> dropWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    return Maps.dropWhile(this, this::createFromEntries, predicate);
+  }
 
-    /**
-     * Returns a LinkedHashMap containing tuples returned by {@code n} calls to a given Supplier {@code s}.
-     *
-     * @param <K> The key type
-     * @param <V> The value type
-     * @param n   The number of elements in the LinkedHashMap
-     * @param s   The Supplier computing element values
-     * @return A LinkedHashMap of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code s} is null
-     */
-    @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> fill(int n, @NonNull Supplier<? extends Tuple2<? extends K, ? extends V>> s) {
-        Objects.requireNonNull(s, "s is null");
-        return ofEntries(Collections.fill(n, (Supplier<? extends Tuple2<K, V>>) s));
-    }
+  @Override
+  public LinkedHashMap<K, V> filter(@NonNull BiPredicate<? super K, ? super V> predicate) {
+    return Maps.filter(this, this::createFromEntries, predicate);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given entries.
-     *
-     * @param entries Map entries
-     * @param <K>     The key type
-     * @param <V>     The value type
-     * @return A new Map containing the given entries
-     */
-    @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> ofEntries(java.util.Map.@NonNull Entry<? extends K, ? extends V> @NonNull ... entries) {
-        HashMap<K, V> map = HashMap.empty();
-        Queue<Tuple2<K, V>> list = Queue.empty();
-        for (java.util.Map.Entry<? extends K, ? extends V> entry : entries) {
-            final Tuple2<K, V> tuple = Tuple.of(entry.getKey(), entry.getValue());
-            map = map.put(tuple);
-            list = list.append(tuple);
-        }
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public LinkedHashMap<K, V> reject(@NonNull BiPredicate<? super K, ? super V> predicate) {
+    return Maps.reject(this, this::createFromEntries, predicate);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given entries.
-     *
-     * @param entries Map entries
-     * @param <K>     The key type
-     * @param <V>     The value type
-     * @return A new Map containing the given entries
-     */
-    @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> ofEntries(@NonNull Tuple2<? extends K, ? extends V> @NonNull ... entries) {
-        final HashMap<K, V> map = HashMap.ofEntries(entries);
-        final Queue<Tuple2<K, V>> list = Queue.of((Tuple2<K, V>[]) entries);
-        return wrapNonUnique(list, map);
-    }
+  @Override
+  public LinkedHashMap<K, V> filter(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    return Maps.filter(this, this::createFromEntries, predicate);
+  }
 
-    /**
-     * Creates a LinkedHashMap of the given entries.
-     *
-     * @param entries Map entries
-     * @param <K>     The key type
-     * @param <V>     The value type
-     * @return A new Map containing the given entries
-     */
-    @SuppressWarnings("unchecked")
-    public static <K, V> LinkedHashMap<K, V> ofEntries(@NonNull Iterable<? extends Tuple2<? extends K, ? extends V>> entries) {
-        Objects.requireNonNull(entries, "entries is null");
-        if (entries instanceof LinkedHashMap) {
-            return (LinkedHashMap<K, V>) entries;
-        } else {
-            HashMap<K, V> map = HashMap.empty();
-            Queue<Tuple2<K, V>> list = Queue.empty();
-            for (Tuple2<? extends K, ? extends V> entry : entries) {
-                map = map.put(entry);
-                list = list.append((Tuple2<K, V>) entry);
-            }
-            return wrapNonUnique(list, map);
-        }
-    }
+  @Override
+  public LinkedHashMap<K, V> reject(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    return Maps.reject(this, this::createFromEntries, predicate);
+  }
 
-    @Override
-    public <K2, V2> LinkedHashMap<K2, V2> bimap(@NonNull Function<? super K, ? extends K2> keyMapper, @NonNull Function<? super V, ? extends V2> valueMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        Objects.requireNonNull(valueMapper, "valueMapper is null");
-        final Iterator<Tuple2<K2, V2>> entries = iterator().map(entry -> Tuple.of(keyMapper.apply(entry._1), valueMapper.apply(entry._2)));
-        return LinkedHashMap.ofEntries(entries);
-    }
+  @Override
+  public LinkedHashMap<K, V> filterKeys(@NonNull Predicate<? super K> predicate) {
+    return Maps.filterKeys(this, this::createFromEntries, predicate);
+  }
 
-    @Override
-    public Tuple2<V, LinkedHashMap<K, V>> computeIfAbsent(K key, @NonNull Function<? super K, ? extends V> mappingFunction) {
-        return Maps.computeIfAbsent(this, key, mappingFunction);
-    }
+  @Override
+  public LinkedHashMap<K, V> rejectKeys(@NonNull Predicate<? super K> predicate) {
+    return Maps.rejectKeys(this, this::createFromEntries, predicate);
+  }
 
-    @Override
-    public Tuple2<Option<V>, LinkedHashMap<K, V>> computeIfPresent(K key, @NonNull BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-        return Maps.computeIfPresent(this, key, remappingFunction);
-    }
+  @Override
+  public LinkedHashMap<K, V> filterValues(@NonNull Predicate<? super V> predicate) {
+    return Maps.filterValues(this, this::createFromEntries, predicate);
+  }
 
-    @Override
-    public boolean containsKey(K key) {
-        return map.containsKey(key);
-    }
+  @Override
+  public LinkedHashMap<K, V> rejectValues(@NonNull Predicate<? super V> predicate) {
+    return Maps.rejectValues(this, this::createFromEntries, predicate);
+  }
 
-    @Override
-    public LinkedHashMap<K, V> distinct() {
-        return Maps.distinct(this);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> distinctBy(@NonNull Comparator<? super Tuple2<K, V>> comparator) {
-        return Maps.distinctBy(this, this::createFromEntries, comparator);
-    }
-
-    @Override
-    public <U> LinkedHashMap<K, V> distinctBy(@NonNull Function<? super Tuple2<K, V>, ? extends U> keyExtractor) {
-        return Maps.distinctBy(this, this::createFromEntries, keyExtractor);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> drop(int n) {
-        return Maps.drop(this, this::createFromEntries, LinkedHashMap::empty, n);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> dropRight(int n) {
-        return Maps.dropRight(this, this::createFromEntries, LinkedHashMap::empty, n);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> dropUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.dropUntil(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> dropWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.dropWhile(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> filter(@NonNull BiPredicate<? super K, ? super V> predicate) {
-        return Maps.filter(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> reject(@NonNull BiPredicate<? super K, ? super V> predicate) {
-        return Maps.reject(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> filter(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.filter(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> reject(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.reject(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> filterKeys(@NonNull Predicate<? super K> predicate) {
-        return Maps.filterKeys(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> rejectKeys(@NonNull Predicate<? super K> predicate) {
-        return Maps.rejectKeys(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> filterValues(@NonNull Predicate<? super V> predicate) {
-        return Maps.filterValues(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> rejectValues(@NonNull Predicate<? super V> predicate) {
-        return Maps.rejectValues(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public <K2, V2> LinkedHashMap<K2, V2> flatMap(@NonNull BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(LinkedHashMap.<K2, V2> empty(), (acc, entry) -> {
-            for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
-                acc = acc.put(mappedEntry);
-            }
-            return acc;
+  @Override
+  public <K2, V2> LinkedHashMap<K2, V2> flatMap(
+      @NonNull BiFunction<? super K, ? super V, ? extends Iterable<Tuple2<K2, V2>>> mapper) {
+    Objects.requireNonNull(mapper, "mapper is null");
+    return foldLeft(
+        LinkedHashMap.<K2, V2>empty(),
+        (acc, entry) -> {
+          for (Tuple2<? extends K2, ? extends V2> mappedEntry : mapper.apply(entry._1, entry._2)) {
+            acc = acc.put(mappedEntry);
+          }
+          return acc;
         });
-    }
+  }
 
-    @Override
-    public Option<V> get(K key) {
-        return map.get(key);
-    }
+  @Override
+  public Option<V> get(K key) {
+    return map.get(key);
+  }
 
-    @Override
-    public V getOrElse(K key, V defaultValue) {
-        return map.getOrElse(key, defaultValue);
-    }
+  @Override
+  public V getOrElse(K key, V defaultValue) {
+    return map.getOrElse(key, defaultValue);
+  }
 
-    @Override
-    public <C> Map<C, LinkedHashMap<K, V>> groupBy(@NonNull Function<? super Tuple2<K, V>, ? extends C> classifier) {
-        return Maps.groupBy(this, this::createFromEntries, classifier);
-    }
+  @Override
+  public <C> Map<C, LinkedHashMap<K, V>> groupBy(
+      @NonNull Function<? super Tuple2<K, V>, ? extends C> classifier) {
+    return Maps.groupBy(this, this::createFromEntries, classifier);
+  }
 
-    @Override
-    public Iterator<LinkedHashMap<K, V>> grouped(int size) {
-        return Maps.grouped(this, this::createFromEntries, size);
-    }
+  @Override
+  public Iterator<LinkedHashMap<K, V>> grouped(int size) {
+    return Maps.grouped(this, this::createFromEntries, size);
+  }
 
-    @Override
-    public Tuple2<K, V> head() {
-        return list.head();
-    }
+  @Override
+  public Tuple2<K, V> head() {
+    return list.head();
+  }
 
-    @Override
-    public LinkedHashMap<K, V> init() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("init of empty LinkedHashMap");
-        } else {
-            return LinkedHashMap.ofEntries(list.init());
+  @Override
+  public LinkedHashMap<K, V> init() {
+    if (isEmpty()) {
+      throw new UnsupportedOperationException("init of empty LinkedHashMap");
+    } else {
+      return LinkedHashMap.ofEntries(list.init());
+    }
+  }
+
+  @Override
+  public Option<LinkedHashMap<K, V>> initOption() {
+    return Maps.initOption(this);
+  }
+
+  /**
+   * An {@code LinkedHashMap}'s value is computed synchronously.
+   *
+   * @return false
+   */
+  @Override
+  public boolean isAsync() {
+    return false;
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return map.isEmpty();
+  }
+
+  /**
+   * An {@code LinkedHashMap}'s value is computed eagerly.
+   *
+   * @return false
+   */
+  @Override
+  public boolean isLazy() {
+    return false;
+  }
+
+  @Override
+  public boolean isSequential() {
+    return true;
+  }
+
+  @Override
+  public @NonNull Iterator<Tuple2<K, V>> iterator() {
+    return list.iterator();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public Set<K> keySet() {
+    return LinkedHashSet.wrap((LinkedHashMap<K, Object>) this);
+  }
+
+  @Override
+  public Tuple2<K, V> last() {
+    return list.last();
+  }
+
+  @Override
+  public <K2, V2> LinkedHashMap<K2, V2> map(
+      @NonNull BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
+    Objects.requireNonNull(mapper, "mapper is null");
+    return foldLeft(LinkedHashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
+  }
+
+  @Override
+  public <K2> LinkedHashMap<K2, V> mapKeys(@NonNull Function<? super K, ? extends K2> keyMapper) {
+    Objects.requireNonNull(keyMapper, "keyMapper is null");
+    return map((k, v) -> Tuple.of(keyMapper.apply(k), v));
+  }
+
+  @Override
+  public <K2> LinkedHashMap<K2, V> mapKeys(
+      @NonNull Function<? super K, ? extends K2> keyMapper,
+      @NonNull BiFunction<? super V, ? super V, ? extends V> valueMerge) {
+    return Collections.mapKeys(this, LinkedHashMap.empty(), keyMapper, valueMerge);
+  }
+
+  @Override
+  public <W> LinkedHashMap<K, W> mapValues(@NonNull Function<? super V, ? extends W> mapper) {
+    Objects.requireNonNull(mapper, "mapper is null");
+    return map((k, v) -> Tuple.of(k, mapper.apply(v)));
+  }
+
+  @Override
+  public LinkedHashMap<K, V> merge(@NonNull Map<? extends K, ? extends V> that) {
+    return Maps.merge(this, this::createFromEntries, that);
+  }
+
+  @Override
+  public <U extends V> LinkedHashMap<K, V> merge(
+      @NonNull Map<? extends K, U> that,
+      @NonNull BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
+    return Maps.merge(this, this::createFromEntries, that, collisionResolution);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other) {
+    return isEmpty() ? ofEntries(other) : this;
+  }
+
+  @Override
+  public LinkedHashMap<K, V> orElse(
+      @NonNull Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier) {
+    return isEmpty() ? ofEntries(supplier.get()) : this;
+  }
+
+  @Override
+  public Tuple2<LinkedHashMap<K, V>, LinkedHashMap<K, V>> partition(
+      @NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    return Maps.partition(this, this::createFromEntries, predicate);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> peek(@NonNull Consumer<? super Tuple2<K, V>> action) {
+    return Maps.peek(this, action);
+  }
+
+  @Override
+  public <U extends V> LinkedHashMap<K, V> put(
+      K key, U value, @NonNull BiFunction<? super V, ? super U, ? extends V> merge) {
+    return Maps.put(this, key, value, merge);
+  }
+
+  /**
+   * Associates the specified value with the specified key in this map. If the map previously
+   * contained a mapping for the key, the old value is replaced by the specified value.
+   *
+   * <p>Note that this method has a worst-case linear complexity.
+   *
+   * @param key key with which the specified value is to be associated
+   * @param value value to be associated with the specified key
+   * @return A new Map containing these elements and that entry.
+   */
+  @Override
+  public LinkedHashMap<K, V> put(K key, V value) {
+    final Queue<Tuple2<K, V>> newList;
+    final Option<V> currentEntry = get(key);
+    if (currentEntry.isDefined()) {
+      newList = list.replace(Tuple.of(key, currentEntry.get()), Tuple.of(key, value));
+    } else {
+      newList = list.append(Tuple.of(key, value));
+    }
+    final HashMap<K, V> newMap = map.put(key, value);
+    return wrap(newList, newMap);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> put(@NonNull Tuple2<? extends K, ? extends V> entry) {
+    return Maps.put(this, entry);
+  }
+
+  @Override
+  public <U extends V> LinkedHashMap<K, V> put(
+      @NonNull Tuple2<? extends K, U> entry,
+      @NonNull BiFunction<? super V, ? super U, ? extends V> merge) {
+    return Maps.put(this, entry, merge);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> remove(K key) {
+    if (containsKey(key)) {
+      final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> Objects.equals(t._1, key));
+      final HashMap<K, V> newMap = map.remove(key);
+      return wrap(newList, newMap);
+    } else {
+      return this;
+    }
+  }
+
+  @Override
+  @Deprecated
+  public LinkedHashMap<K, V> removeAll(@NonNull BiPredicate<? super K, ? super V> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    return reject(predicate);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> removeAll(@NonNull Iterable<? extends K> keys) {
+    Objects.requireNonNull(keys, "keys is null");
+    final HashSet<K> toRemove = HashSet.ofAll(keys);
+    final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
+    final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
+    return newList.size() == size() ? this : wrap(newList, newMap);
+  }
+
+  @Override
+  @Deprecated
+  public LinkedHashMap<K, V> removeKeys(@NonNull Predicate<? super K> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    return rejectKeys(predicate);
+  }
+
+  @Override
+  @Deprecated
+  public LinkedHashMap<K, V> removeValues(@NonNull Predicate<? super V> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    return rejectValues(predicate);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> replace(
+      @NonNull Tuple2<K, V> currentElement, @NonNull Tuple2<K, V> newElement) {
+    Objects.requireNonNull(currentElement, "currentElement is null");
+    Objects.requireNonNull(newElement, "newElement is null");
+
+    // We replace the whole element, i.e. key and value have to be present.
+    if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
+
+      Queue<Tuple2<K, V>> newList = list;
+      HashMap<K, V> newMap = map;
+
+      final K currentKey = currentElement._1;
+      final K newKey = newElement._1;
+
+      // If current key and new key are equal, the element will be automatically replaced,
+      // otherwise we need to remove the pair (newKey, ?) from the list manually.
+      if (!Objects.equals(currentKey, newKey)) {
+        final Option<V> value = newMap.get(newKey);
+        if (value.isDefined()) {
+          newList = newList.remove(Tuple.of(newKey, value.get()));
         }
+      }
+
+      newList = newList.replace(currentElement, newElement);
+      newMap = newMap.remove(currentKey).put(newElement);
+
+      return wrap(newList, newMap);
+
+    } else {
+      return this;
     }
+  }
 
-    @Override
-    public Option<LinkedHashMap<K, V>> initOption() {
-        return Maps.initOption(this);
+  @Override
+  public LinkedHashMap<K, V> replaceAll(
+      @NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
+    return Maps.replaceAll(this, currentElement, newElement);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> replaceValue(K key, V value) {
+    return Maps.replaceValue(this, key, value);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> replace(K key, V oldValue, V newValue) {
+    return Maps.replace(this, key, oldValue, newValue);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> replaceAll(
+      @NonNull BiFunction<? super K, ? super V, ? extends V> function) {
+    return Maps.replaceAll(this, function);
+  }
+
+  @Override
+  public LinkedHashMap<K, V> retainAll(@NonNull Iterable<? extends Tuple2<K, V>> elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    LinkedHashMap<K, V> result = empty();
+    for (Tuple2<K, V> entry : elements) {
+      if (contains(entry)) {
+        result = result.put(entry._1, entry._2);
+      }
     }
+    return result;
+  }
 
-    /**
-     * An {@code LinkedHashMap}'s value is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return map.isEmpty();
-    }
-
-    /**
-     * An {@code LinkedHashMap}'s value is computed eagerly.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isLazy() {
-        return false;
-    }
-
-    @Override
-    public boolean isSequential() {
-        return true;
-    }
-
-    @Override
-    public @NonNull Iterator<Tuple2<K, V>> iterator() {
-        return list.iterator();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public Set<K> keySet() {
-        return LinkedHashSet.wrap((LinkedHashMap<K, Object>) this);
-    }
-
-    @Override
-    public Tuple2<K, V> last() {
-        return list.last();
-    }
-
-    @Override
-    public <K2, V2> LinkedHashMap<K2, V2> map(@NonNull BiFunction<? super K, ? super V, Tuple2<K2, V2>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return foldLeft(LinkedHashMap.empty(), (acc, entry) -> acc.put(entry.map(mapper)));
-    }
-
-    @Override
-    public <K2> LinkedHashMap<K2, V> mapKeys(@NonNull Function<? super K, ? extends K2> keyMapper) {
-        Objects.requireNonNull(keyMapper, "keyMapper is null");
-        return map((k, v) -> Tuple.of(keyMapper.apply(k), v));
-    }
-
-    @Override
-    public <K2> LinkedHashMap<K2, V> mapKeys(@NonNull Function<? super K, ? extends K2> keyMapper, @NonNull BiFunction<? super V, ? super V, ? extends V> valueMerge) {
-        return Collections.mapKeys(this, LinkedHashMap.empty(), keyMapper, valueMerge);
-    }
-
-    @Override
-    public <W> LinkedHashMap<K, W> mapValues(@NonNull Function<? super V, ? extends W> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return map((k, v) -> Tuple.of(k, mapper.apply(v)));
-    }
-
-    @Override
-    public LinkedHashMap<K, V> merge(@NonNull Map<? extends K, ? extends V> that) {
-        return Maps.merge(this, this::createFromEntries, that);
-    }
-
-    @Override
-    public <U extends V> LinkedHashMap<K, V> merge(@NonNull Map<? extends K, U> that,
-                                                   @NonNull BiFunction<? super V, ? super U, ? extends V> collisionResolution) {
-        return Maps.merge(this, this::createFromEntries, that, collisionResolution);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> orElse(Iterable<? extends Tuple2<K, V>> other) {
-        return isEmpty() ? ofEntries(other) : this;
-    }
-
-    @Override
-    public LinkedHashMap<K, V> orElse(@NonNull Supplier<? extends Iterable<? extends Tuple2<K, V>>> supplier) {
-        return isEmpty() ? ofEntries(supplier.get()) : this;
-    }
-
-    @Override
-    public Tuple2<LinkedHashMap<K, V>, LinkedHashMap<K, V>> partition(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.partition(this, this::createFromEntries, predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> peek(@NonNull Consumer<? super Tuple2<K, V>> action) {
-        return Maps.peek(this, action);
-    }
-
-    @Override
-    public <U extends V> LinkedHashMap<K, V> put(K key, U value, @NonNull BiFunction<? super V, ? super U, ? extends V> merge) {
-        return Maps.put(this, key, value, merge);
-    }
-
-    /**
-     * Associates the specified value with the specified key in this map.
-     * If the map previously contained a mapping for the key, the old value is
-     * replaced by the specified value.
-     * <p>
-     * Note that this method has a worst-case linear complexity.
-     *
-     * @param key   key with which the specified value is to be associated
-     * @param value value to be associated with the specified key
-     * @return A new Map containing these elements and that entry.
-     */
-    @Override
-    public LinkedHashMap<K, V> put(K key, V value) {
-        final Queue<Tuple2<K, V>> newList;
-        final Option<V> currentEntry = get(key);
-        if (currentEntry.isDefined()) {
-            newList = list.replace(Tuple.of(key, currentEntry.get()), Tuple.of(key, value));
-        } else {
-            newList = list.append(Tuple.of(key, value));
-        }
-        final HashMap<K, V> newMap = map.put(key, value);
-        return wrap(newList, newMap);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> put(@NonNull Tuple2<? extends K, ? extends V> entry) {
-        return Maps.put(this, entry);
-    }
-
-    @Override
-    public <U extends V> LinkedHashMap<K, V> put(@NonNull Tuple2<? extends K, U> entry,
-                                                 @NonNull BiFunction<? super V, ? super U, ? extends V> merge) {
-        return Maps.put(this, entry, merge);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> remove(K key) {
-        if (containsKey(key)) {
-            final Queue<Tuple2<K, V>> newList = list.removeFirst(t -> Objects.equals(t._1, key));
-            final HashMap<K, V> newMap = map.remove(key);
-            return wrap(newList, newMap);
-        } else {
-            return this;
-        }
-    }
-
-    @Override
-    @Deprecated
-    public LinkedHashMap<K, V> removeAll(@NonNull BiPredicate<? super K, ? super V> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return reject(predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> removeAll(@NonNull Iterable<? extends K> keys) {
-        Objects.requireNonNull(keys, "keys is null");
-        final HashSet<K> toRemove = HashSet.ofAll(keys);
-        final Queue<Tuple2<K, V>> newList = list.filter(t -> !toRemove.contains(t._1));
-        final HashMap<K, V> newMap = map.filter(t -> !toRemove.contains(t._1));
-        return newList.size() == size() ? this : wrap(newList, newMap);
-    }
-
-    @Override
-    @Deprecated
-    public LinkedHashMap<K, V> removeKeys(@NonNull Predicate<? super K> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return rejectKeys(predicate);
-    }
-
-    @Override
-    @Deprecated
-    public LinkedHashMap<K, V> removeValues(@NonNull Predicate<? super V> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return rejectValues(predicate);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> replace(@NonNull Tuple2<K, V> currentElement, @NonNull Tuple2<K, V> newElement) {
-        Objects.requireNonNull(currentElement, "currentElement is null");
-        Objects.requireNonNull(newElement, "newElement is null");
-
-        // We replace the whole element, i.e. key and value have to be present.
-        if (!Objects.equals(currentElement, newElement) && contains(currentElement)) {
-
-            Queue<Tuple2<K, V>> newList = list;
-            HashMap<K, V> newMap = map;
-
-            final K currentKey = currentElement._1;
-            final K newKey = newElement._1;
-
-            // If current key and new key are equal, the element will be automatically replaced,
-            // otherwise we need to remove the pair (newKey, ?) from the list manually.
-            if (!Objects.equals(currentKey, newKey)) {
-                final Option<V> value = newMap.get(newKey);
-                if (value.isDefined()) {
-                    newList = newList.remove(Tuple.of(newKey, value.get()));
-                }
-            }
-
-            newList = newList.replace(currentElement, newElement);
-            newMap = newMap.remove(currentKey).put(newElement);
-
-            return wrap(newList, newMap);
-
-        } else {
-            return this;
-        }
-    }
-
-    @Override
-    public LinkedHashMap<K, V> replaceAll(@NonNull Tuple2<K, V> currentElement, Tuple2<K, V> newElement) {
-        return Maps.replaceAll(this, currentElement, newElement);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> replaceValue(K key, V value) {
-        return Maps.replaceValue(this, key, value);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> replace(K key, V oldValue, V newValue) {
-        return Maps.replace(this, key, oldValue, newValue);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> replaceAll(@NonNull BiFunction<? super K, ? super V, ? extends V> function) {
-        return Maps.replaceAll(this, function);
-    }
-
-    @Override
-    public LinkedHashMap<K, V> retainAll(@NonNull Iterable<? extends Tuple2<K, V>> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        LinkedHashMap<K, V> result = empty();
-        for (Tuple2<K, V> entry : elements) {
-            if (contains(entry)) {
-                result = result.put(entry._1, entry._2);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public LinkedHashMap<K, V> scan(
+  @Override
+  public LinkedHashMap<K, V> scan(
       @NonNull Tuple2<K, V> zero,
-      @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>> operation) {
-        return Maps.scan(this, zero, operation, this::createFromEntries);
-    }
+      @NonNull BiFunction<? super Tuple2<K, V>, ? super Tuple2<K, V>, ? extends Tuple2<K, V>>
+          operation) {
+    return Maps.scan(this, zero, operation, this::createFromEntries);
+  }
 
-    @Override
-    public int size() {
-        return map.size();
-    }
+  @Override
+  public int size() {
+    return map.size();
+  }
 
-    @Override
-    public Iterator<LinkedHashMap<K, V>> slideBy(@NonNull Function<? super Tuple2<K, V>, ?> classifier) {
-        return Maps.slideBy(this, this::createFromEntries, classifier);
-    }
+  @Override
+  public Iterator<LinkedHashMap<K, V>> slideBy(
+      @NonNull Function<? super Tuple2<K, V>, ?> classifier) {
+    return Maps.slideBy(this, this::createFromEntries, classifier);
+  }
 
-    @Override
-    public Iterator<LinkedHashMap<K, V>> sliding(int size) {
-        return Maps.sliding(this, this::createFromEntries, size);
-    }
+  @Override
+  public Iterator<LinkedHashMap<K, V>> sliding(int size) {
+    return Maps.sliding(this, this::createFromEntries, size);
+  }
 
-    @Override
-    public Iterator<LinkedHashMap<K, V>> sliding(int size, int step) {
-        return Maps.sliding(this, this::createFromEntries, size, step);
-    }
+  @Override
+  public Iterator<LinkedHashMap<K, V>> sliding(int size, int step) {
+    return Maps.sliding(this, this::createFromEntries, size, step);
+  }
 
-    @Override
-    public Tuple2<LinkedHashMap<K, V>, LinkedHashMap<K, V>> span(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.span(this, this::createFromEntries, predicate);
-    }
+  @Override
+  public Tuple2<LinkedHashMap<K, V>, LinkedHashMap<K, V>> span(
+      @NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    return Maps.span(this, this::createFromEntries, predicate);
+  }
 
-    @Override
-    public LinkedHashMap<K, V> tail() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty LinkedHashMap");
-        } else {
-            return wrap(list.tail(), map.remove(list.head()._1()));
-        }
+  @Override
+  public LinkedHashMap<K, V> tail() {
+    if (isEmpty()) {
+      throw new UnsupportedOperationException("tail of empty LinkedHashMap");
+    } else {
+      return wrap(list.tail(), map.remove(list.head()._1()));
     }
+  }
 
-    @Override
-    public Option<LinkedHashMap<K, V>> tailOption() {
-        return Maps.tailOption(this);
-    }
+  @Override
+  public Option<LinkedHashMap<K, V>> tailOption() {
+    return Maps.tailOption(this);
+  }
 
-    @Override
-    public LinkedHashMap<K, V> take(int n) {
-        return Maps.take(this, this::createFromEntries, n);
-    }
+  @Override
+  public LinkedHashMap<K, V> take(int n) {
+    return Maps.take(this, this::createFromEntries, n);
+  }
 
-    @Override
-    public LinkedHashMap<K, V> takeRight(int n) {
-        return Maps.takeRight(this, this::createFromEntries, n);
-    }
+  @Override
+  public LinkedHashMap<K, V> takeRight(int n) {
+    return Maps.takeRight(this, this::createFromEntries, n);
+  }
 
-    @Override
-    public LinkedHashMap<K, V> takeUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.takeUntil(this, this::createFromEntries, predicate);
-    }
+  @Override
+  public LinkedHashMap<K, V> takeUntil(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    return Maps.takeUntil(this, this::createFromEntries, predicate);
+  }
 
-    @Override
-    public LinkedHashMap<K, V> takeWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
-        return Maps.takeWhile(this, this::createFromEntries, predicate);
-    }
+  @Override
+  public LinkedHashMap<K, V> takeWhile(@NonNull Predicate<? super Tuple2<K, V>> predicate) {
+    return Maps.takeWhile(this, this::createFromEntries, predicate);
+  }
 
-    @Override
-    public java.util.LinkedHashMap<K, V> toJavaMap() {
-        return toJavaMap(java.util.LinkedHashMap::new, t -> t);
-    }
+  @Override
+  public java.util.LinkedHashMap<K, V> toJavaMap() {
+    return toJavaMap(java.util.LinkedHashMap::new, t -> t);
+  }
 
-    @Override
-    public Seq<V> values() {
-        return map(t -> t._2);
-    }
+  @Override
+  public Seq<V> values() {
+    return map(t -> t._2);
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        return Collections.equals(this, o);
-    }
+  @Override
+  public boolean equals(Object o) {
+    return Collections.equals(this, o);
+  }
 
-    @Override
-    public int hashCode() {
-        return Collections.hashUnordered(this);
-    }
+  @Override
+  public int hashCode() {
+    return Collections.hashUnordered(this);
+  }
 
-    private Object readResolve() {
-        return isEmpty() ? EMPTY : this;
-    }
+  private Object readResolve() {
+    return isEmpty() ? EMPTY : this;
+  }
 
-    @Override
-    public String stringPrefix() {
-        return "LinkedHashMap";
-    }
+  @Override
+  public String stringPrefix() {
+    return "LinkedHashMap";
+  }
 
-    @Override
-    public String toString() {
-        return mkString(stringPrefix() + "(", ", ", ")");
-    }
+  @Override
+  public String toString() {
+    return mkString(stringPrefix() + "(", ", ", ")");
+  }
 
-    /**
-     * Construct Map with given values and key order.
-     *
-     * @param list The list of key-value tuples with unique keys.
-     * @param map  The map of key-value tuples.
-     * @param <K>  The key type
-     * @param <V>  The value type
-     * @return A new Map containing the given map with given key order
-     */
-    private static <K, V> LinkedHashMap<K, V> wrap(@NonNull Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
-        return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
-    }
+  /**
+   * Construct Map with given values and key order.
+   *
+   * @param list The list of key-value tuples with unique keys.
+   * @param map The map of key-value tuples.
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given map with given key order
+   */
+  private static <K, V> LinkedHashMap<K, V> wrap(
+      @NonNull Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
+    return list.isEmpty() ? empty() : new LinkedHashMap<>(list, map);
+  }
 
-    /**
-     * Construct Map with given values and key order.
-     *
-     * @param list The list of key-value tuples with non-unique keys.
-     * @param map  The map of key-value tuples.
-     * @param <K>  The key type
-     * @param <V>  The value type
-     * @return A new Map containing the given map with given key order
-     */
-    private static <K, V> LinkedHashMap<K, V> wrapNonUnique(@NonNull Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
-        return list.isEmpty() ? empty() : new LinkedHashMap<>(list.reverse().distinctBy(Tuple2::_1).reverse().toQueue(), map);
-    }
+  /**
+   * Construct Map with given values and key order.
+   *
+   * @param list The list of key-value tuples with non-unique keys.
+   * @param map The map of key-value tuples.
+   * @param <K> The key type
+   * @param <V> The value type
+   * @return A new Map containing the given map with given key order
+   */
+  private static <K, V> LinkedHashMap<K, V> wrapNonUnique(
+      @NonNull Queue<Tuple2<K, V>> list, HashMap<K, V> map) {
+    return list.isEmpty()
+        ? empty()
+        : new LinkedHashMap<>(list.reverse().distinctBy(Tuple2::_1).reverse().toQueue(), map);
+  }
 
-    // We need this method to narrow the argument of `ofEntries`.
-    // If this method is static with type args <K, V>, the jdk fails to infer types at the call site.
-    private LinkedHashMap<K, V> createFromEntries(Iterable<Tuple2<K, V>> tuples) {
-        return LinkedHashMap.ofEntries(tuples);
-    }
-
+  // We need this method to narrow the argument of `ofEntries`.
+  // If this method is static with type args <K, V>, the jdk fails to infer types at the call site.
+  private LinkedHashMap<K, V> createFromEntries(Iterable<Tuple2<K, V>> tuples) {
+    return LinkedHashMap.ofEntries(tuples);
+  }
 }
