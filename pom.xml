@@ -384,6 +384,9 @@
                         <version>${spotless.version}</version>
                         <configuration>
                             <java>
+                                <googleJavaFormat>
+                                    <version>1.33.0</version>
+                                </googleJavaFormat>
                                 <removeUnusedImports />
                                 <importOrder>
                                     <order>,\#</order>

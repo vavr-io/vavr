@@ -38,1133 +38,1158 @@ import org.jspecify.annotations.NonNull;
 // DEV-NOTE: it is not possible to create an EMPTY TreeSet without a Comparator type in scope
 public final class TreeSet<T> implements SortedSet<T>, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private final RedBlackTree<T> tree;
+  private final RedBlackTree<T> tree;
 
-    TreeSet(RedBlackTree<T> tree) {
-        this.tree = tree;
-    }
+  TreeSet(RedBlackTree<T> tree) {
+    this.tree = tree;
+  }
 
-    /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link TreeSet}.
-     * <p>
-     * The natural comparator is used to compare TreeSet elements.
-     *
-     * @param <T> Component type of the List.
-     * @return A io.vavr.collection.List Collector.
-     */
-    public static <T extends Comparable<? super T>> Collector<T, ArrayList<T>, TreeSet<T>> collector() {
-        return collector(Comparators.naturalComparator());
-    }
+  /**
+   * Returns a {@link java.util.stream.Collector} which may be used in conjunction with {@link
+   * java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link TreeSet}.
+   *
+   * <p>The natural comparator is used to compare TreeSet elements.
+   *
+   * @param <T> Component type of the List.
+   * @return A io.vavr.collection.List Collector.
+   */
+  public static <T extends Comparable<? super T>>
+      Collector<T, ArrayList<T>, TreeSet<T>> collector() {
+    return collector(Comparators.naturalComparator());
+  }
 
-    /**
-     * Returns a {@link java.util.stream.Collector} which may be used in conjunction with
-     * {@link java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link TreeSet}.
-     *
-     * @param <T>        Component type of the List.
-     * @param comparator An element comparator
-     * @return A io.vavr.collection.List Collector.
-     */
-    public static <T> Collector<T, ArrayList<T>, TreeSet<T>> collector(@NonNull Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        final Supplier<ArrayList<T>> supplier = ArrayList::new;
-        final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
-        final BinaryOperator<ArrayList<T>> combiner = (left, right) -> {
-            left.addAll(right);
-            return left;
+  /**
+   * Returns a {@link java.util.stream.Collector} which may be used in conjunction with {@link
+   * java.util.stream.Stream#collect(java.util.stream.Collector)} to obtain a {@link TreeSet}.
+   *
+   * @param <T> Component type of the List.
+   * @param comparator An element comparator
+   * @return A io.vavr.collection.List Collector.
+   */
+  public static <T> Collector<T, ArrayList<T>, TreeSet<T>> collector(
+      @NonNull Comparator<? super T> comparator) {
+    Objects.requireNonNull(comparator, "comparator is null");
+    final Supplier<ArrayList<T>> supplier = ArrayList::new;
+    final BiConsumer<ArrayList<T>, T> accumulator = ArrayList::add;
+    final BinaryOperator<ArrayList<T>> combiner =
+        (left, right) -> {
+          left.addAll(right);
+          return left;
         };
-        final Function<ArrayList<T>, TreeSet<T>> finisher = list -> TreeSet.ofAll(comparator, list);
-        return Collector.of(supplier, accumulator, combiner, finisher);
-    }
-
-    public static <T extends Comparable<? super T>> TreeSet<T> empty() {
-        return empty(Comparators.naturalComparator());
-    }
-
-    public static <T> TreeSet<T> empty(@NonNull Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        return new TreeSet<>(RedBlackTree.empty(comparator));
-    }
-
-    /**
-     * Narrows a {@code TreeSet<? extends T>} to {@code TreeSet<T>} via a
-     * type-safe cast. Safe here because the set is immutable and no elements
-     * can be added that would violate the type (covariance)
-     * <p>
-     * CAUTION: The underlying {@code Comparator} might fail!
-     *
-     * @param treeSet the set to narrow
-     * @param <T>     the target element type
-     * @return the same set viewed as {@code TreeSet<T>}
-     */
-    @SuppressWarnings("unchecked")
-    public static <T> TreeSet<T> narrow(TreeSet<? extends T> treeSet) {
-        return (TreeSet<T>) treeSet;
-    }
-
-    public static <T extends Comparable<? super T>> TreeSet<T> of(T value) {
-        return of(Comparators.naturalComparator(), value);
-    }
-
-    public static <T> TreeSet<T> of(@NonNull Comparator<? super T> comparator, T value) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        return new TreeSet<>(RedBlackTree.of(comparator, value));
-    }
-
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    public static <T extends Comparable<? super T>> TreeSet<T> of(T @NonNull ... values) {
-        return TreeSet.<T> of(Comparators.naturalComparator(), values);
-    }
-
-    @SuppressWarnings("varargs")
-    @SafeVarargs
-    public static <T> TreeSet<T> of(@NonNull Comparator<? super T> comparator, T @NonNull ... values) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(values, "values is null");
-        return new TreeSet<>(RedBlackTree.of(comparator, values));
-    }
-
-    /**
-     * Returns a TreeSet containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
-     *
-     * @param <T>        Component type of the TreeSet
-     * @param comparator The comparator used to sort the elements
-     * @param n          The number of elements in the TreeSet
-     * @param f          The Function computing element values
-     * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code comparator} or {@code f} are null
-     */
-    public static <T> TreeSet<T> tabulate(@NonNull Comparator<? super T> comparator, int n, @NonNull Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(f, "f is null");
-        return Collections.tabulate(n, f, TreeSet.empty(comparator), values -> of(comparator, values));
-    }
-
-    /**
-     * Returns a TreeSet containing {@code n} values of a given Function {@code f}
-     * over a range of integer values from 0 to {@code n - 1}.
-     * The underlying comparator is the natural comparator of T.
-     *
-     * @param <T> Component type of the TreeSet
-     * @param n   The number of elements in the TreeSet
-     * @param f   The Function computing element values
-     * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
-     * @throws NullPointerException if {@code f} is null
-     */
-    public static <T extends Comparable<? super T>> TreeSet<T> tabulate(int n, @NonNull Function<? super Integer, ? extends T> f) {
-        Objects.requireNonNull(f, "f is null");
-        return tabulate(Comparators.naturalComparator(), n, f);
-    }
-
-    /**
-     * Returns a TreeSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
-     *
-     * @param <T>        Component type of the TreeSet
-     * @param comparator The comparator used to sort the elements
-     * @param n          The number of elements in the TreeSet
-     * @param s          The Supplier computing element values
-     * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code comparator} or {@code s} are null
-     */
-    public static <T> TreeSet<T> fill(@NonNull Comparator<? super T> comparator, int n, @NonNull Supplier<? extends T> s) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(s, "s is null");
-        return Collections.fill(n, s, TreeSet.empty(comparator), values -> of(comparator, values));
-    }
-
-    /**
-     * Returns a TreeSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
-     * The underlying comparator is the natural comparator of T.
-     *
-     * @param <T> Component type of the TreeSet
-     * @param n   The number of elements in the TreeSet
-     * @param s   The Supplier computing element values
-     * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code s}.
-     * @throws NullPointerException if {@code s} is null
-     */
-    public static <T extends Comparable<? super T>> TreeSet<T> fill(int n, @NonNull Supplier<? extends T> s) {
-        Objects.requireNonNull(s, "s is null");
-        return fill(Comparators.naturalComparator(), n, s);
-    }
-
-    public static <T extends Comparable<? super T>> TreeSet<T> ofAll(@NonNull Iterable<? extends T> values) {
-        return ofAll(Comparators.naturalComparator(), values);
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, @NonNull Iterable<? extends T> values) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        Objects.requireNonNull(values, "values is null");
-        if (values instanceof TreeSet && ((TreeSet<?>) values).comparator() == comparator) {
-            return (TreeSet<T>) values;
-        } else {
-            return values.iterator().hasNext() ? new TreeSet<>(RedBlackTree.ofAll(comparator, values)) : empty(comparator);
-        }
-    }
-
-    public static <T extends Comparable<? super T>> TreeSet<T> ofAll(java.util.stream.@NonNull Stream<? extends T> javaStream) {
-        Objects.requireNonNull(javaStream, "javaStream is null");
-        return ofAll(Iterator.ofAll(javaStream.iterator()));
-    }
-
-    public static <T> TreeSet<T> ofAll(Comparator<? super T> comparator, java.util.stream.@NonNull Stream<? extends T> javaStream) {
-        Objects.requireNonNull(javaStream, "javaStream is null");
-        return ofAll(comparator, Iterator.ofAll(javaStream.iterator()));
-    }
-
-    /**
-     * Creates a TreeSet from boolean values.
-     *
-     * @param elements boolean values
-     * @return A new TreeSet of Boolean values
-     * @throws NullPointerException if elements is null
-     */
-    public static TreeSet<Boolean> ofAll(boolean @NonNull ... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return TreeSet.ofAll(Iterator.ofAll(elements));
-    }
-
-    /**
-     * Creates a TreeSet from byte values.
-     *
-     * @param elements byte values
-     * @return A new TreeSet of Byte values
-     * @throws NullPointerException if elements is null
-     */
-    public static TreeSet<Byte> ofAll(byte @NonNull ... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return TreeSet.ofAll(Iterator.ofAll(elements));
-    }
-
-    /**
-     * Creates a TreeSet from char values.
-     *
-     * @param elements char values
-     * @return A new TreeSet of Character values
-     * @throws NullPointerException if elements is null
-     */
-    public static TreeSet<Character> ofAll(char @NonNull ... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return TreeSet.ofAll(Iterator.ofAll(elements));
-    }
-
-    /**
-     * Creates a TreeSet from double values.
-     *
-     * @param elements double values
-     * @return A new TreeSet of Double values
-     * @throws NullPointerException if elements is null
-     */
-    public static TreeSet<Double> ofAll(double @NonNull ... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return TreeSet.ofAll(Iterator.ofAll(elements));
-    }
-
-    /**
-     * Creates a TreeSet from float values.
-     *
-     * @param elements float values
-     * @return A new TreeSet of Float values
-     * @throws NullPointerException if elements is null
-     */
-    public static TreeSet<Float> ofAll(float @NonNull ... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return TreeSet.ofAll(Iterator.ofAll(elements));
-    }
-
-    /**
-     * Creates a TreeSet from int values.
-     *
-     * @param elements int values
-     * @return A new TreeSet of Integer values
-     * @throws NullPointerException if elements is null
-     */
-    public static TreeSet<Integer> ofAll(int @NonNull ... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return TreeSet.ofAll(Iterator.ofAll(elements));
-    }
-
-    /**
-     * Creates a TreeSet from long values.
-     *
-     * @param elements long values
-     * @return A new TreeSet of Long values
-     * @throws NullPointerException if elements is null
-     */
-    public static TreeSet<Long> ofAll(long @NonNull ... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return TreeSet.ofAll(Iterator.ofAll(elements));
-    }
-
-    /**
-     * Creates a TreeSet from short values.
-     *
-     * @param elements short values
-     * @return A new TreeSet of Short values
-     * @throws NullPointerException if elements is null
-     */
-    public static TreeSet<Short> ofAll(short @NonNull ... elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        return TreeSet.ofAll(Iterator.ofAll(elements));
-    }
-
-    /**
-     * Creates a TreeSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.range(0, 0)  // = TreeSet()
-     * TreeSet.range(2, 0)  // = TreeSet()
-     * TreeSet.range(-2, 2) // = TreeSet(-2, -1, 0, 1)
-     * }
-     * </pre>
-     *
-     * @param from        the first number
-     * @param toExclusive the last number + 1
-     * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
-     */
-    public static TreeSet<Integer> range(int from, int toExclusive) {
-        return TreeSet.ofAll(Iterator.range(from, toExclusive));
-    }
-
-    /**
-     * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.range('a', 'a')  // = TreeSet()
-     * TreeSet.range('b', 'a')  // = TreeSet()
-     * TreeSet.range('a', 'c')  // = TreeSet('a', 'b')
-     * }
-     * </pre>
-     *
-     * @param from        the first char
-     * @param toExclusive the last char + 1
-     * @return a range of char values as specified or the empty range if {@code from >= toExclusive}
-     */
-    public static TreeSet<Character> range(char from, char toExclusive) {
-        return TreeSet.ofAll(Iterator.range(from, toExclusive));
-    }
-
-    /**
-     * Creates a TreeSet of int numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeBy(1, 3, 1)  // = TreeSet(1, 2)
-     * TreeSet.rangeBy(1, 4, 2)  // = TreeSet(1, 3)
-     * TreeSet.rangeBy(4, 1, -2) // = TreeSet(4, 2)
-     * TreeSet.rangeBy(4, 1, 2)  // = TreeSet()
-     * }
-     * </pre>
-     *
-     * @param from        the first number
-     * @param toExclusive the last number + 1
-     * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
-     */
-    public static TreeSet<Integer> rangeBy(int from, int toExclusive, int step) {
-        return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
-    }
-
-    /**
-     * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeBy('a', 'c', 1)  // = TreeSet('a', 'b')
-     * TreeSet.rangeBy('a', 'd', 2)  // = TreeSet('a', 'c')
-     * TreeSet.rangeBy('d', 'a', -2) // = TreeSet('d', 'b')
-     * TreeSet.rangeBy('d', 'a', 2)  // = TreeSet()
-     * }
-     * </pre>
-     *
-     * @param from        the first char
-     * @param toExclusive the last char + 1
-     * @param step        the step
-     * @return a range of char values as specified or the empty range if<br>
-     * {@code from >= toExclusive} and {@code step > 0} or<br>
-     * {@code from <= toExclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
-     */
-    public static TreeSet<Character> rangeBy(char from, char toExclusive, int step) {
-        return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
-    }
-
-    /**
-     * Creates a TreeSet of double numbers starting from {@code from}, extending up to (but not including) {@code toExclusive},
-     * with {@code step}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeBy(1.0, 3.0, 1.0)  // = TreeSet(1.0, 2.0)
-     * TreeSet.rangeBy(1.0, 4.0, 2.0)  // = TreeSet(1.0, 3.0)
-     * TreeSet.rangeBy(4.0, 1.0, -2.0) // = TreeSet(4.0, 2.0)
-     * TreeSet.rangeBy(4.0, 1.0, 2.0)  // = TreeSet()
-     * }
-     * </pre>
-     *
-     * @param from        the first double
-     * @param toExclusive the upper bound (exclusive)
-     * @param step        the step
-     * @return a range of double values as specified or the empty range if<br>
-     * {@code from >= toExclusive} and {@code step > 0} or<br>
-     * {@code from <= toExclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
-     */
-    public static TreeSet<Double> rangeBy(double from, double toExclusive, double step) {
-        return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
-    }
-
-    /**
-     * Creates a TreeSet of long numbers starting from {@code from}, extending to {@code toExclusive - 1}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.range(0L, 0L)  // = TreeSet()
-     * TreeSet.range(2L, 0L)  // = TreeSet()
-     * TreeSet.range(-2L, 2L) // = TreeSet(-2L, -1L, 0L, 1L)
-     * }
-     * </pre>
-     *
-     * @param from        the first number
-     * @param toExclusive the last number + 1
-     * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
-     */
-    public static TreeSet<Long> range(long from, long toExclusive) {
-        return TreeSet.ofAll(Iterator.range(from, toExclusive));
-    }
-
-    /**
-     * Creates a TreeSet of long numbers starting from {@code from}, extending to {@code toExclusive - 1},
-     * with {@code step}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeBy(1L, 3L, 1L)  // = TreeSet(1L, 2L)
-     * TreeSet.rangeBy(1L, 4L, 2L)  // = TreeSet(1L, 3L)
-     * TreeSet.rangeBy(4L, 1L, -2L) // = TreeSet(4L, 2L)
-     * TreeSet.rangeBy(4L, 1L, 2L)  // = TreeSet()
-     * }
-     * </pre>
-     *
-     * @param from        the first number
-     * @param toExclusive the last number + 1
-     * @param step        the step
-     * @return a range of long values as specified or the empty range if<br>
-     * {@code from >= toInclusive} and {@code step > 0} or<br>
-     * {@code from <= toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
-     */
-    public static TreeSet<Long> rangeBy(long from, long toExclusive, long step) {
-        return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
-    }
-
-    /**
-     * Creates a TreeSet of int numbers starting from {@code from}, extending to {@code toInclusive}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeClosed(0, 0)  // = TreeSet(0)
-     * TreeSet.rangeClosed(2, 0)  // = TreeSet()
-     * TreeSet.rangeClosed(-2, 2) // = TreeSet(-2, -1, 0, 1, 2)
-     * }
-     * </pre>
-     *
-     * @param from        the first number
-     * @param toInclusive the last number
-     * @return a range of int values as specified or the empty range if {@code from > toInclusive}
-     */
-    public static TreeSet<Integer> rangeClosed(int from, int toInclusive) {
-        return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
-    }
-
-    /**
-     * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toInclusive}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeClosed('a', 'a')  // = TreeSet('a')
-     * TreeSet.rangeClosed('b', 'a')  // = TreeSet()
-     * TreeSet.rangeClosed('a', 'c')  // = TreeSet('a', 'b', 'c')
-     * }
-     * </pre>
-     *
-     * @param from        the first char
-     * @param toInclusive the last char
-     * @return a range of char values as specified or the empty range if {@code from > toInclusive}
-     */
-    public static TreeSet<Character> rangeClosed(char from, char toInclusive) {
-        return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
-    }
-
-    /**
-     * Creates a TreeSet of int numbers starting from {@code from}, extending to {@code toInclusive},
-     * with {@code step}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeClosedBy(1, 3, 1)  // = TreeSet(1, 2, 3)
-     * TreeSet.rangeClosedBy(1, 4, 2)  // = TreeSet(1, 3)
-     * TreeSet.rangeClosedBy(4, 1, -2) // = TreeSet(4, 2)
-     * TreeSet.rangeClosedBy(4, 1, 2)  // = TreeSet()
-     * }
-     * </pre>
-     *
-     * @param from        the first number
-     * @param toInclusive the last number
-     * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
-     * {@code from > toInclusive} and {@code step > 0} or<br>
-     * {@code from < toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
-     */
-    public static TreeSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
-        return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
-    }
-
-    /**
-     * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toInclusive},
-     * with {@code step}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeClosedBy('a', 'c', 1)  // = TreeSet('a', 'b', 'c')
-     * TreeSet.rangeClosedBy('a', 'd', 2)  // = TreeSet('a', 'c')
-     * TreeSet.rangeClosedBy('d', 'a', -2) // = TreeSet('d', 'b')
-     * TreeSet.rangeClosedBy('d', 'a', 2)  // = TreeSet()
-     * }
-     * </pre>
-     *
-     * @param from        the first char
-     * @param toInclusive the last char
-     * @param step        the step
-     * @return a range of char values as specified or the empty range if<br>
-     * {@code from > toInclusive} and {@code step > 0} or<br>
-     * {@code from < toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
-     */
-    public static TreeSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
-        return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
-    }
-
-    /**
-     * Creates a TreeSet of double numbers starting from {@code from}, extending to {@code toInclusive},
-     * with {@code step}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeClosedBy(1.0, 3.0, 1.0)  // = TreeSet(1.0, 2.0, 3.0)
-     * TreeSet.rangeClosedBy(1.0, 4.0, 2.0)  // = TreeSet(1.0, 3.0)
-     * TreeSet.rangeClosedBy(4.0, 1.0, -2.0) // = TreeSet(4.0, 2.0)
-     * TreeSet.rangeClosedBy(4.0, 1.0, 2.0)  // = TreeSet()
-     * }
-     * </pre>
-     *
-     * @param from        the first double
-     * @param toInclusive the last double
-     * @param step        the step
-     * @return a range of double values as specified or the empty range if<br>
-     * {@code from > toInclusive} and {@code step > 0} or<br>
-     * {@code from < toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
-     */
-    public static TreeSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
-        return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
-    }
-
-    /**
-     * Creates a TreeSet of long numbers starting from {@code from}, extending to {@code toInclusive}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeClosed(0L, 0L)  // = TreeSet(0L)
-     * TreeSet.rangeClosed(2L, 0L)  // = TreeSet()
-     * TreeSet.rangeClosed(-2L, 2L) // = TreeSet(-2L, -1L, 0L, 1L, 2L)
-     * }
-     * </pre>
-     *
-     * @param from        the first number
-     * @param toInclusive the last number
-     * @return a range of long values as specified or the empty range if {@code from > toInclusive}
-     */
-    public static TreeSet<Long> rangeClosed(long from, long toInclusive) {
-        return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
-    }
-
-    /**
-     * Creates a TreeSet of long numbers starting from {@code from}, extending to {@code toInclusive},
-     * with {@code step}.
-     * <p>
-     * Examples:
-     * <pre>
-     * {@code
-     * TreeSet.rangeClosedBy(1L, 3L, 1L)  // = TreeSet(1L, 2L, 3L)
-     * TreeSet.rangeClosedBy(1L, 4L, 2L)  // = TreeSet(1L, 3L)
-     * TreeSet.rangeClosedBy(4L, 1L, -2L) // = TreeSet(4L, 2L)
-     * TreeSet.rangeClosedBy(4L, 1L, 2L)  // = TreeSet()
-     * }
-     * </pre>
-     *
-     * @param from        the first number
-     * @param toInclusive the last number
-     * @param step        the step
-     * @return a range of int values as specified or the empty range if<br>
-     * {@code from > toInclusive} and {@code step > 0} or<br>
-     * {@code from < toInclusive} and {@code step < 0}
-     * @throws IllegalArgumentException if {@code step} is zero
-     */
-    public static TreeSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
-        return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
-    }
-
-    @Override
-    public TreeSet<T> add(T element) {
-        return contains(element) ? this : new TreeSet<>(tree.insert(element));
-    }
-
-    @Override
-    public TreeSet<T> addAll(@NonNull Iterable<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        RedBlackTree<T> that = tree;
-        for (T element : elements) {
-            if (!that.contains(element)) {
-                that = that.insert(element);
-            }
-        }
-        if (tree == that) {
-            return this;
-        } else {
-            return new TreeSet<>(that);
-        }
-    }
-
-    @Override
-    public <R> TreeSet<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
-        return ofAll(Comparators.naturalComparator(), iterator().<R> collect(partialFunction));
-    }
-
-    @Override
-    public Comparator<T> comparator() {
-        return tree.comparator();
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public TreeSet<T> diff(@NonNull Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            return this;
-        } else if (elements instanceof TreeSet) {
-            final TreeSet<T> that = (TreeSet<T>) elements;
-            return that.isEmpty() ? this : new TreeSet<>(tree.difference(that.tree));
-        } else {
-            return removeAll(elements);
-        }
-    }
-
-    @Override
-    public boolean contains(T element) {
-        return tree.contains(element);
-    }
-
-    @Override
-    public TreeSet<T> distinct() {
-        return this;
-    }
-
-    @Override
-    public TreeSet<T> distinctBy(@NonNull Comparator<? super T> comparator) {
-        Objects.requireNonNull(comparator, "comparator is null");
-        return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(comparator));
-    }
-
-    @Override
-    public <U> TreeSet<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
-        Objects.requireNonNull(keyExtractor, "keyExtractor is null");
-        return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(keyExtractor));
-    }
-
-    @Override
-    public TreeSet<T> drop(int n) {
-        if (n <= 0 || isEmpty()) {
-            return this;
-        } else if (n >= length()) {
-            return empty(tree.comparator());
-        } else {
-            return TreeSet.ofAll(tree.comparator(), iterator().drop(n));
-        }
-    }
-
-    @Override
-    public TreeSet<T> dropRight(int n) {
-        if (n <= 0 || isEmpty()) {
-            return this;
-        } else if (n >= length()) {
-            return empty(tree.comparator());
-        } else {
-            return TreeSet.ofAll(tree.comparator(), iterator().dropRight(n));
-        }
-    }
-
-    @Override
-    public TreeSet<T> dropUntil(@NonNull Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return dropWhile(predicate.negate());
-    }
-
-    @Override
-    public TreeSet<T> dropWhile(@NonNull Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().dropWhile(predicate));
-        return (treeSet.length() == length()) ? this : treeSet;
-    }
-
-    @Override
-    public TreeSet<T> filter(@NonNull Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().filter(predicate));
-        return (treeSet.length() == length()) ? this : treeSet;
-    }
-
-    @Override
-    public TreeSet<T> reject(@NonNull Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return filter(predicate.negate());
-    }
-
-    @Override
-    public <U> TreeSet<U> flatMap(@NonNull Comparator<? super U> comparator,
-                                  @NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
-    }
-
-    @Override
-    public <U> TreeSet<U> flatMap(@NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
-        return flatMap(Comparators.naturalComparator(), mapper);
-    }
-
-    @Override
-    public <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return iterator().foldRight(zero, f);
-    }
-
-    @Override
-    public <C> Map<C, TreeSet<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
-        return Collections.groupBy(this, classifier, elements -> ofAll(comparator(), elements));
-    }
-
-    @Override
-    public Iterator<TreeSet<T>> grouped(int size) {
-        return sliding(size, size);
-    }
-
-    @Override
-    public boolean hasDefiniteSize() {
-        return true;
-    }
-
-    @Override
-    public T head() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("head of empty TreeSet");
-        } else {
-            return tree.min().get();
-        }
-    }
-
-    @Override
-    public Option<T> headOption() {
-        return tree.min();
-    }
-
-    @Override
-    public TreeSet<T> init() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("init of empty TreeSet");
-        } else {
-            return new TreeSet<>(tree.delete(tree.max().get()));
-        }
-    }
-
-    @Override
-    public Option<TreeSet<T>> initOption() {
-        return isEmpty() ? Option.none() : Option.some(init());
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public TreeSet<T> intersect(@NonNull Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (isEmpty()) {
-            return this;
-        } else if (elements instanceof TreeSet) {
-            final TreeSet<T> that = (TreeSet<T>) elements;
-            return new TreeSet<>(tree.intersection(that.tree));
-        } else {
-            return retainAll(elements);
-        }
-    }
-
-    /**
-     * A {@code TreeSet} is computed synchronously.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isAsync() {
-        return false;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return tree.isEmpty();
-    }
-
-    /**
-     * A {@code TreeSet} is computed eagerly.
-     *
-     * @return false
-     */
-    @Override
-    public boolean isLazy() {
-        return false;
-    }
-
-    @Override
-    public boolean isTraversableAgain() {
-        return true;
-    }
-
-    @Override
-    public @NonNull Iterator<T> iterator() {
-        return tree.iterator();
-    }
-
-    @Override
-    public T last() {
-        if (isEmpty()) {
-            throw new NoSuchElementException("last of empty TreeSet");
-        } else {
-            return tree.max().get();
-        }
-    }
-
-    @Override
-    public int length() {
-        return tree.size();
-    }
-
-    @Override
-    public <U> TreeSet<U> map(@NonNull Comparator<? super U> comparator, @NonNull Function<? super T, ? extends U> mapper) {
-        Objects.requireNonNull(mapper, "mapper is null");
-        return TreeSet.ofAll(comparator, iterator().map(mapper));
-    }
-
-    @Override
-    public <U> TreeSet<U> map(@NonNull Function<? super T, ? extends U> mapper) {
-        return map(Comparators.naturalComparator(), mapper);
-    }
-
-    @Override
-    public <U> TreeSet<U> mapTo(U value) {
-        return map(ignored -> value);
-    }
-
-    @Override
-    public TreeSet<Void> mapToVoid() {
-        return map((o1, o2) -> 0, ignored -> null);
-    }
-
-    /**
-     * Returns this {@code TreeSet} if it is nonempty,
-     * otherwise {@code TreeSet} created from iterable, using existing comparator.
-     *
-     * @param other An alternative {@code Traversable}
-     * @return this {@code TreeSet} if it is nonempty,
-     * otherwise {@code TreeSet} created from iterable, using existing comparator.
-     */
-    @Override
-    public TreeSet<T> orElse(@NonNull Iterable<? extends T> other) {
-        return isEmpty() ? ofAll(tree.comparator(), other) : this;
-    }
-
-    /**
-     * Returns this {@code TreeSet} if it is nonempty,
-     * otherwise {@code TreeSet} created from result of evaluating supplier, using existing comparator.
-     *
-     * @param supplier An alternative {@code Traversable}
-     * @return this {@code TreeSet} if it is nonempty,
-     * otherwise {@code TreeSet} created from result of evaluating supplier, using existing comparator.
-     */
-    @Override
-    public TreeSet<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
-        return isEmpty() ? ofAll(tree.comparator(), supplier.get()) : this;
-    }
-
-    @Override
-    public Tuple2<TreeSet<T>, TreeSet<T>> partition(@NonNull Predicate<? super T> predicate) {
-        return Collections.partition(this, values -> TreeSet.ofAll(tree.comparator(), values), predicate);
-    }
-
-    @Override
-    public TreeSet<T> peek(@NonNull Consumer<? super T> action) {
-        Objects.requireNonNull(action, "action is null");
-        if (!isEmpty()) {
-            action.accept(head());
-        }
-        return this;
-    }
-
-    @Override
-    public TreeSet<T> remove(T element) {
-        return new TreeSet<>(tree.delete(element));
-    }
-
-    @Override
-    public TreeSet<T> removeAll(@NonNull Iterable<? extends T> elements) {
-        return Collections.removeAll(this, elements);
-    }
-
-    @Override
-    public TreeSet<T> replace(T currentElement, T newElement) {
-        if (tree.contains(currentElement)) {
-            return new TreeSet<>(tree.delete(currentElement).insert(newElement));
-        } else {
-            return this;
-        }
-    }
-
-    @Override
-    public TreeSet<T> replaceAll(T currentElement, T newElement) {
-        // a set has only one occurrence
-        return replace(currentElement, newElement);
-    }
-
-    @Override
-    public TreeSet<T> retainAll(@NonNull Iterable<? extends T> elements) {
-        return Collections.retainAll(this, elements);
-    }
-
-    @Override
-    public TreeSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
-        return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator(), iter));
-    }
-
-    @Override
-    public <U> Set<U> scanLeft(U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
-        if (zero instanceof Comparable) {
-            final Comparator<U> comparator = Comparators.naturalComparator();
-            return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));
-        } else {
-            return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
-        }
-    }
-
-    @Override
-    public <U> Set<U> scanRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
-        if (zero instanceof Comparable) {
-            final Comparator<U> comparator = Comparators.naturalComparator();
-            return Collections.scanRight(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));
-        } else {
-            return Collections.scanRight(this, zero, operation, HashSet::ofAll);
-        }
-    }
-
-    @Override
-    public Iterator<TreeSet<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
-        return iterator().slideBy(classifier).map(seq -> TreeSet.ofAll(tree.comparator(), seq));
-    }
-
-    @Override
-    public Iterator<TreeSet<T>> sliding(int size) {
-        return sliding(size, 1);
-    }
-
-    @Override
-    public Iterator<TreeSet<T>> sliding(int size, int step) {
-        return iterator().sliding(size, step).map(seq -> TreeSet.ofAll(tree.comparator(), seq));
-    }
-
-    @Override
-    public Tuple2<TreeSet<T>, TreeSet<T>> span(@NonNull Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        return iterator().span(predicate).map(i1 -> TreeSet.ofAll(tree.comparator(), i1),
-                i2 -> TreeSet.ofAll(tree.comparator(), i2));
-    }
-
-    @Override
-    public TreeSet<T> tail() {
-        if (isEmpty()) {
-            throw new UnsupportedOperationException("tail of empty TreeSet");
-        } else {
-            return new TreeSet<>(tree.delete(tree.min().get()));
-        }
-    }
-
-    @Override
-    public Option<TreeSet<T>> tailOption() {
-        return isEmpty() ? Option.none() : Option.some(tail());
-    }
-
-    @Override
-    public TreeSet<T> take(int n) {
-        if (n <= 0) {
-            return empty(tree.comparator());
-        } else if (n >= length()) {
-            return this;
-        } else {
-            return TreeSet.ofAll(tree.comparator(), iterator().take(n));
-        }
-    }
-
-    @Override
-    public TreeSet<T> takeRight(int n) {
-        if (n <= 0) {
-            return empty(tree.comparator());
-        } else if (n >= length()) {
-            return this;
-        } else {
-            return TreeSet.ofAll(tree.comparator(), iterator().takeRight(n));
-        }
-    }
-
-    @Override
-    public TreeSet<T> takeUntil(@NonNull Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final TreeSet<T> treeSet = takeWhile(predicate.negate());
-        return (treeSet.length() == length()) ? this : treeSet;
-    }
-
-    @Override
-    public TreeSet<T> takeWhile(@NonNull Predicate<? super T> predicate) {
-        Objects.requireNonNull(predicate, "predicate is null");
-        final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().takeWhile(predicate));
-        return (treeSet.length() == length()) ? this : treeSet;
-    }
-
-    /**
-     * Transforms this {@code TreeSet}.
-     *
-     * @param f   A transformation
-     * @param <U> Type of transformation result
-     * @return An instance of type {@code U}
-     * @throws NullPointerException if {@code f} is null
-     */
-    public <U> U transform(Function<? super TreeSet<T>, ? extends U> f) {
-        Objects.requireNonNull(f, "f is null");
-        return f.apply(this);
-    }
-
-    @Override
-    public java.util.TreeSet<T> toJavaSet() {
-        return toJavaSet(ignore -> new java.util.TreeSet<>(comparator()));
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    public TreeSet<T> union(@NonNull Set<? extends T> elements) {
-        Objects.requireNonNull(elements, "elements is null");
-        if (elements instanceof TreeSet) {
-            final TreeSet<T> that = (TreeSet<T>) elements;
-            return that.isEmpty() ? this : new TreeSet<>(tree.union(that.tree));
-        } else {
-            return addAll(elements);
-        }
-    }
-
-    @Override
-    public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
+    final Function<ArrayList<T>, TreeSet<T>> finisher = list -> TreeSet.ofAll(comparator, list);
+    return Collector.of(supplier, accumulator, combiner, finisher);
+  }
+
+  public static <T extends Comparable<? super T>> TreeSet<T> empty() {
+    return empty(Comparators.naturalComparator());
+  }
+
+  public static <T> TreeSet<T> empty(@NonNull Comparator<? super T> comparator) {
+    Objects.requireNonNull(comparator, "comparator is null");
+    return new TreeSet<>(RedBlackTree.empty(comparator));
+  }
+
+  /**
+   * Narrows a {@code TreeSet<? extends T>} to {@code TreeSet<T>} via a type-safe cast. Safe here
+   * because the set is immutable and no elements can be added that would violate the type
+   * (covariance)
+   *
+   * <p>CAUTION: The underlying {@code Comparator} might fail!
+   *
+   * @param treeSet the set to narrow
+   * @param <T> the target element type
+   * @return the same set viewed as {@code TreeSet<T>}
+   */
+  @SuppressWarnings("unchecked")
+  public static <T> TreeSet<T> narrow(TreeSet<? extends T> treeSet) {
+    return (TreeSet<T>) treeSet;
+  }
+
+  public static <T extends Comparable<? super T>> TreeSet<T> of(T value) {
+    return of(Comparators.naturalComparator(), value);
+  }
+
+  public static <T> TreeSet<T> of(@NonNull Comparator<? super T> comparator, T value) {
+    Objects.requireNonNull(comparator, "comparator is null");
+    return new TreeSet<>(RedBlackTree.of(comparator, value));
+  }
+
+  @SuppressWarnings("varargs")
+  @SafeVarargs
+  public static <T extends Comparable<? super T>> TreeSet<T> of(T @NonNull ... values) {
+    return TreeSet.<T>of(Comparators.naturalComparator(), values);
+  }
+
+  @SuppressWarnings("varargs")
+  @SafeVarargs
+  public static <T> TreeSet<T> of(
+      @NonNull Comparator<? super T> comparator, T @NonNull ... values) {
+    Objects.requireNonNull(comparator, "comparator is null");
+    Objects.requireNonNull(values, "values is null");
+    return new TreeSet<>(RedBlackTree.of(comparator, values));
+  }
+
+  /**
+   * Returns a TreeSet containing {@code n} values of a given Function {@code f} over a range of
+   * integer values from 0 to {@code n - 1}.
+   *
+   * @param <T> Component type of the TreeSet
+   * @param comparator The comparator used to sort the elements
+   * @param n The number of elements in the TreeSet
+   * @param f The Function computing element values
+   * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+   * @throws NullPointerException if {@code comparator} or {@code f} are null
+   */
+  public static <T> TreeSet<T> tabulate(
+      @NonNull Comparator<? super T> comparator,
+      int n,
+      @NonNull Function<? super Integer, ? extends T> f) {
+    Objects.requireNonNull(comparator, "comparator is null");
+    Objects.requireNonNull(f, "f is null");
+    return Collections.tabulate(n, f, TreeSet.empty(comparator), values -> of(comparator, values));
+  }
+
+  /**
+   * Returns a TreeSet containing {@code n} values of a given Function {@code f} over a range of
+   * integer values from 0 to {@code n - 1}. The underlying comparator is the natural comparator of
+   * T.
+   *
+   * @param <T> Component type of the TreeSet
+   * @param n The number of elements in the TreeSet
+   * @param f The Function computing element values
+   * @return A TreeSet consisting of elements {@code f(0),f(1), ..., f(n - 1)}
+   * @throws NullPointerException if {@code f} is null
+   */
+  public static <T extends Comparable<? super T>> TreeSet<T> tabulate(
+      int n, @NonNull Function<? super Integer, ? extends T> f) {
+    Objects.requireNonNull(f, "f is null");
+    return tabulate(Comparators.naturalComparator(), n, f);
+  }
+
+  /**
+   * Returns a TreeSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
+   *
+   * @param <T> Component type of the TreeSet
+   * @param comparator The comparator used to sort the elements
+   * @param n The number of elements in the TreeSet
+   * @param s The Supplier computing element values
+   * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code
+   *     s}.
+   * @throws NullPointerException if {@code comparator} or {@code s} are null
+   */
+  public static <T> TreeSet<T> fill(
+      @NonNull Comparator<? super T> comparator, int n, @NonNull Supplier<? extends T> s) {
+    Objects.requireNonNull(comparator, "comparator is null");
+    Objects.requireNonNull(s, "s is null");
+    return Collections.fill(n, s, TreeSet.empty(comparator), values -> of(comparator, values));
+  }
+
+  /**
+   * Returns a TreeSet containing tuples returned by {@code n} calls to a given Supplier {@code s}.
+   * The underlying comparator is the natural comparator of T.
+   *
+   * @param <T> Component type of the TreeSet
+   * @param n The number of elements in the TreeSet
+   * @param s The Supplier computing element values
+   * @return A TreeSet of size {@code n}, where each element contains the result supplied by {@code
+   *     s}.
+   * @throws NullPointerException if {@code s} is null
+   */
+  public static <T extends Comparable<? super T>> TreeSet<T> fill(
+      int n, @NonNull Supplier<? extends T> s) {
+    Objects.requireNonNull(s, "s is null");
+    return fill(Comparators.naturalComparator(), n, s);
+  }
+
+  public static <T extends Comparable<? super T>> TreeSet<T> ofAll(
+      @NonNull Iterable<? extends T> values) {
+    return ofAll(Comparators.naturalComparator(), values);
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T> TreeSet<T> ofAll(
+      Comparator<? super T> comparator, @NonNull Iterable<? extends T> values) {
+    Objects.requireNonNull(comparator, "comparator is null");
+    Objects.requireNonNull(values, "values is null");
+    if (values instanceof TreeSet && ((TreeSet<?>) values).comparator() == comparator) {
+      return (TreeSet<T>) values;
+    } else {
+      return values.iterator().hasNext()
+          ? new TreeSet<>(RedBlackTree.ofAll(comparator, values))
+          : empty(comparator);
+    }
+  }
+
+  public static <T extends Comparable<? super T>> TreeSet<T> ofAll(
+      java.util.stream.@NonNull Stream<? extends T> javaStream) {
+    Objects.requireNonNull(javaStream, "javaStream is null");
+    return ofAll(Iterator.ofAll(javaStream.iterator()));
+  }
+
+  public static <T> TreeSet<T> ofAll(
+      Comparator<? super T> comparator, java.util.stream.@NonNull Stream<? extends T> javaStream) {
+    Objects.requireNonNull(javaStream, "javaStream is null");
+    return ofAll(comparator, Iterator.ofAll(javaStream.iterator()));
+  }
+
+  /**
+   * Creates a TreeSet from boolean values.
+   *
+   * @param elements boolean values
+   * @return A new TreeSet of Boolean values
+   * @throws NullPointerException if elements is null
+   */
+  public static TreeSet<Boolean> ofAll(boolean @NonNull ... elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    return TreeSet.ofAll(Iterator.ofAll(elements));
+  }
+
+  /**
+   * Creates a TreeSet from byte values.
+   *
+   * @param elements byte values
+   * @return A new TreeSet of Byte values
+   * @throws NullPointerException if elements is null
+   */
+  public static TreeSet<Byte> ofAll(byte @NonNull ... elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    return TreeSet.ofAll(Iterator.ofAll(elements));
+  }
+
+  /**
+   * Creates a TreeSet from char values.
+   *
+   * @param elements char values
+   * @return A new TreeSet of Character values
+   * @throws NullPointerException if elements is null
+   */
+  public static TreeSet<Character> ofAll(char @NonNull ... elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    return TreeSet.ofAll(Iterator.ofAll(elements));
+  }
+
+  /**
+   * Creates a TreeSet from double values.
+   *
+   * @param elements double values
+   * @return A new TreeSet of Double values
+   * @throws NullPointerException if elements is null
+   */
+  public static TreeSet<Double> ofAll(double @NonNull ... elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    return TreeSet.ofAll(Iterator.ofAll(elements));
+  }
+
+  /**
+   * Creates a TreeSet from float values.
+   *
+   * @param elements float values
+   * @return A new TreeSet of Float values
+   * @throws NullPointerException if elements is null
+   */
+  public static TreeSet<Float> ofAll(float @NonNull ... elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    return TreeSet.ofAll(Iterator.ofAll(elements));
+  }
+
+  /**
+   * Creates a TreeSet from int values.
+   *
+   * @param elements int values
+   * @return A new TreeSet of Integer values
+   * @throws NullPointerException if elements is null
+   */
+  public static TreeSet<Integer> ofAll(int @NonNull ... elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    return TreeSet.ofAll(Iterator.ofAll(elements));
+  }
+
+  /**
+   * Creates a TreeSet from long values.
+   *
+   * @param elements long values
+   * @return A new TreeSet of Long values
+   * @throws NullPointerException if elements is null
+   */
+  public static TreeSet<Long> ofAll(long @NonNull ... elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    return TreeSet.ofAll(Iterator.ofAll(elements));
+  }
+
+  /**
+   * Creates a TreeSet from short values.
+   *
+   * @param elements short values
+   * @return A new TreeSet of Short values
+   * @throws NullPointerException if elements is null
+   */
+  public static TreeSet<Short> ofAll(short @NonNull ... elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    return TreeSet.ofAll(Iterator.ofAll(elements));
+  }
+
+  /**
+   * Creates a TreeSet of int numbers starting from {@code from}, extending to {@code toExclusive -
+   * 1}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.range(0, 0)  // = TreeSet()
+   * TreeSet.range(2, 0)  // = TreeSet()
+   * TreeSet.range(-2, 2) // = TreeSet(-2, -1, 0, 1)
+   * }</pre>
+   *
+   * @param from the first number
+   * @param toExclusive the last number + 1
+   * @return a range of int values as specified or the empty range if {@code from >= toExclusive}
+   */
+  public static TreeSet<Integer> range(int from, int toExclusive) {
+    return TreeSet.ofAll(Iterator.range(from, toExclusive));
+  }
+
+  /**
+   * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toExclusive -
+   * 1}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.range('a', 'a')  // = TreeSet()
+   * TreeSet.range('b', 'a')  // = TreeSet()
+   * TreeSet.range('a', 'c')  // = TreeSet('a', 'b')
+   * }</pre>
+   *
+   * @param from the first char
+   * @param toExclusive the last char + 1
+   * @return a range of char values as specified or the empty range if {@code from >= toExclusive}
+   */
+  public static TreeSet<Character> range(char from, char toExclusive) {
+    return TreeSet.ofAll(Iterator.range(from, toExclusive));
+  }
+
+  /**
+   * Creates a TreeSet of int numbers starting from {@code from}, extending to {@code toExclusive -
+   * 1}, with {@code step}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeBy(1, 3, 1)  // = TreeSet(1, 2)
+   * TreeSet.rangeBy(1, 4, 2)  // = TreeSet(1, 3)
+   * TreeSet.rangeBy(4, 1, -2) // = TreeSet(4, 2)
+   * TreeSet.rangeBy(4, 1, 2)  // = TreeSet()
+   * }</pre>
+   *
+   * @param from the first number
+   * @param toExclusive the last number + 1
+   * @param step the step
+   * @return a range of long values as specified or the empty range if<br>
+   *     {@code from >= toInclusive} and {@code step > 0} or<br>
+   *     {@code from <= toInclusive} and {@code step < 0}
+   * @throws IllegalArgumentException if {@code step} is zero
+   */
+  public static TreeSet<Integer> rangeBy(int from, int toExclusive, int step) {
+    return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+  }
+
+  /**
+   * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toExclusive -
+   * 1}, with {@code step}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeBy('a', 'c', 1)  // = TreeSet('a', 'b')
+   * TreeSet.rangeBy('a', 'd', 2)  // = TreeSet('a', 'c')
+   * TreeSet.rangeBy('d', 'a', -2) // = TreeSet('d', 'b')
+   * TreeSet.rangeBy('d', 'a', 2)  // = TreeSet()
+   * }</pre>
+   *
+   * @param from the first char
+   * @param toExclusive the last char + 1
+   * @param step the step
+   * @return a range of char values as specified or the empty range if<br>
+   *     {@code from >= toExclusive} and {@code step > 0} or<br>
+   *     {@code from <= toExclusive} and {@code step < 0}
+   * @throws IllegalArgumentException if {@code step} is zero
+   */
+  public static TreeSet<Character> rangeBy(char from, char toExclusive, int step) {
+    return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+  }
+
+  /**
+   * Creates a TreeSet of double numbers starting from {@code from}, extending up to (but not
+   * including) {@code toExclusive}, with {@code step}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeBy(1.0, 3.0, 1.0)  // = TreeSet(1.0, 2.0)
+   * TreeSet.rangeBy(1.0, 4.0, 2.0)  // = TreeSet(1.0, 3.0)
+   * TreeSet.rangeBy(4.0, 1.0, -2.0) // = TreeSet(4.0, 2.0)
+   * TreeSet.rangeBy(4.0, 1.0, 2.0)  // = TreeSet()
+   * }</pre>
+   *
+   * @param from the first double
+   * @param toExclusive the upper bound (exclusive)
+   * @param step the step
+   * @return a range of double values as specified or the empty range if<br>
+   *     {@code from >= toExclusive} and {@code step > 0} or<br>
+   *     {@code from <= toExclusive} and {@code step < 0}
+   * @throws IllegalArgumentException if {@code step} is zero
+   */
+  public static TreeSet<Double> rangeBy(double from, double toExclusive, double step) {
+    return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+  }
+
+  /**
+   * Creates a TreeSet of long numbers starting from {@code from}, extending to {@code toExclusive -
+   * 1}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.range(0L, 0L)  // = TreeSet()
+   * TreeSet.range(2L, 0L)  // = TreeSet()
+   * TreeSet.range(-2L, 2L) // = TreeSet(-2L, -1L, 0L, 1L)
+   * }</pre>
+   *
+   * @param from the first number
+   * @param toExclusive the last number + 1
+   * @return a range of long values as specified or the empty range if {@code from >= toExclusive}
+   */
+  public static TreeSet<Long> range(long from, long toExclusive) {
+    return TreeSet.ofAll(Iterator.range(from, toExclusive));
+  }
+
+  /**
+   * Creates a TreeSet of long numbers starting from {@code from}, extending to {@code toExclusive -
+   * 1}, with {@code step}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeBy(1L, 3L, 1L)  // = TreeSet(1L, 2L)
+   * TreeSet.rangeBy(1L, 4L, 2L)  // = TreeSet(1L, 3L)
+   * TreeSet.rangeBy(4L, 1L, -2L) // = TreeSet(4L, 2L)
+   * TreeSet.rangeBy(4L, 1L, 2L)  // = TreeSet()
+   * }</pre>
+   *
+   * @param from the first number
+   * @param toExclusive the last number + 1
+   * @param step the step
+   * @return a range of long values as specified or the empty range if<br>
+   *     {@code from >= toInclusive} and {@code step > 0} or<br>
+   *     {@code from <= toInclusive} and {@code step < 0}
+   * @throws IllegalArgumentException if {@code step} is zero
+   */
+  public static TreeSet<Long> rangeBy(long from, long toExclusive, long step) {
+    return TreeSet.ofAll(Iterator.rangeBy(from, toExclusive, step));
+  }
+
+  /**
+   * Creates a TreeSet of int numbers starting from {@code from}, extending to {@code toInclusive}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeClosed(0, 0)  // = TreeSet(0)
+   * TreeSet.rangeClosed(2, 0)  // = TreeSet()
+   * TreeSet.rangeClosed(-2, 2) // = TreeSet(-2, -1, 0, 1, 2)
+   * }</pre>
+   *
+   * @param from the first number
+   * @param toInclusive the last number
+   * @return a range of int values as specified or the empty range if {@code from > toInclusive}
+   */
+  public static TreeSet<Integer> rangeClosed(int from, int toInclusive) {
+    return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+  }
+
+  /**
+   * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toInclusive}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeClosed('a', 'a')  // = TreeSet('a')
+   * TreeSet.rangeClosed('b', 'a')  // = TreeSet()
+   * TreeSet.rangeClosed('a', 'c')  // = TreeSet('a', 'b', 'c')
+   * }</pre>
+   *
+   * @param from the first char
+   * @param toInclusive the last char
+   * @return a range of char values as specified or the empty range if {@code from > toInclusive}
+   */
+  public static TreeSet<Character> rangeClosed(char from, char toInclusive) {
+    return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+  }
+
+  /**
+   * Creates a TreeSet of int numbers starting from {@code from}, extending to {@code toInclusive},
+   * with {@code step}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeClosedBy(1, 3, 1)  // = TreeSet(1, 2, 3)
+   * TreeSet.rangeClosedBy(1, 4, 2)  // = TreeSet(1, 3)
+   * TreeSet.rangeClosedBy(4, 1, -2) // = TreeSet(4, 2)
+   * TreeSet.rangeClosedBy(4, 1, 2)  // = TreeSet()
+   * }</pre>
+   *
+   * @param from the first number
+   * @param toInclusive the last number
+   * @param step the step
+   * @return a range of int values as specified or the empty range if<br>
+   *     {@code from > toInclusive} and {@code step > 0} or<br>
+   *     {@code from < toInclusive} and {@code step < 0}
+   * @throws IllegalArgumentException if {@code step} is zero
+   */
+  public static TreeSet<Integer> rangeClosedBy(int from, int toInclusive, int step) {
+    return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+  }
+
+  /**
+   * Creates a TreeSet of char numbers starting from {@code from}, extending to {@code toInclusive},
+   * with {@code step}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeClosedBy('a', 'c', 1)  // = TreeSet('a', 'b', 'c')
+   * TreeSet.rangeClosedBy('a', 'd', 2)  // = TreeSet('a', 'c')
+   * TreeSet.rangeClosedBy('d', 'a', -2) // = TreeSet('d', 'b')
+   * TreeSet.rangeClosedBy('d', 'a', 2)  // = TreeSet()
+   * }</pre>
+   *
+   * @param from the first char
+   * @param toInclusive the last char
+   * @param step the step
+   * @return a range of char values as specified or the empty range if<br>
+   *     {@code from > toInclusive} and {@code step > 0} or<br>
+   *     {@code from < toInclusive} and {@code step < 0}
+   * @throws IllegalArgumentException if {@code step} is zero
+   */
+  public static TreeSet<Character> rangeClosedBy(char from, char toInclusive, int step) {
+    return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+  }
+
+  /**
+   * Creates a TreeSet of double numbers starting from {@code from}, extending to {@code
+   * toInclusive}, with {@code step}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeClosedBy(1.0, 3.0, 1.0)  // = TreeSet(1.0, 2.0, 3.0)
+   * TreeSet.rangeClosedBy(1.0, 4.0, 2.0)  // = TreeSet(1.0, 3.0)
+   * TreeSet.rangeClosedBy(4.0, 1.0, -2.0) // = TreeSet(4.0, 2.0)
+   * TreeSet.rangeClosedBy(4.0, 1.0, 2.0)  // = TreeSet()
+   * }</pre>
+   *
+   * @param from the first double
+   * @param toInclusive the last double
+   * @param step the step
+   * @return a range of double values as specified or the empty range if<br>
+   *     {@code from > toInclusive} and {@code step > 0} or<br>
+   *     {@code from < toInclusive} and {@code step < 0}
+   * @throws IllegalArgumentException if {@code step} is zero
+   */
+  public static TreeSet<Double> rangeClosedBy(double from, double toInclusive, double step) {
+    return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+  }
+
+  /**
+   * Creates a TreeSet of long numbers starting from {@code from}, extending to {@code toInclusive}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeClosed(0L, 0L)  // = TreeSet(0L)
+   * TreeSet.rangeClosed(2L, 0L)  // = TreeSet()
+   * TreeSet.rangeClosed(-2L, 2L) // = TreeSet(-2L, -1L, 0L, 1L, 2L)
+   * }</pre>
+   *
+   * @param from the first number
+   * @param toInclusive the last number
+   * @return a range of long values as specified or the empty range if {@code from > toInclusive}
+   */
+  public static TreeSet<Long> rangeClosed(long from, long toInclusive) {
+    return TreeSet.ofAll(Iterator.rangeClosed(from, toInclusive));
+  }
+
+  /**
+   * Creates a TreeSet of long numbers starting from {@code from}, extending to {@code toInclusive},
+   * with {@code step}.
+   *
+   * <p>Examples:
+   *
+   * <pre>{@code
+   * TreeSet.rangeClosedBy(1L, 3L, 1L)  // = TreeSet(1L, 2L, 3L)
+   * TreeSet.rangeClosedBy(1L, 4L, 2L)  // = TreeSet(1L, 3L)
+   * TreeSet.rangeClosedBy(4L, 1L, -2L) // = TreeSet(4L, 2L)
+   * TreeSet.rangeClosedBy(4L, 1L, 2L)  // = TreeSet()
+   * }</pre>
+   *
+   * @param from the first number
+   * @param toInclusive the last number
+   * @param step the step
+   * @return a range of int values as specified or the empty range if<br>
+   *     {@code from > toInclusive} and {@code step > 0} or<br>
+   *     {@code from < toInclusive} and {@code step < 0}
+   * @throws IllegalArgumentException if {@code step} is zero
+   */
+  public static TreeSet<Long> rangeClosedBy(long from, long toInclusive, long step) {
+    return TreeSet.ofAll(Iterator.rangeClosedBy(from, toInclusive, step));
+  }
+
+  @Override
+  public TreeSet<T> add(T element) {
+    return contains(element) ? this : new TreeSet<>(tree.insert(element));
+  }
+
+  @Override
+  public TreeSet<T> addAll(@NonNull Iterable<? extends T> elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    RedBlackTree<T> that = tree;
+    for (T element : elements) {
+      if (!that.contains(element)) {
+        that = that.insert(element);
+      }
+    }
+    if (tree == that) {
+      return this;
+    } else {
+      return new TreeSet<>(that);
+    }
+  }
+
+  @Override
+  public <R> TreeSet<R> collect(@NonNull PartialFunction<? super T, ? extends R> partialFunction) {
+    return ofAll(Comparators.naturalComparator(), iterator().<R>collect(partialFunction));
+  }
+
+  @Override
+  public Comparator<T> comparator() {
+    return tree.comparator();
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public TreeSet<T> diff(@NonNull Set<? extends T> elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    if (isEmpty()) {
+      return this;
+    } else if (elements instanceof TreeSet) {
+      final TreeSet<T> that = (TreeSet<T>) elements;
+      return that.isEmpty() ? this : new TreeSet<>(tree.difference(that.tree));
+    } else {
+      return removeAll(elements);
+    }
+  }
+
+  @Override
+  public boolean contains(T element) {
+    return tree.contains(element);
+  }
+
+  @Override
+  public TreeSet<T> distinct() {
+    return this;
+  }
+
+  @Override
+  public TreeSet<T> distinctBy(@NonNull Comparator<? super T> comparator) {
+    Objects.requireNonNull(comparator, "comparator is null");
+    return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(comparator));
+  }
+
+  @Override
+  public <U> TreeSet<T> distinctBy(@NonNull Function<? super T, ? extends U> keyExtractor) {
+    Objects.requireNonNull(keyExtractor, "keyExtractor is null");
+    return isEmpty() ? this : TreeSet.ofAll(tree.comparator(), iterator().distinctBy(keyExtractor));
+  }
+
+  @Override
+  public TreeSet<T> drop(int n) {
+    if (n <= 0 || isEmpty()) {
+      return this;
+    } else if (n >= length()) {
+      return empty(tree.comparator());
+    } else {
+      return TreeSet.ofAll(tree.comparator(), iterator().drop(n));
+    }
+  }
+
+  @Override
+  public TreeSet<T> dropRight(int n) {
+    if (n <= 0 || isEmpty()) {
+      return this;
+    } else if (n >= length()) {
+      return empty(tree.comparator());
+    } else {
+      return TreeSet.ofAll(tree.comparator(), iterator().dropRight(n));
+    }
+  }
+
+  @Override
+  public TreeSet<T> dropUntil(@NonNull Predicate<? super T> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    return dropWhile(predicate.negate());
+  }
+
+  @Override
+  public TreeSet<T> dropWhile(@NonNull Predicate<? super T> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().dropWhile(predicate));
+    return (treeSet.length() == length()) ? this : treeSet;
+  }
+
+  @Override
+  public TreeSet<T> filter(@NonNull Predicate<? super T> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().filter(predicate));
+    return (treeSet.length() == length()) ? this : treeSet;
+  }
+
+  @Override
+  public TreeSet<T> reject(@NonNull Predicate<? super T> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    return filter(predicate.negate());
+  }
+
+  @Override
+  public <U> TreeSet<U> flatMap(
+      @NonNull Comparator<? super U> comparator,
+      @NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    Objects.requireNonNull(mapper, "mapper is null");
+    return TreeSet.ofAll(comparator, iterator().flatMap(mapper));
+  }
+
+  @Override
+  public <U> TreeSet<U> flatMap(
+      @NonNull Function<? super T, ? extends Iterable<? extends U>> mapper) {
+    return flatMap(Comparators.naturalComparator(), mapper);
+  }
+
+  @Override
+  public <U> U foldRight(U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> f) {
+    Objects.requireNonNull(f, "f is null");
+    return iterator().foldRight(zero, f);
+  }
+
+  @Override
+  public <C> Map<C, TreeSet<T>> groupBy(@NonNull Function<? super T, ? extends C> classifier) {
+    return Collections.groupBy(this, classifier, elements -> ofAll(comparator(), elements));
+  }
+
+  @Override
+  public Iterator<TreeSet<T>> grouped(int size) {
+    return sliding(size, size);
+  }
+
+  @Override
+  public boolean hasDefiniteSize() {
+    return true;
+  }
+
+  @Override
+  public T head() {
+    if (isEmpty()) {
+      throw new NoSuchElementException("head of empty TreeSet");
+    } else {
+      return tree.min().get();
+    }
+  }
+
+  @Override
+  public Option<T> headOption() {
+    return tree.min();
+  }
+
+  @Override
+  public TreeSet<T> init() {
+    if (isEmpty()) {
+      throw new UnsupportedOperationException("init of empty TreeSet");
+    } else {
+      return new TreeSet<>(tree.delete(tree.max().get()));
+    }
+  }
+
+  @Override
+  public Option<TreeSet<T>> initOption() {
+    return isEmpty() ? Option.none() : Option.some(init());
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public TreeSet<T> intersect(@NonNull Set<? extends T> elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    if (isEmpty()) {
+      return this;
+    } else if (elements instanceof TreeSet) {
+      final TreeSet<T> that = (TreeSet<T>) elements;
+      return new TreeSet<>(tree.intersection(that.tree));
+    } else {
+      return retainAll(elements);
+    }
+  }
+
+  /**
+   * A {@code TreeSet} is computed synchronously.
+   *
+   * @return false
+   */
+  @Override
+  public boolean isAsync() {
+    return false;
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return tree.isEmpty();
+  }
+
+  /**
+   * A {@code TreeSet} is computed eagerly.
+   *
+   * @return false
+   */
+  @Override
+  public boolean isLazy() {
+    return false;
+  }
+
+  @Override
+  public boolean isTraversableAgain() {
+    return true;
+  }
+
+  @Override
+  public @NonNull Iterator<T> iterator() {
+    return tree.iterator();
+  }
+
+  @Override
+  public T last() {
+    if (isEmpty()) {
+      throw new NoSuchElementException("last of empty TreeSet");
+    } else {
+      return tree.max().get();
+    }
+  }
+
+  @Override
+  public int length() {
+    return tree.size();
+  }
+
+  @Override
+  public <U> TreeSet<U> map(
+      @NonNull Comparator<? super U> comparator, @NonNull Function<? super T, ? extends U> mapper) {
+    Objects.requireNonNull(mapper, "mapper is null");
+    return TreeSet.ofAll(comparator, iterator().map(mapper));
+  }
+
+  @Override
+  public <U> TreeSet<U> map(@NonNull Function<? super T, ? extends U> mapper) {
+    return map(Comparators.naturalComparator(), mapper);
+  }
+
+  @Override
+  public <U> TreeSet<U> mapTo(U value) {
+    return map(ignored -> value);
+  }
+
+  @Override
+  public TreeSet<Void> mapToVoid() {
+    return map((o1, o2) -> 0, ignored -> null);
+  }
+
+  /**
+   * Returns this {@code TreeSet} if it is nonempty, otherwise {@code TreeSet} created from
+   * iterable, using existing comparator.
+   *
+   * @param other An alternative {@code Traversable}
+   * @return this {@code TreeSet} if it is nonempty, otherwise {@code TreeSet} created from
+   *     iterable, using existing comparator.
+   */
+  @Override
+  public TreeSet<T> orElse(@NonNull Iterable<? extends T> other) {
+    return isEmpty() ? ofAll(tree.comparator(), other) : this;
+  }
+
+  /**
+   * Returns this {@code TreeSet} if it is nonempty, otherwise {@code TreeSet} created from result
+   * of evaluating supplier, using existing comparator.
+   *
+   * @param supplier An alternative {@code Traversable}
+   * @return this {@code TreeSet} if it is nonempty, otherwise {@code TreeSet} created from result
+   *     of evaluating supplier, using existing comparator.
+   */
+  @Override
+  public TreeSet<T> orElse(@NonNull Supplier<? extends Iterable<? extends T>> supplier) {
+    return isEmpty() ? ofAll(tree.comparator(), supplier.get()) : this;
+  }
+
+  @Override
+  public Tuple2<TreeSet<T>, TreeSet<T>> partition(@NonNull Predicate<? super T> predicate) {
+    return Collections.partition(
+        this, values -> TreeSet.ofAll(tree.comparator(), values), predicate);
+  }
+
+  @Override
+  public TreeSet<T> peek(@NonNull Consumer<? super T> action) {
+    Objects.requireNonNull(action, "action is null");
+    if (!isEmpty()) {
+      action.accept(head());
+    }
+    return this;
+  }
+
+  @Override
+  public TreeSet<T> remove(T element) {
+    return new TreeSet<>(tree.delete(element));
+  }
+
+  @Override
+  public TreeSet<T> removeAll(@NonNull Iterable<? extends T> elements) {
+    return Collections.removeAll(this, elements);
+  }
+
+  @Override
+  public TreeSet<T> replace(T currentElement, T newElement) {
+    if (tree.contains(currentElement)) {
+      return new TreeSet<>(tree.delete(currentElement).insert(newElement));
+    } else {
+      return this;
+    }
+  }
+
+  @Override
+  public TreeSet<T> replaceAll(T currentElement, T newElement) {
+    // a set has only one occurrence
+    return replace(currentElement, newElement);
+  }
+
+  @Override
+  public TreeSet<T> retainAll(@NonNull Iterable<? extends T> elements) {
+    return Collections.retainAll(this, elements);
+  }
+
+  @Override
+  public TreeSet<T> scan(T zero, @NonNull BiFunction<? super T, ? super T, ? extends T> operation) {
+    return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator(), iter));
+  }
+
+  @Override
+  public <U> Set<U> scanLeft(
+      U zero, @NonNull BiFunction<? super U, ? super T, ? extends U> operation) {
+    if (zero instanceof Comparable) {
+      final Comparator<U> comparator = Comparators.naturalComparator();
+      return Collections.scanLeft(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));
+    } else {
+      return Collections.scanLeft(this, zero, operation, HashSet::ofAll);
+    }
+  }
+
+  @Override
+  public <U> Set<U> scanRight(
+      U zero, @NonNull BiFunction<? super T, ? super U, ? extends U> operation) {
+    if (zero instanceof Comparable) {
+      final Comparator<U> comparator = Comparators.naturalComparator();
+      return Collections.scanRight(this, zero, operation, iter -> TreeSet.ofAll(comparator, iter));
+    } else {
+      return Collections.scanRight(this, zero, operation, HashSet::ofAll);
+    }
+  }
+
+  @Override
+  public Iterator<TreeSet<T>> slideBy(@NonNull Function<? super T, ?> classifier) {
+    return iterator().slideBy(classifier).map(seq -> TreeSet.ofAll(tree.comparator(), seq));
+  }
+
+  @Override
+  public Iterator<TreeSet<T>> sliding(int size) {
+    return sliding(size, 1);
+  }
+
+  @Override
+  public Iterator<TreeSet<T>> sliding(int size, int step) {
+    return iterator().sliding(size, step).map(seq -> TreeSet.ofAll(tree.comparator(), seq));
+  }
+
+  @Override
+  public Tuple2<TreeSet<T>, TreeSet<T>> span(@NonNull Predicate<? super T> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    return iterator()
+        .span(predicate)
+        .map(
+            i1 -> TreeSet.ofAll(tree.comparator(), i1), i2 -> TreeSet.ofAll(tree.comparator(), i2));
+  }
+
+  @Override
+  public TreeSet<T> tail() {
+    if (isEmpty()) {
+      throw new UnsupportedOperationException("tail of empty TreeSet");
+    } else {
+      return new TreeSet<>(tree.delete(tree.min().get()));
+    }
+  }
+
+  @Override
+  public Option<TreeSet<T>> tailOption() {
+    return isEmpty() ? Option.none() : Option.some(tail());
+  }
+
+  @Override
+  public TreeSet<T> take(int n) {
+    if (n <= 0) {
+      return empty(tree.comparator());
+    } else if (n >= length()) {
+      return this;
+    } else {
+      return TreeSet.ofAll(tree.comparator(), iterator().take(n));
+    }
+  }
+
+  @Override
+  public TreeSet<T> takeRight(int n) {
+    if (n <= 0) {
+      return empty(tree.comparator());
+    } else if (n >= length()) {
+      return this;
+    } else {
+      return TreeSet.ofAll(tree.comparator(), iterator().takeRight(n));
+    }
+  }
+
+  @Override
+  public TreeSet<T> takeUntil(@NonNull Predicate<? super T> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    final TreeSet<T> treeSet = takeWhile(predicate.negate());
+    return (treeSet.length() == length()) ? this : treeSet;
+  }
+
+  @Override
+  public TreeSet<T> takeWhile(@NonNull Predicate<? super T> predicate) {
+    Objects.requireNonNull(predicate, "predicate is null");
+    final TreeSet<T> treeSet = TreeSet.ofAll(tree.comparator(), iterator().takeWhile(predicate));
+    return (treeSet.length() == length()) ? this : treeSet;
+  }
+
+  /**
+   * Transforms this {@code TreeSet}.
+   *
+   * @param f A transformation
+   * @param <U> Type of transformation result
+   * @return An instance of type {@code U}
+   * @throws NullPointerException if {@code f} is null
+   */
+  public <U> U transform(Function<? super TreeSet<T>, ? extends U> f) {
+    Objects.requireNonNull(f, "f is null");
+    return f.apply(this);
+  }
+
+  @Override
+  public java.util.TreeSet<T> toJavaSet() {
+    return toJavaSet(ignore -> new java.util.TreeSet<>(comparator()));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Override
+  public TreeSet<T> union(@NonNull Set<? extends T> elements) {
+    Objects.requireNonNull(elements, "elements is null");
+    if (elements instanceof TreeSet) {
+      final TreeSet<T> that = (TreeSet<T>) elements;
+      return that.isEmpty() ? this : new TreeSet<>(tree.union(that.tree));
+    } else {
+      return addAll(elements);
+    }
+  }
+
+  @Override
+  public <T1, T2> Tuple2<TreeSet<T1>, TreeSet<T2>> unzip(
       @NonNull Function<? super T, Tuple2<? extends T1, ? extends T2>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip(unzipper).map(i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
-                i2 -> TreeSet.ofAll(Comparators.naturalComparator(), i2));
-    }
+    Objects.requireNonNull(unzipper, "unzipper is null");
+    return iterator()
+        .unzip(unzipper)
+        .map(
+            i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
+            i2 -> TreeSet.ofAll(Comparators.naturalComparator(), i2));
+  }
 
-    @Override
-    public <T1, T2, T3> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
+  @Override
+  public <T1, T2, T3> Tuple3<TreeSet<T1>, TreeSet<T2>, TreeSet<T3>> unzip3(
       @NonNull Function<? super T, Tuple3<? extends T1, ? extends T2, ? extends T3>> unzipper) {
-        Objects.requireNonNull(unzipper, "unzipper is null");
-        return iterator().unzip3(unzipper).map(
-                i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
-                i2 -> TreeSet.ofAll(Comparators.naturalComparator(), i2),
-                i3 -> TreeSet.ofAll(Comparators.naturalComparator(), i3));
-    }
+    Objects.requireNonNull(unzipper, "unzipper is null");
+    return iterator()
+        .unzip3(unzipper)
+        .map(
+            i1 -> TreeSet.ofAll(Comparators.naturalComparator(), i1),
+            i2 -> TreeSet.ofAll(Comparators.naturalComparator(), i2),
+            i3 -> TreeSet.ofAll(Comparators.naturalComparator(), i3));
+  }
 
-    @Override
-    public <U> TreeSet<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
-        return zipWith(that, Tuple::of);
-    }
+  @Override
+  public <U> TreeSet<Tuple2<T, U>> zip(@NonNull Iterable<? extends U> that) {
+    return zipWith(that, Tuple::of);
+  }
 
-    @Override
-    public <U, R> TreeSet<R> zipWith(@NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
-        Objects.requireNonNull(that, "that is null");
-        Objects.requireNonNull(mapper, "mapper is null");
-        return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWith(that, mapper));
-    }
+  @Override
+  public <U, R> TreeSet<R> zipWith(
+      @NonNull Iterable<? extends U> that, BiFunction<? super T, ? super U, ? extends R> mapper) {
+    Objects.requireNonNull(that, "that is null");
+    Objects.requireNonNull(mapper, "mapper is null");
+    return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWith(that, mapper));
+  }
 
-    @Override
-    public <U> TreeSet<Tuple2<T, U>> zipAll(@NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
-        Objects.requireNonNull(that, "that is null");
-        final Comparator<Tuple2<T, U>> tuple2Comparator = Tuple2.comparator(tree.comparator(), Comparators.naturalComparator());
-        return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
-    }
+  @Override
+  public <U> TreeSet<Tuple2<T, U>> zipAll(
+      @NonNull Iterable<? extends U> that, T thisElem, U thatElem) {
+    Objects.requireNonNull(that, "that is null");
+    final Comparator<Tuple2<T, U>> tuple2Comparator =
+        Tuple2.comparator(tree.comparator(), Comparators.naturalComparator());
+    return TreeSet.ofAll(tuple2Comparator, iterator().zipAll(that, thisElem, thatElem));
+  }
 
-    @Override
-    public TreeSet<Tuple2<T, Integer>> zipWithIndex() {
-        final Comparator<? super T> component1Comparator = tree.comparator();
-        final Comparator<Tuple2<T, Integer>> tuple2Comparator = (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
-        return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
-    }
+  @Override
+  public TreeSet<Tuple2<T, Integer>> zipWithIndex() {
+    final Comparator<? super T> component1Comparator = tree.comparator();
+    final Comparator<Tuple2<T, Integer>> tuple2Comparator =
+        (t1, t2) -> component1Comparator.compare(t1._1, t2._1);
+    return TreeSet.ofAll(tuple2Comparator, iterator().zipWithIndex());
+  }
 
-    @Override
-    public <U> SortedSet<U> zipWithIndex(@NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
-        return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));
-    }
+  @Override
+  public <U> SortedSet<U> zipWithIndex(
+      @NonNull BiFunction<? super T, ? super Integer, ? extends U> mapper) {
+    return TreeSet.ofAll(Comparators.naturalComparator(), iterator().zipWithIndex(mapper));
+  }
 
-    // -- Object
+  // -- Object
 
-    @Override
-    public boolean equals(Object o) {
-        return Collections.equals(this, o);
-    }
+  @Override
+  public boolean equals(Object o) {
+    return Collections.equals(this, o);
+  }
 
-    @Override
-    public int hashCode() {
-        return Collections.hashUnordered(this);
-    }
+  @Override
+  public int hashCode() {
+    return Collections.hashUnordered(this);
+  }
 
-    @Override
-    public String stringPrefix() {
-        return "TreeSet";
-    }
+  @Override
+  public String stringPrefix() {
+    return "TreeSet";
+  }
 
-    @Override
-    public String toString() {
-        return mkString(stringPrefix() + "(", ", ", ")");
-    }
+  @Override
+  public String toString() {
+    return mkString(stringPrefix() + "(", ", ", ")");
+  }
 }

@@ -23,16 +23,16 @@ import org.junit.jupiter.api.Test;
 
 public abstract class AbstractLinearSeqTest extends AbstractSeqTest {
 
-    @Override
-    abstract protected <T> LinearSeq<T> of(T element);
+  @Override
+  protected abstract <T> LinearSeq<T> of(T element);
 
-    // -- static narrow
+  // -- static narrow
 
-    @Test
-    public void shouldNarrowIndexedSeq() {
-        final LinearSeq<Double> doubles = of(1.0d);
-        final LinearSeq<Number> numbers = LinearSeq.narrow(doubles);
-        final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
-        assertThat(actual).isEqualTo(3);
-    }
+  @Test
+  public void shouldNarrowIndexedSeq() {
+    final LinearSeq<Double> doubles = of(1.0d);
+    final LinearSeq<Number> numbers = LinearSeq.narrow(doubles);
+    final int actual = numbers.append(new BigDecimal("2.0")).sum().intValue();
+    assertThat(actual).isEqualTo(3);
+  }
 }

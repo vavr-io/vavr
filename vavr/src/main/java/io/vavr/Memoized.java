@@ -1,4 +1,3 @@
 package io.vavr;
 
-interface Memoized {
-}
+interface Memoized {}

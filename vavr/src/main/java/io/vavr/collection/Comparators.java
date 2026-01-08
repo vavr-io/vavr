@@ -28,63 +28,62 @@ import java.util.Comparator;
  */
 final class Comparators {
 
-    private Comparators() {
-    }
+  private Comparators() {}
 
-    /**
-     * Returns the natural comparator for type U, i.e. treating it as {@code Comparable<U>}.
-     * The returned comparator is also {@code java.io.Serializable}.
-     * <p>
-     * Please note that this will lead to runtime exceptions, if U is not Comparable.
-     *
-     * @param <U> The type
-     * @return The natural Comparator of type U
-     */
-    @SuppressWarnings("unchecked")
-    static <U> Comparator<U> naturalComparator() {
-        return NaturalComparator.instance();
-    }
+  /**
+   * Returns the natural comparator for type U, i.e. treating it as {@code Comparable<U>}. The
+   * returned comparator is also {@code java.io.Serializable}.
+   *
+   * <p>Please note that this will lead to runtime exceptions, if U is not Comparable.
+   *
+   * @param <U> The type
+   * @return The natural Comparator of type U
+   */
+  @SuppressWarnings("unchecked")
+  static <U> Comparator<U> naturalComparator() {
+    return NaturalComparator.instance();
+  }
 }
 
 final class NaturalComparator<T> implements Comparator<T>, Serializable {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    private static final NaturalComparator<?> INSTANCE = new NaturalComparator<>();
+  private static final NaturalComparator<?> INSTANCE = new NaturalComparator<>();
 
-    private NaturalComparator() {
-    }
+  private NaturalComparator() {}
 
-    @SuppressWarnings("unchecked")
-    static <T> NaturalComparator<T> instance() {
-        return (NaturalComparator<T>) INSTANCE;
-    }
+  @SuppressWarnings("unchecked")
+  static <T> NaturalComparator<T> instance() {
+    return (NaturalComparator<T>) INSTANCE;
+  }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public int compare(T o1, T o2) {
-        return ((Comparable<T>) o1).compareTo(o2);
-    }
+  @SuppressWarnings("unchecked")
+  @Override
+  public int compare(T o1, T o2) {
+    return ((Comparable<T>) o1).compareTo(o2);
+  }
 
-    /** @see Comparator#equals(Object) */
-    @Override
-    public boolean equals(Object obj) {
-        return obj instanceof NaturalComparator;
-    }
+  /**
+   * @see Comparator#equals(Object)
+   */
+  @Override
+  public boolean equals(Object obj) {
+    return obj instanceof NaturalComparator;
+  }
 
-    @Override
-    public int hashCode() {
-        return 1;
-    }
+  @Override
+  public int hashCode() {
+    return 1;
+  }
 
-    /**
-     * Instance control for object serialization.
-     *
-     * @return The singleton instance of NaturalComparator.
-     * @see java.io.Serializable
-     */
-    private Object readResolve() {
-        return INSTANCE;
-    }
-
+  /**
+   * Instance control for object serialization.
+   *
+   * @return The singleton instance of NaturalComparator.
+   * @see java.io.Serializable
+   */
+  private Object readResolve() {
+    return INSTANCE;
+  }
 }

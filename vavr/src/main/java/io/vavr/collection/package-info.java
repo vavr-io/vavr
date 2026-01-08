@@ -2,6 +2,7 @@
  * Purely functional collections based on {@linkplain io.vavr.collection.Traversable}.
  *
  * <h2>Performance Characteristics of Vavr Collections</h2>
+ *
  * <table style="border-collapse: collapse; border: 1px solid; padding: 5px;">
  * <caption>Time Complexity of Sequential Operations</caption>
  * <thead>
@@ -26,7 +27,9 @@
  * <tr><td>{@linkplain io.vavr.collection.Vector}</td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td><td><small>const<sup>eff</sup></small></td></tr>
  * </tbody>
  * </table>
+ *
  * <br>
+ *
  * <table style="border-collapse: collapse; border: 1px solid; padding: 5px;">
  * <caption>Time Complexity of Map/Set Operations</caption>
  * <thead>
@@ -48,14 +51,19 @@
  * <tr><td>{@linkplain io.vavr.collection.TreeSet}</td><td><small>log</small></td><td><small>log</small></td><td><small>log</small></td><td><small>log</small></td></tr>
  * </tbody>
  * </table>
+ *
  * <br>
+ *
  * <ul>
- * <li><small>const</small>&nbsp;&middot;&nbsp;constant time</li>
- * <li><small>const<sup>a</sup></small>&nbsp;&middot;&nbsp;amortized constant time, few operations may take longer</li>
- * <li><small>const<sup>eff</sup></small>&nbsp;&middot;&nbsp;effectively constant time, depending on assumptions like distribution of hash keys</li>
- * <li><small>const<sup>lazy</sup></small>&nbsp;&middot;&nbsp;lazy constant time, the operation is deferred</li>
- * <li><small>log</small>&nbsp;&middot;&nbsp;logarithmic time</li>
- * <li><small>linear</small>&nbsp;&middot;&nbsp;linear time</li>
+ *   <li><small>const</small>&nbsp;&middot;&nbsp;constant time
+ *   <li><small>const<sup>a</sup></small>&nbsp;&middot;&nbsp;amortized constant time, few operations
+ *       may take longer
+ *   <li><small>const<sup>eff</sup></small>&nbsp;&middot;&nbsp;effectively constant time, depending
+ *       on assumptions like distribution of hash keys
+ *   <li><small>const<sup>lazy</sup></small>&nbsp;&middot;&nbsp;lazy constant time, the operation is
+ *       deferred
+ *   <li><small>log</small>&nbsp;&middot;&nbsp;logarithmic time
+ *   <li><small>linear</small>&nbsp;&middot;&nbsp;linear time
  * </ul>
  */
 package io.vavr.collection;

@@ -27,27 +27,27 @@ import java.util.NoSuchElementException;
  */
 public class MatchError extends NoSuchElementException {
 
-    private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 1L;
 
-    @SuppressWarnings("serial") // Conditionally serializable
-    private final Object obj;
+  @SuppressWarnings("serial") // Conditionally serializable
+  private final Object obj;
 
-    /**
-     * Internally called by {@link API.Match}.
-     *
-     * @param obj The object which could not be matched.
-     */
-    MatchError(Object obj) {
-        super((obj == null) ? "null" : "type: " + obj.getClass().getName() + ", value: " + obj);
-        this.obj = obj;
-    }
+  /**
+   * Internally called by {@link API.Match}.
+   *
+   * @param obj The object which could not be matched.
+   */
+  MatchError(Object obj) {
+    super((obj == null) ? "null" : "type: " + obj.getClass().getName() + ", value: " + obj);
+    this.obj = obj;
+  }
 
-    /**
-     * Returns the object which could not be matched.
-     *
-     * @return An Object.
-     */
-    public Object getObject() {
-        return obj;
-    }
+  /**
+   * Returns the object which could not be matched.
+   *
+   * @return An Object.
+   */
+  public Object getObject() {
+    return obj;
+  }
 }
