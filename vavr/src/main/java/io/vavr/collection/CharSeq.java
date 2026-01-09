@@ -258,7 +258,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * Example:
      * <pre>
      * {@code
-     * CharSeq.unfoldRight('j', x -&gt; x == 'a'
+     * CharSeq.unfoldRight('j', x -> x == 'a'
      *             ? Option.none()
      *             : Option.of(new Tuple2<>(new Character(x), (char)(x-1))));
      * // CharSeq.of("jihgfedcb"))
@@ -286,7 +286,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * Example:
      * <pre>
      * {@code
-     * CharSeq.unfoldLeft('j', x -&gt; x == 'a'
+     * CharSeq.unfoldLeft('j', x -> x == 'a'
      *             ? Option.none()
      *             : Option.of(new Tuple2<>((char)(x-1), new Character(x))));
      * // CharSeq.of("bcdefghij"))
@@ -314,7 +314,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * Example:
      * <pre>
      * {@code
-     * CharSeq.unfold('j', x -&gt; x == 'a'
+     * CharSeq.unfold('j', x -> x == 'a'
      *                ? Option.none()
      *                : Option.of(new Tuple2<>((char)(x-1), new Character(x))));
      * // CharSeq.of("bcdefghij"))
@@ -2489,13 +2489,13 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <td>tr (Turkish)</td>
      * <td>&#92;u0130</td>
      * <td>&#92;u0069</td>
-     * <td>capital letter I with dot above -&gt; small letter i</td>
+     * <td>capital letter I with dot above -> small letter i</td>
      * </tr>
      * <tr>
      * <td>tr (Turkish)</td>
      * <td>&#92;u0049</td>
      * <td>&#92;u0131</td>
-     * <td>capital letter I -&gt; small letter dotless i </td>
+     * <td>capital letter I -> small letter dotless i </td>
      * </tr>
      * <tr>
      * <td>(all)</td>
@@ -2569,19 +2569,19 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <td>tr (Turkish)</td>
      * <td>&#92;u0069</td>
      * <td>&#92;u0130</td>
-     * <td>small letter i -&gt; capital letter I with dot above</td>
+     * <td>small letter i -> capital letter I with dot above</td>
      * </tr>
      * <tr>
      * <td>tr (Turkish)</td>
      * <td>&#92;u0131</td>
      * <td>&#92;u0049</td>
-     * <td>small letter dotless i -&gt; capital letter I</td>
+     * <td>small letter dotless i -> capital letter I</td>
      * </tr>
      * <tr>
      * <td>(all)</td>
      * <td>&#92;u00df</td>
      * <td>&#92;u0053 &#92;u0053</td>
-     * <td>small letter sharp s -&gt; two letters: SS</td>
+     * <td>small letter sharp s -> two letters: SS</td>
      * </tr>
      * <tr>
      * <td>(all)</td>
@@ -2646,19 +2646,19 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <td>tr (Turkish)</td>
      * <td>&#92;u0069</td>
      * <td>&#92;u0130</td>
-     * <td>small letter i -&gt; capital letter I with dot above</td>
+     * <td>small letter i -> capital letter I with dot above</td>
      * </tr>
      * <tr>
      * <td>tr (Turkish)</td>
      * <td>&#92;u0131</td>
      * <td>&#92;u0049</td>
-     * <td>small letter dotless i -&gt; capital letter I</td>
+     * <td>small letter dotless i -> capital letter I</td>
      * </tr>
      * <tr>
      * <td>(all)</td>
      * <td>&#92;u00df</td>
      * <td>&#92;u0053 &#92;u0053</td>
-     * <td>small letter sharp s -&gt; two letters: SS</td>
+     * <td>small letter sharp s -> two letters: SS</td>
      * </tr>
      * <tr>
      * <td>(all)</td>

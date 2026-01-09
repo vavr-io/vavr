@@ -729,9 +729,9 @@ def generateMainClasses(): Unit = {
            * e.g. by {@code Match}:
            *
            * <pre>{@code Match(i).of(
-           *     Case($$(is(0)), i -&gt; run(() -&gt; System.out.println("zero"))),
-           *     Case($$(is(1)), i -&gt; run(() -&gt; System.out.println("one"))),
-           *     Case($$(), o -&gt; run(() -&gt; System.out.println("many")))
+           *     Case($$(is(0)), i -> run(() -> System.out.println("zero"))),
+           *     Case($$(is(1)), i -> run(() -> System.out.println("one"))),
+           *     Case($$(), o -> run(() -> System.out.println("many")))
            * )}</pre>
            *
            * @param unit A block of code to be run.
@@ -901,10 +901,10 @@ def generateMainClasses(): Unit = {
            * <p>
            * Example:
            * <pre>{@code 
-           * For(getPersons(), person -&gt;
-           *     For(person.getTweets(), tweet -&gt;
+           * For(getPersons(), person ->
+           *     For(person.getTweets(), tweet ->
            *         For(tweet.getReplies())
-           *             .yield(reply -&gt; person + ", " + tweet + ", " + reply)));
+           *             .yield(reply -> person + ", " + tweet + ", " + reply)));
            * }</pre>
            *
            * @param ts An iterable
@@ -1194,7 +1194,7 @@ def generateMainClasses(): Unit = {
            * <pre>{@code 
            * String evenOrOdd(int num) {
            *     return Match(num).of(
-           *             Case($$(i -&gt; i % 2 == 0), "even"),
+           *             Case($$(i -> i % 2 == 0), "even"),
            *             Case($$(this::isOdd), "odd")
            *     );
            * }
@@ -1207,10 +1207,10 @@ def generateMainClasses(): Unit = {
            * It is also valid to pass {@code Predicate} instances:
            *
            * <pre>{@code 
-           * Predicate&lt;Integer&gt; isOdd = i -&gt; i % 2 == 1;
+           * Predicate&lt;Integer&gt; isOdd = i -> i % 2 == 1;
            *
            * Match(num).of(
-           *         Case($$(i -&gt; i % 2 == 0), "even"),
+           *         Case($$(i -> i % 2 == 0), "even"),
            *         Case($$(isOdd), "odd")
            * );
            * }</pre>
@@ -1223,7 +1223,7 @@ def generateMainClasses(): Unit = {
            * However, this code will fail:
            *
            * <pre>{@code 
-           * Predicate&lt;Integer&gt; p = i -&gt; true;
+           * Predicate&lt;Integer&gt; p = i -> true;
            * Match(p).of(
            *     Case($$(p), 1) // WRONG! It calls $$(Predicate)
            * );
@@ -1232,7 +1232,7 @@ def generateMainClasses(): Unit = {
            * Instead we have to use {@link Predicates#is(Object)}:
            *
            * <pre>{@code 
-           * Predicate&lt;Integer&gt; p = i -&gt; true;
+           * Predicate&lt;Integer&gt; p = i -> true;
            * Match(p).of(
            *     Case($$(is(p)), 1) // CORRECT! It calls $$(T)
            * );
@@ -1721,10 +1721,10 @@ def generateMainClasses(): Unit = {
          *
          * <pre>{@code 
          * Iterator&lt;R&gt; result =
-         *     For(iterable1, v1 -&gt;
-         *         For(iterable2, v2 -&gt;
+         *     For(iterable1, v1 ->
+         *         For(iterable2, v2 ->
          *             ...
-         *             For(iterableN).yield(vN -&gt; f.apply(v1, v2, ..., vN))
+         *             For(iterableN).yield(vN -> f.apply(v1, v2, ..., vN))
          *         )
          *     );
          * }</pre>
@@ -1890,7 +1890,7 @@ def generateMainClasses(): Unit = {
                *
                * Examples (w.l.o.g. referring to Function1):
                * <pre>{@code // using a lambda expression
-               * Function1&lt;Integer, Integer&gt; add1 = Function1.of(i -&gt; i + 1);
+               * Function1&lt;Integer, Integer&gt; add1 = Function1.of(i -> i + 1);
                *
                * // using a method reference (, e.g. Integer method(Integer i) { return i + 1; })
                * Function1&lt;Integer, Integer&gt; add2 = Function1.of(this::method);
@@ -1901,13 +1901,13 @@ def generateMainClasses(): Unit = {
                * <p>
                * <strong>Caution:</strong> Reflection loses type information of lambda references.
                * <pre>{@code // type of a lambda expression
-               * Type&lt;?, ?&gt; type1 = add1.getType(); // (Integer) -&gt; Integer
+               * Type&lt;?, ?&gt; type1 = add1.getType(); // (Integer) -> Integer
                *
                * // type of a method reference
-               * Type&lt;?, ?&gt; type2 = add2.getType(); // (Integer) -&gt; Integer
+               * Type&lt;?, ?&gt; type2 = add2.getType(); // (Integer) -> Integer
                *
                * // type of a lambda reference
-               * Type&lt;?, ?&gt; type3 = add3.getType(); // (Object) -&gt; Object
+               * Type&lt;?, ?&gt; type3 = add3.getType(); // (Object) -> Object
                * }</pre>
                *
                * @param methodReference (typically) a method reference, e.g. {@code Type::method}

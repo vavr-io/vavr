@@ -62,10 +62,10 @@ import org.jspecify.annotations.NonNull;
  *
  * <pre>{@code 
  * Iterator&lt;R&gt; result =
- *     For(iterable1, v1 -&gt;
- *         For(iterable2, v2 -&gt;
+ *     For(iterable1, v1 ->
+ *         For(iterable2, v2 ->
  *             ...
- *             For(iterableN).yield(vN -&gt; f.apply(v1, v2, ..., vN))
+ *             For(iterableN).yield(vN -> f.apply(v1, v2, ..., vN))
  *         )
  *     );
  * }</pre>
@@ -2293,9 +2293,9 @@ public final class API {
      * e.g. by {@code Match}:
      *
      * <pre>{@code Match(i).of(
-     *     Case($(is(0)), i -&gt; run(() -&gt; System.out.println("zero"))),
-     *     Case($(is(1)), i -&gt; run(() -&gt; System.out.println("one"))),
-     *     Case($(), o -&gt; run(() -&gt; System.out.println("many")))
+     *     Case($(is(0)), i -> run(() -> System.out.println("zero"))),
+     *     Case($(is(1)), i -> run(() -> System.out.println("one"))),
+     *     Case($(), o -> run(() -> System.out.println("many")))
      * )}</pre>
      *
      * @param unit A block of code to be run.
@@ -2316,10 +2316,10 @@ public final class API {
      * <p>
      * Example:
      * <pre>{@code 
-     * For(getPersons(), person -&gt;
-     *     For(person.getTweets(), tweet -&gt;
+     * For(getPersons(), person ->
+     *     For(person.getTweets(), tweet ->
      *         For(tweet.getReplies())
-     *             .yield(reply -&gt; person + ", " + tweet + ", " + reply)));
+     *             .yield(reply -> person + ", " + tweet + ", " + reply)));
      * }</pre>
      *
      * @param ts An iterable
@@ -10384,7 +10384,7 @@ public final class API {
      * <pre>{@code 
      * String evenOrOdd(int num) {
      *     return Match(num).of(
-     *             Case($(i -&gt; i % 2 == 0), "even"),
+     *             Case($(i -> i % 2 == 0), "even"),
      *             Case($(this::isOdd), "odd")
      *     );
      * }
@@ -10397,10 +10397,10 @@ public final class API {
      * It is also valid to pass {@code Predicate} instances:
      *
      * <pre>{@code 
-     * Predicate&lt;Integer&gt; isOdd = i -&gt; i % 2 == 1;
+     * Predicate&lt;Integer&gt; isOdd = i -> i % 2 == 1;
      *
      * Match(num).of(
-     *         Case($(i -&gt; i % 2 == 0), "even"),
+     *         Case($(i -> i % 2 == 0), "even"),
      *         Case($(isOdd), "odd")
      * );
      * }</pre>
@@ -10413,7 +10413,7 @@ public final class API {
      * However, this code will fail:
      *
      * <pre>{@code 
-     * Predicate&lt;Integer&gt; p = i -&gt; true;
+     * Predicate&lt;Integer&gt; p = i -> true;
      * Match(p).of(
      *     Case($(p), 1) // WRONG! It calls $(Predicate)
      * );
@@ -10422,7 +10422,7 @@ public final class API {
      * Instead we have to use {@link Predicates#is(Object)}:
      *
      * <pre>{@code 
-     * Predicate&lt;Integer&gt; p = i -&gt; true;
+     * Predicate&lt;Integer&gt; p = i -> true;
      * Match(p).of(
      *     Case($(is(p)), 1) // CORRECT! It calls $(T)
      * );

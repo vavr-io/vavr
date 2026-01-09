@@ -561,7 +561,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * Example:
      * <pre>
      * {@code
-     * Queue.unfoldRight(10, x -&gt; x == 0
+     * Queue.unfoldRight(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2<>(x, x-1)));
      * // Queue(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
@@ -590,7 +590,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * Example:
      * <pre>
      * {@code
-     * Queue.unfoldLeft(10, x -&gt; x == 0
+     * Queue.unfoldLeft(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2<>(x-1, x)));
      * // Queue(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
@@ -619,7 +619,7 @@ public final class Queue<T> extends AbstractQueue<T, Queue<T>> implements Linear
      * Example:
      * <pre>
      * {@code
-     * Queue.unfold(10, x -&gt; x == 0
+     * Queue.unfold(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2<>(x-1, x)));
      * // Queue(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
