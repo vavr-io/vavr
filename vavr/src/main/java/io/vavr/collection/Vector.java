@@ -659,7 +659,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * Example:
      * <pre>
      * {@code
-     * Vector.unfoldRight(10, x -&gt; x == 0
+     * Vector.unfoldRight(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
      * // Vector(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
@@ -688,7 +688,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * Example:
      * <pre>
      * {@code
-     * Vector.unfoldLeft(10, x -&gt; x == 0
+     * Vector.unfoldLeft(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
@@ -717,7 +717,7 @@ public final class Vector<T> implements IndexedSeq<T>, Serializable {
      * Example:
      * <pre>
      * {@code
-     * Vector.unfold(10, x -&gt; x == 0
+     * Vector.unfold(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))

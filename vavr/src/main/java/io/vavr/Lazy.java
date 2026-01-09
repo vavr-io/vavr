@@ -53,7 +53,7 @@ import org.jspecify.annotations.NonNull;
  *
  * <p>Creating a <em>truly lazy</em> value for an interface type:</p>
  * <pre>{@code
- * final CharSequence chars = Lazy.val(() -&gt; "Yay!", CharSequence.class);
+ * final CharSequence chars = Lazy.val(() -> "Yay!", CharSequence.class);
  * }</pre>
  *
  * @param <T> the type of the lazily evaluated value
