@@ -1740,7 +1740,7 @@ def generateMainClasses(): Unit = {
          * mapped cross product elements.
          *
          * <pre>{@code 
-         * { f(v1, v2, ..., vN) | v1 &isin; iterable1, ... vN &isin; iterableN }
+         * { f(v1, v2, ..., vN) | v1 ∈ iterable1, ... vN ∈ iterableN }
          * }</pre>
          *
          * As with all Vavr Values, the result of a For-comprehension can be converted
