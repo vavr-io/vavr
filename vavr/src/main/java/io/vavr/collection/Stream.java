@@ -63,9 +63,9 @@ import static io.vavr.collection.JavaConverters.ListView;
  * Stream.rangeClosed(0, 3)        // = 0, 1, 2, 3
  *
  * // generators
- * Stream.cons(Object, Supplier)   // e.g. Stream.cons(current, () -&gt; next(current));
+ * Stream.cons(Object, Supplier)   // e.g. Stream.cons(current, () → next(current));
  * Stream.continually(Supplier)    // e.g. Stream.continually(Math::random);
- * Stream.iterate(Object, Function)// e.g. Stream.iterate(1, i -&gt; i * 2);
+ * Stream.iterate(Object, Function)// e.g. Stream.iterate(1, i → i * 2);
  * }
  * </pre>
  *
@@ -102,7 +102,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * }
  *
  * static boolean isPrime(long num) {
- *     return !Stream.rangeClosed(2L, (long) Math.sqrt(num)).exists(d -&gt; num % d == 0);
+ *     return !Stream.rangeClosed(2L, (long) Math.sqrt(num)).exists(d → num % d == 0);
  * }
  * }
  * </pre>
@@ -814,7 +814,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * Example:
      * <pre>
      * {@code
-     * Stream.unfoldRight(10, x -&gt; x == 0
+     * Stream.unfoldRight(10, x → x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
      * // Stream(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
@@ -843,7 +843,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * Example:
      * <pre>
      * {@code
-     * Stream.unfoldLeft(10, x -&gt; x == 0
+     * Stream.unfoldLeft(10, x → x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Stream(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
@@ -872,7 +872,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * Example:
      * <pre>
      * {@code
-     * Stream.unfold(10, x -&gt; x == 0
+     * Stream.unfold(10, x → x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // Stream(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
@@ -925,13 +925,13 @@ public interface Stream<T> extends LinearSeq<T> {
      * Well known Scala code for Fibonacci infinite sequence
      * <pre>
      * {@code
-     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t =&gt; t._1 + t._2 }
+     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t ⇒ t._1 + t._2 }
      * }
      * </pre>
      * can be transformed to
      * <pre>
      * {@code
-     * Stream.of(0, 1).appendSelf(self -&gt; self.zip(self.tail()).map(t -&gt; t._1 + t._2));
+     * Stream.of(0, 1).appendSelf(self → self.zip(self.tail()).map(t → t._1 + t._2));
      * }
      * </pre>
      *
