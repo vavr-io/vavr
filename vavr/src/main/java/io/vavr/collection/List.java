@@ -116,7 +116,7 @@ import static io.vavr.collection.JavaConverters.ListView;
  * <pre>
  * {@code
  * // = List(1, 2, 3)
- * List.of("123".toCharArray()).map(c -&gt; Character.digit(c, 10))
+ * List.of("123".toCharArray()).map(c -> Character.digit(c, 10))
  * }
  * </pre>
  *
@@ -788,7 +788,7 @@ public interface List<T> extends LinearSeq<T> {
      * Example:
      * <pre>
      * {@code
-     * List.unfoldRight(10, x -&gt; x == 0
+     * List.unfoldRight(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
      * // List(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
@@ -817,7 +817,7 @@ public interface List<T> extends LinearSeq<T> {
      * Example:
      * <pre>
      * {@code
-     * List.unfoldLeft(10, x -&gt; x == 0
+     * List.unfoldLeft(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
@@ -847,7 +847,7 @@ public interface List<T> extends LinearSeq<T> {
      * Example:
      * <pre>
      * {@code
-     * List.unfold(10, x -&gt; x == 0
+     * List.unfold(10, x -> x == 0
      *             ? Option.none()
      *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
      * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
