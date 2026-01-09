@@ -1,7 +1,6 @@
 # Vavr
 
 [![Build Status](https://github.com/vavr-io/vavr/actions/workflows/ci.yml/badge.svg)](https://github.com/vavr-io/vavr/actions/workflows/ci.yml)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Maven Central Version](https://img.shields.io/maven-central/v/io.vavr/vavr?versionPrefix=0)](https://central.sonatype.com/artifact/io.vavr/vavr/versions)
 [![javadoc](https://javadoc.io/badge2/io.vavr/vavr/0.11.0/javadoc.svg)](https://javadoc.io/doc/io.vavr/vavr/0.11.0)
 
