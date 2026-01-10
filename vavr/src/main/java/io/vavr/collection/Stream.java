@@ -52,10 +52,10 @@ import static io.vavr.collection.JavaConverters.ListView;
  * {@code
  * // factory methods
  * Stream.empty()                  // = Stream.of() = Empty.instance()
- * Stream.of(x)                    // = new Cons&lt;&gt;(x, Empty.instance())
+ * Stream.of(x)                    // = new Cons<>(x, Empty.instance())
  * Stream.of(Object...)            // e.g. Stream.of(1, 2, 3)
  * Stream.ofAll(Iterable)          // e.g. Stream.ofAll(List.of(1, 2, 3)) = 1, 2, 3
- * Stream.ofAll(&lt;primitive array&gt;) // e.g. List.ofAll(1, 2, 3) = 1, 2, 3
+ * Stream.ofAll(<primitive array>) // e.g. List.ofAll(1, 2, 3) = 1, 2, 3
  *
  * // int sequences
  * Stream.from(0)                  // = 0, 1, 2, 3, ...
@@ -73,18 +73,18 @@ import static io.vavr.collection.JavaConverters.ListView;
  *
  * <pre>
  * {@code
- * Stream&lt;Integer&gt;       s1 = Stream.of(1);
- * Stream&lt;Integer&gt;       s2 = Stream.of(1, 2, 3);
+ * Stream<Integer>       s1 = Stream.of(1);
+ * Stream<Integer>       s2 = Stream.of(1, 2, 3);
  *                       // = Stream.of(new Integer[] {1, 2, 3});
  *
- * Stream&lt;int[]&gt;         s3 = Stream.ofAll(1, 2, 3);
- * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.ofAll(List.of(1, 2, 3));
+ * Stream<int[]>         s3 = Stream.ofAll(1, 2, 3);
+ * Stream<List<Integer>> s4 = Stream.ofAll(List.of(1, 2, 3));
  *
- * Stream&lt;Integer&gt;       s5 = Stream.ofAll(1, 2, 3);
- * Stream&lt;Integer&gt;       s6 = Stream.ofAll(List.of(1, 2, 3));
+ * Stream<Integer>       s5 = Stream.ofAll(1, 2, 3);
+ * Stream<Integer>       s6 = Stream.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
- * Stream&lt;Integer[]&gt;     s7 = Stream.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
+ * Stream<Integer[]>     s7 = Stream.<Integer[]> of(new Integer[] {1, 2, 3});
  * }
  * </pre>
  *
@@ -739,7 +739,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * {@code
      * Stream.unfoldRight(10, x -&gt; x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
+     *             : Option.of(new Tuple2<>(x, x-1)));
      * // Stream(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
      * }
      * </pre>
@@ -768,7 +768,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * {@code
      * Stream.unfoldLeft(10, x -&gt; x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     *             : Option.of(new Tuple2<>(x-1, x)));
      * // Stream(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
      * }
      * </pre>
@@ -797,7 +797,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * {@code
      * Stream.unfold(10, x -&gt; x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     *             : Option.of(new Tuple2<>(x-1, x)));
      * // Stream(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
      * }
      * </pre>
@@ -848,7 +848,7 @@ public interface Stream<T> extends LinearSeq<T> {
      * Well known Scala code for Fibonacci infinite sequence
      * <pre>
      * {@code
-     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t =&gt; t._1 + t._2 }
+     * val fibs:Stream[Int] = 0 #:: 1 #:: (fibs zip fibs.tail).map{ t => t._1 + t._2 }
      * }
      * </pre>
      * can be transformed to

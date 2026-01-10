@@ -541,7 +541,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * {@code
      * Array.unfoldRight(10, x -&gt; x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;gt;(x, x-1)));
+     *             : Option.of(new Tuple2<gt;(x, x-1)));
      * // Array(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
      * }
      * </pre>
@@ -570,7 +570,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * {@code
      * Array.unfoldLeft(10, x -&gt; x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;gt;(x-1, x)));
+     *             : Option.of(new Tuple2<gt;(x-1, x)));
      * // Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
      * }
      * </pre>
@@ -599,7 +599,7 @@ public final class Array<T> implements IndexedSeq<T>, Serializable {
      * {@code
      * Array.unfold(10, x -&gt; x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;gt;(x-1, x)));
+     *             : Option.of(new Tuple2<gt;(x-1, x)));
      * // Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
      * }
      * </pre>

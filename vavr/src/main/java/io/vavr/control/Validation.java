@@ -46,26 +46,26 @@ import org.jspecify.annotations.NonNull;
  * // Validation construction:
  *
  * // Valid
- * Validation&lt;String, Integer&gt; valid = Validation.valid(5);
+ * Validation<String, Integer> valid = Validation.valid(5);
  *
  * // Invalid
- * Validation&lt;List&lt;String>, Integer&gt;invalid = Validation.invalid(List.of("error1", "error2"));
+ * Validation<List<String>, Integer>invalid = Validation.invalid(List.of("error1", "error2"));
  *
  * // Validation combination:
  *
- * Validation&lt;String, String> valid1 = Validation.valid("John");
- * Validation&lt;String, Integer> valid2 = Validation.valid(5);
- * Validation&lt;String, Option&lt;String&gt;&gt; valid3 = Validation.valid(Option.of("123 Fake St."));
- * Function3&lt;String, Integer, Option&lt;String&gt;, Person> f = ...;
+ * Validation<String, String> valid1 = Validation.valid("John");
+ * Validation<String, Integer> valid2 = Validation.valid(5);
+ * Validation<String, Option<String>> valid3 = Validation.valid(Option.of("123 Fake St."));
+ * Function3<String, Integer, Option<String>, Person> f = ...;
  *
- * Validation&lt;List&lt;String&gt;, String&gt; result =
+ * Validation<List<String>, String> result =
  *     valid1.combine(valid2).ap((name, age) -> "Name: " + name + " Age: " + age);
  *
- * Validation&lt;List&lt;String&gt;, Person&gt; result2 =
+ * Validation<List<String>, Person> result2 =
  *     valid1.combine(valid2).combine(valid3).ap(f);
  *
  * // Another way to combine validations:
- * Validation&lt;List&lt;String&gt;, Person&gt; result3 =
+ * Validation<List<String>, Person> result3 =
  *     Validation.combine(valid1, valid2, valid3).ap(f);
  * }
  * </pre>
