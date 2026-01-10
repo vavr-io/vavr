@@ -2,7 +2,7 @@
  * \   \/   /      \   \/   /   __/   /      \   \/   /      \
  *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
  *
- * Copyright 2014-2025 Vavr, https://vavr.io
+ * Copyright 2014-2026 Vavr, https://vavr.io
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -4149,7 +4149,7 @@ def genVavrFile(packageName: String, className: String, baseDir: String = TARGET
      *  \  \/  /  /\  \  \/  /  /
      *   \____/__/  \__\____/__/
      *
-     * Copyright 2014-2025 Vavr, https://vavr.io
+     * Copyright 2014-2026 Vavr, https://vavr.io
      *
      * Licensed under the Apache License, Version 2.0 (the "License");
      * you may not use this file except in compliance with the License.
