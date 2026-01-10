@@ -41,7 +41,6 @@ import static io.vavr.collection.JavaConverters.ChangePolicy.MUTABLE;
  * <p>
  * <strong>Note:</strong>Because CharSeq represents a sequence of primitive characters (i.e. a String),
  * it breaks the Liskov Substitution Principle in the way, that the CharSeq cannot contain {@code null} elements.
- * In future version of Java, CharSeq should extend IndexedSeq&lt;char&gt; instead.
  *
  * @author Ruslan Sennov, Daniel Dietrich
  */
@@ -283,7 +282,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * {@code
      * CharSeq.unfoldRight('j', x -> x == 'a'
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;(new Character(x), (char)(x-1))));
+     *             : Option.of(new Tuple2<>(new Character(x), (char)(x-1))));
      * // CharSeq.of("jihgfedcb"))
      * }
      * </pre>
@@ -311,7 +310,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * {@code
      * CharSeq.unfoldLeft('j', x -> x == 'a'
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;((char)(x-1), new Character(x))));
+     *             : Option.of(new Tuple2<>((char)(x-1), new Character(x))));
      * // CharSeq.of("bcdefghij"))
      * }
      * </pre>
@@ -339,7 +338,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * {@code
      * CharSeq.unfold('j', x -> x == 'a'
      *                ? Option.none()
-     *                : Option.of(new Tuple2&lt;&gt;((char)(x-1), new Character(x))));
+     *                : Option.of(new Tuple2<>((char)(x-1), new Character(x))));
      * // CharSeq.of("bcdefghij"))
      * }
      * </pre>
@@ -1685,7 +1684,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * or both. If they have different characters at one or more index
      * positions, let <i>k</i> be the smallest such index; then the string
      * whose character at position <i>k</i> has the smaller value, as
-     * determined by using the &lt; operator, lexicographically precedes the
+     * determined by using the {@code <} operator, lexicographically precedes the
      * other string. In this case, {@code compareTo} returns the
      * difference of the two character values at position {@code k} in
      * the two string -- that is, the value:
@@ -1943,12 +1942,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * of {@code ch} in the range from 0 to 0xFFFF (inclusive),
      * this is the smallest value <i>k</i> such that:
      * <blockquote><pre>
-     * (this.charAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &gt;= fromIndex)
+     * (this.charAt(<i>k</i>) == ch) {@code &&} (<i>k</i> >= fromIndex)
      * </pre></blockquote>
      * is true. For other values of {@code ch}, it is the
      * smallest value <i>k</i> such that:
      * <blockquote><pre>
-     * (this.codePointAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &gt;= fromIndex)
+     * (this.codePointAt(<i>k</i>) == ch) {@code &&} (<i>k</i> >= fromIndex)
      * </pre></blockquote>
      * is true. In either case, if no such character occurs in this
      * string at or after position {@code fromIndex}, then
@@ -2030,12 +2029,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * from 0 to 0xFFFF (inclusive), the index returned is the largest
      * value <i>k</i> such that:
      * <blockquote><pre>
-     * (this.charAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &lt;= fromIndex)
+     * (this.charAt(<i>k</i>) == ch) {@code &&} (<i>k</i> <= fromIndex)
      * </pre></blockquote>
      * is true. For other values of {@code ch}, it is the
      * largest value <i>k</i> such that:
      * <blockquote><pre>
-     * (this.codePointAt(<i>k</i>) == ch) {@code &&} (<i>k</i> &lt;= fromIndex)
+     * (this.codePointAt(<i>k</i>) == ch) {@code &&} (<i>k</i> <= fromIndex)
      * </pre></blockquote>
      * is true. In either case, if no such character occurs in this
      * string at or before position {@code fromIndex}, then
@@ -2107,7 +2106,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * <p>
      * The returned index is the smallest value <i>k</i> for which:
      * <blockquote><pre>
-     * <i>k</i> &gt;= fromIndex {@code &&} this.startsWith(str, <i>k</i>)
+     * <i>k</i> >= fromIndex {@code &&} this.startsWith(str, <i>k</i>)
      * </pre></blockquote>
      * If no such value of <i>k</i> exists, then {@code -1} is returned.
      *

@@ -44,7 +44,7 @@ import org.jspecify.annotations.NonNull;
  *
  * <p>Example usage:</p>
  * <pre>{@code
- * final Lazy&lt;Double&gt; l = Lazy.of(Math::random);
+ * final Lazy<Double> l = Lazy.of(Math::random);
  * l.isEvaluated(); // false
  * double value = l.get(); // evaluates and returns a random number, e.g., 0.123
  * l.isEvaluated(); // true

@@ -70,10 +70,10 @@ import static io.vavr.collection.JavaConverters.ListView;
  * {@code
  * // factory methods
  * List.empty()                        // = List.of() = Nil.instance()
- * List.of(x)                          // = new Cons&lt;&gt;(x, Nil.instance())
+ * List.of(x)                          // = new Cons<>(x, Nil.instance())
  * List.of(Object...)                  // e.g. List.of(1, 2, 3)
  * List.ofAll(Iterable)                // e.g. List.ofAll(Stream.of(1, 2, 3)) = 1, 2, 3
- * List.ofAll(&lt;primitive array&gt;) // e.g. List.of(new int[] {1, 2, 3}) = 1, 2, 3
+ * List.ofAll(<primitive array>) // e.g. List.of(new int[] {1, 2, 3}) = 1, 2, 3
  *
  * // int sequences
  * List.range(0, 3)              // = 0, 1, 2
@@ -96,18 +96,18 @@ import static io.vavr.collection.JavaConverters.ListView;
  *
  * <pre>
  * {@code
- * List&lt;Integer&gt;       s1 = List.of(1);
- * List&lt;Integer&gt;       s2 = List.of(1, 2, 3);
+ * List<Integer>       s1 = List.of(1);
+ * List<Integer>       s2 = List.of(1, 2, 3);
  *                           // = List.of(new Integer[] {1, 2, 3});
  *
- * List&lt;int[]&gt;         s3 = List.ofAll(1, 2, 3);
- * List&lt;List&lt;Integer&gt;&gt; s4 = List.ofAll(List.of(1, 2, 3));
+ * List<int[]>         s3 = List.ofAll(1, 2, 3);
+ * List<List<Integer>> s4 = List.ofAll(List.of(1, 2, 3));
  *
- * List&lt;Integer&gt;       s5 = List.ofAll(1, 2, 3);
- * List&lt;Integer&gt;       s6 = List.ofAll(List.of(1, 2, 3));
+ * List<Integer>       s5 = List.ofAll(1, 2, 3);
+ * List<Integer>       s6 = List.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
- * List&lt;Integer[]&gt;     s7 = List.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
+ * List<Integer[]>     s7 = List.<Integer[]> of(new Integer[] {1, 2, 3});
  * }
  * </pre>
  *
@@ -790,7 +790,7 @@ public interface List<T> extends LinearSeq<T> {
      * {@code
      * List.unfoldRight(10, x -> x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;(x, x-1)));
+     *             : Option.of(new Tuple2<>(x, x-1)));
      * // List(10, 9, 8, 7, 6, 5, 4, 3, 2, 1))
      * }
      * </pre>
@@ -819,7 +819,7 @@ public interface List<T> extends LinearSeq<T> {
      * {@code
      * List.unfoldLeft(10, x -> x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     *             : Option.of(new Tuple2<>(x-1, x)));
      * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
      * }
      * </pre>
@@ -849,7 +849,7 @@ public interface List<T> extends LinearSeq<T> {
      * {@code
      * List.unfold(10, x -> x == 0
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;(x-1, x)));
+     *             : Option.of(new Tuple2<>(x-1, x)));
      * // List(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
      * }
      * </pre>
