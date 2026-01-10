@@ -76,24 +76,24 @@ public interface Function4<T1, T2, T3, T4, R> extends Serializable {
      *
      * Examples (w.l.o.g. referring to Function1):
      * <pre>{@code // using a lambda expression
-     * Function1&lt;Integer, Integer&gt; add1 = Function1.of(i -> i + 1);
+     * Function1<Integer, Integer> add1 = Function1.of(i -> i + 1);
      *
      * // using a method reference (, e.g. Integer method(Integer i) { return i + 1; })
-     * Function1&lt;Integer, Integer&gt; add2 = Function1.of(this::method);
+     * Function1<Integer, Integer> add2 = Function1.of(this::method);
      *
      * // using a lambda reference
-     * Function1&lt;Integer, Integer&gt; add3 = Function1.of(add1::apply);
+     * Function1<Integer, Integer> add3 = Function1.of(add1::apply);
      * }</pre>
      * <p>
      * <strong>Caution:</strong> Reflection loses type information of lambda references.
      * <pre>{@code // type of a lambda expression
-     * Type&lt;?, ?&gt; type1 = add1.getType(); // (Integer) -> Integer
+     * Type<?, ?> type1 = add1.getType(); // (Integer) -> Integer
      *
      * // type of a method reference
-     * Type&lt;?, ?&gt; type2 = add2.getType(); // (Integer) -> Integer
+     * Type<?, ?> type2 = add2.getType(); // (Integer) -> Integer
      *
      * // type of a lambda reference
-     * Type&lt;?, ?&gt; type3 = add3.getType(); // (Object) -> Object
+     * Type<?, ?> type3 = add3.getType(); // (Object) -> Object
      * }</pre>
      *
      * @param methodReference (typically) a method reference, e.g. {@code Type::method}
