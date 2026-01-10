@@ -1198,7 +1198,7 @@ def generateMainClasses(): Unit = {
            * It is also valid to pass {@code Predicate} instances:
            *
            * <pre>{@code 
-           * Predicate&lt;Integer&gt; isOdd = i -> i % 2 == 1;
+           * Predicate<Integer> isOdd = i -> i % 2 == 1;
            *
            * Match(num).of(
            *         Case($$(i -> i % 2 == 0), "even"),
@@ -1214,7 +1214,7 @@ def generateMainClasses(): Unit = {
            * However, this code will fail:
            *
            * <pre>{@code 
-           * Predicate&lt;Integer&gt; p = i -> true;
+           * Predicate<Integer> p = i -> true;
            * Match(p).of(
            *     Case($$(p), 1) // WRONG! It calls $$(Predicate)
            * );
@@ -1223,7 +1223,7 @@ def generateMainClasses(): Unit = {
            * Instead we have to use {@link Predicates#is(Object)}:
            *
            * <pre>{@code 
-           * Predicate&lt;Integer&gt; p = i -> true;
+           * Predicate<Integer> p = i -> true;
            * Match(p).of(
            *     Case($$(is(p)), 1) // CORRECT! It calls $$(T)
            * );
@@ -1702,13 +1702,13 @@ def generateMainClasses(): Unit = {
          *
          * <pre>{@code 
          * // lazily evaluated
-         * Iterator&lt;R&gt; result = For(iterable1, iterable2, ..., iterableN).yield(f);
+         * Iterator<R> result = For(iterable1, iterable2, ..., iterableN).yield(f);
          * }</pre>
          *
          * or
          *
          * <pre>{@code 
-         * Iterator&lt;R&gt; result =
+         * Iterator<R> result =
          *     For(iterable1, v1 ->
          *         For(iterable2, v2 ->
          *             ...
@@ -1736,7 +1736,7 @@ def generateMainClasses(): Unit = {
          * Please note that values like Option, Try, Future, etc. are also iterable.
          * <p>
          * Given a suitable function
-         * f: {@code (v1, v2, ..., vN) -> ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
+         * f: {@code (v1, v2, ..., vN) -> ...} and 1 <= N <= 8 iterables, the result is a Stream of the
          * mapped cross product elements.
          *
          * <pre>{@code 
@@ -1878,24 +1878,24 @@ def generateMainClasses(): Unit = {
                *
                * Examples (w.l.o.g. referring to Function1):
                * <pre>{@code // using a lambda expression
-               * Function1&lt;Integer, Integer&gt; add1 = Function1.of(i -> i + 1);
+               * Function1<Integer, Integer> add1 = Function1.of(i -> i + 1);
                *
                * // using a method reference (, e.g. Integer method(Integer i) { return i + 1; })
-               * Function1&lt;Integer, Integer&gt; add2 = Function1.of(this::method);
+               * Function1<Integer, Integer> add2 = Function1.of(this::method);
                *
                * // using a lambda reference
-               * Function1&lt;Integer, Integer&gt; add3 = Function1.of(add1::apply);
+               * Function1<Integer, Integer> add3 = Function1.of(add1::apply);
                * }</pre>
                * <p>
                * <strong>Caution:</strong> Reflection loses type information of lambda references.
                * <pre>{@code // type of a lambda expression
-               * Type&lt;?, ?&gt; type1 = add1.getType(); // (Integer) -> Integer
+               * Type<?, ?> type1 = add1.getType(); // (Integer) -> Integer
                *
                * // type of a method reference
-               * Type&lt;?, ?&gt; type2 = add2.getType(); // (Integer) -> Integer
+               * Type<?, ?> type2 = add2.getType(); // (Integer) -> Integer
                *
                * // type of a lambda reference
-               * Type&lt;?, ?&gt; type3 = add3.getType(); // (Object) -> Object
+               * Type<?, ?> type3 = add3.getType(); // (Object) -> Object
                * }</pre>
                *
                * @param methodReference (typically) a method reference, e.g. {@code Type::method}
