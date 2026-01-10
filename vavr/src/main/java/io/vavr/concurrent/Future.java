@@ -798,8 +798,8 @@ public interface Future<T> extends Value<T> {
      * <p>Example:</p>
      * <pre>{@code
      * Future<Integer> future = Future.of(() -> { throw new Error(); });
-     * Future&lt;Integer&gt; that = Future.of(() -> 1);
-     * Future&lt;Integer&gt; result = future.fallbackTo(that);
+     * Future<Integer> that = Future.of(() -> 1);
+     * Future<Integer> result = future.fallbackTo(that);
      *
      * // prints Success(1)
      * result.onComplete(System.out::println);

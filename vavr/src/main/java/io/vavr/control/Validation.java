@@ -249,7 +249,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param <T2>        type of second valid value
      * @param validation1 first validation
      * @param validation2 second validation
-     * @return an instance of Builder&lt;E,T1,T2&gt;
+     * @return an instance of Builder<E,T1,T2>
      * @throws NullPointerException if validation1 or validation2 is null
      */
     static <E, T1, T2> Builder<E, T1, T2> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2) {
@@ -268,7 +268,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param validation1 first validation
      * @param validation2 second validation
      * @param validation3 third validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3&gt;
+     * @return an instance of Builder3<E,T1,T2,T3>
      * @throws NullPointerException if validation1, validation2 or validation3 is null
      */
     static <E, T1, T2, T3> Builder3<E, T1, T2, T3> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3) {
@@ -290,7 +290,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param validation2 second validation
      * @param validation3 third validation
      * @param validation4 fourth validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4&gt;
+     * @return an instance of Builder3<E,T1,T2,T3,T4>
      * @throws NullPointerException if validation1, validation2, validation3 or validation4 is null
      */
     static <E, T1, T2, T3, T4> Builder4<E, T1, T2, T3, T4> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4) {
@@ -315,7 +315,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param validation3 third validation
      * @param validation4 fourth validation
      * @param validation5 fifth validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5&gt;
+     * @return an instance of Builder3<E,T1,T2,T3,T4,T5>
      * @throws NullPointerException if validation1, validation2, validation3, validation4 or validation5 is null
      */
     static <E, T1, T2, T3, T4, T5> Builder5<E, T1, T2, T3, T4, T5> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4, @NonNull Validation<E, T5> validation5) {
@@ -343,7 +343,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param validation4 fourth validation
      * @param validation5 fifth validation
      * @param validation6 sixth validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6&gt;
+     * @return an instance of Builder3<E,T1,T2,T3,T4,T5,T6>
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5 or validation6 is null
      */
     static <E, T1, T2, T3, T4, T5, T6> Builder6<E, T1, T2, T3, T4, T5, T6> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4, @NonNull Validation<E, T5> validation5, @NonNull Validation<E, T6> validation6) {
@@ -374,7 +374,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param validation5 fifth validation
      * @param validation6 sixth validation
      * @param validation7 seventh validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7&gt;
+     * @return an instance of Builder3<E,T1,T2,T3,T4,T5,T6,T7>
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6 or validation7 is null
      */
     static <E, T1, T2, T3, T4, T5, T6, T7> Builder7<E, T1, T2, T3, T4, T5, T6, T7> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4, @NonNull Validation<E, T5> validation5, @NonNull Validation<E, T6> validation6, @NonNull Validation<E, T7> validation7) {
@@ -408,7 +408,7 @@ public interface Validation<E, T> extends Value<T>, Serializable {
      * @param validation6 sixth validation
      * @param validation7 seventh validation
      * @param validation8 eighth validation
-     * @return an instance of Builder3&lt;E,T1,T2,T3,T4,T5,T6,T7,T8&gt;
+     * @return an instance of Builder3<E,T1,T2,T3,T4,T5,T6,T7,T8>
      * @throws NullPointerException if validation1, validation2, validation3, validation4, validation5, validation6, validation7 or validation8 is null
      */
     static <E, T1, T2, T3, T4, T5, T6, T7, T8> Builder8<E, T1, T2, T3, T4, T5, T6, T7, T8> combine(@NonNull Validation<E, T1> validation1, @NonNull Validation<E, T2> validation2, @NonNull Validation<E, T3> validation3, @NonNull Validation<E, T4> validation4, @NonNull Validation<E, T5> validation5, @NonNull Validation<E, T6> validation6, @NonNull Validation<E, T7> validation7, @NonNull Validation<E, T8> validation8) {

@@ -101,7 +101,7 @@ public interface Seq<T> extends Traversable<T>, PartialFunction<Integer, T>, Ser
      *
      * @param index an index
      * @return the element at the given index
-     * @throws IndexOutOfBoundsException if this is empty, index &lt; 0 or index &gt;= length()
+     * @throws IndexOutOfBoundsException if this is empty, index < 0 or index >= length()
      * @deprecated Will be removed
      */
     @Deprecated

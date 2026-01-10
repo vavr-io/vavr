@@ -100,14 +100,14 @@ import static io.vavr.collection.JavaConverters.ListView;
  * List<Integer>       s2 = List.of(1, 2, 3);
  *                           // = List.of(new Integer[] {1, 2, 3});
  *
- * List&lt;int[]&gt;         s3 = List.ofAll(1, 2, 3);
- * List&lt;List&lt;Integer&gt;&gt; s4 = List.ofAll(List.of(1, 2, 3));
+ * List<int[]>         s3 = List.ofAll(1, 2, 3);
+ * List<List<Integer>> s4 = List.ofAll(List.of(1, 2, 3));
  *
- * List&lt;Integer&gt;       s5 = List.ofAll(1, 2, 3);
- * List&lt;Integer&gt;       s6 = List.ofAll(List.of(1, 2, 3));
+ * List<Integer>       s5 = List.ofAll(1, 2, 3);
+ * List<Integer>       s6 = List.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
- * List&lt;Integer[]&gt;     s7 = List.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
+ * List<Integer[]>     s7 = List.<Integer[]> of(new Integer[] {1, 2, 3});
  * }
  * </pre>
  *

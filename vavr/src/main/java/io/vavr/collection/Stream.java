@@ -77,14 +77,14 @@ import static io.vavr.collection.JavaConverters.ListView;
  * Stream<Integer>       s2 = Stream.of(1, 2, 3);
  *                       // = Stream.of(new Integer[] {1, 2, 3});
  *
- * Stream&lt;int[]&gt;         s3 = Stream.ofAll(1, 2, 3);
- * Stream&lt;List&lt;Integer&gt;&gt; s4 = Stream.ofAll(List.of(1, 2, 3));
+ * Stream<int[]>         s3 = Stream.ofAll(1, 2, 3);
+ * Stream<List<Integer>> s4 = Stream.ofAll(List.of(1, 2, 3));
  *
- * Stream&lt;Integer&gt;       s5 = Stream.ofAll(1, 2, 3);
- * Stream&lt;Integer&gt;       s6 = Stream.ofAll(List.of(1, 2, 3));
+ * Stream<Integer>       s5 = Stream.ofAll(1, 2, 3);
+ * Stream<Integer>       s6 = Stream.ofAll(List.of(1, 2, 3));
  *
  * // cuckoo's egg
- * Stream&lt;Integer[]&gt;     s7 = Stream.&lt;Integer[]&gt; of(new Integer[] {1, 2, 3});
+ * Stream<Integer[]>     s7 = Stream.<Integer[]> of(new Integer[] {1, 2, 3});
  * }
  * </pre>
  *
