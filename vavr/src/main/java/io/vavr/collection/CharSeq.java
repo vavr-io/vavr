@@ -283,7 +283,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * {@code
      * CharSeq.unfoldRight('j', x -> x == 'a'
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;(new Character(x), (char)(x-1))));
+     *             : Option.of(new Tuple2<>(new Character(x), (char)(x-1))));
      * // CharSeq.of("jihgfedcb"))
      * }
      * </pre>
@@ -311,7 +311,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * {@code
      * CharSeq.unfoldLeft('j', x -> x == 'a'
      *             ? Option.none()
-     *             : Option.of(new Tuple2&lt;&gt;((char)(x-1), new Character(x))));
+     *             : Option.of(new Tuple2<>((char)(x-1), new Character(x))));
      * // CharSeq.of("bcdefghij"))
      * }
      * </pre>
@@ -339,7 +339,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * {@code
      * CharSeq.unfold('j', x -> x == 'a'
      *                ? Option.none()
-     *                : Option.of(new Tuple2&lt;&gt;((char)(x-1), new Character(x))));
+     *                : Option.of(new Tuple2<>((char)(x-1), new Character(x))));
      * // CharSeq.of("bcdefghij"))
      * }
      * </pre>
