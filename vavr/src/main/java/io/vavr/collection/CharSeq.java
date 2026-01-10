@@ -1990,12 +1990,12 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * from 0 to 0xFFFF (inclusive), the index returned is the largest
      * value <i>k</i> such that:
      * <blockquote><pre>
-     * (this.charAt(<i>k</i>) == ch) {@code &&} (<i>k</i> <= fromIndex)
+     * (this.charAt(<i>k</i>) == ch) {@code &&} (<i>k</i> {@code <=} fromIndex)
      * </pre></blockquote>
      * is true. For other values of {@code ch}, it is the
      * largest value <i>k</i> such that:
      * <blockquote><pre>
-     * (this.codePointAt(<i>k</i>) == ch) {@code &&} (<i>k</i> <= fromIndex)
+     * (this.codePointAt(<i>k</i>) == ch) {@code &&} (<i>k</i> {@code <=} fromIndex)
      * </pre></blockquote>
      * is true. In either case, if no such character occurs in this
      * string at or before position {@code fromIndex}, then
