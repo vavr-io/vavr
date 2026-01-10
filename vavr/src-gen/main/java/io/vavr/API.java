@@ -55,13 +55,13 @@ import org.jspecify.annotations.NonNull;
  *
  * <pre>{@code 
  * // lazily evaluated
- * Iterator&lt;R&gt; result = For(iterable1, iterable2, ..., iterableN).yield(f);
+ * Iterator<R> result = For(iterable1, iterable2, ..., iterableN).yield(f);
  * }</pre>
  *
  * or
  *
  * <pre>{@code 
- * Iterator&lt;R&gt; result =
+ * Iterator<R> result =
  *     For(iterable1, v1 ->
  *         For(iterable2, v2 ->
  *             ...
@@ -89,7 +89,7 @@ import org.jspecify.annotations.NonNull;
  * Please note that values like Option, Try, Future, etc. are also iterable.
  * <p>
  * Given a suitable function
- * f: {@code (v1, v2, ..., vN) -> ...} and 1 &lt;= N &lt;= 8 iterables, the result is a Stream of the
+ * f: {@code (v1, v2, ..., vN) -> ...} and 1 <= N <= 8 iterables, the result is a Stream of the
  * mapped cross product elements.
  *
  * <pre>{@code 
@@ -10397,7 +10397,7 @@ public final class API {
      * It is also valid to pass {@code Predicate} instances:
      *
      * <pre>{@code 
-     * Predicate&lt;Integer&gt; isOdd = i -> i % 2 == 1;
+     * Predicate<Integer> isOdd = i -> i % 2 == 1;
      *
      * Match(num).of(
      *         Case($(i -> i % 2 == 0), "even"),
@@ -10413,7 +10413,7 @@ public final class API {
      * However, this code will fail:
      *
      * <pre>{@code 
-     * Predicate&lt;Integer&gt; p = i -> true;
+     * Predicate<Integer> p = i -> true;
      * Match(p).of(
      *     Case($(p), 1) // WRONG! It calls $(Predicate)
      * );
@@ -10422,7 +10422,7 @@ public final class API {
      * Instead we have to use {@link Predicates#is(Object)}:
      *
      * <pre>{@code 
-     * Predicate&lt;Integer&gt; p = i -> true;
+     * Predicate<Integer> p = i -> true;
      * Match(p).of(
      *     Case($(is(p)), 1) // CORRECT! It calls $(T)
      * );
