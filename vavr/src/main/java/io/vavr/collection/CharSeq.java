@@ -1684,7 +1684,7 @@ public final class CharSeq implements CharSequence, IndexedSeq<Character>, Seria
      * or both. If they have different characters at one or more index
      * positions, let <i>k</i> be the smallest such index; then the string
      * whose character at position <i>k</i> has the smaller value, as
-     * determined by using the < operator, lexicographically precedes the
+     * determined by using the {@code <} operator, lexicographically precedes the
      * other string. In this case, {@code compareTo} returns the
      * difference of the two character values at position {@code k} in
      * the two string -- that is, the value:
