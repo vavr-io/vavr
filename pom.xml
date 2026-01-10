@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.vavr</groupId>
     <artifactId>vavr-parent</artifactId>
@@ -218,7 +219,8 @@
                         <showWarnings>true</showWarnings>
                         <compilerArgs>
                             <arg>-Xlint:all</arg>
-                            <arg>-Xlint:-processing</arg> <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
+                            <arg>-Xlint:-processing
+                            </arg> <!-- Workaround for JDK bug https://bugs.openjdk.java.net/browse/JDK-6999068 -->
                         </compilerArgs>
                         <annotationProcessorPaths>
                             <path>
@@ -356,7 +358,8 @@
                         <extensions>true</extensions>
                         <configuration>
                             <publishingServerId>central</publishingServerId>
-                            <centralSnapshotsUrl>https://central.sonatype.com/repository/maven-snapshots/</centralSnapshotsUrl>
+                            <centralSnapshotsUrl>https://central.sonatype.com/repository/maven-snapshots/
+                            </centralSnapshotsUrl>
                         </configuration>
                     </plugin>
 
@@ -384,11 +387,33 @@
                         <version>${spotless.version}</version>
                         <configuration>
                             <java>
-                                <removeUnusedImports />
+                                <licenseHeader>
+                                    <content>
+/* ____  ______________  ________________________  __________
+ * \   \/   /      \   \/   /   __/   /      \   \/   /      \
+ *  \______/___/\___\______/___/_____/___/\___\______/___/\___\
+ *
+ * Copyright 2014-$YEAR Vavr, https://vavr.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+                                    </content>
+                                </licenseHeader>
+                                <removeUnusedImports/>
                                 <importOrder>
                                     <order>,\#</order>
                                 </importOrder>
-                                <endWithNewline />
+                                <endWithNewline/>
                             </java>
                         </configuration>
                         <executions>
@@ -425,7 +450,7 @@
                                     <executable>java</executable>
                                     <arguments>
                                         <argument>-classpath</argument>
-                                        <classpath />
+                                        <classpath/>
                                         <argument>io.vavr.JmhRunner</argument>
                                     </arguments>
                                 </configuration>
