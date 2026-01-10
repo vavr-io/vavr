@@ -16,8 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-// temporarily needed to circumvent https://issues.scala-lang.org/browse/SI-3772 (see case class Generics)
 import Generator._
 import JavaGenerator._
 
