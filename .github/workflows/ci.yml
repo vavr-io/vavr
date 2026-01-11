@@ -27,13 +27,14 @@ jobs:
           cache: 'maven'
 
       - name: Build with Maven
-        run: ./mvnw package
+        run: ./mvnw -B package
 
       - name: Verify jar
-        uses: pivovarit/verify-jar-action@v1
+        uses: pivovarit/verify-jar-action@v1.1.0
         with:
           directory: 'vavr/target'
           bytecode-version: '65'
+          max-checks: 10
 
   deploy-snapshot:
     runs-on: ubuntu-latest
